@@ -216,7 +216,9 @@
     .char-card.h:hover { box-shadow: 0 16px 40px rgba(147,197,253,0.15); }
     .char-card.k:hover { box-shadow: 0 16px 40px rgba(252,165,165,0.15); }
     .char-card.y:hover { box-shadow: 0 16px 40px rgba(253,230,138,0.12); }
-    .char-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; display: block; background: rgba(0,0,0,0.2); }
+    .char-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; display: block; background: rgba(0,0,0,0.2); }
+    .char-card.k .char-img { object-position: 50% 5%; transform: scale(1.15); transform-origin: top center; }
+    .char-card.y .char-img { object-position: 50% 0%; transform: scale(1.45); transform-origin: top center; }
     .char-info { padding: 20px; }
     .char-num  { font-size: 11px; letter-spacing: 3px; color: var(--muted); margin-bottom: 6px; }
     .char-name { font-size: 22px; font-weight: 400; margin-bottom: 4px; font-family: 'Noto Serif JP', serif; }
