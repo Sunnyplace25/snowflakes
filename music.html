@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Snow flakes — Music">
+  <meta property="og:description" content="各ストリーミングサービスで配信中">
+  <title>Snow flakes | Music</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0c1220; --text: #e2e8f0; --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08); --card: rgba(255,255,255,0.04);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35; }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 480px; margin: 0 auto;
+      padding: 80px 24px 60px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .back {
+      position: fixed; top: 20px; left: 24px; z-index: 100;
+      font-size: 13px; color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back:hover { color: var(--text); }
+
+    .hero-icon { font-size: 48px; margin-bottom: 20px; opacity: 0.9; }
+    .hero-label {
+      font-size: 11px; letter-spacing: 7px; color: var(--muted);
+      font-family: 'Cormorant Garamond', serif; margin-bottom: 14px;
+    }
+    .hero-title {
+      font-size: 38px; font-weight: 300; color: white; letter-spacing: 3px;
+      font-family: 'Cormorant Garamond', serif; margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-size: 13px; color: var(--muted); letter-spacing: 2px;
+      margin-bottom: 48px;
+    }
+
+    .links { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+
+    .service-btn {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 24px; border-radius: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .service-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.07);
+    }
+    .service-btn.spotify  { border-color: rgba(30,215,96,0.3); }
+    .service-btn.apple    { border-color: rgba(252,165,165,0.3); }
+    .service-btn.amazon   { border-color: rgba(253,230,138,0.3); }
+    .service-btn.youtube  { border-color: rgba(248,113,113,0.3); }
+    .service-btn.suno     { border-color: rgba(196,181,253,0.3); }
+
+    .service-btn:hover.spotify  { border-color: rgba(30,215,96,0.6); }
+    .service-btn:hover.apple    { border-color: rgba(252,165,165,0.6); }
+    .service-btn:hover.amazon   { border-color: rgba(253,230,138,0.6); }
+    .service-btn:hover.youtube  { border-color: rgba(248,113,113,0.6); }
+    .service-btn:hover.suno     { border-color: rgba(196,181,253,0.6); }
+
+    .service-icon { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; }
+    .service-info { flex: 1; }
+    .service-name { font-size: 16px; font-weight: 400; color: white; margin-bottom: 3px; }
+    .service-note { font-size: 12px; color: var(--muted); }
+    .service-arrow { font-size: 16px; color: var(--muted); }
+
+    .divider {
+      width: 100%; height: 1px; background: var(--border);
+      margin: 8px 0;
+    }
+
+    .footer-note {
+      margin-top: 48px; font-size: 12px; color: #334155;
+      letter-spacing: 4px; font-family: 'Cormorant Garamond', serif;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+
+<a class="back" href="index.html">← もどる</a>
+
+<div class="wrap">
+  <div class="hero-icon">🎵</div>
+  <p class="hero-label">SNOW FLAKES</p>
+  <h1 class="hero-title">Music</h1>
+  <p class="hero-sub">各サービスで配信中</p>
+
+  <div class="links">
+
+    <a class="service-btn spotify" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank">
+      <span class="service-icon">🟢</span>
+      <span class="service-info">
+        <p class="service-name">Spotify</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn apple" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank">
+      <span class="service-icon">🍎</span>
+      <span class="service-info">
+        <p class="service-name">Apple Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn amazon" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank">
+      <span class="service-icon">📦</span>
+      <span class="service-info">
+        <p class="service-name">Amazon Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn youtube" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank">
+      <span class="service-icon">▶️</span>
+      <span class="service-info">
+        <p class="service-name">YouTube Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <div class="divider"></div>
+
+    <a class="service-btn suno" href="https://suno.com/@snowflakes_music" target="_blank">
+      <span class="service-icon">❄</span>
+      <span class="service-info">
+        <p class="service-name">Suno</p>
+        <p class="service-note">未配信曲も公開中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+  </div>
+
+  <p class="footer-note">SNOW FLAKES / 山吹ことり</p>
+</div>
+
+<script>
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 50}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.6+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
