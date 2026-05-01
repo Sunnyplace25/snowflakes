@@ -205,7 +205,7 @@
       gap: 20px; max-width: 900px; margin: 0 auto;
     }
     .char-card {
-      border-radius: 20px; overflow: hidden;
+      border-radius: 20px;
       border: 1.5px solid rgba(255,255,255,0.08);
       background: var(--card); transition: transform 0.25s, box-shadow 0.25s;
     }
@@ -216,6 +216,7 @@
     .char-card.h:hover { box-shadow: 0 16px 40px rgba(147,197,253,0.15); }
     .char-card.k:hover { box-shadow: 0 16px 40px rgba(252,165,165,0.15); }
     .char-card.y:hover { box-shadow: 0 16px 40px rgba(253,230,138,0.12); }
+    .char-img-wrap { overflow: hidden; border-radius: 18px 18px 0 0; }
     .char-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; display: block; background: rgba(0,0,0,0.2); }
     .char-card.k .char-img { object-position: 50% 5%; transform: scale(1.15); transform-origin: top center; }
     .char-card.y .char-img { object-position: 50% 0%; transform: scale(1.45); transform-origin: top center; }
@@ -675,7 +676,7 @@
   <h2 class="sec-title">登場人物</h2>
   <div class="char-grid">
     <div class="char-card h">
-      <img class="char-img" src="chara_hinata.png" alt="ヒナタ">
+      <div class="char-img-wrap"><img class="char-img" src="chara_hinata.png" alt="ヒナタ"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--hinata)">ヒナタ</p>
@@ -684,7 +685,7 @@
       </div>
     </div>
     <div class="char-card k">
-      <img class="char-img" src="chara_kouta.png" alt="コウタ">
+      <div class="char-img-wrap"><img class="char-img" src="chara_kouta.png" alt="コウタ"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--kouta)">コウタ</p>
@@ -693,7 +694,7 @@
       </div>
     </div>
     <div class="char-card y">
-      <img class="char-img" src="chara_hayate.png" alt="ハヤテ">
+      <div class="char-img-wrap"><img class="char-img" src="chara_hayate.png" alt="ハヤテ"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--hayate)">ハヤテ</p>
