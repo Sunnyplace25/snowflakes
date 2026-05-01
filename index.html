@@ -153,18 +153,50 @@
     .btn-green  { background: rgba(110,231,183,0.12); border: 1.5px solid #6ee7b7; color: #6ee7b7; }
     .btn-purple { background: rgba(196,181,253,0.12); border: 1.5px solid #c4b5fd; color: #c4b5fd; }
 
-    /* Songs list */
-    .songs { padding: 0 24px 100px; }
-    .songs-inner { max-width: 720px; margin: 0 auto; }
-    .song-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 24px; border-radius: 12px; margin-bottom: 8px;
-      background: var(--card); border: 1px solid var(--border);
-      transition: border-color 0.2s;
+    /* Discography */
+    .discography { padding: 0 24px 100px; }
+    .disco-inner { max-width: 900px; margin: 0 auto; }
+    .disco-group { margin-bottom: 56px; }
+    .disco-group-label {
+      font-size: 11px; letter-spacing: 5px; color: var(--muted);
+      margin-bottom: 20px; font-family: 'Cormorant Garamond', serif;
     }
-    .song-row:hover { border-color: rgba(255,255,255,0.16); }
-    .song-name { font-size: 16px; color: white; }
-    .song-meta { font-size: 13px; color: var(--muted); }
+    .singles-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .single-card {
+      border-radius: 14px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .single-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
+    .single-jacket { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+    .single-info { padding: 14px 16px; }
+    .single-title { font-size: 15px; color: white; margin-bottom: 4px; font-family: 'Noto Serif JP', serif; }
+    .single-status { font-size: 12px; color: var(--muted); }
+    .ep-card {
+      display: flex; gap: 0;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+    }
+    .ep-jacket { width: 240px; flex-shrink: 0; object-fit: cover; display: block; }
+    .ep-body { padding: 36px 40px; flex: 1; }
+    .ep-type { font-size: 11px; letter-spacing: 5px; color: var(--muted); margin-bottom: 10px; font-family: 'Cormorant Garamond', serif; }
+    .ep-title { font-size: 30px; font-weight: 300; color: white; margin-bottom: 28px; font-family: 'Cormorant Garamond', serif; letter-spacing: 2px; }
+    .ep-tracklist { list-style: none; }
+    .ep-track {
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+    }
+    .ep-track:last-child { border-bottom: none; }
+    .ep-track-num { font-size: 11px; color: var(--muted); font-family: 'Cormorant Garamond', serif; width: 20px; flex-shrink: 0; }
+    .ep-track-name { font-size: 15px; color: #b8c5d4; }
+    @media (max-width: 640px) {
+      .ep-card { flex-direction: column; }
+      .ep-jacket { width: 100%; aspect-ratio: 1; }
+      .ep-body { padding: 24px; }
+    }
 
     /* Characters */
     .characters { padding: 100px 24px; background: rgba(255,255,255,0.02); }
@@ -463,30 +495,90 @@
   </div>
 </section>
 
-<!-- Songs -->
-<section class="songs">
-  <span class="sec-label" style="text-align:center;display:block;margin-bottom:32px;">TRACKS</span>
-  <div class="songs-inner">
-    <div class="song-row">
-      <span class="song-name">置いた音</span>
-      <span class="song-meta">配信中</span>
+<!-- Discography -->
+<section class="discography">
+  <span class="sec-label" style="text-align:center;display:block;margin-bottom:12px;">DISCOGRAPHY</span>
+  <h2 class="sec-title">ディスコグラフィ</h2>
+  <div class="disco-inner">
+
+    <!-- Singles -->
+    <div class="disco-group">
+      <p class="disco-group-label">SINGLES</p>
+      <div class="singles-grid">
+
+        <div class="single-card">
+          <img class="single-jacket" src="Discography/Round Bounce.jpg" alt="Round Bounce">
+          <div class="single-info">
+            <p class="single-title">Round Bounce</p>
+            <p class="single-status">配信中</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <a href="https://ncode.syosetu.com/n9009lo/81" target="_blank"
+                 style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">対応する話 →</a>
+              <a href="https://amzn.asia/d/0awN4sBR" target="_blank"
+                 style="font-size:12px;color:var(--hayate);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);">Kindle →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="single-card">
+          <img class="single-jacket" src="Discography/SWEETs.png" alt="SWEETs">
+          <div class="single-info">
+            <p class="single-title">SWEETs</p>
+            <p class="single-status">配信中</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <a href="https://ncode.syosetu.com/n9009lo/79" target="_blank"
+                 style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">対応する話 →</a>
+              <a href="https://amzn.asia/d/0awN4sBR" target="_blank"
+                 style="font-size:12px;color:var(--hayate);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);">Kindle →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="single-card">
+          <img class="single-jacket" src="Discography/置いた音.png" alt="置いた音">
+          <div class="single-info">
+            <p class="single-title">置いた音</p>
+            <p class="single-status">配信中</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <a href="https://amzn.asia/d/048TEyN6" target="_blank"
+                 style="font-size:12px;color:var(--hayate);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);">Kindle（書き下ろし） →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="song-row">
-      <span class="song-name">Round Bounce</span>
-      <span class="song-meta">配信中</span>
+
+    <!-- EP -->
+    <div class="disco-group">
+      <p class="disco-group-label">EP</p>
+      <div class="ep-card">
+        <img class="ep-jacket" src="Discography/early_snow.png" alt="Early Snow">
+        <div class="ep-body">
+          <p class="ep-type">EP</p>
+          <p class="ep-title">Early Snow</p>
+          <ol class="ep-tracklist">
+            <li class="ep-track"><span class="ep-track-num">01</span><span class="ep-track-name">約束はしない</span></li>
+            <li class="ep-track"><span class="ep-track-num">02</span><span class="ep-track-name">透明のまま</span></li>
+            <li class="ep-track">
+              <span class="ep-track-num">03</span>
+              <span class="ep-track-name">Little Snow（Near）</span>
+              <a href="https://ncode.syosetu.com/n0679lx/" target="_blank"
+                 style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">白い音 →</a>
+            </li>
+            <li class="ep-track"><span class="ep-track-num">04</span><span class="ep-track-name">Still（Untitled）</span></li>
+            <li class="ep-track"><span class="ep-track-num">05</span><span class="ep-track-name">名前のない歌</span></li>
+            <li class="ep-track">
+              <span class="ep-track-num">06</span>
+              <span class="ep-track-name">Little Snow（Raw）</span>
+              <a href="https://amzn.asia/d/06YVW5rN" target="_blank"
+                 style="margin-left:auto;font-size:11px;color:var(--hayate);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(253,230,138,0.35);background:rgba(253,230,138,0.07);white-space:nowrap;flex-shrink:0;">Kindle →</a>
+            </li>
+          </ol>
+        </div>
+      </div>
     </div>
-    <div class="song-row">
-      <span class="song-name">SWEETs</span>
-      <span class="song-meta">配信中</span>
-    </div>
-    <div class="song-row">
-      <span class="song-name">グラスの縁</span>
-      <span class="song-meta">Suno</span>
-    </div>
-    <div class="song-row">
-      <span class="song-name">呼吸の距離</span>
-      <span class="song-meta">Suno</span>
-    </div>
+
   </div>
 </section>
 
