@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snow flakes 管理</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0c1220; --card: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.1); --text: #e2e8f0;
+      --muted: #64748b; --blue: #93c5fd; --red: #fca5a5;
+    }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      min-height: 100vh; padding: 24px 16px 60px;
+    }
+    .header {
+      text-align: center; margin-bottom: 32px;
+    }
+    .header h1 { font-size: 20px; font-weight: 300; letter-spacing: 6px; color: var(--blue); }
+    .header p { font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: 2px; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    }
+    .card h2 { font-size: 13px; letter-spacing: 4px; color: var(--muted); margin-bottom: 20px; }
+
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, textarea {
+      width: 100%; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-size: 15px; padding: 12px 14px;
+      outline: none; transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus { border-color: var(--blue); }
+    .field { margin-bottom: 16px; }
+
+    .btn {
+      width: 100%; padding: 16px; border-radius: 100px;
+      border: none; font-size: 16px; font-weight: bold;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), #60a5fa);
+      color: #0f172a;
+    }
+    .btn-danger {
+      background: transparent; border: 1px solid var(--muted);
+      color: var(--muted); font-size: 13px; padding: 10px;
+      margin-top: 10px;
+    }
+    .btn:disabled { opacity: 0.4; pointer-events: none; }
+
+    .status {
+      padding: 14px 16px; border-radius: 10px; font-size: 14px;
+      margin-top: 16px; display: none;
+    }
+    .status.success { background: rgba(110,231,183,0.12); border: 1px solid rgba(110,231,183,0.3); color: #6ee7b7; }
+    .status.error   { background: rgba(252,165,165,0.12); border: 1px solid rgba(252,165,165,0.3); color: var(--red); }
+    .status.loading { background: rgba(147,197,253,0.12); border: 1px solid rgba(147,197,253,0.3); color: var(--blue); }
+
+    .topics-preview {
+      list-style: none;
+    }
+    .topics-preview li {
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 14px; display: flex; gap: 12px; align-items: baseline;
+    }
+    .topics-preview li:last-child { border-bottom: none; }
+    .t-date { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+    .t-title { color: #cbd5e1; }
+
+    .tab-nav { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tab {
+      flex: 1; padding: 10px; border-radius: 100px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab.active { background: rgba(147,197,253,0.1); border-color: var(--blue); color: var(--blue); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .pat-hint {
+      font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>❄ SNOW FLAKES</h1>
+  <p>サイト管理ツール</p>
+</div>
+
+<div class="tab-nav">
+  <button class="tab active" onclick="switchTab('topics')">TOPICS追加</button>
+  <button class="tab" onclick="switchTab('settings')">設定</button>
+</div>
+
+<!-- TOPICS追加 -->
+<div id="tab-topics" class="section active">
+  <div class="card" id="pat-warning" style="display:none;border-color:rgba(252,165,165,0.3);">
+    <p style="font-size:14px;color:var(--red);">GitHub PATが未設定です。「設定」タブから入力してください。</p>
+  </div>
+
+  <div class="card">
+    <h2>TOPICS — 新しいお知らせを追加</h2>
+    <div class="field">
+      <label>日付</label>
+      <input type="text" id="date" placeholder="2026.05.03">
+    </div>
+    <div class="field">
+      <label>タイトル</label>
+      <input type="text" id="title" placeholder="新しいお知らせ">
+    </div>
+    <div class="field">
+      <label>リンクURL（任意）</label>
+      <input type="url" id="url" placeholder="https://...">
+    </div>
+    <button class="btn btn-primary" id="push-btn" onclick="pushTopic()">
+      Push してサイトに反映
+    </button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card" id="preview-card" style="display:none;">
+    <h2>現在のTOPICS</h2>
+    <ul class="topics-preview" id="topics-list"></ul>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn btn-danger" onclick="loadTopics()">現在のTOPICSを読み込む</button>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div id="tab-settings" class="section">
+  <div class="card">
+    <h2>GITHUB PAT</h2>
+    <div class="field">
+      <label>Personal Access Token</label>
+      <input type="password" id="pat-input" placeholder="ghp_xxxxxxxxxxxx">
+      <p class="pat-hint">
+        GitHub → Settings → Developer settings →<br>
+        Personal access tokens → Fine-grained tokens<br>
+        権限：Contents（Read and Write）
+      </p>
+    </div>
+    <button class="btn btn-primary" onclick="savePat()">保存</button>
+    <div class="status" id="pat-status"></div>
+    <button class="btn btn-danger" onclick="clearPat()">PATを削除</button>
+  </div>
+
+  <div class="card" style="border-color:rgba(147,197,253,0.2);">
+    <h2>リポジトリ情報</h2>
+    <p style="font-size:14px;color:var(--muted);line-height:2;">
+      オーナー：<span style="color:var(--text);">Sunnyplace25</span><br>
+      リポジトリ：<span style="color:var(--text);">snowflakes</span><br>
+      ブランチ：<span style="color:var(--text);">main</span><br>
+      対象ファイル：<span style="color:var(--text);">index.html</span>
+    </p>
+  </div>
+</div>
+
+<script>
+const OWNER = 'Sunnyplace25';
+const REPO  = 'snowflakes';
+const BRANCH = 'main';
+const FILE = 'index.html';
+
+function getPat() { return localStorage.getItem('sf_pat') || ''; }
+
+function savePat() {
+  const val = document.getElementById('pat-input').value.trim();
+  if (!val) return showStatus('pat-status', 'PATを入力してください', 'error');
+  localStorage.setItem('sf_pat', val);
+  document.getElementById('pat-input').value = '';
+  showStatus('pat-status', '保存しました！', 'success');
+  checkPat();
+}
+
+function clearPat() {
+  localStorage.removeItem('sf_pat');
+  showStatus('pat-status', '削除しました', 'success');
+  checkPat();
+}
+
+function checkPat() {
+  const warning = document.getElementById('pat-warning');
+  warning.style.display = getPat() ? 'none' : 'block';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['topics','settings'][i] === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function showStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status ' + type;
+  el.style.display = 'block';
+}
+
+async function fetchFile() {
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}?ref=${BRANCH}`,
+    { headers: { Authorization: `Bearer ${getPat()}`, Accept: 'application/vnd.github+json' } }
+  );
+  if (!res.ok) throw new Error('ファイル取得失敗: ' + res.status);
+  return await res.json();
+}
+
+async function loadTopics() {
+  if (!getPat()) return showStatus('status', 'PATが未設定です', 'error');
+  showStatus('status', '読み込み中...', 'loading');
+  try {
+    const data = await fetchFile();
+    const html = decodeBase64(data.content);
+    const items = parseTopics(html);
+    renderTopics(items);
+    document.getElementById('status').style.display = 'none';
+  } catch(e) {
+    showStatus('status', e.message, 'error');
+  }
+}
+
+function parseTopics(html) {
+  const results = [];
+  const re = /<span[^>]*Cormorant[^>]*>(\d{4}\.\d{2}\.\d{2})<\/span>\s*<span[^>]*>([^<]+)<\/span>/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    results.push({ date: m[1], title: m[2].trim() });
+    if (results.length >= 8) break;
+  }
+  return results;
+}
+
+function renderTopics(items) {
+  const list = document.getElementById('topics-list');
+  const card = document.getElementById('preview-card');
+  if (!items.length) { card.style.display = 'none'; return; }
+  list.innerHTML = items.map(i =>
+    `<li><span class="t-date">${i.date}</span><span class="t-title">${i.title}</span></li>`
+  ).join('');
+  card.style.display = 'block';
+}
+
+async function pushTopic() {
+  if (!getPat()) return showStatus('status', 'PATが未設定です（設定タブへ）', 'error');
+  const date  = document.getElementById('date').value.trim();
+  const title = document.getElementById('title').value.trim();
+  const url   = document.getElementById('url').value.trim();
+
+  if (!date || !title) return showStatus('status', '日付とタイトルは必須です', 'error');
+
+  const btn = document.getElementById('push-btn');
+  btn.disabled = true;
+  showStatus('status', 'index.html を取得中...', 'loading');
+
+  try {
+    const data = await fetchFile();
+    const html = decodeBase64(data.content);
+
+    const newEntry = buildTopicEntry(date, title, url);
+    const marker = '<!-- TOPICS_START -->';
+
+    let newHtml;
+    if (html.includes(marker)) {
+      newHtml = html.replace(marker, marker + '\n' + newEntry);
+    } else {
+      // マーカーなしの場合、最初の既存TOPICSアイテムの直前に挿入
+      const insertPoint = 'style="display:flex;align-items:baseline;gap:20px;padding:20px 24px;border-radius:12px;text-decoration:none;color:inherit;transition:background 0.2s;"';
+      const idx = html.indexOf(insertPoint);
+      if (idx === -1) throw new Error('挿入位置が見つかりませんでした');
+      // <a タグの開始位置を探す
+      const aStart = html.lastIndexOf('<a ', idx);
+      newHtml = html.slice(0, aStart) + newEntry + '\n    ' + html.slice(aStart);
+    }
+
+    showStatus('status', 'GitHubにPush中...', 'loading');
+
+    const res = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${getPat()}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/vnd.github+json'
+        },
+        body: JSON.stringify({
+          message: `TOPICS追加: ${title}`,
+          content: encodeBase64(newHtml),
+          sha: data.sha,
+          branch: BRANCH
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Push失敗: ' + res.status);
+    }
+
+    showStatus('status', '✓ Push完了！サイトに反映されました', 'success');
+    document.getElementById('date').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('url').value = '';
+
+    // プレビュー更新
+    const updated = parseTopics(newHtml);
+    renderTopics(updated);
+
+  } catch(e) {
+    showStatus('status', '❌ ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function buildTopicEntry(date, title, url) {
+  const href = url || '#';
+  const target = url ? ' target="_blank"' : '';
+  return `    <a href="${escHtml(href)}"${target}
+       style="display:flex;align-items:baseline;gap:20px;padding:20px 24px;border-radius:12px;text-decoration:none;color:inherit;transition:background 0.2s;"
+       onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
+      <span style="font-size:12px;color:var(--muted);flex-shrink:0;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">${escHtml(date)}</span>
+      <span style="font-size:15px;color:#cbd5e1;font-weight:300;">${escHtml(title)}</span>
+    </a>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function decodeBase64(b64) {
+  const bin = atob(b64.replace(/\n/g, ''));
+  return new TextDecoder('utf-8').decode(
+    Uint8Array.from(bin, c => c.charCodeAt(0))
+  );
+}
+
+function encodeBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+
+// 今日の日付をデフォルト表示
+(function() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('date').value =
+    `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+  checkPat();
+})();
+</script>
+</body>
+</html>
