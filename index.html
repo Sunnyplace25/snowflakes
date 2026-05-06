@@ -115,9 +115,13 @@
     }
     .hero-snowflake { font-size: 52px; margin-bottom: 24px; opacity: 0.9; }
     .hero-title {
-      font-size: clamp(36px, 6vw, 72px); font-weight: 300; color: white;
+      font-size: clamp(20px, 5.5vw, 72px); font-weight: 300; color: white;
       margin-bottom: 24px; letter-spacing: 2px; line-height: 1.5;
       font-family: 'Noto Serif JP', serif;
+      white-space: nowrap;
+    }
+    @media (max-width: 400px) {
+      .hero-title { font-size: 18px; letter-spacing: 1px; }
     }
     .hero-sub {
       font-size: clamp(14px, 2vw, 17px); color: var(--muted);
