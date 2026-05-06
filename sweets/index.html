@@ -3339,6 +3339,7 @@
 
 　今は、疲れているだけだ。</div>
       </div>
+      <div id="story-end"></div>
 
     </div>
 
@@ -3346,6 +3347,11 @@
     <div class="section">
       <div class="section-label">notes</div>
 
+      <div id="notes-locked" class="empty" style="padding:40px 0;">
+        <div style="font-size:12px;letter-spacing:2px;color:var(--muted);">短編を最後まで読むと解放されます</div>
+      </div>
+
+      <div id="notes-content" style="display:none;">
       <div class="post-card">
         <div class="post-tag">note</div>
         <div class="post-title">「一つ多い音」解説</div>
@@ -3471,6 +3477,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 それは最後まで、はっきりとは説明されません。
 ただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。</div>
       </div>
+      </div><!-- /notes-content -->
 
     </div>
 
@@ -3513,6 +3520,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function unlock() {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
+      initNotes();
+    }
+
+    // ── Notes unlock ──
+    const NOTES_KEY = 'sf_sweets_notes_unlocked';
+
+    function unlockNotes() {
+      localStorage.setItem(NOTES_KEY, 'true');
+      document.getElementById('notes-locked').style.display = 'none';
+      document.getElementById('notes-content').style.display = 'block';
+    }
+
+    function initNotes() {
+      if (localStorage.getItem(NOTES_KEY) === 'true') {
+        unlockNotes();
+        return;
+      }
+      const sentinel = document.getElementById('story-end');
+      const observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          unlockNotes();
+          observer.disconnect();
+        }
+      }, { threshold: 1.0 });
+      observer.observe(sentinel);
     }
 
     // ── Snowflakes ──
