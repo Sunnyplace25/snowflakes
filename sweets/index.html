@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SWEETs ROOM | SNOW FLAKES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --hinata: #93c5fd;
+      --kouta:  #fca5a5;
+      --hayate: #fde68a;
+      --bg:     #0c1220;
+      --text:   #e2e8f0;
+      --muted:  #94a3b8;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --sweets: #f9a8d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      opacity: 0.3;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(12,18,32,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back {
+      font-size: 14px; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+    .nav-label {
+      font-size: 12px; letter-spacing: 6px; color: var(--muted);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ── GATE ── */
+    .gate {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 100px 24px 60px;
+    }
+
+    .gate-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 10vw, 88px);
+      font-weight: 300;
+      letter-spacing: 14px;
+      color: var(--sweets);
+      margin-bottom: 10px;
+    }
+
+    .gate-sub {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--muted);
+      margin-bottom: 64px;
+    }
+
+    .gate-form {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 12px;
+      width: 100%; max-width: 300px;
+    }
+
+    .gate-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 15px;
+      font-weight: 300;
+      outline: none;
+      text-align: center;
+      letter-spacing: 3px;
+      transition: border-color 0.2s;
+    }
+    .gate-input:focus { border-color: rgba(249,168,212,0.5); }
+    .gate-input::placeholder { color: var(--muted); letter-spacing: 1px; font-size: 13px; }
+
+    .gate-error {
+      font-size: 12px;
+      color: var(--kouta);
+      letter-spacing: 1px;
+      height: 18px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .gate-error.show { opacity: 1; }
+
+    .gate-btn {
+      margin-top: 4px;
+      padding: 10px 44px;
+      border-radius: 100px;
+      background: rgba(249,168,212,0.08);
+      border: 1.5px solid var(--sweets);
+      color: var(--sweets);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      letter-spacing: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gate-btn:hover { background: rgba(249,168,212,0.18); }
+
+    /* ── CONTENT ── */
+    .content {
+      display: none;
+      position: relative; z-index: 1;
+      padding-top: 80px;
+    }
+    .content.visible { display: block; }
+
+    .content-hero {
+      text-align: center;
+      padding: 80px 24px 64px;
+      border-bottom: 1px solid var(--border);
+    }
+    .content-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 10vw, 88px);
+      font-weight: 300;
+      letter-spacing: 14px;
+      color: var(--sweets);
+      margin-bottom: 10px;
+    }
+    .content-hero p {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--muted);
+    }
+
+    .section {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--sweets);
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .post-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+      cursor: default;
+    }
+    .post-card:hover { border-color: rgba(249,168,212,0.25); }
+
+    .post-tag {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--sweets);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .post-title {
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .post-date {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .post-body {
+      font-size: 14px;
+      line-height: 2.2;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 2.4;
+      letter-spacing: 1px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 48px 24px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 680px) {
+      nav { padding: 14px 20px; }
+      .nav-label { display: none; }
+      .post-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="snow"></canvas>
+
+  <nav>
+    <a class="nav-back" href="../index.html">← SNOW FLAKES</a>
+    <span class="nav-label">SWEETs ROOM</span>
+    <span></span>
+  </nav>
+
+  <!-- ── GATE ── -->
+  <div class="gate" id="gate">
+    <h1 class="gate-title">SWEETs</h1>
+    <p class="gate-sub">members only</p>
+    <div class="gate-form">
+      <input class="gate-input" type="password" id="pw-input" placeholder="password" autocomplete="off">
+      <div class="gate-error" id="gate-error">パスワードが違います</div>
+      <button class="gate-btn" onclick="checkPassword()">enter</button>
+    </div>
+  </div>
+
+  <!-- ── CONTENT ── -->
+  <div class="content" id="content">
+
+    <div class="content-hero">
+      <h1>SWEETs</h1>
+      <p>members room</p>
+    </div>
+
+    <!-- 短編先行 -->
+    <div class="section">
+      <div class="section-label">short stories</div>
+
+      <!-- コンテンツをここに追加 -->
+      <div class="empty">
+        準備中です。<br>もうしばらくお待ちください。
+      </div>
+
+    </div>
+
+    <!-- 解説 -->
+    <div class="section">
+      <div class="section-label">notes</div>
+
+      <!-- コンテンツをここに追加 -->
+      <div class="empty">
+        準備中です。<br>もうしばらくお待ちください。
+      </div>
+
+    </div>
+
+    <footer>SNOW FLAKES — SWEETs ROOM</footer>
+
+  </div>
+
+  <script>
+    // ── Password ──
+    const PASSWORD = 'applepie';
+    const STORAGE_KEY = 'sf_sweets_unlocked';
+
+    if (localStorage.getItem(STORAGE_KEY) === 'true') unlock();
+
+    document.getElementById('pw-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    function checkPassword() {
+      const val = document.getElementById('pw-input').value.trim().toLowerCase();
+      if (val === PASSWORD) {
+        localStorage.setItem(STORAGE_KEY, 'true');
+        unlock();
+      } else {
+        const err = document.getElementById('gate-error');
+        err.classList.add('show');
+        document.getElementById('pw-input').value = '';
+        setTimeout(() => err.classList.remove('show'), 2000);
+      }
+    }
+
+    function unlock() {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('content').classList.add('visible');
+    }
+
+    // ── Snowflakes ──
+    const canvas = document.getElementById('snow');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const flakes = Array.from({ length: 70 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 2 + 0.5,
+      speed: Math.random() * 0.5 + 0.2,
+      drift: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.5 + 0.2
+    }));
+
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(f => {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+        ctx.fill();
+        f.y += f.speed;
+        f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  </script>
+
+</body>
+</html>

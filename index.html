@@ -93,6 +93,14 @@
       transition: background 0.2s;
     }
     .nav-app:hover { background: rgba(147,197,253,0.2); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-sweets {
+      padding: 8px 22px; border-radius: 100px;
+      background: rgba(249,168,212,0.08); border: 1.5px solid #f9a8d4;
+      color: #f9a8d4; font-size: 14px; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-sweets:hover { background: rgba(249,168,212,0.2); }
 
     /* Hero */
     .hero {
@@ -339,7 +347,10 @@
 <nav>
   <a class="nav-back" href="https://sunnyplace25.github.io/taskpwa/promo/index.html">← アプリ紹介</a>
   <span class="nav-label">SNOW FLAKES</span>
-  <a class="nav-app" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">アプリを開く</a>
+  <div class="nav-right">
+    <a class="nav-sweets" href="sweets/">SWEETs</a>
+    <a class="nav-app" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">アプリを開く</a>
+  </div>
 </nav>
 
 <!-- Hero -->
