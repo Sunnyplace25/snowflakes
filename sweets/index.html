@@ -64,6 +64,16 @@
       padding: 100px 24px 60px;
     }
 
+    .gate-season {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(56px, 12vw, 100px);
+      font-weight: 300;
+      letter-spacing: 10px;
+      color: rgba(255,255,255,0.06);
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
     .gate-eyebrow {
       font-size: 11px;
       letter-spacing: 4px;
@@ -260,6 +270,7 @@
 
   <!-- ── GATE ── -->
   <div class="gate" id="gate">
+    <p class="gate-season" id="gate-season"></p>
     <p class="gate-eyebrow">SNOW FLAKES — fan contents</p>
     <h1 class="gate-title">SWEETs</h1>
     <p class="gate-sub">members only</p>
@@ -305,6 +316,16 @@
   </div>
 
   <script>
+    // ── Season ──
+    (function() {
+      const m = new Date().getMonth() + 1;
+      const s = m >= 3 && m <= 5 ? 'Spring'
+              : m >= 6 && m <= 8 ? 'Summer'
+              : m >= 9 && m <= 11 ? 'Autumn'
+              : 'Winter';
+      document.getElementById('gate-season').textContent = s;
+    })();
+
     // ── Password ──
     const PASSWORD = 'applepie';
 
