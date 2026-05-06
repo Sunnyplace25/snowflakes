@@ -86,7 +86,10 @@
     }
     .nav-back { font-size: 14px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .nav-back:hover { color: var(--text); }
-    .nav-label { font-size: 12px; letter-spacing: 6px; color: var(--muted); font-family: 'Cormorant Garamond', serif; }
+    .nav-label {
+      font-size: 12px; letter-spacing: 6px; color: var(--muted); font-family: 'Cormorant Garamond', serif;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
     .nav-app {
       padding: 8px 22px; border-radius: 100px;
       background: rgba(147,197,253,0.1); border: 1.5px solid var(--hinata);
