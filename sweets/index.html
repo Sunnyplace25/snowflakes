@@ -307,9 +307,6 @@
   <script>
     // ── Password ──
     const PASSWORD = 'applepie';
-    const STORAGE_KEY = 'sf_sweets_unlocked';
-
-    if (localStorage.getItem(STORAGE_KEY) === 'true') unlock();
 
     document.getElementById('pw-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') checkPassword();
@@ -318,7 +315,6 @@
     function checkPassword() {
       const val = document.getElementById('pw-input').value.trim().toLowerCase();
       if (val === PASSWORD) {
-        localStorage.setItem(STORAGE_KEY, 'true');
         unlock();
       } else {
         const err = document.getElementById('gate-error');
