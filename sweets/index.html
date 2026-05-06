@@ -199,6 +199,39 @@
     }
     .post-card:hover { border-color: rgba(249,168,212,0.25); }
 
+    .post-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .post-header-left { flex: 1; }
+
+    .read-btn {
+      flex-shrink: 0;
+      padding: 8px 24px;
+      border-radius: 100px;
+      background: rgba(249,168,212,0.08);
+      border: 1.5px solid var(--sweets);
+      color: var(--sweets);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .read-btn:hover { background: rgba(249,168,212,0.18); }
+    .read-btn:disabled {
+      border-color: var(--border);
+      color: var(--muted);
+      cursor: default;
+      background: none;
+    }
+
+    .post-content { display: none; }
+    .post-content.open { display: block; }
+
     .post-tag {
       font-size: 10px;
       letter-spacing: 4px;
@@ -294,9 +327,15 @@
       <div class="section-label">short stories</div>
 
       <div class="post-card">
-        <div class="post-tag">short story</div>
-        <div class="post-title">ひとつ多い音</div>
-        <div class="post-date">2026</div>
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="post-tag">short story</div>
+            <div class="post-title">ひとつ多い音</div>
+            <div class="post-date">2026</div>
+          </div>
+          <button class="read-btn" onclick="toggleContent('story-body', this)">読む</button>
+        </div>
+        <div class="post-content" id="story-body">
         <div class="divider"></div>
         <div class="post-body">【残っている音】
 
@@ -3338,8 +3377,9 @@
 　まだ、触れずに置いておく。
 
 　今は、疲れているだけだ。</div>
-      </div>
       <div id="story-end"></div>
+      </div><!-- /post-content -->
+      </div><!-- /post-card -->
 
     </div>
 
@@ -3347,20 +3387,16 @@
     <div class="section">
       <div class="section-label">notes</div>
 
-      <div id="notes-locked" class="empty" style="padding:40px 0;">
-        <div style="font-size:12px;letter-spacing:2px;color:var(--muted);">短編を最後まで読むと解放されます</div>
-      </div>
-
-      <div id="notes-unlocked-msg" style="display:none;text-align:center;padding:40px 0;">
-        <div style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;">解説が解放されました</div>
-        <button onclick="showNotes()" style="padding:10px 40px;border-radius:100px;background:rgba(249,168,212,0.08);border:1.5px solid var(--sweets);color:var(--sweets);font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.18)'" onmouseout="this.style.background='rgba(249,168,212,0.08)'">読む</button>
-      </div>
-
-      <div id="notes-content" style="display:none;">
       <div class="post-card">
-        <div class="post-tag">note</div>
-        <div class="post-title">「一つ多い音」解説</div>
-        <div class="post-date">― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―</div>
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="post-tag">note</div>
+            <div class="post-title">「一つ多い音」解説</div>
+            <div class="post-date">― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―</div>
+          </div>
+          <button class="read-btn" id="notes-btn" disabled onclick="toggleContent('notes-body', this)">読む</button>
+        </div>
+        <div class="post-content" id="notes-body">
         <div class="divider"></div>
         <div class="post-body">「一つ多い音」は、Snow flakes本編の外側にある短編です。
 読まなくても、本編は成立する。
@@ -3481,8 +3517,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 それは最後まで、はっきりとは説明されません。
 ただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。</div>
-      </div>
-      </div><!-- /notes-content -->
+        </div><!-- /post-content -->
+      </div><!-- /post-card -->
 
     </div>
 
@@ -3528,24 +3564,30 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       initNotes();
     }
 
+    // ── Content toggle ──
+    function toggleContent(id, btn) {
+      const el = document.getElementById(id);
+      if (el.classList.contains('open')) {
+        el.classList.remove('open');
+        btn.textContent = '読む';
+      } else {
+        el.classList.add('open');
+        btn.textContent = '閉じる';
+      }
+    }
+
     // ── Notes unlock ──
     const NOTES_KEY = 'sf_sweets_notes_unlocked';
 
     function unlockNotes() {
       localStorage.setItem(NOTES_KEY, 'true');
-      document.getElementById('notes-locked').style.display = 'none';
-      document.getElementById('notes-unlocked-msg').style.display = 'block';
-    }
-
-    function showNotes() {
-      document.getElementById('notes-unlocked-msg').style.display = 'none';
-      document.getElementById('notes-content').style.display = 'block';
+      const btn = document.getElementById('notes-btn');
+      btn.disabled = false;
     }
 
     function initNotes() {
       if (localStorage.getItem(NOTES_KEY) === 'true') {
-        document.getElementById('notes-locked').style.display = 'none';
-        document.getElementById('notes-content').style.display = 'block';
+        unlockNotes();
         return;
       }
       const sentinel = document.getElementById('story-end');
@@ -3554,7 +3596,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           unlockNotes();
           observer.disconnect();
         }
-      }, { threshold: 1.0 });
+      }, { rootMargin: '0px', threshold: 0.5 });
       observer.observe(sentinel);
     }
 
