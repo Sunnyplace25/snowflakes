@@ -66,10 +66,9 @@
 
     .gate-season {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(56px, 12vw, 100px);
-      font-weight: 300;
-      letter-spacing: 10px;
-      color: rgba(255,255,255,0.06);
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--muted);
       margin-bottom: 8px;
       user-select: none;
     }
@@ -270,11 +269,11 @@
 
   <!-- ── GATE ── -->
   <div class="gate" id="gate">
-    <p class="gate-season" id="gate-season"></p>
     <p class="gate-eyebrow">SNOW FLAKES — fan contents</p>
     <h1 class="gate-title">SWEETs</h1>
     <p class="gate-sub">members only</p>
     <div class="gate-form">
+      <p class="gate-season" id="gate-season"></p>
       <input class="gate-input" type="password" id="pw-input" placeholder="password" autocomplete="off">
       <div class="gate-error" id="gate-error">パスワードが違います</div>
       <button class="gate-btn" onclick="checkPassword()">enter</button>
