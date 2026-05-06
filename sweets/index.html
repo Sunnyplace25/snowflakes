@@ -3351,6 +3351,11 @@
         <div style="font-size:12px;letter-spacing:2px;color:var(--muted);">短編を最後まで読むと解放されます</div>
       </div>
 
+      <div id="notes-unlocked-msg" style="display:none;text-align:center;padding:40px 0;">
+        <div style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:20px;">解説が解放されました</div>
+        <button onclick="showNotes()" style="padding:10px 40px;border-radius:100px;background:rgba(249,168,212,0.08);border:1.5px solid var(--sweets);color:var(--sweets);font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.18)'" onmouseout="this.style.background='rgba(249,168,212,0.08)'">読む</button>
+      </div>
+
       <div id="notes-content" style="display:none;">
       <div class="post-card">
         <div class="post-tag">note</div>
@@ -3529,12 +3534,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function unlockNotes() {
       localStorage.setItem(NOTES_KEY, 'true');
       document.getElementById('notes-locked').style.display = 'none';
+      document.getElementById('notes-unlocked-msg').style.display = 'block';
+    }
+
+    function showNotes() {
+      document.getElementById('notes-unlocked-msg').style.display = 'none';
       document.getElementById('notes-content').style.display = 'block';
     }
 
     function initNotes() {
       if (localStorage.getItem(NOTES_KEY) === 'true') {
-        unlockNotes();
+        document.getElementById('notes-locked').style.display = 'none';
+        document.getElementById('notes-content').style.display = 'block';
         return;
       }
       const sentinel = document.getElementById('story-end');
