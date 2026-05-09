@@ -959,8 +959,12 @@
       events: {
         onStateChange: function(e) {
           if (e.data === YT.PlayerState.ENDED) {
-            document.getElementById('yt-player').style.opacity = '0';
-            document.getElementById('hero-fallback').style.opacity = '1';
+            var p = document.getElementById('yt-player');
+            var img = document.getElementById('hero-fallback');
+            p.style.transition = 'none';
+            p.style.opacity = '0';
+            p.style.pointerEvents = 'none';
+            img.style.opacity = '1';
           }
         }
       }
