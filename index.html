@@ -368,13 +368,10 @@
 <section class="hero" style="position:relative;overflow:hidden;">
   <!-- 動画背景 -->
   <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0c1220;">
-    <div style="position:relative;height:100%;width:calc(100% * 9 / 16);min-width:calc(100vh * 9 / 16);">
-      <iframe
-        src="https://www.youtube.com/embed/MoXBFduEfSY?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&playsinline=1&rel=0&showinfo=0"
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none;"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-      </iframe>
+    <div style="position:relative;height:100vh;width:calc(100vh * 9 / 16);">
+      <div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:opacity 1.5s;"></div>
+      <img id="hero-fallback" src="plofile/chara_hinata.png" alt="ヒナタ"
+           style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:opacity 1.5s;">
     </div>
     <!-- オーバーレイ -->
     <div style="position:absolute;inset:0;background:rgba(12,18,32,0.6);"></div>
@@ -942,6 +939,31 @@
   <p style="margin-top:16px;"><a href="kotori.html" style="font-size:12px;color:#1e293b;text-decoration:none;letter-spacing:2px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#1e293b'">山吹ことり について</a></p>
 </footer>
 
+<script>
+  // YouTube IFrame API
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+
+  function onYouTubeIframeAPIReady() {
+    new YT.Player('yt-player', {
+      videoId: 'MoXBFduEfSY',
+      playerVars: {
+        autoplay: 1, mute: 1, controls: 0,
+        disablekb: 1, fs: 0, modestbranding: 1,
+        playsinline: 1, rel: 0, showinfo: 0
+      },
+      events: {
+        onStateChange: function(e) {
+          if (e.data === YT.PlayerState.ENDED) {
+            document.getElementById('yt-player').style.opacity = '0';
+            document.getElementById('hero-fallback').style.opacity = '1';
+          }
+        }
+      }
+    });
+  }
+</script>
 <script>
   const canvas = document.getElementById('snow');
   const ctx = canvas.getContext('2d');
