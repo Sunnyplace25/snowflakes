@@ -977,19 +977,10 @@
     r: Math.random()*1.8+0.4, speed: Math.random()*0.5+0.15,
     drift: (Math.random()-0.5)*0.25
   }));
-  const heroHeight = () => window.innerHeight;
   function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#fff';
-    const hh = heroHeight();
     for (const f of flakes) {
-      if (f.y < hh) {
-        f.y+=f.speed; f.x+=f.drift;
-        if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
-        if(f.x<-4)f.x=canvas.width+4;
-        if(f.x>canvas.width+4)f.x=-4;
-        continue;
-      }
       ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
       f.y+=f.speed; f.x+=f.drift;
       if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
