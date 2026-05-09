@@ -363,19 +363,14 @@
   .qf-list { display: none; flex-direction: column; gap: 6px; margin-top: 16px; }
   .qf-list.open { display: flex; }
   .qf-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    display: flex; align-items: center; gap: 10px;
     padding: 10px 14px; border-radius: 10px;
     background: rgba(240,171,252,0.04); border: 1px solid rgba(240,171,252,0.15);
+    text-decoration: none; transition: background 0.2s;
   }
+  .qf-row:hover { background: rgba(240,171,252,0.09); }
   .qf-ep { font-size: 11px; color: var(--muted); font-family: 'Cormorant Garamond', serif; flex-shrink: 0; width: 36px; }
-  .qf-title { font-size: 14px; color: #e2e8f0; }
-  .qf-link {
-    flex-shrink: 0; font-size: 12px; color: #f0abfc; text-decoration: none;
-    padding: 5px 14px; border-radius: 100px;
-    border: 1px solid rgba(240,171,252,0.35); background: rgba(240,171,252,0.07);
-    white-space: nowrap; transition: background 0.2s;
-  }
-  .qf-link:hover { background: rgba(240,171,252,0.14); }
+  .qf-title { font-size: 14px; color: #f0abfc; }
   .qf-toggle {
     margin-top: 16px; padding: 10px 24px; border-radius: 100px;
     border: 1px solid rgba(240,171,252,0.35); background: rgba(240,171,252,0.07);
@@ -752,20 +747,20 @@
       <p style="font-size:14px;color:#94a3b8;line-height:1.9;font-weight:300;">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
       <button class="qf-toggle" onclick="const l=this.nextElementSibling;l.classList.toggle('open');this.textContent=l.classList.contains('open')?'閉じる ↑':'読む →';">読む →</button>
       <div class="qf-list">
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.01</span><span class="qf-title">節分</span></div><a class="qf-link" href="https://www.instagram.com/p/DUiTkqXiZnX/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.02</span><span class="qf-title">バレンタイン / ヒナタ</span></div><a class="qf-link" href="https://www.instagram.com/p/DUuSVSgCZdL/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.03</span><span class="qf-title">バレンタイン / コウタ</span></div><a class="qf-link" href="https://www.instagram.com/p/DUuS_7CCZAr/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.04</span><span class="qf-title">バレンタイン / ハヤテ</span></div><a class="qf-link" href="https://www.instagram.com/p/DUuTdtFiUm-/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.05</span><span class="qf-title">SWEETs</span></div><a class="qf-link" href="https://www.instagram.com/p/DVNsuIeF2D-/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.06</span><span class="qf-title">Spring Waltz</span></div><a class="qf-link" href="https://www.instagram.com/reel/DWjSdMCEZP-/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.07</span><span class="qf-title">いつかのホワイトデー</span></div><a class="qf-link" href="https://www.instagram.com/p/DV4BOSdkvo4/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.08</span><span class="qf-title">置いた音</span></div><a class="qf-link" href="https://www.instagram.com/reel/DWoEzizDheI/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.09</span><span class="qf-title">うまかった</span></div><a class="qf-link" href="https://www.instagram.com/reel/DW8zbStCd1p/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.10</span><span class="qf-title">帰り道</span></div><a class="qf-link" href="https://www.instagram.com/reel/DW_b7avjmf0/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.11</span><span class="qf-title">プリン</span></div><a class="qf-link" href="https://www.instagram.com/reel/DXHBLwmCBVd/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.12</span><span class="qf-title">デート</span></div><a class="qf-link" href="https://www.instagram.com/reel/DXMhjm3mj5T/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.13</span><span class="qf-title">予備の傘</span></div><a class="qf-link" href="https://www.instagram.com/reel/DXhJx4QDybN/" target="_blank">読む →</a></div>
-        <div class="qf-row"><div class="qf-row-left"><span class="qf-ep">ep.14</span><span class="qf-title">柏餅食ってから</span></div><a class="qf-link" href="https://www.instagram.com/reel/DYCuIrXJJoU/" target="_blank">読む →</a></div>
+        <a class="qf-row" href="https://www.instagram.com/p/DUiTkqXiZnX/" target="_blank"><span class="qf-ep">ep.01</span><span class="qf-title">節分</span></a>
+        <a class="qf-row" href="https://www.instagram.com/p/DUuSVSgCZdL/" target="_blank"><span class="qf-ep">ep.02</span><span class="qf-title">バレンタイン / ヒナタ</span></a>
+        <a class="qf-row" href="https://www.instagram.com/p/DUuS_7CCZAr/" target="_blank"><span class="qf-ep">ep.03</span><span class="qf-title">バレンタイン / コウタ</span></a>
+        <a class="qf-row" href="https://www.instagram.com/p/DUuTdtFiUm-/" target="_blank"><span class="qf-ep">ep.04</span><span class="qf-title">バレンタイン / ハヤテ</span></a>
+        <a class="qf-row" href="https://www.instagram.com/p/DVNsuIeF2D-/" target="_blank"><span class="qf-ep">ep.05</span><span class="qf-title">SWEETs</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DWjSdMCEZP-/" target="_blank"><span class="qf-ep">ep.06</span><span class="qf-title">Spring Waltz</span></a>
+        <a class="qf-row" href="https://www.instagram.com/p/DV4BOSdkvo4/" target="_blank"><span class="qf-ep">ep.07</span><span class="qf-title">いつかのホワイトデー</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DWoEzizDheI/" target="_blank"><span class="qf-ep">ep.08</span><span class="qf-title">置いた音</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DW8zbStCd1p/" target="_blank"><span class="qf-ep">ep.09</span><span class="qf-title">うまかった</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DW_b7avjmf0/" target="_blank"><span class="qf-ep">ep.10</span><span class="qf-title">帰り道</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DXHBLwmCBVd/" target="_blank"><span class="qf-ep">ep.11</span><span class="qf-title">プリン</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DXMhjm3mj5T/" target="_blank"><span class="qf-ep">ep.12</span><span class="qf-title">デート</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DXhJx4QDybN/" target="_blank"><span class="qf-ep">ep.13</span><span class="qf-title">予備の傘</span></a>
+        <a class="qf-row" href="https://www.instagram.com/reel/DYCuIrXJJoU/" target="_blank"><span class="qf-ep">ep.14</span><span class="qf-title">柏餅食ってから</span></a>
       </div>
     </div>
 
