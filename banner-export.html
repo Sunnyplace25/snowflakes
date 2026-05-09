@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>バナー PNG出力</title>
+<style>
+  body { background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; margin: 0; font-family: sans-serif; }
+  canvas { border: 1px solid #334155; }
+  button { padding: 12px 28px; background: #6366f1; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+  button:hover { background: #4f46e5; }
+  p { color: #94a3b8; font-size: 13px; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+<p>実寸（200×40px）</p>
+<canvas id="c" width="200" height="40"></canvas>
+<p>4倍拡大プレビュー</p>
+<canvas id="big" width="800" height="160"></canvas>
+<button onclick="download()">PNG をダウンロード</button>
+
+<script>
+function draw(ctx, scale) {
+  const w = 200 * scale, h = 40 * scale;
+  // background
+  const bg = ctx.createLinearGradient(0, 0, w, 0);
+  bg.addColorStop(0, '#0B1220');
+  bg.addColorStop(1, '#0F1A2E');
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, w, h, 3 * scale);
+  ctx.fill();
+  // border
+  ctx.strokeStyle = 'rgba(147,197,253,0.15)';
+  ctx.lineWidth = 0.8 * scale;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, w, h, 3 * scale);
+  ctx.stroke();
+  // snowflake
+  ctx.fillStyle = '#9FB8FF';
+  ctx.globalAlpha = 0.85;
+  ctx.font = `${10 * scale}px serif`;
+  ctx.fillText('❄', 8 * scale, 24 * scale);
+  ctx.globalAlpha = 1;
+  // Snow flakes
+  ctx.fillStyle = '#F0F6FF';
+  ctx.font = `700 ${10.5 * scale}px 'Playfair Display', Georgia, serif`;
+  ctx.letterSpacing = 0.8 * scale + 'px';
+  ctx.fillText('Snow flakes', 22 * scale, 18 * scale);
+  ctx.letterSpacing = '0px';
+  // 山吹ことり
+  ctx.fillStyle = '#BFD3FF';
+  ctx.font = `400 ${6.2 * scale}px 'Playfair Display', Georgia, serif`;
+  ctx.fillText('山吹ことり', 22 * scale, 32 * scale);
+  // separator
+  ctx.fillStyle = '#4A5568';
+  ctx.font = `${5.5 * scale}px sans-serif`;
+  ctx.fillText('  ｜', 62 * scale, 32 * scale);
+  // Story & Music Project
+  ctx.fillStyle = '#7F8CA3';
+  ctx.font = `300 ${5.5 * scale}px 'Noto Sans JP', sans-serif`;
+  ctx.fillText('  Story & Music Project', 73 * scale, 32 * scale);
+}
+
+function render() {
+  const c = document.getElementById('c');
+  draw(c.getContext('2d'), 1);
+  const big = document.getElementById('big');
+  draw(big.getContext('2d'), 4);
+}
+
+function download() {
+  // 高解像度で出力
+  const c = document.createElement('canvas');
+  c.width = 400; c.height = 80;
+  draw(c.getContext('2d'), 2);
+  const a = document.createElement('a');
+  a.download = 'banner_snowflakes.png';
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+
+// フォント読み込み待ち
+document.fonts.ready.then(render);
+</script>
+</body>
+</html>
