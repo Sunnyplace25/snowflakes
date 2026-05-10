@@ -377,8 +377,10 @@
   @media (max-width: 600px) { .sp-br { display: inline; } }
   .qf-br { display: none; }
   @media (max-width: 600px) { .qf-br { display: block; } }
-  .qf-list { display: none; flex-direction: column; gap: 6px; margin-top: 16px; }
-  .qf-list.open { display: flex; }
+  .qf-list { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
+  .qf-list::-webkit-scrollbar { width: 4px; }
+  .qf-list::-webkit-scrollbar-track { background: transparent; }
+  .qf-list::-webkit-scrollbar-thumb { background: rgba(240,171,252,0.25); border-radius: 2px; }
   .qf-row {
     display: flex; align-items: center; gap: 10px;
     padding: 10px 14px; border-radius: 10px;
@@ -388,13 +390,6 @@
   .qf-row:hover { background: rgba(240,171,252,0.09); }
   .qf-ep { font-size: 11px; color: var(--muted); font-family: 'Cormorant Garamond', serif; flex-shrink: 0; width: 36px; }
   .qf-title { font-size: 14px; color: #f0abfc; }
-  .qf-toggle {
-    margin-top: 16px; padding: 10px 24px; border-radius: 100px;
-    border: 1px solid rgba(240,171,252,0.35); background: rgba(240,171,252,0.07);
-    color: #f0abfc; font-size: 13px; cursor: pointer; transition: background 0.2s;
-    font-family: 'Noto Serif JP', serif;
-  }
-  .qf-toggle:hover { background: rgba(240,171,252,0.14); }
   </style>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
@@ -730,7 +725,6 @@
       <p style="font-size:11px;letter-spacing:4px;color:#f0abfc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;">INSTAGRAM / 書き下ろしシリーズ</p>
       <p style="font-size:22px;font-weight:400;color:white;margin-bottom:8px;font-family:'Cormorant Garamond',serif;letter-spacing:2px;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
       <p style="font-size:14px;color:#94a3b8;line-height:1.9;font-weight:300;">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
-      <button class="qf-toggle" onclick="const l=this.nextElementSibling;l.classList.toggle('open');this.textContent=l.classList.contains('open')?'閉じる ↑':'読む →';">読む →</button>
       <div class="qf-list">
         <a class="qf-row" href="https://www.instagram.com/p/DUiTkqXiZnX/" target="_blank"><span class="qf-ep">ep.01</span><span class="qf-title">節分</span></a>
         <a class="qf-row" href="https://www.instagram.com/p/DUuSVSgCZdL/" target="_blank"><span class="qf-ep">ep.02</span><span class="qf-title">バレンタイン / ヒナタ</span></a>
