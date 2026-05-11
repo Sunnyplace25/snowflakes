@@ -489,12 +489,12 @@
        style="display:block;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);transition:all 0.4s;position:relative;overflow:hidden;">
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
         <div style="flex:1;min-width:0;">
-          <p style="font-size:10px;letter-spacing:6px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:6px;">SHORT STORY</p>
+          <p id="short-label" style="font-size:10px;letter-spacing:6px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:6px;">SHORT STORY</p>
           <p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#94a3b8;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
         </div>
         <div style="text-align:right;flex-shrink:0;">
           <p id="short-date" style="font-size:11px;color:#475569;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">—</p>
-          <p style="font-size:20px;color:#334155;margin-top:4px;">→</p>
+          <p id="short-arrow" style="font-size:20px;color:#334155;margin-top:4px;">→</p>
         </div>
       </div>
     </a>
@@ -530,12 +530,44 @@
 
     /* 短篇カード */
     #short-banner { display:none; }
-    #short-banner:hover { background: rgba(255,255,255,0.07) !important; transform: translateY(-1px); }
-    @keyframes shortGlow {
-      0%,100% { box-shadow: 0 0 20px rgba(148,163,184,0.14), 0 0 60px rgba(148,163,184,0.05); border-color: rgba(148,163,184,0.20); }
-      50%      { box-shadow: 0 0 38px rgba(148,163,184,0.28), 0 0 90px rgba(148,163,184,0.10); border-color: rgba(148,163,184,0.42); }
+    #short-banner:hover { background: rgba(180,200,255,0.06) !important; transform: translateY(-2px); }
+    @keyframes shortNeon {
+      0%,100% {
+        box-shadow:
+          0 0 6px  rgba(160,200,255,0.5),
+          0 0 18px rgba(130,170,255,0.35),
+          0 0 40px rgba(100,140,255,0.18),
+          0 0 90px rgba(80,120,255,0.08),
+          inset 0 0 18px rgba(130,170,255,0.04);
+        border-color: rgba(140,180,255,0.55);
+      }
+      50% {
+        box-shadow:
+          0 0 10px rgba(180,220,255,0.80),
+          0 0 28px rgba(140,180,255,0.55),
+          0 0 60px rgba(110,150,255,0.30),
+          0 0 130px rgba(90,130,255,0.13),
+          inset 0 0 28px rgba(140,180,255,0.08);
+        border-color: rgba(170,210,255,0.90);
+      }
     }
-    #short-banner.glow { animation: shortGlow 2.6s ease-in-out infinite; }
+    #short-banner.glow {
+      animation: shortNeon 2.2s ease-in-out infinite;
+      background: rgba(120,160,255,0.04) !important;
+    }
+    #short-banner.glow #short-title {
+      color: #c8d8f8 !important;
+      text-shadow: 0 0 10px rgba(160,200,255,0.6), 0 0 26px rgba(120,170,255,0.30);
+    }
+    #short-banner.glow #short-label {
+      color: #7aa4e8 !important;
+      text-shadow: 0 0 8px rgba(120,170,255,0.7), 0 0 20px rgba(100,150,255,0.35);
+      letter-spacing: 7px;
+    }
+    #short-banner.glow #short-arrow {
+      color: #8ab4f8 !important;
+      text-shadow: 0 0 8px rgba(140,180,255,0.8);
+    }
   </style>
 
   <script>
