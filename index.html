@@ -452,6 +452,74 @@
 <section style="padding:80px 24px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">TOPICS</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:48px;font-family:'Noto Serif JP',serif;">最新情報</h2>
+  <!-- 本編更新バナー -->
+  <div style="max-width:680px;margin:0 auto 40px;">
+    <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/158" target="_blank"
+       style="display:block;text-decoration:none;border-radius:16px;padding:28px 32px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.3s;position:relative;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div id="update-dot" style="width:10px;height:10px;border-radius:50%;background:#64748b;flex-shrink:0;transition:all 0.5s;"></div>
+        <div>
+          <p id="update-label" style="font-size:11px;letter-spacing:6px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:6px;transition:color 0.5s;">DAILY UPDATE</p>
+          <p style="font-size:clamp(18px,3vw,24px);font-weight:300;color:#cbd5e1;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">Snow flakes <span style="font-size:0.7em;color:#94a3b8;">本編</span> <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:1.1em;color:#94a3b8;transition:color 0.5s;">#158</span></p>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <p id="update-time-label" style="font-size:11px;color:#64748b;letter-spacing:2px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21:00</p>
+          <p id="update-status" style="font-size:13px;color:#64748b;margin-top:4px;transition:color 0.5s;">毎日更新</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <style>
+    @keyframes bannerGlow {
+      0%,100% { box-shadow: 0 0 20px rgba(148,163,184,0.15), 0 0 60px rgba(148,163,184,0.05); border-color: rgba(148,163,184,0.25); }
+      50%      { box-shadow: 0 0 32px rgba(148,163,184,0.28), 0 0 80px rgba(148,163,184,0.12); border-color: rgba(148,163,184,0.45); }
+    }
+    @keyframes dotPulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.4); opacity: 0.8; }
+    }
+    #update-banner.active {
+      animation: bannerGlow 2.4s ease-in-out infinite;
+      background: rgba(255,255,255,0.07) !important;
+    }
+    #update-banner.active #update-dot {
+      background: #e2e8f0 !important;
+      animation: dotPulse 2.4s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(226,232,240,0.8);
+    }
+    #update-banner.active #update-label { color: #94a3b8 !important; }
+    #update-banner.active #update-ep    { color: #e2e8f0 !important; }
+    #update-banner.active #update-time-label { color: #e2e8f0 !important; }
+    #update-banner.active #update-status {
+      color: #e2e8f0 !important;
+      content: '更新しました';
+    }
+    #update-banner:hover { background: rgba(255,255,255,0.08) !important; }
+  </style>
+
+  <script>
+    (function() {
+      function checkUpdateTime() {
+        var now = new Date();
+        var h = now.getHours(), m = now.getMinutes();
+        var banner = document.getElementById('update-banner');
+        var status = document.getElementById('update-status');
+        if (!banner) return;
+        // 21:00〜23:59 の間は光らせる
+        if (h === 21 || h === 22 || h === 23) {
+          banner.classList.add('active');
+          status.textContent = h === 21 && m < 5 ? '更新しました' : '更新済み';
+        } else {
+          banner.classList.remove('active');
+          status.textContent = '毎日更新';
+        }
+      }
+      checkUpdateTime();
+      setInterval(checkUpdateTime, 60000);
+    })();
+  </script>
+
   <div style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:2px;">
 
     <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3632254/" target="_blank"
