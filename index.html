@@ -1288,12 +1288,38 @@
   }
   #chara-close:hover { color: #94a3b8; }
   #chara-img img { width: 90px; display: block; }
+  #chara-input-wrap {
+    margin-top: 9px; display: flex; gap: 5px; align-items: center;
+  }
+  #chara-input {
+    flex: 1; min-width: 0;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 6px; padding: 5px 8px;
+    color: #e2e8f0; font-size: 12px;
+    font-family: 'Noto Serif JP', serif;
+    outline: none;
+  }
+  #chara-input::placeholder { color: #475569; }
+  #chara-input:focus { border-color: rgba(147,197,253,0.4); }
+  #chara-submit {
+    background: rgba(147,197,253,0.12);
+    border: 1px solid rgba(147,197,253,0.28);
+    border-radius: 6px; padding: 5px 9px;
+    color: #93c5fd; font-size: 13px; cursor: pointer;
+    line-height: 1; flex-shrink: 0;
+  }
+  #chara-submit:hover { background: rgba(147,197,253,0.22); }
 </style>
 
 <div id="chara-popup">
   <div id="chara-bubble">
     <p id="chara-name"></p>
     <p id="chara-line"></p>
+    <div id="chara-input-wrap" style="display:none">
+      <input id="chara-input" type="text" maxlength="12" placeholder="なまえ">
+      <button id="chara-submit">→</button>
+    </div>
     <button id="chara-close">✕</button>
   </div>
   <div id="chara-img"><img id="chara-face" src="" alt=""></div>
@@ -1303,40 +1329,172 @@
   (function() {
     if (sessionStorage.getItem('charaShown')) return;
 
+    var storedName = localStorage.getItem('sf_visitor_name');
+
     var chars = [
       { name: 'HINATA', img: 'plofile/chibi_hinata.png', color: '#93c5fd' },
       { name: 'KOUTA',  img: 'plofile/chibi_kouta.png',  color: '#fca5a5' },
       { name: 'HAYATE', img: 'plofile/chibi_hayate.png', color: '#fde68a' }
     ];
-    var lines = [
-      '来てくれてありがとう',
-      '今日は、少しだけ聴いていく？',
-      '無理に急がなくていいよ',
-      'ここから、物語に入れる',
-      '音と物語、どっちから？',
-      '静かな場所に来たね'
+
+    var popup   = document.getElementById('chara-popup');
+    var nameEl  = document.getElementById('chara-name');
+    var lineEl  = document.getElementById('chara-line');
+    var faceEl  = document.getElementById('chara-face');
+    var inputWrap = document.getElementById('chara-input-wrap');
+    var inputEl = document.getElementById('chara-input');
+
+    function closePopup() {
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(24px)';
+      setTimeout(function() { popup.style.display = 'none'; }, 600);
+    }
+    document.getElementById('chara-close').addEventListener('click', closePopup);
+
+    var askLines = [
+      '名前、聞いてもいい？',
+      '呼び方だけ、教えて',
+      '無理なら、そのままでもいいけど',
+      'ここでは、なんて呼ばれてる？',
+      '……名前、残していく？',
+      '君の名前、知りたい',
+      'あとで呼ぶかもしれないから',
+      'よかったら、名前',
+      '最初に、それだけ聞かせて'
     ];
 
-    var c = chars[Math.floor(Math.random() * chars.length)];
-    var l = lines[Math.floor(Math.random() * lines.length)];
+    var charLines = {
+      HINATA: function(n) { return [
+        '……' + n + 'さん、来たんだ',
+        '今日は少し静かだね',
+        'また来てくれてありがとう',
+        '続きを置いておく',
+        '夜の曲、増えてる'
+      ]; },
+      KOUTA: function(n) { return [
+        n + 'さん、甘いもの好き？',
+        '無理してない？',
+        '今日はゆっくり見てけば',
+        '新しい曲、追加されてる',
+        '座ってく？'
+      ]; },
+      HAYATE: function(n) { return [
+        'お、' + n + 'さん！',
+        'また来たな',
+        '今日はどこ見る？',
+        'ちゃんと寝てる？',
+        'なんか聴いてく？'
+      ]; }
+    };
 
-    document.getElementById('chara-name').textContent = c.name;
-    document.getElementById('chara-name').style.color = c.color;
-    document.getElementById('chara-line').textContent = l;
-    document.getElementById('chara-face').src = c.img;
-    document.getElementById('chara-face').alt = c.name;
+    if (!storedName) {
+      // 初回：ヒナタがランダムな一言で名前を聞く
+      nameEl.textContent = 'HINATA';
+      nameEl.style.color = '#93c5fd';
+      lineEl.textContent = askLines[Math.floor(Math.random() * askLines.length)];
+      faceEl.src = 'plofile/chibi_hinata.png';
+      faceEl.alt = 'HINATA';
+      inputWrap.style.display = 'flex';
 
-    setTimeout(function() {
-      document.getElementById('chara-popup').classList.add('show');
-      sessionStorage.setItem('charaShown', '1');
-    }, 2500);
+      setTimeout(function() {
+        popup.classList.add('show');
+        sessionStorage.setItem('charaShown', '1');
+        inputEl.focus();
+      }, 2500);
 
-    document.getElementById('chara-close').addEventListener('click', function() {
-      var el = document.getElementById('chara-popup');
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-      setTimeout(function() { el.style.display = 'none'; }, 600);
-    });
+      function submitName() {
+        var n = inputEl.value.trim();
+        if (!n) return;
+        localStorage.setItem('sf_visitor_name', n);
+        inputWrap.style.display = 'none';
+        lineEl.textContent = 'ありがとう、' + n + 'さん';
+        setTimeout(closePopup, 2800);
+      }
+      document.getElementById('chara-submit').addEventListener('click', submitName);
+      inputEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitName();
+      });
+
+    } else {
+      // 再訪：3人それぞれのセリフから名前入りでランダム表示
+      var c = chars[Math.floor(Math.random() * chars.length)];
+      var pool = charLines[c.name](storedName);
+      var l = pool[Math.floor(Math.random() * pool.length)];
+
+      nameEl.textContent = c.name;
+      nameEl.style.color = c.color;
+      lineEl.textContent = l;
+      faceEl.src = c.img;
+      faceEl.alt = c.name;
+
+      setTimeout(function() {
+        popup.classList.add('show');
+        sessionStorage.setItem('charaShown', '1');
+        // 役割終わったら自動で消える
+        setTimeout(closePopup, 5000);
+      }, 2500);
+    }
+    // ── SWEETs ナビクリック時ポップアップ ──────────────────────
+    var SWEETS_CODE_UPDATED = false; // ← コード更新日だけ true にする
+
+    var sweetsLines = [
+      'SWEETsCode、もう見つけた？',
+      'ヒント、Instagramに落ちてるかも',
+      '甘いもの、ちゃんと確認した？',
+      'SWEETs ROOM、開いた？',
+      'まだ秘密、残ってるよ',
+      '気づく人は、ちゃんと気づくらしい',
+      'コード、意外と見逃される',
+      'リールの最後、見た？',
+      'たまにヒント混ざってる',
+      '全部見つけなくても大丈夫だけど',
+      '隠してるつもり、あんまりない',
+      '今日のヒント、結構分かりやすい',
+      '甘いだけじゃ終わらないけど',
+      'たぶん、もう気づいてるよね',
+      '……入力、試してみる？'
+    ];
+    if (SWEETS_CODE_UPDATED) {
+      sweetsLines.push('今日はコード、更新されてるらしい');
+    }
+
+    var sweetsLink = document.querySelector('a.nav-sweets');
+    if (sweetsLink) {
+      sweetsLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        var dest = this.href;
+        var sc = chars[Math.floor(Math.random() * chars.length)];
+        var sl = sweetsLines[Math.floor(Math.random() * sweetsLines.length)];
+        popup.style.display = '';
+        popup.style.opacity = '0';
+        popup.style.transform = 'translateY(24px)';
+        nameEl.textContent = sc.name;
+        nameEl.style.color = sc.color;
+        lineEl.textContent = sl;
+        inputWrap.style.display = 'none';
+        faceEl.src = sc.img;
+        faceEl.alt = sc.name;
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            popup.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            popup.style.opacity = '1';
+            popup.style.transform = 'translateY(0)';
+          });
+        });
+        var navigated = false;
+        function goSweets() {
+          if (navigated) return;
+          navigated = true;
+          window.location.href = dest;
+        }
+        var navTimer = setTimeout(goSweets, 2200);
+        document.getElementById('chara-close').addEventListener('click', function onSweetsClose() {
+          clearTimeout(navTimer);
+          document.getElementById('chara-close').removeEventListener('click', onSweetsClose);
+          goSweets();
+        }, { once: true });
+      });
+    }
   })();
 </script>
 
