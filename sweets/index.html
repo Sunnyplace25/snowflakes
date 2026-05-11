@@ -3763,10 +3763,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     document.getElementById('chara-close').addEventListener('click', hidePopup);
 
-    // 初回：2秒後
-    setTimeout(showPopup, 2000);
-    // 2回目以降：30秒おきに繰り返し
-    setInterval(showPopup, 30000);
+    // 背景（空白部分）をクリックしたときだけ表示
+    document.addEventListener('click', function(e) {
+      var tag = e.target.tagName.toLowerCase();
+      var interactive = ['a', 'button', 'input', 'select', 'textarea', 'label', 'img'];
+      if (interactive.indexOf(tag) !== -1) return;
+      if (e.target.closest('a, button, input, [role="button"], #chara-popup')) return;
+      showPopup();
+    });
   })();
 </script>
 
