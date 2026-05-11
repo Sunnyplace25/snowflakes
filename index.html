@@ -500,23 +500,42 @@
 
   <script>
     (function() {
-      function checkUpdateTime() {
-        var now = new Date();
-        var h = now.getHours(), m = now.getMinutes();
+      var BASE_EP   = 158;
+      var BASE_TIME = new Date('2026-05-12T21:00:00'); // #158 が公開される時刻
+
+      function getEpisode(now) {
+        var ms = now - BASE_TIME;
+        if (ms < 0) return BASE_EP - 1; // まだ未公開
+        var days = Math.floor(ms / 86400000);
+        return BASE_EP + days;
+      }
+
+      function update() {
+        var now    = new Date();
+        var ep     = getEpisode(now);
+        var h      = now.getHours();
+        var m      = now.getMinutes();
         var banner = document.getElementById('update-banner');
+        var epEl   = document.getElementById('update-ep');
         var status = document.getElementById('update-status');
-        if (!banner) return;
-        // 21:00〜23:59 の間は光らせる
-        if (h === 21 || h === 22 || h === 23) {
+        if (!banner || !epEl) return;
+
+        // 話数・リンクを動的に更新
+        epEl.textContent = '#' + ep;
+        banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
+
+        // 21:00〜23:59 は光る
+        if (h >= 21) {
           banner.classList.add('active');
-          status.textContent = h === 21 && m < 5 ? '更新しました' : '更新済み';
+          status.textContent = (h === 21 && m < 10) ? '更新しました' : '更新済み';
         } else {
           banner.classList.remove('active');
-          status.textContent = '毎日更新';
+          status.textContent = '毎日21時更新';
         }
       }
-      checkUpdateTime();
-      setInterval(checkUpdateTime, 60000);
+
+      update();
+      setInterval(update, 30000); // 30秒ごとに確認
     })();
   </script>
 
