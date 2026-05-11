@@ -455,16 +455,29 @@
   <!-- 本編更新バナー -->
   <div style="max-width:680px;margin:0 auto 40px;">
     <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/158" target="_blank"
-       style="display:block;text-decoration:none;border-radius:16px;padding:28px 32px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);transition:all 0.3s;position:relative;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <div id="update-dot" style="width:10px;height:10px;border-radius:50%;background:#64748b;flex-shrink:0;transition:all 0.5s;"></div>
-        <div>
-          <p id="update-label" style="font-size:11px;letter-spacing:6px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:6px;transition:color 0.5s;">DAILY UPDATE</p>
-          <p style="font-size:clamp(18px,3vw,24px);font-weight:300;color:#cbd5e1;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">Snow flakes <span style="font-size:0.7em;color:#94a3b8;">本編</span> <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:1.1em;color:#94a3b8;transition:color 0.5s;">#158</span></p>
+       style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);transition:all 0.4s;position:relative;overflow:hidden;">
+
+      <!-- 背景パーティクル光（active時に表示） -->
+      <div id="update-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(226,232,240,0.07) 0%, transparent 70%);"></div>
+
+      <div style="position:relative;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+        <!-- ドット -->
+        <div id="update-dot" style="width:12px;height:12px;border-radius:50%;background:#334155;flex-shrink:0;transition:all 0.5s;"></div>
+
+        <!-- テキスト -->
+        <div style="flex:1;min-width:0;">
+          <p id="update-label" style="font-size:10px;letter-spacing:7px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:8px;transition:color 0.5s;">DAILY UPDATE</p>
+          <p style="font-size:clamp(22px,4vw,32px);font-weight:300;color:#94a3b8;font-family:'Noto Serif JP',serif;letter-spacing:0.06em;line-height:1.2;transition:color 0.5s;">
+            Snow flakes
+            <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:0.85em;color:#64748b;margin-left:10px;transition:color 0.5s;">#158</span>
+          </p>
+          <p id="update-sub" style="font-size:12px;color:#475569;margin-top:6px;letter-spacing:2px;transition:color 0.5s;">本編 毎日21時更新</p>
         </div>
-        <div style="margin-left:auto;text-align:right;">
-          <p id="update-time-label" style="font-size:11px;color:#64748b;letter-spacing:2px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21:00</p>
-          <p id="update-status" style="font-size:13px;color:#64748b;margin-top:4px;transition:color 0.5s;">毎日更新</p>
+
+        <!-- 右側ステータス -->
+        <div style="text-align:right;flex-shrink:0;">
+          <p id="update-status" style="font-size:12px;color:#475569;letter-spacing:3px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21 : 00</p>
+          <p id="update-arrow" style="font-size:20px;color:#334155;margin-top:6px;transition:all 0.5s;">→</p>
         </div>
       </div>
     </a>
@@ -472,30 +485,31 @@
 
   <style>
     @keyframes bannerGlow {
-      0%,100% { box-shadow: 0 0 20px rgba(148,163,184,0.15), 0 0 60px rgba(148,163,184,0.05); border-color: rgba(148,163,184,0.25); }
-      50%      { box-shadow: 0 0 32px rgba(148,163,184,0.28), 0 0 80px rgba(148,163,184,0.12); border-color: rgba(148,163,184,0.45); }
+      0%   { box-shadow: 0 0 24px rgba(148,163,184,0.18), 0 0 80px rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
+      50%  { box-shadow: 0 0 48px rgba(148,163,184,0.38), 0 0 120px rgba(148,163,184,0.15), inset 0 0 40px rgba(148,163,184,0.04); border-color: rgba(148,163,184,0.55); }
+      100% { box-shadow: 0 0 24px rgba(148,163,184,0.18), 0 0 80px rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
     }
     @keyframes dotPulse {
-      0%,100% { transform: scale(1); opacity: 1; }
-      50%      { transform: scale(1.4); opacity: 0.8; }
+      0%,100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(226,232,240,0.6); }
+      50%      { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(226,232,240,0); }
+    }
+    @keyframes arrowSlide {
+      0%,100% { transform: translateX(0); }
+      50%      { transform: translateX(5px); }
     }
     #update-banner.active {
-      animation: bannerGlow 2.4s ease-in-out infinite;
-      background: rgba(255,255,255,0.07) !important;
+      animation: bannerGlow 2.2s ease-in-out infinite;
+      background: rgba(255,255,255,0.06) !important;
     }
-    #update-banner.active #update-dot {
-      background: #e2e8f0 !important;
-      animation: dotPulse 2.4s ease-in-out infinite;
-      box-shadow: 0 0 8px rgba(226,232,240,0.8);
-    }
-    #update-banner.active #update-label { color: #94a3b8 !important; }
-    #update-banner.active #update-ep    { color: #e2e8f0 !important; }
-    #update-banner.active #update-time-label { color: #e2e8f0 !important; }
-    #update-banner.active #update-status {
-      color: #e2e8f0 !important;
-      content: '更新しました';
-    }
-    #update-banner:hover { background: rgba(255,255,255,0.08) !important; }
+    #update-banner.active #update-shine   { opacity: 1 !important; }
+    #update-banner.active #update-dot     { background: #e2e8f0 !important; animation: dotPulse 2.2s ease-in-out infinite; }
+    #update-banner.active #update-label   { color: #94a3b8 !important; letter-spacing: 8px; }
+    #update-banner.active p[style*="Snow flakes"] { color: #f1f5f9 !important; }
+    #update-banner.active #update-ep      { color: #cbd5e1 !important; }
+    #update-banner.active #update-sub     { color: #94a3b8 !important; }
+    #update-banner.active #update-status  { color: #cbd5e1 !important; }
+    #update-banner.active #update-arrow   { color: #e2e8f0 !important; animation: arrowSlide 1.6s ease-in-out infinite; }
+    #update-banner:hover                  { background: rgba(255,255,255,0.07) !important; transform: translateY(-1px); }
   </style>
 
   <script>
@@ -525,12 +539,15 @@
         banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
 
         // 21:00〜23:59 は光る
+        var sub = document.getElementById('update-sub');
         if (h >= 21) {
           banner.classList.add('active');
-          status.textContent = (h === 21 && m < 10) ? '更新しました' : '更新済み';
+          status.textContent = '21 : 00';
+          if (sub) sub.textContent = (h === 21 && m < 10) ? '更新しました ✦' : '本編 更新済み';
         } else {
           banner.classList.remove('active');
-          status.textContent = '毎日21時更新';
+          status.textContent = '21 : 00';
+          if (sub) sub.textContent = '本編 毎日21時更新';
         }
       }
 
