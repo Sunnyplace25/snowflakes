@@ -483,6 +483,23 @@
     </a>
   </div>
 
+  <!-- 短篇カード（公開から3日間だけ表示） -->
+  <div style="max-width:680px;margin:-24px auto 40px;">
+    <a id="short-banner" href="#" target="_blank"
+       style="display:block;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-size:10px;letter-spacing:6px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:6px;">SHORT STORY</p>
+          <p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#94a3b8;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <p id="short-date" style="font-size:11px;color:#475569;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">—</p>
+          <p style="font-size:20px;color:#334155;margin-top:4px;">→</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
   <style>
     @keyframes bannerGlow {
       0%   { box-shadow: 0 0 24px rgba(148,163,184,0.18), 0 0 80px rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
@@ -510,6 +527,15 @@
     #update-banner.active #update-status  { color: #cbd5e1 !important; }
     #update-banner.active #update-arrow   { color: #e2e8f0 !important; animation: arrowSlide 1.6s ease-in-out infinite; }
     #update-banner:hover                  { background: rgba(255,255,255,0.07) !important; transform: translateY(-1px); }
+
+    /* 短篇カード */
+    #short-banner { display:none; }
+    #short-banner:hover { background: rgba(255,255,255,0.07) !important; transform: translateY(-1px); }
+    @keyframes shortGlow {
+      0%,100% { box-shadow: 0 0 20px rgba(148,163,184,0.14), 0 0 60px rgba(148,163,184,0.05); border-color: rgba(148,163,184,0.20); }
+      50%      { box-shadow: 0 0 38px rgba(148,163,184,0.28), 0 0 90px rgba(148,163,184,0.10); border-color: rgba(148,163,184,0.42); }
+    }
+    #short-banner.glow { animation: shortGlow 2.6s ease-in-out infinite; }
   </style>
 
   <script>
@@ -553,6 +579,50 @@
 
       update();
       setInterval(update, 30000); // 30秒ごとに確認
+    })();
+  </script>
+
+  <script>
+    (function() {
+      // ── 短篇カード設定 ──────────────────────────────────────
+      // 短篇を投稿したら以下3つを更新する
+      var SHORT_PUB   = null;                          // 例: new Date('2026-05-20T00:00:00')
+      var SHORT_TITLE = '';                            // 例: '白い花'
+      var SHORT_URL   = 'https://ncode.syosetu.com/n9009lo/'; // 短篇のURL
+      // ────────────────────────────────────────────────────────
+
+      var SHOW_DAYS = 3;
+
+      function updateShort() {
+        var card = document.getElementById('short-banner');
+        if (!card) return;
+        if (!SHORT_PUB || !SHORT_TITLE) return; // 未設定なら非表示のまま
+
+        var now  = new Date();
+        var ms   = now - SHORT_PUB;
+        if (ms < 0 || ms >= SHOW_DAYS * 86400000) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 3日以内なら表示
+        card.style.display = 'block';
+        card.classList.add('glow');
+        card.href = SHORT_URL;
+
+        var titleEl = document.getElementById('short-title');
+        var dateEl  = document.getElementById('short-date');
+        if (titleEl) titleEl.textContent = SHORT_TITLE;
+        if (dateEl) {
+          var y = SHORT_PUB.getFullYear();
+          var m = ('0' + (SHORT_PUB.getMonth() + 1)).slice(-2);
+          var d = ('0' + SHORT_PUB.getDate()).slice(-2);
+          dateEl.textContent = y + '.' + m + '.' + d;
+        }
+      }
+
+      updateShort();
+      setInterval(updateShort, 60000); // 1分ごとに確認
     })();
   </script>
 
