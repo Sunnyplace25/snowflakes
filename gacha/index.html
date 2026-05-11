@@ -38,12 +38,12 @@
     }
     .page-eyebrow {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 10px; letter-spacing: 5px; color: #64748b; margin-bottom: 10px;
+      font-size: 10px; letter-spacing: 5px; color: #94a3b8; margin-bottom: 10px;
     }
     .page-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 26px; font-weight: 300; letter-spacing: 5px;
-      color: rgba(255,255,255,0.75);
+      color: rgba(255,255,255,0.9);
     }
 
     /* ── Machine ── */
@@ -53,42 +53,59 @@
     }
 
     .machine-dome {
-      width: 190px; height: 190px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 32%,
-        rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 55%, rgba(0,0,0,0.08) 100%);
-      border: 1px solid rgba(255,255,255,0.25);
+      width: 210px; height: 210px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 30%,
+        rgba(255,255,255,0.22) 0%,
+        rgba(147,197,253,0.08) 40%,
+        rgba(12,18,32,0.6) 100%);
+      border: 2px solid rgba(255,255,255,0.35);
       position: relative; overflow: hidden;
-      box-shadow: 0 0 50px rgba(147,197,253,0.1), inset 0 0 30px rgba(0,0,0,0.2);
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,0.04),
+        0 0 40px rgba(147,197,253,0.25),
+        0 0 80px rgba(147,197,253,0.1),
+        inset 0 0 60px rgba(147,197,253,0.08);
+    }
+    /* glass highlight */
+    .machine-dome::after {
+      content: '';
+      position: absolute; top: 8%; left: 14%;
+      width: 38%; height: 28%;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.18) 0%, transparent 80%);
+      border-radius: 50%;
+      pointer-events: none;
     }
     .mini-cap {
-      position: absolute; width: 14px; height: 14px; border-radius: 50%;
+      position: absolute; width: 18px; height: 18px; border-radius: 50%;
       animation: floatCap linear infinite;
+      box-shadow: 0 0 8px currentColor;
     }
     @keyframes floatCap {
-      0%   { transform: translateY(210px) rotate(0deg);   opacity: 0; }
-      10%  { opacity: 0.4; }
-      90%  { opacity: 0.25; }
-      100% { transform: translateY(-40px) rotate(200deg); opacity: 0; }
+      0%   { transform: translateY(230px) rotate(0deg);   opacity: 0; }
+      8%   { opacity: 0.75; }
+      88%  { opacity: 0.5; }
+      100% { transform: translateY(-40px) rotate(240deg); opacity: 0; }
     }
 
     .machine-neck {
-      width: 34px; height: 24px;
-      background: rgba(255,255,255,0.025);
-      border-left: 1px solid rgba(255,255,255,0.06);
-      border-right: 1px solid rgba(255,255,255,0.06);
+      width: 40px; height: 28px;
+      background: rgba(255,255,255,0.06);
+      border-left: 2px solid rgba(255,255,255,0.18);
+      border-right: 2px solid rgba(255,255,255,0.18);
     }
     .machine-base {
-      width: 230px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 18px; padding: 20px 22px 22px;
+      width: 250px;
+      background: rgba(255,255,255,0.07);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 20px; padding: 22px 24px 24px;
       display: flex; flex-direction: column; align-items: center; gap: 12px;
+      box-shadow: 0 0 30px rgba(147,197,253,0.08);
     }
     .machine-label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 10px; letter-spacing: 5px; color: rgba(255,255,255,0.45);
+      font-size: 11px; letter-spacing: 6px; color: rgba(255,255,255,0.6);
     }
-    .daily-note { font-size: 11px; color: #64748b; letter-spacing: 1px; min-height: 18px; }
+    .daily-note { font-size: 11px; color: #94a3b8; letter-spacing: 1px; min-height: 18px; }
 
     .lever-btn {
       width: 100%;
@@ -116,11 +133,11 @@
 
     .text-btn {
       font-family: 'Noto Serif JP', serif; font-size: 12px;
-      letter-spacing: 2px; color: #64748b; background: none; border: none;
+      letter-spacing: 2px; color: #94a3b8; background: none; border: none;
       cursor: pointer; text-decoration: underline;
       text-underline-offset: 4px; transition: color 0.3s;
     }
-    .text-btn:hover { color: #94a3b8; }
+    .text-btn:hover { color: #cbd5e1; }
 
     .mini-result { margin-top: 20px; min-height: 56px; opacity: 0; transition: opacity 0.5s; }
     .mini-result.show { opacity: 1; }
@@ -128,9 +145,9 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 30px; letter-spacing: 3px; margin-bottom: 6px;
     }
-    .mini-fortune-msg { font-size: 13px; color: #64748b; line-height: 2; }
+    .mini-fortune-msg { font-size: 13px; color: #94a3b8; line-height: 2; }
     .mini-again {
-      margin-top: 14px; font-size: 11px; letter-spacing: 2px; color: #475569;
+      margin-top: 14px; font-size: 11px; letter-spacing: 2px; color: #64748b;
       font-family: 'Noto Serif JP', serif; background: none; border: none;
       cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
       transition: color 0.3s;
@@ -189,10 +206,20 @@
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       font-size: 30px; z-index: 2; pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.25s ease;
       text-shadow: 0 0 12px rgba(255,255,255,0.6);
     }
     .capsule.open .cap-snow { opacity: 0; }
+
+    /* open flash */
+    .cap-flash {
+      position: fixed; inset: 0; z-index: 350;
+      background: rgba(255,255,255,0);
+      pointer-events: none;
+      transition: background 0.08s ease;
+    }
+    .cap-flash.burst { background: rgba(255,255,255,0.18); }
+    .cap-flash.fade  { background: rgba(255,255,255,0); transition: background 0.5s ease; }
 
     /* hinata: slow */
     .capsule.char-hinata .cap-top    { transition: transform 0.75s ease 0.15s; }
@@ -352,6 +379,7 @@
 </div>
 
 <!-- Capsule -->
+<div class="cap-flash" id="capFlash"></div>
 <div class="cap-overlay" id="capOverlay">
   <div class="capsule" id="capsule">
     <div class="cap-top"></div>
@@ -434,6 +462,7 @@
   var miniFortuneMsg  = document.getElementById('miniFortuneMsg');
   var miniAgainBtn = document.getElementById('miniAgainBtn');
   var capOverlay   = document.getElementById('capOverlay');
+  var capFlash     = document.getElementById('capFlash');
   var capsuleEl    = document.getElementById('capsule');
   var capTopEl     = capsuleEl.querySelector('.cap-top');
   var resultOverlay = document.getElementById('resultOverlay');
@@ -498,6 +527,10 @@
 
     setTimeout(function() {
       capsuleEl.classList.add('open');
+      // flash on open
+      capFlash.classList.add('burst');
+      setTimeout(function() { capFlash.classList.remove('burst'); capFlash.classList.add('fade'); }, 80);
+      setTimeout(function() { capFlash.classList.remove('fade'); }, 600);
       setTimeout(function() {
         capOverlay.classList.remove('dim');
         capsuleEl.className = 'capsule';
@@ -541,6 +574,9 @@
     });
     setTimeout(function() {
       capsuleEl.classList.add('open');
+      capFlash.classList.add('burst');
+      setTimeout(function() { capFlash.classList.remove('burst'); capFlash.classList.add('fade'); }, 80);
+      setTimeout(function() { capFlash.classList.remove('fade'); }, 600);
       setTimeout(function() {
         capOverlay.classList.remove('dim');
         capsuleEl.className = 'capsule';
