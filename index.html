@@ -1287,11 +1287,7 @@
     background: none; border: none; padding: 0; line-height: 1;
   }
   #chara-close:hover { color: #94a3b8; }
-  #chara-img img {
-    width: 80px; display: block;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-  }
+  #chara-img img { width: 90px; display: block; }
 </style>
 
 <div id="chara-popup">
@@ -1308,9 +1304,9 @@
     if (sessionStorage.getItem('charaShown')) return;
 
     var chars = [
-      { name: 'HINATA', img: 'plofile/e4fc3674-bb9a-4611-a34d-98b214f50ce0.png', color: '#93c5fd' },
-      { name: 'KOUTA',  img: 'plofile/4616c7b8-2649-4771-aeee-83b2c411254e.png', color: '#fca5a5' },
-      { name: 'HAYATE', img: 'plofile/08c8e413-7b09-47f4-905c-c42140c7c3b9.png', color: '#fde68a' }
+      { name: 'HINATA', img: 'plofile/chibi_hinata.png', color: '#93c5fd' },
+      { name: 'KOUTA',  img: 'plofile/chibi_kouta.png',  color: '#fca5a5' },
+      { name: 'HAYATE', img: 'plofile/chibi_hayate.png', color: '#fde68a' }
     ];
     var lines = [
       '来てくれてありがとう',
