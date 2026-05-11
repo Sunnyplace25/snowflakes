@@ -1253,6 +1253,97 @@
     });
   }
 </script>
+<style>
+  #chara-popup {
+    position: fixed; bottom: 20px; right: 16px; z-index: 9999;
+    display: flex; align-items: flex-end; gap: 8px;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+  }
+  #chara-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #chara-bubble {
+    background: rgba(10,18,34,0.88);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px 14px 4px 14px;
+    padding: 12px 14px 10px;
+    max-width: 170px;
+    backdrop-filter: blur(10px);
+    position: relative;
+  }
+  #chara-name {
+    font-size: 9px; letter-spacing: 3px;
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 5px;
+  }
+  #chara-line {
+    font-size: 12px; color: #cbd5e1;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; line-height: 1.9; margin: 0;
+  }
+  #chara-close {
+    position: absolute; top: 7px; right: 9px;
+    font-size: 12px; color: #334155; cursor: pointer;
+    background: none; border: none; padding: 0; line-height: 1;
+  }
+  #chara-close:hover { color: #94a3b8; }
+  #chara-img img {
+    width: 80px; display: block;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+</style>
+
+<div id="chara-popup">
+  <div id="chara-bubble">
+    <p id="chara-name"></p>
+    <p id="chara-line"></p>
+    <button id="chara-close">✕</button>
+  </div>
+  <div id="chara-img"><img id="chara-face" src="" alt=""></div>
+</div>
+
+<script>
+  (function() {
+    if (sessionStorage.getItem('charaShown')) return;
+
+    var chars = [
+      { name: 'HINATA', img: 'plofile/e4fc3674-bb9a-4611-a34d-98b214f50ce0.png', color: '#93c5fd' },
+      { name: 'KOUTA',  img: 'plofile/4616c7b8-2649-4771-aeee-83b2c411254e.png', color: '#fca5a5' },
+      { name: 'HAYATE', img: 'plofile/08c8e413-7b09-47f4-905c-c42140c7c3b9.png', color: '#fde68a' }
+    ];
+    var lines = [
+      '来てくれてありがとう',
+      '今日は、少しだけ聴いていく？',
+      '無理に急がなくていいよ',
+      'ここから、物語に入れる',
+      '音と物語、どっちから？',
+      '静かな場所に来たね'
+    ];
+
+    var c = chars[Math.floor(Math.random() * chars.length)];
+    var l = lines[Math.floor(Math.random() * lines.length)];
+
+    document.getElementById('chara-name').textContent = c.name;
+    document.getElementById('chara-name').style.color = c.color;
+    document.getElementById('chara-line').textContent = l;
+    document.getElementById('chara-face').src = c.img;
+    document.getElementById('chara-face').alt = c.name;
+
+    setTimeout(function() {
+      document.getElementById('chara-popup').classList.add('show');
+      sessionStorage.setItem('charaShown', '1');
+    }, 2500);
+
+    document.getElementById('chara-close').addEventListener('click', function() {
+      var el = document.getElementById('chara-popup');
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      setTimeout(function() { el.style.display = 'none'; }, 600);
+    });
+  })();
+</script>
+
 <script>
   const canvas = document.getElementById('snow');
   const ctx = canvas.getContext('2d');
