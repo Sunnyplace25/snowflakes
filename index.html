@@ -424,6 +424,12 @@
       <div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:opacity 1.5s;"></div>
       <img id="hero-fallback" src="plofile/hinata_hero.webp" alt="ヒナタ"
            style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:opacity 1.5s;">
+      <!-- タップ再生ボタン（スマホで自動再生できなかった時） -->
+      <div id="play-btn" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;cursor:pointer;z-index:10;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+          <span style="font-size:26px;color:#fff;margin-left:4px;">▶</span>
+        </div>
+      </div>
     </div>
     <!-- オーバーレイ -->
     <div style="position:absolute;inset:0;background:rgba(12,18,32,0.6);"></div>
@@ -455,29 +461,29 @@
   <!-- 本編更新バナー -->
   <div style="max-width:680px;margin:0 auto 40px;">
     <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/158" target="_blank"
-       style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);transition:all 0.4s;position:relative;overflow:hidden;">
+       style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
 
       <!-- 背景パーティクル光（active時に表示） -->
-      <div id="update-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(226,232,240,0.07) 0%, transparent 70%);"></div>
+      <div id="update-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(147,197,253,0.08) 0%, transparent 70%);"></div>
 
       <div style="position:relative;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
         <!-- ドット -->
-        <div id="update-dot" style="width:12px;height:12px;border-radius:50%;background:#334155;flex-shrink:0;transition:all 0.5s;"></div>
+        <div id="update-dot" style="width:12px;height:12px;border-radius:50%;background:#3b5f8a;flex-shrink:0;transition:all 0.5s;"></div>
 
         <!-- テキスト -->
         <div style="flex:1;min-width:0;">
-          <p id="update-label" style="font-size:10px;letter-spacing:7px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:8px;transition:color 0.5s;">DAILY UPDATE</p>
-          <p style="font-size:clamp(22px,4vw,32px);font-weight:300;color:#94a3b8;font-family:'Noto Serif JP',serif;letter-spacing:0.06em;line-height:1.2;transition:color 0.5s;">
+          <p id="update-label" style="font-size:10px;letter-spacing:7px;color:#4e7aa8;font-family:'Cormorant Garamond',serif;margin-bottom:8px;transition:color 0.5s;">DAILY UPDATE</p>
+          <p id="update-title" style="font-size:clamp(22px,4vw,32px);font-weight:300;color:#7aaedb;font-family:'Noto Serif JP',serif;letter-spacing:0.06em;line-height:1.2;transition:color 0.5s;">
             Snow flakes
-            <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:0.85em;color:#64748b;margin-left:10px;transition:color 0.5s;">#158</span>
+            <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:0.85em;color:#4e7aa8;margin-left:10px;transition:color 0.5s;">#158</span>
           </p>
-          <p id="update-sub" style="font-size:12px;color:#475569;margin-top:6px;letter-spacing:2px;transition:color 0.5s;">本編 毎日21時更新</p>
+          <p id="update-sub" style="font-size:12px;color:#4e7aa8;margin-top:6px;letter-spacing:2px;transition:color 0.5s;">本編 毎日21時更新</p>
         </div>
 
         <!-- 右側ステータス -->
         <div style="text-align:right;flex-shrink:0;">
-          <p id="update-status" style="font-size:12px;color:#475569;letter-spacing:3px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21 : 00</p>
-          <p id="update-arrow" style="font-size:20px;color:#334155;margin-top:6px;transition:all 0.5s;">→</p>
+          <p id="update-status" style="font-size:12px;color:#4e7aa8;letter-spacing:3px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21 : 00</p>
+          <p id="update-arrow" style="font-size:20px;color:#4e7aa8;margin-top:6px;transition:all 0.5s;">→</p>
         </div>
       </div>
     </a>
@@ -501,13 +507,13 @@
 
   <style>
     @keyframes bannerGlow {
-      0%   { box-shadow: 0 0 24px rgba(148,163,184,0.18), 0 0 80px rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
-      50%  { box-shadow: 0 0 48px rgba(148,163,184,0.38), 0 0 120px rgba(148,163,184,0.15), inset 0 0 40px rgba(148,163,184,0.04); border-color: rgba(148,163,184,0.55); }
-      100% { box-shadow: 0 0 24px rgba(148,163,184,0.18), 0 0 80px rgba(148,163,184,0.06); border-color: rgba(148,163,184,0.22); }
+      0%   { box-shadow: 0 0 24px rgba(147,197,253,0.18), 0 0 80px rgba(147,197,253,0.06); border-color: rgba(147,197,253,0.30); }
+      50%  { box-shadow: 0 0 48px rgba(147,197,253,0.38), 0 0 120px rgba(147,197,253,0.15), inset 0 0 40px rgba(147,197,253,0.05); border-color: rgba(147,197,253,0.65); }
+      100% { box-shadow: 0 0 24px rgba(147,197,253,0.18), 0 0 80px rgba(147,197,253,0.06); border-color: rgba(147,197,253,0.30); }
     }
     @keyframes dotPulse {
-      0%,100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(226,232,240,0.6); }
-      50%      { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(226,232,240,0); }
+      0%,100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(147,197,253,0.6); }
+      50%      { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(147,197,253,0); }
     }
     @keyframes arrowSlide {
       0%,100% { transform: translateX(0); }
@@ -515,17 +521,17 @@
     }
     #update-banner.active {
       animation: bannerGlow 2.2s ease-in-out infinite;
-      background: rgba(255,255,255,0.06) !important;
+      background: rgba(147,197,253,0.05) !important;
     }
     #update-banner.active #update-shine   { opacity: 1 !important; }
-    #update-banner.active #update-dot     { background: #e2e8f0 !important; animation: dotPulse 2.2s ease-in-out infinite; }
-    #update-banner.active #update-label   { color: #94a3b8 !important; letter-spacing: 8px; }
-    #update-banner.active p[style*="Snow flakes"] { color: #f1f5f9 !important; }
-    #update-banner.active #update-ep      { color: #cbd5e1 !important; }
-    #update-banner.active #update-sub     { color: #94a3b8 !important; }
-    #update-banner.active #update-status  { color: #cbd5e1 !important; }
-    #update-banner.active #update-arrow   { color: #e2e8f0 !important; animation: arrowSlide 1.6s ease-in-out infinite; }
-    #update-banner:hover                  { background: rgba(255,255,255,0.07) !important; transform: translateY(-1px); }
+    #update-banner.active #update-dot     { background: #93c5fd !important; animation: dotPulse 2.2s ease-in-out infinite; }
+    #update-banner.active #update-label   { color: #7aaedb !important; letter-spacing: 8px; }
+    #update-banner.active #update-title   { color: #93c5fd !important; }
+    #update-banner.active #update-ep      { color: #7aaedb !important; }
+    #update-banner.active #update-sub     { color: #7aaedb !important; }
+    #update-banner.active #update-status  { color: #93c5fd !important; }
+    #update-banner.active #update-arrow   { color: #93c5fd !important; animation: arrowSlide 1.6s ease-in-out infinite; }
+    #update-banner:hover                  { background: rgba(147,197,253,0.07) !important; transform: translateY(-1px); }
 
     /* 短篇カード */
     #short-banner { display:none; }
@@ -1221,41 +1227,68 @@
 </footer>
 
 <script>
-  // モバイルは autoplay 不可 → フォールバック画像を表示
-  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  // YouTube IFrame API（全デバイス）
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
 
-  if (isMobile) {
-    var fb = document.getElementById('hero-fallback');
-    if (fb) { fb.style.transition = 'none'; fb.style.opacity = '1'; }
-  } else {
-    // YouTube IFrame API（PC のみ）
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
+  var ytPlayer;
 
-    window.onYouTubeIframeAPIReady = function() {
-      new YT.Player('yt-player', {
-        videoId: 'MoXBFduEfSY',
-        playerVars: {
-          autoplay: 1, mute: 1, controls: 0,
-          disablekb: 1, fs: 0, modestbranding: 1,
-          playsinline: 1, rel: 0, showinfo: 0
-        },
-        events: {
-          onStateChange: function(e) {
-            if (e.data === YT.PlayerState.ENDED) {
-              var p   = document.getElementById('yt-player');
-              var img = document.getElementById('hero-fallback');
-              p.style.transition   = 'none';
-              p.style.opacity      = '0';
-              p.style.pointerEvents = 'none';
-              img.style.opacity    = '1';
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('yt-player', {
+      videoId: 'MoXBFduEfSY',
+      playerVars: {
+        autoplay: 1, mute: 1, controls: 0,
+        disablekb: 1, fs: 0, modestbranding: 1,
+        playsinline: 1, rel: 0, showinfo: 0
+      },
+      events: {
+        onReady: function(e) {
+          e.target.playVideo();
+          // 2秒後に再生できていなければタップボタンを表示
+          setTimeout(function() {
+            if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+              var btn = document.getElementById('play-btn');
+              if (btn) btn.style.display = 'flex';
             }
+          }, 2000);
+        },
+        onStateChange: function(e) {
+          if (e.data === YT.PlayerState.PLAYING) {
+            // 再生開始したらタップボタンを隠す
+            var btn = document.getElementById('play-btn');
+            if (btn) btn.style.display = 'none';
           }
+          if (e.data === YT.PlayerState.ENDED) {
+            var p   = document.getElementById('yt-player');
+            var img = document.getElementById('hero-fallback');
+            p.style.transition    = 'none';
+            p.style.opacity       = '0';
+            p.style.pointerEvents = 'none';
+            img.style.opacity     = '1';
+          }
+        },
+        onError: function() {
+          // エラー時はフォールバック画像
+          var img = document.getElementById('hero-fallback');
+          if (img) img.style.opacity = '1';
+        }
+      }
+    });
+  };
+
+  // タップボタンを押したら再生
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('play-btn');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        if (ytPlayer) {
+          ytPlayer.playVideo();
+          btn.style.display = 'none';
         }
       });
-    };
-  }
+    }
+  });
 </script>
 <script>
   const canvas = document.getElementById('snow');
