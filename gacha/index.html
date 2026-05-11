@@ -210,8 +210,8 @@
     .cap-overlay.dim { background: rgba(12,18,32,0.72); pointer-events: auto; }
 
     .capsule {
-      width: 100px; height: 100px; border-radius: 50%;
-      position: relative; overflow: hidden;
+      width: 100px; height: 100px;
+      position: relative;
       transform: translateY(-320px) rotate(-8deg); opacity: 0;
     }
     .capsule.drop { animation: capDrop 0.72s cubic-bezier(.18,1.3,.48,1) forwards; }
@@ -234,17 +234,19 @@
 
     .cap-top, .cap-bottom {
       position: absolute; width: 100px; height: 50px;
+      overflow: hidden;
     }
     .cap-top {
-      top: 0;
-      background: var(--cap-clr, rgba(147,197,253,0.7));
-      box-shadow: inset 0 8px 18px rgba(255,255,255,0.25);
+      top: 0; border-radius: 50px 50px 0 0;
+      background: var(--cap-clr, rgba(147,197,253,0.85));
+      box-shadow: inset 0 8px 20px rgba(255,255,255,0.35), inset -4px -4px 10px rgba(0,0,0,0.2);
       transition: transform 0.55s ease;
     }
     .cap-bottom {
-      bottom: 0;
-      background: rgba(255,255,255,0.15);
-      border-top: 1px solid rgba(255,255,255,0.25);
+      bottom: 0; border-radius: 0 0 50px 50px;
+      background: rgba(255,255,255,0.2);
+      border-top: 1px solid rgba(255,255,255,0.3);
+      box-shadow: inset 0 -6px 16px rgba(255,255,255,0.1);
       transition: transform 0.55s ease;
     }
     /* snow mark */
@@ -259,11 +261,11 @@
 
     /* capsule glow on open */
     @keyframes capGlow {
-      0%   { box-shadow: 0 0 0px rgba(255,255,255,0); }
-      30%  { box-shadow: 0 0 40px 16px rgba(255,255,255,0.55), 0 0 80px 30px var(--cap-glow, rgba(147,197,253,0.4)); }
-      100% { box-shadow: 0 0 0px rgba(255,255,255,0); }
+      0%   { filter: brightness(1) drop-shadow(0 0 0px transparent); }
+      25%  { filter: brightness(2.2) drop-shadow(0 0 28px white) drop-shadow(0 0 50px var(--cap-glow, rgba(147,197,253,1))); }
+      100% { filter: brightness(1) drop-shadow(0 0 0px transparent); }
     }
-    .capsule.glow { animation: capGlow 0.8s ease forwards; }
+    .capsule.glow { animation: capGlow 1s ease forwards; }
 
     /* hinata: slow */
     .capsule.char-hinata .cap-top    { transition: transform 0.75s ease 0.15s; }
@@ -275,10 +277,10 @@
     .capsule.char-hayate .cap-top    { transition: transform 0.28s cubic-bezier(.15,1.6,.4,1); }
     .capsule.char-hayate .cap-bottom { transition: transform 0.28s cubic-bezier(.15,1.6,.4,1); }
 
-    .capsule.open .cap-top    { transform: translateY(-50px); }
-    .capsule.open .cap-bottom { transform: translateY(50px); }
-    .capsule.char-hayate.open .cap-top    { transform: translateY(-60px); }
-    .capsule.char-hayate.open .cap-bottom { transform: translateY(60px); }
+    .capsule.open .cap-top    { transform: translateY(-70px); }
+    .capsule.open .cap-bottom { transform: translateY(70px); }
+    .capsule.char-hayate.open .cap-top    { transform: translateY(-90px); }
+    .capsule.char-hayate.open .cap-bottom { transform: translateY(90px); }
 
     /* ── Result overlay ── */
     .result-overlay {
