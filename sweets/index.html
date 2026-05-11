@@ -3644,5 +3644,116 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     drawSnow();
   </script>
 
+<!-- キャラポップアップ（SWEETs ROOM用） -->
+<style>
+  #chara-popup {
+    position: fixed; bottom: 24px; right: 20px; z-index: 9999;
+    display: flex; align-items: flex-end; gap: 10px;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+  }
+  #chara-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #chara-bubble {
+    background: rgba(10,18,34,0.90);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px 16px 4px 16px;
+    padding: 16px 18px 14px;
+    max-width: 210px;
+    backdrop-filter: blur(10px);
+    position: relative;
+  }
+  #chara-name {
+    font-size: 10px; letter-spacing: 3px;
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 7px;
+  }
+  #chara-line {
+    font-size: 14px; color: #cbd5e1;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; line-height: 2; margin: 0;
+  }
+  #chara-close {
+    position: absolute; top: 8px; right: 11px;
+    font-size: 13px; color: #334155; cursor: pointer;
+    background: none; border: none; padding: 0; line-height: 1;
+  }
+  #chara-close:hover { color: #94a3b8; }
+  #chara-img img { width: 120px; display: block; }
+</style>
+
+<div id="chara-popup">
+  <div id="chara-bubble">
+    <p id="chara-name"></p>
+    <p id="chara-line"></p>
+    <button id="chara-close">✕</button>
+  </div>
+  <div id="chara-img"><img id="chara-face" src="" alt=""></div>
+</div>
+
+<script>
+  (function() {
+    if (sessionStorage.getItem('sweetsCharaShown')) return;
+
+    var SWEETS_CODE_UPDATED = false; // ← コード更新日だけ true にする
+
+    var chars = [
+      { name: 'HINATA', img: '../plofile/chibi_hinata.png', color: '#93c5fd' },
+      { name: 'KOUTA',  img: '../plofile/chibi_kouta.png',  color: '#fca5a5' },
+      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a' }
+    ];
+
+    var sweetsLines = [
+      'SWEETsCode、もう見つけた？',
+      'ヒント、Instagramに落ちてるかも',
+      '甘いもの、ちゃんと確認した？',
+      'まだ秘密、残ってるよ',
+      '気づく人は、ちゃんと気づくらしい',
+      'コード、意外と見逃される',
+      'リールの最後、見た？',
+      'たまにヒント混ざってる',
+      '全部見つけなくても大丈夫だけど',
+      '隠してるつもり、あんまりない',
+      '今日のヒント、結構分かりやすい',
+      '甘いだけじゃ終わらないけど',
+      'たぶん、もう気づいてるよね',
+      '……入力、試してみる？'
+    ];
+    if (SWEETS_CODE_UPDATED) {
+      sweetsLines.push('今日はコード、更新されてるらしい');
+    }
+
+    var c = chars[Math.floor(Math.random() * chars.length)];
+    var l = sweetsLines[Math.floor(Math.random() * sweetsLines.length)];
+
+    var popup  = document.getElementById('chara-popup');
+    var nameEl = document.getElementById('chara-name');
+    var lineEl = document.getElementById('chara-line');
+    var faceEl = document.getElementById('chara-face');
+
+    nameEl.textContent = c.name;
+    nameEl.style.color = c.color;
+    lineEl.textContent = l;
+    faceEl.src = c.img;
+    faceEl.alt = c.name;
+
+    setTimeout(function() {
+      popup.classList.add('show');
+      sessionStorage.setItem('sweetsCharaShown', '1');
+      setTimeout(function() {
+        popup.style.opacity = '0';
+        popup.style.transform = 'translateY(24px)';
+        setTimeout(function() { popup.style.display = 'none'; }, 600);
+      }, 5000);
+    }, 2000);
+
+    document.getElementById('chara-close').addEventListener('click', function() {
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(24px)';
+      setTimeout(function() { popup.style.display = 'none'; }, 600);
+    });
+  })();
+</script>
+
 </body>
 </html>
