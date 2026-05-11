@@ -211,15 +211,13 @@
     }
     .capsule.open .cap-snow { opacity: 0; }
 
-    /* open flash */
-    .cap-flash {
-      position: fixed; inset: 0; z-index: 350;
-      background: rgba(255,255,255,0);
-      pointer-events: none;
-      transition: background 0.08s ease;
+    /* capsule glow on open */
+    @keyframes capGlow {
+      0%   { box-shadow: 0 0 0px rgba(255,255,255,0); }
+      30%  { box-shadow: 0 0 40px 16px rgba(255,255,255,0.55), 0 0 80px 30px var(--cap-glow, rgba(147,197,253,0.4)); }
+      100% { box-shadow: 0 0 0px rgba(255,255,255,0); }
     }
-    .cap-flash.burst { background: rgba(255,255,255,0.18); }
-    .cap-flash.fade  { background: rgba(255,255,255,0); transition: background 0.5s ease; }
+    .capsule.glow { animation: capGlow 0.8s ease forwards; }
 
     /* hinata: slow */
     .capsule.char-hinata .cap-top    { transition: transform 0.75s ease 0.15s; }
@@ -379,7 +377,6 @@
 </div>
 
 <!-- Capsule -->
-<div class="cap-flash" id="capFlash"></div>
 <div class="cap-overlay" id="capOverlay">
   <div class="capsule" id="capsule">
     <div class="cap-top"></div>
@@ -462,7 +459,6 @@
   var miniFortuneMsg  = document.getElementById('miniFortuneMsg');
   var miniAgainBtn = document.getElementById('miniAgainBtn');
   var capOverlay   = document.getElementById('capOverlay');
-  var capFlash     = document.getElementById('capFlash');
   var capsuleEl    = document.getElementById('capsule');
   var capTopEl     = capsuleEl.querySelector('.cap-top');
   var resultOverlay = document.getElementById('resultOverlay');
@@ -526,11 +522,9 @@
     var showDelay = fortune.char === 'hinata' ? 900 : fortune.char === 'hayate' ? 380 : 520;
 
     setTimeout(function() {
+      capsuleEl.style.setProperty('--cap-glow', CHAR_META[fortune.char].capClr);
       capsuleEl.classList.add('open');
-      // flash on open
-      capFlash.classList.add('burst');
-      setTimeout(function() { capFlash.classList.remove('burst'); capFlash.classList.add('fade'); }, 80);
-      setTimeout(function() { capFlash.classList.remove('fade'); }, 600);
+      capsuleEl.classList.add('glow');
       setTimeout(function() {
         capOverlay.classList.remove('dim');
         capsuleEl.className = 'capsule';
@@ -573,10 +567,9 @@
       requestAnimationFrame(function() { capsuleEl.classList.add('drop'); });
     });
     setTimeout(function() {
+      capsuleEl.style.setProperty('--cap-glow', CHAR_META[f.char].capClr);
       capsuleEl.classList.add('open');
-      capFlash.classList.add('burst');
-      setTimeout(function() { capFlash.classList.remove('burst'); capFlash.classList.add('fade'); }, 80);
-      setTimeout(function() { capFlash.classList.remove('fade'); }, 600);
+      capsuleEl.classList.add('glow');
       setTimeout(function() {
         capOverlay.classList.remove('dim');
         capsuleEl.className = 'capsule';
