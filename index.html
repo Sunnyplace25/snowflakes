@@ -1215,9 +1215,10 @@
 </footer>
 
 <script>
-  // スマホはヒナタ画像を表示
+  // スマホはヒナタ画像を表示、動画非表示
   if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
     document.getElementById('hero-fallback').style.opacity = '1';
+    document.getElementById('yt-player').style.display = 'none';
   } else {
     var tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
