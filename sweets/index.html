@@ -3693,8 +3693,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 <script>
   (function() {
-    if (sessionStorage.getItem('sweetsCharaShown')) return;
-
     var SWEETS_CODE_UPDATED = false; // ← コード更新日だけ true にする
 
     var chars = [
@@ -3723,35 +3721,52 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       sweetsLines.push('今日はコード、更新されてるらしい');
     }
 
-    var c = chars[Math.floor(Math.random() * chars.length)];
-    var l = sweetsLines[Math.floor(Math.random() * sweetsLines.length)];
-
     var popup  = document.getElementById('chara-popup');
     var nameEl = document.getElementById('chara-name');
     var lineEl = document.getElementById('chara-line');
     var faceEl = document.getElementById('chara-face');
 
-    nameEl.textContent = c.name;
-    nameEl.style.color = c.color;
-    lineEl.textContent = l;
-    faceEl.src = c.img;
-    faceEl.alt = c.name;
+    // 使ったセリフを記録してなるべく重複しないようにする
+    var usedLines = [];
 
-    setTimeout(function() {
-      popup.classList.add('show');
-      sessionStorage.setItem('sweetsCharaShown', '1');
-      setTimeout(function() {
-        popup.style.opacity = '0';
-        popup.style.transform = 'translateY(24px)';
-        setTimeout(function() { popup.style.display = 'none'; }, 600);
-      }, 5000);
-    }, 2000);
+    function pickLine() {
+      if (usedLines.length >= sweetsLines.length) usedLines = [];
+      var pool = sweetsLines.filter(function(l) { return usedLines.indexOf(l) === -1; });
+      var l = pool[Math.floor(Math.random() * pool.length)];
+      usedLines.push(l);
+      return l;
+    }
 
-    document.getElementById('chara-close').addEventListener('click', function() {
-      popup.style.opacity = '0';
-      popup.style.transform = 'translateY(24px)';
+    function showPopup() {
+      var c = chars[Math.floor(Math.random() * chars.length)];
+      var l = pickLine();
+      nameEl.textContent = c.name;
+      nameEl.style.color = c.color;
+      lineEl.textContent = l;
+      faceEl.src = c.img;
+      faceEl.alt = c.name;
+      popup.style.display = '';
+      popup.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          popup.classList.add('show');
+        });
+      });
+      // 5秒後に自動で消える
+      setTimeout(hidePopup, 5000);
+    }
+
+    function hidePopup() {
+      popup.classList.remove('show');
       setTimeout(function() { popup.style.display = 'none'; }, 600);
-    });
+    }
+
+    document.getElementById('chara-close').addEventListener('click', hidePopup);
+
+    // 初回：2秒後
+    setTimeout(showPopup, 2000);
+    // 2回目以降：30秒おきに繰り返し
+    setInterval(showPopup, 30000);
   })();
 </script>
 
