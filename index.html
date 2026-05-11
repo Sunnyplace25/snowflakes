@@ -1221,32 +1221,40 @@
 </footer>
 
 <script>
-  // YouTube IFrame API
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
+  // モバイルは autoplay 不可 → フォールバック画像を表示
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-  function onYouTubeIframeAPIReady() {
-    new YT.Player('yt-player', {
-      videoId: 'MoXBFduEfSY',
-      playerVars: {
-        autoplay: 1, mute: 1, controls: 0,
-        disablekb: 1, fs: 0, modestbranding: 1,
-        playsinline: 1, rel: 0, showinfo: 0
-      },
-      events: {
-        onStateChange: function(e) {
-          if (e.data === YT.PlayerState.ENDED) {
-            var p = document.getElementById('yt-player');
-            var img = document.getElementById('hero-fallback');
-            p.style.transition = 'none';
-            p.style.opacity = '0';
-            p.style.pointerEvents = 'none';
-            img.style.opacity = '1';
+  if (isMobile) {
+    var fb = document.getElementById('hero-fallback');
+    if (fb) { fb.style.transition = 'none'; fb.style.opacity = '1'; }
+  } else {
+    // YouTube IFrame API（PC のみ）
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = function() {
+      new YT.Player('yt-player', {
+        videoId: 'MoXBFduEfSY',
+        playerVars: {
+          autoplay: 1, mute: 1, controls: 0,
+          disablekb: 1, fs: 0, modestbranding: 1,
+          playsinline: 1, rel: 0, showinfo: 0
+        },
+        events: {
+          onStateChange: function(e) {
+            if (e.data === YT.PlayerState.ENDED) {
+              var p   = document.getElementById('yt-player');
+              var img = document.getElementById('hero-fallback');
+              p.style.transition   = 'none';
+              p.style.opacity      = '0';
+              p.style.pointerEvents = 'none';
+              img.style.opacity    = '1';
+            }
           }
         }
-      }
-    });
+      });
+    };
   }
 </script>
 <script>
