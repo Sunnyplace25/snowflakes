@@ -424,7 +424,7 @@
     <div style="position:relative;height:100vh;width:calc(100vh * 9 / 16);">
       <div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%;transition:opacity 1.5s;"></div>
       <img id="hero-fallback" src="plofile/hinata_hero.webp" alt="ヒナタ"
-           style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;transition:opacity 1.5s;">
+           style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;transition:opacity 1.5s;opacity:0;">
     </div>
     <!-- オーバーレイ -->
     <div style="position:absolute;inset:0;background:rgba(12,18,32,0.6);"></div>
@@ -1215,10 +1215,14 @@
 </footer>
 
 <script>
-  // YouTube IFrame API
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
+  // スマホはヒナタ画像を表示
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    document.getElementById('hero-fallback').style.opacity = '1';
+  } else {
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
 
   function onYouTubeIframeAPIReady() {
     new YT.Player('yt-player', {
