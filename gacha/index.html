@@ -434,7 +434,7 @@
     <div class="machine-window" id="dome"></div>
     <div class="machine-controls">
       <p class="daily-note" id="dailyNote"></p>
-      <button class="lever-btn" id="leverBtn">まわす</button>
+      <button class="lever-btn" id="leverBtn" onclick="doPull()">まわす</button>
     </div>
   </div>
 </div>
@@ -548,7 +548,7 @@
   var capsuleEl     = document.getElementById('capsule');
   var capTopEl      = capsuleEl.querySelector('.cap-top');
   var resultOverlay = document.getElementById('resultOverlay');
-  var candyPopup    = document.getElementById('candy-popup');
+  function getCandyPopup() { return document.getElementById('candy-popup'); }
 
   /* ── Balls inside dome ── */
   var dome = document.getElementById('dome');
@@ -616,7 +616,7 @@
       document.getElementById('candy-char-line').textContent = candy.charaLine;
       document.getElementById('candy-char-img').src = CHAR_META[candy.chara].img;
       document.getElementById('candy-char-img').alt = candy.chara.toUpperCase();
-      setTimeout(function() { candyPopup.classList.add('show'); }, 900);
+      setTimeout(function() { getCandyPopup().classList.add('show'); }, 900);
     } else {
       candyWrap.style.display = 'none';
     }
@@ -634,7 +634,7 @@
   });
 
   document.getElementById('candy-close').addEventListener('click', function() {
-    candyPopup.classList.remove('show');
+    getCandyPopup().classList.remove('show');
   });
 
   savedViewBtn.addEventListener('click', function() {
@@ -671,7 +671,8 @@
   }
 
   /* ── First (daily) pull — 無料 ── */
-  leverBtn.addEventListener('click', function() {
+  function doPull() {
+    if (leverBtn.disabled) return;
     leverBtn.disabled = true;
     var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
     save(fortune);
@@ -682,7 +683,9 @@
       replayBtn.style.display = '';
       belowMachine.classList.add('show');
     });
-  });
+  }
+  window.doPull = doPull;
+  leverBtn.addEventListener('click', doPull);
 
   /* ── Replay pull — ❄ 5 消費 ── */
   var pendingReplayFortune = null;
@@ -729,7 +732,7 @@
     var count = Math.floor(Math.random() * 5) + 1;
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
 
-    candyPopup.classList.remove('show');
+    getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
       showResult(f, rc, count);
     });
