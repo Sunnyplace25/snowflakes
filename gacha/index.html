@@ -501,6 +501,57 @@
   </div>
 </div>
 
+<!-- Candy character popup -->
+<style>
+  #candy-popup {
+    position: fixed; bottom: 24px; right: 20px; z-index: 500;
+    display: flex; align-items: flex-end; gap: 10px;
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  #candy-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #candy-bubble {
+    background: rgba(10,18,34,0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px 20px 4px 20px;
+    padding: 18px 20px 16px;
+    max-width: 230px;
+    backdrop-filter: blur(14px);
+    position: relative;
+  }
+  #candy-char-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; letter-spacing: 5px; margin-bottom: 8px;
+  }
+  #candy-char-line {
+    font-size: 16px; color: #e2e8f0;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; line-height: 2;
+  }
+  #candy-close {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 13px; color: #475569; cursor: pointer;
+    background: none; border: none; padding: 0;
+  }
+  #candy-close:hover { color: #94a3b8; }
+  #candy-char-img { width: 160px; display: block; }
+  @media (max-width: 480px) {
+    #candy-popup { bottom: 12px; right: 10px; }
+    #candy-bubble { max-width: 170px; padding: 14px 16px 12px; }
+    #candy-char-line { font-size: 13px; }
+    #candy-char-img { width: 110px; }
+  }
+</style>
+<div id="candy-popup">
+  <div id="candy-bubble">
+    <p id="candy-char-name"></p>
+    <p id="candy-char-line"></p>
+    <button id="candy-close">✕</button>
+  </div>
+  <img id="candy-char-img" src="" alt="">
+</div>
+
 <script>
 (function () {
 
@@ -750,57 +801,6 @@
 
 })();
 </script>
-
-<!-- Candy character popup -->
-<style>
-  #candy-popup {
-    position: fixed; bottom: 24px; right: 20px; z-index: 500;
-    display: flex; align-items: flex-end; gap: 10px;
-    opacity: 0; transform: translateY(28px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    pointer-events: none;
-  }
-  #candy-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  #candy-bubble {
-    background: rgba(10,18,34,0.95);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 20px 20px 4px 20px;
-    padding: 18px 20px 16px;
-    max-width: 230px;
-    backdrop-filter: blur(14px);
-    position: relative;
-  }
-  #candy-char-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 5px; margin-bottom: 8px;
-  }
-  #candy-char-line {
-    font-size: 16px; color: #e2e8f0;
-    font-family: 'Noto Serif JP', serif;
-    font-weight: 300; line-height: 2;
-  }
-  #candy-close {
-    position: absolute; top: 10px; right: 12px;
-    font-size: 13px; color: #475569; cursor: pointer;
-    background: none; border: none; padding: 0;
-  }
-  #candy-close:hover { color: #94a3b8; }
-  #candy-char-img { width: 160px; display: block; }
-  @media (max-width: 480px) {
-    #candy-popup { bottom: 12px; right: 10px; }
-    #candy-bubble { max-width: 170px; padding: 14px 16px 12px; }
-    #candy-char-line { font-size: 13px; }
-    #candy-char-img { width: 110px; }
-  }
-</style>
-<div id="candy-popup">
-  <div id="candy-bubble">
-    <p id="candy-char-name"></p>
-    <p id="candy-char-line"></p>
-    <button id="candy-close">✕</button>
-  </div>
-  <img id="candy-char-img" src="" alt="">
-</div>
 
 <!-- Snow -->
 <script>
