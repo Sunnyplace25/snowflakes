@@ -1235,29 +1235,63 @@
   #sf-tutorial {
     position: fixed; inset: 0; z-index: 10000;
     background: rgba(12,18,32,0.92); backdrop-filter: blur(12px);
-    display: none; align-items: center; justify-content: center; padding: 24px;
+    display: none; align-items: flex-end; justify-content: center;
+    padding: 0 20px 40px;
     opacity: 0; transition: opacity 0.5s;
   }
   #sf-tutorial.ready { display: flex; }
   #sf-tutorial.visible { opacity: 1; }
-  #sf-tutorial-box {
-    background: rgba(13,21,38,0.98);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 24px; padding: 40px 32px;
-    max-width: 320px; width: 100%; text-align: center;
+  #sf-tutorial-inner {
+    display: flex; align-items: flex-end; gap: 14px;
+    max-width: 480px; width: 100%;
+  }
+  #sf-tutorial-img { width: 180px; flex-shrink: 0; display: block; }
+  #sf-tutorial-bubble {
+    flex: 1;
+    background: rgba(10,18,34,0.96);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px 20px 20px 4px;
+    padding: 24px 24px 20px;
+    backdrop-filter: blur(14px);
+    margin-bottom: 16px;
+  }
+  #sf-tutorial-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; letter-spacing: 5px;
+    color: #93c5fd; margin-bottom: 12px;
+  }
+  #sf-tutorial-line {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px; color: #e2e8f0;
+    font-weight: 300; line-height: 2.2;
+    margin-bottom: 20px;
+  }
+  #sf-tutorial-btn {
+    background: rgba(147,197,253,0.08);
+    border: 1px solid rgba(147,197,253,0.3);
+    color: #93c5fd;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; letter-spacing: 5px;
+    padding: 10px 28px; border-radius: 100px;
+    cursor: pointer; transition: background 0.2s;
+    display: block; width: 100%;
+  }
+  #sf-tutorial-btn:hover { background: rgba(147,197,253,0.18); }
+  @media (max-width: 480px) {
+    #sf-tutorial-img { width: 120px; }
+    #sf-tutorial-line { font-size: 13px; }
+    #sf-tutorial { padding: 0 12px 28px; }
   }
 </style>
 
 <div id="sf-tutorial">
-  <div id="sf-tutorial-box">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#475569;margin-bottom:28px;">Snow flakes</p>
-    <p style="font-size:15px;color:#cbd5e1;line-height:2.2;margin-bottom:12px;">ようこそ。</p>
-    <p style="font-size:13px;color:#94a3b8;line-height:2.2;margin-bottom:32px;">
-      物語を読んだり、音楽を聴いたり、<br>
-      部屋を訪れると「Snow」が積もります。<br>
-      集めると、少し先へ進めるかもしれません。
-    </p>
-    <button onclick="sfCloseTutorial()" style="background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.3);color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:5px;padding:12px 36px;border-radius:100px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(147,197,253,0.18)'" onmouseout="this.style.background='rgba(147,197,253,0.08)'">はじめる</button>
+  <div id="sf-tutorial-inner">
+    <img id="sf-tutorial-img" src="plofile/chibi_hinata.png" alt="HINATA">
+    <div id="sf-tutorial-bubble">
+      <p id="sf-tutorial-name">HINATA</p>
+      <p id="sf-tutorial-line">……来てくれたんだ。<br>ここを歩くと、「Snow」が少しずつ積もる。<br>集めると、少し奥へ進めるかもしれない。</p>
+      <button id="sf-tutorial-btn" onclick="sfCloseTutorial()">はじめる</button>
+    </div>
   </div>
 </div>
 
