@@ -406,6 +406,7 @@
   .qf-ep { font-size: 11px; color: var(--muted); font-family: 'Cormorant Garamond', serif; flex-shrink: 0; width: 36px; }
   .qf-title { font-size: 14px; color: #f0abfc; }
   </style>
+  <script src="snow.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -421,12 +422,14 @@
 <canvas id="snow"></canvas>
 
 <nav>
-  <div style="flex:1;"></div>
+  <div style="flex:1;">
+    <span class="sf-snow-nav">❄ <span class="sf-snow-val">0</span></span>
+  </div>
   <span class="nav-label">Snow flakes</span>
   <div class="nav-right" style="flex:1;justify-content:flex-end;">
     <a class="nav-gacha" href="gacha/">今日の音</a>
     <a class="nav-sweets" href="sweets/">SWEETs</a>
-    <a class="nav-app" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">アプリ</a>
+    <a class="nav-app" data-sf-action="taskapp" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">アプリ</a>
   </div>
 </nav>
 
@@ -1123,28 +1126,28 @@
   <span class="sec-label">LINKS</span>
   <h2 class="sec-title">リンク</h2>
   <div class="links-grid">
-    <a class="link-card novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank">
+    <a class="link-card novel" data-sf-action="novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank">
       <span class="link-icon"><i class="fa-solid fa-book" style="color:#93c5fd;"></i></span>
       <div class="link-info">
         <p class="link-name">小説を読む</p>
         <p class="link-platform">小説家になろう</p>
       </div>
     </a>
-    <a class="link-card kindle" href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank">
+    <a class="link-card kindle" data-sf-action="amazon" href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-amazon" style="color:#fde68a;"></i></span>
       <div class="link-info">
         <p class="link-name">電子書籍</p>
         <p class="link-platform">Amazon Kindle</p>
       </div>
     </a>
-    <a class="link-card spotify" href="music.html" target="_blank">
+    <a class="link-card spotify" data-sf-action="spotify" href="music.html" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-spotify" style="color:#5aab85;"></i></span>
       <div class="link-info">
         <p class="link-name">音楽を聴く</p>
         <p class="link-platform">Spotify / Apple Music / Amazon / YouTube</p>
       </div>
     </a>
-    <a class="link-card insta" href="https://www.instagram.com/snowflakes_story" target="_blank">
+    <a class="link-card insta" data-sf-action="instagram" href="https://www.instagram.com/snowflakes_story" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-instagram" style="color:#e1729a;"></i></span>
       <div class="link-info">
         <p class="link-name">snowflakes_story</p>
@@ -1152,21 +1155,21 @@
         <p class="link-desc">書き下ろし短編 / 映像リール / 未公開楽曲デモ</p>
       </div>
     </a>
-    <a class="link-card twitter" href="https://x.com/yayuyoyamabuki" target="_blank">
+    <a class="link-card twitter" data-sf-action="x" href="https://x.com/yayuyoyamabuki" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-x-twitter" style="color:#94a3b8;"></i></span>
       <div class="link-info">
         <p class="link-name">@yayuyoyamabuki</p>
         <p class="link-platform">X（旧Twitter）</p>
       </div>
     </a>
-    <a class="link-card tiktok" href="https://www.tiktok.com/@snowflakes.music" target="_blank">
+    <a class="link-card tiktok" data-sf-action="tiktok" href="https://www.tiktok.com/@snowflakes.music" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-tiktok" style="color:#5aab85;"></i></span>
       <div class="link-info">
         <p class="link-name">snowflakes.music</p>
         <p class="link-platform">TikTok</p>
       </div>
     </a>
-    <a class="link-card youtube" href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank">
+    <a class="link-card youtube" data-sf-action="youtube" href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank">
       <span class="link-icon"><i class="fa-brands fa-youtube" style="color:#c06060;"></i></span>
       <div class="link-info">
         <p class="link-name">Snow flakes</p>
@@ -1226,6 +1229,76 @@
   <p class="footer-copy">Unauthorized reproduction or AI training is prohibited.</p>
   <p style="margin-top:16px;"><a href="kotori.html" style="font-size:12px;color:#1e293b;text-decoration:none;letter-spacing:2px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#1e293b'">山吹ことり について</a></p>
 </footer>
+
+<!-- ── Snow system ── -->
+<style>
+  #sf-tutorial {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(12,18,32,0.92); backdrop-filter: blur(12px);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+    opacity: 0; transition: opacity 0.5s;
+  }
+  #sf-tutorial.ready { display: flex; }
+  #sf-tutorial.visible { opacity: 1; }
+  #sf-tutorial-box {
+    background: rgba(13,21,38,0.98);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px; padding: 40px 32px;
+    max-width: 320px; width: 100%; text-align: center;
+  }
+</style>
+
+<div id="sf-tutorial">
+  <div id="sf-tutorial-box">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#475569;margin-bottom:28px;">Snow flakes</p>
+    <p style="font-size:15px;color:#cbd5e1;line-height:2.2;margin-bottom:12px;">ようこそ。</p>
+    <p style="font-size:13px;color:#94a3b8;line-height:2.2;margin-bottom:32px;">
+      物語を読んだり、音楽を聴いたり、<br>
+      部屋を訪れると「Snow」が積もります。<br>
+      集めると、少し先へ進めるかもしれません。
+    </p>
+    <button onclick="sfCloseTutorial()" style="background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.3);color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:5px;padding:12px 36px;border-radius:100px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(147,197,253,0.18)'" onmouseout="this.style.background='rgba(147,197,253,0.08)'">はじめる</button>
+  </div>
+</div>
+
+<script>
+  function sfCloseTutorial() {
+    var t = document.getElementById('sf-tutorial');
+    t.classList.remove('visible');
+    setTimeout(function() { t.classList.remove('ready'); }, 500);
+    localStorage.setItem('sf_tutorial_seen', '1');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!localStorage.getItem('sf_tutorial_seen')) {
+      var t = document.getElementById('sf-tutorial');
+      t.classList.add('ready');
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() { t.classList.add('visible'); });
+      });
+    }
+
+    // 訪問 +10
+    SfSnow.addWithToast('visit_top');
+
+    // 今日のスノフレバナー +10
+    var banner = document.getElementById('update-banner');
+    if (banner) {
+      banner.addEventListener('click', function() {
+        SfSnow.addWithToast('link_narou_today');
+      });
+    }
+
+    // リンクカード +5
+    var cards = document.querySelectorAll('[data-sf-action]');
+    for (var i = 0; i < cards.length; i++) {
+      (function(card) {
+        card.addEventListener('click', function() {
+          SfSnow.addWithToast('link_' + card.dataset.sfAction);
+        });
+      })(cards[i]);
+    }
+  });
+</script>
 
 <script>
   // スマホはヒナタ画像を表示、動画非表示

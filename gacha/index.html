@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -381,6 +382,7 @@
 <body>
 <canvas id="snow"></canvas>
 <a class="back-link" href="../">← Snow flakes</a>
+<div style="position:fixed;top:22px;right:22px;z-index:50;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#64748b;">❄ <span class="sf-snow-val">0</span></div>
 
 <div class="page-head">
   <p class="page-eyebrow">Snow flakes</p>
@@ -589,6 +591,10 @@
 
   /* ── First (daily) pull ── */
   leverBtn.addEventListener('click', function() {
+    if (!SfSnow.spend(5)) {
+      dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+      return;
+    }
     leverBtn.disabled = true;
     var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
     save(fortune);
@@ -609,6 +615,13 @@
   }
 
   replayBtn.addEventListener('click', function() {
+    if (!SfSnow.spend(5)) {
+      miniResult.classList.remove('show');
+      miniFortuneName.textContent = '';
+      miniFortuneMsg.textContent = 'Snow が足りません（❄ 5 必要）';
+      miniResult.classList.add('show');
+      return;
+    }
     miniResult.classList.remove('show');
     replayBtn.style.display = 'none';
     var f = replayFortune();
@@ -649,6 +662,9 @@
     savedViewBtn.style.display = '';
     belowMachine.classList.add('show');
     replayBtn.style.display = '';
+  } else if (SfSnow.getBalance() < 5) {
+    dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+    leverBtn.disabled = true;
   }
 
 })();

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -307,7 +308,7 @@
   <nav>
     <a class="nav-back" href="../index.html">← Snow flakes</a>
     <span class="nav-label">SWEETs ROOM</span>
-    <span></span>
+    <span class="sf-snow-nav" style="font-size:12px;letter-spacing:3px;color:#64748b;">❄ <span class="sf-snow-val">0</span></span>
   </nav>
 
   <!-- ── GATE ── -->
@@ -320,6 +321,13 @@
       <input class="gate-input" type="password" id="pw-input" placeholder="SWEETs code" autocomplete="off">
       <div class="gate-error" id="gate-error">パスワードが違います</div>
       <button class="gate-btn" onclick="checkPassword()">enter</button>
+    </div>
+
+    <!-- Snow panel -->
+    <div style="margin-top:36px;text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#334155;margin-bottom:14px;">SNOW</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;letter-spacing:4px;color:rgba(255,255,255,0.55);line-height:1;">❄ <span id="sf-snow-balance">0</span></p>
+      <p style="font-size:11px;color:#334155;margin-top:10px;letter-spacing:1px;">今日あと <span id="sf-daily-remaining">0</span> 積もります</p>
     </div>
   </div>
 
@@ -3749,6 +3757,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       showPopup();
     });
   })();
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    SfSnow.addWithToast('visit_sweets');
+  });
 </script>
 
 </body>
