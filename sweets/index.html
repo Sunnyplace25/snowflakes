@@ -3754,6 +3754,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     drawSnow();
   </script>
 
+
 <!-- キャラポップアップ（SWEETs ROOM用） -->
 <style>
   #chara-popup {
@@ -3810,19 +3811,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 <script>
   (function() {
-    // 3分クールダウン（ミリ秒）
     var COOLDOWN = 3 * 60 * 1000;
     var lastShown = 0;
 
-    var SP = '<span style="color:#f9a8d4">SWEETs</span>';
-    var IG = '<span style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic;">Instagram</span>';
+    var EX = '<span style="color:#fca5a5">EXCHANGE</span>';
     var lines = [
-      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: SP + 'では集めたアイテムで限定コンテンツが見れるぞ！' },
-      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: '季節ごとに' + SP + ' Codeが変わるから要チェック！' },
-      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: SP + ' Codeは' + IG + 'のリールに隠されてるぞ！' }
+      { name: 'KOUTA', img: '../plofile/chibi_kouta.png', color: '#fca5a5',
+        line: '交換できる特典があるぞ！' },
+      { name: 'KOUTA', img: '../plofile/chibi_kouta.png', color: '#fca5a5',
+        line: 'アイテムを集めると' + EX + 'で使えるぞ' },
     ];
     var lastIdx = -1;
 
@@ -3864,7 +3861,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     document.getElementById('chara-close').addEventListener('click', hidePopup);
 
-    // 背景クリックで表示（クールダウン付き）
     document.addEventListener('click', function(e) {
       var tag = e.target.tagName.toLowerCase();
       var interactive = ['a', 'button', 'input', 'select', 'textarea', 'label', 'img'];
