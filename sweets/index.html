@@ -4035,10 +4035,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var contentHtml = '';
       item.sections.forEach(function(sec) {
         if (sec.heading) {
-          contentHtml += '<p class="exch-content-heading">■ ' + sec.heading + '</p>';
+          contentHtml += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:13px;letter-spacing:3px;color:#93c5fd;margin:22px 0 10px;">■ ' + sec.heading + '</p>';
         }
         sec.body.split('\n').forEach(function(line) {
-          contentHtml += '<p>' + (line === '' ? '　' : line) + '</p>';
+          contentHtml += '<p style="font-size:14px;color:#cbd5e1;line-height:2.2;font-weight:300;margin-bottom:4px;">' + (line === '' ? '\u3000' : line) + '</p>';
         });
       });
 
