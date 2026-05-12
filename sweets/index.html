@@ -384,7 +384,7 @@
     <div class="gate-form">
       <p class="gate-season" id="gate-season"></p>
       <input class="gate-input" type="password" id="pw-input" placeholder="SWEETs code" autocomplete="off">
-      <div class="gate-error" id="gate-error">パスワードが違います</div>
+      <div class="gate-error" id="gate-error">SWEETs CODE が違います</div>
       <button class="gate-btn" onclick="checkPassword()">enter</button>
     </div>
 
@@ -3841,6 +3841,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     function showPopup() {
       if (!document.getElementById('content').classList.contains('visible')) return;
+      // 全アイテム交換済みなら表示しない
+      if (typeof EXCHANGE_CATALOG !== 'undefined' &&
+          EXCHANGE_CATALOG.every(function(item) { return SfSnow.isUnlocked(item.id); })) return;
       var now = Date.now();
       if (now - lastShown < COOLDOWN) return;
       lastShown = now;
@@ -4035,10 +4038,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var contentHtml = '';
       item.sections.forEach(function(sec) {
         if (sec.heading) {
-          contentHtml += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:13px;letter-spacing:3px;color:#93c5fd;margin:22px 0 10px;">■ ' + sec.heading + '</p>';
+          contentHtml += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:14px;letter-spacing:2px;color:#93c5fd;line-height:2.0;margin:22px 0 6px;">■ ' + sec.heading + '</p>';
         }
         sec.body.split('\n').forEach(function(line) {
-          contentHtml += '<p style="font-size:14px;color:#cbd5e1;line-height:2.2;font-weight:300;margin-bottom:4px;">' + (line === '' ? '\u3000' : line) + '</p>';
+          contentHtml += '<p style="font-size:14px;color:#cbd5e1;line-height:2.0;font-weight:300;margin-bottom:0;">' + (line === '' ? '\u3000' : line) + '</p>';
         });
       });
 

@@ -1501,6 +1501,20 @@
     line-height: 1; flex-shrink: 0;
   }
   #chara-submit:hover { background: rgba(147,197,253,0.22); }
+  #chara-install-btn {
+    display: none; margin-top: 12px; width: 100%;
+    background: rgba(253,230,138,0.1);
+    border: 1px solid rgba(253,230,138,0.35);
+    border-radius: 100px; padding: 9px 0;
+    color: #fde68a; font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; letter-spacing: 4px; cursor: pointer;
+    transition: background 0.2s;
+  }
+  #chara-install-btn:hover { background: rgba(253,230,138,0.2); }
+  #chara-install-note {
+    display: none; margin-top: 10px;
+    font-size: 11px; color: #94a3b8; letter-spacing: 1px; line-height: 1.8;
+  }
 </style>
 
 <div id="chara-popup">
@@ -1511,10 +1525,21 @@
       <input id="chara-input" type="text" maxlength="12" placeholder="なまえ">
       <button id="chara-submit">→</button>
     </div>
+    <button id="chara-install-btn">ホーム画面に追加 →</button>
+    <p id="chara-install-note"></p>
     <button id="chara-close">✕</button>
   </div>
   <div id="chara-img"><img id="chara-face" src="" alt=""></div>
 </div>
+
+<script>
+  // ── PWA install prompt ──
+  var _deferredInstall = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    _deferredInstall = e;
+  });
+</script>
 
 <script>
   (function() {
@@ -1617,21 +1642,60 @@
       });
 
     } else {
-      // 再訪：3人それぞれのセリフから名前入りでランダム表示
-      var c = chars[Math.floor(Math.random() * chars.length)];
-      var pool = charLines[c.name](storedName);
-      var l = pool[Math.floor(Math.random() * pool.length)];
+      // 再訪：インストール促進を20%の確率で差し込む（未インストール時のみ）
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      var installShown = localStorage.getItem('sf_install_shown');
+      var showInstall  = !isStandalone && !installShown && Math.random() < 0.2;
 
-      nameEl.textContent = c.name;
-      nameEl.style.color = c.color;
-      lineEl.innerHTML = l;
-      faceEl.src = c.img;
-      faceEl.alt = c.name;
+      if (showInstall) {
+        // ハヤテがホーム画面追加を促す
+        nameEl.textContent = 'HAYATE';
+        nameEl.style.color = '#fde68a';
+        lineEl.innerHTML   = 'ホーム画面に追加するといつでも会えるぞ！';
+        faceEl.src = 'plofile/chibi_hayate.png';
+        faceEl.alt = 'HAYATE';
+
+        var installBtn  = document.getElementById('chara-install-btn');
+        var installNote = document.getElementById('chara-install-note');
+        installBtn.style.display = 'block';
+
+        installBtn.addEventListener('click', function() {
+          if (_deferredInstall) {
+            // Android Chrome: ネイティブプロンプト
+            _deferredInstall.prompt();
+            _deferredInstall.userChoice.then(function() {
+              _deferredInstall = null;
+              localStorage.setItem('sf_install_shown', '1');
+              closePopup();
+            });
+          } else {
+            // iOS Safari: 手順を表示
+            var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            installNote.style.display = 'block';
+            installNote.textContent = isIOS
+              ? '↑ 下の共有ボタン → 「ホーム画面に追加」'
+              : 'ブラウザメニュー → 「ホームに追加」または「アプリをインストール」';
+            localStorage.setItem('sf_install_shown', '1');
+            installBtn.style.display = 'none';
+          }
+        });
+
+      } else {
+        // 通常のランダムキャラ
+        var c = chars[Math.floor(Math.random() * chars.length)];
+        var pool = charLines[c.name](storedName);
+        var l = pool[Math.floor(Math.random() * pool.length)];
+
+        nameEl.textContent = c.name;
+        nameEl.style.color = c.color;
+        lineEl.innerHTML = l;
+        faceEl.src = c.img;
+        faceEl.alt = c.name;
+      }
 
       setTimeout(function() {
         popup.classList.add('show');
         sessionStorage.setItem('charaShown', '1');
-        // 役割終わったら自動で消える
         setTimeout(closePopup, 5000);
       }, 2500);
     }
