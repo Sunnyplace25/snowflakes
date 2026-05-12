@@ -442,6 +442,12 @@
         <p class="lucky-value" id="resMusic"></p>
       </div>
     </div>
+    <div id="res-candy-wrap" style="display:none;margin-bottom:16px;">
+      <div style="background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.18);border-radius:14px;padding:12px 16px;text-align:left;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-bottom:6px;">CANDY</p>
+        <p id="res-candy-name" style="font-size:14px;color:#f9a8d4;letter-spacing:1px;">—</p>
+      </div>
+    </div>
     <button class="close-btn" id="closeBtn">閉じる</button>
   </div>
 </div>
@@ -531,7 +537,7 @@
   });
 
   /* ── Show full result card ── */
-  function showResult(fortune) {
+  function showResult(fortune, candy) {
     var meta = CHAR_META[fortune.char];
     document.getElementById('resFortuneName').textContent = fortune.name;
     document.getElementById('resFortuneName').style.color = fortune.color;
@@ -549,6 +555,15 @@
     card.style.setProperty('--glow',  meta.glow);
     card.style.setProperty('--fclr',  fortune.color);
 
+    // Candy
+    var candyWrap = document.getElementById('res-candy-wrap');
+    if (candy) {
+      document.getElementById('res-candy-name').textContent = candy.label + ' を入手';
+      candyWrap.style.display = '';
+    } else {
+      candyWrap.style.display = 'none';
+    }
+
     resultOverlay.classList.add('show');
   }
 
@@ -560,7 +575,7 @@
 
   savedViewBtn.addEventListener('click', function() {
     var d = loadSaved();
-    if (d) showResult(d);
+    if (d) showResult(d, null);
   });
 
   /* ── Capsule animation ── */
@@ -598,8 +613,9 @@
     leverBtn.disabled = true;
     var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
     save(fortune);
+    var candy = SfSnow.rollCandy();
     runCapsule(fortune, function() {
-      showResult(fortune);
+      showResult(fortune, candy);
       dailyNote.textContent = '今日の1回は引きました';
     });
   });

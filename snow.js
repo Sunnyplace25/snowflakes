@@ -135,6 +135,44 @@
     document.head.appendChild(s);
   })();
 
+  /* ── Candy system ── */
+  var CANDY_TYPES = [
+    { id: 'milk',   label: 'ミルクキャンディー' },
+    { id: 'honey',  label: 'ハニーレモンキャンディー' },
+    { id: 'cassis', label: 'カシスキャンディー' },
+  ];
+  var KEY_CANDY = 'sf_candy';
+
+  function getCandies() {
+    try { return JSON.parse(localStorage.getItem(KEY_CANDY) || '{}'); }
+    catch(e) { return {}; }
+  }
+  function addCandy(id) {
+    var c = getCandies();
+    c[id] = (c[id] || 0) + 1;
+    localStorage.setItem(KEY_CANDY, JSON.stringify(c));
+    updateCandyUI();
+    return c[id];
+  }
+  // Roll candy: 20% chance, returns candy object or null
+  function rollCandy() {
+    if (Math.random() >= 0.2) return null;
+    var c = CANDY_TYPES[Math.floor(Math.random() * CANDY_TYPES.length)];
+    addCandy(c.id);
+    return c;
+  }
+  function updateCandyUI() {
+    var c = getCandies();
+    CANDY_TYPES.forEach(function(t) {
+      var el = document.getElementById('sf-candy-' + t.id);
+      if (el) el.textContent = c[t.id] || 0;
+    });
+  }
+
+  // Extend updateUI to also refresh candies
+  var _origUpdateUI = updateUI;
+  updateUI = function() { _origUpdateUI(); updateCandyUI(); };
+
   w.SfSnow = {
     getBalance:       getBalance,
     add:              add,
@@ -145,6 +183,10 @@
     getDailyEarned:   getDailyEarned,
     getDailyRemaining:getDailyRemaining,
     DAILY_MAX:        DAILY_MAX,
+    CANDY_TYPES:      CANDY_TYPES,
+    getCandies:       getCandies,
+    addCandy:         addCandy,
+    rollCandy:        rollCandy,
   };
 
   document.addEventListener('DOMContentLoaded', updateUI);
