@@ -3808,13 +3808,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var COOLDOWN = 3 * 60 * 1000;
     var lastShown = 0;
 
+    var SP = '<span style="color:#f9a8d4">SWEETs</span>';
+    var IG = '<span style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic;">Instagram</span>';
     var lines = [
       { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: 'SWEETsでは限定コンテンツが見れるぞ' },
+        line: SP + 'では限定コンテンツが見れるぞ' },
       { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: '季節ごとにCodeが変わるから要チェック！' },
+        line: '季節ごとに' + SP + ' Codeが変わるから要チェック！' },
       { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: 'SWEETsCodeはInstagramのリールに隠されてるぞ！' }
+        line: SP + ' Codeは' + IG + 'のリールに隠されてるぞ！' }
     ];
     var lastIdx = -1;
 
@@ -3838,7 +3840,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var c = pickLine();
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
-      lineEl.textContent = c.line;
+      lineEl.innerHTML = c.line;
       faceEl.src = c.img;
       faceEl.alt = c.name;
       popup.style.display = '';
