@@ -135,6 +135,9 @@
       color: #bfdbfe; font-family: 'Cormorant Garamond', serif;
       font-size: 16px; letter-spacing: 5px; cursor: pointer;
       transition: all 0.25s;
+      position: relative; z-index: 10;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .lever-btn:hover:not(:disabled) {
       background: rgba(147,197,253,0.22);
@@ -354,11 +357,11 @@
       padding: 20px;
       background: rgba(12,18,32,0.82);
       backdrop-filter: blur(8px);
-      opacity: 0;
+      opacity: 0; pointer-events: none;
       transition: opacity 0.3s;
     }
     #confirm-overlay.ready { display: flex; }
-    #confirm-overlay.show  { opacity: 1; }
+    #confirm-overlay.show  { opacity: 1; pointer-events: auto; }
     #confirm-box {
       background: rgba(13,21,38,0.97);
       border: 1px solid rgba(255,255,255,0.1);
