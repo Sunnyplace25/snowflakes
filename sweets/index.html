@@ -3941,8 +3941,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
 
+    var hasLocked = EXCHANGE_CATALOG.some(function(item) { return !SfSnow.isUnlocked(item.id); });
+    if (!hasLocked) { wrap.innerHTML = ''; return; }
+
     EXCHANGE_CATALOG.forEach(function(item) {
       var unlocked = SfSnow.isUnlocked(item.id);
+      if (unlocked) return;
 
       // Cost label
       var costLabel, canAfford;
