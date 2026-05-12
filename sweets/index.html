@@ -3633,6 +3633,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         </div><!-- /post-content -->
       </div><!-- /post-card -->
 
+      <!-- EXCHANGE解放コンテンツ（動的） -->
+      <div id="notes-dynamic-wrap"></div>
+
     </div>
 
     <footer>Snow flakes — SWEETs ROOM</footer>
@@ -3876,6 +3879,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   document.addEventListener('DOMContentLoaded', function() {
     SfSnow.addWithToast('visit_sweets');
     renderExchange();
+    renderNotes();
   });
 </script>
 
@@ -3970,11 +3974,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
       if (unlocked) {
         html += '<p class="exch-done">解放済み ✦</p>';
-        html += '<button class="exch-read-btn" onclick="toggleExchContent(\'' + item.id + '\')">読む ▼</button>';
-        html += '<div class="exch-content" id="exch-content-' + item.id + '">';
-        html += '<button class="exch-close-btn" onclick="toggleExchContent(\'' + item.id + '\')">閉じる ✕</button>';
-        html += contentHtml;
-        html += '</div>';
+        html += '<button class="exch-read-btn" onclick="scrollToNotes()">NOTESで読む →</button>';
       } else {
         html += '<button class="exch-btn" id="exch-btn-' + item.id + '"'
           + (canAfford ? '' : ' disabled')
@@ -4009,12 +4009,58 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!ok) { alert('アイテムが足りません'); return; }
     SfSnow.unlockItem(id);
     renderExchange();
-    // 解放後すぐ展開
-    setTimeout(function() {
-      var el = document.getElementById('exch-content-' + id);
-      var btn = el ? el.previousElementSibling : null;
-      if (el) { el.classList.add('open'); if (btn) btn.textContent = '閉じる ▲'; }
-    }, 50);
+    renderNotes();
+    setTimeout(function() { scrollToNotes(); }, 80);
+  }
+
+  function scrollToNotes() {
+    var el = document.getElementById('notes-dynamic-wrap');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderNotes() {
+    var wrap = document.getElementById('notes-dynamic-wrap');
+    if (!wrap) return;
+
+    var html = '';
+    EXCHANGE_CATALOG.forEach(function(item) {
+      if (!SfSnow.isUnlocked(item.id)) return;
+
+      // Build content sections
+      var contentHtml = '';
+      item.sections.forEach(function(sec) {
+        if (sec.heading) {
+          contentHtml += '<p class="exch-content-heading">■ ' + sec.heading + '</p>';
+        }
+        sec.body.split('\n').forEach(function(line) {
+          contentHtml += '<p>' + (line === '' ? '　' : line) + '</p>';
+        });
+      });
+
+      html += '<div class="post-card" style="margin-top:24px;">';
+      html += '<div class="post-header">';
+      html += '<div class="post-header-left">';
+      html += '<div class="post-tag">note</div>';
+      html += '<div class="post-title">' + item.title + '</div>';
+      if (item.origin) html += '<div class="post-date">' + item.origin + '</div>';
+      html += '</div>';
+      html += '<button class="read-btn" onclick="toggleNoteCard(\'' + item.id + '\', this)">読む</button>';
+      html += '</div>';
+      html += '<div class="post-content" id="notes-card-' + item.id + '">';
+      html += '<div class="divider"></div>';
+      html += '<div class="post-body">' + contentHtml + '</div>';
+      html += '</div>';
+      html += '</div>';
+    });
+
+    wrap.innerHTML = html;
+  }
+
+  function toggleNoteCard(id, btn) {
+    var el = document.getElementById('notes-card-' + id);
+    if (!el) return;
+    var isOpen = el.classList.toggle('open');
+    btn.textContent = isOpen ? '閉じる' : '読む';
   }
 </script>
 
