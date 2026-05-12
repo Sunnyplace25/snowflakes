@@ -262,6 +262,7 @@
       backdrop-filter: blur(12px);
       display: flex; align-items: center; justify-content: center;
       padding: 20px;
+      overflow-y: auto;
       opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
     }
     .result-overlay.show { opacity: 1; pointer-events: auto; }
@@ -276,6 +277,7 @@
       transform: translateY(20px) scale(0.96);
       transition: transform 0.5s ease;
       position: relative; overflow: hidden;
+      flex-shrink: 0;
     }
     .result-overlay.show .result-card { transform: none; }
 
@@ -309,7 +311,7 @@
       border-radius: 16px; padding: 14px;
       margin-bottom: 12px; text-align: left;
     }
-    .res-char img { width: 68px; flex-shrink: 0; }
+    .res-char img { width: clamp(44px, 16vw, 68px); flex-shrink: 0; }
     .res-char-info { flex: 1; }
     .res-char-name {
       font-family: 'Cormorant Garamond', serif;
@@ -362,9 +364,17 @@
       body { padding: 65px 16px 50px; }
       .machine-box   { width: 240px; }
       .machine-window{ height: 190px; }
-      .res-fortune-name { font-size: 42px; }
-      .res-char img  { width: 58px; }
-      .result-card   { padding: 28px 20px 22px; }
+      .res-fortune-name { font-size: 38px; }
+      .result-overlay { padding: 12px; align-items: flex-start; padding-top: 20px; }
+      .result-card   { padding: 24px 16px 20px; }
+      .res-char      { padding: 10px; gap: 10px; }
+      .lucky-grid    { gap: 8px; margin-bottom: 16px; }
+      .lucky-item    { padding: 10px; }
+    }
+    @media (max-width: 360px) {
+      .res-fortune-name { font-size: 32px; }
+      .res-char-line { font-size: 12px; }
+      .lucky-value   { font-size: 12px; }
     }
   </style>
 </head>
