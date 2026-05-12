@@ -162,10 +162,11 @@
     /* ── Capsule overlay ── */
     .cap-overlay {
       position: fixed; inset: 0; z-index: 300;
-      display: flex; align-items: center; justify-content: center;
+      display: none; align-items: center; justify-content: center;
       background: transparent; pointer-events: none;
       transition: background 0.35s;
     }
+    .cap-overlay.ready { display: flex; }
     .cap-overlay.dim { background: rgba(12,18,32,0.72); pointer-events: auto; }
 
     .capsule {
@@ -643,6 +644,7 @@
     var meta = CHAR_META[fortune.char];
     capsuleEl.className = 'capsule char-' + fortune.char;
     capTopEl.style.background = meta.capClr;
+    capOverlay.classList.add('ready');
     capOverlay.classList.add('dim');
 
     requestAnimationFrame(function() {
@@ -658,6 +660,7 @@
       capsuleEl.classList.add('glow');
       setTimeout(function() {
         capOverlay.classList.remove('dim');
+        capOverlay.classList.remove('ready');
         capsuleEl.className = 'capsule';
         onDone();
       }, showDelay);
