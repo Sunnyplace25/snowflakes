@@ -217,6 +217,37 @@
   var _origUpdateUI = updateUI;
   updateUI = function() { _origUpdateUI(); updateCandyUI(); updateMonthlyItemUI(); };
 
+  /* ── Spend / Unlock system ── */
+  var KEY_UNLOCKED = 'sf_unlocked';
+
+  function spendCandy(id, amount) {
+    var c = getCandies();
+    if ((c[id] || 0) < amount) return false;
+    c[id] = (c[id] || 0) - amount;
+    localStorage.setItem(KEY_CANDY, JSON.stringify(c));
+    updateCandyUI();
+    return true;
+  }
+
+  function spendMonthlyItem(id, amount) {
+    var items = getMonthlyItems();
+    if ((items[id] || 0) < amount) return false;
+    items[id] = items[id] - amount;
+    localStorage.setItem(KEY_MITEMS, JSON.stringify(items));
+    updateMonthlyItemUI();
+    return true;
+  }
+
+  function getUnlocked() {
+    try { return JSON.parse(localStorage.getItem(KEY_UNLOCKED) || '[]'); }
+    catch(e) { return []; }
+  }
+  function isUnlocked(id) { return getUnlocked().indexOf(id) !== -1; }
+  function unlockItem(id) {
+    var u = getUnlocked();
+    if (u.indexOf(id) === -1) { u.push(id); localStorage.setItem(KEY_UNLOCKED, JSON.stringify(u)); }
+  }
+
   w.SfSnow = {
     getBalance:       getBalance,
     add:              add,
@@ -234,6 +265,10 @@
     isMonthlyDone:      isMonthlyDone,
     addMonthlyItem:     addMonthlyItem,
     getMonthlyItems:    getMonthlyItems,
+    spendCandy:         spendCandy,
+    spendMonthlyItem:   spendMonthlyItem,
+    isUnlocked:         isUnlocked,
+    unlockItem:         unlockItem,
   };
 
   document.addEventListener('DOMContentLoaded', updateUI);
