@@ -246,12 +246,13 @@
       position: fixed; inset: 0; z-index: 400;
       background: rgba(12,18,32,0.9);
       backdrop-filter: blur(12px);
-      display: flex; align-items: center; justify-content: center;
+      display: none; align-items: center; justify-content: center;
       padding: 20px;
       overflow-y: auto;
-      opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+      opacity: 0; transition: opacity 0.5s ease;
     }
-    .result-overlay.show { opacity: 1; pointer-events: auto; }
+    .result-overlay.ready { display: flex; }
+    .result-overlay.show  { opacity: 1; }
 
     .result-card {
       background: rgba(13,21,38,0.97);
@@ -616,11 +617,15 @@
       candyWrap.style.display = 'none';
     }
 
-    resultOverlay.classList.add('show');
+    resultOverlay.classList.add('ready');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { resultOverlay.classList.add('show'); });
+    });
   }
 
   document.getElementById('closeBtn').addEventListener('click', function() {
     resultOverlay.classList.remove('show');
+    setTimeout(function() { resultOverlay.classList.remove('ready'); }, 500);
     belowMachine.classList.add('show');
   });
 
