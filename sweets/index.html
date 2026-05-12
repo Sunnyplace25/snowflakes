@@ -3700,48 +3700,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 <script>
   (function() {
-    var SWEETS_CODE_UPDATED = false; // ← コード更新日だけ true にする
-
     var chars = [
-      {
-        name: 'HINATA', img: '../plofile/chibi_hinata.png', color: '#93c5fd',
-        lines: [
-          '……SWEETsCode、もう見つけた？',
-          'ヒント、たぶんもう出てる',
-          'リールの最後、見落としてない？',
-          '静かなところに置いてある',
-          '……入力、試してみる？',
-          '隠してるつもり、あんまりない',
-          '気づく人は、ちゃんと気づくから',
-          'まだ秘密、残ってるよ'
-        ]
-      },
-      {
-        name: 'KOUTA', img: '../plofile/chibi_kouta.png', color: '#fca5a5',
-        lines: [
-          'コード、意外と見逃される',
-          '甘いもの見て満足してない？',
-          SWEETS_CODE_UPDATED ? '今日は更新されてるらしい' : null,
-          'ヒント、Instagram側',
-          'ちゃんと最後まで見た？',
-          '甘いだけじゃ終わらないけど',
-          '入力すると、ちょっと増える',
-          'まあ、気づかなくても怒られない'
-        ].filter(Boolean)
-      },
-      {
-        name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        lines: [
-          'SWEETsCode、もう回収した？',
-          'ヒント、わりと堂々と出てるぞ',
-          'リール最後まで見ろって',
-          SWEETS_CODE_UPDATED ? '今日はコード変わってるかも' : null,
-          '見つけたら入力してみ',
-          'まだ隠しあるけどな',
-          '気づいたやつ、ちょっと嬉しい',
-          'こういうの、好きなんだよな'
-        ].filter(Boolean)
-      }
+      { name: 'HINATA', img: '../plofile/chibi_hinata.png', color: '#93c5fd',
+        line: 'SWEETsCode、Instagramのリールに置いてある。' },
+      { name: 'KOUTA',  img: '../plofile/chibi_kouta.png',  color: '#fca5a5',
+        line: 'SWEETsCodeはInstagramのQFリール。チェックして' },
+      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
+        line: 'SWEETsCode、Instagramのリールに隠しといた！' }
     ];
 
     var popup  = document.getElementById('chara-popup');
@@ -3749,21 +3714,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var lineEl = document.getElementById('chara-line');
     var faceEl = document.getElementById('chara-face');
 
-    // キャラごとに使ったセリフを記録
-    var usedLines = { HINATA: [], KOUTA: [], HAYATE: [] };
-
-    function pickLine(c) {
-      var used = usedLines[c.name];
-      if (used.length >= c.lines.length) usedLines[c.name] = [];
-      var pool = c.lines.filter(function(l) { return used.indexOf(l) === -1; });
-      var l = pool[Math.floor(Math.random() * pool.length)];
-      usedLines[c.name].push(l);
-      return l;
-    }
-
     function showPopup() {
       var c = chars[Math.floor(Math.random() * chars.length)];
-      var l = pickLine(c);
+      var l = c.line;
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
       lineEl.textContent = l;
