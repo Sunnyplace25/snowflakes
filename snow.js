@@ -20,8 +20,10 @@
     link_x:           5,
     link_tiktok:      5,
     link_youtube:     5,
-    link_taskapp:     5,
-    like_chara:       5,
+    link_taskapp:        5,
+    like_chara_hinata:   5,
+    like_chara_kouta:    5,
+    like_chara_hayate:   5,
   };
   var DAILY_MAX = (function() {
     var s = 0;
