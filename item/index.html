@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アイテム取得 | Snow flakes</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0c1220;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px 24px 120px;
+      overflow: hidden;
+    }
+
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    .back-link {
+      position: fixed; top: 22px; left: 22px; z-index: 10;
+      color: #475569; font-size: 11px; letter-spacing: 3px;
+      text-decoration: none; font-family: 'Cormorant Garamond', serif;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: #93c5fd; }
+
+    /* ── Item card ── */
+    .wrap {
+      position: relative; z-index: 1;
+      text-align: center;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .wrap.show { opacity: 1; transform: translateY(0); }
+
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 7px; color: #475569;
+      margin-bottom: 36px;
+    }
+    .item-icon {
+      font-size: 54px; margin-bottom: 24px;
+      display: block;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .item-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px; color: #64748b; margin-bottom: 8px;
+    }
+    .item-name {
+      font-size: clamp(17px, 4.5vw, 24px);
+      font-weight: 300; letter-spacing: 3px;
+      color: rgba(255,255,255,0.88); margin-bottom: 6px;
+    }
+    .item-msg {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 3px; color: #64748b; margin-bottom: 44px;
+    }
+    .btn-home {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 5px;
+      color: #93c5fd; text-decoration: none;
+      padding: 12px 32px; border-radius: 100px;
+      border: 1px solid rgba(147,197,253,0.3);
+      background: rgba(147,197,253,0.06);
+      transition: background 0.25s;
+    }
+    .btn-home:hover { background: rgba(147,197,253,0.14); }
+
+    /* ── Character popup ── */
+    #chara-popup {
+      position: fixed; bottom: 24px; right: 20px; z-index: 50;
+      display: flex; align-items: flex-end; gap: 10px;
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+    #chara-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #chara-bubble {
+      background: rgba(10,18,34,0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px 20px 4px 20px;
+      padding: 22px 24px 18px;
+      max-width: 280px;
+      backdrop-filter: blur(14px);
+      position: relative;
+    }
+    #chara-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 5px;
+      color: #fde68a; margin-bottom: 10px;
+    }
+    #chara-line {
+      font-size: 17px; color: #e2e8f0;
+      font-weight: 300; line-height: 2.1;
+    }
+    #chara-close {
+      position: absolute; top: 10px; right: 13px;
+      font-size: 14px; color: #475569; cursor: pointer;
+      background: none; border: none; padding: 0;
+    }
+    #chara-close:hover { color: #94a3b8; }
+    #chara-img img { width: 220px; display: block; }
+
+    @media (max-width: 480px) {
+      #chara-popup { bottom: 12px; right: 10px; gap: 8px; }
+      #chara-bubble { max-width: 190px; padding: 16px 18px 14px; }
+      #chara-line { font-size: 14px; }
+      #chara-img img { width: 140px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<a class="back-link" href="../">← Snow flakes</a>
+
+<!-- Item display -->
+<div class="wrap" id="wrap">
+  <p class="eyebrow" id="eyebrow">Snow flakes</p>
+  <span class="item-icon" id="itemIcon">☕</span>
+  <p class="item-label">ITEM</p>
+  <p class="item-name" id="itemName">—</p>
+  <p class="item-msg">を手に入れました</p>
+  <a class="btn-home" href="../">トップへ戻る</a>
+</div>
+
+<!-- Character popup -->
+<div id="chara-popup">
+  <div id="chara-bubble">
+    <p id="chara-name">HAYATE</p>
+    <p id="chara-line"></p>
+    <button id="chara-close">✕</button>
+  </div>
+  <div id="chara-img"><img src="../plofile/chibi_hayate.png" alt="HAYATE"></div>
+</div>
+
+<script src="../snow.js"></script>
+<script>
+  var ITEM_DATA = {
+    proteincoffee: {
+      icon:    '☕',
+      name:    'プロテインコーヒー',
+      eyebrow: 'KOTORI YAMABUKI',
+      chara:   'HAYATE',
+      charaColor: '#fde68a',
+      charaImg:   '../plofile/chibi_hayate.png',
+      charaLines: [
+        'レアアイテムじゃん！',
+        'プロテインコーヒー、当たったじゃん！',
+        'それ月1でしか出ないやつだぞ！',
+      ]
+    }
+  };
+
+  var params = new URLSearchParams(location.search);
+  var itemId = params.get('item') || '';
+  var data   = ITEM_DATA[itemId];
+  var wrap   = document.getElementById('wrap');
+
+  if (data) {
+    document.getElementById('itemIcon').textContent = data.icon;
+    document.getElementById('itemName').textContent = data.name;
+    document.getElementById('eyebrow').textContent  = data.eyebrow || 'Snow flakes';
+  }
+
+  // Fade in item card
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { wrap.classList.add('show'); });
+  });
+
+  // Character popup after short delay
+  if (data) {
+    var popup  = document.getElementById('chara-popup');
+    var nameEl = document.getElementById('chara-name');
+    var lineEl = document.getElementById('chara-line');
+    var imgEl  = document.querySelector('#chara-img img');
+
+    nameEl.textContent = data.chara;
+    nameEl.style.color = data.charaColor;
+    lineEl.textContent = data.charaLines[Math.floor(Math.random() * data.charaLines.length)];
+    imgEl.src = data.charaImg;
+    imgEl.alt = data.chara;
+
+    setTimeout(function() { popup.classList.add('show'); }, 900);
+
+    document.getElementById('chara-close').addEventListener('click', function() {
+      popup.classList.remove('show');
+    });
+  }
+</script>
+
+<script>
+  var c = document.getElementById('snow'), cx = c.getContext('2d');
+  function rsz() { c.width = innerWidth; c.height = innerHeight; }
+  window.addEventListener('resize', rsz); rsz();
+  var fl = Array.from({length:40}, function() { return {
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.4+0.3, s: Math.random()*0.35+0.1, d: (Math.random()-.5)*0.16
+  }; });
+  function draw() {
+    cx.clearRect(0,0,c.width,c.height); cx.fillStyle='rgba(255,255,255,0.5)';
+    fl.forEach(function(f) {
+      cx.beginPath(); cx.arc(f.x,f.y,f.r,0,Math.PI*2); cx.fill();
+      f.y+=f.s; f.x+=f.d;
+      if(f.y>c.height+4){f.y=-4;f.x=Math.random()*c.width;}
+      if(f.x<-4)f.x=c.width+4; if(f.x>c.width+4)f.x=-4;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
