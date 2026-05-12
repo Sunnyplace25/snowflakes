@@ -348,14 +348,15 @@
     /* ── Confirm modal ── */
     #confirm-overlay {
       position: fixed; inset: 0; z-index: 600;
-      display: flex; align-items: center; justify-content: center;
+      display: none; align-items: center; justify-content: center;
       padding: 20px;
       background: rgba(12,18,32,0.82);
       backdrop-filter: blur(8px);
-      opacity: 0; pointer-events: none;
+      opacity: 0;
       transition: opacity 0.3s;
     }
-    #confirm-overlay.show { opacity: 1; pointer-events: auto; }
+    #confirm-overlay.ready { display: flex; }
+    #confirm-overlay.show  { opacity: 1; }
     #confirm-box {
       background: rgba(13,21,38,0.97);
       border: 1px solid rgba(255,255,255,0.1);
@@ -685,16 +686,24 @@
       return;
     }
     pendingReplayFortune = pickReplayFortune();
-    confirmOverlay.classList.add('show');
+    confirmOverlay.classList.add('ready');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { confirmOverlay.classList.add('show'); });
+    });
   });
 
-  document.getElementById('confirmCancel').addEventListener('click', function() {
+  function hideConfirm() {
     confirmOverlay.classList.remove('show');
+    setTimeout(function() { confirmOverlay.classList.remove('ready'); }, 300);
+  }
+
+  document.getElementById('confirmCancel').addEventListener('click', function() {
+    hideConfirm();
     pendingReplayFortune = null;
   });
 
   document.getElementById('confirmOk').addEventListener('click', function() {
-    confirmOverlay.classList.remove('show');
+    hideConfirm();
     if (!pendingReplayFortune) return;
     if (!SfSnow.spend(5)) {
       dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
