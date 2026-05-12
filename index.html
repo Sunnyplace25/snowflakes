@@ -1262,8 +1262,8 @@
   }
   #sf-tutorial-line {
     font-family: 'Noto Serif JP', serif;
-    font-size: 15px; color: #e2e8f0;
-    font-weight: 300; line-height: 2.2;
+    font-size: 13px; color: #e2e8f0;
+    font-weight: 300; line-height: 2.1;
     margin-bottom: 20px;
   }
   #sf-tutorial-btn {
@@ -1278,9 +1278,10 @@
   }
   #sf-tutorial-btn:hover { background: rgba(147,197,253,0.18); }
   @media (max-width: 480px) {
-    #sf-tutorial-img { width: 120px; }
-    #sf-tutorial-line { font-size: 13px; }
-    #sf-tutorial { padding: 0 12px 28px; }
+    #sf-tutorial-img { width: 110px; }
+    #sf-tutorial-line { font-size: 12px; line-height: 2; }
+    #sf-tutorial { padding: 0 12px 20px; }
+    #sf-tutorial-bubble { padding: 18px 16px 16px; }
   }
 </style>
 
@@ -1289,7 +1290,7 @@
     <img id="sf-tutorial-img" src="plofile/chibi_hinata.png" alt="HINATA">
     <div id="sf-tutorial-bubble">
       <p id="sf-tutorial-name">HINATA</p>
-      <p id="sf-tutorial-line">……来てくれたんだ。<br>ここを歩くと、「Snow」が少しずつ積もる。<br>集めると、少し奥へ進めるかもしれない。</p>
+      <p id="sf-tutorial-line">ようこそ、Snow flakesへ。<br><br>このサイトでは、<br>物語を読んだり、音楽を聴いたり、<br>いろいろな部屋を訪れることで<br>「Snow」が少しずつ積もっていきます。<br><br>集めたSnowで、<br>ガチャや特別なページが開くことがあります。<br><br>まずは、今日の物語からどうぞ。</p>
       <button id="sf-tutorial-btn" onclick="sfCloseTutorial()">はじめる</button>
     </div>
   </div>
@@ -1305,10 +1306,26 @@
   document.addEventListener('DOMContentLoaded', function() {
     if (!localStorage.getItem('sf_tutorial_seen')) {
       var t = document.getElementById('sf-tutorial');
-      t.classList.add('ready');
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() { t.classList.add('visible'); });
-      });
+      var triggered = false;
+      function showTutorial() {
+        if (triggered) return;
+        triggered = true;
+        t.classList.add('ready');
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() { t.classList.add('visible'); });
+        });
+      }
+      // ヒーローセクションをスクロールし終えたら表示
+      var hero = document.querySelector('.hero');
+      if (hero && 'IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function(entries) {
+          if (!entries[0].isIntersecting) { showTutorial(); obs.disconnect(); }
+        }, { threshold: 0 });
+        obs.observe(hero);
+      } else {
+        // フォールバック：即時表示
+        setTimeout(showTutorial, 800);
+      }
     }
 
     // 訪問 +10
