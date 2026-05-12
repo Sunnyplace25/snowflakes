@@ -1238,6 +1238,11 @@
     display: none; align-items: flex-end; justify-content: center;
     padding: 0 20px 40px;
     opacity: 0; transition: opacity 0.5s;
+    overflow: hidden;
+  }
+  #sf-tutorial-snow {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 0;
   }
   #sf-tutorial.ready { display: flex; }
   #sf-tutorial.visible { opacity: 1; }
@@ -1286,7 +1291,8 @@
 </style>
 
 <div id="sf-tutorial">
-  <div id="sf-tutorial-inner">
+  <canvas id="sf-tutorial-snow"></canvas>
+  <div id="sf-tutorial-inner" style="position:relative;z-index:1;">
     <img id="sf-tutorial-img" src="plofile/chibi_hinata.png" alt="HINATA">
     <div id="sf-tutorial-bubble">
       <p id="sf-tutorial-name">HINATA</p>
@@ -1297,10 +1303,48 @@
 </div>
 
 <script>
+  // ── Tutorial snow ──
+  var _tutSnowRaf = null;
+  function _startTutSnow() {
+    var c = document.getElementById('sf-tutorial-snow');
+    if (!c) return;
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+    var cx = c.getContext('2d');
+    var fl = Array.from({length: 60}, function() { return {
+      x: Math.random() * c.width,
+      y: Math.random() * c.height,
+      r: Math.random() * 2 + 0.4,
+      s: Math.random() * 0.6 + 0.15,
+      d: (Math.random() - 0.5) * 0.25,
+      o: Math.random() * 0.5 + 0.3
+    }; });
+    function draw() {
+      cx.clearRect(0, 0, c.width, c.height);
+      fl.forEach(function(f) {
+        cx.beginPath();
+        cx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        cx.fillStyle = 'rgba(255,255,255,' + f.o + ')';
+        cx.fill();
+        f.y += f.s; f.x += f.d;
+        if (f.y > c.height + 4) { f.y = -4; f.x = Math.random() * c.width; }
+        if (f.x < -4) f.x = c.width + 4;
+        if (f.x > c.width + 4) f.x = -4;
+      });
+      _tutSnowRaf = requestAnimationFrame(draw);
+    }
+    draw();
+  }
+  function _stopTutSnow() {
+    if (_tutSnowRaf) { cancelAnimationFrame(_tutSnowRaf); _tutSnowRaf = null; }
+    var c = document.getElementById('sf-tutorial-snow');
+    if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
+  }
+
   function sfCloseTutorial() {
     var t = document.getElementById('sf-tutorial');
     t.classList.remove('visible');
-    setTimeout(function() { t.classList.remove('ready'); }, 500);
+    setTimeout(function() { t.classList.remove('ready'); _stopTutSnow(); }, 500);
     localStorage.setItem('sf_tutorial_seen', '1');
   }
   document.addEventListener('DOMContentLoaded', function() {
@@ -1311,6 +1355,7 @@
         if (triggered) return;
         triggered = true;
         t.classList.add('ready');
+        _startTutSnow();
         requestAnimationFrame(function() {
           requestAnimationFrame(function() { t.classList.add('visible'); });
         });
