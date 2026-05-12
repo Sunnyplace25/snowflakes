@@ -3836,6 +3836,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function showPopup() {
+      if (!document.getElementById('content').classList.contains('visible')) return;
       var now = Date.now();
       if (now - lastShown < COOLDOWN) return;
       lastShown = now;
