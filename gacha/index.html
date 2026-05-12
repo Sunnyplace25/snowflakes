@@ -249,10 +249,10 @@
       display: none; align-items: center; justify-content: center;
       padding: 20px;
       overflow-y: auto;
-      opacity: 0; transition: opacity 0.5s ease;
+      opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
     }
     .result-overlay.ready { display: flex; }
-    .result-overlay.show  { opacity: 1; }
+    .result-overlay.show  { opacity: 1; pointer-events: auto; }
 
     .result-card {
       background: rgba(13,21,38,0.97);
