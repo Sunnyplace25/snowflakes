@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>今日の音 | Snow flakes</title>
+  <title>ガチャ | Snow flakes</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,21 +158,6 @@
       text-underline-offset: 4px; transition: color 0.3s;
     }
     .text-btn:hover { color: #cbd5e1; }
-
-    .mini-result { margin-top: 20px; min-height: 56px; opacity: 0; transition: opacity 0.5s; }
-    .mini-result.show { opacity: 1; }
-    .mini-fortune-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 30px; letter-spacing: 3px; margin-bottom: 6px;
-    }
-    .mini-fortune-msg { font-size: 13px; color: #94a3b8; line-height: 2; }
-    .mini-again {
-      margin-top: 14px; font-size: 11px; letter-spacing: 2px; color: #64748b;
-      font-family: 'Noto Serif JP', serif; background: none; border: none;
-      cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
-      transition: color 0.3s;
-    }
-    .mini-again:hover { color: #64748b; }
 
     /* ── Capsule overlay ── */
     .cap-overlay {
@@ -386,7 +371,7 @@
 
 <div class="page-head">
   <p class="page-eyebrow">Snow flakes</p>
-  <h1 class="page-title">今日の音</h1>
+  <h1 class="page-title">ガチャ</h1>
 </div>
 
 <div class="machine-wrap">
@@ -402,12 +387,6 @@
 
 <div class="below-machine" id="belowMachine">
   <button class="text-btn" id="savedViewBtn" style="display:none">今日の結果を見る</button>
-  <button class="text-btn" id="replayBtn">もう一回まわす？</button>
-  <div class="mini-result" id="miniResult">
-    <p class="mini-fortune-name" id="miniFortuneName"></p>
-    <p class="mini-fortune-msg" id="miniFortuneMsg"></p>
-    <button class="mini-again" id="miniAgainBtn">もう一回</button>
-  </div>
 </div>
 
 <!-- Capsule -->
@@ -443,9 +422,12 @@
       </div>
     </div>
     <div id="res-candy-wrap" style="display:none;margin-bottom:16px;">
-      <div style="background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.18);border-radius:14px;padding:12px 16px;text-align:left;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-bottom:6px;">CANDY</p>
-        <p id="res-candy-name" style="font-size:14px;color:#f9a8d4;letter-spacing:1px;">—</p>
+      <div style="background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.18);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+        <img id="res-candy-img" src="" alt="" style="width:56px;flex-shrink:0;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-bottom:5px;">CANDY</p>
+          <p id="res-candy-name" style="font-size:13px;color:#f9a8d4;letter-spacing:1px;">—</p>
+        </div>
       </div>
     </div>
     <button class="close-btn" id="closeBtn">閉じる</button>
@@ -493,15 +475,11 @@
   var dailyNote    = document.getElementById('dailyNote');
   var belowMachine = document.getElementById('belowMachine');
   var savedViewBtn = document.getElementById('savedViewBtn');
-  var replayBtn    = document.getElementById('replayBtn');
-  var miniResult   = document.getElementById('miniResult');
-  var miniFortuneName = document.getElementById('miniFortuneName');
-  var miniFortuneMsg  = document.getElementById('miniFortuneMsg');
-  var miniAgainBtn = document.getElementById('miniAgainBtn');
   var capOverlay   = document.getElementById('capOverlay');
   var capsuleEl    = document.getElementById('capsule');
   var capTopEl     = capsuleEl.querySelector('.cap-top');
   var resultOverlay = document.getElementById('resultOverlay');
+  var candyPopup   = document.getElementById('candy-popup');
 
   /* ── Balls inside dome ── */
   var dome = document.getElementById('dome');
@@ -558,8 +536,17 @@
     // Candy
     var candyWrap = document.getElementById('res-candy-wrap');
     if (candy) {
+      document.getElementById('res-candy-img').src = candy.img;
       document.getElementById('res-candy-name').textContent = candy.label + ' を入手';
       candyWrap.style.display = '';
+      // Trigger candy character popup
+      var charColors = { hinata:'#93c5fd', kouta:'#fca5a5', hayate:'#fde68a' };
+      document.getElementById('candy-char-name').textContent = candy.chara.toUpperCase();
+      document.getElementById('candy-char-name').style.color = charColors[candy.chara] || '#e2e8f0';
+      document.getElementById('candy-char-line').textContent = candy.charaLine;
+      document.getElementById('candy-char-img').src = CHAR_META[candy.chara].img;
+      document.getElementById('candy-char-img').alt = candy.chara.toUpperCase();
+      setTimeout(function() { candyPopup.classList.add('show'); }, 900);
     } else {
       candyWrap.style.display = 'none';
     }
@@ -570,7 +557,10 @@
   document.getElementById('closeBtn').addEventListener('click', function() {
     resultOverlay.classList.remove('show');
     belowMachine.classList.add('show');
-    replayBtn.style.display = '';
+  });
+
+  document.getElementById('candy-close').addEventListener('click', function() {
+    candyPopup.classList.remove('show');
   });
 
   savedViewBtn.addEventListener('click', function() {
@@ -620,56 +610,6 @@
     });
   });
 
-  /* ── Replay (extra) pulls ── */
-  var usedReplay = [];
-  function replayFortune() {
-    if (usedReplay.length >= FORTUNES.length) usedReplay = [];
-    var pool = FORTUNES.filter(function(f) { return usedReplay.indexOf(f.name) === -1; });
-    var f = pool[Math.floor(Math.random() * pool.length)];
-    usedReplay.push(f.name);
-    return f;
-  }
-
-  replayBtn.addEventListener('click', function() {
-    if (!SfSnow.spend(5)) {
-      miniResult.classList.remove('show');
-      miniFortuneName.textContent = '';
-      miniFortuneMsg.textContent = 'Snow が足りません（❄ 5 必要）';
-      miniResult.classList.add('show');
-      return;
-    }
-    miniResult.classList.remove('show');
-    replayBtn.style.display = 'none';
-    var f = replayFortune();
-    var meta = CHAR_META[f.char];
-
-    capsuleEl.className = 'capsule char-' + f.char;
-    capTopEl.style.background = meta.capClr;
-    capOverlay.classList.add('dim');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { capsuleEl.classList.add('drop'); });
-    });
-    setTimeout(function() {
-      capsuleEl.style.setProperty('--cap-glow', CHAR_META[f.char].capClr);
-      capsuleEl.classList.add('open');
-      capsuleEl.classList.add('glow');
-      setTimeout(function() {
-        capOverlay.classList.remove('dim');
-        capsuleEl.className = 'capsule';
-        miniFortuneName.textContent = f.name;
-        miniFortuneName.style.color = f.color;
-        miniFortuneMsg.textContent  = f.line;
-        miniResult.classList.add('show');
-        replayBtn.style.display = '';
-      }, 420);
-    }, 680);
-  });
-
-  miniAgainBtn.addEventListener('click', function() {
-    miniResult.classList.remove('show');
-    setTimeout(function() { replayBtn.click(); }, 260);
-  });
-
   /* ── Init ── */
   var saved = loadSaved();
   if (saved) {
@@ -677,7 +617,6 @@
     dailyNote.textContent = '今日の1回は引きました';
     savedViewBtn.style.display = '';
     belowMachine.classList.add('show');
-    replayBtn.style.display = '';
   } else if (SfSnow.getBalance() < 5) {
     dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
     leverBtn.disabled = true;
@@ -685,6 +624,57 @@
 
 })();
 </script>
+
+<!-- Candy character popup -->
+<style>
+  #candy-popup {
+    position: fixed; bottom: 24px; right: 20px; z-index: 500;
+    display: flex; align-items: flex-end; gap: 10px;
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  #candy-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #candy-bubble {
+    background: rgba(10,18,34,0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px 20px 4px 20px;
+    padding: 18px 20px 16px;
+    max-width: 230px;
+    backdrop-filter: blur(14px);
+    position: relative;
+  }
+  #candy-char-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; letter-spacing: 5px; margin-bottom: 8px;
+  }
+  #candy-char-line {
+    font-size: 16px; color: #e2e8f0;
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; line-height: 2;
+  }
+  #candy-close {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 13px; color: #475569; cursor: pointer;
+    background: none; border: none; padding: 0;
+  }
+  #candy-close:hover { color: #94a3b8; }
+  #candy-char-img { width: 160px; display: block; }
+  @media (max-width: 480px) {
+    #candy-popup { bottom: 12px; right: 10px; }
+    #candy-bubble { max-width: 170px; padding: 14px 16px 12px; }
+    #candy-char-line { font-size: 13px; }
+    #candy-char-img { width: 110px; }
+  }
+</style>
+<div id="candy-popup">
+  <div id="candy-bubble">
+    <p id="candy-char-name"></p>
+    <p id="candy-char-line"></p>
+    <button id="candy-close">✕</button>
+  </div>
+  <img id="candy-char-img" src="" alt="">
+</div>
 
 <!-- Snow -->
 <script>

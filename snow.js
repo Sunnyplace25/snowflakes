@@ -175,9 +175,12 @@
 
   /* ── Candy system ── */
   var CANDY_TYPES = [
-    { id: 'milk',   label: 'ミルクキャンディー' },
-    { id: 'honey',  label: 'ハニーレモンキャンディー' },
-    { id: 'cassis', label: 'カシスキャンディー' },
+    { id: 'milk',   label: 'ミルクキャンディー',      img: '../item/candy_milk.webp',
+      chara: 'hinata', charaLine: 'これ、美味いやつ' },
+    { id: 'honey',  label: 'ハニーレモンキャンディー', img: '../item/candy_honey.webp',
+      chara: 'kouta',  charaLine: '甘いけど、嫌いじゃない' },
+    { id: 'cassis', label: 'カシスキャンディー',       img: '../item/candy_cassis.webp',
+      chara: 'hayate', charaLine: '好きだな、これ' },
   ];
   var KEY_CANDY = 'sf_candy';
 
