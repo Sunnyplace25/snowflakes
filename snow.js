@@ -135,6 +135,44 @@
     document.head.appendChild(s);
   })();
 
+  /* ── Monthly item system ── */
+  var KEY_MONTH = 'sf_month_';
+  function thisMonth() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1);
+  }
+  function getMonthlyDone() {
+    try { return JSON.parse(localStorage.getItem(KEY_MONTH + thisMonth()) || '[]'); }
+    catch(e) { return []; }
+  }
+  function isMonthlyDone(action) { return getMonthlyDone().indexOf(action) !== -1; }
+  function markMonthlyDone(action) {
+    var d = getMonthlyDone();
+    if (d.indexOf(action) === -1) d.push(action);
+    localStorage.setItem(KEY_MONTH + thisMonth(), JSON.stringify(d));
+  }
+
+  var KEY_MITEMS = 'sf_monthly_items';
+  function getMonthlyItems() {
+    try { return JSON.parse(localStorage.getItem(KEY_MITEMS) || '{}'); }
+    catch(e) { return {}; }
+  }
+  // Add monthly item (returns count if first time this month, 0 if already got)
+  function addMonthlyItem(action, itemId) {
+    if (isMonthlyDone(action)) return 0;
+    var items = getMonthlyItems();
+    items[itemId] = (items[itemId] || 0) + 1;
+    localStorage.setItem(KEY_MITEMS, JSON.stringify(items));
+    markMonthlyDone(action);
+    updateMonthlyItemUI();
+    return items[itemId];
+  }
+  function updateMonthlyItemUI() {
+    var items = getMonthlyItems();
+    var el = document.getElementById('sf-mitem-proteincoffee');
+    if (el) el.textContent = items['proteincoffee'] || 0;
+  }
+
   /* ── Candy system ── */
   var CANDY_TYPES = [
     { id: 'milk',   label: 'ミルクキャンディー' },
@@ -169,9 +207,9 @@
     });
   }
 
-  // Extend updateUI to also refresh candies
+  // Extend updateUI to also refresh candies and monthly items
   var _origUpdateUI = updateUI;
-  updateUI = function() { _origUpdateUI(); updateCandyUI(); };
+  updateUI = function() { _origUpdateUI(); updateCandyUI(); updateMonthlyItemUI(); };
 
   w.SfSnow = {
     getBalance:       getBalance,
@@ -183,10 +221,13 @@
     getDailyEarned:   getDailyEarned,
     getDailyRemaining:getDailyRemaining,
     DAILY_MAX:        DAILY_MAX,
-    CANDY_TYPES:      CANDY_TYPES,
-    getCandies:       getCandies,
-    addCandy:         addCandy,
-    rollCandy:        rollCandy,
+    CANDY_TYPES:        CANDY_TYPES,
+    getCandies:         getCandies,
+    addCandy:           addCandy,
+    rollCandy:          rollCandy,
+    isMonthlyDone:      isMonthlyDone,
+    addMonthlyItem:     addMonthlyItem,
+    getMonthlyItems:    getMonthlyItems,
   };
 
   document.addEventListener('DOMContentLoaded', updateUI);

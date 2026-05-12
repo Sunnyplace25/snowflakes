@@ -172,6 +172,7 @@
       .profile-key { width: 60px; }
     }
   </style>
+  <script src="snow.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -329,6 +330,11 @@
     requestAnimationFrame(draw);
   }
   draw();
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    SfSnow.addMonthlyItem('visit_kotori', 'proteincoffee');
+  });
 </script>
 </body>
 </html>
