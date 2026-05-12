@@ -4039,6 +4039,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       html += '<div class="post-header-left">';
       html += '<div class="post-tag">note</div>';
       html += '<div class="post-title">' + item.title + '</div>';
+      if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
       if (item.origin) html += '<div class="post-date">' + item.origin + '</div>';
       html += '</div>';
       html += '<button class="read-btn" onclick="toggleNoteCard(\'' + item.id + '\', this)">読む</button>';
