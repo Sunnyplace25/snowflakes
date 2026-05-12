@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ガチャ | Snow flakes</title>
+  <title>今日の音 | Snow flakes</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -345,6 +345,54 @@
     }
     .close-btn:hover { color: #94a3b8; border-color: rgba(255,255,255,0.22); }
 
+    /* ── Confirm modal ── */
+    #confirm-overlay {
+      position: fixed; inset: 0; z-index: 600;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      background: rgba(12,18,32,0.82);
+      backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #confirm-overlay.show { opacity: 1; pointer-events: auto; }
+    #confirm-box {
+      background: rgba(13,21,38,0.97);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 32px 28px;
+      max-width: 300px; width: 100%;
+      text-align: center;
+    }
+    .confirm-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 5px; color: #64748b; margin-bottom: 16px;
+    }
+    .confirm-msg {
+      font-size: 14px; color: #e2e8f0;
+      letter-spacing: 1px; line-height: 2.4; margin-bottom: 26px;
+    }
+    .confirm-btns { display: flex; gap: 10px; }
+    .confirm-cancel {
+      flex: 1; padding: 12px;
+      background: none; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px; color: #64748b;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 3px; cursor: pointer;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .confirm-cancel:hover { color: #94a3b8; border-color: rgba(255,255,255,0.22); }
+    .confirm-ok {
+      flex: 1; padding: 12px;
+      background: rgba(147,197,253,0.12);
+      border: 1px solid rgba(147,197,253,0.4);
+      border-radius: 50px; color: #bfdbfe;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 3px; cursor: pointer;
+      transition: background 0.25s;
+    }
+    .confirm-ok:hover { background: rgba(147,197,253,0.22); }
+
     /* ── Mobile ── */
     @media (max-width: 480px) {
       body { padding: 65px 16px 50px; }
@@ -371,7 +419,7 @@
 
 <div class="page-head">
   <p class="page-eyebrow">Snow flakes</p>
-  <h1 class="page-title">ガチャ</h1>
+  <h1 class="page-title">今日の音</h1>
 </div>
 
 <div class="machine-wrap">
@@ -387,6 +435,19 @@
 
 <div class="below-machine" id="belowMachine">
   <button class="text-btn" id="savedViewBtn" style="display:none">今日の結果を見る</button>
+  <button class="text-btn" id="replayBtn" style="display:none;margin-top:14px;">もう一回まわす？ ❄ 5</button>
+</div>
+
+<!-- 確認モーダル -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <p class="confirm-eyebrow">GACHA</p>
+    <p class="confirm-msg">❄ 5 を消費して<br>ガチャをまわしますか？</p>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" id="confirmCancel">キャンセル</button>
+      <button class="confirm-ok" id="confirmOk">まわす</button>
+    </div>
+  </div>
 </div>
 
 <!-- Capsule -->
@@ -471,15 +532,17 @@
   function save(data) { try { localStorage.setItem(todayKey, JSON.stringify(data)); } catch(e) {} }
 
   /* ── DOM ── */
-  var leverBtn     = document.getElementById('leverBtn');
-  var dailyNote    = document.getElementById('dailyNote');
-  var belowMachine = document.getElementById('belowMachine');
-  var savedViewBtn = document.getElementById('savedViewBtn');
-  var capOverlay   = document.getElementById('capOverlay');
-  var capsuleEl    = document.getElementById('capsule');
-  var capTopEl     = capsuleEl.querySelector('.cap-top');
+  var leverBtn      = document.getElementById('leverBtn');
+  var dailyNote     = document.getElementById('dailyNote');
+  var belowMachine  = document.getElementById('belowMachine');
+  var savedViewBtn  = document.getElementById('savedViewBtn');
+  var replayBtn     = document.getElementById('replayBtn');
+  var confirmOverlay = document.getElementById('confirm-overlay');
+  var capOverlay    = document.getElementById('capOverlay');
+  var capsuleEl     = document.getElementById('capsule');
+  var capTopEl      = capsuleEl.querySelector('.cap-top');
   var resultOverlay = document.getElementById('resultOverlay');
-  var candyPopup   = document.getElementById('candy-popup');
+  var candyPopup    = document.getElementById('candy-popup');
 
   /* ── Balls inside dome ── */
   var dome = document.getElementById('dome');
@@ -515,7 +578,7 @@
   });
 
   /* ── Show full result card ── */
-  function showResult(fortune, candy) {
+  function showResult(fortune, candy, candyCount) {
     var meta = CHAR_META[fortune.char];
     document.getElementById('resFortuneName').textContent = fortune.name;
     document.getElementById('resFortuneName').style.color = fortune.color;
@@ -537,7 +600,8 @@
     var candyWrap = document.getElementById('res-candy-wrap');
     if (candy) {
       document.getElementById('res-candy-img').src = candy.img;
-      document.getElementById('res-candy-name').textContent = candy.label + ' を入手';
+      var countSuffix = (candyCount && candyCount > 1) ? ' × ' + candyCount : '';
+      document.getElementById('res-candy-name').textContent = candy.label + countSuffix + ' を入手';
       candyWrap.style.display = '';
       // Trigger candy character popup
       var charColors = { hinata:'#93c5fd', kouta:'#fca5a5', hayate:'#fde68a' };
@@ -594,12 +658,8 @@
     }, openDelay);
   }
 
-  /* ── First (daily) pull ── */
+  /* ── First (daily) pull — 無料 ── */
   leverBtn.addEventListener('click', function() {
-    if (!SfSnow.spend(5)) {
-      dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
-      return;
-    }
     leverBtn.disabled = true;
     var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
     save(fortune);
@@ -607,6 +667,51 @@
     runCapsule(fortune, function() {
       showResult(fortune, candy);
       dailyNote.textContent = '今日の1回は引きました';
+      replayBtn.style.display = '';
+      belowMachine.classList.add('show');
+    });
+  });
+
+  /* ── Replay pull — ❄ 5 消費 ── */
+  var pendingReplayFortune = null;
+
+  function pickReplayFortune() {
+    return FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+  }
+
+  replayBtn.addEventListener('click', function() {
+    if (SfSnow.getBalance() < 5) {
+      dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+      return;
+    }
+    pendingReplayFortune = pickReplayFortune();
+    confirmOverlay.classList.add('show');
+  });
+
+  document.getElementById('confirmCancel').addEventListener('click', function() {
+    confirmOverlay.classList.remove('show');
+    pendingReplayFortune = null;
+  });
+
+  document.getElementById('confirmOk').addEventListener('click', function() {
+    confirmOverlay.classList.remove('show');
+    if (!pendingReplayFortune) return;
+    if (!SfSnow.spend(5)) {
+      dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+      return;
+    }
+    var f = pendingReplayFortune;
+    pendingReplayFortune = null;
+
+    // キャンディ確定・数ランダム（1〜5）
+    var CTYPES = SfSnow.CANDY_TYPES;
+    var rc = CTYPES[Math.floor(Math.random() * CTYPES.length)];
+    var count = Math.floor(Math.random() * 5) + 1;
+    for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
+
+    candyPopup.classList.remove('show');
+    runCapsule(f, function() {
+      showResult(f, rc, count);
     });
   });
 
@@ -616,10 +721,8 @@
     leverBtn.disabled = true;
     dailyNote.textContent = '今日の1回は引きました';
     savedViewBtn.style.display = '';
+    replayBtn.style.display = '';
     belowMachine.classList.add('show');
-  } else if (SfSnow.getBalance() < 5) {
-    dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
-    leverBtn.disabled = true;
   }
 
 })();
