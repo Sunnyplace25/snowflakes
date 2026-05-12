@@ -3736,37 +3736,49 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 <script>
   (function() {
-    var chars = [
-      { name: 'HINATA', img: '../plofile/chibi_hinata.png', color: '#93c5fd',
-        line: 'SWEETsCode、Instagramのリールに置いてある。' },
-      { name: 'KOUTA',  img: '../plofile/chibi_kouta.png',  color: '#fca5a5',
-        line: 'SWEETsCodeはInstagramのQFリール。チェックして' },
+    // 3分クールダウン（ミリ秒）
+    var COOLDOWN = 3 * 60 * 1000;
+    var lastShown = 0;
+
+    var lines = [
       { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
-        line: 'SWEETsCode、Instagramのリールに隠しといた！' }
+        line: 'SWEETsでは限定コンテンツが見れるぞ' },
+      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
+        line: '季節ごとにCodeが変わるから要チェック！' },
+      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
+        line: 'SWEETsCodeはInstagramのリールに隠されてるぞ！' }
     ];
+    var lastIdx = -1;
 
     var popup  = document.getElementById('chara-popup');
     var nameEl = document.getElementById('chara-name');
     var lineEl = document.getElementById('chara-line');
     var faceEl = document.getElementById('chara-face');
 
+    function pickLine() {
+      var pool = lines.filter(function(_, i) { return i !== lastIdx; });
+      var item = pool[Math.floor(Math.random() * pool.length)];
+      lastIdx = lines.indexOf(item);
+      return item;
+    }
+
     function showPopup() {
-      var c = chars[Math.floor(Math.random() * chars.length)];
-      var l = c.line;
+      var now = Date.now();
+      if (now - lastShown < COOLDOWN) return;
+      lastShown = now;
+
+      var c = pickLine();
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
-      lineEl.textContent = l;
+      lineEl.textContent = c.line;
       faceEl.src = c.img;
       faceEl.alt = c.name;
       popup.style.display = '';
       popup.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          popup.classList.add('show');
-        });
+        requestAnimationFrame(function() { popup.classList.add('show'); });
       });
-      // 5秒後に自動で消える
-      setTimeout(hidePopup, 5000);
+      setTimeout(hidePopup, 6000);
     }
 
     function hidePopup() {
@@ -3776,7 +3788,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     document.getElementById('chara-close').addEventListener('click', hidePopup);
 
-    // 背景（空白部分）をクリックしたときだけ表示
+    // 背景クリックで表示（クールダウン付き）
     document.addEventListener('click', function(e) {
       var tag = e.target.tagName.toLowerCase();
       var interactive = ['a', 'button', 'input', 'select', 'textarea', 'label', 'img'];
