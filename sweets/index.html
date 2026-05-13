@@ -3661,6 +3661,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     // ── Password ──
     const PASSWORD = 'applepie';
+    const PASSWORD_SHIROIHANA = 'kinakomochi';
 
     document.getElementById('pw-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') checkPassword();
@@ -3670,6 +3671,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       const val = document.getElementById('pw-input').value.trim().toLowerCase();
       if (val === PASSWORD) {
         unlock();
+      } else if (val === PASSWORD_SHIROIHANA) {
+        localStorage.setItem('sf_shiroihana_unlocked', 'true');
+        window.location.href = 'shiroihana.html';
       } else {
         const err = document.getElementById('gate-error');
         err.classList.add('show');
