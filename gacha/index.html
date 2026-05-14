@@ -665,7 +665,8 @@
       var charColors = { hinata:'#93c5fd', kouta:'#fca5a5', hayate:'#fde68a' };
       document.getElementById('candy-char-name').textContent = candy.chara.toUpperCase();
       document.getElementById('candy-char-name').style.color = charColors[candy.chara] || '#e2e8f0';
-      document.getElementById('candy-char-line').textContent = candy.charaLine;
+      var lines = candy.charaLines || [candy.charaLine];
+      document.getElementById('candy-char-line').textContent = lines[Math.floor(Math.random() * lines.length)];
       document.getElementById('candy-char-img').src = CHAR_META[candy.chara].img;
       document.getElementById('candy-char-img').alt = candy.chara.toUpperCase();
       setTimeout(function() { getCandyPopup().classList.add('show'); }, 900);

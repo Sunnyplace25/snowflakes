@@ -179,11 +179,11 @@
   /* ── Candy system ── */
   var CANDY_TYPES = [
     { id: 'milk',   label: 'ミルクキャンディー',      img: '../item/candy_milk.webp',
-      chara: 'hinata', charaLine: 'これ、美味いやつ' },
+      chara: 'hinata', charaLines: ['これ、美味いやつ', '舌の上で溶ける'] },
     { id: 'honey',  label: 'ハニーレモンキャンディー', img: '../item/candy_honey.webp',
-      chara: 'kouta',  charaLine: '甘いけど、嫌いじゃない' },
+      chara: 'kouta',  charaLines: ['甘いけど、嫌いじゃない', 'ひとくちでほどけていく'] },
     { id: 'cassis', label: 'カシスキャンディー',       img: '../item/candy_cassis.webp',
-      chara: 'hayate', charaLine: '好きだな、これ' },
+      chara: 'hayate', charaLines: ['好きだな、これ', 'まだ足りない！まだ欲しい！'] },
   ];
   var KEY_CANDY = 'sf_candy';
 
