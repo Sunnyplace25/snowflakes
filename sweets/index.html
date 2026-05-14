@@ -142,6 +142,39 @@
     .gate-error.show { opacity: 1; }
     .gate-error.success { color: #6ee7b7; }
 
+    #snow-get-popup {
+      position: fixed; inset: 0; z-index: 9000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(12,18,32,0.75); backdrop-filter: blur(10px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #snow-get-popup.show { opacity: 1; pointer-events: auto; }
+    #snow-get-box {
+      text-align: center;
+      transform: translateY(16px) scale(0.94);
+      transition: transform 0.4s cubic-bezier(.18,1.2,.45,1);
+    }
+    #snow-get-popup.show #snow-get-box { transform: none; }
+    .snow-get-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px; font-weight: 300; letter-spacing: 4px;
+      color: #93c5fd; line-height: 1;
+    }
+    .snow-get-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; letter-spacing: 8px; color: #64748b;
+      margin-top: 8px; margin-bottom: 32px;
+    }
+    .snow-get-close {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 4px; color: #475569;
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px; padding: 10px 36px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .snow-get-close:hover { color: #94a3b8; border-color: rgba(255,255,255,0.22); }
+
     .gate-btn {
       margin-top: 4px;
       padding: 10px 44px;
@@ -428,6 +461,15 @@
     <span class="nav-label">SWEETs ROOM</span>
     <span class="sf-snow-nav" style="font-size:12px;letter-spacing:3px;color:#64748b;">❄ <span class="sf-snow-val">0</span></span>
   </nav>
+
+  <!-- Snow GET popup -->
+  <div id="snow-get-popup">
+    <div id="snow-get-box">
+      <p class="snow-get-num">❄ <span id="snow-get-amount">0</span></p>
+      <p class="snow-get-label">SNOW をゲット！</p>
+      <button class="snow-get-close" onclick="document.getElementById('snow-get-popup').classList.remove('show')">閉じる</button>
+    </div>
+  </div>
 
   <!-- ── GATE ── -->
   <div class="gate" id="gate">
@@ -3787,7 +3829,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
             used.push(upper);
             localStorage.setItem('sf_used_codes', JSON.stringify(used));
             SfSnow.updateUI();
-            showGateMsg('❄ +' + code.snow + ' Snow を受け取りました', 'success');
+            document.getElementById('snow-get-amount').textContent = code.snow;
+            document.getElementById('snow-get-popup').classList.add('show');
           }
         } else {
           showGateMsg('SWEETs CODE が違います', 'error');
