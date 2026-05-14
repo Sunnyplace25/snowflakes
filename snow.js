@@ -217,6 +217,24 @@
   var _origUpdateUI = updateUI;
   updateUI = function() { _origUpdateUI(); updateCandyUI(); updateMonthlyItemUI(); };
 
+  /* ── Pick system ── */
+  var KEY_PICKS = 'sf_picks';
+  function getPicks() {
+    try { return parseInt(localStorage.getItem(KEY_PICKS) || '0', 10); }
+    catch(e) { return 0; }
+  }
+  function addPick(n) {
+    var p = getPicks() + (n || 1);
+    localStorage.setItem(KEY_PICKS, String(p));
+    return p;
+  }
+  function spendPick(n) {
+    var p = getPicks();
+    if (p < n) return false;
+    localStorage.setItem(KEY_PICKS, String(p - n));
+    return true;
+  }
+
   /* ── Spend / Unlock system ── */
   var KEY_UNLOCKED = 'sf_unlocked';
 
@@ -269,6 +287,9 @@
     spendMonthlyItem:   spendMonthlyItem,
     isUnlocked:         isUnlocked,
     unlockItem:         unlockItem,
+    getPicks:           getPicks,
+    addPick:            addPick,
+    spendPick:          spendPick,
   };
 
   document.addEventListener('DOMContentLoaded', updateUI);
