@@ -568,6 +568,13 @@
     #update-banner.active #update-arrow   { color: #93c5fd !important; animation: arrowSlide 1.6s ease-in-out infinite; }
     #update-banner:hover                  { background: rgba(147,197,253,0.07) !important; transform: translateY(-1px); }
 
+    /* 新作カード赤グロー */
+    @keyframes redCardGlow {
+      0%,100% { box-shadow: 0 0 8px rgba(248,113,113,0.25), 0 0 24px rgba(248,113,113,0.10); border-color: rgba(248,113,113,0.4); }
+      50%      { box-shadow: 0 0 18px rgba(248,113,113,0.55), 0 0 50px rgba(248,113,113,0.22), inset 0 0 20px rgba(248,113,113,0.05); border-color: rgba(248,113,113,0.75); }
+    }
+    .short-new-card { animation: redCardGlow 2.4s ease-in-out infinite; }
+
     /* 短篇カード */
     #short-banner { display:none; }
     #short-banner:hover { background: rgba(180,200,255,0.06) !important; transform: translateY(-2px); }
@@ -907,7 +914,7 @@
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;">短編作品</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.3);display:flex;flex-direction:column;gap:0;">
+    <div class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">ひとつ多い音</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">「音だけ残ってる、みたいな」</p>
