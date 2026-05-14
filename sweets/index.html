@@ -314,7 +314,7 @@
     .door-chibi {
       position:absolute; bottom:0; left:50%;
       transform:translateX(-50%);
-      height:82%;
+      height:80%;
       width:auto;
       max-width:96%;
       object-fit:contain;
@@ -325,6 +325,10 @@
       pointer-events:none;
       z-index:2;
     }
+    /* キャラごとの身長差 */
+    #door-hayate .door-chibi { height:74%; }
+    #door-hinata .door-chibi { height:84%; }
+    #door-kouta  .door-chibi { height:78%; }
     .door-hotspot:hover .door-chibi {
       transform:translateX(-50%) translateY(-10px);
       filter:none;
