@@ -140,6 +140,7 @@
       transition: opacity 0.3s;
     }
     .gate-error.show { opacity: 1; }
+    .gate-error.success { color: #6ee7b7; }
 
     .gate-btn {
       margin-top: 4px;
@@ -3743,22 +3744,54 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     const PASSWORD = 'applepie';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 
+    // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
+    const SNOW_CODES = {
+      // 例: 'SPRING2026': { snow: 50, expires: '2026-06-30' },
+    };
+
     document.getElementById('pw-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') checkPassword();
     });
 
+    function showGateMsg(msg, type) {
+      const err = document.getElementById('gate-error');
+      err.textContent = msg;
+      err.classList.remove('success');
+      if (type === 'success') err.classList.add('success');
+      err.classList.add('show');
+      setTimeout(() => { err.classList.remove('show', 'success'); err.textContent = 'SWEETs CODE が違います'; }, 2500);
+    }
+
     function checkPassword() {
-      const val = document.getElementById('pw-input').value.trim().toLowerCase();
-      if (val === PASSWORD) {
+      const val = document.getElementById('pw-input').value.trim();
+      const lower = val.toLowerCase();
+      document.getElementById('pw-input').value = '';
+      if (lower === PASSWORD) {
         unlock();
-      } else if (val === PASSWORD_SHIROIHANA) {
+      } else if (lower === PASSWORD_SHIROIHANA) {
         localStorage.setItem('sf_shiroihana_unlocked', 'true');
         window.location.href = 'shiroihana.html';
       } else {
-        const err = document.getElementById('gate-error');
-        err.classList.add('show');
-        document.getElementById('pw-input').value = '';
-        setTimeout(() => err.classList.remove('show'), 2000);
+        // Snow配布コード確認
+        const upper = val.toUpperCase();
+        const code = SNOW_CODES[upper];
+        if (code) {
+          const used = JSON.parse(localStorage.getItem('sf_used_codes') || '[]');
+          if (used.indexOf(upper) !== -1) {
+            showGateMsg('このコードはすでに使用済みです', 'error');
+          } else if (code.expires && new Date() > new Date(code.expires)) {
+            showGateMsg('このコードの有効期限が切れています', 'error');
+          } else {
+            const cur = parseInt(localStorage.getItem('sf_snow') || '0', 10);
+            localStorage.setItem('sf_snow', String(cur + code.snow));
+            used.push(upper);
+            localStorage.setItem('sf_used_codes', JSON.stringify(used));
+            SfSnow.updateUI();
+            showGateMsg('❄ +' + code.snow + ' Snow を受け取りました', 'success');
+          }
+        } else {
+          showGateMsg('SWEETs CODE が違います', 'error');
+        }
       }
     }
 
