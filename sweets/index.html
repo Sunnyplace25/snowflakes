@@ -342,6 +342,16 @@
     .door-hotspot.unlocked:hover .door-chibi {
       transform:translateX(-50%) translateY(-14px);
     }
+    /* 足元の影 */
+    .door-hotspot::after {
+      content:'';
+      position:absolute; bottom:4px; left:50%;
+      transform:translateX(-50%);
+      width:52%; height:12px;
+      background:radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
+      pointer-events:none;
+      z-index:1;
+    }
     .door-label {
       position:absolute; bottom:0; left:0; right:0;
       padding:20px 4px 10px;
