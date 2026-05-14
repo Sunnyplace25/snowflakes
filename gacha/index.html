@@ -912,8 +912,9 @@
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       var c = SfSnow.rollCandy();
       var isPick = Math.random() < 0.08; // 8%
-      if (isPick) { SfSnow.addPick(1); pickCount++; }
-      results.push({ fortune: f, candy: c, pick: isPick });
+      var pickAmt = isPick ? (Math.random() < 0.5 ? 1 : 2) : 0;
+      if (isPick) { SfSnow.addPick(pickAmt); pickCount += pickAmt; }
+      results.push({ fortune: f, candy: c, pick: pickAmt });
       if (c) candyTally[c.label] = (candyTally[c.label] || 0) + 1;
     }
 
@@ -923,7 +924,7 @@
     results.forEach(function(r, i) {
       var cell = document.createElement('div');
       cell.className = 'ten-cell';
-      var pickBadge = r.pick ? '<p style="font-size:9px;margin-top:4px;">🎸</p>' : '';
+      var pickBadge = r.pick ? '<p style="font-size:9px;margin-top:4px;">🎸' + (r.pick === 2 ? '×2' : '') + '</p>' : '';
       cell.innerHTML =
         '<p class="ten-cell-num">' + (i + 1) + '</p>' +
         '<p class="ten-cell-name" style="color:' + r.fortune.color + '">' + r.fortune.name + '</p>' +
