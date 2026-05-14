@@ -912,7 +912,7 @@
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       var c = SfSnow.rollCandy();
       var isPick = Math.random() < 0.08; // 8%
-      var pickAmt = isPick ? (Math.random() < 0.5 ? 1 : 2) : 0;
+      var pickAmt = isPick ? (Math.random() < 0.1 ? 2 : 1) : 0;
       if (isPick) { SfSnow.addPick(pickAmt); pickCount += pickAmt; }
       results.push({ fortune: f, candy: c, pick: pickAmt });
       if (c) candyTally[c.label] = (candyTally[c.label] || 0) + 1;
