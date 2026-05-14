@@ -429,7 +429,7 @@
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 12px;
-      padding: 10px 6px;
+      padding: 8px 4px;
       text-align: center;
     }
     .ten-cell-num {
@@ -928,9 +928,11 @@
     results.forEach(function(r, i) {
       var cell = document.createElement('div');
       cell.className = 'ten-cell';
+      var meta = CHAR_META[r.fortune.char];
       var pickBadge = r.pick ? '<p style="font-size:9px;margin-top:4px;">🎸' + (r.pick === 2 ? '×2' : '') + '</p>' : '';
       cell.innerHTML =
         '<p class="ten-cell-num">' + (i + 1) + '</p>' +
+        '<img src="' + meta.img + '" alt="" style="width:56px;display:block;margin:4px auto 2px;">' +
         '<p class="ten-cell-name" style="color:' + r.fortune.color + '">' + r.fortune.name + '</p>' +
         pickBadge;
       grid.appendChild(cell);
