@@ -4037,9 +4037,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var CANDY_IMG   = { milk: '../item/candy_milk.webp', honey: '../item/candy_honey.webp', cassis: '../item/candy_cassis.webp' };
 
   var DOOR_CONFIG = [
-    { doorId:'door-hayate', roomId:'room_hayate', charName:'HAYATE', color:'rgba(253,230,138,0.35)', url:'../room/hayate/' },
-    { doorId:'door-hinata', roomId:'room_hinata', charName:'HINATA', color:'rgba(147,197,253,0.35)', url:'../room/hinata/' },
-    { doorId:'door-kouta',  roomId:'room_kouta',  charName:'KOUTA',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/'  },
+    { doorId:'door-hayate', roomId:'room_hayate', candy:'cassis', color:'rgba(253,230,138,0.35)', url:'../room/hayate/' },
+    { doorId:'door-hinata', roomId:'room_hinata', candy:'milk',   color:'rgba(147,197,253,0.35)', url:'../room/hinata/' },
+    { doorId:'door-kouta',  roomId:'room_kouta',  candy:'honey',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/'  },
   ];
 
   function renderRooms() {
@@ -4050,9 +4050,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = SfSnow.isUnlocked(d.roomId);
       el.style.cursor = 'pointer';
       if (unlocked) {
-        el.onclick = function() { location.href = d.url; };
+        el.onclick = function(e) { e.stopPropagation(); location.href = d.url; };
       } else {
-        el.onclick = function() { showCharaPopupByChar(d.charName); };
+        el.onclick = function(e) { e.stopPropagation(); };
       }
       el.onmouseenter = function() { overlay.style.background = d.color; };
       el.onmouseleave = function() { overlay.style.background = 'transparent'; };
