@@ -213,9 +213,14 @@
     });
   }
 
-  // Extend updateUI to also refresh candies and monthly items
+  function updatePickUI() {
+    var el = document.getElementById('sf-pick-count');
+    if (el) el.textContent = getPicks();
+  }
+
+  // Extend updateUI to also refresh candies, monthly items and picks
   var _origUpdateUI = updateUI;
-  updateUI = function() { _origUpdateUI(); updateCandyUI(); updateMonthlyItemUI(); };
+  updateUI = function() { _origUpdateUI(); updateCandyUI(); updateMonthlyItemUI(); updatePickUI(); };
 
   /* ── Pick system ── */
   var KEY_PICKS = 'sf_picks';
