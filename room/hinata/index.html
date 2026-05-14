@@ -9,20 +9,191 @@
   <script src="../../snow.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #080f1e; color: #e2e8f0; font-family: 'Noto Serif JP', serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-    .back { position: fixed; top: 22px; left: 22px; font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 3px; color: #475569; text-decoration: none; transition: color 0.2s; }
+
+    body {
+      background: #080f1e;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* 背景グロー */
+    body::before {
+      content: '';
+      position: fixed;
+      bottom: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 480px; height: 320px;
+      background: radial-gradient(ellipse, rgba(147,197,253,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .nav {
+      width: 100%; max-width: 480px;
+      padding: 22px 22px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .back {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 3px;
+      color: #475569; text-decoration: none;
+      transition: color 0.2s;
+    }
     .back:hover { color: #94a3b8; }
-    .eyebrow { font-family: 'Cormorant Garamond', serif; font-size: 9px; letter-spacing: 6px; color: #475569; margin-bottom: 24px; }
-    .chara-img { width: 120px; margin-bottom: 20px; opacity: 0.9; }
-    h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; letter-spacing: 6px; color: #93c5fd; margin-bottom: 12px; }
-    .note { font-size: 11px; color: #475569; letter-spacing: 2px; }
+    .snow-badge {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 3px;
+      color: #475569;
+    }
+    .snow-badge .sf-snow-val { color: #93c5fd; }
+
+    /* メインエリア */
+    .main {
+      flex: 1;
+      width: 100%; max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 24px 48px;
+      position: relative;
+    }
+
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px;
+      color: #475569;
+      margin-bottom: 32px;
+    }
+
+    .chara-wrap {
+      position: relative;
+      width: 220px;
+      margin-bottom: 32px;
+    }
+    .chara-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: -12px; left: 50%;
+      transform: translateX(-50%);
+      width: 100px; height: 16px;
+      background: radial-gradient(ellipse, rgba(147,197,253,0.35) 0%, transparent 70%);
+    }
+    .chara-img {
+      width: 100%;
+      display: block;
+    }
+
+    .name-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 8px;
+      color: #475569;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 300;
+      letter-spacing: 8px;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+    .role {
+      font-size: 10px; letter-spacing: 4px;
+      color: #475569;
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      width: 40px; height: 1px;
+      background: rgba(147,197,253,0.25);
+      margin-bottom: 32px;
+    }
+
+    .profile-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(147,197,253,0.08);
+      border: 1px solid rgba(147,197,253,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .profile-item {
+      background: rgba(8,15,30,0.9);
+      padding: 18px 16px;
+    }
+    .profile-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 4px;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .profile-val {
+      font-size: 12px; letter-spacing: 2px;
+      color: #94a3b8;
+    }
+
+    .quote {
+      font-size: 12px; line-height: 2.2;
+      letter-spacing: 1px;
+      color: #475569;
+      text-align: center;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <a href="../../sweets/" class="back">← SWEETs</a>
-  <p class="eyebrow">Snow flakes — HINATA</p>
-  <img src="../../plofile/chibi_hinata.png" alt="HINATA" class="chara-img">
-  <h1>ヒナタの部屋</h1>
-  <p class="note">coming soon</p>
+  <nav class="nav">
+    <a href="../../sweets/" class="back">← SWEETs</a>
+    <span class="snow-badge">❄ <span class="sf-snow-val">0</span></span>
+  </nav>
+
+  <div class="main">
+    <p class="eyebrow">Snow flakes — ROOM</p>
+
+    <div class="chara-wrap">
+      <img src="../../plofile/ヒナタ透過.png" alt="HINATA" class="chara-img">
+    </div>
+
+    <p class="name-en">HINATA</p>
+    <h1>ヒナタの部屋</h1>
+    <p class="role">guitar &amp; vocal</p>
+
+    <div class="divider"></div>
+
+    <div class="profile-grid">
+      <div class="profile-item">
+        <p class="profile-label">HAIR</p>
+        <p class="profile-val">black</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">PART</p>
+        <p class="profile-val">guitar &amp; vocal</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">CANDY</p>
+        <p class="profile-val">milk candy</p>
+      </div>
+      <div class="profile-item">
+        <p class="profile-label">IMAGE</p>
+        <p class="profile-val">still water</p>
+      </div>
+    </div>
+
+    <p class="quote">音と、距離と、その間にあるもの。</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      SfSnow.updateUI();
+    });
+  </script>
 </body>
 </html>
