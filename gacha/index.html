@@ -924,7 +924,7 @@
     SfSnow.CANDY_TYPES.forEach(function(ct) {
       var n = Math.floor(Math.random() * 6) + 10; // 10〜15
       for (var j = 0; j < n; j++) SfSnow.addCandy(ct.id);
-      candyTally[ct.label] = n;
+      candyTally[ct.id] = { label: ct.label, img: ct.img, count: n };
     });
 
     // Build grid
@@ -959,22 +959,21 @@
 
     // Candy + pick summary
     var candyWrap = document.getElementById('tenCandyWrap');
-    var lines = [];
-    var candyKeys = Object.keys(candyTally);
-    if (candyKeys.length > 0) {
-      lines.push('<p style="font-family:\'Cormorant Garamond\',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-bottom:6px;">CANDY</p>');
-      lines.push(candyKeys.map(function(k) { return k + ' × ' + candyTally[k]; }).join('　'));
-    }
+    var itemRow = '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<img src="{img}" alt="" style="width:32px;flex-shrink:0;">' +
+      '<span style="flex:1;font-size:13px;color:#e2e8f0;letter-spacing:1px;">{label}</span>' +
+      '<span style="font-family:\'Cormorant Garamond\',serif;font-size:16px;color:rgba(255,255,255,0.6);">× {count}</span>' +
+      '</div>';
+    var html = '<p style="font-family:\'Cormorant Garamond\',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-bottom:8px;">ITEMS</p>';
+    Object.keys(candyTally).forEach(function(id) {
+      var c = candyTally[id];
+      html += itemRow.replace('{img}', c.img).replace('{label}', c.label).replace('{count}', c.count);
+    });
     if (pickCount > 0) {
-      lines.push('<p style="font-family:\'Cormorant Garamond\',serif;font-size:8px;letter-spacing:4px;color:#64748b;margin-top:10px;margin-bottom:6px;">PICK</p>');
-      lines.push('<span style="display:inline-flex;align-items:center;gap:8px;"><img src="../item/pick.png" alt="pick" style="width:36px;opacity:0.9;"> ギターピック × ' + pickCount + '</span>');
+      html += itemRow.replace('{img}', '../item/pick.png').replace('{label}', 'ギターピック').replace('{count}', pickCount);
     }
-    if (lines.length > 0) {
-      candyWrap.style.display = '';
-      candyWrap.innerHTML = lines.join('');
-    } else {
-      candyWrap.style.display = 'none';
-    }
+    candyWrap.style.display = '';
+    candyWrap.innerHTML = html;
 
     // Show overlay
     tenOverlay.classList.add('ready');
