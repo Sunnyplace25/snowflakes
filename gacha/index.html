@@ -861,7 +861,7 @@
     leverBtn.disabled = true;
     var CTYPES = SfSnow.CANDY_TYPES;
     var rc = CTYPES[Math.floor(Math.random() * CTYPES.length)];
-    var count = Math.floor(Math.random() * 5) + 1;
+    var count = Math.floor(Math.random() * 4) + 2; // 2〜5個確定
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
@@ -914,13 +914,16 @@
     pickCount = pickAmt;
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-      var rowCandies = SfSnow.rollCandyAll(); // 各キャンディ独立7%
-      var firstCandy = rowCandies.length > 0 ? rowCandies[0] : null;
-      rowCandies.forEach(function(c) { candyTally[c.label] = (candyTally[c.label] || 0) + 1; });
-      results.push({ fortune: f, candy: firstCandy, pick: 0 });
+      results.push({ fortune: f, candy: null, pick: 0 });
     }
     // ピックバッジは最初のセルに表示
     results[0].pick = pickAmt;
+    // 3種類のキャンディそれぞれ10〜15個確定
+    SfSnow.CANDY_TYPES.forEach(function(ct) {
+      var n = Math.floor(Math.random() * 6) + 10; // 10〜15
+      for (var j = 0; j < n; j++) SfSnow.addCandy(ct.id);
+      candyTally[ct.label] = n;
+    });
 
     // Build grid
     var grid = document.getElementById('tenGrid');
