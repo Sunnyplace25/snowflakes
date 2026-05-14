@@ -326,10 +326,6 @@
     #door-hayate .door-chibi { width:78%; bottom:8%; }
     #door-hinata .door-chibi { width:108%; bottom:0; }
     #door-kouta  .door-chibi { width:96%; bottom:6%; }
-    /* 足元影 */
-    #door-hayate::after { width:42%; opacity:0.65; }
-    #door-hinata::after { width:58%; opacity:1; }
-    #door-kouta::after  { width:50%; opacity:0.82; }
     .door-hotspot:hover .door-chibi {
       transform:translateX(-50%) translateY(-10px);
       filter:none;
@@ -342,16 +338,6 @@
     }
     .door-hotspot.unlocked:hover .door-chibi {
       transform:translateX(-50%) translateY(-14px);
-    }
-    /* 足元の影 */
-    .door-hotspot::after {
-      content:'';
-      position:absolute; bottom:4px; left:50%;
-      transform:translateX(-50%);
-      width:52%; height:12px;
-      background:radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
-      pointer-events:none;
-      z-index:1;
     }
     .door-label {
       position:absolute; bottom:0; left:0; right:0;
