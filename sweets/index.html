@@ -312,27 +312,30 @@
       background:transparent;
     }
     .door-chibi {
-      position:absolute; bottom:22px; left:50%;
+      position:absolute; bottom:0; left:50%;
       transform:translateX(-50%);
-      width:68px;
+      width:90%;
+      max-height:96%;
+      object-fit:contain;
+      object-position:bottom;
       filter:grayscale(1) brightness(0.22);
-      opacity:0.75;
+      opacity:0.8;
       transition:transform 0.38s ease, filter 0.38s ease, opacity 0.38s ease;
       pointer-events:none;
       z-index:2;
     }
     .door-hotspot:hover .door-chibi {
-      transform:translateX(-50%) translateY(-16px);
+      transform:translateX(-50%) translateY(-10px);
       filter:none;
       opacity:1;
     }
     .door-hotspot.unlocked .door-chibi {
       filter:none;
       opacity:1;
-      transform:translateX(-50%) translateY(-8px);
+      transform:translateX(-50%) translateY(-6px);
     }
     .door-hotspot.unlocked:hover .door-chibi {
-      transform:translateX(-50%) translateY(-20px);
+      transform:translateX(-50%) translateY(-14px);
     }
     .door-label {
       position:absolute; bottom:0; left:0; right:0;
