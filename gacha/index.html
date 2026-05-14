@@ -441,7 +441,7 @@
 
 <div class="below-machine" id="belowMachine">
   <button class="text-btn" id="savedViewBtn" style="display:none">今日の結果を見る</button>
-  <div style="margin-top:24px;">
+  <div style="margin-top:36px;">
     <a href="../sweets/" style="display:inline-flex;padding:14px 36px;border-radius:9999px;background:rgba(249,168,212,0.1);border:1.5px solid rgba(249,168,212,0.45);align-items:center;justify-content:center;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;color:#f9a8d4;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(249,168,212,0.22)';this.style.borderColor='rgba(249,168,212,0.8)'" onmouseleave="this.style.background='rgba(249,168,212,0.1)';this.style.borderColor='rgba(249,168,212,0.45)'">SWEETs →</a>
   </div>
 </div>
@@ -749,7 +749,7 @@
         showResult(fortune, candy);
         leverBtn.disabled = false;
         dailyNote.textContent = '❄ 5 で もう一回まわせます';
-        savedViewBtn.style.display = 'block';
+        savedViewBtn.style.display = 'inline-block';
         belowMachine.classList.add('show');
       });
     }
@@ -790,7 +790,7 @@
   var saved = loadSaved();
   if (saved) {
     dailyNote.textContent = '❄ 5 で もう一回まわせます';
-    savedViewBtn.style.display = 'block';
+    savedViewBtn.style.display = 'inline-block';
     belowMachine.classList.add('show');
   }
 
