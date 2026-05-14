@@ -402,15 +402,15 @@
       <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#94a3b8;margin-bottom:14px;text-align:center;">ITEMS</p>
         <table style="width:100%;border-collapse:collapse;">
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('milk')">
             <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;">ミルクキャンディー</td>
             <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-milk">0</span></td>
           </tr>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('honey')">
             <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;">ハニーレモンキャンディー</td>
             <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-honey">0</span></td>
           </tr>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('cassis')">
             <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;">カシスキャンディー</td>
             <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-cassis">0</span></td>
           </tr>
@@ -3876,6 +3876,26 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       popup.classList.remove('show');
       setTimeout(function() { popup.style.display = 'none'; }, 600);
     }
+
+    var CANDY_CHARA = { milk: 'HINATA', honey: 'KOUTA', cassis: 'HAYATE' };
+
+    window.showCharaPopupByCandy = function(candy) {
+      var charaName = CANDY_CHARA[candy];
+      var c = lines.find(function(l) { return l.name === charaName && l.line.indexOf('が解放') !== -1; });
+      if (!c) return;
+      lastShown = Date.now();
+      nameEl.textContent = c.name;
+      nameEl.style.color = c.color;
+      lineEl.innerHTML = c.line;
+      faceEl.src = c.img;
+      faceEl.alt = c.name;
+      popup.style.display = '';
+      popup.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() { popup.classList.add('show'); });
+      });
+      setTimeout(hidePopup, 6000);
+    };
 
     document.getElementById('chara-close').addEventListener('click', hidePopup);
 
