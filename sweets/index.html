@@ -325,14 +325,14 @@
       pointer-events:none;
       z-index:2;
     }
-    /* キャラごとの立ち位置（透明余白補正込み） */
-    #door-hayate .door-chibi { height:88%; bottom:-4.8%; }  /* 透明余白4.8%補正 */
-    #door-hinata .door-chibi { height:96%; bottom:-7.6%; }  /* 透明余白7.6%補正 */
-    #door-kouta  .door-chibi { height:92%; bottom:-5.4%; }  /* 透明余白5.4%補正 */
+    /* キャラごとの立ち位置（トリミング済み画像・余白なし） */
+    #door-hayate .door-chibi { height:80%; bottom:0; }
+    #door-hinata .door-chibi { height:90%; bottom:0; }
+    #door-kouta  .door-chibi { height:84%; bottom:0; }
     /* 足元影 */
-    #door-hayate::after { width:40%; opacity:0.65; }
-    #door-hinata::after { width:56%; opacity:1; }
-    #door-kouta::after  { width:48%; opacity:0.82; }
+    #door-hayate::after { width:42%; opacity:0.65; }
+    #door-hinata::after { width:58%; opacity:1; }
+    #door-kouta::after  { width:50%; opacity:0.82; }
     .door-hotspot:hover .door-chibi {
       transform:translateX(-50%) translateY(-10px);
       filter:none;
@@ -508,17 +508,17 @@
         <img src="studio.png" alt="Snow flakes studio" class="studio-bg">
         <div id="door-hayate" class="door-hotspot locked" style="left:0;width:33.3%;">
           <div class="door-overlay"></div>
-          <img class="door-chibi" src="../plofile/chibi_hayate.png" alt="">
+          <img class="door-chibi" src="chibi_hayate_s.png" alt="">
           <div class="door-label">ハヤテの部屋</div>
         </div>
         <div id="door-hinata" class="door-hotspot locked" style="left:33.3%;width:33.4%;">
           <div class="door-overlay"></div>
-          <img class="door-chibi" src="chibi_hinata_studio.png" alt="">
+          <img class="door-chibi" src="chibi_hinata_s.png" alt="">
           <div class="door-label">ヒナタの部屋</div>
         </div>
         <div id="door-kouta" class="door-hotspot locked" style="left:66.7%;width:33.3%;">
           <div class="door-overlay"></div>
-          <img class="door-chibi" src="../plofile/chibi_kouta.png" alt="">
+          <img class="door-chibi" src="chibi_kouta_s.png" alt="">
           <div class="door-label">コウタの部屋</div>
         </div>
       </div>
