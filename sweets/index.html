@@ -3888,8 +3888,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var lineEl = document.getElementById('chara-line');
     var faceEl = document.getElementById('chara-face');
 
+    var EXCH_LINES = ['交換できる特典があるぞ！', 'アイテムを集めると'];
+
     function pickLine() {
-      var pool = lines.filter(function(_, i) { return i !== lastIdx; });
+      var exchWrap = document.getElementById('exch-wrap');
+      var exchVisible = exchWrap && exchWrap.innerHTML.trim() !== '';
+      var pool = lines.filter(function(l, i) {
+        if (i === lastIdx) return false;
+        if (!exchVisible && EXCH_LINES.some(function(kw) { return l.line.indexOf(kw) !== -1; })) return false;
+        return true;
+      });
+      if (!pool.length) return null;
       var item = pool[Math.floor(Math.random() * pool.length)];
       lastIdx = lines.indexOf(item);
       return item;
@@ -3905,6 +3914,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       lastShown = now;
 
       var c = pickLine();
+      if (!c) return;
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
       lineEl.innerHTML = c.line;
