@@ -441,8 +441,7 @@
 
 <div class="below-machine" id="belowMachine">
   <button class="text-btn" id="savedViewBtn" style="display:none">今日の結果を見る</button>
-  <button class="text-btn" id="replayBtn" style="display:none;margin-top:14px;">もう一回まわす？ ❄ 5</button>
-  <a href="../sweets/" class="text-btn" style="display:inline-block;margin-top:14px;color:#f9a8d4;text-decoration:none;" onmouseenter="this.style.color='#fbcfe8'" onmouseleave="this.style.color='#f9a8d4'">SWEETsへ</a>
+  <a href="../sweets/" style="display:flex;width:100px;height:100px;border-radius:50%;background:rgba(249,168,212,0.1);border:1.5px solid rgba(249,168,212,0.45);margin:24px auto 0;align-items:center;justify-content:center;text-align:center;font-family:'Noto Serif JP',serif;font-size:11px;line-height:1.7;letter-spacing:2px;color:#f9a8d4;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(249,168,212,0.22)';this.style.borderColor='rgba(249,168,212,0.8)'" onmouseleave="this.style.background='rgba(249,168,212,0.1)';this.style.borderColor='rgba(249,168,212,0.45)'">SWEETs<br>へ行く</a>
 </div>
 
 <!-- 確認モーダル -->
@@ -594,7 +593,6 @@
   var dailyNote     = document.getElementById('dailyNote');
   var belowMachine  = document.getElementById('belowMachine');
   var savedViewBtn  = document.getElementById('savedViewBtn');
-  var replayBtn     = document.getElementById('replayBtn');
   var confirmOverlay = document.getElementById('confirm-overlay');
   var capOverlay    = document.getElementById('capOverlay');
   var capsuleEl     = document.getElementById('capsule');
@@ -722,52 +720,49 @@
     }, openDelay);
   }
 
-  /* ── First (daily) pull — 無料 ── */
+  /* ── Pull（無料 or ❄5 リプレイ統合） ── */
+  var pendingReplayFortune = null;
+
   function doPull() {
     if (leverBtn.disabled) return;
-    leverBtn.disabled = true;
-    var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-    save(fortune);
-    var candy = SfSnow.rollCandy();
-    runCapsule(fortune, function() {
-      showResult(fortune, candy);
-      dailyNote.textContent = 'もう一回まわす？ ❄５';
-      replayBtn.style.display = '';
-      belowMachine.classList.add('show');
-    });
+
+    if (loadSaved()) {
+      // すでに引いた → ❄5 リプレイ
+      if (SfSnow.getBalance() < 5) {
+        dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+        return;
+      }
+      pendingReplayFortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+      confirmOverlay.classList.add('ready');
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() { confirmOverlay.classList.add('show'); });
+      });
+    } else {
+      // 無料デイリー
+      leverBtn.disabled = true;
+      var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+      save(fortune);
+      var candy = SfSnow.rollCandy();
+      runCapsule(fortune, function() {
+        showResult(fortune, candy);
+        leverBtn.disabled = false;
+        dailyNote.textContent = '❄ 5 で もう一回まわせます';
+        savedViewBtn.style.display = '';
+        belowMachine.classList.add('show');
+      });
+    }
   }
   window.doPull = doPull;
   leverBtn.addEventListener('click', doPull);
-
-  /* ── Replay pull — ❄ 5 消費 ── */
-  var pendingReplayFortune = null;
-
-  function pickReplayFortune() {
-    return FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-  }
-
-  replayBtn.addEventListener('click', function() {
-    if (SfSnow.getBalance() < 5) {
-      dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
-      return;
-    }
-    pendingReplayFortune = pickReplayFortune();
-    confirmOverlay.classList.add('ready');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { confirmOverlay.classList.add('show'); });
-    });
-  });
 
   function hideConfirm() {
     confirmOverlay.classList.remove('show');
     setTimeout(function() { confirmOverlay.classList.remove('ready'); }, 300);
   }
-
   document.getElementById('confirmCancel').addEventListener('click', function() {
     hideConfirm();
     pendingReplayFortune = null;
   });
-
   document.getElementById('confirmOk').addEventListener('click', function() {
     hideConfirm();
     if (!pendingReplayFortune) return;
@@ -777,26 +772,23 @@
     }
     var f = pendingReplayFortune;
     pendingReplayFortune = null;
-
-    // キャンディ確定・数ランダム（1〜5）
+    leverBtn.disabled = true;
     var CTYPES = SfSnow.CANDY_TYPES;
     var rc = CTYPES[Math.floor(Math.random() * CTYPES.length)];
     var count = Math.floor(Math.random() * 5) + 1;
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
-
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
       showResult(f, rc, count);
+      leverBtn.disabled = false;
     });
   });
 
   /* ── Init ── */
   var saved = loadSaved();
   if (saved) {
-    leverBtn.disabled = true;
-    dailyNote.textContent = 'もう一回まわす？ ❄５';
+    dailyNote.textContent = '❄ 5 で もう一回まわせます';
     savedViewBtn.style.display = '';
-    replayBtn.style.display = '';
     belowMachine.classList.add('show');
   }
 
