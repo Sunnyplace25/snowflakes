@@ -325,14 +325,14 @@
       pointer-events:none;
       z-index:2;
     }
-    /* キャラごとの立ち位置（奥行き＝サイズ差のみ、全員bottom:0で接地） */
-    #door-hayate .door-chibi { height:68%; bottom:0; }
-    #door-hinata .door-chibi { height:86%; bottom:0; }
-    #door-kouta  .door-chibi { height:76%; bottom:0; }
-    /* 足元影：サイズに合わせてスケール */
-    #door-hayate::after { width:36%; opacity:0.65; }
-    #door-hinata::after { width:54%; opacity:1; }
-    #door-kouta::after  { width:44%; opacity:0.82; }
+    /* キャラごとの立ち位置（透明余白補正込み） */
+    #door-hayate .door-chibi { height:88%; bottom:-4.8%; }  /* 透明余白4.8%補正 */
+    #door-hinata .door-chibi { height:96%; bottom:-7.6%; }  /* 透明余白7.6%補正 */
+    #door-kouta  .door-chibi { height:92%; bottom:-5.4%; }  /* 透明余白5.4%補正 */
+    /* 足元影 */
+    #door-hayate::after { width:40%; opacity:0.65; }
+    #door-hinata::after { width:56%; opacity:1; }
+    #door-kouta::after  { width:48%; opacity:0.82; }
     .door-hotspot:hover .door-chibi {
       transform:translateX(-50%) translateY(-10px);
       filter:none;
