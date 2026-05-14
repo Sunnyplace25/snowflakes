@@ -301,31 +301,28 @@
     }
 
     /* ── ROOMS ── */
-    .rooms-grid {
-      display:flex; gap:12px; flex-wrap:wrap;
-      max-width:480px; margin:12px auto 0;
+    #rooms-entrance-wrap { position:relative; border-radius:16px; overflow:hidden; }
+    #rooms-entrance-wrap img { width:100%; display:block; }
+    .door-hotspot {
+      position:absolute; top:0; height:100%;
     }
-    .room-card {
-      flex:1; min-width:120px;
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:16px; padding:18px 12px;
+    .door-overlay {
+      position:absolute; inset:0;
+      transition:background 0.35s;
+      background:rgba(6,12,24,0.82);
+    }
+    .door-hotspot.unlocked .door-overlay { background:transparent; }
+    .door-label {
+      position:absolute; bottom:0; left:0; right:0;
+      padding:20px 4px 10px;
+      background:linear-gradient(transparent, rgba(6,12,24,0.85));
       text-align:center;
-    }
-    .room-entrance {
-      flex:1; min-width:120px;
-      border-radius:16px; padding:22px 12px;
-      text-align:center; text-decoration:none;
-      display:flex; flex-direction:column;
-      align-items:center; gap:10px;
-      transition:background 0.25s, border-color 0.25s;
-    }
-    .room-entrance img { width:64px; }
-    .room-entrance-name {
-      font-size:12px; letter-spacing:3px;
       font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.9);
+      opacity:0; transition:opacity 0.3s;
+      pointer-events:none;
     }
-    .room-entrance-arrow { font-size:11px; letter-spacing:2px; opacity:0.6; }
+    .door-hotspot:hover .door-label { opacity:1; }
 
     /* ── EXCHANGE ── */
     .exch-wrap { margin-top:12px; width:100%; max-width:480px; }
@@ -461,9 +458,23 @@
     </div>
 
     <!-- Rooms section -->
-    <div class="section" id="rooms-section" style="display:none;">
+    <div class="section" id="rooms-section">
       <div class="section-label">rooms</div>
-      <div class="rooms-grid" id="rooms-wrap"></div>
+      <div id="rooms-entrance-wrap" style="max-width:480px;margin:12px auto 0;">
+        <img src="band.png" alt="Snow flakes band">
+        <div id="door-hayate" class="door-hotspot locked" style="left:0;width:33.3%;">
+          <div class="door-overlay"></div>
+          <div class="door-label">ハヤテの部屋</div>
+        </div>
+        <div id="door-hinata" class="door-hotspot locked" style="left:33.3%;width:33.4%;">
+          <div class="door-overlay"></div>
+          <div class="door-label">ヒナタの部屋</div>
+        </div>
+        <div id="door-kouta" class="door-hotspot locked" style="left:66.7%;width:33.3%;">
+          <div class="door-overlay"></div>
+          <div class="door-label">コウタの部屋</div>
+        </div>
+      </div>
     </div>
 
     <!-- Exchange section -->
@@ -4018,58 +4029,43 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   var CANDY_LABEL = { milk: 'ミルクキャンディー', honey: 'ハニーレモンキャンディー', cassis: 'カシスキャンディー' };
   var CANDY_IMG   = { milk: '../item/candy_milk.webp', honey: '../item/candy_honey.webp', cassis: '../item/candy_cassis.webp' };
-  var CHAR_CHIBI  = { hinata: '../plofile/chibi_hinata.png', kouta: '../plofile/chibi_kouta.png', hayate: '../plofile/chibi_hayate.png' };
+
+  var DOOR_CONFIG = [
+    { doorId:'door-hayate', roomId:'room_hayate', color:'rgba(253,230,138,0.35)', url:'../room/hayate/' },
+    { doorId:'door-hinata', roomId:'room_hinata', color:'rgba(147,197,253,0.35)', url:'../room/hinata/' },
+    { doorId:'door-kouta',  roomId:'room_kouta',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/'  },
+  ];
 
   function renderRooms() {
-    var wrap = document.getElementById('rooms-wrap');
-    var section = document.getElementById('rooms-section');
-    if (!wrap) return;
-    var unlocked = EXCHANGE_CATALOG.filter(function(item) { return item.type === 'room' && SfSnow.isUnlocked(item.id); });
-    if (unlocked.length === 0) { section.style.display = 'none'; return; }
-    section.style.display = '';
-    wrap.innerHTML = unlocked.map(function(room) {
-      return '<a href="' + room.url + '" class="room-entrance" style="background:rgba(255,255,255,0.04);border:1px solid ' + room.color + '44;"'
-        + ' onmouseenter="this.style.background=\'rgba(255,255,255,0.09)\';this.style.borderColor=\'' + room.color + 'aa\'"'
-        + ' onmouseleave="this.style.background=\'rgba(255,255,255,0.04)\';this.style.borderColor=\'' + room.color + '44\'">'
-        + '<img src="' + CHAR_CHIBI[room.char] + '" alt="' + room.char + '">'
-        + '<span class="room-entrance-name" style="color:' + room.color + ';">' + room.title + '</span>'
-        + '<span class="room-entrance-arrow" style="color:' + room.color + ';">→</span>'
-        + '</a>';
-    }).join('');
+    DOOR_CONFIG.forEach(function(d) {
+      var el = document.getElementById(d.doorId);
+      if (!el) return;
+      var overlay = el.querySelector('.door-overlay');
+      var unlocked = SfSnow.isUnlocked(d.roomId);
+      if (unlocked) {
+        el.classList.add('unlocked'); el.classList.remove('locked');
+        el.style.cursor = 'pointer';
+        el.onclick = function() { location.href = d.url; };
+      } else {
+        el.classList.add('locked'); el.classList.remove('unlocked');
+        el.style.cursor = 'default';
+        el.onclick = null;
+      }
+      el.onmouseenter = function() { overlay.style.background = d.color; };
+      el.onmouseleave = function() {
+        overlay.style.background = unlocked ? 'transparent' : 'rgba(6,12,24,0.82)';
+      };
+    });
   }
 
   function renderExchange() {
     var wrap = document.getElementById('exch-wrap');
     if (!wrap || EXCHANGE_CATALOG.length === 0) return;
 
-    // room 型の未解放 → flex グリッドで表示
-    var lockedRooms = EXCHANGE_CATALOG.filter(function(item) { return item.type === 'room' && !SfSnow.isUnlocked(item.id); });
     var lockedOthers = EXCHANGE_CATALOG.filter(function(item) { return item.type !== 'room' && !SfSnow.isUnlocked(item.id); });
-
-    if (lockedRooms.length === 0 && lockedOthers.length === 0) { wrap.innerHTML = ''; return; }
+    if (lockedOthers.length === 0) { wrap.innerHTML = ''; return; }
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
-
-    // 部屋カード（横並び）
-    if (lockedRooms.length > 0) {
-      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
-      lockedRooms.forEach(function(item) {
-        var candies = SfSnow.getCandies();
-        var have = (candies[item.cost.candy] || 0);
-        var canAfford = have >= item.cost.amount;
-        html += '<div class="room-card" style="border-color:' + item.color + '22;">';
-        html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
-        html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
-        html += '<p class="exch-cost" style="margin-bottom:12px;">× ' + item.cost.amount + '</p>';
-        html += '<button class="exch-btn" style="border-color:' + item.color + '44;color:' + item.color + ';"'
-          + (canAfford ? '' : ' disabled')
-          + ' onclick="doUnlock(\'' + item.id + '\')">'
-          + (canAfford ? '解放する' : 'アイテムが足りません')
-          + '</button>';
-        html += '</div>';
-      });
-      html += '</div>';
-    }
 
     EXCHANGE_CATALOG.forEach(function(item) {
       if (item.type === 'room') return;
@@ -4144,7 +4140,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderRooms();
     renderExchange();
     renderNotes();
-    setTimeout(function() { scrollToNotes(); }, 80);
+    if (item.type !== 'room') setTimeout(function() { scrollToNotes(); }, 80);
   }
 
   function scrollToNotes() {
