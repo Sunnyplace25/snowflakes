@@ -908,15 +908,19 @@
     var results = [];
     var candyTally = {};
     var pickCount = 0;
+    // ピック：1確定、5%で2個
+    var pickAmt = Math.random() < 0.05 ? 2 : 1;
+    SfSnow.addPick(pickAmt);
+    pickCount = pickAmt;
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-      var c = SfSnow.rollCandy();
-      var isPick = Math.random() < 0.08; // 8%
-      var pickAmt = isPick ? (Math.random() < 0.1 ? 2 : 1) : 0;
-      if (isPick) { SfSnow.addPick(pickAmt); pickCount += pickAmt; }
-      results.push({ fortune: f, candy: c, pick: pickAmt });
-      if (c) candyTally[c.label] = (candyTally[c.label] || 0) + 1;
+      var rowCandies = SfSnow.rollCandyAll(); // 各キャンディ独立7%
+      var firstCandy = rowCandies.length > 0 ? rowCandies[0] : null;
+      rowCandies.forEach(function(c) { candyTally[c.label] = (candyTally[c.label] || 0) + 1; });
+      results.push({ fortune: f, candy: firstCandy, pick: 0 });
     }
+    // ピックバッジは最初のセルに表示
+    results[0].pick = pickAmt;
 
     // Build grid
     var grid = document.getElementById('tenGrid');

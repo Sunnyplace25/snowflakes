@@ -4042,6 +4042,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : '';
   }
 
+  // SfSnow.updateUI が呼ばれるたびにアイテム行の表示も更新
+  var _origSfUI = SfSnow.updateUI;
+  SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); };
+
   document.addEventListener('DOMContentLoaded', function() {
     SfSnow.addWithToast('visit_sweets');
     renderRooms();

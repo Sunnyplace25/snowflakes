@@ -198,12 +198,27 @@
     updateCandyUI();
     return c[id];
   }
-  // Roll candy: 20% chance, returns candy object or null
+  // Roll candy: each type has independent 7% chance, returns array of obtained candies
   function rollCandy() {
-    if (Math.random() >= 0.2) return null;
-    var c = CANDY_TYPES[Math.floor(Math.random() * CANDY_TYPES.length)];
-    addCandy(c.id);
-    return c;
+    var got = [];
+    CANDY_TYPES.forEach(function(c) {
+      if (Math.random() < 0.07) {
+        addCandy(c.id);
+        got.push(c);
+      }
+    });
+    return got.length > 0 ? got[0] : null; // 後方互換：最初の1個を返す
+  }
+  // 全取得分を返すバージョン
+  function rollCandyAll() {
+    var got = [];
+    CANDY_TYPES.forEach(function(c) {
+      if (Math.random() < 0.07) {
+        addCandy(c.id);
+        got.push(c);
+      }
+    });
+    return got;
   }
   function updateCandyUI() {
     var c = getCandies();
@@ -285,6 +300,7 @@
     getCandies:         getCandies,
     addCandy:           addCandy,
     rollCandy:          rollCandy,
+    rollCandyAll:       rollCandyAll,
     isMonthlyDone:      isMonthlyDone,
     addMonthlyItem:     addMonthlyItem,
     getMonthlyItems:    getMonthlyItems,
