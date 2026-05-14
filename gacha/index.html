@@ -663,9 +663,9 @@
   ];
 
   var CHAR_META = {
-    hinata: { img:'../plofile/chibi_hinata.png', capClr:'rgba(147,197,253,0.55)', glow:'rgba(147,197,253,0.07)' },
-    kouta:  { img:'../plofile/chibi_kouta.png',  capClr:'rgba(252,165,165,0.55)', glow:'rgba(252,165,165,0.07)' },
-    hayate: { img:'../plofile/chibi_hayate.png', capClr:'rgba(253,230,138,0.55)', glow:'rgba(253,230,138,0.06)' },
+    hinata: { img:'../plofile/chibi_hinata.webp', capClr:'rgba(147,197,253,0.55)', glow:'rgba(147,197,253,0.07)' },
+    kouta:  { img:'../plofile/chibi_kouta.webp',  capClr:'rgba(252,165,165,0.55)', glow:'rgba(252,165,165,0.07)' },
+    hayate: { img:'../plofile/chibi_hayate.webp', capClr:'rgba(253,230,138,0.55)', glow:'rgba(253,230,138,0.06)' },
   };
 
   /* ── STORAGE ── */
@@ -968,7 +968,7 @@
       html += itemRow.replace('{img}', c.img).replace('{label}', c.label).replace('{count}', c.count);
     });
     if (pickCount > 0) {
-      html += itemRow.replace('{img}', '../item/pick.png').replace('{label}', 'ギターピック').replace('{count}', pickCount);
+      html += itemRow.replace('{img}', '../item/pick.webp').replace('{label}', 'ギターピック').replace('{count}', pickCount);
     }
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;

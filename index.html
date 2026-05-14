@@ -1313,7 +1313,7 @@
 <div id="sf-tutorial">
   <canvas id="sf-tutorial-snow"></canvas>
   <div id="sf-tutorial-inner" style="position:relative;z-index:1;">
-    <img id="sf-tutorial-img" src="plofile/chibi_hinata.png" alt="HINATA">
+    <img id="sf-tutorial-img" src="plofile/chibi_hinata.webp" alt="HINATA">
     <div id="sf-tutorial-bubble">
       <p id="sf-tutorial-name">HINATA</p>
       <p id="sf-tutorial-line">ようこそ、Snow flakesへ。<br><br>このサイトでは、<br>物語を読んだり、音楽を聴いたり、<br>いろいろな部屋を訪れることで<br>「Snow」が少しずつ積もっていきます。<br><br>集めたSnowで、<br>ガチャや特別なページが開くことがあります。<br><br>まずは、今日の物語からどうぞ。</p>
@@ -1568,9 +1568,9 @@
     var storedName = localStorage.getItem('sf_visitor_name');
 
     var chars = [
-      { name: 'HINATA', img: 'plofile/chibi_hinata.png', color: '#93c5fd' },
-      { name: 'KOUTA',  img: 'plofile/chibi_kouta.png',  color: '#fca5a5' },
-      { name: 'HAYATE', img: 'plofile/chibi_hayate.png', color: '#fde68a' }
+      { name: 'HINATA', img: 'plofile/chibi_hinata.webp', color: '#93c5fd' },
+      { name: 'KOUTA',  img: 'plofile/chibi_kouta.webp',  color: '#fca5a5' },
+      { name: 'HAYATE', img: 'plofile/chibi_hayate.webp', color: '#fde68a' }
     ];
 
     var popup   = document.getElementById('chara-popup');
@@ -1638,7 +1638,7 @@
       nameEl.textContent = 'HINATA';
       nameEl.style.color = '#93c5fd';
       lineEl.textContent = askLines[Math.floor(Math.random() * askLines.length)];
-      faceEl.src = 'plofile/chibi_hinata.png';
+      faceEl.src = 'plofile/chibi_hinata.webp';
       faceEl.alt = 'HINATA';
       inputWrap.style.display = 'flex';
 
@@ -1672,7 +1672,7 @@
         nameEl.textContent = 'HAYATE';
         nameEl.style.color = '#fde68a';
         lineEl.innerHTML   = 'ホーム画面に追加するといつでも会えるぞ！';
-        faceEl.src = 'plofile/chibi_hayate.png';
+        faceEl.src = 'plofile/chibi_hayate.webp';
         faceEl.alt = 'HAYATE';
 
         var installBtn  = document.getElementById('chara-install-btn');
