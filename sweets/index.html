@@ -4052,7 +4052,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (unlocked) {
         el.onclick = function(e) { e.stopPropagation(); location.href = d.url; };
       } else {
-        el.onclick = function(e) { e.stopPropagation(); };
+        el.onclick = (function(candy) { return function(e) { e.stopPropagation(); showCharaPopupByCandy(candy); }; })(d.candy);
       }
       el.onmouseenter = function() { overlay.style.background = d.color; };
       el.onmouseleave = function() { overlay.style.background = 'transparent'; };
