@@ -730,7 +730,7 @@
     var candy = SfSnow.rollCandy();
     runCapsule(fortune, function() {
       showResult(fortune, candy);
-      dailyNote.textContent = '今日の1回は引きました';
+      dailyNote.textContent = 'もう一回まわす？ ❄５';
       replayBtn.style.display = '';
       belowMachine.classList.add('show');
     });
@@ -793,7 +793,7 @@
   var saved = loadSaved();
   if (saved) {
     leverBtn.disabled = true;
-    dailyNote.textContent = '今日の1回は引きました';
+    dailyNote.textContent = 'もう一回まわす？ ❄５';
     savedViewBtn.style.display = '';
     replayBtn.style.display = '';
     belowMachine.classList.add('show');
