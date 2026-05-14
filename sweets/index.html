@@ -309,9 +309,8 @@
     .door-overlay {
       position:absolute; inset:0;
       transition:background 0.35s;
-      background:rgba(6,12,24,0.82);
+      background:transparent;
     }
-    .door-hotspot.unlocked .door-overlay { background:transparent; }
     .door-label {
       position:absolute; bottom:0; left:0; right:0;
       padding:20px 4px 10px;
@@ -459,7 +458,7 @@
 
     <!-- Rooms section -->
     <div class="section" id="rooms-section">
-      <div class="section-label">rooms</div>
+      <div class="section-label">studio</div>
       <div id="rooms-entrance-wrap" style="max-width:480px;margin:12px auto 0;">
         <img src="band.png" alt="Snow flakes band">
         <div id="door-hayate" class="door-hotspot locked" style="left:0;width:33.3%;">
@@ -3933,6 +3932,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       showSpecificLine(c);
     };
 
+    window.showCharaPopupByChar = function(charName) {
+      var pool = lines.filter(function(l) { return l.name === charName; });
+      if (!pool.length) return;
+      var c = pool[Math.floor(Math.random() * pool.length)];
+      showSpecificLine(c);
+    };
+
     window.showCharaPopupByItem = function() {
       var c = lines.find(function(l) { return l.line.indexOf('プロテインコーヒー') !== -1; });
       if (!c) return;
@@ -4031,9 +4037,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var CANDY_IMG   = { milk: '../item/candy_milk.webp', honey: '../item/candy_honey.webp', cassis: '../item/candy_cassis.webp' };
 
   var DOOR_CONFIG = [
-    { doorId:'door-hayate', roomId:'room_hayate', color:'rgba(253,230,138,0.35)', url:'../room/hayate/' },
-    { doorId:'door-hinata', roomId:'room_hinata', color:'rgba(147,197,253,0.35)', url:'../room/hinata/' },
-    { doorId:'door-kouta',  roomId:'room_kouta',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/'  },
+    { doorId:'door-hayate', roomId:'room_hayate', charName:'HAYATE', color:'rgba(253,230,138,0.35)', url:'../room/hayate/' },
+    { doorId:'door-hinata', roomId:'room_hinata', charName:'HINATA', color:'rgba(147,197,253,0.35)', url:'../room/hinata/' },
+    { doorId:'door-kouta',  roomId:'room_kouta',  charName:'KOUTA',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/'  },
   ];
 
   function renderRooms() {
@@ -4042,19 +4048,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!el) return;
       var overlay = el.querySelector('.door-overlay');
       var unlocked = SfSnow.isUnlocked(d.roomId);
+      el.style.cursor = 'pointer';
       if (unlocked) {
-        el.classList.add('unlocked'); el.classList.remove('locked');
-        el.style.cursor = 'pointer';
         el.onclick = function() { location.href = d.url; };
       } else {
-        el.classList.add('locked'); el.classList.remove('unlocked');
-        el.style.cursor = 'default';
-        el.onclick = null;
+        el.onclick = function() { showCharaPopupByChar(d.charName); };
       }
       el.onmouseenter = function() { overlay.style.background = d.color; };
-      el.onmouseleave = function() {
-        overlay.style.background = unlocked ? 'transparent' : 'rgba(6,12,24,0.82)';
-      };
+      el.onmouseleave = function() { overlay.style.background = 'transparent'; };
     });
   }
 
@@ -4062,10 +4063,29 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var wrap = document.getElementById('exch-wrap');
     if (!wrap || EXCHANGE_CATALOG.length === 0) return;
 
+    var candies = SfSnow.getCandies();
+    var lockedRoomsReady = EXCHANGE_CATALOG.filter(function(item) {
+      return item.type === 'room' && !SfSnow.isUnlocked(item.id) && (candies[item.cost.candy] || 0) >= item.cost.amount;
+    });
     var lockedOthers = EXCHANGE_CATALOG.filter(function(item) { return item.type !== 'room' && !SfSnow.isUnlocked(item.id); });
-    if (lockedOthers.length === 0) { wrap.innerHTML = ''; return; }
+    if (lockedRoomsReady.length === 0 && lockedOthers.length === 0) { wrap.innerHTML = ''; return; }
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
+
+    // 300個揃った部屋カード
+    if (lockedRoomsReady.length > 0) {
+      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
+      lockedRoomsReady.forEach(function(item) {
+        html += '<div class="exch-card" style="flex:1;min-width:120px;text-align:center;">';
+        html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
+        html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
+        html += '<p class="exch-cost" style="margin-bottom:12px;">× ' + item.cost.amount + '</p>';
+        html += '<button class="exch-btn" style="border-color:' + item.color + '55;color:' + item.color + ';"'
+          + ' onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
 
     EXCHANGE_CATALOG.forEach(function(item) {
       if (item.type === 'room') return;
