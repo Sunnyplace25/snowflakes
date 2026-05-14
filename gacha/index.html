@@ -933,11 +933,25 @@
       cell.className = 'ten-cell';
       var meta = CHAR_META[r.fortune.char];
       var pickBadge = r.pick ? '<p style="font-size:9px;margin-top:4px;">🎸' + (r.pick === 2 ? '×2' : '') + '</p>' : '';
+      var tapHint = i === 0 ? '<p style="font-size:8px;letter-spacing:1px;color:#475569;margin-top:4px;">tap</p>' : '';
       cell.innerHTML =
         '<p class="ten-cell-num">' + (i + 1) + '</p>' +
         '<img src="' + meta.img + '" alt="" style="width:56px;display:block;margin:4px auto 2px;">' +
         '<p class="ten-cell-name" style="color:' + r.fortune.color + '">' + r.fortune.name + '</p>' +
-        pickBadge;
+        pickBadge + tapHint;
+      if (i === 0) {
+        cell.style.cursor = 'pointer';
+        cell.style.borderColor = 'rgba(255,255,255,0.22)';
+        (function(fortune) {
+          cell.addEventListener('click', function() {
+            tenOverlay.classList.remove('show');
+            setTimeout(function() {
+              tenOverlay.classList.remove('ready');
+              showResult(fortune, null);
+            }, 300);
+          });
+        })(r.fortune);
+      }
       grid.appendChild(cell);
     });
 
