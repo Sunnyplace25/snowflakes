@@ -314,21 +314,18 @@
     .door-chibi {
       position:absolute; bottom:0; left:50%;
       transform:translateX(-50%);
-      height:80%;
-      width:auto;
-      max-width:96%;
-      object-fit:contain;
-      object-position:bottom;
+      width:108%;
+      height:auto;
       filter:grayscale(1) brightness(0.22);
       opacity:0.8;
       transition:transform 0.38s ease, filter 0.38s ease, opacity 0.38s ease;
       pointer-events:none;
       z-index:2;
     }
-    /* キャラごとの立ち位置（トリミング済み画像・余白なし） */
-    #door-hayate .door-chibi { height:80%; bottom:0; }
-    #door-hinata .door-chibi { height:90%; bottom:0; }
-    #door-kouta  .door-chibi { height:84%; bottom:0; }
+    /* キャラごとのサイズ・立ち位置 */
+    #door-hayate .door-chibi { width:102%; bottom:8%; }
+    #door-hinata .door-chibi { width:178%; bottom:0; }
+    #door-kouta  .door-chibi { width:154%; bottom:6%; }
     /* 足元影 */
     #door-hayate::after { width:42%; opacity:0.65; }
     #door-hinata::after { width:58%; opacity:1; }
