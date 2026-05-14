@@ -414,7 +414,7 @@
             <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;">カシスキャンディー</td>
             <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-cassis">0</span></td>
           </tr>
-          <tr>
+          <tr style="cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByItem()">
             <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;">プロテインコーヒー</td>
             <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-proteincoffee">0</span></td>
           </tr>
@@ -3834,6 +3834,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         line: 'ハニーレモンキャンディー&nbsp;&nbsp;300個でコウタの部屋が解放！' },
       { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
         line: 'カシスキャンディー&nbsp;&nbsp;300個でハヤテの部屋が解放！' },
+      { name: 'HAYATE', img: '../plofile/chibi_hayate.png', color: '#fde68a',
+        line: 'プロテインコーヒー１個で作品の解説が読めるぞ！' },
     ];
     var lastIdx = -1;
 
@@ -3883,6 +3885,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var charaName = CANDY_CHARA[candy];
       var c = lines.find(function(l) { return l.name === charaName && l.line.indexOf('が解放') !== -1; });
       if (!c) return;
+      showSpecificLine(c);
+    };
+
+    window.showCharaPopupByItem = function() {
+      var c = lines.find(function(l) { return l.line.indexOf('プロテインコーヒー') !== -1; });
+      if (!c) return;
+      showSpecificLine(c);
+    };
+
+    function showSpecificLine(c) {
       lastShown = Date.now();
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
