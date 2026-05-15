@@ -451,8 +451,24 @@
     .exch-card {
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.1);
-      border-radius:16px; padding:20px 22px; margin-bottom:10px;
+      border-radius:16px; padding:0; margin-bottom:10px;
+      overflow:hidden;
     }
+    .exch-card-header {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; padding:18px 20px; cursor:pointer;
+      transition:background 0.2s;
+    }
+    .exch-card-header:hover { background:rgba(255,255,255,0.03); }
+    .exch-card-header-left { flex:1; min-width:0; }
+    .exch-toggle-btn {
+      background:none; border:none; color:#475569;
+      font-size:11px; cursor:pointer; padding:2px 0 0;
+      flex-shrink:0; transition:color 0.2s, transform 0.3s;
+    }
+    .exch-card-header:hover .exch-toggle-btn { color:#94a3b8; }
+    .exch-content.open ~ * .exch-toggle-btn,
+    .exch-card.open .exch-toggle-btn { transform:rotate(180deg); }
     .exch-title {
       font-size:14px; color:rgba(255,255,255,0.85);
       letter-spacing:1px; margin-bottom:4px;
@@ -4399,13 +4415,26 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       });
 
       html += '<div class="exch-card" id="exch-card-' + item.id + '">';
+
+      // ── ヘッダー（常時表示） ──
+      html += '<div class="exch-card-header" onclick="toggleExchCard(\'' + item.id + '\')">';
+      html += '<div class="exch-card-header-left">';
       html += '<p class="exch-title">' + item.title + '</p>';
       html += '<p class="exch-sub">' + item.sub + '</p>';
-      if (item.origin) html += '<p style="font-size:10px;color:#475569;letter-spacing:1px;margin-bottom:12px;">' + item.origin + '</p>';
+      if (item.origin) html += '<p style="font-size:10px;color:#475569;letter-spacing:1px;margin-top:-6px;margin-bottom:8px;">' + item.origin + '</p>';
       html += '<p class="exch-cost">' + costLabel + '</p>';
+      if (unlocked) html += '<p class="exch-done" style="text-align:left;padding:0;">解放済み ✦</p>';
+      html += '</div>';
+      html += '<button class="exch-toggle-btn" tabindex="-1">▼</button>';
+      html += '</div>';
 
+      // ── 折りたたみボディ ──
+      html += '<div class="exch-content" id="exch-content-' + item.id + '" style="padding:0 20px 0;">';
+      if (contentHtml) {
+        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);padding:16px 0;">' + contentHtml + '</div>';
+      }
+      html += '<div style="padding:' + (contentHtml ? '0' : '4px') + ' 0 18px;">';
       if (unlocked) {
-        html += '<p class="exch-done">解放済み ✦</p>';
         html += '<button class="exch-read-btn" onclick="scrollToNotes()">NOTESで読む →</button>';
       } else {
         html += '<button class="exch-btn" id="exch-btn-' + item.id + '"'
@@ -4414,6 +4443,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           + (canAfford ? '解放する' : 'アイテムが足りません')
           + '</button>';
       }
+      html += '</div>';
+      html += '</div>';
 
       html += '</div>';
     });
@@ -4421,12 +4452,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     wrap.innerHTML = html;
   }
 
-  function toggleExchContent(id) {
-    var el = document.getElementById('exch-content-' + id);
-    var btn = el ? el.previousElementSibling : null;
-    if (!el) return;
-    var isOpen = el.classList.toggle('open');
-    if (btn) btn.textContent = isOpen ? '閉じる ▲' : '読む ▼';
+  function toggleExchCard(id) {
+    var body = document.getElementById('exch-content-' + id);
+    var card = document.getElementById('exch-card-' + id);
+    if (!body) return;
+    var isOpen = body.classList.toggle('open');
+    var btn = card ? card.querySelector('.exch-toggle-btn') : null;
+    if (btn) btn.style.transform = isOpen ? 'rotate(180deg)' : '';
   }
 
   function doUnlock(id) {
