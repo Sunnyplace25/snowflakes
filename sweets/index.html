@@ -4495,7 +4495,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var html = '';
     EXCHANGE_CATALOG.forEach(function(item) {
-      if (!SfSnow.isUnlocked(item.id)) return;
+      if (item.type === 'room') return; // 部屋はNOTESに出さない
 
       // Build content sections
       var contentHtml = '';
