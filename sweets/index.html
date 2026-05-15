@@ -3855,7 +3855,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     })();
 
     // ── Password ──
-    const PASSWORD = 'applepie';
+    // シーズン変更時は PASSWORD と SWEETS_VERSION を一緒に更新する
+    // → 旧バージョンで保持していたログインが自動無効化される
+    const SWEETS_VERSION   = '2026-spring';
+    const PASSWORD         = 'applepie';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 
     // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
@@ -3911,6 +3914,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     const SWEETS_KEY = 'sf_sweets_unlocked';
+    const SWEETS_VER_KEY = 'sf_sweets_ver';
 
     function unlock() {
       // コード正解 → ダイアログを表示
@@ -3920,6 +3924,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     function saveAndEnter() {
       localStorage.setItem(SWEETS_KEY, '1');
+      localStorage.setItem(SWEETS_VER_KEY, SWEETS_VERSION);
       _doEnter(true);
     }
 
@@ -3934,11 +3939,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       initNotes();
     }
 
-    // ページロード時：保存済みなら自動ログイン（入口は残す）
+    // ページロード時：保存済みかつ同シーズンなら自動ログイン（入口は残す）
     document.addEventListener('DOMContentLoaded', function() {
-      if (localStorage.getItem(SWEETS_KEY) === '1') {
+      if (localStorage.getItem(SWEETS_KEY) === '1' &&
+          localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
         document.getElementById('content').classList.add('visible');
         initNotes();
+      } else {
+        // バージョン不一致 → 旧ログイン情報をクリア
+        localStorage.removeItem(SWEETS_KEY);
+        localStorage.removeItem(SWEETS_VER_KEY);
       }
     });
 
