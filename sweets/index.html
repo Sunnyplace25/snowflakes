@@ -4589,7 +4589,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<div class="post-content" id="player-' + item.id + '">';
         html += '<div class="divider"></div>';
         html += '<div style="padding:16px 0 4px;">'
-          + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls></audio>'
+          + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls controlsList="nodownload" oncontextmenu="return false;"></audio>'
           + '</div>';
         html += '</div>';
       }
