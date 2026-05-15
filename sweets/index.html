@@ -3700,6 +3700,9 @@
     <div class="section">
       <div class="section-label">notes</div>
 
+      <!-- EXCHANGE解放コンテンツ（動的） -->
+      <div id="notes-dynamic-wrap"></div>
+
       <div class="post-card">
         <div class="post-header">
           <div class="post-header-left">
@@ -3832,9 +3835,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 ただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。</div>
         </div><!-- /post-content -->
       </div><!-- /post-card -->
-
-      <!-- EXCHANGE解放コンテンツ（動的） -->
-      <div id="notes-dynamic-wrap"></div>
 
     </div>
 
@@ -3980,11 +3980,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function initNotes() {
-      if (localStorage.getItem(NOTES_KEY) === 'true') {
+      // 既存ユーザー（旧キー）またはexchange解放済みならそのまま表示
+      if (localStorage.getItem(NOTES_KEY) === 'true' ||
+          (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('note_hitotsu_1'))) {
         unlockNotes();
         return;
       }
       const sentinel = document.getElementById('story-end');
+      if (!sentinel) return;
       const observer = new IntersectionObserver(function(entries) {
         if (entries[0].isIntersecting) {
           unlockNotes();
@@ -4257,6 +4260,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   ─────────────────────────────────────────────────────── */
   var EXCHANGE_CATALOG = [
     {
+      id:       'note_hitotsu_1',
+      type:     'note',
+      title:    '「ひとつ多い音」解説',
+      sub:      '― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―',
+      origin:   '',
+      cost:     { item: 'proteincoffee', amount: 1 },
+      sections: [],  // 静的HTMLカードで表示するためrenderNotesはスキップ
+    },
+    {
       id:       'note_hinata_1',
       type:     'note',
       title:    '「整えない音」解説',
@@ -4453,21 +4465,30 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     if (!ok) { alert('アイテムが足りません'); return; }
     SfSnow.unlockItem(id);
+    // note_hitotsu_1 は静的カードを解放
+    if (id === 'note_hitotsu_1' && typeof unlockNotes === 'function') unlockNotes();
     renderRooms();
     renderExchange();
     renderNotes();
-    if (item.type !== 'room') setTimeout(function() { scrollToNotes(); }, 80);
+    if (item.type !== 'room') setTimeout(function() { scrollToNotes(id); }, 80);
   }
 
   function scrollToNotes(id) {
     var card = id ? document.getElementById('notes-card-' + id) : null;
+    var isStatic = false;
+    // note_hitotsu_1 は静的HTMLカード（id=notes-body）
+    if (!card && id === 'note_hitotsu_1') {
+      card = document.getElementById('notes-body');
+      isStatic = true;
+    }
     var target = card || document.getElementById('notes-dynamic-wrap');
     if (!target) return;
     // 対象カードを開く
     if (card) {
-      var body = card;
-      if (!body.classList.contains('open')) body.classList.add('open');
-      var btn = body.previousElementSibling ? body.previousElementSibling.querySelector('.read-btn') : null;
+      if (!card.classList.contains('open')) card.classList.add('open');
+      var btn = isStatic
+        ? document.getElementById('notes-btn')
+        : (card.previousElementSibling ? card.previousElementSibling.querySelector('.read-btn') : null);
       if (btn) btn.textContent = '閉じる';
     }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -4480,6 +4501,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var html = '';
     EXCHANGE_CATALOG.forEach(function(item) {
       if (item.type === 'room') return; // 部屋はNOTESに出さない
+      if (!item.sections || item.sections.length === 0) return; // 静的HTMLカード担当はスキップ
 
       // Build content sections
       var contentHtml = '';
