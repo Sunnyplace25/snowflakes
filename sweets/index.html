@@ -3939,12 +3939,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       initNotes();
     }
 
-    // ページロード時：保存済みかつ同シーズンなら自動ログイン（入口は残す）
+    // ページロード時：保存済みかつ同シーズンならコードを自動入力
     document.addEventListener('DOMContentLoaded', function() {
       if (localStorage.getItem(SWEETS_KEY) === '1' &&
           localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
-        document.getElementById('content').classList.add('visible');
-        initNotes();
+        const input = document.getElementById('pw-input');
+        input.value = PASSWORD;
+        input.focus();
       } else {
         // バージョン不一致 → 旧ログイン情報をクリア
         localStorage.removeItem(SWEETS_KEY);
