@@ -4318,6 +4318,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var wrap = document.getElementById('exch-wrap');
     if (!wrap || EXCHANGE_CATALOG.length === 0) return;
 
+    // 全部屋が解放済みならエクスチェンジ欄ごと非表示にする
+    var allRoomsUnlocked = EXCHANGE_CATALOG.filter(function(i) { return i.type === 'room'; })
+      .every(function(i) { return SfSnow.isUnlocked(i.id); });
+    if (allRoomsUnlocked) {
+      wrap.innerHTML = '';
+      var sec = wrap.parentElement;
+      if (sec) sec.style.display = 'none';
+      return;
+    }
+
     var candies = SfSnow.getCandies();
     // 解放可能な部屋（キャンディが揃っている）
     var lockedRoomsReady = EXCHANGE_CATALOG.filter(function(item) {
