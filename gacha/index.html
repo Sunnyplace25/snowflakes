@@ -865,6 +865,7 @@
         dailyNote.textContent = '❄ 5 で もう一回まわせます';
         savedViewBtn.style.display = 'inline-block';
         belowMachine.classList.add('show');
+        SfSnow.updateUI();
       });
     }
   }
@@ -1002,6 +1003,8 @@
     }
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;
+
+    SfSnow.updateUI();
 
     // Show overlay
     tenOverlay.classList.add('ready');
