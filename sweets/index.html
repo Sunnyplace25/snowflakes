@@ -602,7 +602,7 @@
     </div>
 
     <!-- Items section -->
-    <div class="section">
+    <div class="section" id="items-section" style="display:none;">
       <div class="section-label">items</div>
       <div style="max-width:480px;margin:0 auto;">
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
@@ -4224,6 +4224,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
     var emptyMsg = document.getElementById('items-empty-msg');
     if (emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : '';
+    var section = document.getElementById('items-section');
+    if (section) section.style.display = anyVisible ? '' : 'none';
   }
 
   // SfSnow.updateUI が呼ばれるたびにアイテム行の表示も更新
@@ -4326,15 +4328,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!wrap || EXCHANGE_CATALOG.length === 0) return;
 
     var candies = SfSnow.getCandies();
+    // 解放可能な部屋（キャンディが揃っている）
     var lockedRoomsReady = EXCHANGE_CATALOG.filter(function(item) {
       return item.type === 'room' && !SfSnow.isUnlocked(item.id) && (candies[item.cost.candy] || 0) >= item.cost.amount;
     });
-    var lockedOthers = EXCHANGE_CATALOG.filter(function(item) { return item.type !== 'room' && !SfSnow.isUnlocked(item.id); });
-    if (lockedRoomsReady.length === 0 && lockedOthers.length === 0) { wrap.innerHTML = ''; return; }
+    // 未解放の部屋（キャンディ不足）
+    var lockedRoomsNotReady = EXCHANGE_CATALOG.filter(function(item) {
+      return item.type === 'room' && !SfSnow.isUnlocked(item.id) && (candies[item.cost.candy] || 0) < item.cost.amount;
+    });
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
 
-    // 300個揃った部屋カード
+    // 解放可能な部屋カード
     if (lockedRoomsReady.length > 0) {
       html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
       lockedRoomsReady.forEach(function(item) {
@@ -4349,10 +4354,25 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       html += '</div>';
     }
 
+    // キャンディ不足の部屋カード（常に表示）
+    if (lockedRoomsNotReady.length > 0) {
+      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
+      lockedRoomsNotReady.forEach(function(item) {
+        var have = candies[item.cost.candy] || 0;
+        html += '<div class="exch-card" style="flex:1;min-width:120px;text-align:center;opacity:0.7;">';
+        html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
+        html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
+        html += '<p class="exch-cost" style="margin-bottom:4px;">× ' + item.cost.amount + '</p>';
+        html += '<p style="font-size:10px;color:#64748b;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
+        html += '<button class="exch-btn" disabled>キャンディが足りません</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
     EXCHANGE_CATALOG.forEach(function(item) {
       if (item.type === 'room') return;
       var unlocked = SfSnow.isUnlocked(item.id);
-      if (unlocked) return;
 
       // Cost label
       var costLabel, canAfford;
