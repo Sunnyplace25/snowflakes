@@ -3953,6 +3953,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
       initNotes();
+      // ログイン後にNOTES・EXCHANGEを再描画
+      if (typeof renderNotes === 'function') renderNotes();
+      if (typeof renderExchange === 'function') renderExchange();
+      if (typeof renderRooms === 'function') renderRooms();
+      if (typeof renderItemRows === 'function') renderItemRows();
     }
 
     // ページロード時：保存済みかつ同シーズンならコードを自動入力
@@ -4415,27 +4420,21 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       });
 
       html += '<div class="exch-card" id="exch-card-' + item.id + '">';
-
-      // ── ヘッダー（常時表示） ──
       html += '<div class="exch-card-header" onclick="toggleExchCard(\'' + item.id + '\')">';
       html += '<div class="exch-card-header-left">';
       html += '<p class="exch-title">' + item.title + '</p>';
       html += '<p class="exch-sub">' + item.sub + '</p>';
       if (item.origin) html += '<p style="font-size:10px;color:#475569;letter-spacing:1px;margin-top:-6px;margin-bottom:8px;">' + item.origin + '</p>';
       html += '<p class="exch-cost">' + costLabel + '</p>';
-      if (unlocked) html += '<p class="exch-done" style="text-align:left;padding:0;">解放済み ✦</p>';
       html += '</div>';
       html += '<button class="exch-toggle-btn" tabindex="-1">▼</button>';
       html += '</div>';
 
-      // ── 折りたたみボディ ──
-      html += '<div class="exch-content" id="exch-content-' + item.id + '" style="padding:0 20px 0;">';
-      if (contentHtml) {
-        html += '<div style="border-top:1px solid rgba(255,255,255,0.06);padding:16px 0;">' + contentHtml + '</div>';
-      }
-      html += '<div style="padding:' + (contentHtml ? '0' : '4px') + ' 0 18px;">';
+      // ── 折りたたみボディ（ボタンのみ） ──
+      html += '<div class="exch-content" id="exch-content-' + item.id + '" style="padding:0 20px 18px;">';
       if (unlocked) {
-        html += '<button class="exch-read-btn" onclick="scrollToNotes()">NOTESで読む →</button>';
+        html += '<p class="exch-done" style="text-align:left;padding:0 0 10px;">解放済み ✦</p>';
+        html += '<button class="exch-read-btn" onclick="scrollToNotes(\'' + item.id + '\')">NOTESで読む →</button>';
       } else {
         html += '<button class="exch-btn" id="exch-btn-' + item.id + '"'
           + (canAfford ? '' : ' disabled')
@@ -4444,8 +4443,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           + '</button>';
       }
       html += '</div>';
-      html += '</div>';
-
       html += '</div>';
     });
 
@@ -4478,9 +4475,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (item.type !== 'room') setTimeout(function() { scrollToNotes(); }, 80);
   }
 
-  function scrollToNotes() {
-    var el = document.getElementById('notes-dynamic-wrap');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function scrollToNotes(id) {
+    var card = id ? document.getElementById('notes-card-' + id) : null;
+    var target = card || document.getElementById('notes-dynamic-wrap');
+    if (!target) return;
+    // 対象カードを開く
+    if (card) {
+      var body = card;
+      if (!body.classList.contains('open')) body.classList.add('open');
+      var btn = body.previousElementSibling ? body.previousElementSibling.querySelector('.read-btn') : null;
+      if (btn) btn.textContent = '閉じる';
+    }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function renderNotes() {
