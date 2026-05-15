@@ -441,6 +441,14 @@
     }
     .door-hotspot:hover .door-label { opacity:1; }
 
+    /* ── Section req hint ── */
+    .section-req {
+      font-size:10px; letter-spacing:2px; color:#475569;
+      text-align:center; margin:0 0 18px;
+      display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;
+    }
+    .section-req img { width:16px; opacity:0.65; vertical-align:middle; }
+
     /* ── EXCHANGE ── */
     .exch-wrap { margin-top:12px; width:100%; max-width:480px; }
     .exch-section-label {
@@ -603,6 +611,11 @@
     <!-- Exchange section -->
     <div class="section">
       <div class="section-label">exchange</div>
+      <p class="section-req" id="exch-req">
+        <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
+        <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
+        <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
+      </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
     </div>
 
@@ -3696,9 +3709,21 @@
 
     </div>
 
+    <!-- Music section -->
+    <div class="section" id="music-section">
+      <div class="section-label">music</div>
+      <p class="section-req" id="music-req">
+        <img src="../item/pick.webp"> ギターピック × 1
+      </p>
+      <div id="music-wrap" style="max-width:480px;margin:0 auto;"></div>
+    </div>
+
     <!-- 解説 -->
     <div class="section">
       <div class="section-label">notes</div>
+      <p class="section-req" id="notes-req">
+        <img src="../item/proteincoffee.webp"> プロテインコーヒー × 1
+      </p>
 
       <!-- EXCHANGE解放コンテンツ（動的） -->
       <div id="notes-dynamic-wrap"></div>
@@ -3940,6 +3965,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof renderExchange === 'function') renderExchange();
       if (typeof renderRooms === 'function') renderRooms();
       if (typeof renderItemRows === 'function') renderItemRows();
+      if (typeof renderMusic === 'function') renderMusic();
     }
 
     // ページロード時：保存済みかつ同シーズンならコードを自動入力
@@ -4252,7 +4278,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   // SfSnow.updateUI が呼ばれるたびにアイテム行の表示も更新
   var _origSfUI = SfSnow.updateUI;
-  SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); };
+  SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); if (typeof renderMusic === 'function') renderMusic(); };
 
   document.addEventListener('DOMContentLoaded', function() {
     SfSnow.addWithToast('visit_sweets');
@@ -4260,6 +4286,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderExchange();
     renderNotes();
     renderItemRows();
+    renderMusic();
   });
 </script>
 
@@ -4289,6 +4316,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「整えない音」とは', body: 'このタイトルが示しているのは、\n単なる未完成ではありません。\n\n揺れたまま。\n未完成のまま。\n言い切れないまま。\n\nそれでも、\n誰かへ差し出された音。\n\n整えないことでしか残らない感情。\n\nそれが、\n『整えない音』です。' },
       ]
     },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass.mp3', cost:{ pick:1 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
@@ -4512,11 +4540,89 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     SfSnow.unlockItem(id);
     renderNotes();
-    // 解放直後にカードを開く
     setTimeout(function() {
       var el = document.getElementById('notes-card-' + id);
       if (el) el.classList.add('open');
       var btn = el ? el.previousElementSibling.querySelector('.read-btn') : null;
+      if (btn) btn.textContent = '閉じる';
+    }, 50);
+  }
+
+  /* ── Music section ── */
+  function renderMusic() {
+    var wrap = document.getElementById('music-wrap');
+    if (!wrap) return;
+    var songs = EXCHANGE_CATALOG.filter(function(i) { return i.type === 'song'; });
+    var section = document.getElementById('music-section');
+    if (songs.length === 0) {
+      if (section) section.style.display = 'none';
+      return;
+    }
+    if (section) section.style.display = '';
+
+    // 全曲解放済みならrequirementヒントを隠す
+    var allUnlocked = songs.every(function(s) { return SfSnow.isUnlocked(s.id); });
+    var reqEl = document.getElementById('music-req');
+    if (reqEl) reqEl.style.display = allUnlocked ? 'none' : '';
+
+    var html = '';
+    songs.forEach(function(item) {
+      var unlocked = SfSnow.isUnlocked(item.id);
+      html += '<div class="post-card" style="margin-top:0;">';
+      html += '<div class="post-header">';
+      html += '<div class="post-header-left">';
+      html += '<div class="post-tag">♪</div>';
+      html += '<div class="post-title">' + item.title + '</div>';
+      if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
+      html += '</div>';
+      if (unlocked) {
+        html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
+      } else {
+        var picks = SfSnow.getPicks();
+        var ok = picks >= item.cost.pick;
+        html += '<button class="read-btn"' + (ok ? '' : ' style="opacity:0.45;"')
+          + ' onclick="doUnlockSong(\'' + item.id + '\')">'
+          + (ok ? '交換する' : 'ピック不足') + '</button>';
+      }
+      html += '</div>';
+      if (unlocked) {
+        html += '<div class="post-content" id="player-' + item.id + '">';
+        html += '<div class="divider"></div>';
+        html += '<div style="padding:16px 0 4px;">'
+          + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls></audio>'
+          + '</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+
+  function togglePlay(id, src) {
+    var player = document.getElementById('player-' + id);
+    var btn    = document.getElementById('play-btn-' + id);
+    if (!player) return;
+    var isOpen = player.classList.toggle('open');
+    if (btn) btn.textContent = isOpen ? '閉じる' : '▶ 聴く';
+    if (!isOpen) {
+      var audio = document.getElementById('audio-' + id);
+      if (audio) audio.pause();
+    }
+  }
+
+  function doUnlockSong(id) {
+    var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
+    if (!item || item.type !== 'song') return;
+    if (!SfSnow.spendPick(item.cost.pick)) {
+      alert('ギターピックが足りません');
+      return;
+    }
+    SfSnow.unlockItem(id);
+    renderMusic();
+    setTimeout(function() {
+      var player = document.getElementById('player-' + id);
+      var btn    = document.getElementById('play-btn-' + id);
+      if (player) { player.classList.add('open'); }
       if (btn) btn.textContent = '閉じる';
     }, 50);
   }
