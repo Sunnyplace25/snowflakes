@@ -3710,7 +3710,7 @@
             <div class="post-title">「ひとつ多い音」解説</div>
             <div class="post-date">― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―</div>
           </div>
-          <button class="read-btn" id="notes-btn" disabled onclick="toggleContent('notes-body', this)" title="短編を最後まで読むと解放されます">読む</button>
+          <button class="read-btn" id="notes-btn" onclick="notesExchange()">交換する</button>
         </div>
         <div class="post-content" id="notes-body">
         <div class="divider"></div>
@@ -3976,7 +3976,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function unlockNotes() {
       localStorage.setItem(NOTES_KEY, 'true');
       const btn = document.getElementById('notes-btn');
-      btn.disabled = false;
+      if (btn) {
+        btn.textContent = '読む';
+        btn.onclick = function() { toggleContent('notes-body', btn); };
+      }
+      if (typeof renderItemRows === 'function') renderItemRows();
+    }
+
+    function notesExchange() {
+      if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
+        unlockNotes();
+      } else {
+        // プロテインコーヒーがない場合はガチャへ誘導
+        alert('プロテインコーヒーが足りません');
+      }
     }
 
     function initNotes() {
