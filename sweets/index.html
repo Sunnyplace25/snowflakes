@@ -175,6 +175,61 @@
     }
     .snow-get-close:hover { color: #94a3b8; border-color: rgba(255,255,255,0.22); }
 
+    /* ── Login keep dialog ── */
+    #login-dialog {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(12,18,32,0.82); backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s;
+    }
+    #login-dialog.show { opacity: 1; pointer-events: auto; }
+    #login-dialog-box {
+      background: rgba(18,10,28,0.97);
+      border: 1px solid rgba(249,168,212,0.3);
+      border-radius: 24px;
+      padding: 44px 36px 36px;
+      text-align: center;
+      max-width: 300px; width: 88%;
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.4s cubic-bezier(.18,1.2,.45,1);
+    }
+    #login-dialog.show #login-dialog-box { transform: none; }
+    .login-dialog-icon { font-size: 28px; margin-bottom: 16px; opacity: 0.7; }
+    .login-dialog-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; letter-spacing: 5px;
+      color: var(--sweets); margin-bottom: 12px;
+    }
+    .login-dialog-body {
+      font-size: 13px; color: #94a3b8;
+      line-height: 1.9; margin-bottom: 28px;
+    }
+    .login-dialog-body small {
+      display: block; font-size: 11px; color: #475569;
+      margin-top: 6px; letter-spacing: 1px;
+    }
+    .login-dialog-btns { display: flex; flex-direction: column; gap: 10px; }
+    .login-dialog-save {
+      padding: 12px; border-radius: 100px;
+      background: rgba(249,168,212,0.1);
+      border: 1.5px solid rgba(249,168,212,0.5);
+      color: var(--sweets); font-size: 13px;
+      letter-spacing: 3px; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      transition: background 0.2s;
+    }
+    .login-dialog-save:hover { background: rgba(249,168,212,0.2); }
+    .login-dialog-once {
+      padding: 10px; border-radius: 100px;
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #475569; font-size: 12px;
+      letter-spacing: 2px; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .login-dialog-once:hover { color: #64748b; border-color: rgba(255,255,255,0.2); }
+
     .gate-btn {
       margin-top: 4px;
       padding: 10px 44px;
@@ -520,6 +575,22 @@
           </tr>
         </table>
         <p id="items-empty-msg" style="font-size:10px;color:#475569;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Login keep dialog ── -->
+  <div id="login-dialog">
+    <div id="login-dialog-box">
+      <div class="login-dialog-icon">❄</div>
+      <p class="login-dialog-title">SWEETs ROOM</p>
+      <p class="login-dialog-body">
+        ログイン状態を保持しますか？
+        <small>次回からコードなしでアクセスできます</small>
+      </p>
+      <div class="login-dialog-btns">
+        <button class="login-dialog-save" onclick="saveAndEnter()">保持する</button>
+        <button class="login-dialog-once" onclick="sessionEnter()">今回のみ</button>
       </div>
     </div>
   </div>
@@ -3838,11 +3909,38 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     }
 
+    const SWEETS_KEY = 'sf_sweets_unlocked';
+
     function unlock() {
+      // コード正解 → ダイアログを表示
+      const dialog = document.getElementById('login-dialog');
+      dialog.classList.add('show');
+    }
+
+    function saveAndEnter() {
+      localStorage.setItem(SWEETS_KEY, '1');
+      _doEnter(true);
+    }
+
+    function sessionEnter() {
+      _doEnter(false);
+    }
+
+    function _doEnter(saved) {
+      document.getElementById('login-dialog').classList.remove('show');
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
       initNotes();
     }
+
+    // ページロード時：保存済みなら自動ログイン
+    document.addEventListener('DOMContentLoaded', function() {
+      if (localStorage.getItem(SWEETS_KEY) === '1') {
+        document.getElementById('gate').style.display = 'none';
+        document.getElementById('content').classList.add('visible');
+        initNotes();
+      }
+    });
 
     // ── Content toggle ──
     function toggleContent(id, btn) {
