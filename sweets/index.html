@@ -3938,10 +3938,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       initNotes();
     }
 
-    // ページロード時：保存済みなら自動ログイン
+    // ページロード時：保存済みなら自動ログイン（入口は残す）
     document.addEventListener('DOMContentLoaded', function() {
       if (localStorage.getItem(SWEETS_KEY) === '1') {
-        document.getElementById('gate').style.display = 'none';
         document.getElementById('content').classList.add('visible');
         initNotes();
       }
