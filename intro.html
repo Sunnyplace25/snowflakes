@@ -698,34 +698,46 @@
 
 <div class="divider"></div>
 
-<!-- ── GACHA ── -->
+<!-- ── GAME ── -->
 <section class="section">
-  <p class="sec-eyebrow">05 — GACHA</p>
-  <h2 class="sec-title">今日の音</h2>
-  <p class="sec-title-ja">ガチャでアイテムを集める</p>
+  <p class="sec-eyebrow">05 — GAME</p>
+  <h2 class="sec-title">ゲーム</h2>
+  <p class="sec-title-ja">サイトで遊ぶ</p>
   <p class="sec-body">
-    サイトを訪れるたびに「Snow（❄）」が積もります。<br>
-    集めたSnowで「今日の音」ガチャをまわすと、<br>
-    キャンディーやギターピックなどのアイテムが手に入ります。<br><br>
-    アイテムはSWEETsの限定コンテンツを解放するのに使います。<br>
-    来るたびに、少しずつ開いていく仕組みです。
+    Snow flakesには、読む・聴く以外に「遊ぶ」要素があります。<br><br>
+    サイトを訪れるたびに「Snow（❄）」が積もり、<br>
+    ガチャ「今日の音」でアイテムが手に入ります。<br>
+    集めたアイテムがSWEETsの鍵になります。<br><br>
+    来るたびに、少しずつ世界が広がっていきます。
   </p>
 
-  <div style="margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
-    <div style="border-radius:14px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);padding:24px 16px;text-align:center;">
-      <p style="font-size:28px;margin-bottom:10px;">❄</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#93c5fd;margin-bottom:6px;">SNOW</p>
-      <p style="font-size:11px;color:#94a3b8;line-height:1.8;">サイトを訪れると<br>自然と積もる</p>
-    </div>
-    <div style="border-radius:14px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);padding:24px 16px;text-align:center;">
-      <p style="font-size:28px;margin-bottom:10px;">🎲</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#c4b5fd;margin-bottom:6px;">GACHA</p>
-      <p style="font-size:11px;color:#94a3b8;line-height:1.8;">Snowを使って<br>ガチャをまわす</p>
-    </div>
-    <div style="border-radius:14px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);padding:24px 16px;text-align:center;">
-      <p style="font-size:28px;margin-bottom:10px;">🍬</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#f9a8d4;margin-bottom:6px;">ITEMS</p>
-      <p style="font-size:11px;color:#94a3b8;line-height:1.8;">アイテムで<br>SWEETsを解放</p>
+  <!-- ゲームループ -->
+  <div style="margin-top:40px;position:relative;">
+    <!-- フロー -->
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;">
+      <div style="border-radius:14px;border:1px solid rgba(147,197,253,0.25);background:rgba(147,197,253,0.05);padding:20px 16px;text-align:center;min-width:100px;">
+        <p style="font-size:26px;margin-bottom:8px;">❄</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#93c5fd;margin-bottom:4px;">SNOW</p>
+        <p style="font-size:10px;color:#64748b;line-height:1.7;">サイトを<br>訪れると積もる</p>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#334155;">→</p>
+      <div style="border-radius:14px;border:1px solid rgba(196,181,253,0.25);background:rgba(196,181,253,0.05);padding:20px 16px;text-align:center;min-width:100px;">
+        <p style="font-size:26px;margin-bottom:8px;">🎲</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#c4b5fd;margin-bottom:4px;">GACHA</p>
+        <p style="font-size:10px;color:#64748b;line-height:1.7;">「今日の音」<br>ガチャをまわす</p>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#334155;">→</p>
+      <div style="border-radius:14px;border:1px solid rgba(249,168,212,0.25);background:rgba(249,168,212,0.05);padding:20px 16px;text-align:center;min-width:100px;">
+        <p style="font-size:26px;margin-bottom:8px;">🍬</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#f9a8d4;margin-bottom:4px;">ITEMS</p>
+        <p style="font-size:10px;color:#64748b;line-height:1.7;">キャンディ・<br>ピックをゲット</p>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#334155;">→</p>
+      <div style="border-radius:14px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.08);padding:20px 16px;text-align:center;min-width:100px;">
+        <p style="font-size:26px;margin-bottom:8px;">🔓</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#f9a8d4;margin-bottom:4px;">SWEETs</p>
+        <p style="font-size:10px;color:#64748b;line-height:1.7;">限定コンテンツ<br>を解放</p>
+      </div>
     </div>
   </div>
 </section>
