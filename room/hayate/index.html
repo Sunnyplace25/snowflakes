@@ -32,22 +32,25 @@
     }
 
     .nav {
-      width: 100%; max-width: 480px;
-      padding: 22px 22px 0;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 16px 24px;
+      background: rgba(8,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(253,230,138,0.1);
     }
     .back {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; letter-spacing: 3px;
+      font-size: 12px; letter-spacing: 4px;
       color: #475569; text-decoration: none;
       transition: color 0.2s;
     }
     .back:hover { color: #94a3b8; }
     .snow-badge {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; letter-spacing: 3px;
+      font-size: 12px; letter-spacing: 4px;
       color: #475569;
     }
     .snow-badge .sf-snow-val { color: #fde68a; }
@@ -58,7 +61,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 32px 24px 48px;
+      padding: 80px 24px 48px;
       position: relative;
     }
 
@@ -370,17 +373,13 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
+      var SAVE_KEY = 'sf_pf_hayate';
       var candies  = SfSnow.getCandies();
       var cassis   = candies['cassis'] || 0;
-      var roomDone = SfSnow.isUnlocked('room_hayate');
-      var count    = roomDone ? 999 : cassis;
 
-      var reveal = function(id, text) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.className = 'detail-val';
-        el.textContent = text;
-      };
+      // 永続保存された解放済みIDを読み込む
+      var saved = [];
+      try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch(e) {}
 
       var PROFILE = [
         { n:  30, id: 'pf-name',     val: '楠木 颯（くすのき はやて）' },
@@ -395,11 +394,32 @@
         { n:  84, id: 'pf-habit',    val: '笑いながら話を逸らす' },
         { n: 100, id: 'pf-smoke',    val: 'たまに吸う / 人にもらうことが多い' },
       ];
+
+      // 現在の枚数で新たに解放できるものを保存
+      var changed = false;
       PROFILE.forEach(function(p) {
-        if (count >= p.n) reveal(p.id, p.val);
+        if (cassis >= p.n && saved.indexOf(p.id) === -1) {
+          saved.push(p.id);
+          changed = true;
+        }
+      });
+      if (cassis >= 100 && saved.indexOf('mini') === -1) { saved.push('mini'); changed = true; }
+      if (changed) localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+
+      var reveal = function(id, text) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'detail-val';
+        el.textContent = text;
+      };
+
+      // 解放済み項目を表示
+      PROFILE.forEach(function(p) {
+        if (saved.indexOf(p.id) !== -1) reveal(p.id, p.val);
       });
 
-      if (count >= 100) {
+      // MINI INFO：100枚で解放（永続）
+      if (saved.indexOf('mini') !== -1) {
         var mi = [
           'ライブ後だけ異様にテンションが高い',
           '人を泊めがち',
