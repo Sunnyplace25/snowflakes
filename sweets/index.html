@@ -4637,19 +4637,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
       html += '<div class="post-card" style="margin-top:0;">';
-      html += '<div class="music-card-row">';
-      // ボタン（左固定）
-      html += '<div class="music-card-btn">';
-      if (unlocked) {
-        html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
-      } else {
-        html += '<button class="read-btn"' + (ok ? '' : ' style="opacity:0.45;"')
-          + ' onclick="doUnlockSong(\'' + item.id + '\')">'
-          + (ok ? '交換する' : 'ピック不足') + '</button>';
-      }
-      html += '</div>';
-      // タイトル・コスト（右）
-      html += '<div class="music-card-info">';
+      html += '<div class="post-header">';
+      // タイトル・コスト（左）
+      html += '<div class="post-header-left">';
       html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
       if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
       if (!unlocked) {
@@ -4659,6 +4649,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           + '</div>';
       }
       html += '</div>';
+      // ボタン（右固定）
+      if (unlocked) {
+        html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
+      } else {
+        html += '<button class="read-btn"' + (ok ? '' : ' style="opacity:0.45;"')
+          + ' onclick="doUnlockSong(\'' + item.id + '\')">'
+          + (ok ? '交換する' : 'ピック不足') + '</button>';
+      }
       html += '</div>';
       if (unlocked) {
         html += '<div class="post-content" id="player-' + item.id + '">';
