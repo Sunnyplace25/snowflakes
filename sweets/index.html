@@ -393,6 +393,14 @@
       color: var(--text);
       margin-bottom: 10px;
     }
+    .post-title.nowrap {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+    .post-header-left.nowrap-wrap { min-width: 0; }
 
     .post-date {
       font-size: 12px;
@@ -4629,8 +4637,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = SfSnow.isUnlocked(item.id);
       html += '<div class="post-card" style="margin-top:0;">';
       html += '<div class="post-header">';
-      html += '<div class="post-header-left">';
-      html += '<div class="post-title">' + item.title + '</div>';
+      html += '<div class="post-header-left nowrap-wrap">';
+      html += '<div class="post-title nowrap">' + item.title + '</div>';
       if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
       if (!unlocked) {
         html += '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;">'
