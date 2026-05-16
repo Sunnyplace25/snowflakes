@@ -21,7 +21,6 @@
       overflow-x: hidden;
     }
 
-    /* 背景グロー */
     body::before {
       content: '';
       position: fixed;
@@ -56,7 +55,6 @@
     }
     .snow-badge .sf-snow-val { color: #93c5fd; }
 
-    /* メインエリア */
     .main {
       flex: 1;
       width: 100%; max-width: 480px;
@@ -72,24 +70,6 @@
       font-size: 9px; letter-spacing: 6px;
       color: #475569;
       margin-bottom: 32px;
-    }
-
-    .chara-wrap {
-      position: relative;
-      width: 220px;
-      margin-bottom: 32px;
-    }
-    .chara-wrap::after {
-      content: '';
-      position: absolute;
-      bottom: -12px; left: 50%;
-      transform: translateX(-50%);
-      width: 100px; height: 16px;
-      background: radial-gradient(ellipse, rgba(147,197,253,0.35) 0%, transparent 70%);
-    }
-    .chara-img {
-      width: 100%;
-      display: block;
     }
 
     .name-en {
@@ -151,10 +131,8 @@
       font-style: italic;
     }
 
-    /* Profile Detail */
     .section-divider {
-      width: 100%;
-      height: 1px;
+      width: 100%; height: 1px;
       background: rgba(147,197,253,0.1);
       margin: 40px 0;
     }
@@ -169,24 +147,20 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 0;
     }
     .detail-row {
       display: flex;
-      gap: 0;
       border-bottom: 1px solid rgba(147,197,253,0.06);
-      padding: 14px 0;
-      align-items: baseline;
+      padding: 12px 0;
+      align-items: center;
     }
-    .detail-row:first-child {
-      border-top: 1px solid rgba(147,197,253,0.06);
-    }
+    .detail-row:first-child { border-top: 1px solid rgba(147,197,253,0.06); }
     .detail-key {
       font-family: 'Cormorant Garamond', serif;
       font-size: 9px; letter-spacing: 4px;
       color: #475569;
       min-width: 90px;
-      padding-top: 2px;
+      flex-shrink: 0;
     }
     .detail-val {
       font-size: 12px; letter-spacing: 1px;
@@ -194,15 +168,44 @@
       line-height: 1.9;
       flex: 1;
     }
-    .detail-val.locked {
+    .detail-val.name-glow {
+      color: #93c5fd;
+      text-shadow: 0 0 14px rgba(147,197,253,0.5);
+      font-size: 13px;
+    }
+
+    /* Unlock button */
+    .unlock-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid rgba(147,197,253,0.15);
+      border-radius: 100px;
+      padding: 5px 14px 5px 8px;
+      cursor: not-allowed;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 10px; letter-spacing: 3px;
+      font-size: 10px; letter-spacing: 2px;
       color: #334155;
+      transition: all 0.2s;
+      white-space: nowrap;
     }
-    .detail-val.blank {
-      color: #334155;
-      letter-spacing: 4px;
+    .unlock-btn.ready {
+      color: #64748b;
+      border-color: rgba(147,197,253,0.35);
+      cursor: pointer;
     }
+    .unlock-btn.ready:hover {
+      background: rgba(147,197,253,0.08);
+      border-color: rgba(147,197,253,0.6);
+      color: #93c5fd;
+    }
+    .candy-ic {
+      width: 18px; height: 18px;
+      object-fit: contain;
+      opacity: 0.5;
+    }
+    .unlock-btn.ready .candy-ic { opacity: 1; }
 
     /* Mini Info */
     .mini-info {
@@ -215,12 +218,18 @@
       flex-direction: column;
       gap: 2px;
     }
+    .mini-lock {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0;
+    }
     .mini-info-item {
       font-size: 11px; letter-spacing: 1px;
       color: #64748b;
       line-height: 2.0;
       padding-left: 14px;
       position: relative;
+      display: none;
     }
     .mini-info-item::before {
       content: '·';
@@ -302,13 +311,16 @@
     <p class="quote">音と、距離と、その間にあるもの。</p>
 
     <div class="section-divider"></div>
-
     <p class="section-label">PROFILE</p>
 
-    <div class="detail-list" id="profile-list">
+    <div class="detail-list">
       <div class="detail-row">
         <p class="detail-key">NAME</p>
-        <p class="detail-val locked" id="pf-name">LOCKED</p>
+        <p class="detail-val" id="pf-name">
+          <button class="unlock-btn" data-id="pf-name" data-need="30">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 30
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">PART</p>
@@ -316,57 +328,101 @@
       </div>
       <div class="detail-row">
         <p class="detail-key">SIGN</p>
-        <p class="detail-val locked" id="pf-sign">LOCKED</p>
+        <p class="detail-val" id="pf-sign">
+          <button class="unlock-btn" data-id="pf-sign" data-need="36">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 36
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">BLOOD</p>
-        <p class="detail-val locked" id="pf-blood">LOCKED</p>
+        <p class="detail-val" id="pf-blood">
+          <button class="unlock-btn" data-id="pf-blood" data-need="42">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 42
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HEIGHT</p>
-        <p class="detail-val locked" id="pf-height">LOCKED</p>
+        <p class="detail-val" id="pf-height">
+          <button class="unlock-btn" data-id="pf-height" data-need="48">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 48
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">LIKES</p>
-        <p class="detail-val locked" id="pf-likes">LOCKED</p>
+        <p class="detail-val" id="pf-likes">
+          <button class="unlock-btn" data-id="pf-likes" data-need="54">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 54
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">DISLIKES</p>
-        <p class="detail-val locked" id="pf-dislikes">LOCKED</p>
+        <p class="detail-val" id="pf-dislikes">
+          <button class="unlock-btn" data-id="pf-dislikes" data-need="60">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 60
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HOBBY</p>
-        <p class="detail-val locked" id="pf-hobby">LOCKED</p>
+        <p class="detail-val" id="pf-hobby">
+          <button class="unlock-btn" data-id="pf-hobby" data-need="66">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 66
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">FOOD</p>
-        <p class="detail-val locked" id="pf-food">LOCKED</p>
+        <p class="detail-val" id="pf-food">
+          <button class="unlock-btn" data-id="pf-food" data-need="72">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 72
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">ROOM</p>
-        <p class="detail-val locked" id="pf-room">LOCKED</p>
+        <p class="detail-val" id="pf-room">
+          <button class="unlock-btn" data-id="pf-room" data-need="78">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 78
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HABIT</p>
-        <p class="detail-val locked" id="pf-habit">LOCKED</p>
+        <p class="detail-val" id="pf-habit">
+          <button class="unlock-btn" data-id="pf-habit" data-need="84">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 84
+          </button>
+        </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SMOKE</p>
-        <p class="detail-val locked" id="pf-smoke">LOCKED</p>
+        <p class="detail-val" id="pf-smoke">
+          <button class="unlock-btn" data-id="pf-smoke" data-need="100">
+            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 100
+          </button>
+        </p>
       </div>
     </div>
 
     <div class="section-divider"></div>
-
     <p class="section-label">MINI INFO</p>
 
-    <div class="mini-info" id="mini-info">
-      <p class="mini-info-item" id="mi-1">LOCKED</p>
-      <p class="mini-info-item" id="mi-2">LOCKED</p>
-      <p class="mini-info-item" id="mi-3">LOCKED</p>
-      <p class="mini-info-item" id="mi-4">LOCKED</p>
-      <p class="mini-info-item" id="mi-5">LOCKED</p>
-      <p class="mini-info-item" id="mi-6">LOCKED</p>
+    <div class="mini-info">
+      <div class="mini-lock" id="mini-lock">
+        <button class="unlock-btn" id="mini-unlock-btn" data-need="100">
+          <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 100
+        </button>
+      </div>
+      <p class="mini-info-item" id="mi-1"></p>
+      <p class="mini-info-item" id="mi-2"></p>
+      <p class="mini-info-item" id="mi-3"></p>
+      <p class="mini-info-item" id="mi-4"></p>
+      <p class="mini-info-item" id="mi-5"></p>
+      <p class="mini-info-item" id="mi-6"></p>
     </div>
 
     <div class="section-divider"></div>
@@ -385,64 +441,87 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
-      var SAVE_KEY = 'sf_pf_hinata';
-      var candies  = SfSnow.getCandies();
-      var milk     = candies['milk'] || 0;
+      var SAVE_KEY   = 'sf_pf_hinata';
+      var CANDY_TYPE = 'milk';
 
-      // 永続保存された解放済みIDを読み込む
       var saved = [];
       try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch(e) {}
 
       var PROFILE = [
-        { n:  30, id: 'pf-name',     val: '環 陽向（たまき ひなた）' },
-        { n:  36, id: 'pf-sign',     val: '水瓶座' },
-        { n:  42, id: 'pf-blood',    val: 'AB型' },
-        { n:  48, id: 'pf-height',   val: '177cm' },
-        { n:  54, id: 'pf-likes',    val: 'ブラックコーヒー / 深夜のコンビニ / 静かな雨' },
-        { n:  60, id: 'pf-dislikes', val: '騒がしい場所 / 急かされること' },
-        { n:  66, id: 'pf-hobby',    val: 'デモ整理 / 夜の散歩 / 環境音を聴く' },
-        { n:  72, id: 'pf-food',     val: '甘すぎない甘いもの' },
-        { n:  78, id: 'pf-room',     val: '静か / 白いデスクライト / 深夜' },
-        { n:  84, id: 'pf-habit',    val: '考えごとをすると窓を見る' },
-        { n: 100, id: 'pf-smoke',    val: '吸う / 夜だけ増える' },
+        { n:  30, id: 'pf-name',     val: '環 陽向（たまき ひなた）',              isName: true  },
+        { n:  36, id: 'pf-sign',     val: '水瓶座',                                isName: false },
+        { n:  42, id: 'pf-blood',    val: 'AB型',                                  isName: false },
+        { n:  48, id: 'pf-height',   val: '177cm',                                 isName: false },
+        { n:  54, id: 'pf-likes',    val: 'ブラックコーヒー / 深夜のコンビニ / 静かな雨', isName: false },
+        { n:  60, id: 'pf-dislikes', val: '騒がしい場所 / 急かされること',           isName: false },
+        { n:  66, id: 'pf-hobby',    val: 'デモ整理 / 夜の散歩 / 環境音を聴く',      isName: false },
+        { n:  72, id: 'pf-food',     val: '甘すぎない甘いもの',                     isName: false },
+        { n:  78, id: 'pf-room',     val: '静か / 白いデスクライト / 深夜',          isName: false },
+        { n:  84, id: 'pf-habit',    val: '考えごとをすると窓を見る',               isName: false },
+        { n: 100, id: 'pf-smoke',    val: '吸う / 夜だけ増える',                    isName: false },
       ];
 
-      // 現在の枚数で新たに解放できるものを保存
-      var changed = false;
-      PROFILE.forEach(function(p) {
-        if (milk >= p.n && saved.indexOf(p.id) === -1) {
-          saved.push(p.id);
-          changed = true;
-        }
-      });
-      if (milk >= 100 && saved.indexOf('mini') === -1) { saved.push('mini'); changed = true; }
-      if (changed) localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+      var MI_TEXTS = [
+        '曲名を最後まで決めない',
+        'デモ音源名が「001」のまま残っている',
+        'ギターケースの中だけ妙に綺麗',
+        '缶コーヒーを机に置きっぱなしにしがち',
+        '小雪相手だと少しだけ声が柔らかい',
+        '無意識に弦を触っている'
+      ];
 
-      var reveal = function(id, text) {
-        var el = document.getElementById(id);
+      function getCandy() { return SfSnow.getCandies()[CANDY_TYPE] || 0; }
+
+      function revealProfile(p) {
+        var el = document.getElementById(p.id);
         if (!el) return;
-        el.className = 'detail-val';
-        el.textContent = text;
-      };
+        el.className = p.isName ? 'detail-val name-glow' : 'detail-val';
+        el.textContent = p.val;
+      }
 
-      // 解放済み項目を表示
+      function revealMini() {
+        var lock = document.getElementById('mini-lock');
+        if (lock) lock.style.display = 'none';
+        MI_TEXTS.forEach(function(text, i) {
+          var el = document.getElementById('mi-' + (i + 1));
+          if (el) { el.textContent = text; el.style.display = ''; }
+        });
+      }
+
+      // 解放済みを即表示
       PROFILE.forEach(function(p) {
-        if (saved.indexOf(p.id) !== -1) reveal(p.id, p.val);
+        if (saved.indexOf(p.id) !== -1) revealProfile(p);
+      });
+      if (saved.indexOf('mini') !== -1) revealMini();
+
+      // ボタンのセットアップ
+      var cur = getCandy();
+
+      PROFILE.forEach(function(p) {
+        if (saved.indexOf(p.id) !== -1) return;
+        var el = document.getElementById(p.id);
+        if (!el) return;
+        var btn = el.querySelector('.unlock-btn');
+        if (!btn) return;
+        if (cur >= p.n) btn.classList.add('ready');
+        btn.addEventListener('click', function() {
+          if (getCandy() < p.n) return;
+          if (saved.indexOf(p.id) === -1) {
+            saved.push(p.id);
+            localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+          }
+          revealProfile(p);
+        });
       });
 
-      // MINI INFO：100枚で解放（永続）
-      if (saved.indexOf('mini') !== -1) {
-        var mi = [
-          '曲名を最後まで決めない',
-          'デモ音源名が「001」のまま残っている',
-          'ギターケースの中だけ妙に綺麗',
-          '缶コーヒーを机に置きっぱなしにしがち',
-          '小雪相手だと少しだけ声が柔らかい',
-          '無意識に弦を触っている'
-        ];
-        mi.forEach(function(text, i) {
-          var el = document.getElementById('mi-' + (i + 1));
-          if (el) { el.style.color = '#64748b'; el.textContent = text; }
+      var miniBtn = document.getElementById('mini-unlock-btn');
+      if (miniBtn && saved.indexOf('mini') === -1) {
+        if (cur >= 100) miniBtn.classList.add('ready');
+        miniBtn.addEventListener('click', function() {
+          if (getCandy() < 100) return;
+          saved.push('mini');
+          localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+          revealMini();
         });
       }
 
