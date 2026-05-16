@@ -233,6 +233,51 @@
     }
     .login-dialog-once:hover { color: #64748b; border-color: rgba(255,255,255,0.2); }
 
+    /* ── Confirm dialog ── */
+    #confirm-dialog {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(12,18,32,0.82); backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #confirm-dialog.show { opacity: 1; pointer-events: auto; }
+    #confirm-dialog-box {
+      background: rgba(18,10,28,0.97);
+      border: 1px solid rgba(249,168,212,0.25);
+      border-radius: 24px;
+      padding: 40px 32px 32px;
+      text-align: center;
+      max-width: 280px; width: 88%;
+      transform: translateY(16px) scale(0.96);
+      transition: transform 0.35s cubic-bezier(.18,1.2,.45,1);
+    }
+    #confirm-dialog.show #confirm-dialog-box { transform: none; }
+    #confirm-msg {
+      font-size: 14px; letter-spacing: 3px;
+      color: #e2e8f0; margin-bottom: 28px; line-height: 1.8;
+    }
+    .confirm-btns { display: flex; flex-direction: column; gap: 10px; }
+    .confirm-ok {
+      padding: 12px; border-radius: 100px;
+      background: rgba(249,168,212,0.1);
+      border: 1.5px solid rgba(249,168,212,0.4);
+      color: var(--sweets); font-size: 13px;
+      letter-spacing: 3px; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      transition: background 0.2s;
+    }
+    .confirm-ok:hover { background: rgba(249,168,212,0.2); }
+    .confirm-cancel {
+      padding: 10px; border-radius: 100px;
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #475569; font-size: 12px;
+      letter-spacing: 2px; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .confirm-cancel:hover { color: #64748b; border-color: rgba(255,255,255,0.2); }
+
     .gate-btn {
       margin-top: 4px;
       padding: 10px 44px;
@@ -3716,7 +3761,7 @@
     <div class="section" id="music-section">
       <div class="section-label">music</div>
       <p class="section-req" id="music-req">
-        <img src="../item/pick.webp"> ギターピック × 1
+        <img src="../item/pick.webp"> ギターピック
       </p>
       <div id="music-wrap" style="max-width:480px;margin:0 auto;"></div>
     </div>
@@ -4013,12 +4058,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function notesExchange() {
-      if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
-        unlockNotes();
-      } else {
-        // プロテインコーヒーがない場合はガチャへ誘導
-        alert('プロテインコーヒーが足りません');
-      }
+      showConfirm('交換しますか？', function() {
+        if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
+          unlockNotes();
+        } else {
+          alert('プロテインコーヒーが足りません');
+        }
+      });
     }
 
     function initNotes() {
@@ -4151,6 +4197,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         line: '<span style="color:#fde68a">カシスキャンディー</span>&nbsp;&nbsp;100個でハヤテの部屋が解放！' },
       { name: 'HAYATE', img: '../plofile/chibi_hayate.webp', color: '#fde68a',
         line: '<span style="color:#fde68a">プロテインコーヒー</span>１個で作品の解説が読めるぞ！' },
+      { name: 'KOUTA', img: '../plofile/chibi_kouta.webp', color: '#fca5a5',
+        line: '<span style="color:#fde68a">ギターピック</span>でSWEETs限定楽曲が聴けるぞ！' },
     ];
     var lastIdx = -1;
 
@@ -4320,7 +4368,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       ]
     },
     { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cost:{ pick:1 } },
-    { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:1 } },
+    { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
@@ -4448,16 +4496,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function doUnlock(id) {
     var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
     if (!item) return;
-    var ok = false;
-    if (item.type === 'note') {
-      ok = SfSnow.spendMonthlyItem(item.cost.item, item.cost.amount);
-    } else {
-      ok = SfSnow.spendCandy(item.cost.candy, item.cost.amount);
-    }
-    if (!ok) { alert('アイテムが足りません'); return; }
-    SfSnow.unlockItem(id);
-    renderRooms();
-    renderExchange();
+    showConfirm('交換しますか？', function() {
+      var ok = false;
+      if (item.type === 'note') {
+        ok = SfSnow.spendMonthlyItem(item.cost.item, item.cost.amount);
+      } else {
+        ok = SfSnow.spendCandy(item.cost.candy, item.cost.amount);
+      }
+      if (!ok) { alert('アイテムが足りません'); return; }
+      SfSnow.unlockItem(id);
+      renderRooms();
+      renderExchange();
+    });
   }
 
   function scrollToNotes(id) {
@@ -4538,6 +4588,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function doUnlockNote(id) {
     var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
     if (!item || item.type !== 'note') return;
+    showConfirm('交換しますか？', function() {
     if (!SfSnow.spendMonthlyItem(item.cost.item, item.cost.amount)) {
       alert('プロテインコーヒーが足りません');
       return;
@@ -4550,6 +4601,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var btn = el ? el.previousElementSibling.querySelector('.read-btn') : null;
       if (btn) btn.textContent = '閉じる';
     }, 50);
+    }); /* showConfirm callback end */
   }
 
   /* ── Music section ── */
@@ -4616,18 +4668,51 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function doUnlockSong(id) {
     var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
     if (!item || item.type !== 'song') return;
-    if (!SfSnow.spendPick(item.cost.pick)) {
+    var picks = SfSnow.getPicks();
+    if (picks < item.cost.pick) {
       alert('ギターピックが足りません');
       return;
     }
-    SfSnow.unlockItem(id);
-    renderMusic();
-    setTimeout(function() {
-      var player = document.getElementById('player-' + id);
-      var btn    = document.getElementById('play-btn-' + id);
-      if (player) { player.classList.add('open'); }
-      if (btn) btn.textContent = '閉じる';
-    }, 50);
+    showConfirm('交換しますか？', function() {
+      if (!SfSnow.spendPick(item.cost.pick)) { alert('ギターピックが足りません'); return; }
+      SfSnow.unlockItem(id);
+      renderMusic();
+      setTimeout(function() {
+        var player = document.getElementById('player-' + id);
+        var btn    = document.getElementById('play-btn-' + id);
+        if (player) { player.classList.add('open'); }
+        if (btn) btn.textContent = '閉じる';
+      }, 50);
+    });
+  }
+
+  /* ── 共通確認ダイアログ ── */
+  (function() {
+    var dlg = document.createElement('div');
+    dlg.id = 'confirm-dialog';
+    dlg.innerHTML = '<div id="confirm-dialog-box">'
+      + '<p id="confirm-msg"></p>'
+      + '<div class="confirm-btns">'
+      + '<button class="confirm-ok" id="confirm-ok-btn">はい</button>'
+      + '<button class="confirm-cancel" id="confirm-cancel-btn">やめる</button>'
+      + '</div></div>';
+    document.body.appendChild(dlg);
+    document.getElementById('confirm-cancel-btn').addEventListener('click', function() {
+      dlg.classList.remove('show');
+    });
+  })();
+
+  var _confirmCallback = null;
+  function showConfirm(msg, onOk) {
+    var dlg = document.getElementById('confirm-dialog');
+    document.getElementById('confirm-msg').textContent = msg;
+    _confirmCallback = onOk;
+    var okBtn = document.getElementById('confirm-ok-btn');
+    okBtn.onclick = function() {
+      dlg.classList.remove('show');
+      if (_confirmCallback) { _confirmCallback(); _confirmCallback = null; }
+    };
+    dlg.classList.add('show');
   }
 </script>
 
