@@ -4632,6 +4632,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       html += '<div class="post-header-left">';
       html += '<div class="post-title">' + item.title + '</div>';
       if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
+      if (!unlocked) {
+        html += '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;">'
+          + '<img src="../item/pick.webp" alt="pick" style="width:18px;opacity:0.75;">'
+          + '<span style="font-size:11px;letter-spacing:2px;color:#94a3b8;">ギターピック &times; ' + item.cost.pick + '</span>'
+          + '</div>';
+      }
       html += '</div>';
       if (unlocked) {
         html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
