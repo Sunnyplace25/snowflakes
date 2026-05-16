@@ -297,15 +297,15 @@
       </div>
       <div class="detail-row">
         <p class="detail-key">PART</p>
-        <p class="detail-val locked" id="pf-part">LOCKED</p>
+        <p class="detail-val" id="pf-part">Bass</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SIGN</p>
-        <p class="detail-val blank" id="pf-sign">────</p>
+        <p class="detail-val locked" id="pf-sign">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">BLOOD</p>
-        <p class="detail-val blank" id="pf-blood">────</p>
+        <p class="detail-val locked" id="pf-blood">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HEIGHT</p>
@@ -370,28 +370,36 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
-      var unlocked = (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('room_kouta'));
+      var candies  = SfSnow.getCandies();
+      var honey    = candies['honey'] || 0;
+      var roomDone = SfSnow.isUnlocked('room_kouta');
+      var count    = roomDone ? 999 : honey;
 
-      if (unlocked) {
-        var set = function(id, cls, text) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.className = 'detail-val ' + cls;
-          el.textContent = text;
-        };
-        set('pf-name',     '',       '橘 航太（たちばな こうた）');
-        set('pf-part',     '',       'Bass');
-        set('pf-sign',     '',       'てんびん座');
-        set('pf-blood',    '',       'A型');
-        set('pf-height',   '',       '174cm');
-        set('pf-likes',    '',       'カフェラテ / 文庫本 / 整理された机');
-        set('pf-dislikes', '',       '曖昧な返事 / 無駄な争い');
-        set('pf-hobby',    '',       '読書 / 映画鑑賞 / 配線を整えること / カフェ');
-        set('pf-food',     '',       '甘いもの全般');
-        set('pf-room',     '',       '暖色 / 本棚 / 生活感');
-        set('pf-habit',    '',       '考えながらペンを回す');
-        set('pf-smoke',    '',       '吸わない / 匂いは嫌いじゃない / ライターだけ持っている');
+      var reveal = function(id, text) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'detail-val';
+        el.textContent = text;
+      };
 
+      var PROFILE = [
+        { n:  30, id: 'pf-name',     val: '橘 航太（たちばな こうた）' },
+        { n:  36, id: 'pf-sign',     val: 'てんびん座' },
+        { n:  42, id: 'pf-blood',    val: 'A型' },
+        { n:  48, id: 'pf-height',   val: '174cm' },
+        { n:  54, id: 'pf-likes',    val: 'カフェラテ / 文庫本 / 整理された机' },
+        { n:  60, id: 'pf-dislikes', val: '曖昧な返事 / 無駄な争い' },
+        { n:  66, id: 'pf-hobby',    val: '読書 / 映画鑑賞 / 配線を整えること / カフェ' },
+        { n:  72, id: 'pf-food',     val: '甘いもの全般' },
+        { n:  78, id: 'pf-room',     val: '暖色 / 本棚 / 生活感' },
+        { n:  84, id: 'pf-habit',    val: '考えながらペンを回す' },
+        { n: 100, id: 'pf-smoke',    val: '吸わない / 匂いは嫌いじゃない / ライターだけ持っている' },
+      ];
+      PROFILE.forEach(function(p) {
+        if (count >= p.n) reveal(p.id, p.val);
+      });
+
+      if (count >= 100) {
         var mi = [
           '本棚だけ妙にきっちりしている',
           '読みかけの文庫本が何冊もある',
@@ -403,14 +411,21 @@
         ];
         mi.forEach(function(text, i) {
           var el = document.getElementById('mi-' + (i + 1));
-          if (el) el.textContent = text;
+          if (el) { el.style.color = '#64748b'; el.textContent = text; }
         });
+      }
 
-        // Item Log
-        var tag1 = document.getElementById('il-1-tag');
-        var desc1 = document.getElementById('il-1-desc');
-        if (tag1) tag1.textContent = '［初めて張り替えたベースの弦］';
-        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+      var tag1  = document.getElementById('il-1-tag');
+      var desc1 = document.getElementById('il-1-desc');
+      if (tag1) tag1.textContent = '［初めて張り替えたベースの弦］';
+      if (desc1) {
+        if (SfSnow.isUnlocked('item_kouta_string')) {
+          desc1.className = 'item-log-desc';
+          desc1.textContent = '';
+        } else {
+          desc1.className = 'item-log-desc locked';
+          desc1.textContent = '持っていません';
+        }
       }
     });
   </script>

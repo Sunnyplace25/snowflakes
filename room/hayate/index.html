@@ -297,15 +297,15 @@
       </div>
       <div class="detail-row">
         <p class="detail-key">PART</p>
-        <p class="detail-val locked" id="pf-part">LOCKED</p>
+        <p class="detail-val" id="pf-part">Drums</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SIGN</p>
-        <p class="detail-val blank" id="pf-sign">────</p>
+        <p class="detail-val locked" id="pf-sign">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">BLOOD</p>
-        <p class="detail-val blank" id="pf-blood">────</p>
+        <p class="detail-val locked" id="pf-blood">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HEIGHT</p>
@@ -370,28 +370,36 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
-      var unlocked = (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('room_hayate'));
+      var candies  = SfSnow.getCandies();
+      var cassis   = candies['cassis'] || 0;
+      var roomDone = SfSnow.isUnlocked('room_hayate');
+      var count    = roomDone ? 999 : cassis;
 
-      if (unlocked) {
-        var set = function(id, cls, text) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.className = 'detail-val ' + cls;
-          el.textContent = text;
-        };
-        set('pf-name',     '',       '楠木 颯（くすのき はやて）');
-        set('pf-part',     '',       'Drums');
-        set('pf-sign',     '',       'さそり座');
-        set('pf-blood',    '',       'O型');
-        set('pf-height',   '',       '181cm');
-        set('pf-likes',    '',       '炭酸 / 朝方の空 / 人の多い場所');
-        set('pf-dislikes', '',       '重すぎる空気 / 静かすぎる時間');
-        set('pf-hobby',    '',       'ゲーム / 深夜ドライブ / 思いつきで出かけること');
-        set('pf-food',     '',       'ジャンクフード / コンビニの新作');
-        set('pf-room',     '',       '朝焼け / ローテーブル / 誰かの気配');
-        set('pf-habit',    '',       '笑いながら話を逸らす');
-        set('pf-smoke',    '',       'たまに吸う / 人にもらうことが多い');
+      var reveal = function(id, text) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'detail-val';
+        el.textContent = text;
+      };
 
+      var PROFILE = [
+        { n:  30, id: 'pf-name',     val: '楠木 颯（くすのき はやて）' },
+        { n:  36, id: 'pf-sign',     val: 'さそり座' },
+        { n:  42, id: 'pf-blood',    val: 'O型' },
+        { n:  48, id: 'pf-height',   val: '181cm' },
+        { n:  54, id: 'pf-likes',    val: '炭酸 / 朝方の空 / 人の多い場所' },
+        { n:  60, id: 'pf-dislikes', val: '重すぎる空気 / 静かすぎる時間' },
+        { n:  66, id: 'pf-hobby',    val: 'ゲーム / 深夜ドライブ / 思いつきで出かけること' },
+        { n:  72, id: 'pf-food',     val: 'ジャンクフード / コンビニの新作' },
+        { n:  78, id: 'pf-room',     val: '朝焼け / ローテーブル / 誰かの気配' },
+        { n:  84, id: 'pf-habit',    val: '笑いながら話を逸らす' },
+        { n: 100, id: 'pf-smoke',    val: 'たまに吸う / 人にもらうことが多い' },
+      ];
+      PROFILE.forEach(function(p) {
+        if (count >= p.n) reveal(p.id, p.val);
+      });
+
+      if (count >= 100) {
         var mi = [
           'ライブ後だけ異様にテンションが高い',
           '人を泊めがち',
@@ -403,14 +411,21 @@
         ];
         mi.forEach(function(text, i) {
           var el = document.getElementById('mi-' + (i + 1));
-          if (el) el.textContent = text;
+          if (el) { el.style.color = '#64748b'; el.textContent = text; }
         });
+      }
 
-        // Item Log
-        var tag1 = document.getElementById('il-1-tag');
-        var desc1 = document.getElementById('il-1-desc');
-        if (tag1) tag1.textContent = '［子どもの頃のイベントリストバンド］';
-        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+      var tag1  = document.getElementById('il-1-tag');
+      var desc1 = document.getElementById('il-1-desc');
+      if (tag1) tag1.textContent = '［子どもの頃のイベントリストバンド］';
+      if (desc1) {
+        if (SfSnow.isUnlocked('item_hayate_wristband')) {
+          desc1.className = 'item-log-desc';
+          desc1.textContent = '';
+        } else {
+          desc1.className = 'item-log-desc locked';
+          desc1.textContent = '持っていません';
+        }
       }
     });
   </script>

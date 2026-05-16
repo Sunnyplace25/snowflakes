@@ -309,15 +309,15 @@
       </div>
       <div class="detail-row">
         <p class="detail-key">PART</p>
-        <p class="detail-val locked" id="pf-part">LOCKED</p>
+        <p class="detail-val" id="pf-part">Guitar &amp; Vocal</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SIGN</p>
-        <p class="detail-val blank" id="pf-sign">────</p>
+        <p class="detail-val locked" id="pf-sign">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">BLOOD</p>
-        <p class="detail-val blank" id="pf-blood">────</p>
+        <p class="detail-val locked" id="pf-blood">LOCKED</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HEIGHT</p>
@@ -382,37 +382,38 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
-      var unlocked = (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('room_hinata'));
+      var candies  = SfSnow.getCandies();
+      var milk     = candies['milk'] || 0;
+      var roomDone = SfSnow.isUnlocked('room_hinata');
+      var count    = roomDone ? 999 : milk;
 
-      if (unlocked) {
-        // Profile
-        var set = function(id, cls, text) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.className = 'detail-val ' + cls;
-          el.textContent = text;
-        };
-        set('pf-name',     '',       '環 陽向（たまき ひなた）');
-        set('pf-part',     '',       'Guitar / Vocal');
-        set('pf-sign',     '',       '水瓶座');
-        set('pf-blood',    '',       'AB型');
-        set('pf-height',   '',       '177cm');
-        set('pf-likes',    '',       'ブラックコーヒー / 深夜のコンビニ / 静かな雨');
-        set('pf-dislikes', '',       '騒がしい場所 / 急かされること');
-        set('pf-hobby',    '',       'デモ整理 / 夜の散歩 / 環境音を聴く');
-        set('pf-food',     '',       '甘すぎない甘いもの');
-        set('pf-room',     '',       '静か / 白いデスクライト / 深夜');
-        set('pf-habit',    '',       '考えごとをすると窓を見る');
-        set('pf-smoke',    '',       '吸う / 夜だけ増える');
+      var reveal = function(id, text) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'detail-val';
+        el.textContent = text;
+      };
 
-        // Mini Info
-        var mi = [
-          '曲名を最後まで決めない',
-          'デモ音源名が「001」のまま残っている',
-          'ギターケースの中だけ妙に綺麗',
-          '缶コーヒーを机に置きっぱなしにしがち',
-          '小雪相手だと少しだけ声が柔らかい'
-        ];
+      // プロフィール：枚数に応じて1項目ずつ解放
+      var PROFILE = [
+        { n:  30, id: 'pf-name',     val: '環 陽向（たまき ひなた）' },
+        { n:  36, id: 'pf-sign',     val: '水瓶座' },
+        { n:  42, id: 'pf-blood',    val: 'AB型' },
+        { n:  48, id: 'pf-height',   val: '177cm' },
+        { n:  54, id: 'pf-likes',    val: 'ブラックコーヒー / 深夜のコンビニ / 静かな雨' },
+        { n:  60, id: 'pf-dislikes', val: '騒がしい場所 / 急かされること' },
+        { n:  66, id: 'pf-hobby',    val: 'デモ整理 / 夜の散歩 / 環境音を聴く' },
+        { n:  72, id: 'pf-food',     val: '甘すぎない甘いもの' },
+        { n:  78, id: 'pf-room',     val: '静か / 白いデスクライト / 深夜' },
+        { n:  84, id: 'pf-habit',    val: '考えごとをすると窓を見る' },
+        { n: 100, id: 'pf-smoke',    val: '吸う / 夜だけ増える' },
+      ];
+      PROFILE.forEach(function(p) {
+        if (count >= p.n) reveal(p.id, p.val);
+      });
+
+      // MINI INFO：100枚で解放
+      if (count >= 100) {
         var mi = [
           '曲名を最後まで決めない',
           'デモ音源名が「001」のまま残っている',
@@ -423,14 +424,22 @@
         ];
         mi.forEach(function(text, i) {
           var el = document.getElementById('mi-' + (i + 1));
-          if (el) el.textContent = text;
+          if (el) { el.style.color = '#64748b'; el.textContent = text; }
         });
+      }
 
-        // Item Log
-        var tag1 = document.getElementById('il-1-tag');
-        var desc1 = document.getElementById('il-1-desc');
-        if (tag1) tag1.textContent = '［古いカセットテープ］';
-        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+      // ITEM LOG：タグ名は常に表示、アイテム所持で内容解放
+      var tag1  = document.getElementById('il-1-tag');
+      var desc1 = document.getElementById('il-1-desc');
+      if (tag1) tag1.textContent = '［古いカセットテープ］';
+      if (desc1) {
+        if (SfSnow.isUnlocked('item_hinata_cassette')) {
+          desc1.className = 'item-log-desc';
+          desc1.textContent = '';
+        } else {
+          desc1.className = 'item-log-desc locked';
+          desc1.textContent = '持っていません';
+        }
       }
     });
   </script>
