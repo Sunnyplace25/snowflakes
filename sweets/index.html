@@ -4210,7 +4210,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { name: 'KOUTA', img: '../plofile/chibi_kouta.webp', color: '#fca5a5',
         line: '<span style="color:#fde68a">ギターピック</span>でSWEETs限定楽曲が聴けるぞ！' },
       { name: 'HINATA', img: '../plofile/chibi_hinata.webp', color: '#93c5fd',
-        line: '山吹ことりの部屋、いってみた？' },
+        line: '山吹ことりの部屋、いってみた？', href: '../kotori.html' },
     ];
     var lastIdx = -1;
 
@@ -4246,17 +4246,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
       var c = pickLine();
       if (!c) return;
-      nameEl.textContent = c.name;
-      nameEl.style.color = c.color;
-      lineEl.innerHTML = c.line;
-      faceEl.src = c.img;
-      faceEl.alt = c.name;
-      popup.style.display = '';
-      popup.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() { popup.classList.add('show'); });
-      });
-      setTimeout(hidePopup, 6000);
+      applyLineToPopup(c);
     }
 
     function hidePopup() {
@@ -4286,19 +4276,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       showSpecificLine(c);
     };
 
-    function showSpecificLine(c) {
-      lastShown = Date.now();
+    function applyLineToPopup(c) {
       nameEl.textContent = c.name;
       nameEl.style.color = c.color;
       lineEl.innerHTML = c.line;
       faceEl.src = c.img;
       faceEl.alt = c.name;
+      var bubble = document.getElementById('chara-bubble');
+      if (c.href) {
+        bubble.style.cursor = 'pointer';
+        bubble.onclick = function() { location.href = c.href; };
+      } else {
+        bubble.style.cursor = '';
+        bubble.onclick = null;
+      }
       popup.style.display = '';
       popup.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       requestAnimationFrame(function() {
         requestAnimationFrame(function() { popup.classList.add('show'); });
       });
       setTimeout(hidePopup, 6000);
+    }
+
+    function showSpecificLine(c) {
+      lastShown = Date.now();
+      applyLineToPopup(c);
     };
 
     document.getElementById('chara-close').addEventListener('click', hidePopup);
