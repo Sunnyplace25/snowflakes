@@ -213,25 +213,24 @@
       align-items: center;
       gap: 6px;
       background: transparent;
-      border: 1px solid rgba(252,165,165,0.15);
+      border: 1px solid rgba(252,165,165,0.2);
       border-radius: 100px;
       padding: 5px 14px 5px 8px;
       cursor: not-allowed;
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px; letter-spacing: 2px;
-      color: #334155;
+      color: #475569;
       transition: all 0.2s;
       white-space: nowrap;
     }
     .unlock-btn.ready {
-      color: #64748b;
-      border-color: rgba(252,165,165,0.35);
+      color: #fca5a5;
+      border-color: rgba(252,165,165,0.45);
       cursor: pointer;
     }
     .unlock-btn.ready:hover {
-      background: rgba(252,165,165,0.08);
-      border-color: rgba(252,165,165,0.6);
-      color: #fca5a5;
+      background: rgba(252,165,165,0.1);
+      border-color: rgba(252,165,165,0.7);
     }
     .candy-ic {
       width: 18px; height: 18px;
@@ -362,6 +361,16 @@
       color: #fca5a5;
     }
     .dialog-btn.confirm:hover { background: rgba(252,165,165,0.15); }
+
+    .alert-overlay {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(8,15,30,0.8);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .alert-overlay.open { display: flex; }
   </style>
 </head>
 <body>
@@ -369,6 +378,16 @@
     <a href="../../sweets/" class="back">← SWEETs</a>
     <span class="snow-badge">❄ <span class="sf-snow-val">0</span></span>
   </nav>
+
+  <!-- アラートダイアログ -->
+  <div class="alert-overlay" id="alert-dialog">
+    <div class="dialog-box">
+      <p class="dialog-title" id="alert-msg"></p>
+      <div class="dialog-btns">
+        <button class="dialog-btn confirm" id="alert-ok">OK</button>
+      </div>
+    </div>
+  </div>
 
   <div class="dialog-overlay" id="unlock-dialog">
     <div class="dialog-box">
@@ -426,7 +445,7 @@
         <div class="name-area">
           <span class="name-nick" id="name-nick">コウタ</span>
           <span class="name-full" id="name-full">橘 航太（たちばな こうた）</span>
-          <button class="name-item-btn" id="name-unlock-btn">（ベースの弦）</button>
+          <button class="name-item-btn" id="name-unlock-btn">ベースの弦</button>
         </div>
       </div>
       <div class="detail-row">
@@ -602,7 +621,7 @@
       var nameBtn = document.getElementById('name-unlock-btn');
       if (saved.indexOf('pf-name') !== -1) {
         document.getElementById('name-nick').style.display = 'none';
-        document.getElementById('name-full').style.display = '';
+        document.getElementById('name-full').style.display = 'inline';
         if (nameBtn) nameBtn.style.display = 'none';
       } else {
         if (SfSnow.isUnlocked('item_kouta_string') && nameBtn) {
@@ -610,12 +629,12 @@
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
-            if (!nameBtn.classList.contains('ready')) return;
+            if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
             showDialog('初めて張り替えたベースの弦', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
               document.getElementById('name-nick').style.display = 'none';
-              document.getElementById('name-full').style.display = '';
+              document.getElementById('name-full').style.display = 'inline';
               nameBtn.style.display = 'none';
             });
           });
@@ -627,6 +646,16 @@
         if (saved.indexOf(p.id) !== -1) revealProfile(p);
       });
       if (saved.indexOf('mini') !== -1) revealMini();
+
+      // アラート
+      var alertDialog = document.getElementById('alert-dialog');
+      function showAlert(msg) {
+        document.getElementById('alert-msg').textContent = msg;
+        alertDialog.classList.add('open');
+      }
+      document.getElementById('alert-ok').addEventListener('click', function() {
+        alertDialog.classList.remove('open');
+      });
 
       // ダイアログ制御
       var pendingAction = null;
@@ -657,7 +686,7 @@
         if (!btn) return;
         if (cur >= CANDY_COST) btn.classList.add('ready');
         btn.addEventListener('click', function() {
-          if (!btn.classList.contains('ready')) return;
+          if (!btn.classList.contains('ready')) { showAlert('数が足りません'); return; }
           showDialog('ハニーレモンキャンディー × ' + CANDY_COST, function() {
             if (!SfSnow.spendCandy(CANDY_TYPE, CANDY_COST)) return;
             if (saved.indexOf(p.id) === -1) {
@@ -677,7 +706,7 @@
       if (miniBtn && saved.indexOf('mini') === -1) {
         if (cur >= MINI_COST) miniBtn.classList.add('ready');
         miniBtn.addEventListener('click', function() {
-          if (!miniBtn.classList.contains('ready')) return;
+          if (!miniBtn.classList.contains('ready')) { showAlert('数が足りません'); return; }
           showDialog('ハニーレモンキャンディー × ' + MINI_COST, function() {
             if (!SfSnow.spendCandy(CANDY_TYPE, MINI_COST)) return;
             saved.push('mini');
