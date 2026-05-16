@@ -490,32 +490,20 @@
 <section style="padding:80px 24px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">TOPICS</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:48px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
-  <!-- 本編更新バナー -->
+  <!-- SWEETs最新情報バナー -->
   <div style="max-width:680px;margin:0 auto 40px;">
-    <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/159" target="_blank"
-       style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
-
-      <!-- 背景パーティクル光（active時に表示） -->
-      <div id="update-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(147,197,253,0.08) 0%, transparent 70%);"></div>
-
-      <div style="position:relative;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-        <!-- ドット -->
-        <div id="update-dot" style="width:12px;height:12px;border-radius:50%;background:#3b5f8a;flex-shrink:0;transition:all 0.5s;"></div>
-
-        <!-- テキスト -->
+    <a href="./sweets/"
+       style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(249,168,212,0.03);border:1px solid rgba(249,168,212,0.2);transition:all 0.3s;position:relative;overflow:hidden;"
+       onmouseover="this.style.background='rgba(249,168,212,0.06)';this.style.borderColor='rgba(249,168,212,0.4)'"
+       onmouseout="this.style.background='rgba(249,168,212,0.03)';this.style.borderColor='rgba(249,168,212,0.2)'">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
         <div style="flex:1;min-width:0;">
-          <p id="update-label" style="font-size:10px;letter-spacing:7px;color:#4e7aa8;font-family:'Cormorant Garamond',serif;margin-bottom:8px;transition:color 0.5s;">DAILY UPDATE</p>
-          <p id="update-title" style="font-size:clamp(22px,4vw,32px);font-weight:300;color:#7aaedb;font-family:'Noto Serif JP',serif;letter-spacing:0.06em;line-height:1.2;transition:color 0.5s;">
-            Snow flakes
-            <span id="update-ep" style="font-family:'Cormorant Garamond',serif;font-size:0.85em;color:#4e7aa8;margin-left:10px;transition:color 0.5s;">#159</span>
-          </p>
-          <p id="update-sub" style="font-size:12px;color:#4e7aa8;margin-top:6px;letter-spacing:2px;transition:color 0.5s;">本編 毎日21時更新</p>
+          <p style="font-size:10px;letter-spacing:7px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">2026.05.17</p>
+          <p style="font-size:clamp(18px,3vw,26px);font-weight:300;color:#f9a8d4;font-family:'Noto Serif JP',serif;letter-spacing:0.06em;line-height:1.4;margin-bottom:6px;">SWEETs</p>
+          <p style="font-size:14px;color:#cbd5e1;letter-spacing:1px;font-weight:300;">解説 NOTE「半分のまま」追加</p>
         </div>
-
-        <!-- 右側ステータス -->
-        <div style="text-align:right;flex-shrink:0;">
-          <p id="update-status" style="font-size:12px;color:#4e7aa8;letter-spacing:3px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21 : 00</p>
-          <p id="update-arrow" style="font-size:20px;color:#4e7aa8;margin-top:6px;transition:all 0.5s;">→</p>
+        <div style="flex-shrink:0;">
+          <p style="font-size:20px;color:#f9a8d4;">→</p>
         </div>
       </div>
     </a>
@@ -1133,6 +1121,23 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
               <a href="https://ncode.syosetu.com/n9009lo/24" target="_blank"
                  style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">ep.24 →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="single-card">
+          <a href="./sweets/" style="display:block;">
+            <div style="width:100%;aspect-ratio:1;background:linear-gradient(135deg,rgba(252,165,165,0.15) 0%,rgba(8,15,30,0.95) 100%);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding:16px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;margin-bottom:6px;">Rabbit Arc</span>
+              <span style="font-family:'Noto Serif JP',serif;font-size:18px;color:#e2e8f0;letter-spacing:2px;line-height:1.4;">白いまま</span>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;margin-top:4px;">Vo. Kouta</span>
+            </div>
+          </a>
+          <div class="single-info">
+            <p class="single-title">白いまま</p>
+            <p class="single-status" style="color:#fca5a5;letter-spacing:2px;font-size:11px;">SWEETs限定</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+              <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);">SWEETs →</a>
             </div>
           </div>
         </div>
