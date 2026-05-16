@@ -518,15 +518,15 @@
   </div>
 
   <!-- SWEETs お知らせ -->
-  <div style="max-width:680px;margin:0 auto 20px;padding:0 20px;">
-    <a href="./sweets/" style="display:block;text-decoration:none;border:1px solid rgba(249,168,212,0.35);border-radius:16px;padding:16px 22px;background:rgba(249,168,212,0.04);transition:background 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='rgba(249,168,212,0.04)'">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
-        <div>
-          <p style="font-size:12px;letter-spacing:4px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:6px;">2026.05.17</p>
-          <p style="color:#f9a8d4;letter-spacing:3px;font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:6px;">SWEETs</p>
-          <p style="font-size:15px;letter-spacing:1px;color:#cbd5e1;font-weight:300;line-height:1.8;">解説 NOTE「半分のまま」追加</p>
+  <div style="max-width:680px;margin:0 auto 40px;">
+    <a href="./sweets/" style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(249,168,212,0.03);border:1px solid rgba(249,168,212,0.2);transition:all 0.3s;" onmouseover="this.style.background='rgba(249,168,212,0.06)';this.style.borderColor='rgba(249,168,212,0.4)'" onmouseout="this.style.background='rgba(249,168,212,0.03)';this.style.borderColor='rgba(249,168,212,0.2)'">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-size:10px;letter-spacing:7px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">2026.05.17</p>
+          <p style="font-size:clamp(18px,3vw,26px);font-weight:300;color:#f9a8d4;font-family:'Cormorant Garamond',serif;letter-spacing:4px;margin-bottom:6px;">SWEETs</p>
+          <p style="font-size:13px;color:#94a3b8;letter-spacing:2px;">解説 NOTE「半分のまま」追加</p>
         </div>
-        <p style="font-size:18px;color:#f9a8d4;flex-shrink:0;">→</p>
+        <p style="font-size:20px;color:#f9a8d4;flex-shrink:0;">→</p>
       </div>
     </a>
   </div>
@@ -838,6 +838,42 @@
         </button>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Studio -->
+<section style="padding:80px 24px;position:relative;z-index:1;">
+  <span class="sec-label">STUDIO</span>
+  <h2 class="sec-title">キャラクタールーム</h2>
+  <div style="max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+
+    <div style="border-radius:16px;overflow:hidden;background:var(--card);border:1px solid rgba(147,197,253,0.2);transition:transform 0.2s,border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(147,197,253,0.2)'">
+      <div style="height:6px;background:#93c5fd;opacity:0.6;"></div>
+      <div style="padding:24px 20px;">
+        <p style="font-size:10px;letter-spacing:5px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Guitar &amp; Vocal</p>
+        <p style="font-size:22px;color:#93c5fd;font-family:'Noto Serif JP',serif;margin-bottom:16px;">ヒナタ</p>
+        <a href="room/hinata/" style="display:inline-block;font-size:12px;color:#93c5fd;text-decoration:none;padding:7px 18px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);letter-spacing:2px;">プロフィール詳細 →</a>
+      </div>
+    </div>
+
+    <div style="border-radius:16px;overflow:hidden;background:var(--card);border:1px solid rgba(252,165,165,0.2);transition:transform 0.2s,border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(252,165,165,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(252,165,165,0.2)'">
+      <div style="height:6px;background:#fca5a5;opacity:0.6;"></div>
+      <div style="padding:24px 20px;">
+        <p style="font-size:10px;letter-spacing:5px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Bass</p>
+        <p style="font-size:22px;color:#fca5a5;font-family:'Noto Serif JP',serif;margin-bottom:16px;">コウタ</p>
+        <a href="room/kouta/" style="display:inline-block;font-size:12px;color:#fca5a5;text-decoration:none;padding:7px 18px;border-radius:100px;border:1px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);letter-spacing:2px;">プロフィール詳細 →</a>
+      </div>
+    </div>
+
+    <div style="border-radius:16px;overflow:hidden;background:var(--card);border:1px solid rgba(253,230,138,0.2);transition:transform 0.2s,border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(253,230,138,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(253,230,138,0.2)'">
+      <div style="height:6px;background:#fde68a;opacity:0.6;"></div>
+      <div style="padding:24px 20px;">
+        <p style="font-size:10px;letter-spacing:5px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Drums</p>
+        <p style="font-size:22px;color:#fde68a;font-family:'Noto Serif JP',serif;margin-bottom:16px;">ハヤテ</p>
+        <a href="room/hayate/" style="display:inline-block;font-size:12px;color:#fde68a;text-decoration:none;padding:7px 18px;border-radius:100px;border:1px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);letter-spacing:2px;">プロフィール詳細 →</a>
+      </div>
+    </div>
+
   </div>
 </section>
 
