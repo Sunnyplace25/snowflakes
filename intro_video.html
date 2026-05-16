@@ -613,10 +613,9 @@
   }
 
   function goTo(idx) {
-    // 現在を非表示
     const prevEl = document.getElementById(SLIDES[current].id);
     prevEl.classList.remove('active');
-    // fade-up リセット
+    // 前スライドのfade-upをインラインリセット（再訪問時用）
     prevEl.querySelectorAll('.fade-up').forEach(el => {
       el.style.transition = 'none';
       el.style.opacity = '0';
@@ -629,20 +628,20 @@
     const slideData = SLIDES[current];
     const el = document.getElementById(slideData.id);
 
-    // fade-up をリセットしてから active
+    // 新スライドのfade-up: インラインtransitionだけnoneにして開始値をCSSに任せる
     el.querySelectorAll('.fade-up').forEach(el2 => {
       el2.style.transition = 'none';
-      el2.style.opacity = '0';
-      el2.style.transform = 'translateY(24px)';
+      el2.style.opacity = '';       // CSSの opacity:0 に戻す
+      el2.style.transform = '';     // CSSの translateY(24px) に戻す
     });
-
+    // リフローで確定させてからtransition復元 → active付与でアニメ開始
+    el.offsetHeight;
+    el.querySelectorAll('.fade-up').forEach(el2 => {
+      el2.style.transition = '';
+    });
     setTimeout(() => {
       el.classList.add('active');
-      // CSS transition を戻す
-      el.querySelectorAll('.fade-up').forEach(el2 => {
-        el2.style.transition = '';
-      });
-    }, 50);
+    }, 60);
 
     updateDots();
     startProgress(slideData.duration);
