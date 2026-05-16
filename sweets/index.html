@@ -393,12 +393,13 @@
       color: var(--text);
       margin-bottom: 10px;
     }
-    .post-title.nowrap {
-      font-size: 13px;
-      white-space: nowrap;
+    .music-card-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
-    .post-header.music-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .post-header.music-header .post-header-left { width: 100%; }
+    .music-card-btn { flex-shrink: 0; }
+    .music-card-info { flex: 1; min-width: 0; }
 
     .post-date {
       font-size: 12px;
@@ -4633,27 +4634,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var html = '';
     songs.forEach(function(item) {
       var unlocked = SfSnow.isUnlocked(item.id);
+      var picks = SfSnow.getPicks();
+      var ok = unlocked || picks >= item.cost.pick;
       html += '<div class="post-card" style="margin-top:0;">';
-      html += '<div class="post-header music-header">';
-      html += '<div class="post-header-left">';
-      html += '<div class="post-title nowrap">' + item.title + '</div>';
-      if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
-      if (!unlocked) {
-        html += '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;">'
-          + '<img src="../item/pick.webp" alt="pick" style="width:18px;opacity:0.75;">'
-          + '<span style="font-size:11px;letter-spacing:2px;color:#94a3b8;">ギターピック &times; ' + item.cost.pick + '</span>'
-          + '</div>';
-      }
-      html += '</div>';
+      html += '<div class="music-card-row">';
+      // ボタン（左固定）
+      html += '<div class="music-card-btn">';
       if (unlocked) {
         html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
       } else {
-        var picks = SfSnow.getPicks();
-        var ok = picks >= item.cost.pick;
         html += '<button class="read-btn"' + (ok ? '' : ' style="opacity:0.45;"')
           + ' onclick="doUnlockSong(\'' + item.id + '\')">'
           + (ok ? '交換する' : 'ピック不足') + '</button>';
       }
+      html += '</div>';
+      // タイトル・コスト（右）
+      html += '<div class="music-card-info">';
+      html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
+      if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
+      if (!unlocked) {
+        html += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">'
+          + '<img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.75;">'
+          + '<span style="font-size:11px;letter-spacing:2px;color:#94a3b8;">ギターピック &times; ' + item.cost.pick + '</span>'
+          + '</div>';
+      }
+      html += '</div>';
       html += '</div>';
       if (unlocked) {
         html += '<div class="post-content" id="player-' + item.id + '">';
