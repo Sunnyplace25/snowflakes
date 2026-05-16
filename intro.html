@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snow flakes — サイト紹介</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #080f1e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #475569;
+      --border: rgba(255,255,255,0.08);
+      --card: rgba(255,255,255,0.04);
+      --hinata: #93c5fd;
+      --kouta: #fca5a5;
+      --hayate: #fde68a;
+      --pink: #f9a8d4;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('plofile/hinata_hero.webp');
+      background-size: cover;
+      background-position: top center;
+      filter: brightness(0.35) saturate(0.7);
+      transform: scale(1.05);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(8,15,30,0.2) 0%,
+        rgba(8,15,30,0.1) 40%,
+        rgba(8,15,30,0.85) 85%,
+        rgba(8,15,30,1) 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 0 24px;
+    }
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 8px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 12vw, 90px);
+      font-weight: 300;
+      color: white;
+      letter-spacing: 8px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+    }
+    .hero-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 2;
+      max-width: 400px;
+      margin: 0 auto 48px;
+    }
+    .hero-url {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 28px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.04);
+      display: inline-block;
+      text-decoration: none;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--dim);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--dim), transparent);
+    }
+
+    /* ── SECTION COMMON ── */
+    .section {
+      padding: 100px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .sec-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 300;
+      color: white;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+    }
+    .sec-title-ja {
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 4px;
+      margin-bottom: 40px;
+    }
+    .sec-body {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 2.2;
+    }
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      margin: 0 auto 80px;
+    }
+
+    /* ── NOVEL SECTION ── */
+    .novel-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-top: 40px;
+    }
+    .novel-covers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .novel-cover {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .novel-cover img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      aspect-ratio: 2/3;
+    }
+    .novel-tag {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--hinata);
+      border: 1px solid rgba(147,197,253,0.3);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .novel-platform {
+      margin-top: 32px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+    .novel-platform span {
+      color: var(--hinata);
+    }
+
+    /* ── MUSIC SECTION ── */
+    .music-section {
+      background: linear-gradient(180deg, transparent, rgba(147,197,253,0.03) 30%, rgba(147,197,253,0.03) 70%, transparent);
+      padding: 100px 24px;
+    }
+    .music-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .music-jackets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 40px;
+    }
+    .jacket-item {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .jacket-item img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+    .jacket-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 12px 12px;
+      background: linear-gradient(transparent, rgba(8,15,30,0.9));
+      font-size: 12px;
+      color: white;
+      letter-spacing: 1px;
+    }
+    .streaming-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .stream-chip {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: var(--card);
+    }
+
+    /* ── CHARACTERS SECTION ── */
+    .chars-section {
+      padding: 100px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .chars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .char-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .char-card.h { border-color: rgba(147,197,253,0.25); }
+    .char-card.k { border-color: rgba(252,165,165,0.25); }
+    .char-card.y { border-color: rgba(253,230,138,0.25); }
+    .char-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .char-card.k .char-img { transform: scale(1.2); transform-origin: top center; }
+    .char-card.y .char-img { object-position: 50% 8%; transform: scale(1.4); transform-origin: top center; }
+    .char-info {
+      padding: 14px 16px;
+    }
+    .char-name-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 3px;
+      margin-bottom: 2px;
+    }
+    .char-card.h .char-name-en { color: var(--hinata); }
+    .char-card.k .char-name-en { color: var(--kouta); }
+    .char-card.y .char-name-en { color: var(--hayate); }
+    .char-name-ja {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .char-role {
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: 2px;
+    }
+
+    /* ── SWEETS SECTION ── */
+    .sweets-section {
+      padding: 100px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sweets-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(249,168,212,0.06) 0%, transparent 70%);
+    }
+    .sweets-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .sweets-tag {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--pink);
+      border: 1px solid rgba(249,168,212,0.3);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .sweets-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 40px;
+    }
+    .sweets-card {
+      border-radius: 14px;
+      border: 1px solid rgba(249,168,212,0.15);
+      background: rgba(249,168,212,0.04);
+      padding: 24px 18px;
+      text-align: center;
+    }
+    .sweets-card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+    .sweets-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: var(--pink);
+      margin-bottom: 8px;
+    }
+    .sweets-card-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.8;
+      letter-spacing: 1px;
+    }
+    .sweets-studio {
+      margin-top: 28px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(249,168,212,0.15);
+      position: relative;
+    }
+    .sweets-studio img {
+      width: 100%;
+      display: block;
+      opacity: 0.7;
+    }
+    .sweets-studio-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8,15,30,0.5);
+      gap: 8px;
+    }
+    .sweets-studio-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 6px;
+      color: var(--muted);
+    }
+    .sweets-studio-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: white;
+    }
+    .sweets-studio-note {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 120px 24px 160px;
+      text-align: center;
+      position: relative;
+    }
+    .cta-band {
+      margin-top: 20px;
+      border-radius: 16px;
+      overflow: hidden;
+      max-width: 600px;
+      margin: 0 auto 60px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .cta-band img {
+      width: 100%;
+      display: block;
+      opacity: 0.5;
+      filter: saturate(0.6);
+    }
+    .cta-band-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,15,30,0.3), rgba(8,15,30,0.7));
+    }
+    .cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 300;
+      color: white;
+      letter-spacing: 4px;
+      margin-bottom: 12px;
+    }
+    .cta-sub {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 5px;
+      text-decoration: none;
+      background: rgba(255,255,255,0.05);
+    }
+    .cta-url {
+      margin-top: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--dim);
+      letter-spacing: 3px;
+    }
+    .copyright {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 3px;
+      font-family: 'Cormorant Garamond', serif;
+      white-space: nowrap;
+    }
+
+    /* ── SNOW ── */
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.2; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .novel-layout { grid-template-columns: 1fr; }
+      .novel-covers { grid-template-columns: repeat(2, 1fr); }
+      .music-jackets { grid-template-columns: repeat(2, 1fr); }
+      .sweets-cards { grid-template-columns: 1fr; }
+      .chars-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">OFFICIAL SITE GUIDE</p>
+    <h1 class="hero-title">Snow flakes</h1>
+    <p class="hero-sub">スノーフレークス</p>
+    <p class="hero-desc">
+      音楽と小説でできた、バンドの話。<br>
+      3人のキャラクターと積もっていく音の記録を、<br>
+      このサイトで体験してください。
+    </p>
+    <span class="hero-url">sunnyplace25.github.io/snowflakes</span>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── NOVEL ── -->
+<div class="divider" style="margin-top:0;"></div>
+<section class="section">
+  <p class="sec-eyebrow">01 — NOVEL</p>
+  <h2 class="sec-title">小説</h2>
+  <p class="sec-title-ja">物語を読む</p>
+
+  <div class="novel-layout">
+    <div>
+      <div class="novel-tag">小説家になろう 連載中</div>
+      <p class="sec-body">
+        ヒナタ、コウタ、ハヤテ。<br>
+        3人でつくる音楽と、<br>
+        言葉にならないまま続く日々。<br><br>
+        バンドの内側で起きることを、<br>
+        ひとつひとつ丁寧に書いています。<br><br>
+        Kindleでは単行本も発売中。<br>
+        1巻から読めます。
+      </p>
+      <div class="novel-platform">
+        <span>小説家になろう</span> で全話無料公開<br>
+        <span style="color:var(--muted)">Kindle</span> 単行本 全4巻
+      </div>
+    </div>
+    <div class="novel-covers">
+      <div class="novel-cover">
+        <img src="Discography/early_snow.webp" alt="Snow flakes 小説 山吹ことり">
+      </div>
+      <div class="novel-cover">
+        <img src="plofile/chara_hinata.webp" alt="ヒナタ 環陽向 Snow flakes">
+      </div>
+      <div class="novel-cover">
+        <img src="plofile/kouta.webp" alt="コウタ 橘航太 Snow flakes">
+      </div>
+      <div class="novel-cover">
+        <img src="plofile/chara_hayate.webp" alt="ハヤテ 楠木颯 Snow flakes">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── MUSIC ── -->
+<section class="music-section">
+  <div class="music-inner">
+    <p class="sec-eyebrow">02 — MUSIC</p>
+    <h2 class="sec-title">音楽</h2>
+    <p class="sec-title-ja">ストリーミングで聴く</p>
+    <p class="sec-body">
+      小説の場面と連動した楽曲を、<br>
+      各ストリーミングサービスで配信しています。<br>
+      物語を読みながら流すと、より深く。
+    </p>
+
+    <div class="music-jackets">
+      <div class="jacket-item">
+        <img src="Discography/Round Bounce.webp" alt="Round Bounce Snow flakes 山吹ことり">
+        <div class="jacket-label">Round Bounce</div>
+      </div>
+      <div class="jacket-item">
+        <img src="Discography/SWEETs.webp" alt="SWEETs Snow flakes 山吹ことり">
+        <div class="jacket-label">SWEETs</div>
+      </div>
+      <div class="jacket-item">
+        <img src="Discography/置いた音.webp" alt="置いた音 Snow flakes 山吹ことり">
+        <div class="jacket-label">置いた音</div>
+      </div>
+    </div>
+
+    <div class="streaming-row">
+      <span class="stream-chip">Spotify</span>
+      <span class="stream-chip">Apple Music</span>
+      <span class="stream-chip">Amazon Music</span>
+      <span class="stream-chip">YouTube Music</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── CHARACTERS ── -->
+<section class="chars-section">
+  <p class="sec-eyebrow">03 — CHARACTERS</p>
+  <h2 class="sec-title">Characters</h2>
+  <p class="sec-title-ja">3人を知る</p>
+  <p class="sec-body">
+    サイトには、3人のキャラクターページがあります。<br>
+    それぞれの視点と空気を感じてください。
+  </p>
+
+  <div class="chars-grid">
+    <div class="char-card h">
+      <div style="overflow:hidden;">
+        <img class="char-img" src="plofile/chara_hinata.webp" alt="ヒナタ 環陽向 Snow flakes スノーフレークス 山吹ことり">
+      </div>
+      <div class="char-info">
+        <p class="char-name-en">HINATA</p>
+        <p class="char-name-ja">環 陽向</p>
+        <p class="char-role">Guitar &amp; Vocal</p>
+      </div>
+    </div>
+    <div class="char-card k">
+      <div style="overflow:hidden;">
+        <img class="char-img" src="plofile/kouta.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス 山吹ことり">
+      </div>
+      <div class="char-info">
+        <p class="char-name-en">KOUTA</p>
+        <p class="char-name-ja">橘 航太</p>
+        <p class="char-role">Bass</p>
+      </div>
+    </div>
+    <div class="char-card y">
+      <div style="overflow:hidden;">
+        <img class="char-img" src="plofile/chara_hayate.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス 山吹ことり">
+      </div>
+      <div class="char-info">
+        <p class="char-name-en">HAYATE</p>
+        <p class="char-name-ja">楠木 颯</p>
+        <p class="char-role">Drums</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── SWEETS ── -->
+<section class="sweets-section">
+  <div class="sweets-bg"></div>
+  <div class="sweets-inner">
+    <p class="sec-eyebrow">04 — SWEETs</p>
+    <h2 class="sec-title">SWEETs</h2>
+    <p class="sec-title-ja">限定コンテンツ</p>
+    <p class="sec-body">
+      サイト内のSWEETsページには、<br>
+      通常公開していない特別なコンテンツがあります。<br>
+      ガチャで集めたアイテムで解放できます。
+    </p>
+
+    <div class="sweets-cards">
+      <div class="sweets-card">
+        <div class="sweets-card-icon">🎵</div>
+        <p class="sweets-card-title">MUSIC</p>
+        <p class="sweets-card-desc">SWEETs限定楽曲を<br>ギターピックで解放</p>
+      </div>
+      <div class="sweets-card">
+        <div class="sweets-card-icon">📝</div>
+        <p class="sweets-card-title">NOTES</p>
+        <p class="sweets-card-desc">楽曲・エピソードの<br>制作解説が読める</p>
+      </div>
+      <div class="sweets-card">
+        <div class="sweets-card-icon">🚪</div>
+        <p class="sweets-card-title">ROOM</p>
+        <p class="sweets-card-desc">3人それぞれの<br>部屋に入れる</p>
+      </div>
+    </div>
+
+    <div class="sweets-studio">
+      <img src="sweets/studio.webp" alt="Snow flakes スタジオ キャラクター 山吹ことり スノーフレークス">
+      <div class="sweets-studio-overlay">
+        <p class="sweets-studio-label">unlock with items</p>
+        <p class="sweets-studio-title">STUDIO</p>
+        <p class="sweets-studio-note">ガチャアイテムを集めて解放</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="cta-band">
+    <img src="sweets/band.webp" alt="Snow flakes バンド 山吹ことり スノーフレークス スノフレ">
+    <div class="cta-band-overlay"></div>
+  </div>
+
+  <p class="cta-title" style="margin-top:48px;">ぜひ来てください。</p>
+  <p class="cta-sub">物語の続きは、サイトの中にあります。</p>
+
+  <a class="cta-btn" href="index.html">Snow flakes へ →</a>
+  <p class="cta-url">sunnyplace25.github.io/snowflakes/</p>
+
+  <p class="copyright">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
+</section>
+
+<script>
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 60}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.3, speed: Math.random()*0.4+0.1,
+    drift: (Math.random()-0.5)*0.2
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
