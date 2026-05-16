@@ -359,6 +359,7 @@
       <p class="mini-info-item" id="mi-3">LOCKED</p>
       <p class="mini-info-item" id="mi-4">LOCKED</p>
       <p class="mini-info-item" id="mi-5">LOCKED</p>
+      <p class="mini-info-item" id="mi-6">LOCKED</p>
     </div>
 
     <div class="section-divider"></div>
@@ -394,7 +395,7 @@
         set('pf-height',   '',       '177cm');
         set('pf-likes',    '',       'ブラックコーヒー / 深夜のコンビニ / 静かな雨');
         set('pf-dislikes', '',       '騒がしい場所 / 急かされること');
-        set('pf-hobby',    '',       'デモ整理 / 夜の散歩');
+        set('pf-hobby',    '',       'デモ整理 / 夜の散歩 / 環境音を聴く');
         set('pf-food',     '',       '甘すぎない甘いもの');
         set('pf-room',     '',       '静か / 白いデスクライト / 深夜');
         set('pf-habit',    '',       '考えごとをすると窓を見る');
@@ -406,6 +407,14 @@
           'ギターケースの中だけ妙に綺麗',
           '缶コーヒーを机に置きっぱなしにしがち',
           '小雪相手だと少しだけ声が柔らかい'
+        ];
+        var mi = [
+          '曲名を最後まで決めない',
+          'デモ音源名が「001」のまま残っている',
+          'ギターケースの中だけ妙に綺麗',
+          '缶コーヒーを机に置きっぱなしにしがち',
+          '小雪相手だと少しだけ声が柔らかい',
+          '無意識に弦を触っている'
         ];
         mi.forEach(function(text, i) {
           var el = document.getElementById('mi-' + (i + 1));
