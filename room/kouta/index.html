@@ -168,13 +168,48 @@
       line-height: 1.9;
       flex: 1;
     }
-    .detail-val.name-glow {
+    /* NAME エリア */
+    .name-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .name-nick {
+      font-size: 13px; letter-spacing: 3px;
+      color: #fca5a5;
+      text-shadow: 0 0 12px rgba(252,165,165,0.4);
+    }
+    .name-full {
+      font-size: 13px; letter-spacing: 2px;
       color: #fca5a5;
       text-shadow: 0 0 14px rgba(252,165,165,0.5);
-      font-size: 13px;
+      display: none;
+    }
+    .item-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(252,165,165,0.2);
+      background: transparent;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      color: #334155;
+      font-size: 11px;
+    }
+    .item-btn.ready {
+      border-color: rgba(252,165,165,0.5);
+      color: #fca5a5;
+      cursor: pointer;
+    }
+    .item-btn.ready:hover {
+      background: rgba(252,165,165,0.1);
+      border-color: rgba(252,165,165,0.8);
     }
 
-    /* Unlock button */
     .unlock-btn {
       display: inline-flex;
       align-items: center;
@@ -207,7 +242,12 @@
     }
     .unlock-btn.ready .candy-ic { opacity: 1; }
 
-    /* Mini Info */
+    .item-req {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 3px;
+      color: #334155;
+    }
+
     .mini-info {
       width: 100%;
       background: rgba(252,165,165,0.03);
@@ -237,7 +277,6 @@
       color: #fca5a5;
     }
 
-    /* Item Log */
     .item-log {
       width: 100%;
       display: flex;
@@ -269,6 +308,62 @@
       font-size: 10px; letter-spacing: 3px;
       color: #334155;
     }
+
+    .dialog-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(8,15,30,0.8);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .dialog-overlay.open { display: flex; }
+    .dialog-box {
+      background: #0c1828;
+      border: 1px solid rgba(252,165,165,0.2);
+      border-radius: 16px;
+      padding: 32px 28px;
+      width: min(300px, 88vw);
+      text-align: center;
+    }
+    .dialog-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; letter-spacing: 4px;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+    }
+    .dialog-cost {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 3px;
+      color: #fca5a5;
+      margin-bottom: 28px;
+    }
+    .dialog-cost img { width: 20px; height: 20px; object-fit: contain; }
+    .dialog-btns { display: flex; gap: 10px; }
+    .dialog-btn {
+      flex: 1; padding: 10px 0;
+      border-radius: 8px; border: none;
+      cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 3px;
+      transition: all 0.2s;
+    }
+    .dialog-btn.cancel {
+      background: transparent;
+      border: 1px solid rgba(252,165,165,0.15);
+      color: #475569;
+    }
+    .dialog-btn.cancel:hover { border-color: rgba(252,165,165,0.3); color: #64748b; }
+    .dialog-btn.confirm {
+      background: rgba(252,165,165,0.08);
+      border: 1px solid rgba(252,165,165,0.3);
+      color: #fca5a5;
+    }
+    .dialog-btn.confirm:hover { background: rgba(252,165,165,0.15); }
   </style>
 </head>
 <body>
@@ -276,6 +371,20 @@
     <a href="../../sweets/" class="back">← SWEETs</a>
     <span class="snow-badge">❄ <span class="sf-snow-val">0</span></span>
   </nav>
+
+  <div class="dialog-overlay" id="unlock-dialog">
+    <div class="dialog-box">
+      <p class="dialog-title">交換しますか？</p>
+      <div class="dialog-cost">
+        <img src="../../item/candy_honey.webp" id="dialog-candy-img">
+        <span id="dialog-cost-text">ハニーレモンキャンディー × 30</span>
+      </div>
+      <div class="dialog-btns">
+        <button class="dialog-btn cancel" id="dialog-cancel">キャンセル</button>
+        <button class="dialog-btn confirm" id="dialog-confirm">交換する</button>
+      </div>
+    </div>
+  </div>
 
   <div class="main">
     <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\b4e91d09-8826-4ee0-a2d9-caf0f4ed36c8.png -->
@@ -316,93 +425,93 @@
     <div class="detail-list">
       <div class="detail-row">
         <p class="detail-key">NAME</p>
-        <p class="detail-val" id="pf-name">
-          <button class="unlock-btn" data-id="pf-name" data-need="30">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
-          </button>
-        </p>
+        <div class="name-area">
+          <span class="name-nick" id="name-nick">コウタ</span>
+          <span class="name-full" id="name-full">橘 航太（たちばな こうた）</span>
+          <button class="item-btn" id="name-unlock-btn" title="初めて張り替えたベースの弦">◎</button>
+        </div>
       </div>
       <div class="detail-row">
         <p class="detail-key">PART</p>
-        <p class="detail-val" id="pf-part">Bass</p>
+        <p class="detail-val">Bass</p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SIGN</p>
         <p class="detail-val" id="pf-sign">
-          <button class="unlock-btn" data-id="pf-sign" data-need="36">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 36
+          <button class="unlock-btn" data-id="pf-sign">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">BLOOD</p>
         <p class="detail-val" id="pf-blood">
-          <button class="unlock-btn" data-id="pf-blood" data-need="42">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 42
+          <button class="unlock-btn" data-id="pf-blood">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HEIGHT</p>
         <p class="detail-val" id="pf-height">
-          <button class="unlock-btn" data-id="pf-height" data-need="48">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 48
+          <button class="unlock-btn" data-id="pf-height">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">LIKES</p>
         <p class="detail-val" id="pf-likes">
-          <button class="unlock-btn" data-id="pf-likes" data-need="54">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 54
+          <button class="unlock-btn" data-id="pf-likes">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">DISLIKES</p>
         <p class="detail-val" id="pf-dislikes">
-          <button class="unlock-btn" data-id="pf-dislikes" data-need="60">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 60
+          <button class="unlock-btn" data-id="pf-dislikes">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HOBBY</p>
         <p class="detail-val" id="pf-hobby">
-          <button class="unlock-btn" data-id="pf-hobby" data-need="66">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 66
+          <button class="unlock-btn" data-id="pf-hobby">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">FOOD</p>
         <p class="detail-val" id="pf-food">
-          <button class="unlock-btn" data-id="pf-food" data-need="72">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 72
+          <button class="unlock-btn" data-id="pf-food">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">ROOM</p>
         <p class="detail-val" id="pf-room">
-          <button class="unlock-btn" data-id="pf-room" data-need="78">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 78
+          <button class="unlock-btn" data-id="pf-room">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">HABIT</p>
         <p class="detail-val" id="pf-habit">
-          <button class="unlock-btn" data-id="pf-habit" data-need="84">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 84
+          <button class="unlock-btn" data-id="pf-habit">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
       <div class="detail-row">
         <p class="detail-key">SMOKE</p>
         <p class="detail-val" id="pf-smoke">
-          <button class="unlock-btn" data-id="pf-smoke" data-need="100">
-            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 100
+          <button class="unlock-btn" data-id="pf-smoke">
+            <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 30
           </button>
         </p>
       </div>
@@ -413,7 +522,7 @@
 
     <div class="mini-info">
       <div class="mini-lock" id="mini-lock">
-        <button class="unlock-btn" id="mini-unlock-btn" data-need="100">
+        <button class="unlock-btn" id="mini-unlock-btn">
           <img src="../../item/candy_honey.webp" class="candy-ic">ハニーレモンキャンディー × 100
         </button>
       </div>
@@ -444,22 +553,23 @@
 
       var SAVE_KEY   = 'sf_pf_kouta';
       var CANDY_TYPE = 'honey';
+      var CANDY_COST = 30;
+      var MINI_COST  = 100;
 
       var saved = [];
       try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch(e) {}
 
       var PROFILE = [
-        { n:  30, id: 'pf-name',     val: '橘 航太（たちばな こうた）',              isName: true  },
-        { n:  36, id: 'pf-sign',     val: 'てんびん座',                              isName: false },
-        { n:  42, id: 'pf-blood',    val: 'A型',                                    isName: false },
-        { n:  48, id: 'pf-height',   val: '174cm',                                  isName: false },
-        { n:  54, id: 'pf-likes',    val: 'カフェラテ / 文庫本 / 整理された机',        isName: false },
-        { n:  60, id: 'pf-dislikes', val: '曖昧な返事 / 無駄な争い',                  isName: false },
-        { n:  66, id: 'pf-hobby',    val: '読書 / 映画鑑賞 / 配線を整えること / カフェ', isName: false },
-        { n:  72, id: 'pf-food',     val: '甘いもの全般',                             isName: false },
-        { n:  78, id: 'pf-room',     val: '暖色 / 本棚 / 生活感',                    isName: false },
-        { n:  84, id: 'pf-habit',    val: '考えながらペンを回す',                      isName: false },
-        { n: 100, id: 'pf-smoke',    val: '吸わない / 匂いは嫌いじゃない / ライターだけ持っている', isName: false },
+        { id: 'pf-sign',     val: 'てんびん座' },
+        { id: 'pf-blood',    val: 'A型' },
+        { id: 'pf-height',   val: '174cm' },
+        { id: 'pf-likes',    val: 'カフェラテ / 文庫本 / 整理された机' },
+        { id: 'pf-dislikes', val: '曖昧な返事 / 無駄な争い' },
+        { id: 'pf-hobby',    val: '読書 / 映画鑑賞 / 配線を整えること / カフェ' },
+        { id: 'pf-food',     val: '甘いもの全般' },
+        { id: 'pf-room',     val: '暖色 / 本棚 / 生活感' },
+        { id: 'pf-habit',    val: '考えながらペンを回す' },
+        { id: 'pf-smoke',    val: '吸わない / 匂いは嫌いじゃない / ライターだけ持っている' },
       ];
 
       var MI_TEXTS = [
@@ -477,7 +587,7 @@
       function revealProfile(p) {
         var el = document.getElementById(p.id);
         if (!el) return;
-        el.className = p.isName ? 'detail-val name-glow' : 'detail-val';
+        el.className = 'detail-val';
         el.textContent = p.val;
       }
 
@@ -490,40 +600,92 @@
         });
       }
 
+      // NAME：アイテム所持で丸ボタン有効化 → 交換でフルネーム表示
+      var nameBtn = document.getElementById('name-unlock-btn');
+      if (saved.indexOf('pf-name') !== -1) {
+        document.getElementById('name-nick').style.display = 'none';
+        document.getElementById('name-full').style.display = '';
+        if (nameBtn) nameBtn.style.display = 'none';
+      } else {
+        if (SfSnow.isUnlocked('item_kouta_string')) {
+          if (nameBtn) nameBtn.classList.add('ready');
+        }
+        if (nameBtn) {
+          nameBtn.addEventListener('click', function() {
+            if (!nameBtn.classList.contains('ready')) return;
+            showDialog('初めて張り替えたベースの弦', function() {
+              saved.push('pf-name');
+              localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+              document.getElementById('name-nick').style.display = 'none';
+              document.getElementById('name-full').style.display = '';
+              nameBtn.style.display = 'none';
+            });
+          });
+        }
+      }
+
       // 解放済みを即表示
       PROFILE.forEach(function(p) {
         if (saved.indexOf(p.id) !== -1) revealProfile(p);
       });
       if (saved.indexOf('mini') !== -1) revealMini();
 
-      // ボタンのセットアップ
-      var cur = getCandy();
+      // ダイアログ制御
+      var pendingAction = null;
+      var dialog = document.getElementById('unlock-dialog');
 
+      function showDialog(costText, onConfirm) {
+        document.getElementById('dialog-cost-text').textContent = costText;
+        dialog.classList.add('open');
+        pendingAction = onConfirm;
+      }
+
+      document.getElementById('dialog-cancel').addEventListener('click', function() {
+        dialog.classList.remove('open');
+        pendingAction = null;
+      });
+      document.getElementById('dialog-confirm').addEventListener('click', function() {
+        dialog.classList.remove('open');
+        if (pendingAction) pendingAction();
+        pendingAction = null;
+      });
+
+      var cur = getCandy();
       PROFILE.forEach(function(p) {
         if (saved.indexOf(p.id) !== -1) return;
         var el = document.getElementById(p.id);
         if (!el) return;
         var btn = el.querySelector('.unlock-btn');
         if (!btn) return;
-        if (cur >= p.n) btn.classList.add('ready');
+        if (cur >= CANDY_COST) btn.classList.add('ready');
         btn.addEventListener('click', function() {
-          if (getCandy() < p.n) return;
-          if (saved.indexOf(p.id) === -1) {
-            saved.push(p.id);
-            localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
-          }
-          revealProfile(p);
+          if (!btn.classList.contains('ready')) return;
+          showDialog('ハニーレモンキャンディー × ' + CANDY_COST, function() {
+            if (!SfSnow.spendCandy(CANDY_TYPE, CANDY_COST)) return;
+            if (saved.indexOf(p.id) === -1) {
+              saved.push(p.id);
+              localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+            }
+            revealProfile(p);
+            var now = getCandy();
+            document.querySelectorAll('.unlock-btn').forEach(function(b) {
+              if (now < CANDY_COST) b.classList.remove('ready');
+            });
+          });
         });
       });
 
       var miniBtn = document.getElementById('mini-unlock-btn');
       if (miniBtn && saved.indexOf('mini') === -1) {
-        if (cur >= 100) miniBtn.classList.add('ready');
+        if (cur >= MINI_COST) miniBtn.classList.add('ready');
         miniBtn.addEventListener('click', function() {
-          if (getCandy() < 100) return;
-          saved.push('mini');
-          localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
-          revealMini();
+          if (!miniBtn.classList.contains('ready')) return;
+          showDialog('ハニーレモンキャンディー × ' + MINI_COST, function() {
+            if (!SfSnow.spendCandy(CANDY_TYPE, MINI_COST)) return;
+            saved.push('mini');
+            localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+            revealMini();
+          });
         });
       }
 
