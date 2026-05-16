@@ -812,38 +812,38 @@
   <span class="sec-label">CHARACTERS</span>
   <h2 class="sec-title">Snow flakes</h2>
   <div class="char-grid">
-    <div class="char-card h">
+    <div class="char-card h" style="cursor:pointer;" onclick="goRoom('room_hinata','room/hinata/')">
       <div class="char-img-wrap"><img class="char-img" src="plofile/chara_hinata.webp" alt="Snow flakes スノーフレークス スノフレ ヒナタ 環陽向 ギターボーカル キャラクター 山吹ことり" loading="lazy"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--hinata)" data-i18n="char-name-hinata">ヒナタ</p>
         <p class="char-role">Guitar &amp; Vocal</p>
         <p class="char-desc" data-i18n="char-desc-hinata">言葉にしないまま、音に向かう。</p>
-        <button class="like-btn h" id="btn-hinata" onclick="handleLike('hinata')">
+        <button class="like-btn h" id="btn-hinata" onclick="event.stopPropagation();handleLike('hinata')">
           <span class="like-heart">♡</span><span id="count-hinata">—</span>
         </button>
       </div>
     </div>
-    <div class="char-card k">
+    <div class="char-card k" style="cursor:pointer;" onclick="goRoom('room_kouta','room/kouta/')">
       <div class="char-img-wrap"><img class="char-img" src="plofile/kouta.webp" alt="Snow flakes スノーフレークス スノフレ コウタ 橘航太 ベース キャラクター 山吹ことり" loading="lazy"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--kouta)" data-i18n="char-name-kouta">コウタ</p>
         <p class="char-role">Bass</p>
         <p class="char-desc" data-i18n="char-desc-kouta">揺れを受け止め、形にする。</p>
-        <button class="like-btn k" id="btn-kouta" onclick="handleLike('kouta')">
+        <button class="like-btn k" id="btn-kouta" onclick="event.stopPropagation();handleLike('kouta')">
           <span class="like-heart">♡</span><span id="count-kouta">—</span>
         </button>
       </div>
     </div>
-    <div class="char-card y">
+    <div class="char-card y" style="cursor:pointer;" onclick="goRoom('room_hayate','room/hayate/')">
       <div class="char-img-wrap"><img class="char-img" src="plofile/chara_hayate.webp" alt="Snow flakes スノーフレークス スノフレ ハヤテ 楠木颯 ドラム キャラクター 山吹ことり" loading="lazy"></div>
       <div class="char-info">
         <p class="char-num">Snow flakes</p>
         <p class="char-name" style="color:var(--hayate)" data-i18n="char-name-hayate">ハヤテ</p>
         <p class="char-role">Drums</p>
         <p class="char-desc" data-i18n="char-desc-hayate">迷いごと鳴らして、前へ進む。</p>
-        <button class="like-btn y" id="btn-hayate" onclick="handleLike('hayate')">
+        <button class="like-btn y" id="btn-hayate" onclick="event.stopPropagation();handleLike('hayate')">
           <span class="like-heart">♡</span><span id="count-hayate">—</span>
         </button>
       </div>
@@ -1854,6 +1854,15 @@
       }
     }
   });
+
+  // キャラクターカードクリック
+  window.goRoom = function(itemId, roomUrl) {
+    if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(itemId)) {
+      location.href = roomUrl;
+    } else {
+      location.href = 'sweets/';
+    }
+  };
 
   // いいねボタン処理
   window.handleLike = function(id) {
