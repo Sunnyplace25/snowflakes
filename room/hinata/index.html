@@ -206,6 +206,11 @@
       opacity: 0.5;
     }
     .unlock-btn.ready .candy-ic { opacity: 1; }
+    .item-req {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 3px;
+      color: #334155;
+    }
 
     /* Mini Info */
     .mini-info {
@@ -317,9 +322,7 @@
       <div class="detail-row">
         <p class="detail-key">NAME</p>
         <p class="detail-val" id="pf-name">
-          <button class="unlock-btn" data-id="pf-name" data-need="30">
-            <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 30
-          </button>
+          <span class="item-req">［古いカセットテープ］</span>
         </p>
       </div>
       <div class="detail-row">
@@ -447,8 +450,13 @@
       var saved = [];
       try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch(e) {}
 
+      // NAMEはアイテム所持で解放
+      if (SfSnow.isUnlocked('item_hinata_cassette')) {
+        var nameEl = document.getElementById('pf-name');
+        if (nameEl) { nameEl.className = 'detail-val name-glow'; nameEl.textContent = '環 陽向（たまき ひなた）'; }
+      }
+
       var PROFILE = [
-        { n:  30, id: 'pf-name',     val: '環 陽向（たまき ひなた）',              isName: true  },
         { n:  36, id: 'pf-sign',     val: '水瓶座',                                isName: false },
         { n:  42, id: 'pf-blood',    val: 'AB型',                                  isName: false },
         { n:  48, id: 'pf-height',   val: '177cm',                                 isName: false },
@@ -484,7 +492,7 @@
         if (lock) lock.style.display = 'none';
         MI_TEXTS.forEach(function(text, i) {
           var el = document.getElementById('mi-' + (i + 1));
-          if (el) { el.textContent = text; el.style.display = ''; }
+          if (el) { el.textContent = text; el.style.display = 'block'; }
         });
       }
 
