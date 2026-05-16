@@ -191,21 +191,21 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px; letter-spacing: 1px;
       background: transparent;
-      border: 1px solid rgba(252,165,165,0.18);
+      border: 1px solid rgba(252,165,165,0.25);
       border-radius: 100px;
       padding: 4px 12px;
-      color: #475569;
+      color: rgba(252,165,165,0.45);
       cursor: not-allowed;
       white-space: nowrap;
       transition: all 0.2s;
     }
     .name-item-btn.ready {
-      border-color: rgba(252,165,165,0.45);
-      color: #fca5a5;
+      border-color: rgba(248,113,113,0.6);
+      color: #f87171;
       cursor: pointer;
     }
     .name-item-btn.ready:hover {
-      background: rgba(252,165,165,0.08);
+      background: rgba(248,113,113,0.1);
     }
 
     .unlock-btn {
@@ -568,7 +568,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 
-      var SAVE_KEY   = 'sf_pf_kouta';
+      var SAVE_KEY   = 'sf_pf_kouta_v2';
       var CANDY_TYPE = 'honey';
       var CANDY_COST = 30;
       var MINI_COST  = 100;
