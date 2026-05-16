@@ -142,6 +142,110 @@
       text-align: center;
       font-style: italic;
     }
+
+    /* Profile Detail */
+    .section-divider {
+      width: 100%; height: 1px;
+      background: rgba(253,230,138,0.1);
+      margin: 40px 0;
+    }
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px;
+      color: #475569;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .detail-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .detail-row {
+      display: flex;
+      border-bottom: 1px solid rgba(253,230,138,0.06);
+      padding: 14px 0;
+      align-items: baseline;
+    }
+    .detail-row:first-child { border-top: 1px solid rgba(253,230,138,0.06); }
+    .detail-key {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 4px;
+      color: #475569;
+      min-width: 90px;
+      padding-top: 2px;
+    }
+    .detail-val {
+      font-size: 12px; letter-spacing: 1px;
+      color: #94a3b8;
+      line-height: 1.9;
+      flex: 1;
+    }
+    .detail-val.locked {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 3px;
+      color: #334155;
+    }
+    .detail-val.blank {
+      color: #334155; letter-spacing: 4px;
+    }
+
+    /* Mini Info */
+    .mini-info {
+      width: 100%;
+      background: rgba(253,230,138,0.03);
+      border: 1px solid rgba(253,230,138,0.08);
+      border-radius: 12px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mini-info-item {
+      font-size: 11px; letter-spacing: 1px;
+      color: #64748b;
+      line-height: 2.0;
+      padding-left: 14px;
+      position: relative;
+    }
+    .mini-info-item::before {
+      content: '·';
+      position: absolute; left: 0;
+      color: #fde68a;
+    }
+
+    /* Item Log */
+    .item-log {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .item-log-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(253,230,138,0.03);
+      border: 1px solid rgba(253,230,138,0.08);
+      border-radius: 10px;
+    }
+    .item-log-tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 3px;
+      color: #fde68a;
+      white-space: nowrap;
+    }
+    .item-log-desc {
+      font-size: 11px; letter-spacing: 1px;
+      color: #64748b;
+      flex: 1;
+    }
+    .item-log-desc.locked {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 3px;
+      color: #334155;
+    }
   </style>
 </head>
 <body>
@@ -151,6 +255,7 @@
   </nav>
 
   <div class="main">
+    <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\3f173a35-eb56-4d16-865e-22e7b4d6cc8c.png -->
     <img src="room_top.webp" alt="HAYATE" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 32px;object-fit:cover;border-radius:0 0 24px 24px;">
 
     <p class="eyebrow">Snow flakes — ROOM</p>
@@ -182,12 +287,124 @@
 
     <p class="quote">全部、リズムで変わる。</p>
 
-    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#475569;margin-top:40px;text-align:center;">コンテンツ追加準備中</p>
+    <div class="section-divider"></div>
+    <p class="section-label">PROFILE</p>
+
+    <div class="detail-list">
+      <div class="detail-row">
+        <p class="detail-key">NAME</p>
+        <p class="detail-val locked" id="pf-name">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">PART</p>
+        <p class="detail-val locked" id="pf-part">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">SIGN</p>
+        <p class="detail-val blank" id="pf-sign">────</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">BLOOD</p>
+        <p class="detail-val blank" id="pf-blood">────</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">HEIGHT</p>
+        <p class="detail-val locked" id="pf-height">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">LIKES</p>
+        <p class="detail-val locked" id="pf-likes">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">DISLIKES</p>
+        <p class="detail-val locked" id="pf-dislikes">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">HOBBY</p>
+        <p class="detail-val locked" id="pf-hobby">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">FOOD</p>
+        <p class="detail-val locked" id="pf-food">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">ROOM</p>
+        <p class="detail-val locked" id="pf-room">LOCKED</p>
+      </div>
+      <div class="detail-row">
+        <p class="detail-key">HABIT</p>
+        <p class="detail-val locked" id="pf-habit">LOCKED</p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+    <p class="section-label">MINI INFO</p>
+
+    <div class="mini-info">
+      <p class="mini-info-item" id="mi-1">LOCKED</p>
+      <p class="mini-info-item" id="mi-2">LOCKED</p>
+      <p class="mini-info-item" id="mi-3">LOCKED</p>
+      <p class="mini-info-item" id="mi-4">LOCKED</p>
+      <p class="mini-info-item" id="mi-5">LOCKED</p>
+      <p class="mini-info-item" id="mi-6">LOCKED</p>
+    </div>
+
+    <div class="section-divider"></div>
+    <p class="section-label">ITEM LOG</p>
+
+    <div class="item-log">
+      <div class="item-log-row">
+        <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
+        <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+      </div>
+    </div>
+
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
+
+      var unlocked = (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('room_hayate'));
+
+      if (unlocked) {
+        var set = function(id, cls, text) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.className = 'detail-val ' + cls;
+          el.textContent = text;
+        };
+        set('pf-name',     '',       'ハヤテ');
+        set('pf-part',     '',       'Drums');
+        set('pf-sign',     'blank',  '────');
+        set('pf-blood',    'blank',  '────');
+        set('pf-height',   '',       '181cm');
+        set('pf-likes',    '',       '炭酸 / 朝方の空 / 人の多い場所');
+        set('pf-dislikes', '',       '重すぎる空気 / 静かすぎる時間');
+        set('pf-hobby',    '',       'ゲーム / 深夜ドライブ / 思いつきで出かけること');
+        set('pf-food',     '',       'ジャンクフード / コンビニの新作');
+        set('pf-room',     '',       '朝焼け / ローテーブル / 誰かの気配');
+        set('pf-habit',    '',       '笑いながら話を逸らす');
+
+        var mi = [
+          'ライブ後だけ異様にテンションが高い',
+          '人を泊めがち',
+          '飲みかけの炭酸が増える',
+          'ソファで寝落ちしがち',
+          '写真を雑に壁へ貼っている',
+          '昔のリストバンドを今でも使っている'
+        ];
+        mi.forEach(function(text, i) {
+          var el = document.getElementById('mi-' + (i + 1));
+          if (el) el.textContent = text;
+        });
+
+        // Item Log
+        var tag1 = document.getElementById('il-1-tag');
+        var desc1 = document.getElementById('il-1-desc');
+        if (tag1) tag1.textContent = '［子どもの頃のイベントリストバンド］';
+        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+      }
     });
   </script>
 </body>
