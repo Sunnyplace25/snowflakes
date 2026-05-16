@@ -187,27 +187,26 @@
       text-shadow: 0 0 14px rgba(147,197,253,0.5);
       display: none;
     }
-    .name-item-label {
+    .name-item-btn {
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px; letter-spacing: 1px;
-      color: #93c5fd;
-      white-space: nowrap;
-    }
-    .name-exchange-btn {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 10px; letter-spacing: 2px;
       background: transparent;
-      border: none;
-      padding: 0;
-      color: #334155;
-      cursor: default;
-      transition: color 0.2s;
+      border: 1px solid rgba(147,197,253,0.18);
+      border-radius: 100px;
+      padding: 4px 12px;
+      color: #475569;
+      cursor: not-allowed;
+      white-space: nowrap;
+      transition: all 0.2s;
     }
-    .name-exchange-btn.ready {
+    .name-item-btn.ready {
+      border-color: rgba(147,197,253,0.45);
       color: #93c5fd;
       cursor: pointer;
     }
-    .name-exchange-btn.ready:hover { opacity: 0.7; }
+    .name-item-btn.ready:hover {
+      background: rgba(147,197,253,0.08);
+    }
 
     /* Unlock button */
     .unlock-btn {
@@ -432,8 +431,7 @@
         <div class="name-area">
           <span class="name-nick" id="name-nick">ヒナタ</span>
           <span class="name-full" id="name-full">環 陽向（たまき ひなた）</span>
-          <span class="name-item-label" id="name-item-wrap">（古いカセットテープ）▶</span>
-          <button class="name-exchange-btn" id="name-unlock-btn">もっていません</button>
+          <button class="name-item-btn" id="name-unlock-btn">（古いカセットテープ）</button>
         </div>
       </div>
       <div class="detail-row">
@@ -604,16 +602,13 @@
       }
 
       // NAME：アイテム所持で「交換する」に変化 → ダイアログ → フルネーム表示
-      var nameBtn       = document.getElementById('name-unlock-btn');
-      var nameItemWrap  = document.getElementById('name-item-wrap');
+      var nameBtn = document.getElementById('name-unlock-btn');
       if (saved.indexOf('pf-name') !== -1) {
         document.getElementById('name-nick').style.display = 'none';
         document.getElementById('name-full').style.display = '';
-        if (nameItemWrap) nameItemWrap.style.display = 'none';
         if (nameBtn) nameBtn.style.display = 'none';
       } else {
         if (SfSnow.isUnlocked('item_hinata_cassette') && nameBtn) {
-          nameBtn.textContent = '交換する';
           nameBtn.classList.add('ready');
         }
         if (nameBtn) {
@@ -624,7 +619,6 @@
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
               document.getElementById('name-nick').style.display = 'none';
               document.getElementById('name-full').style.display = '';
-              if (nameItemWrap) nameItemWrap.style.display = 'none';
               nameBtn.style.display = 'none';
             });
           });
