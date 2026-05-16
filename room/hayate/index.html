@@ -120,7 +120,7 @@
     }
     .profile-val {
       font-size: 12px; letter-spacing: 2px;
-      color: #94a3b8;
+      color: #cbd5e1;
     }
 
     .quote {
@@ -164,7 +164,7 @@
     }
     .detail-val {
       font-size: 12px; letter-spacing: 1px;
-      color: #94a3b8;
+      color: #cbd5e1;
       line-height: 1.9;
       flex: 1;
     }
@@ -173,8 +173,9 @@
     .name-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex: 1;
+      flex-wrap: wrap;
     }
     .name-nick {
       font-size: 13px; letter-spacing: 3px;
@@ -187,29 +188,27 @@
       text-shadow: 0 0 14px rgba(253,230,138,0.5);
       display: none;
     }
-    .item-btn {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 1px solid rgba(253,230,138,0.2);
-      background: transparent;
-      cursor: not-allowed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      color: #334155;
-      font-size: 11px;
+    .name-item-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 1px;
+      color: #fde68a;
+      white-space: nowrap;
     }
-    .item-btn.ready {
-      border-color: rgba(253,230,138,0.5);
+    .name-exchange-btn {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 2px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: #475569;
+      cursor: default;
+      transition: color 0.2s;
+    }
+    .name-exchange-btn.ready {
       color: #fde68a;
       cursor: pointer;
     }
-    .item-btn.ready:hover {
-      background: rgba(253,230,138,0.1);
-      border-color: rgba(253,230,138,0.8);
-    }
+    .name-exchange-btn.ready:hover { opacity: 0.7; }
 
     /* Unlock button */
     .unlock-btn {
@@ -262,7 +261,7 @@
     }
     .mini-info-item {
       font-size: 11px; letter-spacing: 1px;
-      color: #64748b;
+      color: #94a3b8;
       line-height: 2.0;
       padding-left: 14px;
       position: relative;
@@ -298,7 +297,7 @@
     }
     .item-log-desc {
       font-size: 11px; letter-spacing: 1px;
-      color: #64748b;
+      color: #94a3b8;
       flex: 1;
     }
     .item-log-desc.locked {
@@ -427,7 +426,8 @@
         <div class="name-area">
           <span class="name-nick" id="name-nick">ハヤテ</span>
           <span class="name-full" id="name-full">楠木 颯（くすのき はやて）</span>
-          <button class="item-btn" id="name-unlock-btn" title="子どもの頃のイベントリストバンド">◎</button>
+          <span class="name-item-label" id="name-item-wrap">（子どもの頃のイベントリストバンド）▶</span>
+          <button class="name-exchange-btn" id="name-unlock-btn">もっていません</button>
         </div>
       </div>
       <div class="detail-row">
@@ -620,15 +620,18 @@
         pendingAction = null;
       });
 
-      // NAME：アイテム所持で丸ボタン有効化 → 交換でフルネーム表示
-      var nameBtn = document.getElementById('name-unlock-btn');
+      // NAME：アイテム所持で「交換する」に変化 → ダイアログ → フルネーム表示
+      var nameBtn      = document.getElementById('name-unlock-btn');
+      var nameItemWrap = document.getElementById('name-item-wrap');
       if (saved.indexOf('pf-name') !== -1) {
         document.getElementById('name-nick').style.display = 'none';
         document.getElementById('name-full').style.display = '';
+        if (nameItemWrap) nameItemWrap.style.display = 'none';
         if (nameBtn) nameBtn.style.display = 'none';
       } else {
-        if (SfSnow.isUnlocked(ITEM_KEY)) {
-          if (nameBtn) nameBtn.classList.add('ready');
+        if (SfSnow.isUnlocked(ITEM_KEY) && nameBtn) {
+          nameBtn.textContent = '交換する';
+          nameBtn.classList.add('ready');
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
@@ -638,6 +641,7 @@
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
               document.getElementById('name-nick').style.display = 'none';
               document.getElementById('name-full').style.display = '';
+              if (nameItemWrap) nameItemWrap.style.display = 'none';
               nameBtn.style.display = 'none';
             });
           });
