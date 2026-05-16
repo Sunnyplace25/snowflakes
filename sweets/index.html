@@ -396,11 +396,9 @@
     .post-title.nowrap {
       font-size: 13px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
     }
-    .post-header-left.nowrap-wrap { min-width: 0; }
+    .post-header.music-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .post-header.music-header .post-header-left { width: 100%; }
 
     .post-date {
       font-size: 12px;
@@ -4636,8 +4634,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     songs.forEach(function(item) {
       var unlocked = SfSnow.isUnlocked(item.id);
       html += '<div class="post-card" style="margin-top:0;">';
-      html += '<div class="post-header">';
-      html += '<div class="post-header-left nowrap-wrap">';
+      html += '<div class="post-header music-header">';
+      html += '<div class="post-header-left">';
       html += '<div class="post-title nowrap">' + item.title + '</div>';
       if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
       if (!unlocked) {
