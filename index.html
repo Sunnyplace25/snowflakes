@@ -653,15 +653,21 @@
         return BASE_EP + days;
       }
 
-      // 18時更新の日は日付を追加する（例: '2026-05-20': 18）
+      // 更新時間の指定（複数可）例: '2026-05-19': [18, 21]  単発: '2026-05-20': 18
       var UPDATE_SCHEDULE = {
-        '2026-05-19': 18,
+        '2026-05-19': [18, 21],
       };
 
       function getTodayKey(d) {
         return d.getFullYear() + '-' +
           String(d.getMonth() + 1).padStart(2, '0') + '-' +
           String(d.getDate()).padStart(2, '0');
+      }
+
+      function getUpdateHours(d) {
+        var val = UPDATE_SCHEDULE[getTodayKey(d)];
+        if (!val) return [21];
+        return Array.isArray(val) ? val.slice().sort(function(a,b){return a-b;}) : [val];
       }
 
       function update() {
@@ -674,22 +680,31 @@
         var status = document.getElementById('update-status');
         if (!banner || !epEl) return;
 
-        var updateHour = UPDATE_SCHEDULE[getTodayKey(now)] || 21;
-        var hh = String(updateHour).padStart(2, '0');
+        var hours = getUpdateHours(now);
+
+        // 現在時刻以下で最大の更新時間（直近の更新）
+        var activeHour = null;
+        var nextHour = hours[0];
+        for (var i = 0; i < hours.length; i++) {
+          if (h >= hours[i]) { activeHour = hours[i]; }
+          else if (activeHour !== null && nextHour === hours[0]) { nextHour = hours[i]; }
+        }
 
         // 話数・リンクを動的に更新
         epEl.textContent = '#' + ep;
         banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
 
         var sub = document.getElementById('update-sub');
-        if (h >= updateHour) {
+        if (activeHour !== null) {
+          var hh = String(activeHour).padStart(2, '0');
           banner.classList.add('active');
           status.textContent = hh + ' : 00';
-          if (sub) sub.textContent = (h === updateHour && m < 10) ? '更新しました ✦' : '本編 更新済み';
+          if (sub) sub.textContent = (h === activeHour && m < 10) ? '更新しました ✦' : '本編 更新済み';
         } else {
+          var hh = String(nextHour).padStart(2, '0');
           banner.classList.remove('active');
           status.textContent = hh + ' : 00';
-          if (sub) sub.textContent = '本編 毎日' + updateHour + '時更新';
+          if (sub) sub.textContent = '本編 ' + nextHour + '時更新';
         }
       }
 
