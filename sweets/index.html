@@ -4661,10 +4661,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
       html += '<div class="post-card" style="margin-top:0;">';
-      // カバーアート
-      if (item.cover) {
-        html += '<img src="' + item.cover + '" alt="' + item.title + '" style="width:100%;border-radius:12px 12px 0 0;display:block;aspect-ratio:1/1;object-fit:cover;opacity:' + (unlocked ? '1' : '0.35') + ';">';
-      }
       html += '<div class="post-header">';
       // タイトル・コスト（左）
       html += '<div class="post-header-left">';
