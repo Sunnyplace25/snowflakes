@@ -189,6 +189,46 @@
       nav { padding: 14px 20px; } .nav-label { display: none; }
       .profile-key { width: 60px; }
     }
+
+    /* ── Welcome popup ── */
+    #welcome-popup {
+      position: fixed; bottom: 24px; right: 20px; z-index: 100;
+      display: flex; align-items: flex-end; gap: 10px;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+    #welcome-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #welcome-bubble {
+      background: rgba(10,18,34,0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px 20px 4px 20px;
+      padding: 18px 22px 16px;
+      max-width: 220px;
+      backdrop-filter: blur(14px);
+      position: relative;
+    }
+    #welcome-bubble p:first-child {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 3px; color: #f9a8d4;
+      margin-bottom: 8px;
+    }
+    #welcome-bubble p:last-child {
+      font-size: 14px; color: #e2e8f0;
+      font-weight: 300; line-height: 1.8; letter-spacing: 1px;
+    }
+    #welcome-close {
+      position: absolute; top: 8px; right: 12px;
+      font-size: 13px; color: #64748b; cursor: pointer;
+      background: none; border: none; padding: 0;
+    }
+    #welcome-close:hover { color: #94a3b8; }
+    #welcome-img img { width: 120px; display: block; }
+    @media (max-width: 480px) {
+      #welcome-popup { bottom: 12px; right: 10px; }
+      #welcome-bubble { max-width: 170px; padding: 14px 16px 12px; }
+      #welcome-img img { width: 90px; }
+    }
   </style>
   <script src="snow.js"></script>
   <!-- Google Analytics -->
@@ -204,6 +244,16 @@
 <body>
 
 <canvas id="snow"></canvas>
+
+<!-- Welcome popup -->
+<div id="welcome-popup">
+  <div id="welcome-bubble">
+    <p>KOTORI YAMABUKI</p>
+    <p>よく見つけたね！<br>ことりの部屋へようこそ！</p>
+    <button id="welcome-close" onclick="document.getElementById('welcome-popup').classList.remove('show')">✕</button>
+  </div>
+  <div id="welcome-img"><img src="kotori_chibi.png" alt="山吹ことり"></div>
+</div>
 
 <nav>
   <a class="nav-back" href="index.html">← Snow flakes</a>
@@ -352,6 +402,14 @@
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // ウェルカムポップアップ
+    setTimeout(function() {
+      document.getElementById('welcome-popup').classList.add('show');
+      setTimeout(function() {
+        document.getElementById('welcome-popup').classList.remove('show');
+      }, 5000);
+    }, 600);
+
     // デイリーSnow（訪問）
     SfSnow.addWithToast('visit_kotori_room');
     // 月1回プロテインコーヒー
@@ -359,7 +417,7 @@
       SfSnow.addMonthlyItem('visit_kotori', 'proteincoffee');
       setTimeout(function() {
         location.href = 'item/?item=proteincoffee';
-      }, 600);
+      }, 1200);
     }
   });
 </script>
