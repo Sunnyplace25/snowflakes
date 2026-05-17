@@ -28,7 +28,7 @@
       --hayate: #fde68a;
       --bg:     #0c1220;
       --text:   #e2e8f0;
-      --muted:  #94a3b8;
+      --muted:  #cbd5e1;
       --card:   rgba(255,255,255,0.04);
       --border: rgba(255,255,255,0.08);
       --sweets: #f9a8d4;
@@ -166,17 +166,17 @@
     }
     .snow-get-label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 13px; letter-spacing: 8px; color: #64748b;
+      font-size: 13px; letter-spacing: 8px; color: #94a3b8;
       margin-top: 8px; margin-bottom: 32px;
     }
     .snow-get-close {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 12px; letter-spacing: 4px; color: #475569;
+      font-size: 12px; letter-spacing: 4px; color: #64748b;
       background: none; border: 1px solid rgba(255,255,255,0.1);
       border-radius: 100px; padding: 10px 36px; cursor: pointer;
       transition: color 0.2s, border-color 0.2s;
     }
-    .snow-get-close:hover { color: #94a3b8; border-color: rgba(255,255,255,0.22); }
+    .snow-get-close:hover { color: #cbd5e1; border-color: rgba(255,255,255,0.22); }
 
     /* ── Login keep dialog ── */
     #login-dialog {
@@ -205,11 +205,11 @@
       color: var(--sweets); margin-bottom: 12px;
     }
     .login-dialog-body {
-      font-size: 13px; color: #94a3b8;
+      font-size: 13px; color: #cbd5e1;
       line-height: 1.9; margin-bottom: 28px;
     }
     .login-dialog-body small {
-      display: block; font-size: 11px; color: #475569;
+      display: block; font-size: 11px; color: #64748b;
       margin-top: 6px; letter-spacing: 1px;
     }
     .login-dialog-btns { display: flex; flex-direction: column; gap: 10px; }
@@ -226,12 +226,12 @@
     .login-dialog-once {
       padding: 10px; border-radius: 100px;
       background: none; border: 1px solid rgba(255,255,255,0.1);
-      color: #475569; font-size: 12px;
+      color: #64748b; font-size: 12px;
       letter-spacing: 2px; cursor: pointer;
       font-family: 'Cormorant Garamond', serif;
       transition: color 0.2s, border-color 0.2s;
     }
-    .login-dialog-once:hover { color: #64748b; border-color: rgba(255,255,255,0.2); }
+    .login-dialog-once:hover { color: #94a3b8; border-color: rgba(255,255,255,0.2); }
 
     /* ── Confirm dialog ── */
     #confirm-dialog {
@@ -271,12 +271,12 @@
     .confirm-cancel {
       padding: 10px; border-radius: 100px;
       background: none; border: 1px solid rgba(255,255,255,0.1);
-      color: #475569; font-size: 12px;
+      color: #64748b; font-size: 12px;
       letter-spacing: 2px; cursor: pointer;
       font-family: 'Cormorant Garamond', serif;
       transition: color 0.2s, border-color 0.2s;
     }
-    .confirm-cancel:hover { color: #64748b; border-color: rgba(255,255,255,0.2); }
+    .confirm-cancel:hover { color: #94a3b8; border-color: rgba(255,255,255,0.2); }
 
     .gate-btn {
       margin-top: 4px;
@@ -498,7 +498,7 @@
 
     /* ── Section req hint ── */
     .section-req {
-      font-size:10px; letter-spacing:2px; color:#475569;
+      font-size:10px; letter-spacing:2px; color:#64748b;
       text-align:center; margin:0 0 18px;
       display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;
     }
@@ -508,7 +508,7 @@
     .exch-wrap { margin-top:12px; width:100%; max-width:480px; }
     .exch-section-label {
       font-family:'Cormorant Garamond',serif;
-      font-size:9px; letter-spacing:6px; color:#94a3b8;
+      font-size:9px; letter-spacing:6px; color:#cbd5e1;
       text-align:center; margin-bottom:12px;
     }
     .exch-card {
@@ -525,11 +525,11 @@
     .exch-card-header:hover { background:rgba(255,255,255,0.03); }
     .exch-card-header-left { flex:1; min-width:0; }
     .exch-toggle-btn {
-      background:none; border:none; color:#475569;
+      background:none; border:none; color:#64748b;
       font-size:11px; cursor:pointer; padding:2px 0 0;
       flex-shrink:0; transition:color 0.2s, transform 0.3s;
     }
-    .exch-card-header:hover .exch-toggle-btn { color:#94a3b8; }
+    .exch-card-header:hover .exch-toggle-btn { color:#cbd5e1; }
     .exch-content.open ~ * .exch-toggle-btn,
     .exch-card.open .exch-toggle-btn { transform:rotate(180deg); }
     .exch-title {
@@ -538,10 +538,10 @@
     }
     .exch-sub {
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; color:#64748b; letter-spacing:1px;
+      font-size:11px; color:#94a3b8; letter-spacing:1px;
       line-height:1.8; margin-bottom:12px;
     }
-    .exch-cost { font-size:11px; color:#94a3b8; letter-spacing:1px; margin-bottom:14px; }
+    .exch-cost { font-size:11px; color:#cbd5e1; letter-spacing:1px; margin-bottom:14px; }
     .exch-btn {
       width:100%; padding:10px;
       background:rgba(253,230,138,0.08);
@@ -552,15 +552,15 @@
       transition:background 0.25s;
     }
     .exch-btn:hover:not(:disabled) { background:rgba(253,230,138,0.16); }
-    .exch-btn:disabled { opacity:0.35; cursor:default; color:#64748b; border-color:rgba(255,255,255,0.1); }
+    .exch-btn:disabled { opacity:0.35; cursor:default; color:#94a3b8; border-color:rgba(255,255,255,0.1); }
     .exch-done { font-size:11px; color:#6ee7b7; letter-spacing:2px; text-align:center; padding:6px 0; }
     .exch-read-btn {
       background:none; border:none;
-      font-size:11px; color:#64748b; letter-spacing:2px;
+      font-size:11px; color:#94a3b8; letter-spacing:2px;
       cursor:pointer; margin-top:10px; padding:0;
       transition:color 0.2s; display:block; width:100%; text-align:center;
     }
-    .exch-read-btn:hover { color:#94a3b8; }
+    .exch-read-btn:hover { color:#cbd5e1; }
     .exch-content {
       display:none; margin-top:16px;
       border-top:1px solid rgba(255,255,255,0.06);
@@ -579,11 +579,11 @@
     .exch-close-btn {
       display:block; width:100%; margin-bottom:14px;
       background:none; border:none;
-      font-size:11px; color:#64748b; letter-spacing:2px;
+      font-size:11px; color:#94a3b8; letter-spacing:2px;
       cursor:pointer; text-align:center; padding:0;
       transition:color 0.2s;
     }
-    .exch-close-btn:hover { color:#94a3b8; }
+    .exch-close-btn:hover { color:#cbd5e1; }
   </style>
 </head>
 <body>
@@ -593,7 +593,7 @@
   <nav>
     <a class="nav-back" href="../index.html">← Snow flakes</a>
     <span class="nav-label">SWEETs ROOM</span>
-    <span class="sf-snow-nav" style="font-size:12px;letter-spacing:3px;color:#64748b;">❄ <span class="sf-snow-val">0</span></span>
+    <span class="sf-snow-nav" style="font-size:12px;letter-spacing:3px;color:#94a3b8;">❄ <span class="sf-snow-val">0</span></span>
   </nav>
 
   <!-- Snow GET popup -->
@@ -615,7 +615,7 @@
       <input class="gate-input" type="password" id="pw-input" placeholder="SWEETs code" autocomplete="off">
       <div class="gate-error" id="gate-error">SWEETs CODE が違います</div>
       <button class="gate-btn" onclick="checkPassword()">enter</button>
-      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer;font-size:11px;color:#475569;letter-spacing:1px;">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer;font-size:11px;color:#64748b;letter-spacing:1px;">
         <input type="checkbox" id="keep-login-cb" style="accent-color:#f9a8d4;width:14px;height:14px;cursor:pointer;">
         次回から自動入力する
       </label>
@@ -626,12 +626,12 @@
 
       <!-- Snow card -->
       <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;margin-bottom:12px;text-align:center;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#94a3b8;margin-bottom:12px;">SNOW</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#cbd5e1;margin-bottom:12px;">SNOW</p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;letter-spacing:4px;color:rgba(255,255,255,0.85);line-height:1;">❄ <span id="sf-snow-balance">0</span></p>
-        <p style="font-size:11px;color:#64748b;margin-top:10px;letter-spacing:1px;">今日あと <span id="sf-daily-remaining" style="color:#94a3b8;">0</span> 積もります</p>
+        <p style="font-size:11px;color:#94a3b8;margin-top:10px;letter-spacing:1px;">今日あと <span id="sf-daily-remaining" style="color:#cbd5e1;">0</span> 積もります</p>
         <!-- ❄ チェックリスト -->
         <div style="margin-top:14px;text-align:left;">
-          <button id="snow-checklist-toggle" onclick="toggleSnowChecklist()" style="background:none;border:none;color:#475569;font-size:10px;letter-spacing:2px;cursor:pointer;font-family:'Cormorant Garamond',serif;padding:0;margin-bottom:8px;width:100%;text-align:left;">▼ 今日のSnow</button>
+          <button id="snow-checklist-toggle" onclick="toggleSnowChecklist()" style="background:none;border:none;color:#64748b;font-size:10px;letter-spacing:2px;cursor:pointer;font-family:'Cormorant Garamond',serif;padding:0;margin-bottom:8px;width:100%;text-align:left;">▼ 今日のSnow</button>
           <div id="snow-checklist-items" style="display:none;"></div>
         </div>
         <a href="../gacha/" style="display:inline-block;margin-top:16px;padding:8px 24px;border:1px solid rgba(253,230,138,0.5);border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#fde68a;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.9)';this.style.color='#fef9c3'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.5)';this.style.color='#fde68a'">ガチャを引く</a>
@@ -686,27 +686,27 @@
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
           <table style="width:100%;border-collapse:collapse;" id="items-table">
             <tr id="item-row-milk" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('milk')">
-              <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_milk.webp" alt="" style="width:32px;opacity:0.85;"> ミルクキャンディー</td>
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_milk.webp" alt="" style="width:32px;opacity:0.85;"> ミルクキャンディー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-milk">0</span></td>
             </tr>
             <tr id="item-row-honey" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('honey')">
-              <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_honey.webp" alt="" style="width:32px;opacity:0.85;"> ハニーレモンキャンディー</td>
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_honey.webp" alt="" style="width:32px;opacity:0.85;"> ハニーレモンキャンディー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-honey">0</span></td>
             </tr>
             <tr id="item-row-cassis" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('cassis')">
-              <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_cassis.webp" alt="" style="width:32px;opacity:0.85;"> カシスキャンディー</td>
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_cassis.webp" alt="" style="width:32px;opacity:0.85;"> カシスキャンディー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-cassis">0</span></td>
             </tr>
             <tr id="item-row-proteincoffee" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByItem()">
-              <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/proteincoffee.webp" alt="" style="width:32px;opacity:0.85;"> プロテインコーヒー</td>
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/proteincoffee.webp" alt="" style="width:32px;opacity:0.85;"> プロテインコーヒー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-proteincoffee">0</span></td>
             </tr>
             <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#94a3b8;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count">0</span></td>
             </tr>
           </table>
-          <p id="items-empty-msg" style="font-size:10px;color:#475569;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
+          <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
         </div>
       </div>
     </div>
@@ -3777,7 +3777,7 @@
       </p>
       <div id="music-wrap" style="max-width:480px;margin:0 auto;"></div>
       <div style="text-align:center;margin-top:20px;">
-        <a href="../music.html" style="display:inline-block;padding:11px 32px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:12px;letter-spacing:4px;font-family:'Cormorant Garamond',serif;text-decoration:none;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.15)'">もっと聴く →</a>
+        <a href="../music.html" style="display:inline-block;padding:11px 32px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);color:#cbd5e1;font-size:12px;letter-spacing:4px;font-family:'Cormorant Garamond',serif;text-decoration:none;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.color='#cbd5e1';this.style.borderColor='rgba(255,255,255,0.15)'">もっと聴く →</a>
       </div>
     </div>
 
@@ -3928,8 +3928,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     <footer>
       <p>Snow flakes — SWEETs ROOM</p>
-      <p style="margin-top:10px;font-size:11px;color:#475569;letter-spacing:1px;">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
-      <p style="font-size:11px;color:#475569;letter-spacing:1px;">All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+      <p style="margin-top:10px;font-size:11px;color:#64748b;letter-spacing:1px;">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
+      <p style="font-size:11px;color:#64748b;letter-spacing:1px;">All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
     </footer>
 
   </div>
@@ -4170,10 +4170,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
   #chara-close {
     position: absolute; top: 12px; right: 15px;
-    font-size: 15px; color: #475569; cursor: pointer;
+    font-size: 15px; color: #64748b; cursor: pointer;
     background: none; border: none; padding: 0; line-height: 1;
   }
-  #chara-close:hover { color: #94a3b8; }
+  #chara-close:hover { color: #cbd5e1; }
   #chara-img img { width: 300px; display: block; }
   @media (max-width: 600px) {
     #chara-popup { bottom: 12px; right: 10px; gap: 8px; }
@@ -4508,7 +4508,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
         html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
         html += '<p class="exch-cost" style="margin-bottom:4px;">× ' + item.cost.amount + '</p>';
-        html += '<p style="font-size:10px;color:#64748b;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
+        html += '<p style="font-size:10px;color:#94a3b8;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
         html += '<button class="exch-btn" disabled>キャンディが足りません</button>';
         html += '</div>';
       });
@@ -4669,7 +4669,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!unlocked) {
         html += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">'
           + '<img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.75;">'
-          + '<span style="font-size:11px;letter-spacing:2px;color:#94a3b8;">ギターピック &times; ' + item.cost.pick + '</span>'
+          + '<span style="font-size:11px;letter-spacing:2px;color:#cbd5e1;">ギターピック &times; ' + item.cost.pick + '</span>'
           + '</div>';
       }
       html += '</div>';
@@ -4798,7 +4798,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var done = SfSnow.isDone(item.action);
       var hasLink = !!item.href;
       var style = 'display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);' + (hasLink ? 'cursor:pointer;' : '');
-      var labelColor = done ? '#374151' : (hasLink ? '#94a3b8' : '#475569');
+      var labelColor = done ? '#374151' : (hasLink ? '#cbd5e1' : '#64748b');
       var labelStyle = done ? 'text-decoration:line-through;color:#374151;' : '';
       var onclick = hasLink ? ' onclick="handleChecklistClick(\'' + item.action + '\',\'' + item.href + '\',' + (item.ext ? 'true' : 'false') + ')"' : '';
       return '<div style="' + style + '"' + onclick + '>' +
@@ -4806,7 +4806,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         '<span style="font-size:13px;line-height:1;">' + (done ? '☑' : '☐') + '</span>' +
         '<span style="' + labelStyle + '">' + item.label + '</span>' +
         '</span>' +
-        '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;color:' + (done ? '#374151' : '#475569') + ';letter-spacing:1px;">+' + item.pts + '</span>' +
+        '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;color:' + (done ? '#374151' : '#64748b') + ';letter-spacing:1px;">+' + item.pts + '</span>' +
         '</div>';
     }).join('');
   }
