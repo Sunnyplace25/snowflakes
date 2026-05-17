@@ -549,10 +549,16 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    // 訪問カウンター
+    // 訪問カウンター（1日1回のみカウント）
     var KEY_VISITS = 'sf_kotori_visits';
-    var visits = parseInt(localStorage.getItem(KEY_VISITS) || '0', 10) + 1;
-    localStorage.setItem(KEY_VISITS, String(visits));
+    var KEY_VISIT_DAY = 'sf_kotori_visit_day';
+    var todayStr = new Date().toLocaleDateString('ja-JP');
+    var visits = parseInt(localStorage.getItem(KEY_VISITS) || '0', 10);
+    if (localStorage.getItem(KEY_VISIT_DAY) !== todayStr) {
+      visits += 1;
+      localStorage.setItem(KEY_VISITS, String(visits));
+      localStorage.setItem(KEY_VISIT_DAY, todayStr);
+    }
 
     // ウェルカムポップアップ
     var welcomeText = document.getElementById('welcome-text');
