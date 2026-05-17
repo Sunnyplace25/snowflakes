@@ -459,7 +459,7 @@
         <div class="name-area">
           <span class="name-nick" id="name-nick">コウタ</span>
           <span class="name-full" id="name-full">橘 航太（たちばな こうた）</span>
-          <button class="name-item-btn" id="name-unlock-btn">ベースの弦</button>
+          <button class="name-item-btn" id="name-unlock-btn">使い古されたZIPPOライター</button>
         </div>
       </div>
       <div class="detail-row">
@@ -638,13 +638,13 @@
         document.getElementById('name-full').style.display = 'inline';
         if (nameBtn) nameBtn.style.display = 'none';
       } else {
-        if (SfSnow.isUnlocked('item_kouta_string') && nameBtn) {
+        if (SfSnow.isUnlocked('item_kouta_zippo') && nameBtn) {
           nameBtn.classList.add('ready');
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
             if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
-            showDialog('初めて張り替えたベースの弦', function() {
+            showDialog('使い古されたZIPPOライター', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
               document.getElementById('name-nick').style.display = 'none';
@@ -733,9 +733,9 @@
       // ITEM LOG
       var tag1  = document.getElementById('il-1-tag');
       var desc1 = document.getElementById('il-1-desc');
-      if (tag1) tag1.textContent = '［初めて張り替えたベースの弦］';
+      if (tag1) tag1.textContent = '［使い古されたZIPPOライター］';
       if (desc1) {
-        if (SfSnow.isUnlocked('item_kouta_string')) {
+        if (SfSnow.isUnlocked('item_kouta_zippo')) {
           desc1.className = 'item-log-desc';
           desc1.textContent = '';
         } else {
