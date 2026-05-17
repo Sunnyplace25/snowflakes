@@ -1496,15 +1496,29 @@
       });
     }
 
-    // リンクカード +5
+    // リンクカード +5 — 別タブから戻ってきたときにトーストを表示
     var cards = document.querySelectorAll('[data-sf-action]');
     for (var i = 0; i < cards.length; i++) {
       (function(card) {
         card.addEventListener('click', function() {
-          SfSnow.addWithToast('link_' + card.dataset.sfAction);
+          var action = 'link_' + card.dataset.sfAction;
+          if (!SfSnow.isDone(action)) {
+            sessionStorage.setItem('sf_pending_action', action);
+          }
         });
       })(cards[i]);
     }
+
+    // 別タブから戻ってきたら pending action を処理
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        var pending = sessionStorage.getItem('sf_pending_action');
+        if (pending) {
+          sessionStorage.removeItem('sf_pending_action');
+          SfSnow.addWithToast(pending);
+        }
+      }
+    });
   });
 </script>
 
