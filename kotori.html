@@ -352,6 +352,9 @@
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // デイリーSnow（訪問）
+    SfSnow.addWithToast('visit_kotori_room');
+    // 月1回プロテインコーヒー
     if (!SfSnow.isMonthlyDone('visit_kotori')) {
       SfSnow.addMonthlyItem('visit_kotori', 'proteincoffee');
       setTimeout(function() {
