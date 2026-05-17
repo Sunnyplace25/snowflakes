@@ -558,6 +558,8 @@
     var welcomeText = document.getElementById('welcome-text');
     if (visits === 1) {
       welcomeText.innerHTML = 'よく見つけたね！<br>ことりの部屋へようこそ！';
+    } else if (visits >= 10) {
+      welcomeText.innerHTML = visits + '回目の来訪だね。<br>すっかり常連だね。';
     } else {
       welcomeText.innerHTML = visits + '回目の来訪だね。';
     }
