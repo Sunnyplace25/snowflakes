@@ -190,6 +190,43 @@
       .profile-key { width: 60px; }
     }
 
+    /* ── Q&A Section ── */
+    .qa-section { padding: 100px 24px; background: rgba(255,255,255,0.01); }
+    .qa-inner { max-width: 680px; margin: 0 auto; }
+    .qa-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .qa-chip {
+      padding: 8px 18px; border-radius: 100px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      color: #cbd5e1; font-size: 13px; cursor: pointer; transition: all 0.2s;
+      font-family: 'Noto Serif JP', serif; letter-spacing: 0.5px;
+    }
+    .qa-chip:hover { background: rgba(147,197,253,0.1); border-color: rgba(147,197,253,0.3); color: #93c5fd; }
+    .qa-chip.active { background: rgba(147,197,253,0.12); border-color: rgba(147,197,253,0.4); color: #93c5fd; }
+    .qa-answer { margin-bottom: 36px; animation: qa-fadein 0.3s ease; }
+    .qa-q-display { font-size: 13px; color: #64748b; letter-spacing: 1px; margin-bottom: 12px; text-align: right; font-family: 'Cormorant Garamond', serif; }
+    .qa-a-bubble {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px 20px 20px 4px; padding: 20px 24px;
+      font-size: 15px; color: #cbd5e1; line-height: 2; font-weight: 300;
+    }
+    @keyframes qa-fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .qa-core-section { margin-top: 52px; padding-top: 48px; border-top: 1px solid rgba(255,255,255,0.07); }
+    .qa-core-header { font-size: 11px; letter-spacing: 5px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; margin-bottom: 20px; text-align: center; }
+    .qa-core-locked { text-align: center; padding: 36px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; }
+    .qa-lock-icon { font-size: 22px; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .qa-core-locked p { font-size: 14px; color: #64748b; font-weight: 300; line-height: 2; }
+    .qa-lock-hint { font-size: 12px !important; color: #475569 !important; margin-top: 4px; }
+    .qa-core-badge { font-size: 10px; letter-spacing: 3px; color: #f9a8d4; font-family: 'Cormorant Garamond', serif; text-align: center; margin-bottom: 18px; }
+    .qa-contact { margin-top: 56px; text-align: center; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .qa-contact p { font-size: 12px; color: #475569; letter-spacing: 2px; margin-bottom: 14px; font-family: 'Cormorant Garamond', serif; }
+    .qa-contact-btn {
+      display: inline-block; padding: 10px 28px; border-radius: 100px;
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #64748b; font-size: 13px; text-decoration: none;
+      transition: all 0.2s; letter-spacing: 2px; font-family: 'Cormorant Garamond', serif;
+    }
+    .qa-contact-btn:hover { border-color: rgba(255,255,255,0.25); color: #94a3b8; }
+
     /* ── Welcome popup ── */
     #welcome-popup {
       position: fixed; bottom: 24px; right: 20px; z-index: 100;
@@ -224,6 +261,14 @@
     }
     #welcome-close:hover { color: #94a3b8; }
     #welcome-img img { width: 120px; display: block; }
+    #welcome-qa-btn {
+      display: block; width: 100%; margin-top: 12px;
+      padding: 8px 0; background: rgba(147,197,253,0.1);
+      border: 1px solid rgba(147,197,253,0.25); border-radius: 100px;
+      color: #93c5fd; font-size: 12px; letter-spacing: 2px; cursor: pointer;
+      transition: all 0.2s; font-family: 'Cormorant Garamond', serif;
+    }
+    #welcome-qa-btn:hover { background: rgba(147,197,253,0.2); }
     @media (max-width: 480px) {
       #welcome-popup { bottom: 12px; right: 10px; }
       #welcome-bubble { max-width: 170px; padding: 14px 16px 12px; }
@@ -249,7 +294,8 @@
 <div id="welcome-popup">
   <div id="welcome-bubble">
     <p>KOTORI YAMABUKI</p>
-    <p>よく見つけたね！<br>ことりの部屋へようこそ！</p>
+    <p id="welcome-text">よく見つけたね！<br>ことりの部屋へようこそ！</p>
+    <button id="welcome-qa-btn" style="display:none;" onclick="document.getElementById('qa-section').scrollIntoView({behavior:'smooth'});document.getElementById('welcome-popup').classList.remove('show');">ききたいこと、ある？</button>
     <button id="welcome-close" onclick="document.getElementById('welcome-popup').classList.remove('show')">✕</button>
   </div>
   <div id="welcome-img"><img src="kotori_chibi.png" alt="山吹ことり"></div>
@@ -309,8 +355,8 @@
         <span class="profile-val" data-i18n="pv-blood">A型</span>
       </div>
       <div class="profile-row">
-        <span class="profile-key" data-i18n="pk-like">好きなもの</span>
-        <span class="profile-val" data-i18n="pv-like">余白</span>
+        <span class="profile-key" data-i18n="pk-like">好きな季節</span>
+        <span class="profile-val" data-i18n="pv-like">秋</span>
       </div>
       <div class="profile-row">
         <span class="profile-key" data-i18n="pk-habit">癖</span>
@@ -367,6 +413,37 @@
   </div>
 </section>
 
+<!-- Q&A -->
+<section class="qa-section" id="qa-section">
+  <span class="sec-label">QUESTION</span>
+  <h2 class="sec-title">ことりに聞いてみる</h2>
+  <div class="qa-inner">
+    <div class="qa-chips" id="qa-chips-base"></div>
+    <div class="qa-answer" id="qa-answer" style="display:none;">
+      <div class="qa-q-display" id="qa-q-display"></div>
+      <div class="qa-a-bubble" id="qa-a-bubble"></div>
+    </div>
+
+    <div class="qa-core-section">
+      <div class="qa-core-header">ことりと仲良くなると</div>
+      <div id="qa-core-locked" class="qa-core-locked">
+        <span class="qa-lock-icon">❄</span>
+        <p>コアファン認定で解放されます</p>
+        <p class="qa-lock-hint">全キャラクターの部屋をすべて開放しよう</p>
+      </div>
+      <div id="qa-core-unlocked" style="display:none;">
+        <p class="qa-core-badge">CORE FAN UNLOCKED</p>
+        <div class="qa-chips" id="qa-chips-core"></div>
+      </div>
+    </div>
+
+    <div class="qa-contact">
+      <p>直接話しかけたいなら</p>
+      <a class="qa-contact-btn" href="mailto:kotoriyamabuki@gmail.com">お問い合わせ・ご相談</a>
+    </div>
+  </div>
+</section>
+
 <!-- Footer -->
 <div class="color-bar"><span class="cb1"></span><span class="cb2"></span><span class="cb3"></span></div>
 <footer>
@@ -401,13 +478,96 @@
   draw();
 </script>
 <script>
+  // ── Q&A データ ──
+  var QA_BASE = [
+    { q: 'Snow flakesってなに？', a: '小説と音楽がつながって進んでいく、バンドの物語です。ヒナタ、コウタ、ハヤテ。三人の音と、言葉にならなかった感情を辿っていきます。' },
+    { q: 'ヒナタってどんな人？', a: 'ギターボーカル。言葉にしないまま、音だけを残す人です。静かに整えて、静かに抱えてきた人。' },
+    { q: 'コウタは？', a: 'ベース担当。崩さないように、意味を探しながら支える人です。気づかないふりが、あまり得意ではありません。' },
+    { q: 'ハヤテは？', a: 'ドラム担当。止まりそうな空気を、軽く叩いて動かす人です。三人の中では、一番明るいかな。' },
+    { q: 'Snowってどうやって集めるの？', a: 'トップページを見たり、リンクを開いたり、毎日遊びに来ると少しずつ積もります。' },
+    { q: 'ガチャって何が出るの？', a: 'キャンディ、ギターピック、カセットテープ、ライブパスなどが出ます。10連はレアアイテムが出やすいかも。' },
+    { q: 'SWEETsってなに？', a: 'Snow flakesをもっと深く楽しむための、特別な部屋です。Snowやアイテムを集めると、限定エピソードやキャラクターの部屋を開けます。' },
+    { q: 'SWEETs codeってなに？', a: 'SWEETsの一部を開くための合言葉です。Instagramのリールに置いてあることがあります。' },
+    { q: '小説はどこで読める？', a: '小説家になろうで連載しています。トップページのリンクからどうぞ。' },
+    { q: '音楽だけでも楽しめる？', a: 'もちろんです。でも、物語を読んだあとに聴くと、少し違って聞こえるかもしれません。' },
+    { q: '最初はどこから見ればいい？', a: 'まずはトップページからどうぞ。小説、音楽、SWEETsの入口をまとめています。' },
+    { q: '毎日来るといいことある？', a: 'Snowが少しずつ積もります。焦らず、ゆっくり遊びに来てください。' },
+    { q: '山吹ことりって何者？', a: 'Snow flakesの小説、音楽、サイトを一人で作っている創作者です。' },
+    { q: '好きな食べ物は？', a: 'チョコとコーヒー。作業してると、たぶんずっと飲んでます。' },
+    { q: 'Snow flakesは一人で作ってるの？', a: 'はい。物語、音楽、イラスト、サイト制作まで、少しずつ一人で積み上げています。' },
+    { q: 'Snow flakesってどういう意味？', a: '雪は、同じ形がひとつもありません。少しずつ違う感情や距離を、重なる音として残したかったんです。' },
+  ];
+  var QA_CORE = [
+    { q: 'ヒナタってどんな人？', a: 'ギターボーカル。静かな人です。あまり喋らないけど、音にはちゃんと残ります。' },
+    { q: 'コウタは？', a: 'ベース担当。ちゃんと考えて、ちゃんと支える人。たぶん一番気づいてます。' },
+    { q: 'ハヤテは？', a: 'ドラム担当。空気が重くなる前に動く人です。たぶん三人の中で一番うるさいかな。' },
+    { q: '三人って仲いいの？', a: '仲はいいです。でも、ずっと少しだけ不器用です。' },
+    { q: '誰が一番大人？', a: 'コウタかも。でも、疲れると全員だいぶ子どもです。' },
+    { q: '一番マイペースなのは？', a: 'ヒナタ。でも突然いなくなるので困ります。' },
+    { q: '一番話しかけやすいのは？', a: 'ハヤテだと思います。たぶん勝手に隣に来ます。' },
+    { q: '甘いもの好きなの誰？', a: 'ハヤテ。あと、コウタも意外と食べます。' },
+    { q: 'コーヒー好きなのは？', a: 'ヒナタ。ブラックを静かに飲んでます。' },
+    { q: '三人で一番寝ないの誰？', a: 'ヒナタ。気づくと朝になってるタイプです。' },
+  ];
+
+  function isCoreFan() {
+    var CORE_BLOCKS = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
+    return ['hinata','kouta','hayate'].every(function(ch) {
+      try {
+        var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
+        return CORE_BLOCKS.every(function(b) { return arr.indexOf(b) !== -1; });
+      } catch(e) { return false; }
+    });
+  }
+
+  function buildQAChips(list, containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    list.forEach(function(item, idx) {
+      var btn = document.createElement('button');
+      btn.className = 'qa-chip';
+      btn.textContent = item.q;
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.qa-chip.active').forEach(function(el) { el.classList.remove('active'); });
+        btn.classList.add('active');
+        var answerEl = document.getElementById('qa-answer');
+        var qEl = document.getElementById('qa-q-display');
+        var aEl = document.getElementById('qa-a-bubble');
+        qEl.textContent = item.q;
+        aEl.textContent = item.a;
+        answerEl.style.display = 'block';
+        // re-trigger animation
+        answerEl.style.animation = 'none';
+        answerEl.offsetHeight; // reflow
+        answerEl.style.animation = '';
+        setTimeout(function() {
+          answerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      });
+      container.appendChild(btn);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    // 訪問カウンター
+    var KEY_VISITS = 'sf_kotori_visits';
+    var visits = parseInt(localStorage.getItem(KEY_VISITS) || '0', 10) + 1;
+    localStorage.setItem(KEY_VISITS, String(visits));
+
     // ウェルカムポップアップ
+    var welcomeText = document.getElementById('welcome-text');
+    if (visits === 1) {
+      welcomeText.innerHTML = 'よく見つけたね！<br>ことりの部屋へようこそ！';
+    } else {
+      welcomeText.innerHTML = visits + '回目の来訪だね。';
+    }
+    var qaBtn = document.getElementById('welcome-qa-btn');
     setTimeout(function() {
       document.getElementById('welcome-popup').classList.add('show');
+      setTimeout(function() { if (qaBtn) qaBtn.style.display = 'block'; }, 1200);
       setTimeout(function() {
         document.getElementById('welcome-popup').classList.remove('show');
-      }, 5000);
+      }, 6000);
     }, 600);
 
     // デイリーSnow（訪問）
@@ -418,6 +578,16 @@
       setTimeout(function() {
         location.href = 'item/?item=proteincoffee';
       }, 1200);
+    }
+
+    // Q&Aチップ生成
+    buildQAChips(QA_BASE, 'qa-chips-base');
+
+    // コアファン判定
+    if (isCoreFan()) {
+      document.getElementById('qa-core-locked').style.display = 'none';
+      document.getElementById('qa-core-unlocked').style.display = 'block';
+      buildQAChips(QA_CORE, 'qa-chips-core');
     }
   });
 </script>
@@ -451,8 +621,8 @@
     'pv-sign':  { ja: 'てんびん座', en: 'Libra' },
     'pk-blood': { ja: '血液型', en: 'Blood type' },
     'pv-blood': { ja: 'A型', en: 'Type A' },
-    'pk-like':  { ja: '好きなもの', en: 'Favorites' },
-    'pv-like':  { ja: '余白', en: 'Empty space' },
+    'pk-like':  { ja: '好きな季節', en: 'Favorite season' },
+    'pv-like':  { ja: '秋', en: 'Autumn' },
     'pk-habit': { ja: '癖', en: 'Habit' },
     'pv-habit': { ja: '腕をまくる', en: 'Rolling up sleeves' },
     'pk-hobby': { ja: '趣味', en: 'Hobbies' },
