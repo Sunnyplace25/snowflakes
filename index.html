@@ -653,6 +653,16 @@
         return BASE_EP + days;
       }
 
+      // 18時更新の日は日付を追加する（例: '2026-05-20': 18）
+      var UPDATE_SCHEDULE = {
+      };
+
+      function getTodayKey(d) {
+        return d.getFullYear() + '-' +
+          String(d.getMonth() + 1).padStart(2, '0') + '-' +
+          String(d.getDate()).padStart(2, '0');
+      }
+
       function update() {
         var now    = new Date();
         var ep     = getEpisode(now);
@@ -663,20 +673,22 @@
         var status = document.getElementById('update-status');
         if (!banner || !epEl) return;
 
+        var updateHour = UPDATE_SCHEDULE[getTodayKey(now)] || 21;
+        var hh = String(updateHour).padStart(2, '0');
+
         // 話数・リンクを動的に更新
         epEl.textContent = '#' + ep;
         banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
 
-        // 21:00〜23:59 は光る
         var sub = document.getElementById('update-sub');
-        if (h >= 21) {
+        if (h >= updateHour) {
           banner.classList.add('active');
-          status.textContent = '21 : 00';
-          if (sub) sub.textContent = (h === 21 && m < 10) ? '更新しました ✦' : '本編 更新済み';
+          status.textContent = hh + ' : 00';
+          if (sub) sub.textContent = (h === updateHour && m < 10) ? '更新しました ✦' : '本編 更新済み';
         } else {
           banner.classList.remove('active');
-          status.textContent = '21 : 00';
-          if (sub) sub.textContent = '本編 毎日21時更新';
+          status.textContent = hh + ' : 00';
+          if (sub) sub.textContent = '本編 毎日' + updateHour + '時更新';
         }
       }
 
