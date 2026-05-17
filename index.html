@@ -700,6 +700,7 @@
           banner.classList.add('active');
           status.textContent = hh + ' : 00';
           if (sub) sub.textContent = (h === activeHour && m < 10) ? '更新しました ✦' : '本編 更新済み';
+          if ('setAppBadge' in navigator) navigator.setAppBadge(1).catch(function(){});
         } else {
           var hh = String(nextHour).padStart(2, '0');
           banner.classList.remove('active');
@@ -2113,6 +2114,21 @@
     }
   }
 })();
+</script>
+
+<script>
+// Service Worker 登録 & バッジ制御
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/snowflakes/sw.js');
+}
+// ページを開いたらバッジを消す
+function clearBadge() {
+  if ('clearAppBadge' in navigator) navigator.clearAppBadge().catch(function(){});
+}
+clearBadge();
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) clearBadge();
+});
 </script>
 
 </body>
