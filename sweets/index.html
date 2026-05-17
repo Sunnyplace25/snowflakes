@@ -4401,7 +4401,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「輪郭、はっきりしましたよね」', body: 'ラストでスタッフが口にする、\n\n「輪郭、はっきりしましたよね」\n\nという言葉。\n\nそれは曲の話であり、同時に、ヒナタ自身の話でもあります。\n\nまだ完成していない。\nまだ半分。\n\nでも、半分だからこそ、今しか鳴らない音がある。\n\n『半分のまま』は、進まない物語ではありません。\n\n急いで答えを出さない物語です。\n\n越えない。\n決めきらない。\nでも、確かに揺れている。\n\nその途中の温度を、静かに残した短編になっています。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cost:{ pick:1 } },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
@@ -4660,6 +4660,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
       html += '<div class="post-card" style="margin-top:0;">';
+      // カバーアート
+      if (item.cover) {
+        html += '<img src="' + item.cover + '" alt="' + item.title + '" style="width:100%;border-radius:12px 12px 0 0;display:block;aspect-ratio:1/1;object-fit:cover;opacity:' + (unlocked ? '1' : '0.35') + ';">';
+      }
       html += '<div class="post-header">';
       // タイトル・コスト（左）
       html += '<div class="post-header-left">';
