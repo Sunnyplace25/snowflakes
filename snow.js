@@ -95,19 +95,37 @@
     if (earnEl) earnEl.textContent = getDailyEarned();
   }
 
-  // Show a floating toast ("+10" style)
+  // Show a floating toast ("+10" style) — stacked, no overlap
+  var _activeToasts = [];
+  var TOAST_H = 44; // height + gap
+
+  function repositionToasts() {
+    var base = 76;
+    for (var i = 0; i < _activeToasts.length; i++) {
+      _activeToasts[i].style.bottom = (base + i * TOAST_H) + 'px';
+    }
+  }
+
   function toast(pts) {
     var t = document.createElement('div');
     t.className = 'sf-toast';
-    t.textContent = '❄ +' + pts;
+    t.innerHTML = '<span class="sf-toast-flake">❄</span><span class="sf-toast-pts">+' + pts + '</span>';
     document.body.appendChild(t);
+    _activeToasts.push(t);
+    repositionToasts();
+
     requestAnimationFrame(function() {
       requestAnimationFrame(function() { t.classList.add('show'); });
     });
     setTimeout(function() {
       t.classList.remove('show');
-      setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
-    }, 1800);
+      setTimeout(function() {
+        if (t.parentNode) t.parentNode.removeChild(t);
+        var idx = _activeToasts.indexOf(t);
+        if (idx !== -1) _activeToasts.splice(idx, 1);
+        repositionToasts();
+      }, 400);
+    }, 2200);
   }
 
   // Add + show toast
@@ -124,12 +142,17 @@
     s.textContent = [
       /* Toast */
       '.sf-toast{position:fixed;bottom:76px;right:18px;z-index:10000;',
-      'background:rgba(147,197,253,0.12);border:1px solid rgba(147,197,253,0.35);',
-      'color:#93c5fd;font-family:"Cormorant Garamond",Georgia,serif;',
-      'font-size:13px;letter-spacing:3px;padding:7px 16px;border-radius:100px;',
-      'pointer-events:none;opacity:0;transform:translateY(8px);',
-      'transition:opacity 0.35s ease,transform 0.35s ease;}',
-      '.sf-toast.show{opacity:1;transform:translateY(0);}',
+      'background:rgba(147,197,253,0.22);border:1.5px solid rgba(147,197,253,0.55);',
+      'color:#dbeeff;font-family:"Cormorant Garamond",Georgia,serif;',
+      'font-size:16px;letter-spacing:4px;padding:10px 22px;border-radius:100px;',
+      'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);',
+      'display:flex;align-items:center;gap:8px;',
+      'pointer-events:none;opacity:0;transform:translateY(14px) scale(0.92);',
+      'transition:opacity 0.3s ease,transform 0.3s ease,bottom 0.25s ease;',
+      'box-shadow:0 4px 20px rgba(147,197,253,0.18);}',
+      '.sf-toast.show{opacity:1;transform:translateY(0) scale(1);}',
+      '.sf-toast-flake{font-size:18px;line-height:1;}',
+      '.sf-toast-pts{font-size:17px;font-weight:400;}',
       /* Nav badge */
       '.sf-snow-nav{font-family:"Cormorant Garamond",Georgia,serif;',
       'font-size:12px;letter-spacing:3px;color:#64748b;',
