@@ -4761,31 +4761,50 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 <!-- ❄ Snow チェックリスト -->
 <script>
   var SNOW_CHECKLIST_ITEMS = [
-    { action: 'visit_top',         label: 'トップページを見る',   pts: 10 },
-    { action: 'visit_sweets',      label: 'SWEETsを見る',        pts: 10 },
-    { action: 'link_narou_today',  label: 'サイトバナーから最新話を読む', pts: 10 },
-    { action: 'link_novel',        label: '小説リンク',           pts: 5  },
-    { action: 'link_spotify',      label: 'Spotify',             pts: 5  },
-    { action: 'link_amazon',       label: 'Amazon Music',        pts: 5  },
-    { action: 'link_youtube',      label: 'YouTube',             pts: 5  },
-    { action: 'link_instagram',    label: 'Instagram',           pts: 5  },
-    { action: 'link_x',            label: 'X',                   pts: 5  },
-    { action: 'link_tiktok',       label: 'TikTok',              pts: 5  },
-    { action: 'link_taskapp',      label: 'タスクアプリ',         pts: 5  },
-    { action: 'like_chara_hinata', label: 'ヒナタをお気に入り',   pts: 5  },
-    { action: 'like_chara_kouta',  label: 'コウタをお気に入り',   pts: 5  },
-    { action: 'like_chara_hayate', label: 'ハヤテをお気に入り',   pts: 5  },
+    { action: 'visit_top',         label: 'トップページを見る',        pts: 10, href: '../',                                                           ext: false },
+    { action: 'visit_sweets',      label: 'SWEETsを見る',              pts: 10, href: null                                                                        },
+    { action: 'link_narou_today',  label: 'サイトバナーから最新話を読む', pts: 10, href: 'https://ncode.syosetu.com/n0964mc/',                              ext: true  },
+    { action: 'link_novel',        label: '小説を読む',                 pts: 5,  href: 'https://ncode.syosetu.com/n9009lo/',                              ext: true  },
+    { action: 'link_spotify',      label: 'Spotify',                   pts: 5,  href: 'https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN',          ext: true  },
+    { action: 'link_amazon',       label: 'Amazon Music',              pts: 5,  href: 'https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L', ext: true },
+    { action: 'link_youtube',      label: 'YouTube',                   pts: 5,  href: 'https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw',        ext: true  },
+    { action: 'link_instagram',    label: 'Instagram',                 pts: 5,  href: 'https://www.instagram.com/snowflakes_story',                      ext: true  },
+    { action: 'link_x',            label: 'X',                         pts: 5,  href: 'https://x.com/yayuyoyamabuki',                                    ext: true  },
+    { action: 'link_tiktok',       label: 'TikTok',                    pts: 5,  href: 'https://www.tiktok.com/@snowflakes.music',                        ext: true  },
+    { action: 'link_taskapp',      label: 'タスクアプリ',               pts: 5,  href: 'https://sunnyplace25.github.io/taskpwa/',                         ext: true  },
+    { action: 'like_chara_hinata', label: 'ヒナタをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
+    { action: 'like_chara_kouta',  label: 'コウタをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
+    { action: 'like_chara_hayate', label: 'ハヤテをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
   ];
+
+  function handleChecklistClick(action, href, ext) {
+    if (!href) return;
+    var done = SfSnow.isDone(action);
+    if (!done) {
+      SfSnow.addWithToast(action);
+      renderSnowChecklist();
+    }
+    if (ext) {
+      window.open(href, '_blank');
+    } else {
+      location.href = href;
+    }
+  }
 
   function renderSnowChecklist() {
     var container = document.getElementById('snow-checklist-items');
     if (!container || typeof SfSnow === 'undefined') return;
     container.innerHTML = SNOW_CHECKLIST_ITEMS.map(function(item) {
       var done = SfSnow.isDone(item.action);
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">' +
-        '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:' + (done ? '#374151' : '#94a3b8') + ';letter-spacing:0.5px;">' +
+      var hasLink = !!item.href;
+      var style = 'display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);' + (hasLink ? 'cursor:pointer;' : '');
+      var labelColor = done ? '#374151' : (hasLink ? '#94a3b8' : '#475569');
+      var labelStyle = done ? 'text-decoration:line-through;color:#374151;' : '';
+      var onclick = hasLink ? ' onclick="handleChecklistClick(\'' + item.action + '\',\'' + item.href + '\',' + (item.ext ? 'true' : 'false') + ')"' : '';
+      return '<div style="' + style + '"' + onclick + '>' +
+        '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:' + labelColor + ';letter-spacing:0.5px;">' +
         '<span style="font-size:13px;line-height:1;">' + (done ? '☑' : '☐') + '</span>' +
-        '<span style="' + (done ? 'text-decoration:line-through;color:#374151;' : '') + '">' + item.label + '</span>' +
+        '<span style="' + labelStyle + '">' + item.label + '</span>' +
         '</span>' +
         '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;color:' + (done ? '#374151' : '#475569') + ';letter-spacing:1px;">+' + item.pts + '</span>' +
         '</div>';
