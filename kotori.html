@@ -190,26 +190,65 @@
       .profile-key { width: 60px; }
     }
 
-    /* ── Q&A Section ── */
+    /* ── Chat Q&A ── */
     .qa-section { padding: 100px 24px; background: rgba(255,255,255,0.01); }
-    .qa-inner { max-width: 680px; margin: 0 auto; }
-    .qa-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
-    .qa-chip {
-      padding: 8px 18px; border-radius: 100px;
+    .qa-inner { max-width: 640px; margin: 0 auto; }
+
+    .chat-window {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 24px 20px;
+      min-height: 200px; max-height: 480px;
+      overflow-y: auto; margin-bottom: 16px;
+      display: flex; flex-direction: column; gap: 20px;
+      scroll-behavior: smooth;
+    }
+    .chat-row { display: flex; align-items: flex-end; gap: 10px; }
+    .chat-row.user { flex-direction: row-reverse; }
+    .chat-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(249,168,212,0.15); border: 1px solid rgba(249,168,212,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #f9a8d4;
+      overflow: hidden;
+    }
+    .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-bubble {
+      max-width: 78%; padding: 14px 18px; border-radius: 18px;
+      font-size: 14px; line-height: 1.9; font-weight: 300;
+      animation: chat-in 0.3s ease;
+    }
+    .chat-bubble.bot {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: #fbbf24; border-radius: 4px 18px 18px 18px;
+    }
+    .chat-bubble.user {
+      background: rgba(147,197,253,0.1); border: 1px solid rgba(147,197,253,0.2);
+      color: #cbd5e1; border-radius: 18px 4px 18px 18px;
+    }
+    .chat-typing { display: flex; align-items: center; gap: 5px; padding: 14px 18px; }
+    .chat-typing span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #fbbf24; opacity: 0.5;
+      animation: typing-dot 1.2s ease-in-out infinite;
+    }
+    .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+    .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-dot { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-6px);opacity:1} }
+    @keyframes chat-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    .chat-suggestions {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 32px; padding: 0 4px;
+    }
+    .chat-chip {
+      padding: 7px 16px; border-radius: 100px;
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      color: #cbd5e1; font-size: 13px; cursor: pointer; transition: all 0.2s;
-      font-family: 'Noto Serif JP', serif; letter-spacing: 0.5px;
+      color: #94a3b8; font-size: 12px; cursor: pointer; transition: all 0.2s;
+      font-family: 'Noto Serif JP', serif;
     }
-    .qa-chip:hover { background: rgba(147,197,253,0.1); border-color: rgba(147,197,253,0.3); color: #93c5fd; }
-    .qa-chip.active { background: rgba(147,197,253,0.12); border-color: rgba(147,197,253,0.4); color: #93c5fd; }
-    .qa-answer { margin-bottom: 36px; animation: qa-fadein 0.3s ease; }
-    .qa-q-display { font-size: 13px; color: #64748b; letter-spacing: 1px; margin-bottom: 12px; text-align: right; font-family: 'Cormorant Garamond', serif; }
-    .qa-a-bubble {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(245,166,35,0.2);
-      border-radius: 20px 20px 20px 4px; padding: 20px 24px;
-      font-size: 15px; color: #fbbf24; line-height: 2; font-weight: 300;
-    }
-    @keyframes qa-fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .chat-chip:hover { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
+
     .qa-core-section { margin-top: 52px; padding-top: 48px; border-top: 1px solid rgba(255,255,255,0.07); }
     .qa-core-header { font-size: 11px; letter-spacing: 5px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; margin-bottom: 20px; text-align: center; }
     .qa-core-locked { text-align: center; padding: 36px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; }
@@ -218,7 +257,7 @@
     .qa-lock-hint { font-size: 12px !important; color: #475569 !important; margin-top: 4px; }
     .qa-core-badge { font-size: 10px; letter-spacing: 3px; color: #f9a8d4; font-family: 'Cormorant Garamond', serif; text-align: center; margin-bottom: 18px; }
     .qa-contact { margin-top: 56px; text-align: center; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.06); }
-    .qa-contact p { font-size: 12px; color: #475569; letter-spacing: 2px; margin-bottom: 14px; font-family: 'Cormorant Garamond', serif; }
+    .qa-contact p { font-size: 12px; color: #94a3b8; letter-spacing: 2px; margin-bottom: 14px; font-family: 'Cormorant Garamond', serif; }
     .qa-contact-btn {
       display: inline-block; padding: 10px 28px; border-radius: 100px;
       background: none; border: 1px solid rgba(255,255,255,0.1);
@@ -375,12 +414,20 @@
   <span class="sec-label">QUESTION</span>
   <h2 class="sec-title">ことりに聞いてみる</h2>
   <div class="qa-inner">
-    <div class="qa-chips" id="qa-chips-base"></div>
-    <div class="qa-answer" id="qa-answer" style="display:none;">
-      <div class="qa-q-display" id="qa-q-display"></div>
-      <div class="qa-a-bubble" id="qa-a-bubble"></div>
+
+    <!-- チャットウィンドウ -->
+    <div class="chat-window" id="chat-window">
+      <!-- 初期メッセージ -->
+      <div class="chat-row">
+        <div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>
+        <div class="chat-bubble bot">なんでも聞いてね。</div>
+      </div>
     </div>
 
+    <!-- 質問チップ -->
+    <div class="chat-suggestions" id="chat-chips-base"></div>
+
+    <!-- コアファンセクション -->
     <div class="qa-core-section">
       <div class="qa-core-header">ことりと仲良くなると</div>
       <div id="qa-core-locked" class="qa-core-locked">
@@ -390,7 +437,7 @@
       </div>
       <div id="qa-core-unlocked" style="display:none;">
         <p class="qa-core-badge">CORE FAN UNLOCKED</p>
-        <div class="qa-chips" id="qa-chips-core"></div>
+        <div class="chat-suggestions" id="chat-chips-core"></div>
       </div>
     </div>
 
@@ -477,29 +524,56 @@
     });
   }
 
+  function addChatMessage(type, text) {
+    var win = document.getElementById('chat-window');
+    var row = document.createElement('div');
+    row.className = 'chat-row' + (type === 'user' ? ' user' : '');
+    if (type === 'bot') {
+      row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>'
+        + '<div class="chat-bubble bot">' + text + '</div>';
+    } else {
+      row.innerHTML = '<div class="chat-bubble user">' + text + '</div>';
+    }
+    win.appendChild(row);
+    win.scrollTop = win.scrollHeight;
+    return row;
+  }
+
+  function showTyping() {
+    var win = document.getElementById('chat-window');
+    var row = document.createElement('div');
+    row.className = 'chat-row';
+    row.id = 'chat-typing-row';
+    row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>'
+      + '<div class="chat-bubble bot chat-typing"><span></span><span></span><span></span></div>';
+    win.appendChild(row);
+    win.scrollTop = win.scrollHeight;
+  }
+
+  function hideTyping() {
+    var el = document.getElementById('chat-typing-row');
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  var chatBusy = false;
+
   function buildQAChips(list, containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
-    list.forEach(function(item, idx) {
+    list.forEach(function(item) {
       var btn = document.createElement('button');
-      btn.className = 'qa-chip';
+      btn.className = 'chat-chip';
       btn.textContent = item.q;
       btn.addEventListener('click', function() {
-        document.querySelectorAll('.qa-chip.active').forEach(function(el) { el.classList.remove('active'); });
-        btn.classList.add('active');
-        var answerEl = document.getElementById('qa-answer');
-        var qEl = document.getElementById('qa-q-display');
-        var aEl = document.getElementById('qa-a-bubble');
-        qEl.textContent = item.q;
-        aEl.textContent = item.a;
-        answerEl.style.display = 'block';
-        // re-trigger animation
-        answerEl.style.animation = 'none';
-        answerEl.offsetHeight; // reflow
-        answerEl.style.animation = '';
+        if (chatBusy) return;
+        chatBusy = true;
+        addChatMessage('user', item.q);
+        showTyping();
         setTimeout(function() {
-          answerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
+          hideTyping();
+          addChatMessage('bot', item.a);
+          chatBusy = false;
+        }, 900);
       });
       container.appendChild(btn);
     });
@@ -551,13 +625,13 @@
     }
 
     // Q&Aチップ生成
-    buildQAChips(QA_BASE, 'qa-chips-base');
+    buildQAChips(QA_BASE, 'chat-chips-base');
 
     // コアファン判定
     if (isCoreFan()) {
       document.getElementById('qa-core-locked').style.display = 'none';
       document.getElementById('qa-core-unlocked').style.display = 'block';
-      buildQAChips(QA_CORE, 'qa-chips-core');
+      buildQAChips(QA_CORE, 'chat-chips-core');
     }
   });
 </script>
