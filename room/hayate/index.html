@@ -451,7 +451,7 @@
         <div class="name-area">
           <span class="name-nick" id="name-nick">ハヤテ</span>
           <span class="name-full" id="name-full">楠木 颯（くすのき はやて）</span>
-          <button class="name-item-btn" id="name-unlock-btn">リストバンド</button>
+          <button class="name-item-btn" id="name-unlock-btn">古いリストバンド</button>
         </div>
       </div>
       <div class="detail-row">
@@ -667,7 +667,7 @@
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
             if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
-            showDialog('子どもの頃のイベントリストバンド', function() {
+            showDialog('古いリストバンド', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
               document.getElementById('name-nick').style.display = 'none';
@@ -728,7 +728,7 @@
       // ITEM LOG
       var tag1  = document.getElementById('il-1-tag');
       var desc1 = document.getElementById('il-1-desc');
-      if (tag1) tag1.textContent = '［子どもの頃のイベントリストバンド］';
+      if (tag1) tag1.textContent = '［古いリストバンド］';
       if (desc1) {
         if (SfSnow.isUnlocked(ITEM_KEY)) {
           desc1.className = 'item-log-desc';
