@@ -4602,7 +4602,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); if (typeof renderMusic === 'function') renderMusic(); };
 
   document.addEventListener('DOMContentLoaded', function() {
-    SfSnow.addWithToast('visit_sweets');
+    SfSnow.addWithToast('visit_sweets', 'SWEETsを訪問');
     renderRooms();
     renderExchange();
     renderNotes();
@@ -5056,7 +5056,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!href) return;
     var done = SfSnow.isDone(action);
     if (!done) {
-      SfSnow.addWithToast(action);
+      var item = SNOW_CHECKLIST.find(function(c) { return c.action === action; });
+      SfSnow.addWithToast(action, item ? item.label : null);
       renderSnowChecklist();
     }
     if (ext) {

@@ -1486,12 +1486,12 @@
     }
 
     // 訪問 +10
-    SfSnow.addWithToast('visit_top');
+    SfSnow.addWithToast('visit_top', 'サイトを訪問');
 
     // すでにいいね済みのキャラ → 毎日 +5
     ['hinata', 'kouta', 'hayate'].forEach(function(id) {
       if (localStorage.getItem('liked_' + id)) {
-        SfSnow.addWithToast('like_chara_' + id);
+        SfSnow.addWithToast('like_chara_' + id, 'お気に入りキャラ登録済み');
       }
     });
 
@@ -1499,7 +1499,7 @@
     var banner = document.getElementById('update-banner');
     if (banner) {
       banner.addEventListener('click', function() {
-        SfSnow.addWithToast('link_narou_today');
+        SfSnow.addWithToast('link_narou_today', '小説を読みに行った');
       });
     }
 
@@ -1918,7 +1918,7 @@
       localStorage.setItem(`liked_${id}`, '1');
       btn.classList.add('liked');
       btn.querySelector('.like-heart').textContent = '♥';
-      SfSnow.addWithToast('like_chara_' + id);
+      SfSnow.addWithToast('like_chara_' + id, 'キャラをお気に入り登録');
     }
   };
 </script>
