@@ -4640,6 +4640,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       ]
     },
     { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 } },
+    { id:'song_gurasu', type:'song', title:'グラスの縁', sub:'Snow flakes', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -4905,7 +4906,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = SfSnow.isUnlocked(item.id);
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
-      html += '<div class="post-card" style="margin-top:0;">';
+      html += '<div class="post-card" style="margin-top:0;position:relative;">';
+      if (item.isNew) {
+        html += '<span style="position:absolute;top:12px;right:12px;font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
+      }
       html += '<div class="post-header">';
       // タイトル・コスト（左）
       html += '<div class="post-header-left">';
