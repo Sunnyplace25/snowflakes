@@ -571,6 +571,17 @@
         <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
       </div>
 
+      <!-- Little Snow USBメモリ -->
+      <div class="item-log-row" id="il-usb-locked">
+        <span class="item-log-tag">［Little Snow（Law）USBメモリ］</span>
+        <span class="item-log-desc locked">もっていません</span>
+      </div>
+      <div id="il-usb-owned" style="display:none;text-align:center;padding:28px 16px 20px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;">
+        <img src="../../item/usb_hinata.webp" alt="Little Snow（Law）USBメモリ" style="width:180px;margin:0 auto 18px;display:block;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">Little Snow（Law）USBメモリ</p>
+        <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが小雪に渡したUSBメモリ。<br>整えていないままの音。</p>
+      </div>
+
       <!-- ヒナタの折りたたみ傘 -->
       <div class="item-log-row" id="il-umbrella-locked">
         <span class="item-log-tag">［ヒナタの折りたたみ傘］</span>
@@ -751,6 +762,14 @@
           desc1.className = 'item-log-desc locked';
           desc1.textContent = '持っていません';
         }
+      }
+
+      // Little Snow USBメモリ
+      if (SfSnow.isUnlocked('usb_hinata')) {
+        var usbLocked = document.getElementById('il-usb-locked');
+        var usbOwned  = document.getElementById('il-usb-owned');
+        if (usbLocked) usbLocked.style.display = 'none';
+        if (usbOwned)  usbOwned.style.display  = '';
       }
 
       // ヒナタの折りたたみ傘

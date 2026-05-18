@@ -716,6 +716,10 @@
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/umbrella_hinata.webp" alt="umbrella" style="width:32px;opacity:0.85;"> ヒナタの折りたたみ傘</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#93c5fd;text-align:right;letter-spacing:2px;">1</td>
             </tr>
+            <tr id="item-row-usb" style="display:none;cursor:default;transition:background 0.2s;">
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/usb_hinata.webp" alt="usb" style="width:32px;opacity:0.85;"> Little Snow（Law）USBメモリ</td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#93c5fd;text-align:right;letter-spacing:2px;">1</td>
+            </tr>
           </table>
           <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
         </div>
@@ -4104,6 +4108,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         chara: 'HINATA', charaColor: '#93c5fd',
         charaImg: '../plofile/chibi_hinata.webp',
         charaLine: '……持っていって'
+      },
+      usb_hinata: {
+        noteCardId: 'note_hinata_1',
+        img: '../item/usb_hinata.webp',
+        name: 'Little Snow（Law）USBメモリ',
+        color: '#93c5fd',
+        chara: 'HINATA', charaColor: '#93c5fd',
+        charaImg: '../plofile/chibi_hinata.webp',
+        charaLine: '整えなかった、あの夜の音だ'
       }
     };
     var _noteItemPendingChara = null;
@@ -4460,6 +4473,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-pick',          count: picks },
       { rowId: 'item-row-ring',          count: SfSnow.isUnlocked('ring_kouta') ? 1 : 0 },
       { rowId: 'item-row-umbrella',      count: SfSnow.isUnlocked('umbrella_hinata') ? 1 : 0 },
+      { rowId: 'item-row-usb',           count: SfSnow.isUnlocked('usb_hinata') ? 1 : 0 },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
