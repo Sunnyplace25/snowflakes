@@ -570,6 +570,17 @@
         <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
         <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
       </div>
+
+      <!-- ヒナタの折りたたみ傘 -->
+      <div class="item-log-row" id="il-umbrella-locked">
+        <span class="item-log-tag">［ヒナタの折りたたみ傘］</span>
+        <span class="item-log-desc locked">もっていません</span>
+      </div>
+      <div id="il-umbrella-owned" style="display:none;text-align:center;padding:28px 16px 20px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;">
+        <img src="../../item/umbrella_hinata.webp" alt="ヒナタの折りたたみ傘" style="width:180px;margin:0 auto 18px;display:block;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">ヒナタの折りたたみ傘</p>
+        <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが常に鞄に入れている黒い折りたたみ傘<br>かさばらない。それがいい。</p>
+      </div>
     </div>
 
   </div>
@@ -740,6 +751,14 @@
           desc1.className = 'item-log-desc locked';
           desc1.textContent = '持っていません';
         }
+      }
+
+      // ヒナタの折りたたみ傘
+      if (SfSnow.isUnlocked('umbrella_hinata')) {
+        var locked = document.getElementById('il-umbrella-locked');
+        var owned  = document.getElementById('il-umbrella-owned');
+        if (locked) locked.style.display = 'none';
+        if (owned)  owned.style.display  = '';
       }
     });
   </script>
