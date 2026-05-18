@@ -635,6 +635,24 @@
           </div>
         </div>
       </div>
+
+      <!-- Snow flakes ライブチケット -->
+      <div class="il-item" id="il-ticket-item">
+        <div class="il-header" onclick="toggleIlItem('il-ticket-item')">
+          <span class="item-log-tag">［Snow flakes ライブチケット］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-ticket-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">もっていません</span>
+          </div>
+          <div id="il-ticket-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/bass_strings_kouta.webp" alt="Snow flakes ライブチケット" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">Snow flakes ライブチケット</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">コウタがケーキのお詫びにあかりに渡したライブチケット。<br>もぎり済み。</p>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -826,6 +844,16 @@
         if (owned)  owned.style.display  = '';
         var ringItem = document.getElementById('il-ring-item');
         if (ringItem) ringItem.classList.add('open');
+      }
+
+      // Snow flakes ライブチケット
+      if (SfSnow.isUnlocked('bass_strings_kouta')) {
+        var tLocked = document.getElementById('il-ticket-locked');
+        var tOwned  = document.getElementById('il-ticket-owned');
+        if (tLocked) tLocked.style.display = 'none';
+        if (tOwned)  tOwned.style.display  = '';
+        var ticketItem = document.getElementById('il-ticket-item');
+        if (ticketItem) ticketItem.classList.add('open');
       }
     });
   </script>
