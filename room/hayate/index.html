@@ -278,12 +278,30 @@
       color: #fde68a;
     }
 
+    /* Item Log Accordion */
+    .il-item { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .il-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .il-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; cursor: pointer; user-select: none;
+    }
+    .il-arrow {
+      font-size: 16px; color: #64748b;
+      transition: transform 0.3s ease; line-height: 1;
+    }
+    .il-item.open .il-arrow { transform: rotate(90deg); }
+    .il-body {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.35s ease;
+    }
+    .il-item.open .il-body { max-height: 500px; }
+
     /* Item Log */
     .item-log {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 0;
     }
     .item-log-row {
       display: flex;
@@ -377,6 +395,22 @@
       justify-content: center;
     }
     .alert-overlay.open { display: flex; }
+
+    /* Room Lightbox */
+    .room-light {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(8,15,30,0.96);
+      display: none; align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    .room-light.open { display: flex; }
+    .room-light img {
+      max-width: 92vw; max-height: 86vh;
+      border-radius: 6px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    }
+    h1 { cursor: pointer; transition: opacity 0.2s; }
+    h1:hover { opacity: 0.75; }
   </style>
 </head>
 <body>
@@ -562,50 +596,43 @@
     <p class="section-label">ITEM LOG</p>
 
     <div class="item-log">
-      <div class="item-log-row">
-        <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
-        <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+      <!-- 古いリストバンド -->
+      <div class="il-item" id="il-1-item">
+        <div class="il-header" onclick="toggleIlItem('il-1-item')">
+          <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div style="padding:8px 0 16px;">
+            <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="section-divider"></div>
-    <p class="section-label">ROOMS</p>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
-      <!-- HINATA -->
-      <a href="../hinata/" style="text-decoration:none;display:block;border-radius:14px;overflow:hidden;position:relative;aspect-ratio:3/4;">
-        <img src="../hinata/room_top.webp" alt="HINATA" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,15,30,0.7) 0%,transparent 55%);"></div>
-        <p style="position:absolute;bottom:12px;left:14px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin:0;">HINATA</p>
-      </a>
-
-      <!-- KOUTA -->
-      <a href="../kouta/" style="text-decoration:none;display:block;border-radius:14px;overflow:hidden;position:relative;aspect-ratio:3/4;">
-        <img src="../kouta/room_top.webp" alt="KOUTA" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(8,15,30,0.7) 0%,transparent 55%);"></div>
-        <p style="position:absolute;bottom:12px;left:14px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin:0;">KOUTA</p>
-      </a>
-
-      <!-- COMING SOON A -->
-      <div style="border-radius:14px;overflow:hidden;position:relative;aspect-ratio:3/4;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;margin:0;">COMING</p>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;margin:0;">SOON</p>
-      </div>
-
-      <!-- COMING SOON B -->
-      <div style="border-radius:14px;overflow:hidden;position:relative;aspect-ratio:3/4;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;margin:0;">COMING</p>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;margin:0;">SOON</p>
-      </div>
-
     </div>
 
   </div>
 
+  <!-- Room Lightbox -->
+  <div class="room-light" id="room-light" onclick="closeRoomLight()">
+    <img src="room_full.webp" alt="ハヤテの部屋">
+  </div>
+
   <script>
+    function toggleIlItem(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    }
+
+    function openRoomLight() {
+      document.getElementById('room-light').classList.add('open');
+    }
+    function closeRoomLight() {
+      document.getElementById('room-light').classList.remove('open');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
+      document.querySelector('h1').addEventListener('click', openRoomLight);
 
       var SAVE_KEY   = 'sf_pf_hayate_v2';
       var CANDY_TYPE = 'cassis';

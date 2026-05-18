@@ -721,54 +721,54 @@
         </div>
 
         <!-- レアアイテム -->
-        <div id="items-rare-wrap" style="display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
+        <div id="items-rare-wrap" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:14px;">RARE ITEMS</p>
 
           <!-- HINATA -->
-          <div id="rare-hinata-section" style="display:none;margin-bottom:10px;">
+          <div id="rare-hinata-section" style="margin-bottom:10px;">
             <div onclick="toggleRareSection('hinata')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(147,197,253,0.1);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
               <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#93c5fd;">HINATA</span>
               <span id="rare-hinata-arrow" style="font-size:13px;color:#93c5fd;transition:transform 0.3s;">›</span>
             </div>
             <div id="rare-hinata-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;">
-                <tr id="item-row-umbrella" style="display:none;cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/umbrella_hinata.webp" alt="umbrella" style="width:30px;opacity:0.85;"> ヒナタの折りたたみ傘</td>
-                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;">✓</td>
+                <tr id="item-row-umbrella" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-umbrella-img" src="../item/umbrella_hinata.webp" alt="umbrella" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-umbrella-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-umbrella-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
-                <tr id="item-row-usb" style="display:none;cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/usb_hinata.webp" alt="usb" style="width:30px;opacity:0.85;"> Little Snow（Law）USBメモリ</td>
-                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;">✓</td>
+                <tr id="item-row-usb" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-usb-img" src="../item/usb_hinata.webp" alt="usb" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-usb-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-usb-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
           </div>
 
           <!-- KOUTA -->
-          <div id="rare-kouta-section" style="display:none;margin-bottom:10px;">
+          <div id="rare-kouta-section" style="margin-bottom:10px;">
             <div onclick="toggleRareSection('kouta')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(252,165,165,0.1);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
               <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fca5a5;">KOUTA</span>
               <span id="rare-kouta-arrow" style="font-size:13px;color:#fca5a5;transition:transform 0.3s;">›</span>
             </div>
             <div id="rare-kouta-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;">
-                <tr id="item-row-ring" style="display:none;cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/ring_kouta.webp" alt="ring" style="width:30px;opacity:0.85;"> 黒い石のシルバーリング</td>
-                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;">✓</td>
+                <tr id="item-row-ring" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-ring-img" src="../item/ring_kouta.webp" alt="ring" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-ring-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-ring-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
           </div>
 
           <!-- HAYATE -->
-          <div id="rare-hayate-section" style="display:none;margin-bottom:10px;">
+          <div id="rare-hayate-section" style="margin-bottom:10px;">
             <div onclick="toggleRareSection('hayate')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(253,230,138,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
               <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fde68a;">HAYATE</span>
               <span id="rare-hayate-arrow" style="font-size:13px;color:#fde68a;transition:transform 0.3s;">›</span>
             </div>
             <div id="rare-hayate-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;" id="rare-hayate-table">
-                <!-- 今後追加 -->
+                <tr><td colspan="2" style="padding:12px 4px;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;text-align:center;">COMING SOON</td></tr>
               </table>
             </div>
           </div>
@@ -4524,9 +4524,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-cassis',        count: candies['cassis'] || 0 },
       { rowId: 'item-row-proteincoffee', count: items['proteincoffee'] || 0 },
       { rowId: 'item-row-pick',          count: picks },
-      { rowId: 'item-row-ring',          count: SfSnow.isUnlocked('ring_kouta') ? 1 : 0 },
-      { rowId: 'item-row-umbrella',      count: SfSnow.isUnlocked('umbrella_hinata') ? 1 : 0 },
-      { rowId: 'item-row-usb',           count: SfSnow.isUnlocked('usb_hinata') ? 1 : 0, isRare: true },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
@@ -4541,19 +4538,26 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var section = document.getElementById('items-section');
     if (section) section.style.display = anyVisible ? '' : 'none';
 
-    // レアアイテムセクション表示制御
-    var hasHinata = SfSnow.isUnlocked('umbrella_hinata') || SfSnow.isUnlocked('usb_hinata');
-    var hasKouta  = SfSnow.isUnlocked('ring_kouta');
-    var hasHayate = false; // 今後追加
-    var hasRare = hasHinata || hasKouta || hasHayate;
-    var rareWrap = document.getElementById('items-rare-wrap');
-    if (rareWrap) rareWrap.style.display = hasRare ? '' : 'none';
-    var hinataSection = document.getElementById('rare-hinata-section');
-    if (hinataSection) hinataSection.style.display = hasHinata ? '' : 'none';
-    var koutaSection = document.getElementById('rare-kouta-section');
-    if (koutaSection) koutaSection.style.display = hasKouta ? '' : 'none';
-    var hayateSection = document.getElementById('rare-hayate-section');
-    if (hayateSection) hayateSection.style.display = hasHayate ? '' : 'none';
+    // レアアイテム: 入手済みは正式名・アイコン表示、未入手は ???
+    function updateRareItem(imgId, nameId, checkId, itemKey, itemName, normalOpacity) {
+      var img   = document.getElementById(imgId);
+      var name  = document.getElementById(nameId);
+      var check = document.getElementById(checkId);
+      if (!img || !name) return;
+      if (SfSnow.isUnlocked(itemKey)) {
+        img.style.opacity = normalOpacity || '0.85';
+        img.style.filter  = '';
+        name.textContent  = itemName;
+        name.style.fontFamily = '';
+        name.style.fontSize   = '';
+        name.style.letterSpacing = '';
+        name.style.color  = '#cbd5e1';
+        if (check) check.textContent = '✓';
+      }
+    }
+    updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata', 'ヒナタの折りたたみ傘');
+    updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',      'Little Snow（Law）USBメモリ');
+    updateRareItem('ri-ring-img',     'ri-ring-name',     'ri-ring-check',     'ring_kouta',      '黒い石のシルバーリング');
   }
 
   function toggleRareSection(chara) {

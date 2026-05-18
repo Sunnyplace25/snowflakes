@@ -283,23 +283,23 @@
     }
 
     /* Item Log */
-    .item-log-header {
+    /* Item Log Accordion */
+    .il-item { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .il-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .il-header {
       display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; user-select: none; margin-bottom: 20px;
+      padding: 14px 0; cursor: pointer; user-select: none;
     }
-    .item-log-header .section-label { margin-bottom: 0; }
-    .item-log-arrow {
-      font-size: 14px; color: #64748b;
-      transition: transform 0.35s ease;
-      line-height: 1;
+    .il-arrow {
+      font-size: 16px; color: #64748b;
+      transition: transform 0.3s ease; line-height: 1;
     }
-    .item-log-header.open .item-log-arrow { transform: rotate(90deg); }
-    #item-log-wrap {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.4s ease;
+    .il-item.open .il-arrow { transform: rotate(90deg); }
+    .il-body {
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.35s ease;
     }
-    #item-log-wrap.open { max-height: 1200px; }
+    .il-item.open .il-body { max-height: 500px; }
     .item-log {
       width: 100%;
       display: flex;
@@ -398,6 +398,22 @@
       justify-content: center;
     }
     .alert-overlay.open { display: flex; }
+
+    /* Room Lightbox */
+    .room-light {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(8,15,30,0.96);
+      display: none; align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    .room-light.open { display: flex; }
+    .room-light img {
+      max-width: 92vw; max-height: 86vh;
+      border-radius: 6px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    }
+    h1 { cursor: pointer; transition: opacity 0.2s; }
+    h1:hover { opacity: 0.75; }
   </style>
 </head>
 <body>
@@ -580,53 +596,77 @@
     </div>
 
     <div class="section-divider"></div>
-    <div class="item-log-header" id="item-log-header" onclick="toggleItemLog()">
-      <p class="section-label">ITEM LOG</p>
-      <span class="item-log-arrow">›</span>
-    </div>
-    <div id="item-log-wrap">
+    <p class="section-label">ITEM LOG</p>
+
     <div class="item-log">
-      <div class="item-log-row">
-        <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
-        <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+      <!-- 古いカセットテープ -->
+      <div class="il-item" id="il-1-item">
+        <div class="il-header" onclick="toggleIlItem('il-1-item')">
+          <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div style="padding:8px 0 16px;">
+            <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+          </div>
+        </div>
       </div>
 
       <!-- Little Snow USBメモリ -->
-      <div class="item-log-row" id="il-usb-locked">
-        <span class="item-log-tag">［Little Snow（Law）USBメモリ］</span>
-        <span class="item-log-desc locked">もっていません</span>
-      </div>
-      <div id="il-usb-owned" style="display:none;text-align:center;padding:28px 16px 20px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;">
-        <img src="../../item/usb_hinata.webp" alt="Little Snow（Law）USBメモリ" style="width:180px;margin:0 auto 18px;display:block;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">Little Snow（Law）USBメモリ</p>
-        <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが小雪に渡したUSBメモリ。<br>整えていないままの音。</p>
+      <div class="il-item" id="il-usb-item">
+        <div class="il-header" onclick="toggleIlItem('il-usb-item')">
+          <span class="item-log-tag">［Little Snow（Law）USBメモリ］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-usb-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">もっていません</span>
+          </div>
+          <div id="il-usb-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/usb_hinata.webp" alt="Little Snow（Law）USBメモリ" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">Little Snow（Law）USBメモリ</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが小雪に渡したUSBメモリ。<br>整えていないままの音。</p>
+          </div>
+        </div>
       </div>
 
       <!-- ヒナタの折りたたみ傘 -->
-      <div class="item-log-row" id="il-umbrella-locked">
-        <span class="item-log-tag">［ヒナタの折りたたみ傘］</span>
-        <span class="item-log-desc locked">もっていません</span>
-      </div>
-      <div id="il-umbrella-owned" style="display:none;text-align:center;padding:28px 16px 20px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;">
-        <img src="../../item/umbrella_hinata.webp" alt="ヒナタの折りたたみ傘" style="width:180px;margin:0 auto 18px;display:block;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">ヒナタの折りたたみ傘</p>
-        <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが常に鞄に入れている黒い折りたたみ傘<br>かさばらない。それがいい。</p>
+      <div class="il-item" id="il-umbrella-item">
+        <div class="il-header" onclick="toggleIlItem('il-umbrella-item')">
+          <span class="item-log-tag">［ヒナタの折りたたみ傘］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-umbrella-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">もっていません</span>
+          </div>
+          <div id="il-umbrella-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/umbrella_hinata.webp" alt="ヒナタの折りたたみ傘" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">ヒナタの折りたたみ傘</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタが常に鞄に入れている黒い折りたたみ傘<br>かさばらない。それがいい。</p>
+          </div>
+        </div>
       </div>
     </div>
-    </div><!-- /item-log-wrap -->
 
   </div>
 
   <script>
-    function toggleItemLog() {
-      var header = document.getElementById('item-log-header');
-      var wrap   = document.getElementById('item-log-wrap');
-      var isOpen = header.classList.toggle('open');
-      wrap.classList.toggle('open', isOpen);
+    function toggleIlItem(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    }
+
+    function openRoomLight() {
+      document.getElementById('room-light').classList.add('open');
+    }
+    function closeRoomLight() {
+      document.getElementById('room-light').classList.remove('open');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
+      document.querySelector('h1').addEventListener('click', openRoomLight);
 
       var SAVE_KEY   = 'sf_pf_hinata_v2';
       var CANDY_TYPE = 'milk';
@@ -798,6 +838,8 @@
         var usbOwned  = document.getElementById('il-usb-owned');
         if (usbLocked) usbLocked.style.display = 'none';
         if (usbOwned)  usbOwned.style.display  = '';
+        var usbItem = document.getElementById('il-usb-item');
+        if (usbItem) usbItem.classList.add('open');
       }
 
       // ヒナタの折りたたみ傘
@@ -806,8 +848,15 @@
         var owned  = document.getElementById('il-umbrella-owned');
         if (locked) locked.style.display = 'none';
         if (owned)  owned.style.display  = '';
+        var umbrellaItem = document.getElementById('il-umbrella-item');
+        if (umbrellaItem) umbrellaItem.classList.add('open');
       }
     });
   </script>
+
+  <!-- Room Lightbox -->
+  <div class="room-light" id="room-light" onclick="closeRoomLight()">
+    <img src="room_full.webp" alt="ヒナタの部屋">
+  </div>
 </body>
 </html>
