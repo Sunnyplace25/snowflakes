@@ -4925,10 +4925,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       // ボタン（右固定）
       if (unlocked) {
         html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
+      } else if (ok) {
+        html += '<button class="read-btn" onclick="doUnlockSong(\'' + item.id + '\')">交換する</button>';
       } else {
-        html += '<button class="read-btn"' + (ok ? '' : ' style="opacity:0.45;"')
-          + ' onclick="doUnlockSong(\'' + item.id + '\')">'
-          + (ok ? '交換する' : 'ピック不足') + '</button>';
+        html += '<button class="read-btn" style="opacity:0.4;cursor:default;" disabled>ピック不足</button>';
       }
       html += '</div>';
       if (unlocked) {
