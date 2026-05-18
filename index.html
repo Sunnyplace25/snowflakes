@@ -2200,12 +2200,17 @@ document.addEventListener('visibilitychange', function() {
 
 <script>
 (function() {
-  var audio   = document.getElementById('sf-audio');
-  var player  = document.getElementById('sf-player');
-  var playBtn = document.getElementById('sf-play-btn');
+  var audio    = document.getElementById('sf-audio');
+  var player   = document.getElementById('sf-player');
+  var playBtn  = document.getElementById('sf-play-btn');
   var progress = document.getElementById('sf-progress');
-  var openBtn = document.getElementById('sf-open-btn');
-  var playing = false;
+  var openBtn  = document.getElementById('sf-open-btn');
+  var playing  = false;
+  var milestones = { 25: false, 50: false, 75: false };
+
+  function gaEvent(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params);
+  }
 
   // 3秒後にプレイヤーをフェードイン
   setTimeout(function() {
@@ -2216,12 +2221,21 @@ document.addEventListener('visibilitychange', function() {
 
   audio.addEventListener('timeupdate', function() {
     if (!audio.duration) return;
-    progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    var pct = audio.currentTime / audio.duration * 100;
+    progress.style.width = pct + '%';
+    // 25 / 50 / 75% マイルストーン
+    [25, 50, 75].forEach(function(m) {
+      if (!milestones[m] && pct >= m) {
+        milestones[m] = true;
+        gaEvent('music_progress', { track: '置いた音', percent: m });
+      }
+    });
   });
 
   audio.addEventListener('ended', function() {
     playing = false;
     playBtn.textContent = '▶';
+    gaEvent('music_complete', { track: '置いた音' });
   });
 
   window.sfTogglePlay = function() {
@@ -2231,6 +2245,9 @@ document.addEventListener('visibilitychange', function() {
     } else {
       audio.play();
       playBtn.textContent = '❚❚';
+      if (audio.currentTime < 1) {
+        gaEvent('music_play', { track: '置いた音' });
+      }
     }
     playing = !playing;
   };
