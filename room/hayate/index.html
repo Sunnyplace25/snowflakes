@@ -610,6 +610,18 @@
           </div>
         </div>
       </div>
+      <!-- STARSの紙製コースター -->
+      <div class="il-item" id="il-2-item">
+        <div class="il-header" onclick="toggleIlItem('il-2-item')">
+          <span class="item-log-tag" id="il-2-tag">［　　　　　　　　　　］</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div style="padding:8px 0 16px;">
+            <span class="item-log-desc locked" id="il-2-desc">LOCKED</span>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -801,9 +813,27 @@
         if (SfSnow.isUnlocked(ITEM_KEY)) {
           desc1.className = 'item-log-desc';
           desc1.textContent = '';
+          var el1 = document.getElementById('il-1-item');
+          if (el1) el1.classList.add('open');
         } else {
           desc1.className = 'item-log-desc locked';
           desc1.textContent = '持っていません';
+        }
+      }
+
+      var COASTER_KEY = 'coaster_hayate';
+      var tag2  = document.getElementById('il-2-tag');
+      var desc2 = document.getElementById('il-2-desc');
+      if (tag2) tag2.textContent = '［STARSの紙製コースター］';
+      if (desc2) {
+        if (SfSnow.isUnlocked(COASTER_KEY)) {
+          desc2.className = 'item-log-desc';
+          desc2.textContent = 'ハヤテの行きつけのバー"STARS"の紙製コースター。地味に集めている。';
+          var el2 = document.getElementById('il-2-item');
+          if (el2) el2.classList.add('open');
+        } else {
+          desc2.className = 'item-log-desc locked';
+          desc2.textContent = '持っていません';
         }
       }
     });

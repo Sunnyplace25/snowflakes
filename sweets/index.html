@@ -773,7 +773,10 @@
             </div>
             <div id="rare-hayate-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;" id="rare-hayate-table">
-                <tr><td colspan="2" style="padding:12px 4px;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;text-align:center;">COMING SOON</td></tr>
+                <tr id="item-row-coaster" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-coaster-img" src="../item/coaster_hayate.webp" alt="coaster" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-coaster-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-coaster-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
+                </tr>
               </table>
             </div>
           </div>
@@ -4183,6 +4186,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         chara: 'AKARI', charaColor: '#fca5a5',
         charaImg: '../plofile/chibi_akari.webp',
         charaLine: '好きになりました！'
+      },
+      coaster_hayate: {
+        noteCardId: null,
+        img: '../item/coaster_hayate.webp',
+        name: 'STARSの紙製コースター',
+        color: '#fde68a',
+        chara: 'HAYATE', charaColor: '#fde68a',
+        charaImg: '../plofile/chibi_hayate.webp',
+        charaLine: 'よく来るから、もらった'
       }
     };
     var _noteItemPendingChara = null;
@@ -4573,6 +4585,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',      'Little Snow（Law）USBメモリ');
     updateRareItem('ri-ring-img',        'ri-ring-name',        'ri-ring-check',        'ring_kouta',         '黒い石のシルバーリング');
     updateRareItem('ri-bassstrings-img', 'ri-bassstrings-name', 'ri-bassstrings-check', 'bass_strings_kouta', 'Snow flakes ライブチケット');
+    updateRareItem('ri-coaster-img',     'ri-coaster-name',     'ri-coaster-check',     'coaster_hayate',     'STARSの紙製コースター');
   }
 
   function toggleRareSection(chara) {
@@ -4640,7 +4653,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       ]
     },
     { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 } },
-    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:true },
+    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:true, reward:'coaster_hayate' },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
