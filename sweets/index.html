@@ -378,6 +378,11 @@
 
     .post-content { display: none; }
     .post-content.open { display: block; overflow-y: auto; max-height: 58vh; }
+    .post-content.open::-webkit-scrollbar { width: 4px; }
+    .post-content.open::-webkit-scrollbar-track { background: transparent; }
+    .post-content.open::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+    .post-content.open::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
+    .post-content.open { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
 
     .post-tag {
       font-size: 10px;
@@ -4116,7 +4121,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         color: '#93c5fd',
         chara: 'HINATA', charaColor: '#93c5fd',
         charaImg: '../plofile/chibi_hinata.webp',
-        charaLine: '整えなかった、あの夜の音だ'
+        charaLine: '聴いてほしい'
       }
     };
     var _noteItemPendingChara = null;
@@ -4149,9 +4154,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       imgEl.alt          = d.name;
       nameEl.textContent = d.name;
       labelEl.style.color = d.color;
+      closeBtn.textContent        = '閉じる';
       closeBtn.style.color        = d.color;
-      closeBtn.style.borderColor  = d.color.replace(')', ',0.3)').replace('rgb', 'rgba');
-      closeBtn.style.background   = d.color.replace(')', ',0.07)').replace('rgb', 'rgba');
+      closeBtn.style.borderColor  = d.color;
+      closeBtn.style.background   = 'rgba(255,255,255,0.05)';
       document.getElementById('note-item-popup').classList.add('show');
     }
 
