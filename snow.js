@@ -107,10 +107,13 @@
     }
   }
 
-  function toast(pts) {
+  function toast(pts, label) {
     var t = document.createElement('div');
     t.className = 'sf-toast';
-    t.innerHTML = '<span class="sf-toast-flake">❄</span><span class="sf-toast-pts">+' + pts + '</span>';
+    var inner = label
+      ? '<span class="sf-toast-label">' + label + '</span><span class="sf-toast-flake">❄</span><span class="sf-toast-pts">+' + pts + '</span>'
+      : '<span class="sf-toast-flake">❄</span><span class="sf-toast-pts">+' + pts + '</span>';
+    t.innerHTML = inner;
     document.body.appendChild(t);
     _activeToasts.push(t);
     repositionToasts();
@@ -130,9 +133,9 @@
   }
 
   // Add + show toast
-  function addWithToast(action) {
+  function addWithToast(action, label) {
     var pts = add(action);
-    if (pts > 0) toast(pts);
+    if (pts > 0) toast(pts, label);
     return pts;
   }
 
@@ -154,6 +157,7 @@
       '.sf-toast.show{opacity:1;transform:translateY(0) scale(1);}',
       '.sf-toast-flake{font-size:18px;line-height:1;}',
       '.sf-toast-pts{font-size:17px;font-weight:400;}',
+      '.sf-toast-label{font-size:11px;letter-spacing:2px;color:#93c5fd;opacity:0.8;margin-right:4px;}',
       /* Nav badge */
       '.sf-snow-nav{font-family:"Cormorant Garamond",Georgia,serif;',
       'font-size:12px;letter-spacing:3px;color:#64748b;',
@@ -281,12 +285,12 @@
   }
 
   // 初回のみポイント付与（unlockItemをフラグとして使用）
-  function addOnce(key, amount) {
+  function addOnce(key, amount, label) {
     if (isUnlocked(key)) return 0;
     unlockItem(key);
     setBalance(getBalance() + amount);
     updateUI();
-    toast(amount);
+    toast(amount, label);
     return amount;
   }
 
