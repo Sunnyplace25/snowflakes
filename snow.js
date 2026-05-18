@@ -10,6 +10,7 @@
 
   // Points per action (daily cap per action)
   var ACTION_PTS = {
+    oita_oto_daily:  5,
     visit_top:       10,
     visit_sweets:    10,
     link_narou_today: 10,
@@ -279,6 +280,16 @@
     return true;
   }
 
+  // 初回のみポイント付与（unlockItemをフラグとして使用）
+  function addOnce(key, amount) {
+    if (isUnlocked(key)) return 0;
+    unlockItem(key);
+    setBalance(getBalance() + amount);
+    updateUI();
+    toast(amount);
+    return amount;
+  }
+
   /* ── Spend / Unlock system ── */
   var KEY_UNLOCKED = 'sf_unlocked';
 
@@ -332,6 +343,7 @@
     spendMonthlyItem:   spendMonthlyItem,
     isUnlocked:         isUnlocked,
     unlockItem:         unlockItem,
+    addOnce:            addOnce,
     getPicks:           getPicks,
     addPick:            addPick,
     spendPick:          spendPick,

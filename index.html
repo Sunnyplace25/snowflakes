@@ -2242,6 +2242,10 @@ document.addEventListener('visibilitychange', function() {
     playing = false;
     playBtn.textContent = '▶';
     gaEvent('music_complete', { track: '置いた音' });
+    // 初回フル再生: 50 Snow
+    var first = SfSnow.addOnce('oita_oto_first', 50);
+    // 2回目以降: 1日1回 5 Snow
+    if (first === 0) SfSnow.addWithToast('oita_oto_daily');
   });
 
   window.sfTogglePlay = function() {
