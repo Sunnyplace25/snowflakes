@@ -574,6 +574,17 @@
         <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
         <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
       </div>
+
+      <!-- 黒い石のシルバーリング -->
+      <div class="item-log-row" id="il-ring-locked">
+        <span class="item-log-tag">［黒い石のシルバーリング］</span>
+        <span class="item-log-desc locked">もっていません</span>
+      </div>
+      <div id="il-ring-owned" style="display:none;text-align:center;padding:28px 16px 20px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;">
+        <img src="../../item/ring_kouta.webp" alt="黒い石のシルバーリング" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">黒い石のシルバーリング</p>
+        <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">路地裏の店でコウタが手に入れた指輪<br>中指にピタリとはまる</p>
+      </div>
     </div>
 
   </div>
@@ -742,6 +753,14 @@
           desc1.className = 'item-log-desc locked';
           desc1.textContent = '持っていません';
         }
+      }
+
+      // 黒い石のシルバーリング
+      if (SfSnow.isUnlocked('ring_kouta')) {
+        var locked = document.getElementById('il-ring-locked');
+        var owned  = document.getElementById('il-ring-owned');
+        if (locked) locked.style.display = 'none';
+        if (owned)  owned.style.display  = '';
       }
     });
   </script>

@@ -708,6 +708,10 @@
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count">0</span></td>
             </tr>
+            <tr id="item-row-ring" style="display:none;cursor:default;transition:background 0.2s;">
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/ring_kouta.webp" alt="ring" style="width:32px;opacity:0.85;"> 黒い石のシルバーリング</td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#fca5a5;text-align:right;letter-spacing:2px;">1</td>
+            </tr>
           </table>
           <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
         </div>
@@ -3924,6 +3928,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
 それは最後まで、はっきりとは説明されません。
 ただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。</div>
+        <div id="notes-end" style="height:1px;"></div>
         </div><!-- /post-content -->
       </div><!-- /post-card -->
 
@@ -4073,6 +4078,42 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         btn.onclick = function() { toggleContent('notes-body', btn); };
       }
       if (typeof renderItemRows === 'function') renderItemRows();
+      initNotesItem();
+    }
+
+    // ── Notes最後まで読んだらリング取得 ──
+    function initNotesItem() {
+      if (SfSnow.isUnlocked('ring_kouta')) return;
+      var sentinel = document.getElementById('notes-end');
+      if (!sentinel) return;
+      var obs = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          SfSnow.unlockItem('ring_kouta');
+          obs.disconnect();
+          if (typeof renderItemRows === 'function') renderItemRows();
+          document.getElementById('ring-item-popup').classList.add('show');
+        }
+      }, { rootMargin: '0px', threshold: 0.5 });
+      obs.observe(sentinel);
+    }
+
+    function closeRingItemPopup() {
+      document.getElementById('ring-item-popup').classList.remove('show');
+      // コウタのキャラポップアップを表示
+      setTimeout(function() {
+        var popup = document.getElementById('chara-popup');
+        var nameEl = document.getElementById('chara-name');
+        var lineEl = document.getElementById('chara-line');
+        var faceEl = document.getElementById('chara-face');
+        if (!popup) return;
+        nameEl.textContent = 'KOUTA';
+        nameEl.style.color = '#fca5a5';
+        lineEl.textContent = 'なぜか、手放せない';
+        faceEl.src = '../plofile/chibi_kouta.webp';
+        popup.style.display = '';
+        popup.classList.add('show');
+        setTimeout(function() { popup.classList.remove('show'); }, 5000);
+      }, 350);
     }
 
     function notesExchange() {
@@ -4141,6 +4182,37 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     drawSnow();
   </script>
 
+
+<!-- リングアイテム取得ポップアップ -->
+<style>
+  #ring-item-popup {
+    position: fixed; inset: 0; z-index: 9100;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(12,18,32,0.88); backdrop-filter: blur(14px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #ring-item-popup.show { opacity: 1; pointer-events: auto; }
+  #ring-item-box {
+    text-align: center;
+    transform: translateY(20px) scale(0.94);
+    transition: transform 0.5s cubic-bezier(.18,1.2,.45,1);
+  }
+  #ring-item-popup.show #ring-item-box { transform: none; }
+  @keyframes ringFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  #ring-item-img { animation: ringFloat 3s ease-in-out infinite; display:block; margin:0 auto 28px; width:160px; }
+  @media (max-width:480px) { #ring-item-img { width:120px; } }
+</style>
+<div id="ring-item-popup">
+  <div id="ring-item-box">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:7px;color:#64748b;margin-bottom:32px;">Snow flakes</p>
+    <img id="ring-item-img" src="../item/ring_kouta.webp" alt="黒い石のシルバーリング">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#fca5a5;margin-bottom:10px;">ITEM</p>
+    <p style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;">黒い石のシルバーリング</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:44px;">を入手しました</p>
+    <button onclick="closeRingItemPopup()" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;color:#fca5a5;background:rgba(252,165,165,0.07);border:1px solid rgba(252,165,165,0.3);border-radius:100px;padding:12px 36px;cursor:pointer;transition:background 0.25s;" onmouseover="this.style.background='rgba(252,165,165,0.15)'" onmouseout="this.style.background='rgba(252,165,165,0.07)'">閉じる</button>
+  </div>
+</div>
 
 <!-- キャラポップアップ（SWEETs ROOM用） -->
 <style>
@@ -4334,6 +4406,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-cassis',        count: candies['cassis'] || 0 },
       { rowId: 'item-row-proteincoffee', count: items['proteincoffee'] || 0 },
       { rowId: 'item-row-pick',          count: picks },
+      { rowId: 'item-row-ring',          count: SfSnow.isUnlocked('ring_kouta') ? 1 : 0 },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
