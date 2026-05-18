@@ -288,6 +288,23 @@
       color: #fca5a5;
     }
 
+    .item-log-header {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none; margin-bottom: 20px;
+    }
+    .item-log-header .section-label { margin-bottom: 0; }
+    .item-log-arrow {
+      font-size: 14px; color: #64748b;
+      transition: transform 0.35s ease;
+      line-height: 1;
+    }
+    .item-log-header.open .item-log-arrow { transform: rotate(90deg); }
+    #item-log-wrap {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.4s ease;
+    }
+    #item-log-wrap.open { max-height: 1200px; }
     .item-log {
       width: 100%;
       display: flex;
@@ -567,8 +584,11 @@
     </div>
 
     <div class="section-divider"></div>
-    <p class="section-label">ITEM LOG</p>
-
+    <div class="item-log-header" id="item-log-header" onclick="toggleItemLog()">
+      <p class="section-label">ITEM LOG</p>
+      <span class="item-log-arrow">›</span>
+    </div>
+    <div id="item-log-wrap">
     <div class="item-log">
       <div class="item-log-row">
         <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
@@ -586,10 +606,18 @@
         <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">路地裏の店でコウタが手に入れた指輪<br>中指にピタリとはまる</p>
       </div>
     </div>
+    </div><!-- /item-log-wrap -->
 
   </div>
 
   <script>
+    function toggleItemLog() {
+      var header = document.getElementById('item-log-header');
+      var wrap   = document.getElementById('item-log-wrap');
+      var isOpen = header.classList.toggle('open');
+      wrap.classList.toggle('open', isOpen);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
 

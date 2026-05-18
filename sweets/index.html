@@ -690,8 +690,11 @@
     <!-- Items section -->
     <div class="section" id="items-section" style="display:none;">
       <div class="section-label">items</div>
-      <div style="max-width:480px;margin:0 auto;">
-        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
+      <div style="max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- 通常アイテム -->
+        <div id="items-normal-wrap" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:14px;">ITEMS</p>
           <table style="width:100%;border-collapse:collapse;" id="items-table">
             <tr id="item-row-milk" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('milk')">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_milk.webp" alt="" style="width:32px;opacity:0.85;"> ミルクキャンディー</td>
@@ -713,21 +716,65 @@
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count">0</span></td>
             </tr>
-            <tr id="item-row-ring" style="display:none;cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/ring_kouta.webp" alt="ring" style="width:32px;opacity:0.85;"> 黒い石のシルバーリング</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#fca5a5;text-align:right;letter-spacing:2px;">1</td>
-            </tr>
-            <tr id="item-row-umbrella" style="display:none;cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/umbrella_hinata.webp" alt="umbrella" style="width:32px;opacity:0.85;"> ヒナタの折りたたみ傘</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#93c5fd;text-align:right;letter-spacing:2px;">1</td>
-            </tr>
-            <tr id="item-row-usb" style="display:none;cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/usb_hinata.webp" alt="usb" style="width:32px;opacity:0.85;"> Little Snow（Law）USBメモリ</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:#93c5fd;text-align:right;letter-spacing:2px;">1</td>
-            </tr>
           </table>
           <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
         </div>
+
+        <!-- レアアイテム -->
+        <div id="items-rare-wrap" style="display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:14px;">RARE ITEMS</p>
+
+          <!-- HINATA -->
+          <div id="rare-hinata-section" style="display:none;margin-bottom:10px;">
+            <div onclick="toggleRareSection('hinata')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(147,197,253,0.1);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#93c5fd;">HINATA</span>
+              <span id="rare-hinata-arrow" style="font-size:13px;color:#93c5fd;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-hinata-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-umbrella" style="display:none;cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/umbrella_hinata.webp" alt="umbrella" style="width:30px;opacity:0.85;"> ヒナタの折りたたみ傘</td>
+                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;">✓</td>
+                </tr>
+                <tr id="item-row-usb" style="display:none;cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/usb_hinata.webp" alt="usb" style="width:30px;opacity:0.85;"> Little Snow（Law）USBメモリ</td>
+                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;">✓</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- KOUTA -->
+          <div id="rare-kouta-section" style="display:none;margin-bottom:10px;">
+            <div onclick="toggleRareSection('kouta')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(252,165,165,0.1);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fca5a5;">KOUTA</span>
+              <span id="rare-kouta-arrow" style="font-size:13px;color:#fca5a5;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-kouta-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-ring" style="display:none;cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/ring_kouta.webp" alt="ring" style="width:30px;opacity:0.85;"> 黒い石のシルバーリング</td>
+                  <td style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;">✓</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- HAYATE -->
+          <div id="rare-hayate-section" style="display:none;margin-bottom:10px;">
+            <div onclick="toggleRareSection('hayate')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(253,230,138,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fde68a;">HAYATE</span>
+              <span id="rare-hayate-arrow" style="font-size:13px;color:#fde68a;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-hayate-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;padding:0 4px;" id="rare-hayate-table">
+                <!-- 今後追加 -->
+              </table>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
 
@@ -4112,7 +4159,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         color: '#93c5fd',
         chara: 'HINATA', charaColor: '#93c5fd',
         charaImg: '../plofile/chibi_hinata.webp',
-        charaLine: '……持っていって'
+        charaLine: '……使う？'
       },
       usb_hinata: {
         noteCardId: 'note_hinata_1',
@@ -4479,7 +4526,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-pick',          count: picks },
       { rowId: 'item-row-ring',          count: SfSnow.isUnlocked('ring_kouta') ? 1 : 0 },
       { rowId: 'item-row-umbrella',      count: SfSnow.isUnlocked('umbrella_hinata') ? 1 : 0 },
-      { rowId: 'item-row-usb',           count: SfSnow.isUnlocked('usb_hinata') ? 1 : 0 },
+      { rowId: 'item-row-usb',           count: SfSnow.isUnlocked('usb_hinata') ? 1 : 0, isRare: true },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
@@ -4493,6 +4540,29 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : '';
     var section = document.getElementById('items-section');
     if (section) section.style.display = anyVisible ? '' : 'none';
+
+    // レアアイテムセクション表示制御
+    var hasHinata = SfSnow.isUnlocked('umbrella_hinata') || SfSnow.isUnlocked('usb_hinata');
+    var hasKouta  = SfSnow.isUnlocked('ring_kouta');
+    var hasHayate = false; // 今後追加
+    var hasRare = hasHinata || hasKouta || hasHayate;
+    var rareWrap = document.getElementById('items-rare-wrap');
+    if (rareWrap) rareWrap.style.display = hasRare ? '' : 'none';
+    var hinataSection = document.getElementById('rare-hinata-section');
+    if (hinataSection) hinataSection.style.display = hasHinata ? '' : 'none';
+    var koutaSection = document.getElementById('rare-kouta-section');
+    if (koutaSection) koutaSection.style.display = hasKouta ? '' : 'none';
+    var hayateSection = document.getElementById('rare-hayate-section');
+    if (hayateSection) hayateSection.style.display = hasHayate ? '' : 'none';
+  }
+
+  function toggleRareSection(chara) {
+    var body  = document.getElementById('rare-' + chara + '-body');
+    var arrow = document.getElementById('rare-' + chara + '-arrow');
+    if (!body) return;
+    var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+    body.style.maxHeight  = isOpen ? '0' : '600px';
+    if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
   }
 
   // SfSnow.updateUI が呼ばれるたびにアイテム行の表示も更新
