@@ -2176,6 +2176,12 @@ document.addEventListener('visibilitychange', function() {
     <div style="margin-top:6px;position:relative;height:2px;background:rgba(255,255,255,0.08);border-radius:1px;width:140px;cursor:pointer;" onclick="sfSeek(event, this)">
       <div id="sf-progress" style="height:100%;width:0%;background:rgba(255,255,255,0.3);border-radius:1px;transition:width 0.5s linear;pointer-events:none;"></div>
     </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+      <span style="font-size:9px;color:#334155;">🔈</span>
+      <input id="sf-volume" type="range" min="0" max="1" step="0.05" value="1"
+        oninput="sfSetVolume(this.value)"
+        style="width:80px;height:2px;accent-color:rgba(255,255,255,0.3);cursor:pointer;background:transparent;">
+    </div>
   </div>
   <button onclick="sfClose()" style="
     background:none; border:none; color:#334155; font-size:16px;
@@ -2250,6 +2256,10 @@ document.addEventListener('visibilitychange', function() {
       }
     }
     playing = !playing;
+  };
+
+  window.sfSetVolume = function(val) {
+    audio.volume = val;
   };
 
   window.sfSeek = function(e, bar) {
