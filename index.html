@@ -1127,7 +1127,7 @@
 </section>
 
 <!-- Discography -->
-<section class="discography">
+<section class="discography" id="discography">
   <span class="sec-label" style="text-align:center;display:block;margin-bottom:12px;">DISCOGRAPHY</span>
   <h2 class="sec-title" data-i18n="disco-h2">ディスコグラフィ</h2>
   <div class="disco-inner">
@@ -2159,6 +2159,16 @@ document.addEventListener('visibilitychange', function() {
 });
 </script>
 
+<!-- ── ディスコグラフィリンク ── -->
+<a id="sf-disco-link" href="#discography" style="
+  position:fixed; bottom:108px; right:24px; z-index:200;
+  font-family:'Cormorant Garamond',serif;
+  font-size:9px; letter-spacing:4px; color:#475569;
+  text-decoration:none; writing-mode:vertical-rl;
+  transition:color 0.2s, opacity 0.4s;
+  opacity:0; pointer-events:none;
+" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">DISCOGRAPHY</a>
+
 <!-- ── フローティングミュージックプレイヤー ── -->
 <div id="sf-player" style="
   position:fixed; bottom:24px; right:24px; z-index:200;
@@ -2225,11 +2235,13 @@ document.addEventListener('visibilitychange', function() {
     if (typeof gtag === 'function') gtag('event', name, params);
   }
 
-  // 3秒後にプレイヤーをフェードイン
+  // 3秒後にプレイヤー＆ディスコリンクをフェードイン
   setTimeout(function() {
     player.style.opacity = '1';
     player.style.transform = 'translateY(0)';
     player.style.pointerEvents = 'auto';
+    var dl = document.getElementById('sf-disco-link');
+    if (dl) { dl.style.opacity = '1'; dl.style.pointerEvents = 'auto'; }
   }, 3000);
 
   audio.addEventListener('timeupdate', function() {
