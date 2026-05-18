@@ -2152,5 +2152,113 @@ document.addEventListener('visibilitychange', function() {
 });
 </script>
 
+<!-- ── フローティングミュージックプレイヤー ── -->
+<div id="sf-player" style="
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  display:flex; align-items:center; gap:12px;
+  background:rgba(12,18,32,0.88); backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:40px; padding:10px 18px 10px 12px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+  transition:opacity 0.4s, transform 0.4s;
+  opacity:0; transform:translateY(16px); pointer-events:none;
+">
+  <button id="sf-play-btn" onclick="sfTogglePlay()" style="
+    width:36px; height:36px; border-radius:50%;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:#e2e8f0; font-size:13px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s; flex-shrink:0;
+  ">▶</button>
+  <div style="min-width:0;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:2px;">NOW PLAYING</p>
+    <p style="font-size:12px;color:#cbd5e1;letter-spacing:1px;white-space:nowrap;">置いた音 <span style="color:#475569;font-size:10px;">— Snow flakes</span></p>
+    <div style="margin-top:6px;position:relative;height:2px;background:rgba(255,255,255,0.08);border-radius:1px;width:140px;cursor:pointer;" onclick="sfSeek(event, this)">
+      <div id="sf-progress" style="height:100%;width:0%;background:rgba(255,255,255,0.3);border-radius:1px;transition:width 0.5s linear;pointer-events:none;"></div>
+    </div>
+  </div>
+  <button onclick="sfClose()" style="
+    background:none; border:none; color:#334155; font-size:16px;
+    cursor:pointer; padding:0 0 0 4px; line-height:1;
+    transition:color 0.2s; flex-shrink:0;
+  " onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">×</button>
+</div>
+
+<!-- 起動ボタン（閉じたあとに再表示） -->
+<button id="sf-open-btn" onclick="sfOpen()" style="
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(12,18,32,0.88); backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);
+  color:#475569; font-size:18px; cursor:pointer;
+  display:none; align-items:center; justify-content:center;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+  transition:color 0.2s;
+" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">♪</button>
+
+<audio id="sf-audio" src="music/oita_oto.mp3" preload="none"></audio>
+
+<script>
+(function() {
+  var audio   = document.getElementById('sf-audio');
+  var player  = document.getElementById('sf-player');
+  var playBtn = document.getElementById('sf-play-btn');
+  var progress = document.getElementById('sf-progress');
+  var openBtn = document.getElementById('sf-open-btn');
+  var playing = false;
+
+  // 3秒後にプレイヤーをフェードイン
+  setTimeout(function() {
+    player.style.opacity = '1';
+    player.style.transform = 'translateY(0)';
+    player.style.pointerEvents = 'auto';
+  }, 3000);
+
+  audio.addEventListener('timeupdate', function() {
+    if (!audio.duration) return;
+    progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  });
+
+  audio.addEventListener('ended', function() {
+    playing = false;
+    playBtn.textContent = '▶';
+  });
+
+  window.sfTogglePlay = function() {
+    if (playing) {
+      audio.pause();
+      playBtn.textContent = '▶';
+    } else {
+      audio.play();
+      playBtn.textContent = '❚❚';
+    }
+    playing = !playing;
+  };
+
+  window.sfSeek = function(e, bar) {
+    if (!audio.duration) return;
+    var rect = bar.getBoundingClientRect();
+    var ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * audio.duration;
+  };
+
+  window.sfClose = function() {
+    audio.pause();
+    playing = false;
+    player.style.opacity = '0';
+    player.style.transform = 'translateY(16px)';
+    player.style.pointerEvents = 'none';
+    openBtn.style.display = 'flex';
+  };
+
+  window.sfOpen = function() {
+    openBtn.style.display = 'none';
+    player.style.opacity = '1';
+    player.style.transform = 'translateY(0)';
+    player.style.pointerEvents = 'auto';
+  };
+})();
+</script>
+
 </body>
 </html>
