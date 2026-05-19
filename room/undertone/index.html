@@ -343,12 +343,11 @@
       align-items:center; justify-content:center;
     }
     .tarot-back {
-      background:#0d1526;
-      border:1px solid rgba(255,255,255,0.06);
-      overflow:hidden; padding:0;
+      background:transparent;
     }
     .tarot-back img {
-      width:100%; height:100%; object-fit:cover; display:block;
+      width:100%; height:100%; object-fit:contain; display:block;
+      filter: drop-shadow(0 0 10px rgba(248,113,113,0.7)) drop-shadow(0 0 28px rgba(248,113,113,0.4)) drop-shadow(0 0 50px rgba(248,113,113,0.2));
     }
 
     .tarot-face {
@@ -487,12 +486,14 @@
     .dual-face, .dual-back {
       position:absolute; inset:0;
       border-radius:14px; backface-visibility:hidden;
-      overflow:hidden;
     }
     .dual-back {
       background:transparent;
     }
-    .dual-back img { width:100%; height:100%; object-fit:contain; display:block; }
+    .dual-back img {
+      width:100%; height:100%; object-fit:contain; display:block;
+      filter: drop-shadow(0 0 10px rgba(147,197,253,0.7)) drop-shadow(0 0 28px rgba(147,197,253,0.4)) drop-shadow(0 0 50px rgba(147,197,253,0.2));
+    }
     .dual-face {
       background:transparent;
       border:1px solid rgba(196,181,253,0.3);
@@ -566,10 +567,14 @@
     .spread-card.flipped { transform:rotateY(180deg); pointer-events:none; }
     .spread-card-face, .spread-card-back {
       position:absolute; inset:0;
-      border-radius:12px; backface-visibility:hidden; overflow:hidden;
+      border-radius:12px; backface-visibility:hidden;
     }
+    .spread-card-face { overflow:hidden; }
     .spread-card-back { background:transparent; }
-    .spread-card-back img { width:100%; height:100%; object-fit:contain; display:block; }
+    .spread-card-back img {
+      width:100%; height:100%; object-fit:contain; display:block;
+      filter: drop-shadow(0 0 10px rgba(147,197,253,0.7)) drop-shadow(0 0 28px rgba(147,197,253,0.4)) drop-shadow(0 0 50px rgba(147,197,253,0.2));
+    }
     .spread-card-face {
       background:transparent;
       border:1px solid rgba(196,181,253,0.3);
