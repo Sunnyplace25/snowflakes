@@ -468,12 +468,12 @@
   </div>
 
   <div class="main">
-    <img id="room-hero-img" src="room_face.webp" alt="ヒナタ 環陽向 Snow flakes スノーフレークス スノフレ ギター キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;object-fit:cover;border-radius:0 0 24px 24px;cursor:pointer;aspect-ratio:1086/1448;" onclick="toggleRoomHero()">
+    <img src="room_face.webp" alt="ヒナタ 環陽向 Snow flakes スノーフレークス スノフレ ギター キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;object-fit:cover;border-radius:0 0 24px 24px;aspect-ratio:1086/1448;">
 
     <p class="eyebrow" style="margin-top:32px;">Snow flakes — ROOM</p>
 
     <p class="name-en">HINATA</p>
-    <h1 style="cursor:pointer;" onclick="toggleRoomHero()">ヒナタの部屋</h1>
+    <h1>ヒナタの部屋</h1>
     <p class="role">guitar &amp; vocal</p>
 
     <div class="divider"></div>
@@ -914,29 +914,8 @@
 
   <!-- Room Lightbox -->
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
-    <img src="room_full.webp" alt="ヒナタの部屋">
+    <img src="room_interior.webp" alt="ヒナタの部屋">
   </div>
 
-  <script>
-  (function() {
-    var heroShowing = 'face'; // 'face' or 'room'
-    window.addEventListener('pageshow', function() {
-      var img = document.getElementById('room-hero-img');
-      if (img) { img.src = 'room_face.webp'; img.style.aspectRatio = '1086/1448'; heroShowing = 'face'; }
-    });
-    window.toggleRoomHero = function() {
-      var img = document.getElementById('room-hero-img');
-      if (heroShowing === 'face') {
-        img.src = 'room_interior.webp';
-        img.style.aspectRatio = '1535/1024';
-        heroShowing = 'room';
-      } else {
-        img.src = 'room_face.webp';
-        img.style.aspectRatio = '1086/1448';
-        heroShowing = 'face';
-      }
-    };
-  })();
-  </script>
 </body>
 </html>
