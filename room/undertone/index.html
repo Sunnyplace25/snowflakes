@@ -126,7 +126,7 @@
       font-size:9px; letter-spacing:4px; color:#fca5a5;
       margin-bottom:6px;
     }
-    .speech-text { font-size:13px; color:#e2e8f0; line-height:2; font-weight:300; }
+    .speech-text { font-size:13px; color:#e2e8f0; line-height:2; font-weight:400; }
     .speech-char-img { width:56px; flex-shrink:0; }
 
     .advance-btn {
@@ -170,8 +170,8 @@
       margin-bottom:14px;
     }
     .hotspot-desc {
-      font-size:14px; color:#cbd5e1; line-height:2.3;
-      font-weight:300; margin-bottom:22px; white-space:pre-line;
+      font-size:14px; color:#e2e8f0; line-height:2.4;
+      font-weight:400; margin-bottom:22px; white-space:pre-line;
     }
     .popup-close {
       font-family:'Cormorant Garamond',serif;
@@ -202,8 +202,8 @@
       margin-bottom:18px;
     }
     .entrance-msg {
-      font-size:15px; color:#cbd5e1; line-height:2.6;
-      margin-bottom:30px; font-weight:300;
+      font-size:15px; color:#e2e8f0; line-height:2.6;
+      margin-bottom:30px; font-weight:400;
     }
     .entrance-btns { display:flex; gap:10px; }
     .entrance-no {
@@ -235,8 +235,8 @@
     }
     .shopkeeper-img {
       width:100%; border-radius:20px; display:block;
-      filter:brightness(0.82) contrast(1.08);
-      box-shadow:0 8px 40px rgba(0,0,0,0.8), 0 0 60px rgba(196,181,253,0.04);
+      filter:brightness(0.88) contrast(1.06);
+      box-shadow:0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(196,181,253,0.35), 0 0 120px rgba(196,181,253,0.15);
     }
     .shopkeeper-name-tag {
       position:absolute; bottom:14px; left:0; right:0;
@@ -246,8 +246,8 @@
     }
 
     .shop-greeting {
-      text-align:center; font-size:13px; color:#64748b;
-      line-height:2.4; margin-bottom:28px; font-weight:300;
+      text-align:center; font-size:14px; color:#94a3b8;
+      line-height:2.4; margin-bottom:28px; font-weight:400;
       font-style:italic;
     }
 
@@ -329,7 +329,7 @@
     /* Card flip */
     .tarot-card-wrap { perspective:1000px; margin-bottom:28px; }
     .tarot-card {
-      width:150px; height:240px;
+      width:200px; height:320px;
       position:relative; transform-style:preserve-3d;
       transition:transform 0.9s cubic-bezier(0.25,0.8,0.25,1);
       cursor:pointer;
@@ -352,10 +352,12 @@
     }
 
     .tarot-face {
-      background:rgba(13,21,38,0.99);
-      border:1px solid rgba(255,255,255,0.08);
+      background:transparent;
+      border:1px solid rgba(196,181,253,0.35);
+      box-shadow:0 0 40px rgba(196,181,253,0.35), 0 0 80px rgba(196,181,253,0.12), inset 0 0 30px rgba(196,181,253,0.04);
+      backdrop-filter:blur(10px);
       transform:rotateY(180deg);
-      padding:20px 16px; text-align:center;
+      padding:24px 18px; text-align:center;
     }
     .tarot-verdict {
       font-family:'Cormorant Garamond',serif;
@@ -375,8 +377,8 @@
       margin:0 auto 14px;
     }
     .tarot-msg {
-      font-size:11px; color:#64748b;
-      line-height:1.95; letter-spacing:0.5px;
+      font-size:13px; color:#94a3b8;
+      line-height:2; letter-spacing:0.5px;
       white-space:pre-line;
     }
     .tarot-rare-badge {
@@ -388,7 +390,7 @@
 
     .tarot-hint {
       font-family:'Cormorant Garamond',serif;
-      font-size:10px; letter-spacing:4px; color:#1e2d40;
+      font-size:10px; letter-spacing:4px; color:#475569;
       margin-bottom:24px; transition:opacity 0.5s;
     }
     .tarot-hint.hide { opacity:0; }
@@ -432,18 +434,18 @@
     /* ── CARD FACE ELEMENTS ── */
     .tf-num {
       font-family:'Cormorant Garamond',serif;
-      font-size:10px; letter-spacing:3px; color:#334155;
-      margin-bottom:6px;
+      font-size:11px; letter-spacing:4px; color:#475569;
+      margin-bottom:8px;
     }
     .tf-position {
       font-family:'Cormorant Garamond',serif;
-      font-size:20px; font-weight:300; letter-spacing:2px;
-      margin-bottom:6px;
+      font-size:26px; font-weight:300; letter-spacing:2px;
+      margin-bottom:8px;
     }
     .tf-name {
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; letter-spacing:2px; color:#94a3b8;
-      line-height:1.4;
+      font-size:13px; letter-spacing:2px; color:#cbd5e1;
+      line-height:1.5;
     }
 
     /* ── RESULT PANEL ── */
@@ -454,26 +456,27 @@
     }
     .result-panel .res-arch {
       font-family:'Cormorant Garamond',serif;
-      font-size:9px; letter-spacing:5px; color:#334155;
+      font-size:9px; letter-spacing:5px; color:#475569;
       margin-bottom:8px;
     }
     .result-panel .res-keyword {
-      font-size:10px; color:#475569; letter-spacing:2px;
+      font-size:11px; color:#64748b; letter-spacing:2px;
       margin-bottom:12px;
     }
     .result-panel .res-msg {
-      font-size:14px; color:#e2e8f0; line-height:2.3;
-      font-weight:300; margin-bottom:12px;
+      font-size:14px; color:#e2e8f0; line-height:2.4;
+      font-weight:400; margin-bottom:12px;
     }
     .result-panel .res-special {
-      font-size:11px; color:#334155; letter-spacing:1px;
-      line-height:2; font-style:italic; white-space:pre-line;
+      font-size:12px; color:#64748b; letter-spacing:1px;
+      line-height:2.2; font-style:italic; white-space:pre-line;
+      font-weight:400;
     }
     .dual-result { margin-top:4px; }
 
     /* ── DUAL CARDS ── */
     .dual-card {
-      width:120px; height:192px;
+      width:150px; height:240px;
       position:relative; transform-style:preserve-3d;
       transition:transform 0.9s cubic-bezier(0.25,0.8,0.25,1);
       cursor:pointer;
@@ -492,16 +495,19 @@
     }
     .dual-back img { width:100%; height:100%; object-fit:cover; display:block; }
     .dual-face {
-      background:rgba(13,21,38,0.99);
-      border:1px solid rgba(255,255,255,0.08);
+      background:transparent;
+      border:1px solid rgba(196,181,253,0.3);
+      box-shadow:0 0 32px rgba(196,181,253,0.3), 0 0 64px rgba(196,181,253,0.1);
+      backdrop-filter:blur(10px);
       transform:rotateY(180deg);
       display:flex; flex-direction:column;
       align-items:center; justify-content:center;
-      padding:14px 10px; text-align:center;
+      overflow:hidden;
+      padding:18px 12px; text-align:center;
     }
-    .dual-face .tf-num      { font-size:9px; }
-    .dual-face .tf-position { font-size:16px; }
-    .dual-face .tf-name     { font-size:9px; }
+    .dual-face .tf-num      { font-size:10px; }
+    .dual-face .tf-position { font-size:20px; }
+    .dual-face .tf-name     { font-size:11px; }
 
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
