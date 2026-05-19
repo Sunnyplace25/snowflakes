@@ -651,10 +651,10 @@
         </div>
       </div>
 
-      <!-- 青い音の欠片 -->
+      <!-- 青い石のネックレス -->
       <div class="il-item" id="il-pendant-item">
         <div class="il-header" onclick="toggleIlItem('il-pendant-item')">
-          <span class="item-log-tag" id="il-pendant-tag"><img src="../../item/pendant_hinata.webp" alt="item">青い音の欠片</span>
+          <span class="item-log-tag" id="il-pendant-tag"><img src="../../item/pendant_hinata.webp" alt="item">青い石のネックレス</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -662,8 +662,8 @@
             <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-pendant-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
-            <img src="../../item/pendant_hinata.webp" alt="青い音の欠片" style="width:180px;margin:0 auto 18px;display:block;">
-            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">青い音の欠片</p>
+            <img src="../../item/pendant_hinata.webp" alt="青い石のネックレス" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">青い石のネックレス</p>
             <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">路地裏の小さな店で、ヒナタが足を止めた青い石のネックレス。<br>ヒナタ曰く「音が聞こえる」。誰にも聞こえないらしい。</p>
           </div>
         </div>
@@ -883,9 +883,9 @@
         if (usbItem) usbItem.classList.add('open');
       }
 
-      // 青い音の欠片（解放条件：後に設定）
+      // 青い石のネックレス（解放条件：後に設定）
       if (SfSnow.isUnlocked('pendant_hinata')) {
-        revealItemTag('il-pendant-tag', '../../item/pendant_hinata.webp', '青い音の欠片');
+        revealItemTag('il-pendant-tag', '../../item/pendant_hinata.webp', '青い石のネックレス');
         var pLocked = document.getElementById('il-pendant-locked');
         var pOwned  = document.getElementById('il-pendant-owned');
         if (pLocked) pLocked.style.display = 'none';
