@@ -170,7 +170,10 @@
         3つ全部解放（青・黄・黒の石）
       </button>
       <button onclick="resetAllStones()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
-        3つ全部リセット
+        Under tone の石 3つリセット
+      </button>
+      <button onclick="resetAllRareItems()" style="padding:12px;background:rgba(252,165,165,0.08);border:1px solid rgba(252,165,165,0.25);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.18)'" onmouseleave="this.style.background='rgba(252,165,165,0.08)'">
+        RARE ITEMS 全部リセット（交換所含む）
       </button>
     </div>
     <p id="stone-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
@@ -495,7 +498,12 @@ function resetAllStones() {
   var arr = raw ? JSON.parse(raw) : [];
   arr = arr.filter(function(k) { return STONE_KEYS.indexOf(k) === -1; });
   localStorage.setItem('sf_unlocked', JSON.stringify(arr));
-  setStoneStatus('✓ 3つ全部リセットしました。');
+  setStoneStatus('✓ Under tone の石 3つリセットしました。');
+}
+
+function resetAllRareItems() {
+  localStorage.removeItem('sf_unlocked');
+  setStoneStatus('✓ RARE ITEMS を全部リセットしました（sf_unlocked 削除）。');
 }
 
 /* ── SWEETs リセット ── */
