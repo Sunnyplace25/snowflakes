@@ -429,6 +429,48 @@
     }
     .tarot-close:hover { color:#64748b; border-color:rgba(255,255,255,0.15); }
 
+    /* ── CARD FACE ELEMENTS ── */
+    .tf-num {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px; letter-spacing:3px; color:#334155;
+      margin-bottom:6px;
+    }
+    .tf-position {
+      font-family:'Cormorant Garamond',serif;
+      font-size:20px; font-weight:300; letter-spacing:2px;
+      margin-bottom:6px;
+    }
+    .tf-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:2px; color:#94a3b8;
+      line-height:1.4;
+    }
+
+    /* ── RESULT PANEL ── */
+    .result-panel {
+      width:100%; max-width:300px;
+      text-align:center;
+      animation:fadeSlide 0.5s ease;
+    }
+    .result-panel .res-arch {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:5px; color:#334155;
+      margin-bottom:8px;
+    }
+    .result-panel .res-keyword {
+      font-size:10px; color:#475569; letter-spacing:2px;
+      margin-bottom:12px;
+    }
+    .result-panel .res-msg {
+      font-size:14px; color:#e2e8f0; line-height:2.3;
+      font-weight:300; margin-bottom:12px;
+    }
+    .result-panel .res-special {
+      font-size:11px; color:#334155; letter-spacing:1px;
+      line-height:2; font-style:italic; white-space:pre-line;
+    }
+    .dual-result { margin-top:4px; }
+
     /* ── DUAL CARDS ── */
     .dual-card {
       width:120px; height:192px;
@@ -457,9 +499,9 @@
       align-items:center; justify-content:center;
       padding:14px 10px; text-align:center;
     }
-    .dual-face .tarot-verdict   { font-size:28px; }
-    .dual-face .tarot-verdict-en{ font-size:7px; letter-spacing:4px; }
-    .dual-face .tarot-msg       { font-size:10px; }
+    .dual-face .tf-num      { font-size:9px; }
+    .dual-face .tf-position { font-size:16px; }
+    .dual-face .tf-name     { font-size:9px; }
 
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
@@ -559,35 +601,45 @@
   <div style="display:flex;gap:24px;margin-bottom:28px;align-items:flex-start;">
 
     <!-- Card A -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
       <div class="dual-card" id="dual-card-a" onclick="pickDual('a')">
-        <div class="dual-face" id="dual-face-a">
-          <p class="tarot-verdict" id="dual-verdict-a"></p>
-          <p class="tarot-verdict-en" id="dual-verdict-en-a"></p>
+        <div class="dual-face">
+          <p class="tf-num" id="dual-num-a"></p>
+          <p class="tf-position" id="dual-pos-a"></p>
           <div class="tarot-sep"></div>
-          <p class="tarot-msg" id="dual-msg-a"></p>
+          <p class="tf-name" id="dual-name-a"></p>
         </div>
-        <div class="dual-back">
-          <img src="tarot_back.webp" alt="">
-        </div>
+        <div class="dual-back"><img src="tarot_back.webp" alt=""></div>
       </div>
       <p id="dual-label-a" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;">A</p>
+      <div id="dual-result-a" class="result-panel dual-result" style="display:none;max-width:150px;">
+        <p class="res-arch" style="font-size:7px;letter-spacing:2px;"></p>
+        <p class="res-keyword" style="font-size:9px;margin-bottom:8px;"></p>
+        <div style="width:16px;height:1px;background:rgba(255,255,255,0.1);margin:0 auto 8px;"></div>
+        <p class="res-msg" style="font-size:11px;"></p>
+        <p class="res-special" style="font-size:9px;"></p>
+      </div>
     </div>
 
     <!-- Card B -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
       <div class="dual-card" id="dual-card-b" onclick="pickDual('b')">
-        <div class="dual-face" id="dual-face-b">
-          <p class="tarot-verdict" id="dual-verdict-b"></p>
-          <p class="tarot-verdict-en" id="dual-verdict-en-b"></p>
+        <div class="dual-face">
+          <p class="tf-num" id="dual-num-b"></p>
+          <p class="tf-position" id="dual-pos-b"></p>
           <div class="tarot-sep"></div>
-          <p class="tarot-msg" id="dual-msg-b"></p>
+          <p class="tf-name" id="dual-name-b"></p>
         </div>
-        <div class="dual-back">
-          <img src="tarot_back2.webp" alt="">
-        </div>
+        <div class="dual-back"><img src="tarot_back2.webp" alt=""></div>
       </div>
       <p id="dual-label-b" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;">B</p>
+      <div id="dual-result-b" class="result-panel dual-result" style="display:none;max-width:150px;">
+        <p class="res-arch" style="font-size:7px;letter-spacing:2px;"></p>
+        <p class="res-keyword" style="font-size:9px;margin-bottom:8px;"></p>
+        <div style="width:16px;height:1px;background:rgba(255,255,255,0.1);margin:0 auto 8px;"></div>
+        <p class="res-msg" style="font-size:11px;"></p>
+        <p class="res-special" style="font-size:9px;"></p>
+      </div>
     </div>
 
   </div>
@@ -605,22 +657,32 @@
         <img src="tarot_back.webp" alt="tarot card back">
       </div>
       <div class="tarot-face">
-        <p class="tarot-verdict" id="tarot-verdict"></p>
-        <p class="tarot-verdict-en" id="tarot-verdict-en"></p>
+        <p class="tf-num" id="tarot-card-num"></p>
+        <p class="tf-position" id="tarot-position"></p>
         <div class="tarot-sep"></div>
-        <p class="tarot-msg" id="tarot-msg"></p>
-        <p class="tarot-rare-badge" id="tarot-rare-badge">★ RARE</p>
+        <p class="tf-name" id="tarot-card-name-sm"></p>
       </div>
     </div>
   </div>
 
   <p class="tarot-hint" id="tarot-hint">カードに触れて</p>
 
+  <!-- Result panel -->
+  <div id="tarot-result-panel" class="result-panel" style="display:none;">
+    <p class="res-arch"></p>
+    <p class="res-keyword"></p>
+    <div style="width:20px;height:1px;background:rgba(255,255,255,0.1);margin:12px auto;"></div>
+    <p class="res-msg"></p>
+    <p class="res-special"></p>
+  </div>
+
   <div id="tarot-stone-reveal">
     <img id="tarot-stone-img" src="" alt="">
     <p id="tarot-stone-name"></p>
     <p id="tarot-stone-sub">アイテムログに追加されました</p>
   </div>
+
+  <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
   <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
 </div>
@@ -646,57 +708,103 @@
     { key:'ring_kouta',     name:'黒い石のシルバーリング', img:'../../item/ring_kouta.webp',    char:'kouta'  },
   ];
 
-  /* ── Tarot cards ── */
-  var TAROT = {
-    yes: [
-      { msg:'見えている。その音は重なっている' },
-      { msg:'流れは悪くない' },
-      { msg:'置いたままの気持ちは消えていない' },
-      { msg:'小さな追い風が吹いている' },
-      { msg:'進む音が聞こえている' },
-      { msg:'向かう先は同じ' },
-      { msg:'その選択は間違っていない' },
-      { msg:'まだ続いている音がある' },
-    ],
-    no: [
-      { msg:'……今は触れない方がいい' },
-      { msg:'少し距離を置いた音が聞こえている' },
-      { msg:'急ぐと音が濁る' },
-      { msg:'まだ扉は開いていない' },
-      { msg:'今は選ぶ時ではない' },
-      { msg:'止まる理由が見えている' },
-      { msg:'今日は沈黙が近くにある' },
-      { msg:'答えはまだ先にある' },
-    ],
-    hold: [
-      { msg:'答えが途中で止まっている' },
-      { msg:'まだ名前がついていない' },
-      { msg:'半分のまま続いている' },
-      { msg:'今は余白の時間' },
-      { msg:'その答えは少し先に置かれている' },
-      { msg:'輪郭がまだ薄く見えている' },
-      { msg:'音がまだ小さい' },
-      { msg:'続きは先にある' },
-    ],
-    rare: [
-      { msg:'……少し、珍しい音がしている' },
-      { msg:'いつもとは流れが違っている' },
-      { msg:'見えていないものが重なっている' },
-      { msg:'止まっていたものが動いている' },
-      { msg:'遠かった音が近づいている' },
-      { msg:'まだ来ていないはずの音が聞こえている' },
-      { msg:'消えたはずのものが残っている' },
-      { msg:'答えが、こちらを見ている' },
-    ],
-  };
+  /* ── Tarot deck (27 cards × 正/逆) ── */
+  var CARDS = [
+    { num:'0',     name:'名前のない歌',  arch:'FOOL',           archJP:'愚者',
+      up:  { key:'始まり・可能性・新しい流れ',    msg:'まだ何者でもない音が、動き始めている' },
+      rev: { key:'迷い・衝動・空回り',            msg:'音は鳴っている。でも向かう場所が見えていない' } },
+    { num:'Ⅰ',    name:'最初の音',      arch:'MAGICIAN',       archJP:'魔術師',
+      up:  { key:'才能・行動・創造',              msg:'置いた音が形になり始める' },
+      rev: { key:'自信不足・迷い',                msg:'鳴らせる音を、自分で止めている' } },
+    { num:'Ⅱ',    name:'白い部屋',      arch:'HIGH PRIESTESS', archJP:'女教皇',
+      up:  { key:'直感・静寂・内面',              msg:'答えは静かな場所に残っている' },
+      rev: { key:'思い込み・混乱',                msg:'周りの音が大きすぎる' } },
+    { num:'Ⅲ',    name:'重なる音',      arch:'EMPRESS',        archJP:'女帝',
+      up:  { key:'愛情・成長・繋がり',            msg:'誰かと重なることで広がる' },
+      rev: { key:'依存・甘え',                    msg:'近すぎて輪郭が消えている' } },
+    { num:'Ⅳ',    name:'置いた椅子',    arch:'EMPEROR',        archJP:'皇帝',
+      up:  { key:'安定・支え・基盤',              msg:'戻る場所はちゃんとある' },
+      rev: { key:'頑固・支配',                    msg:'守ることが縛ることになっている' } },
+    { num:'Ⅴ',    name:'続く約束',      arch:'HIEROPHANT',     archJP:'教皇',
+      up:  { key:'信頼・学び',                    msg:'言葉にしない約束が残っている' },
+      rev: { key:'固定観念・停滞',                msg:'昔の音に縛られている' } },
+    { num:'Ⅵ',    name:'半分のまま',    arch:'LOVERS',         archJP:'恋人',
+      up:  { key:'選択・愛情・関係',              msg:'迷いながらでも進んでいる' },
+      rev: { key:'すれ違い・優柔不断',            msg:'決められないまま時間だけが過ぎる' } },
+    { num:'Ⅶ',    name:'走る鼓動',      arch:'CHARIOT',        archJP:'戦車',
+      up:  { key:'前進・勢い',                    msg:'止まる理由より進む理由' },
+      rev: { key:'暴走・焦り',                    msg:'速さだけが先に行っている' } },
+    { num:'Ⅷ',    name:'整えない音',    arch:'STRENGTH',       archJP:'力',
+      up:  { key:'優しさ・強さ',                  msg:'無理に強くならなくていい' },
+      rev: { key:'我慢・消耗',                    msg:'静かに削れている' } },
+    { num:'Ⅸ',    name:'遠い窓',        arch:'HERMIT',         archJP:'隠者',
+      up:  { key:'内省・観察',                    msg:'少し離れて見える景色' },
+      rev: { key:'孤立・閉鎖',                    msg:'閉じすぎて声が届かない' } },
+    { num:'Ⅹ',    name:'揺れたコード',  arch:'WHEEL OF FORTUNE',archJP:'運命の輪',
+      up:  { key:'転機・流れ',                    msg:'次の音が始まる' },
+      rev: { key:'停滞・ズレ',                    msg:'タイミングが少しだけ違う' } },
+    { num:'XI',    name:'置いた手',      arch:'JUSTICE',        archJP:'正義',
+      up:  { key:'判断・均衡・選択',              msg:'今必要なのは感情より答え' },
+      rev: { key:'偏り・迷い',                    msg:'気持ちと答えが重なっていない' } },
+    { num:'XII',   name:'逆さの景色',    arch:'HANGED MAN',     archJP:'吊るされた男',
+      up:  { key:'待機・別視点・受容',            msg:'止まっているようで、ちゃんと進んでいる' },
+      rev: { key:'停滞・諦め',                    msg:'同じ場所を見続けている' } },
+    { num:'XIII',  name:'消えた音',      arch:'DEATH',          archJP:'死神',
+      up:  { key:'終わり・再生・区切り',          msg:'終わることで残る音もある' },
+      rev: { key:'執着・変化拒否',                msg:'消えた音を探し続けている' } },
+    { num:'XIV',   name:'透明のまま',    arch:'TEMPERANCE',     archJP:'節制',
+      up:  { key:'調和・自然体・流れ',            msg:'無理をしない方が近づく' },
+      rev: { key:'乱れ・極端',                    msg:'混ざりすぎて輪郭が消えている' } },
+    { num:'XV',    name:'ほどけない糸',  arch:'DEVIL',          archJP:'悪魔',
+      up:  { key:'執着・欲望・依存',              msg:'離した方が軽くなる' },
+      rev: { key:'解放・気付き',                  msg:'絡まっていた糸がほどけ始めている' } },
+    { num:'XVI',   name:'崩れたコード',  arch:'TOWER',          archJP:'塔',
+      up:  { key:'衝撃・崩壊・真実',              msg:'壊れたから見えた景色' },
+      rev: { key:'先延ばし・不安',                msg:'崩れる前の音が続いている' } },
+    { num:'XVII',  name:'残る光',        arch:'STAR',           archJP:'星',
+      up:  { key:'希望・未来・安心',              msg:'消えたように見えて残っている' },
+      rev: { key:'失望・迷い',                    msg:'光があることを忘れている' } },
+    { num:'XVIII', name:'白い夜',        arch:'MOON',           archJP:'月',
+      up:  { key:'曖昧・不安・感覚',              msg:'全部見えない夜もある' },
+      rev: { key:'真実・気付き',                  msg:'ぼやけていたものが少し見える' } },
+    { num:'XIX',   name:'朝の音',        arch:'SUN',            archJP:'太陽',
+      up:  { key:'喜び・成功・前進',              msg:'ちゃんと光が届いている' },
+      rev: { key:'空回り・疲労',                  msg:'明るさの中で少し無理をしている' } },
+    { num:'XX',    name:'戻る場所',      arch:'JUDGEMENT',      archJP:'審判',
+      up:  { key:'再会・目覚め・気付き',          msg:'終わった音が戻ってきた' },
+      rev: { key:'迷い・後悔',                    msg:'過去に立ち止まっている' } },
+    { num:'XXI',   name:'続いた音',      arch:'WORLD',          archJP:'世界',
+      up:  { key:'完成・達成・循環',              msg:'終わりじゃない。続いている' },
+      rev: { key:'未完成・途中',                  msg:'あと少しだけ音が足りない' } },
+    { num:'XXII',  name:'置かれた音',    arch:'THE PLACED SOUND',archJP:'置かれた音',
+      up:  { key:'運命・出会い・偶然',            msg:'理由はまだ分からない。でも残る音がある' },
+      rev: { key:'すれ違い・タイミングのズレ',    msg:'拾う場所を少し間違えている' },
+      note:'誰かが置いていった音。\n誰のものだったかは分からない。\n店主も説明しない。' },
+    { num:'XXIII', name:'Snow flakes',   arch:'SNOW FLAKES',    archJP:'スノーフレークス',
+      up:  { key:'絆・重なり・奇跡',              msg:'別々だった音が、重なった' },
+      rev: { key:'距離・静止・余白',              msg:'離れているだけで、消えてはいない' },
+      note:'それぞれ違う形なのに、\n同じ場所へ落ちてくる音。',
+      special:'snow' },
+    { num:'XXIV',  name:'白いカセット',  arch:'WHITE TAPE',     archJP:'白いカセット',
+      up:  { key:'記憶・始まり・受け継ぐもの',    msg:'忘れていた音が戻ってくる' },
+      rev: { key:'曖昧・欠落',                    msg:'聞こえているのに思い出せない' },
+      note:'ラベルのない古いカセット。\n再生するたび、少し違う音がする。',
+      special:'tape' },
+    { num:'XXV',   name:'途中の音',      arch:'HALFWAY SOUND',  archJP:'途中の音',
+      up:  { key:'未完成・可能性',                msg:'終わっていないなら、まだ続けられる' },
+      rev: { key:'諦め・停滞',                    msg:'途中で止めた音が残っている' },
+      note:'完成しなかった曲。\nでも、誰かには必要だった。' },
+    { num:'XXVI',  name:'静かな席',      arch:'EMPTY CHAIR',    archJP:'静かな席',
+      up:  { key:'居場所・安心・再会',            msg:'空いているのは、待っているから' },
+      rev: { key:'孤独・喪失',                    msg:'誰も座っていない理由を考え続けている' },
+      note:'店の奥に置かれている古い椅子。\n店主は誰の席か教えない。' },
+  ];
 
-  /* category config */
-  var CAT_CFG = {
-    yes:  { label:'YES',  labelEn:'— YES —',  color:'#93c5fd', colorDim:'rgba(147,197,253,0.35)', rare:false },
-    no:   { label:'NO',   labelEn:'— NO —',   color:'#94a3b8', colorDim:'rgba(148,163,184,0.3)', rare:false },
-    hold: { label:'——',   labelEn:'— — —',    color:'#475569', colorDim:'rgba(71,85,105,0.3)', rare:false },
-    rare: { label:'★',    labelEn:'R A R E',   color:'#fde68a', colorDim:'rgba(253,230,138,0.3)', rare:true },
-  };
+  function drawCard() {
+    var c = CARDS[Math.floor(Math.random() * CARDS.length)];
+    var up = Math.random() < 0.5;
+    return { card: c, up: up, data: up ? c.up : c.rev, pos: up ? '正位置' : '逆位置' };
+  }
 
   /* ── Hotspot data ── */
   var HOTSPOTS = [
@@ -879,56 +987,61 @@
   }
 
   /* ── Tarot ── */
+  var pendingDraw = null;
+
+  function applyCardFace(numEl, posEl, nameEl, draw) {
+    var posColor = draw.up ? '#fde68a' : '#7dd3fc';
+    numEl.textContent  = draw.card.num;
+    posEl.textContent  = draw.pos;
+    posEl.style.color  = posColor;
+    nameEl.textContent = draw.card.name;
+  }
+
+  function showResultPanel(panelId, draw) {
+    var p = document.getElementById(panelId);
+    p.querySelector('.res-arch').textContent    = draw.card.arch + '  |  ' + draw.card.archJP;
+    p.querySelector('.res-keyword').textContent = draw.data.key;
+    p.querySelector('.res-msg').textContent     = draw.data.msg;
+    var sp = p.querySelector('.res-special');
+    if (draw.card.note) {
+      sp.textContent     = draw.card.note;
+      sp.style.display   = 'block';
+    } else {
+      sp.style.display   = 'none';
+    }
+    p.style.display = 'block';
+    // Special effects
+    if (draw.card.special === 'snow') triggerSnowBurst();
+    if (draw.card.special === 'tape') triggerTapeNoise();
+  }
+
   window.openTarot = function() {
     closeSKPopup();
     setTimeout(function() { showSKPopup('', 'そろそろ選ぶか'); }, 500);
     cardFlipped = false;
-    currentCat = rollCategory();
+    pendingDraw = drawCard();
 
-    // Pick message
-    var pool = TAROT[currentCat];
-    var entry = pool[Math.floor(Math.random() * pool.length)];
-    var cfg   = CAT_CFG[currentCat];
+    applyCardFace(
+      document.getElementById('tarot-card-num'),
+      document.getElementById('tarot-position'),
+      document.getElementById('tarot-card-name-sm'),
+      pendingDraw
+    );
 
-    // Set card front
-    document.getElementById('tarot-verdict').textContent    = cfg.label;
-    document.getElementById('tarot-verdict-en').textContent = cfg.labelEn;
-    document.getElementById('tarot-verdict').style.setProperty('--vclr',     cfg.color);
-    document.getElementById('tarot-verdict-en').style.setProperty('--vclr-dim', cfg.colorDim);
-    // Apply color via parent style prop
-    var face = document.querySelector('.tarot-face');
-    face.style.setProperty('--vclr',     cfg.color);
-    face.style.setProperty('--vclr-dim', cfg.colorDim);
-    document.getElementById('tarot-verdict').style.color    = cfg.color;
-    document.getElementById('tarot-verdict-en').style.color = cfg.colorDim;
-    document.getElementById('tarot-msg').textContent = entry.msg;
-    var rareBadge = document.getElementById('tarot-rare-badge');
-    rareBadge.style.display = cfg.rare ? 'block' : 'none';
-
-    // Reset state
+    // Reset
     document.getElementById('tarot-card').classList.remove('flipped');
     document.getElementById('tarot-hint').classList.remove('hide');
+    document.getElementById('tarot-result-panel').style.display = 'none';
     document.getElementById('tarot-stone-reveal').style.display = 'none';
     document.getElementById('tarot-stone-reveal').classList.remove('stone-reveal-animate');
     document.getElementById('tarot-close-btn').style.display = 'none';
 
-    // Show overlay
     var ov = document.getElementById('tarot-overlay');
     ov.classList.add('ready');
     requestAnimationFrame(function() {
       requestAnimationFrame(function() { ov.classList.add('show'); });
     });
   };
-
-  function rollCategory() {
-    var r = Math.random();
-    if (r < 0.05) return 'rare';  // 5%
-    r -= 0.05;
-    if (r < 0.345) return 'yes';  // 34.5%
-    r -= 0.345;
-    if (r < 0.345) return 'no';   // 34.5%
-    return 'hold';                 // 26%
-  }
 
   window.flipCard = function() {
     if (cardFlipped) return;
@@ -938,6 +1051,7 @@
     document.getElementById('tarot-hint').classList.add('hide');
 
     setTimeout(function() {
+      showResultPanel('tarot-result-panel', pendingDraw);
       checkStoneItem();
       document.getElementById('tarot-close-btn').style.display = 'block';
     }, 950);
@@ -946,12 +1060,10 @@
   function checkStoneItem() {
     var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
     if (!available.length) return;
-
     if (Math.random() < 1/30) {
       var item = available[Math.floor(Math.random() * available.length)];
       SfSnow.unlockItem(item.key);
       renderStones();
-
       document.getElementById('tarot-stone-img').src = item.img;
       document.getElementById('tarot-stone-name').textContent = item.name;
       var reveal = document.getElementById('tarot-stone-reveal');
@@ -967,30 +1079,30 @@
   };
 
   /* ── Dual choice ── */
+  var dualDraws = {};
+
   window.openDual = function() {
     closeSKPopup();
+    dualDraws.a = drawCard();
+    dualDraws.b = drawCard();
 
-    // Roll two independent cards
-    var catA = rollCategory();
-    var catB = rollCategory();
-    var entA = TAROT[catA][Math.floor(Math.random() * TAROT[catA].length)];
-    var entB = TAROT[catB][Math.floor(Math.random() * TAROT[catB].length)];
+    applyCardFace(
+      document.getElementById('dual-num-a'),
+      document.getElementById('dual-pos-a'),
+      document.getElementById('dual-name-a'),
+      dualDraws.a
+    );
+    applyCardFace(
+      document.getElementById('dual-num-b'),
+      document.getElementById('dual-pos-b'),
+      document.getElementById('dual-name-b'),
+      dualDraws.b
+    );
 
-    function setCard(suffix, cat, entry) {
-      var cfg = CAT_CFG[cat];
-      document.getElementById('dual-verdict' + suffix).textContent    = cfg.label;
-      document.getElementById('dual-verdict' + suffix).style.color    = cfg.color;
-      document.getElementById('dual-verdict-en' + suffix).textContent = cfg.labelEn;
-      document.getElementById('dual-verdict-en' + suffix).style.color = cfg.colorDim;
-      document.getElementById('dual-msg' + suffix).textContent = entry.msg;
-    }
-    setCard('-a', catA, entA);
-    setCard('-b', catB, entB);
-
-    // Reset state
     ['a','b'].forEach(function(s) {
       document.getElementById('dual-card-' + s).classList.remove('flipped','dimmed');
       document.getElementById('dual-label-' + s).style.color = '#334155';
+      document.getElementById('dual-result-' + s).style.display = 'none';
     });
     document.getElementById('dual-hint').style.opacity = '1';
     document.getElementById('dual-close-btn').style.display = 'none';
@@ -1003,20 +1115,18 @@
         ov.style.pointerEvents = 'auto';
       });
     });
-
     setTimeout(function() { showSKPopup('', 'そろそろ選ぶか'); }, 500);
   };
 
   window.pickDual = function(picked) {
     var other = picked === 'a' ? 'b' : 'a';
-    // Flip picked, dim other
     document.getElementById('dual-card-' + picked).classList.add('flipped');
     document.getElementById('dual-card-' + other).classList.add('dimmed');
     document.getElementById('dual-hint').style.opacity = '0';
-    // Show label
     document.getElementById('dual-label-' + picked).style.color = '#c4b5fd';
     closeSKPopup();
     setTimeout(function() {
+      showResultPanel('dual-result-' + picked, dualDraws[picked]);
       document.getElementById('dual-close-btn').style.display = 'block';
     }, 950);
   };
@@ -1027,6 +1137,46 @@
     ov.style.pointerEvents = 'none';
     setTimeout(function() { ov.style.display = 'none'; }, 500);
   };
+
+  /* ── Special effects ── */
+  function triggerSnowBurst() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    canvas.style.transition = 'opacity 0.3s';
+    canvas.style.opacity = '0.9';
+    // Handled in snow loop — just set a flag
+    window._snowBurst = Date.now() + 4000;
+    setTimeout(function() {
+      canvas.style.opacity = '';
+    }, 4500);
+  }
+
+  function triggerTapeNoise() {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var bufLen = ctx.sampleRate * 0.9;
+      var buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      var data = buf.getChannelData(0);
+      for (var i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * 0.12;
+      var src = ctx.createBufferSource();
+      src.buffer = buf;
+      var gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.9);
+      var filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2400;
+      filter.Q.value = 0.8;
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      src.start();
+      // CSS glitch flash
+      document.body.style.transition = 'filter 0.05s';
+      document.body.style.filter = 'brightness(1.15) contrast(1.1)';
+      setTimeout(function() { document.body.style.filter = ''; }, 120);
+    } catch(e) {}
+  }
 
   /* ── Chibi popup ── */
   function getDailyVisitCount() {
@@ -1080,11 +1230,14 @@
     r:Math.random()*1.2+0.2, s:Math.random()*0.28+0.07, d:(Math.random()-.5)*0.13
   };});
   function draw(){
+    var burst = window._snowBurst && Date.now() < window._snowBurst;
+    var alpha = burst ? 0.85 : 0.5;
+    var speedMul = burst ? 2.8 : 1;
     cx.clearRect(0,0,c.width,c.height);
-    cx.fillStyle='rgba(196,181,253,0.5)';
+    cx.fillStyle = burst ? 'rgba(255,255,255,' + alpha + ')' : 'rgba(196,181,253,' + alpha + ')';
     fl.forEach(function(f){
-      cx.beginPath(); cx.arc(f.x,f.y,f.r,0,Math.PI*2); cx.fill();
-      f.y+=f.s; f.x+=f.d;
+      cx.beginPath(); cx.arc(f.x,f.y, burst ? f.r*1.6 : f.r ,0,Math.PI*2); cx.fill();
+      f.y += f.s * speedMul; f.x += f.d;
       if(f.y>c.height+4){f.y=-4; f.x=Math.random()*c.width;}
       if(f.x<-4)f.x=c.width+4; if(f.x>c.width+4)f.x=-4;
     });
