@@ -679,9 +679,22 @@
 
     <!-- Under tone section -->
     <div class="section" id="undertone-section" style="display:none;">
-      <!-- Teaser: non-fans -->
+      <!-- Teaser: non-fans (clickable → password) -->
       <div id="undertone-teaser" style="display:none;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#334155;text-align:center;padding:24px 0;">2026 Summer  ·  Coming soon</p>
+        <button onclick="openUndertonePassword()" style="display:block;width:100%;background:none;border:none;cursor:pointer;padding:24px 0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#334155;text-align:center;transition:color 0.2s;" onmouseover="this.style.color='#475569'" onmouseout="this.style.color='#334155'">2026 Summer  ·  Coming soon</p>
+        </button>
+      </div>
+
+      <!-- Password modal (undertone) -->
+      <div id="undertone-pw-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:20px;">
+        <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:32px 28px;max-width:300px;width:100%;text-align:center;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#334155;margin-bottom:20px;">UNDER TONE</p>
+          <input id="undertone-pw-input" type="password" placeholder="password" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:4px;outline:none;text-align:center;margin-bottom:8px;" onkeydown="if(event.key==='Enter')submitUndertonePassword()">
+          <p id="undertone-pw-err" style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#f87171;letter-spacing:2px;height:20px;margin-bottom:16px;"></p>
+          <button onclick="submitUndertonePassword()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;">入る</button>
+          <button onclick="closeUndertonePassword()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;cursor:pointer;">閉じる</button>
+        </div>
       </div>
       <!-- Link: fans -->
       <div id="undertone-link" style="display:none;">
@@ -4131,18 +4144,44 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     function checkUndertoneSection() {
       var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
-      var ok = ['hinata','kouta','hayate'].every(function(ch) {
+      var isFan = ['hinata','kouta','hayate'].every(function(ch) {
         try {
           var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
           return CORE.every(function(b) { return arr.indexOf(b) !== -1; });
         } catch(e) { return false; }
       });
+      var isAdmin = localStorage.getItem('sf_undertone_admin') === 'true';
+      var ok = isFan || isAdmin;
       var sec = document.getElementById('undertone-section');
       if (!sec) return;
       sec.style.display = '';
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
+
+    window.openUndertonePassword = function() {
+      var modal = document.getElementById('undertone-pw-modal');
+      modal.style.display = 'flex';
+      document.getElementById('undertone-pw-input').value = '';
+      document.getElementById('undertone-pw-err').textContent = '';
+      setTimeout(function() { document.getElementById('undertone-pw-input').focus(); }, 100);
+    };
+
+    window.closeUndertonePassword = function() {
+      document.getElementById('undertone-pw-modal').style.display = 'none';
+    };
+
+    window.submitUndertonePassword = function() {
+      var val = document.getElementById('undertone-pw-input').value;
+      if (val === 'HARDGUMI') {
+        localStorage.setItem('sf_undertone_admin', 'true');
+        document.getElementById('undertone-pw-modal').style.display = 'none';
+        checkUndertoneSection();
+      } else {
+        document.getElementById('undertone-pw-err').textContent = '── incorrect ──';
+        document.getElementById('undertone-pw-input').value = '';
+      }
+    };
 
     // ページロード時：保存済みかつ同シーズンならコードを自動入力
     document.addEventListener('DOMContentLoaded', function() {

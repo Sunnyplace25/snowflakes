@@ -988,8 +988,9 @@
 <script>
 (function() {
 
-  /* ── isCoreFan ── */
+  /* ── isCoreFan / admin check ── */
   function isCoreFan() {
+    if (localStorage.getItem('sf_undertone_admin') === 'true') return true;
     var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
     return ['hinata','kouta','hayate'].every(function(ch) {
       try {
