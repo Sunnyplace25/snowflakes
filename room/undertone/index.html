@@ -466,6 +466,11 @@
       font-size:14px; color:#e2e8f0; line-height:2.0;
       font-weight:400; margin-bottom:12px;
     }
+    .result-panel .res-advice {
+      font-family:'Noto Serif JP',serif;
+      font-size:13px; color:#c4b5fd; line-height:2.0;
+      font-weight:300; white-space:pre-line;
+    }
     .result-panel .res-special {
       font-size:13px; color:#94a3b8; letter-spacing:1px;
       line-height:2.0; font-style:italic; white-space:pre-line;
@@ -916,6 +921,8 @@
     <div style="width:20px;height:1px;background:rgba(255,255,255,0.1);margin:12px auto;"></div>
     <p class="res-msg"></p>
     <p class="res-special"></p>
+    <div style="width:20px;height:1px;background:rgba(196,181,253,0.15);margin:14px auto 10px;"></div>
+    <p class="res-advice"></p>
   </div>
 
   <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
@@ -1040,92 +1047,92 @@
   /* ── Tarot deck (27 cards × 正/逆) ── */
   var CARDS = [
     { num:'0',     name:'名前のない歌',  arch:'FOOL',           archJP:'愚者',
-      up:  { key:'始まり・可能性・新しい流れ',    msg:'まだ何者でもない音が、動き始めている' },
-      rev: { key:'迷い・衝動・空回り',            msg:'音は鳴っている。でも向かう場所が見えていない' } },
+      up:  { key:'始まり・可能性・新しい流れ',    msg:'まだ何者でもない音が、動き始めている',     advice:'動き始めたなら、理由はあとからついてくる。' },
+      rev: { key:'迷い・衝動・空回り',            msg:'音は鳴っている。でも向かう場所が見えていない', advice:'向かう場所を、ひとつだけ決めろ。' } },
     { num:'Ⅰ',    name:'最初の音',      arch:'MAGICIAN',       archJP:'魔術師',
-      up:  { key:'才能・行動・創造',              msg:'置いた音が形になり始める' },
-      rev: { key:'自信不足・迷い',                msg:'鳴らせる音を、自分で止めている' } },
+      up:  { key:'才能・行動・創造',              msg:'置いた音が形になり始める',                 advice:'今持っているもので、始めていい。' },
+      rev: { key:'自信不足・迷い',                msg:'鳴らせる音を、自分で止めている',           advice:'できないんじゃなく、やらない選択をしている。' } },
     { num:'Ⅱ',    name:'白い部屋',      arch:'HIGH PRIESTESS', archJP:'女教皇',
-      up:  { key:'直感・静寂・内面',              msg:'答えは静かな場所に残っている' },
-      rev: { key:'思い込み・混乱',                msg:'周りの音が大きすぎる' } },
+      up:  { key:'直感・静寂・内面',              msg:'答えは静かな場所に残っている',             advice:'すぐ答えを出さなくていい。' },
+      rev: { key:'思い込み・混乱',                msg:'周りの音が大きすぎる',                     advice:'外ではなく、内側に聞け。' } },
     { num:'Ⅲ',    name:'重なる音',      arch:'EMPRESS',        archJP:'女帝',
-      up:  { key:'愛情・成長・繋がり',            msg:'誰かと重なることで広がる' },
-      rev: { key:'依存・甘え',                    msg:'近すぎて輪郭が消えている' } },
+      up:  { key:'愛情・成長・繋がり',            msg:'誰かと重なることで広がる',                 advice:'誰かと居ることを、もう少し許していい。' },
+      rev: { key:'依存・甘え',                    msg:'近すぎて輪郭が消えている',                 advice:'あなたの輪郭は、あなたのものだ。' } },
     { num:'Ⅳ',    name:'置いた椅子',    arch:'EMPEROR',        archJP:'皇帝',
-      up:  { key:'安定・支え・基盤',              msg:'戻る場所はちゃんとある' },
-      rev: { key:'頑固・支配',                    msg:'守ることが縛ることになっている' } },
+      up:  { key:'安定・支え・基盤',              msg:'戻る場所はちゃんとある',                   advice:'安定は、怠けじゃない。' },
+      rev: { key:'頑固・支配',                    msg:'守ることが縛ることになっている',           advice:'守るための力が、縛る力になっていないか確かめろ。' } },
     { num:'Ⅴ',    name:'続く約束',      arch:'HIEROPHANT',     archJP:'教皇',
-      up:  { key:'信頼・学び',                    msg:'言葉にしない約束が残っている' },
-      rev: { key:'固定観念・停滞',                msg:'昔の音に縛られている' } },
+      up:  { key:'信頼・学び',                    msg:'言葉にしない約束が残っている',             advice:'信じてきたものを、信じ続けていい。' },
+      rev: { key:'固定観念・停滞',                msg:'昔の音に縛られている',                     advice:'古い地図で新しい場所を歩こうとしている。' } },
     { num:'Ⅵ',    name:'半分のまま',    arch:'LOVERS',         archJP:'恋人',
-      up:  { key:'選択・愛情・関係',              msg:'迷いながらでも進んでいる' },
-      rev: { key:'すれ違い・優柔不断',            msg:'決められないまま時間だけが過ぎる' } },
+      up:  { key:'選択・愛情・関係',              msg:'迷いながらでも進んでいる',                 advice:'迷いながら選んだ答えも、ちゃんと正解になる。' },
+      rev: { key:'すれ違い・優柔不断',            msg:'決められないまま時間だけが過ぎる',         advice:'どちらも選ばないことが、一番遠回りになる。' } },
     { num:'Ⅶ',    name:'走る鼓動',      arch:'CHARIOT',        archJP:'戦車',
-      up:  { key:'前進・勢い',                    msg:'止まる理由より進む理由' },
-      rev: { key:'暴走・焦り',                    msg:'速さだけが先に行っている' } },
+      up:  { key:'前進・勢い',                    msg:'止まる理由より進む理由',                   advice:'止まらなくていい。進みながら考えろ。' },
+      rev: { key:'暴走・焦り',                    msg:'速さだけが先に行っている',                 advice:'速さより方向を確かめろ。' } },
     { num:'Ⅷ',    name:'整えない音',    arch:'STRENGTH',       archJP:'力',
-      up:  { key:'優しさ・強さ',                  msg:'無理に強くならなくていい' },
-      rev: { key:'我慢・消耗',                    msg:'静かに削れている' } },
+      up:  { key:'優しさ・強さ',                  msg:'無理に強くならなくていい',                 advice:'柔らかくいることが、今の強さだ。' },
+      rev: { key:'我慢・消耗',                    msg:'静かに削れている',                         advice:'消耗していいのは、大切なものに対してだけだ。' } },
     { num:'Ⅸ',    name:'遠い窓',        arch:'HERMIT',         archJP:'隠者',
-      up:  { key:'内省・観察',                    msg:'少し離れて見える景色' },
-      rev: { key:'孤立・閉鎖',                    msg:'閉じすぎて声が届かない' } },
+      up:  { key:'内省・観察',                    msg:'少し離れて見える景色',                     advice:'一人でいる時間は、弱さじゃない。' },
+      rev: { key:'孤立・閉鎖',                    msg:'閉じすぎて声が届かない',                   advice:'閉じることと、守ることは違う。' } },
     { num:'Ⅹ',    name:'揺れたコード',  arch:'WHEEL OF FORTUNE',archJP:'運命の輪',
-      up:  { key:'転機・流れ',                    msg:'次の音が始まる' },
-      rev: { key:'停滞・ズレ',                    msg:'タイミングが少しだけ違う' } },
+      up:  { key:'転機・流れ',                    msg:'次の音が始まる',                           advice:'今が変わり目だ。流れに乗れ。' },
+      rev: { key:'停滞・ズレ',                    msg:'タイミングが少しだけ違う',                 advice:'タイミングはずれているだけで、波は来る。' } },
     { num:'XI',    name:'置いた手',      arch:'JUSTICE',        archJP:'正義',
-      up:  { key:'判断・均衡・選択',              msg:'今必要なのは感情より答え' },
-      rev: { key:'偏り・迷い',                    msg:'気持ちと答えが重なっていない' } },
+      up:  { key:'判断・均衡・選択',              msg:'今必要なのは感情より答え',                 advice:'感情より先に、答えを出せ。' },
+      rev: { key:'偏り・迷い',                    msg:'気持ちと答えが重なっていない',             advice:'どちらかに傾いたまま選ばないでいる。' } },
     { num:'XII',   name:'逆さの景色',    arch:'HANGED MAN',     archJP:'吊るされた男',
-      up:  { key:'待機・別視点・受容',            msg:'止まっているようで、ちゃんと進んでいる' },
-      rev: { key:'停滞・諦め',                    msg:'同じ場所を見続けている' } },
+      up:  { key:'待機・別視点・受容',            msg:'止まっているようで、ちゃんと進んでいる',   advice:'今は待つ時間だ。動かなくていい。' },
+      rev: { key:'停滞・諦め',                    msg:'同じ場所を見続けている',                   advice:'角度を変えると、違う景色が見える。' } },
     { num:'XIII',  name:'消えた音',      arch:'DEATH',          archJP:'死神',
-      up:  { key:'終わり・再生・区切り',          msg:'終わることで残る音もある' },
-      rev: { key:'執着・変化拒否',                msg:'消えた音を探し続けている' } },
+      up:  { key:'終わり・再生・区切り',          msg:'終わることで残る音もある',                 advice:'手放すことで、次の音が鳴る。' },
+      rev: { key:'執着・変化拒否',                msg:'消えた音を探し続けている',                 advice:'終わったものに引っ張られている。' } },
     { num:'XIV',   name:'透明のまま',    arch:'TEMPERANCE',     archJP:'節制',
-      up:  { key:'調和・自然体・流れ',            msg:'無理をしない方が近づく' },
-      rev: { key:'乱れ・極端',                    msg:'混ざりすぎて輪郭が消えている' } },
+      up:  { key:'調和・自然体・流れ',            msg:'無理をしない方が近づく',                   advice:'急がなくても届く。' },
+      rev: { key:'乱れ・極端',                    msg:'混ざりすぎて輪郭が消えている',             advice:'バランスが崩れている。どちらかを緩めろ。' } },
     { num:'XV',    name:'ほどけない糸',  arch:'DEVIL',          archJP:'悪魔',
-      up:  { key:'執着・欲望・依存',              msg:'離した方が軽くなる' },
-      rev: { key:'解放・気付き',                  msg:'絡まっていた糸がほどけ始めている' } },
+      up:  { key:'執着・欲望・依存',              msg:'離した方が軽くなる',                       advice:'手放す勇気は、逃げることじゃない。' },
+      rev: { key:'解放・気付き',                  msg:'絡まっていた糸がほどけ始めている',         advice:'絡まりが解け始めている。今が動き時だ。' } },
     { num:'XVI',   name:'崩れたコード',  arch:'TOWER',          archJP:'塔',
-      up:  { key:'衝撃・崩壊・真実',              msg:'壊れたから見えた景色' },
-      rev: { key:'先延ばし・不安',                msg:'崩れる前の音が続いている' } },
+      up:  { key:'衝撃・崩壊・真実',              msg:'壊れたから見えた景色',                     advice:'壊れた場所から、本当に必要なものが見える。' },
+      rev: { key:'先延ばし・不安',                msg:'崩れる前の音が続いている',                 advice:'崩れる前に、自分で動け。' } },
     { num:'XVII',  name:'残る光',        arch:'STAR',           archJP:'星',
-      up:  { key:'希望・未来・安心',              msg:'消えたように見えて残っている' },
-      rev: { key:'失望・迷い',                    msg:'光があることを忘れている' } },
+      up:  { key:'希望・未来・安心',              msg:'消えたように見えて残っている',             advice:'信じていていい。光はある。' },
+      rev: { key:'失望・迷い',                    msg:'光があることを忘れている',                 advice:'希望を諦める理由を探すのをやめろ。' } },
     { num:'XVIII', name:'白い夜',        arch:'MOON',           archJP:'月',
-      up:  { key:'曖昧・不安・感覚',              msg:'全部見えない夜もある' },
-      rev: { key:'真実・気付き',                  msg:'ぼやけていたものが少し見える' } },
+      up:  { key:'曖昧・不安・感覚',              msg:'全部見えない夜もある',                     advice:'全部分からなくていい。感覚に従え。' },
+      rev: { key:'真実・気付き',                  msg:'ぼやけていたものが少し見える',             advice:'ぼやけていたものが見え始めている。見逃すな。' } },
     { num:'XIX',   name:'朝の音',        arch:'SUN',            archJP:'太陽',
-      up:  { key:'喜び・成功・前進',              msg:'ちゃんと光が届いている' },
-      rev: { key:'空回り・疲労',                  msg:'明るさの中で少し無理をしている' } },
+      up:  { key:'喜び・成功・前進',              msg:'ちゃんと光が届いている',                   advice:'素直に喜んでいい。' },
+      rev: { key:'空回り・疲労',                  msg:'明るさの中で少し無理をしている',           advice:'無理に明るくしなくていい。' } },
     { num:'XX',    name:'戻る場所',      arch:'JUDGEMENT',      archJP:'審判',
-      up:  { key:'再会・目覚め・気付き',          msg:'終わった音が戻ってきた' },
-      rev: { key:'迷い・後悔',                    msg:'過去に立ち止まっている' } },
+      up:  { key:'再会・目覚め・気付き',          msg:'終わった音が戻ってきた',                   advice:'気付いたなら、もう動き出せる。' },
+      rev: { key:'迷い・後悔',                    msg:'過去に立ち止まっている',                   advice:'過去に返事をしている場合じゃない。' } },
     { num:'XXI',   name:'続いた音',      arch:'WORLD',          archJP:'世界',
-      up:  { key:'完成・達成・循環',              msg:'終わりじゃない。続いている' },
-      rev: { key:'未完成・途中',                  msg:'あと少しだけ音が足りない' } },
+      up:  { key:'完成・達成・循環',              msg:'終わりじゃない。続いている',               advice:'ここが終わりじゃない。続きがある。' },
+      rev: { key:'未完成・途中',                  msg:'あと少しだけ音が足りない',                 advice:'あと少しだけ、続けろ。' } },
     { num:'XXII',  name:'置かれた音',    arch:'THE PLACED SOUND',archJP:'置かれた音',
-      up:  { key:'運命・出会い・偶然',            msg:'理由はまだ分からない。でも残る音がある' },
-      rev: { key:'すれ違い・タイミングのズレ',    msg:'拾う場所を少し間違えている' },
+      up:  { key:'運命・出会い・偶然',            msg:'理由はまだ分からない。でも残る音がある',   advice:'理由が分からなくても、残るものは残る。' },
+      rev: { key:'すれ違い・タイミングのズレ',    msg:'拾う場所を少し間違えている',               advice:'拾う前に、置いてきたものがある。' },
       note:'誰かが置いていった音。\n誰のものだったかは分からない。\n店主も説明しない。' },
     { num:'XXIII', name:'Snow flakes',   arch:'SNOW FLAKES',    archJP:'スノーフレークス',
-      up:  { key:'絆・重なり・奇跡',              msg:'別々だった音が、重なった' },
-      rev: { key:'距離・静止・余白',              msg:'離れているだけで、消えてはいない' },
+      up:  { key:'絆・重なり・奇跡',              msg:'別々だった音が、重なった',                 advice:'離れていても、同じ場所に向かっている。' },
+      rev: { key:'距離・静止・余白',              msg:'離れているだけで、消えてはいない',         advice:'距離は、消えていない証拠でもある。' },
       note:'それぞれ違う形なのに、\n同じ場所へ落ちてくる音。',
       special:'snow' },
     { num:'XXIV',  name:'白いカセット',  arch:'WHITE TAPE',     archJP:'白いカセット',
-      up:  { key:'記憶・始まり・受け継ぐもの',    msg:'忘れていた音が戻ってくる' },
-      rev: { key:'曖昧・欠落',                    msg:'聞こえているのに思い出せない' },
+      up:  { key:'記憶・始まり・受け継ぐもの',    msg:'忘れていた音が戻ってくる',                 advice:'忘れていた音でも、大切にしていていい。' },
+      rev: { key:'曖昧・欠落',                    msg:'聞こえているのに思い出せない',             advice:'聞こえているはずの音を、聞こえないふりしている。' },
       note:'ラベルのない古いカセット。\n再生するたび、少し違う音がする。',
       special:'tape' },
     { num:'XXV',   name:'途中の音',      arch:'HALFWAY SOUND',  archJP:'途中の音',
-      up:  { key:'未完成・可能性',                msg:'終わっていないなら、まだ続けられる' },
-      rev: { key:'諦め・停滞',                    msg:'途中で止めた音が残っている' },
+      up:  { key:'未完成・可能性',                msg:'終わっていないなら、まだ続けられる',       advice:'未完成のまま、価値がある。' },
+      rev: { key:'諦め・停滞',                    msg:'途中で止めた音が残っている',               advice:'途中で止めた理由より、続ける理由を探せ。' },
       note:'完成しなかった曲。\nでも、誰かには必要だった。' },
     { num:'XXVI',  name:'静かな席',      arch:'EMPTY CHAIR',    archJP:'静かな席',
-      up:  { key:'居場所・安心・再会',            msg:'空いているのは、待っているから' },
-      rev: { key:'孤独・喪失',                    msg:'誰も座っていない理由を考え続けている' },
+      up:  { key:'居場所・安心・再会',            msg:'空いているのは、待っているから',           advice:'誰かがあなたのために空けている。' },
+      rev: { key:'孤独・喪失',                    msg:'誰も座っていない理由を考え続けている',     advice:'孤独と一人は違う。' },
       note:'店の奥に置かれている古い椅子。\n店主は誰の席か教えない。' },
   ];
 
@@ -1778,6 +1785,8 @@
     if (archEl) archEl.textContent = draw.card.arch + '  |  ' + draw.card.archJP;
     if (keyEl)  keyEl.textContent  = draw.data.key;
     if (msgEl)  msgEl.textContent  = draw.data.msg;
+    var advEl = p.querySelector('.res-advice');
+    if (advEl) advEl.textContent = draw.data.advice || '';
     if (spEl) {
       if (draw.card.note) {
         spEl.textContent   = draw.card.note;
