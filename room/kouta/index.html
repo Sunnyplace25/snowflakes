@@ -950,6 +950,7 @@
       if (receiveBtn) {
         receiveBtn.addEventListener('click', function() {
           localStorage.setItem(STRINGS_FIND_KEY, '1');
+          if (typeof SfSnow !== 'undefined') SfSnow.unlockItem('item_kouta_first_strings');
           document.getElementById('kouta-item-found-popup').classList.remove('show');
           revealStringsItem();
         });
