@@ -521,13 +521,26 @@
       <!-- hotspot 1b -->
       <button class="room-hotspot" style="left:22%;top:78%;" onclick="openRoomHotspot('NOTE','歌詞を書き溜めたり、日記を書いたりしている。\n正直、誰にも見せたくない。')">+</button>
       <!-- hotspot 2 -->
-      <button class="room-hotspot" style="left:76%;top:18%;" onclick="openRoomHotspot('POSTER','なんとなく、ずっと貼ってある３ピースバンドのポスター。\n古いのか色褪せている。')">+</button>
+      <button class="room-hotspot" style="left:68%;top:18%;" onclick="openRoomHotspot('POSTER','なんとなく、ずっと貼ってある３ピースバンドのポスター。\n古いのか色褪せている。')">+</button>
       <!-- hotspot 3 -->
       <button class="room-hotspot" style="left:59%;top:58%;" onclick="openRoomHotspot('BASS','ケースに入ったベース\n普段は使わない。でも定期的にメンテして鳴らす。')">+</button>
       <!-- hotspot 4 -->
       <button class="room-hotspot" style="left:38%;top:63%;" onclick="openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
       <!-- hotspot 5 -->
       <button class="room-hotspot" style="left:79%;top:46%;" onclick="openRoomHotspot('BOOKSHELF','好きな作家が数人いる。\nじつはハードカバー派。')">+</button>
+      <!-- hotspot box -->
+      <button class="room-hotspot" style="left:47%;top:22%;" onclick="openBoxHotspot()">+</button>
+    </div>
+
+    <!-- Item found popup -->
+    <div class="room-hs-popup" id="kouta-item-found-popup">
+      <div class="room-hs-card" onclick="event.stopPropagation()">
+        <p class="room-hs-label" style="margin-bottom:18px;">FOUND</p>
+        <img src="../../item/first_strings_kouta.webp" style="width:110px;margin:0 auto 16px;display:block;">
+        <p class="room-hs-desc" style="margin-bottom:4px;">初めて張りかえたベースの弦</p>
+        <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">を見つけた</p>
+        <button id="kouta-item-receive-btn" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#fca5a5'">── 受け取る ──</button>
+      </div>
     </div>
 
     <!-- Room hotspot popup -->
@@ -719,6 +732,25 @@
         </div>
       </div>
 
+      <!-- 初めて張りかえたベースの弦 -->
+      <div class="il-item" id="il-strings-item">
+        <div class="il-header" onclick="toggleIlItem('il-strings-item')">
+          <span class="item-log-tag" id="il-strings-tag"><img src="../../item/first_strings_kouta.webp" alt="item">初めて張りかえたベースの弦</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-strings-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-strings-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/first_strings_kouta.webp" alt="初めて張りかえたベースの弦" style="width:160px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">初めて張りかえたベースの弦</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">コウタが初めて自分で張りかえたベースの弦。<br>捨てられずに、今もそこにある。</p>
+            <p style="margin-top:16px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;">EPISODE ── ? ? ?</p>
+          </div>
+        </div>
+      </div>
+
       <!-- 黒い石のシルバーリング -->
       <div class="il-item" id="il-ring-item">
         <div class="il-header" onclick="toggleIlItem('il-ring-item')">
@@ -757,6 +789,28 @@
       document.getElementById('kouta-hs-label').textContent = label;
       document.getElementById('kouta-hs-desc').textContent  = desc;
       document.getElementById('kouta-hs-popup').classList.add('show');
+    }
+
+    var STRINGS_FIND_KEY = 'sf_kouta_found_first_strings';
+    function hasStrings() { return localStorage.getItem(STRINGS_FIND_KEY) === '1'; }
+
+    function revealStringsItem() {
+      var tag = document.getElementById('il-strings-tag');
+      if (tag) { tag.classList.add('owned'); }
+      var locked = document.getElementById('il-strings-locked');
+      var owned  = document.getElementById('il-strings-owned');
+      if (locked) locked.style.display = 'none';
+      if (owned)  owned.style.display  = '';
+      var item = document.getElementById('il-strings-item');
+      if (item) item.classList.add('open');
+    }
+
+    function openBoxHotspot() {
+      if (!hasStrings()) {
+        document.getElementById('kouta-item-found-popup').classList.add('show');
+      } else {
+        openRoomHotspot('BOX', '捨てられないものが溜まっている箱。\nもうなにも残っていなかった。');
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -910,6 +964,18 @@
           });
         });
       }
+
+      // 弦アイテム受け取りボタン
+      var receiveBtn = document.getElementById('kouta-item-receive-btn');
+      if (receiveBtn) {
+        receiveBtn.addEventListener('click', function() {
+          localStorage.setItem(STRINGS_FIND_KEY, '1');
+          document.getElementById('kouta-item-found-popup').classList.remove('show');
+          revealStringsItem();
+        });
+      }
+      // 弦アイテム：既取得なら即表示
+      if (hasStrings()) revealStringsItem();
 
       // ITEM LOG
       function revealItemTag(tagId, imgSrc, name) {
