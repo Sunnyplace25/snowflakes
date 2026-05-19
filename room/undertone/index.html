@@ -654,14 +654,14 @@
     .chapter-header:hover { background:rgba(255,255,255,0.02); }
     .chapter-num {
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; color:#64748b; flex-shrink:0; width:14px;
+      font-size:11px; color:#94a3b8; flex-shrink:0; width:14px;
     }
     .chapter-title {
       flex:1; font-family:'Cormorant Garamond',serif;
-      font-size:12px; letter-spacing:4px; color:#64748b;
+      font-size:13px; letter-spacing:4px; color:#94a3b8;
       transition:color 0.2s;
     }
-    .chapter-header:hover .chapter-title { color:#94a3b8; }
+    .chapter-header:hover .chapter-title { color:#cbd5e1; }
     .chapter-arr { font-size:10px; color:#94a3b8; transition:transform 0.25s; }
     .chapter-arr.open { transform:rotate(180deg); }
     .chapter-body {
@@ -672,7 +672,7 @@
     .chapter-body::-webkit-scrollbar-track { background:transparent; }
     .chapter-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
     .chapter-text {
-      font-size:13px; color:#94a3b8; line-height:2.4;
+      font-size:13px; color:#cbd5e1; line-height:2.4;
       font-weight:400; white-space:pre-line;
     }
 
@@ -709,6 +709,16 @@
     </div>
     <p class="scene-counter" id="scene-counter">1 / 3</p>
 
+    <div class="speech-bubble" id="speech-bubble">
+      <img class="speech-char-img" id="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="">
+      <div>
+        <p class="speech-char-name" id="speech-char-name">KOUTA</p>
+        <p class="speech-text" id="speech-text"></p>
+      </div>
+    </div>
+
+    <button class="advance-btn" id="advance-btn" onclick="advanceScene()">進む →</button>
+
     <!-- Chapter accordion (re-readable) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
       <div class="chapter-item" id="chapter-item-0">
@@ -743,17 +753,15 @@
         </button>
         <div class="chapter-body" id="chapter-body-3"><p class="chapter-text" id="chapter-text-3"></p></div>
       </div>
-    </div>
-
-    <div class="speech-bubble" id="speech-bubble">
-      <img class="speech-char-img" id="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="">
-      <div>
-        <p class="speech-char-name" id="speech-char-name">KOUTA</p>
-        <p class="speech-text" id="speech-text"></p>
+      <div class="chapter-item" id="chapter-item-4" style="display:none;">
+        <button class="chapter-header" onclick="toggleChapter(4)">
+          <span class="chapter-num">5</span>
+          <span class="chapter-title">帰り道</span>
+          <span class="chapter-arr" id="chapter-arr-4">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-4"><p class="chapter-text" id="chapter-text-4"></p></div>
       </div>
     </div>
-
-    <button class="advance-btn" id="advance-btn" onclick="advanceScene()">進む →</button>
   </div>
 
   <!-- SHOP -->
@@ -1148,6 +1156,11 @@
       label: '4.  店主',
       text:
 '　店主は店の奥に静かに座っていた。\n\n　コウタは少し眉をひそめる。\n\n　違和感。\n\n　前に来た時は、\n　もっと年上に見えた。\n\n　でも今日は、\n　同じくらい。\n\n　……いや、\n　もっと下かもしれない。\n\n　ランプに照らされた白い髪が、\n　薄暗い店内でぼんやり光っている。\n\n「なあ、やっぱり……」\n\n　コウタが言いかける。\n\n「……鳴ってる」\n\n　ヒナタだった。\n\n「また？」\n\n　ハヤテが笑う。\n\n　いつもの調子。\n\n　でも、\n　ヒナタはもう歩き出していた。\n\n　迷わない。\n\n　ハヤテは小さく息を吐いて、\n　諦めたように後ろをついていく。\n\n　コウタだけが、\n　その場に残った。\n\n　足が進まない。\n\n　その時。\n\n『迷っているな』\n\n　知らない声。\n\n『そろそろ選ぶか』\n\n　また別の声。\n\n『これで、よかったの？』\n\n　老人。\n\n　女の人。\n\n　若い男。\n\n　誰の声なのか分からない。\n\n　頭の中で、\n　順番もなく重なっていく。\n\n　違和感だけが先に立つ。\n\n　ふと顔を上げる。\n\n　店主と目が合った。\n\n　静かに笑う。\n\n「……また、来ると思ってた」\n\n　コウタは少しだけ眉をひそめる。\n\n「……俺？」\n\n　返事はない。\n\n　代わりに、\n　カウンターの横へ手を伸ばした。\n\n　カサ、と小さな音。\n\n　古びた箱が置かれる。\n\n　白い縁。\n\n　少し擦れた角。\n\n　見たことのないカード。\n\n「選べ」\n\n「は？」\n\n　ハヤテが笑う。\n\n「急だな」\n\n　ヒナタは何も言わない。\n\n　ただ、\n　カードを見ていた。\n\n「今鳴っているものは、\n　隠せない」\n\n　ランプの灯りが、\n　カードの端を少しだけ照らした。'
+    },
+    {
+      label: '5.  帰り道',
+      text:
+'「見てこれ。買っちゃった」\n\n　ハヤテが嬉しそうに、\n　二人へ見せる。\n\n　手のひらサイズの、\n　よく分からないマスコット。\n\n　丸い目。\n\n　口だけ笑っている。\n\n「何だそれ。怖すぎるだろ」\n\n　コウタが眉をひそめる。\n\n　ヒナタも少しだけ見る。\n\n「趣味悪い」\n\n　短く刺す。\n\n「ひどくない？」\n\n　ハヤテが笑った。\n\n　指先でマスコットをくるくる回しながら、\n　前を歩く。\n\n「変な店だったな」\n\n　少しだけ間が空く。\n\n「……でも、悪くない」\n\n　ヒナタが小さく息を吐いた。\n\n　コウタは何も言わない。\n\n　少し歩いたところで、\n　一度だけ振り返る。\n\n　店の灯りは、\n　まだ静かに点いていた。\n\n　その時。\n\n「まだ、迷ってる？」\n\n　耳元で、\n　声が聞こえた気がした。\n\n　背筋が冷える。\n\n　思わず店の方を見る。\n\n　ランプの灯りの奥。\n\n　店主がこちらを見ていた。\n\n　口元だけ、\n　少し笑っている。\n\n「……きっと、また来る」\n\n　小さな声だった。'
     }
   ];
 
@@ -1450,6 +1463,7 @@
   var visited = localStorage.getItem('sf_undertone_visited') === 'true';
   var maxScene = parseInt(localStorage.getItem('sf_undertone_max_scene') || '0', 10);
   var exploreCount = parseInt(localStorage.getItem('sf_undertone_explore_count') || '0', 10);
+  var ch5Unlocked = localStorage.getItem('sf_undertone_ch5_unlocked') === 'true';
   var cardFlipped = false;
   var currentCat = null;
 
@@ -1481,7 +1495,25 @@
     document.getElementById('explore-state').style.display = 'block';
     document.getElementById('shop-state').style.display = 'none';
     currentScene = 0;
-    renderScene();
+    // 章5: 初めてもう一度歩くを押した時（ショップ訪問後）に解放
+    if (exploreCount >= 1 && !ch5Unlocked) {
+      ch5Unlocked = true;
+      localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
+      var ch5 = ALL_CHAPTERS[4];
+      document.getElementById('prose-label').textContent = ch5.label;
+      document.getElementById('prose-text').textContent  = ch5.text;
+      document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
+      _proseCloseCallback = function() { renderScene(); };
+      closeSKPopup();
+      setTimeout(function() {
+        var sc = document.querySelector('.prose-scroll');
+        if (sc) sc.scrollTop = 0;
+        document.getElementById('prose-popup').classList.add('show');
+      }, 400);
+      renderChapterList();
+    } else {
+      renderScene();
+    }
   };
 
   function renderScene() {
@@ -1527,11 +1559,14 @@
   function renderChapterList() {
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
-    // maxScene が進むたびに章が解放 (0→ch1, 1→ch2, 2→ch3, visited→ch4)
     ALL_CHAPTERS.forEach(function(ch, i) {
-      document.getElementById('chapter-text-' + i).textContent = ch.text;
+      var textEl = document.getElementById('chapter-text-' + i);
+      if (textEl) textEl.textContent = ch.text;
       var item = document.getElementById('chapter-item-' + i);
-      if (i === 3) {
+      if (!item) return;
+      if (i === 4) {
+        item.style.display = ch5Unlocked ? '' : 'none';
+      } else if (i === 3) {
         item.style.display = visited ? '' : 'none';
       } else {
         item.style.display = i <= maxScene ? '' : 'none';
@@ -1541,8 +1576,9 @@
 
   function openChapter(idx) {
     // Close all
-    for (var i = 0; i < 4; i++) {
-      document.getElementById('chapter-body-' + i).style.display = 'none';
+    for (var i = 0; i < 5; i++) {
+      var b = document.getElementById('chapter-body-' + i);
+      if (b) b.style.display = 'none';
       var arr = document.getElementById('chapter-arr-' + i);
       if (arr) arr.classList.remove('open');
     }
