@@ -439,6 +439,7 @@
     .room-scene-wrap img {
       width: 100%; display: block; object-fit: cover;
       border-radius: 0 0 24px 24px;
+      aspect-ratio: 1122/1402; /* face image default */
     }
     .room-hotspot {
       position: absolute; width: 30px; height: 30px;
@@ -964,16 +965,22 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
     });
-    window.addEventListener('pageshow', function() { var img = document.getElementById('room-hero-img'); if (img) { img.src = 'room_face.webp'; heroShowing = 'face'; } });
+    window.addEventListener('pageshow', function() {
+      var img = document.getElementById('room-hero-img');
+      if (img) { img.src = 'room_face.webp'; img.style.aspectRatio = '1122/1402'; heroShowing = 'face'; }
+      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
+    });
     window.toggleRoomHero = function() {
       var img = document.getElementById('room-hero-img');
       var spots = document.querySelectorAll('#kouta-scene .room-hotspot');
       if (heroShowing === 'face') {
         img.src = 'room_interior.webp';
+        img.style.aspectRatio = '1403/1121';
         heroShowing = 'room';
         spots.forEach(function(b) { b.style.display = 'flex'; });
       } else {
         img.src = 'room_face.webp';
+        img.style.aspectRatio = '1122/1402';
         heroShowing = 'face';
         spots.forEach(function(b) { b.style.display = 'none'; });
       }
