@@ -532,9 +532,9 @@
     <p class="scene-counter" id="scene-counter">1 / 3</p>
 
     <div class="speech-bubble" id="speech-bubble">
-      <img class="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="コウタ">
+      <img class="speech-char-img" id="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="">
       <div>
-        <p class="speech-char-name">KOUTA</p>
+        <p class="speech-char-name" id="speech-char-name">KOUTA</p>
         <p class="speech-text" id="speech-text"></p>
       </div>
     </div>
@@ -806,34 +806,144 @@
     return { card: c, up: up, data: up ? c.up : c.rev, pos: up ? '正位置' : '逆位置' };
   }
 
+  /* ── Character data ── */
+  var CHARS = {
+    kouta:  { img:'../../plofile/chibi_kouta.webp',  name:'KOUTA',  color:'#fca5a5' },
+    hinata: { img:'../../plofile/chibi_hinata.webp', name:'HINATA', color:'#93c5fd' },
+    hayate: { img:'../../plofile/chibi_hayate.webp', name:'HAYATE', color:'#fde68a' },
+  };
+
+  // コウタはweight:3で多め、ヒナタ・ハヤテはweight:1
+  function pickChar(pool) {
+    var weighted = [];
+    pool.forEach(function(e) {
+      var w = e.weight || 1;
+      for (var i = 0; i < w; i++) weighted.push(e);
+    });
+    return weighted[Math.floor(Math.random() * weighted.length)];
+  }
+
   /* ── Hotspot data ── */
   var HOTSPOTS = [
-    // Scene 1
+    // Scene 1（路地裏入口）
     [
-      { label:'POSTER',       desc:'雨に濡れた告知の紙。\n"Snow flakes Live"──\n日付は、もう読めない',
-        x:'18%', y:'28%', speech:'貼ってあるじゃないかよ、俺たちのやつ' },
-      { label:'STREET LAMP',  desc:'点いたり消えたりしている。\nリズムがある気がした',
-        x:'78%', y:'18%', speech:null },
-      { label:'SOMETHING',    desc:'石畳の隙間に、何か光るものがある。\n手が届かない',
-        x:'48%', y:'78%', speech:'拾えないのか。もったいない' },
+      { label:'POSTER',
+        desc:'雨に濡れた告知の紙。\n"Snow flakes Live"──\n日付は、もう読めない',
+        x:'18%', y:'28%',
+        chars:[
+          { char:'kouta',  speech:'貼ってあるじゃないかよ、俺たちのやつ', weight:3 },
+          { char:'hayate', speech:'懐かしいな、これ', weight:1 },
+        ]},
+      { label:'STREET LAMP',
+        desc:'点いたり消えたりしている。\nリズムがある気がした',
+        x:'75%', y:'15%',
+        chars:[
+          { char:'hinata', speech:'音が聞こえる', weight:2 },
+          { char:'kouta',  speech:'なんか、規則性がある気がする', weight:2 },
+        ]},
+      { label:'SOMETHING',
+        desc:'石畳の隙間に、何か光るものがある。\n手が届かない',
+        x:'45%', y:'75%',
+        chars:[
+          { char:'kouta',  speech:'拾えないのか。もったいない', weight:3 },
+          { char:'hayate', speech:'あー、惜しい', weight:1 },
+          { char:'hinata', speech:'こっち', weight:1 },
+        ]},
+      { label:'WALL',
+        desc:'壁に小さな文字が刻まれている。\n「音を置いていく場所」',
+        x:'60%', y:'50%',
+        chars:[
+          { char:'hinata', speech:'音が聞こえる', weight:2 },
+          { char:'kouta',  speech:'誰が書いたんだ、これ', weight:2 },
+          { char:'hayate', speech:'なんか意味深じゃない？', weight:1 },
+        ]},
+      { label:'CAT',
+        desc:'路地の奥に猫が一匹いる。\nこちらを見て、動かない',
+        x:'85%', y:'65%',
+        chars:[
+          { char:'hayate', speech:'猫だ。なつかないか', weight:2 },
+          { char:'hinata', speech:'……知ってる顔だ', weight:1 },
+          { char:'kouta',  speech:'待ってろ、逃げるぞ', weight:2 },
+        ]},
     ],
-    // Scene 2
+    // Scene 2（通路）
     [
-      { label:'WINDOW',       desc:'薄明かりが漏れている。\n誰かいるのかもしれない',
-        x:'22%', y:'32%', speech:null },
-      { label:'SIGN',         desc:'古い看板。文字が掠れていて、\nかろうじて「──tone」と読める',
-        x:'68%', y:'22%', speech:'Under tone… 聞いたことある気がする' },
-      { label:'PUDDLE',       desc:'水たまりに、街灯が映っている。\n揺れるたびに形が変わった',
-        x:'50%', y:'76%', speech:null },
+      { label:'WINDOW',
+        desc:'薄明かりが漏れている。\n誰かいるのかもしれない',
+        x:'22%', y:'32%',
+        chars:[
+          { char:'hinata', speech:'音が聞こえる', weight:3 },
+          { char:'kouta',  speech:'中、確認できるか？', weight:2 },
+          { char:'hayate', speech:'誰かいるのかも', weight:1 },
+        ]},
+      { label:'SIGN',
+        desc:'古い看板。文字が掠れていて、\nかろうじて「──tone」と読める',
+        x:'68%', y:'22%',
+        chars:[
+          { char:'kouta',  speech:'Under tone… 聞いたことある気がする', weight:3 },
+          { char:'hayate', speech:'行くか', weight:1 },
+          { char:'hinata', speech:'こっち', weight:2 },
+        ]},
+      { label:'PUDDLE',
+        desc:'水たまりに、街灯が映っている。\n揺れるたびに形が変わった',
+        x:'50%', y:'76%',
+        chars:[
+          { char:'hinata', speech:'揺れてる', weight:2 },
+          { char:'kouta',  speech:'踏むなよ、靴濡れるから', weight:3 },
+          { char:'hayate', speech:'きれいじゃん', weight:1 },
+        ]},
+      { label:'IRON DOOR',
+        desc:'錆びた鉄の扉。\n鍵がかかっている。ずっと前から閉まっている気がした',
+        x:'82%', y:'55%',
+        chars:[
+          { char:'kouta',  speech:'開かないな。別の入口があるはずだ', weight:3 },
+          { char:'hayate', speech:'こっちじゃないか', weight:2 },
+          { char:'hinata', speech:'……違う', weight:1 },
+        ]},
+      { label:'WIRE',
+        desc:'頭上に電線が張られている。\n鳥が一羽、じっとしている',
+        x:'40%', y:'12%',
+        chars:[
+          { char:'hinata', speech:'音が聞こえる', weight:2 },
+          { char:'hayate', speech:'なんか見てるな', weight:2 },
+          { char:'kouta',  speech:'気にしなくていい', weight:1 },
+        ]},
     ],
-    // Scene 3
+    // Scene 3（Under tone 店前）
     [
-      { label:'SIGN',         desc:'Under tone\n── ひとつ多い音に、気づく場所 ──',
-        x:'50%', y:'16%', speech:'なんか、呼ばれてる感じがするんだけど俺だけ？' },
-      { label:'SHOW WINDOW',  desc:'古い宝石と見たことのない道具が\nガラスケースの中に並んでいる',
-        x:'24%', y:'54%', speech:null },
-      { label:'DOOR',         desc:'くすんだ金の取っ手。\nかすかに、音がした気がした',
-        x:'72%', y:'66%', speech:'入るのか？', entrance:true },
+      { label:'SIGN',
+        desc:'Under tone\n── ひとつ多い音に、気づく場所 ──',
+        x:'50%', y:'16%',
+        chars:[
+          { char:'hayate', speech:'なんかよさそうじゃん', weight:2 },
+          { char:'kouta',  speech:'なんか、呼ばれてる感じがするんだけど俺だけ？', weight:3 },
+          { char:'hinata', speech:'……ここだ', weight:2 },
+        ]},
+      { label:'SHOW WINDOW',
+        desc:'古い宝石と見たことのない道具が\nガラスケースの中に並んでいる',
+        x:'24%', y:'54%',
+        chars:[
+          { char:'hinata', speech:'音が聞こえる', weight:2 },
+          { char:'kouta',  speech:'高そうなもの並んでる', weight:2 },
+          { char:'hayate', speech:'これ、欲しいかも', weight:1 },
+        ]},
+      { label:'DOOR',
+        desc:'くすんだ金の取っ手。\nかすかに、音がした気がした',
+        x:'72%', y:'66%',
+        chars:[
+          { char:'kouta',  speech:'入るのか？', weight:3 },
+          { char:'hayate', speech:'面白そう、入ろうぜ', weight:2 },
+          { char:'hinata', speech:'こっち', weight:1 },
+        ],
+        entrance:true },
+      { label:'FLOWER POT',
+        desc:'扉の横に小さな植木鉢が置かれている。\n枯れかけているのに、花が一輪だけ咲いている',
+        x:'88%', y:'40%',
+        chars:[
+          { char:'hinata', speech:'……まだ咲いてる', weight:2 },
+          { char:'kouta',  speech:'水、誰かやってるんだな', weight:3 },
+          { char:'hayate', speech:'意外とたくましいな', weight:1 },
+        ]},
     ],
   ];
 
@@ -900,7 +1010,10 @@
     document.getElementById('hotspot-label').textContent = spot.label;
     document.getElementById('hotspot-desc').textContent  = spot.desc;
     document.getElementById('hotspot-popup').classList.add('show');
-    if (spot.speech) showSpeech(spot.speech);
+    if (spot.chars && spot.chars.length) {
+      var pick = pickChar(spot.chars);
+      showSpeech(pick.char, pick.speech);
+    }
     if (spot.entrance) {
       setTimeout(function() {
         document.getElementById('hotspot-popup').classList.remove('show');
@@ -913,8 +1026,13 @@
     document.getElementById('hotspot-popup').classList.remove('show');
   };
 
-  function showSpeech(text) {
-    document.getElementById('speech-text').textContent = text;
+  function showSpeech(char, text) {
+    var meta = CHARS[char] || CHARS.kouta;
+    document.getElementById('speech-char-img').src           = meta.img;
+    document.getElementById('speech-char-img').alt           = meta.name;
+    document.getElementById('speech-char-name').textContent  = meta.name;
+    document.getElementById('speech-char-name').style.color  = meta.color;
+    document.getElementById('speech-text').textContent       = text;
     document.getElementById('speech-bubble').classList.add('show');
   }
   function hideSpeech() {
