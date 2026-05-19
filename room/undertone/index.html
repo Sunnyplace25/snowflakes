@@ -1052,7 +1052,14 @@
   /* ── Entrance ── */
   window.entranceNo = function() {
     document.getElementById('entrance-overlay').classList.remove('show');
-    window.location.href = '../../sweets/';
+    var noLines = [
+      { char:'hayate', speech:'今日はやめとくか' },
+      { char:'kouta',  speech:'今はいい' },
+      { char:'hinata', speech:'……聞こえない' },
+    ];
+    var pick = noLines[Math.floor(Math.random() * noLines.length)];
+    showSpeech(pick.char, pick.speech);
+    setTimeout(function() { window.location.href = '../../sweets/'; }, 1800);
   };
   window.entranceYes = function() {
     document.getElementById('entrance-overlay').classList.remove('show');
