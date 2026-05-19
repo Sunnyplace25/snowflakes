@@ -628,7 +628,7 @@
         </div>
         <div class="il-body">
           <div style="padding:8px 0 16px;">
-            <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+            <span class="item-log-desc locked" id="il-1-desc">まだもっていません</span>
           </div>
         </div>
       </div>
@@ -641,7 +641,7 @@
         </div>
         <div class="il-body">
           <div id="il-usb-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">もっていません</span>
+            <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-usb-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
             <img src="../../item/usb_hinata.webp" alt="Little Snow（Law）USBメモリ" style="width:180px;margin:0 auto 18px;display:block;">
@@ -659,7 +659,7 @@
         </div>
         <div class="il-body">
           <div id="il-pendant-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">もっていません</span>
+            <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-pendant-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
             <img src="../../item/pendant_hinata.webp" alt="青い音の欠片" style="width:180px;margin:0 auto 18px;display:block;">
@@ -677,7 +677,7 @@
         </div>
         <div class="il-body">
           <div id="il-umbrella-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">もっていません</span>
+            <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-umbrella-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
             <img src="../../item/umbrella_hinata.webp" alt="ヒナタの折りたたみ傘" style="width:180px;margin:0 auto 18px;display:block;">
@@ -767,7 +767,7 @@
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
-            if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
+            if (!nameBtn.classList.contains('ready')) { showAlert('まだもっていません'); return; }
             showDialog('カセットテープ', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));

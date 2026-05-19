@@ -617,7 +617,7 @@
         </div>
         <div class="il-body">
           <div style="padding:8px 0 16px;">
-            <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+            <span class="item-log-desc locked" id="il-1-desc">まだもっていません</span>
           </div>
         </div>
       </div>
@@ -629,7 +629,7 @@
         </div>
         <div class="il-body">
           <div style="padding:8px 0 16px;">
-            <span class="item-log-desc locked" id="il-2-desc">LOCKED</span>
+            <span class="item-log-desc locked" id="il-2-desc">まだもっていません</span>
           </div>
         </div>
       </div>
@@ -757,7 +757,7 @@
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
-            if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
+            if (!nameBtn.classList.contains('ready')) { showAlert('まだもっていません'); return; }
             showDialog('古いリストバンド', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));

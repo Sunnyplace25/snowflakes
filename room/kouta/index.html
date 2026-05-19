@@ -624,7 +624,7 @@
         </div>
         <div class="il-body">
           <div style="padding:8px 0 16px;">
-            <span class="item-log-desc locked" id="il-1-desc">LOCKED</span>
+            <span class="item-log-desc locked" id="il-1-desc">まだもっていません</span>
           </div>
         </div>
       </div>
@@ -637,7 +637,7 @@
         </div>
         <div class="il-body">
           <div id="il-ticket-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">もっていません</span>
+            <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-ticket-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
             <img src="../../item/bass_strings_kouta.webp" alt="Snow flakes ライブチケット" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
@@ -655,7 +655,7 @@
         </div>
         <div class="il-body">
           <div id="il-ring-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">もっていません</span>
+            <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-ring-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
             <img src="../../item/ring_kouta.webp" alt="黒い石のシルバーリング" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
@@ -746,7 +746,7 @@
         }
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
-            if (!nameBtn.classList.contains('ready')) { showAlert('持っていません'); return; }
+            if (!nameBtn.classList.contains('ready')) { showAlert('まだもっていません'); return; }
             showDialog('使い古されたZIPPOライター', function() {
               saved.push('pf-name');
               localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
