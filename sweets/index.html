@@ -725,8 +725,10 @@
 
     <!-- Items section -->
     <div class="section" id="items-section" style="display:none;">
-      <div class="section-label">items</div>
-      <div style="max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+      <button class="section-label" id="items-toggle" onclick="toggleItemsSection()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
+        <span>items</span><span id="items-arr" style="font-size:10px;color:#475569;transition:transform 0.25s;">▾</span>
+      </button>
+      <div id="items-body" style="display:none;max-width:480px;margin:0 auto;flex-direction:column;gap:16px;width:100%;">
 
         <!-- 通常アイテム -->
         <div id="items-normal-wrap" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
@@ -5166,6 +5168,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     items.style.display = open ? 'block' : 'none';
     btn.textContent = (open ? '▲' : '▼') + ' 今日のSnow';
     if (open) renderSnowChecklist();
+  }
+
+  function toggleItemsSection() {
+    var body = document.getElementById('items-body');
+    var arr  = document.getElementById('items-arr');
+    if (!body) return;
+    var open = body.style.display === 'none' || body.style.display === '';
+    body.style.display = open ? 'flex' : 'none';
+    if (arr) arr.style.transform = open ? 'rotate(180deg)' : '';
   }
 
   // SfSnow.updateUI をラップしてチェックリストも更新
