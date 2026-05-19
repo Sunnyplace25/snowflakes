@@ -422,24 +422,19 @@
       cursor: zoom-out;
     }
     .room-light.open { display: flex; }
-    .room-light img {
+    .room-light-inner {
+      position: relative;
+      display: inline-flex;
+      cursor: default;
+    }
+    .room-light-inner img {
       max-width: 92vw; max-height: 86vh;
       border-radius: 6px;
       box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      display: block;
     }
     h1 { cursor: pointer; transition: opacity 0.2s; }
     h1:hover { opacity: 0.75; }
-
-    /* ── Room hotspot ── */
-    .room-scene-wrap {
-      width: calc(100% + 48px); max-width: calc(480px + 48px);
-      margin: -32px -24px 0; position: relative;
-      border-radius: 0 0 24px 24px; overflow: hidden;
-    }
-    .room-scene-wrap img {
-      width: 100%; display: block; object-fit: cover;
-      border-radius: 0 0 24px 24px;
-    }
     .room-hotspot {
       position: absolute; width: 30px; height: 30px;
       background: rgba(255,255,255,0.06);
@@ -456,7 +451,7 @@
       color: #fca5a5;
     }
     .room-hs-popup {
-      position: fixed; inset: 0; z-index: 300;
+      position: fixed; inset: 0; z-index: 600;
       display: none; align-items: center; justify-content: center;
       padding: 20px; background: rgba(8,13,24,0.8);
       backdrop-filter: blur(12px);
@@ -514,23 +509,8 @@
   </div>
 
   <div class="main">
-    <div class="room-scene-wrap" id="kouta-scene">
-      <img id="room-hero-img" src="room_face.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="aspect-ratio:1122/1402;">
-      <!-- hotspot 1a -->
-      <button class="room-hotspot" style="left:22%;top:58%;" onclick="openRoomHotspot('PC','楽曲データが入っている。\n軽い編集もする。')">+</button>
-      <!-- hotspot 1b -->
-      <button class="room-hotspot" style="left:22%;top:74%;" onclick="openRoomHotspot('NOTE','歌詞を書き溜めたり、日記を書いたりしている。\n正直、誰にも見せたくない。')">+</button>
-      <!-- hotspot 2 -->
-      <button class="room-hotspot" style="left:68%;top:18%;" onclick="openRoomHotspot('POSTER','なんとなく、ずっと貼ってある３ピースバンドのポスター。\n古いのか色褪せている。')">+</button>
-      <!-- hotspot 3 -->
-      <button class="room-hotspot" style="left:59%;top:58%;" onclick="openRoomHotspot('BASS','ケースに入ったベース\n普段は使わない。でも定期的にメンテして鳴らす。')">+</button>
-      <!-- hotspot 4 -->
-      <button class="room-hotspot" style="left:33%;top:63%;" onclick="openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
-      <!-- hotspot 5 -->
-      <button class="room-hotspot" style="left:79%;top:46%;" onclick="openRoomHotspot('BOOKSHELF','好きな作家が数人いる。\nじつはハードカバー派。')">+</button>
-      <!-- hotspot box -->
-      <button class="room-hotspot" style="left:47%;top:15%;" onclick="openBoxHotspot()">+</button>
-    </div>
+    <img id="room-face-img" src="room_face.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;border-radius:0 0 24px 24px;aspect-ratio:1122/1402;">
+
 
     <!-- Item found popup -->
     <div class="room-hs-popup" id="kouta-item-found-popup">
@@ -555,7 +535,7 @@
     <p class="eyebrow" style="margin-top:32px;">Snow flakes — ROOM</p>
 
     <p class="name-en">KOUTA</p>
-    <h1 style="cursor:pointer;" onclick="toggleRoomHero()">コウタの部屋</h1>
+    <h1 style="cursor:pointer;" onclick="openRoomLight()">コウタの部屋</h1>
     <p class="role">bass</p>
 
     <div class="divider"></div>
@@ -783,6 +763,7 @@
     }
     function closeRoomLight() {
       document.getElementById('room-light').classList.remove('open');
+      document.getElementById('kouta-hs-popup').classList.remove('show');
     }
 
     function openRoomHotspot(label, desc) {
@@ -815,7 +796,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
-      document.querySelector('h1').addEventListener('click', openRoomLight);
 
       var SAVE_KEY   = 'sf_pf_kouta_v2';
       var CANDY_TYPE = 'honey';
@@ -1016,39 +996,25 @@
     });
   </script>
 
+  <!-- Room Lightbox with hotspots -->
+  <div class="room-light" id="room-light" onclick="closeRoomLight()">
+    <div class="room-light-inner">
+      <img src="room_interior.webp" alt="コウタの部屋" onclick="event.stopPropagation()">
+      <button class="room-hotspot" style="left:22%;top:58%;" onclick="event.stopPropagation();openRoomHotspot('PC','楽曲データが入っている。\n軽い編集もする。')">+</button>
+      <button class="room-hotspot" style="left:22%;top:74%;" onclick="event.stopPropagation();openRoomHotspot('NOTE','歌詞を書き溜めたり、日記を書いたりしている。\n正直、誰にも見せたくない。')">+</button>
+      <button class="room-hotspot" style="left:68%;top:18%;" onclick="event.stopPropagation();openRoomHotspot('POSTER','なんとなく、ずっと貼ってある３ピースバンドのポスター。\n古いのか色褪せている。')">+</button>
+      <button class="room-hotspot" style="left:59%;top:58%;" onclick="event.stopPropagation();openRoomHotspot('BASS','ケースに入ったベース\n普段は使わない。でも定期的にメンテして鳴らす。')">+</button>
+      <button class="room-hotspot" style="left:33%;top:63%;" onclick="event.stopPropagation();openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
+      <button class="room-hotspot" style="left:79%;top:46%;" onclick="event.stopPropagation();openRoomHotspot('BOOKSHELF','好きな作家が数人いる。\nじつはハードカバー派。')">+</button>
+      <button class="room-hotspot" style="left:47%;top:15%;" onclick="event.stopPropagation();openBoxHotspot()">+</button>
+    </div>
+  </div>
+
   <footer style="text-align:center;padding:48px 24px;font-size:11px;letter-spacing:3px;color:#64748b;">
     <p>Snow flakes — ROOM / KOUTA</p>
     <p style="margin-top:10px;font-size:11px;color:#475569;letter-spacing:1px;">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
     <p style="font-size:11px;color:#475569;letter-spacing:1px;">All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
   </footer>
 
-  <script>
-  (function() {
-    var heroShowing = 'face';
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
-    });
-    window.addEventListener('pageshow', function() {
-      var img = document.getElementById('room-hero-img');
-      if (img) { img.src = 'room_face.webp'; img.style.aspectRatio = '1122/1402'; heroShowing = 'face'; }
-      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
-    });
-    window.toggleRoomHero = function() {
-      var img = document.getElementById('room-hero-img');
-      var spots = document.querySelectorAll('#kouta-scene .room-hotspot');
-      if (heroShowing === 'face') {
-        img.src = 'room_interior.webp';
-        img.style.aspectRatio = '1403/1121';
-        heroShowing = 'room';
-        spots.forEach(function(b) { b.style.display = 'flex'; });
-      } else {
-        img.src = 'room_face.webp';
-        img.style.aspectRatio = '1122/1402';
-        heroShowing = 'face';
-        spots.forEach(function(b) { b.style.display = 'none'; });
-      }
-    };
-  })();
-  </script>
 </body>
 </html>
