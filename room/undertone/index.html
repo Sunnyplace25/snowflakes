@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Under tone | Snow flakes</title>
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../../snow.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #080d18;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center;
+      padding: 80px 20px 60px;
+      overflow-x: hidden;
+    }
+    #snow { position:fixed; inset:0; pointer-events:none; z-index:0; }
+
+    .back-link {
+      position:fixed; top:22px; left:22px; z-index:50;
+      color:#94a3b8; font-size:11px; letter-spacing:3px;
+      text-decoration:none; font-family:'Cormorant Garamond',serif;
+      transition:color 0.3s;
+    }
+    .back-link:hover { color:#c4b5fd; }
+    .snow-bal {
+      position:fixed; top:22px; right:22px; z-index:50;
+      font-family:'Cormorant Garamond',serif; font-size:12px;
+      letter-spacing:3px; color:#94a3b8;
+    }
+
+    .main { width:100%; max-width:480px; z-index:1; position:relative; }
+
+    .page-eyebrow {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px; letter-spacing:6px; color:#334155;
+      text-align:center; margin-bottom:8px;
+    }
+    .page-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:32px; font-weight:300; letter-spacing:10px;
+      color:rgba(255,255,255,0.7); text-align:center; margin-bottom:6px;
+    }
+    .page-subtitle {
+      font-size:10px; letter-spacing:3px; color:#334155;
+      text-align:center; margin-bottom:40px;
+      font-family:'Cormorant Garamond',serif; font-style:italic;
+    }
+
+    /* ── LOCKED ── */
+    #locked-state {
+      text-align:center; padding:48px 24px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:20px;
+    }
+
+    /* ── EXPLORE ── */
+    #explore-state { display:none; }
+
+    .scene-wrap {
+      position:relative; width:100%;
+      border-radius:16px; overflow:hidden;
+      background:#050a14;
+      box-shadow:0 0 60px rgba(0,0,0,0.9), 0 0 120px rgba(196,181,253,0.03);
+    }
+    .scene-img {
+      width:100%; display:block;
+      transition:opacity 0.5s ease;
+    }
+    .scene-img.fade { opacity:0; }
+
+    .hotspot {
+      position:absolute;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:50%;
+      width:32px; height:32px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif;
+      font-size:16px; color:rgba(255,255,255,0.4);
+      cursor:pointer; transform:translate(-50%,-50%);
+      transition:background 0.25s, border-color 0.25s, color 0.25s;
+      backdrop-filter:blur(2px);
+    }
+    .hotspot:hover {
+      background:rgba(196,181,253,0.15);
+      border-color:rgba(196,181,253,0.4);
+      color:#c4b5fd;
+    }
+
+    .scene-counter {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:5px; color:#334155;
+      text-align:center; margin-top:10px; margin-bottom:16px;
+    }
+
+    .speech-bubble {
+      display:none;
+      background:rgba(10,18,34,0.96);
+      border:1px solid rgba(252,165,165,0.15);
+      border-radius:16px 16px 4px 16px;
+      padding:14px 18px;
+      margin-top:14px;
+      align-items:center; gap:12px;
+      backdrop-filter:blur(12px);
+      animation:fadeSlide 0.4s ease;
+    }
+    .speech-bubble.show { display:flex; }
+    @keyframes fadeSlide {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:none; }
+    }
+    .speech-char-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:4px; color:#fca5a5;
+      margin-bottom:6px;
+    }
+    .speech-text { font-size:13px; color:#e2e8f0; line-height:2; font-weight:300; }
+    .speech-char-img { width:56px; flex-shrink:0; }
+
+    .advance-btn {
+      display:block; width:100%; margin-top:20px;
+      background:rgba(196,181,253,0.07);
+      border:1px solid rgba(196,181,253,0.2);
+      border-radius:50px; padding:14px;
+      color:#a78bfa; font-family:'Cormorant Garamond',serif;
+      font-size:13px; letter-spacing:5px; cursor:pointer;
+      transition:all 0.25s;
+    }
+    .advance-btn:hover {
+      background:rgba(196,181,253,0.15);
+      border-color:rgba(196,181,253,0.4);
+      color:#c4b5fd;
+    }
+
+    /* Hotspot popup */
+    .hotspot-popup {
+      position:fixed; inset:0; z-index:200;
+      display:none; align-items:center; justify-content:center;
+      padding:20px;
+      background:rgba(8,13,24,0.88);
+      backdrop-filter:blur(10px);
+    }
+    .hotspot-popup.show { display:flex; }
+    .hotspot-card {
+      background:rgba(13,21,38,0.99);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px; padding:28px 24px;
+      max-width:320px; width:100%; text-align:center;
+      animation:cardIn 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform:scale(0.94) translateY(10px); }
+      to   { opacity:1; transform:none; }
+    }
+    .hotspot-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:6px; color:#475569;
+      margin-bottom:14px;
+    }
+    .hotspot-desc {
+      font-size:14px; color:#cbd5e1; line-height:2.3;
+      font-weight:300; margin-bottom:22px; white-space:pre-line;
+    }
+    .popup-close {
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:4px; color:#475569;
+      background:none; border:none; cursor:pointer; transition:color 0.25s;
+    }
+    .popup-close:hover { color:#94a3b8; }
+
+    /* ── ENTRANCE ── */
+    .entrance-overlay {
+      position:fixed; inset:0; z-index:300;
+      display:none; align-items:center; justify-content:center;
+      padding:20px;
+      background:rgba(8,13,24,0.92);
+      backdrop-filter:blur(14px);
+    }
+    .entrance-overlay.show { display:flex; }
+    .entrance-card {
+      background:rgba(13,21,38,0.99);
+      border:1px solid rgba(196,181,253,0.12);
+      border-radius:24px; padding:36px 28px;
+      max-width:320px; width:100%; text-align:center;
+      animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .entrance-eyebrow {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:7px; color:#334155;
+      margin-bottom:18px;
+    }
+    .entrance-msg {
+      font-size:15px; color:#cbd5e1; line-height:2.6;
+      margin-bottom:30px; font-weight:300;
+    }
+    .entrance-btns { display:flex; gap:10px; }
+    .entrance-no {
+      flex:1; padding:13px;
+      background:none; border:1px solid rgba(255,255,255,0.09);
+      border-radius:50px; color:#64748b;
+      font-family:'Cormorant Garamond',serif;
+      font-size:12px; letter-spacing:3px; cursor:pointer;
+      transition:color 0.25s, border-color 0.25s;
+    }
+    .entrance-no:hover { color:#94a3b8; border-color:rgba(255,255,255,0.18); }
+    .entrance-yes {
+      flex:1; padding:13px;
+      background:rgba(196,181,253,0.08);
+      border:1px solid rgba(196,181,253,0.28);
+      border-radius:50px; color:#c4b5fd;
+      font-family:'Cormorant Garamond',serif;
+      font-size:12px; letter-spacing:3px; cursor:pointer;
+      transition:background 0.25s;
+    }
+    .entrance-yes:hover { background:rgba(196,181,253,0.2); }
+
+    /* ── SHOP ── */
+    #shop-state { display:none; }
+
+    .shopkeeper-wrap {
+      width:100%; max-width:360px; margin:0 auto 28px;
+      position:relative;
+    }
+    .shopkeeper-img {
+      width:100%; border-radius:20px; display:block;
+      filter:brightness(0.82) contrast(1.08);
+      box-shadow:0 8px 40px rgba(0,0,0,0.8), 0 0 60px rgba(196,181,253,0.04);
+    }
+    .shopkeeper-name-tag {
+      position:absolute; bottom:14px; left:0; right:0;
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:6px; color:rgba(255,255,255,0.3);
+      text-align:center;
+    }
+
+    .shop-greeting {
+      text-align:center; font-size:13px; color:#64748b;
+      line-height:2.4; margin-bottom:28px; font-weight:300;
+      font-style:italic;
+    }
+
+    /* Stone counter */
+    .stone-counter {
+      display:flex; justify-content:center; gap:20px;
+      margin-bottom:10px;
+    }
+    .stone-slot {
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+    }
+    .stone-slot img {
+      width:44px; height:44px; object-fit:contain;
+      border-radius:8px; transition:filter 0.5s;
+    }
+    .stone-slot .stone-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:8px; letter-spacing:2px; color:#334155;
+    }
+    .stone-slot.obtained .stone-label { color:#94a3b8; }
+    .stone-slot img.grey { filter:grayscale(1) brightness(0.4); }
+
+    .stone-progress {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:4px; color:#334155;
+      text-align:center; margin-bottom:28px;
+    }
+
+    .prob-note {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:2px; color:#1e2d40;
+      text-align:center; margin-bottom:20px;
+    }
+
+    .fortune-btn {
+      display:block; width:100%; margin-bottom:14px;
+      background:rgba(196,181,253,0.08);
+      border:1px solid rgba(196,181,253,0.28);
+      border-radius:50px; padding:16px;
+      color:#c4b5fd; font-family:'Cormorant Garamond',serif;
+      font-size:15px; letter-spacing:6px; cursor:pointer;
+      transition:all 0.25s;
+    }
+    .fortune-btn:hover {
+      background:rgba(196,181,253,0.18);
+      border-color:rgba(196,181,253,0.5);
+      box-shadow:0 0 30px rgba(196,181,253,0.08);
+    }
+    .explore-btn {
+      display:block; width:100%;
+      background:none;
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:50px; padding:12px;
+      color:#334155; font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:4px; cursor:pointer;
+      transition:color 0.25s, border-color 0.25s;
+    }
+    .explore-btn:hover { color:#64748b; border-color:rgba(255,255,255,0.12); }
+
+    /* ── TAROT OVERLAY ── */
+    #tarot-overlay {
+      position:fixed; inset:0; z-index:400;
+      background:rgba(8,13,24,0.97);
+      backdrop-filter:blur(20px);
+      display:none; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:40px 20px;
+      opacity:0; pointer-events:none; transition:opacity 0.5s;
+    }
+    #tarot-overlay.ready { display:flex; }
+    #tarot-overlay.show  { opacity:1; pointer-events:auto; }
+
+    .tarot-eyebrow {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:8px; color:#1e2d40;
+      margin-bottom:32px;
+    }
+
+    /* Card flip */
+    .tarot-card-wrap { perspective:1000px; margin-bottom:28px; }
+    .tarot-card {
+      width:150px; height:240px;
+      position:relative; transform-style:preserve-3d;
+      transition:transform 0.9s cubic-bezier(0.25,0.8,0.25,1);
+      cursor:pointer;
+    }
+    .tarot-card.flipped { transform:rotateY(180deg); }
+
+    .tarot-face, .tarot-back {
+      position:absolute; inset:0;
+      border-radius:16px; backface-visibility:hidden;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+    }
+    .tarot-back {
+      background:#0d1526;
+      border:1px solid rgba(255,255,255,0.06);
+      overflow:hidden; padding:0;
+    }
+    .tarot-back img {
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+
+    .tarot-face {
+      background:rgba(13,21,38,0.99);
+      border:1px solid rgba(255,255,255,0.08);
+      transform:rotateY(180deg);
+      padding:20px 16px; text-align:center;
+    }
+    .tarot-verdict {
+      font-family:'Cormorant Garamond',serif;
+      font-size:36px; font-weight:300; letter-spacing:3px;
+      color:var(--vclr, #c4b5fd);
+      margin-bottom:14px; line-height:1;
+    }
+    .tarot-verdict-en {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:6px;
+      color:var(--vclr-dim, #6d5ea8);
+      margin-bottom:14px;
+    }
+    .tarot-sep {
+      width:20px; height:1px;
+      background:rgba(255,255,255,0.1);
+      margin:0 auto 14px;
+    }
+    .tarot-msg {
+      font-size:11px; color:#64748b;
+      line-height:1.95; letter-spacing:0.5px;
+      white-space:pre-line;
+    }
+    .tarot-rare-badge {
+      display:none;
+      font-family:'Cormorant Garamond',serif;
+      font-size:8px; letter-spacing:3px; color:#fde68a;
+      margin-top:12px;
+    }
+
+    .tarot-hint {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px; letter-spacing:4px; color:#1e2d40;
+      margin-bottom:24px; transition:opacity 0.5s;
+    }
+    .tarot-hint.hide { opacity:0; }
+
+    /* Stone reveal */
+    #tarot-stone-reveal {
+      display:none; width:100%; max-width:300px;
+      background:rgba(196,181,253,0.06);
+      border:1px solid rgba(196,181,253,0.2);
+      border-radius:16px; padding:20px 22px;
+      margin-bottom:20px; text-align:center;
+    }
+    .stone-reveal-animate {
+      animation:stoneGlow 2s ease infinite alternate;
+    }
+    @keyframes stoneGlow {
+      from { border-color:rgba(196,181,253,0.2); box-shadow:none; }
+      to   { border-color:rgba(196,181,253,0.55); box-shadow:0 0 24px rgba(196,181,253,0.12); }
+    }
+    #tarot-stone-img { width:60px; margin:0 auto 10px; display:block; }
+    #tarot-stone-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:15px; letter-spacing:3px; color:#c4b5fd;
+      margin-bottom:6px;
+    }
+    #tarot-stone-sub {
+      font-size:10px; color:#475569; letter-spacing:2px;
+    }
+
+    .tarot-close {
+      width:100%; max-width:300px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:50px; padding:13px;
+      color:#334155; font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:5px; cursor:pointer;
+      transition:color 0.25s, border-color 0.25s;
+    }
+    .tarot-close:hover { color:#64748b; border-color:rgba(255,255,255,0.15); }
+
+    @media (max-width:480px) {
+      body { padding:65px 16px 50px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<a class="back-link" href="../../sweets/">← SWEETs</a>
+<div class="snow-bal">❄ <span class="sf-snow-val">0</span></div>
+
+<div class="main">
+  <p class="page-eyebrow">Snow flakes</p>
+  <h1 class="page-title">Under tone</h1>
+  <p class="page-subtitle">── ひとつ多い音に、気づく場所 ──</p>
+
+  <!-- LOCKED -->
+  <div id="locked-state">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e2d40;margin-bottom:18px;">LOCKED</p>
+    <p style="font-size:13px;color:#334155;line-height:2.4;font-weight:300;">三人の物語をすべて知ると、<br>路地裏への扉が開く</p>
+  </div>
+
+  <!-- EXPLORE -->
+  <div id="explore-state">
+    <div class="scene-wrap" id="scene-wrap">
+      <img class="scene-img" id="scene-img" src="scene1.webp" alt="路地裏">
+    </div>
+    <p class="scene-counter" id="scene-counter">1 / 3</p>
+
+    <div class="speech-bubble" id="speech-bubble">
+      <img class="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="コウタ">
+      <div>
+        <p class="speech-char-name">KOUTA</p>
+        <p class="speech-text" id="speech-text"></p>
+      </div>
+    </div>
+
+    <button class="advance-btn" id="advance-btn" onclick="advanceScene()">進む →</button>
+  </div>
+
+  <!-- SHOP -->
+  <div id="shop-state">
+    <div class="shopkeeper-wrap">
+      <img class="shopkeeper-img" src="shopkeeper.webp" alt="Under toneの店主">
+      <p class="shopkeeper-name-tag">UNDER TONE</p>
+    </div>
+
+    <p class="shop-greeting" id="shop-greeting"></p>
+
+    <div class="stone-counter" id="stone-counter"></div>
+    <p class="stone-progress" id="stone-progress"></p>
+    <p class="prob-note">rare item ── 1 / 30</p>
+
+    <button class="fortune-btn" onclick="openTarot()">占いをお願いする</button>
+    <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
+  </div>
+</div>
+
+<!-- Hotspot popup -->
+<div class="hotspot-popup" id="hotspot-popup">
+  <div class="hotspot-card">
+    <p class="hotspot-label" id="hotspot-label">FOUND</p>
+    <p class="hotspot-desc" id="hotspot-desc"></p>
+    <button class="popup-close" onclick="closeHotspot()">閉じる</button>
+  </div>
+</div>
+
+<!-- Entrance modal -->
+<div class="entrance-overlay" id="entrance-overlay">
+  <div class="entrance-card">
+    <p class="entrance-eyebrow">UNDER TONE</p>
+    <p class="entrance-msg">古い扉の前に立っている<br>くすんだ金の取っ手に、手をかけた</p>
+    <div class="entrance-btns">
+      <button class="entrance-no" onclick="entranceNo()">いいえ</button>
+      <button class="entrance-yes" onclick="entranceYes()">入る</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shopkeeper chibi popup -->
+<div id="sk-popup" style="position:fixed;bottom:24px;right:20px;z-index:450;display:flex;align-items:flex-end;gap:10px;opacity:0;transform:translateY(28px);transition:opacity 0.5s ease,transform 0.5s ease;pointer-events:none;">
+  <div id="sk-bubble" style="background:rgba(10,18,34,0.97);border:1px solid rgba(196,181,253,0.15);border-radius:20px 20px 4px 20px;padding:16px 18px 14px;max-width:210px;backdrop-filter:blur(16px);position:relative;">
+    <p id="sk-line1" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:6px;"></p>
+    <p id="sk-line2" style="font-size:15px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-weight:300;line-height:2.1;"></p>
+    <button onclick="closeSKPopup()" style="position:absolute;top:10px;right:12px;font-size:13px;color:#334155;cursor:pointer;background:none;border:none;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">✕</button>
+  </div>
+  <img src="shopkeeper_chibi.webp" alt="" style="width:90px;display:block;flex-shrink:0;">
+</div>
+
+<!-- Tarot overlay -->
+<div id="tarot-overlay">
+  <p class="tarot-eyebrow">ONE ORACLE</p>
+
+  <div class="tarot-card-wrap">
+    <div class="tarot-card" id="tarot-card" onclick="flipCard()">
+      <div class="tarot-back">
+        <img src="tarot_back.webp" alt="tarot card back">
+      </div>
+      <div class="tarot-face">
+        <p class="tarot-verdict" id="tarot-verdict"></p>
+        <p class="tarot-verdict-en" id="tarot-verdict-en"></p>
+        <div class="tarot-sep"></div>
+        <p class="tarot-msg" id="tarot-msg"></p>
+        <p class="tarot-rare-badge" id="tarot-rare-badge">★ RARE</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="tarot-hint" id="tarot-hint">カードに触れて</p>
+
+  <div id="tarot-stone-reveal">
+    <img id="tarot-stone-img" src="" alt="">
+    <p id="tarot-stone-name"></p>
+    <p id="tarot-stone-sub">アイテムログに追加されました</p>
+  </div>
+
+  <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
+</div>
+
+<script>
+(function() {
+
+  /* ── isCoreFan ── */
+  function isCoreFan() {
+    var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
+    return ['hinata','kouta','hayate'].every(function(ch) {
+      try {
+        var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
+        return CORE.every(function(b) { return arr.indexOf(b) !== -1; });
+      } catch(e) { return false; }
+    });
+  }
+
+  /* ── Stone items ── */
+  var STONE_ITEMS = [
+    { key:'pendant_hinata', name:'青い音の欠片',   img:'../../item/pendant_hinata.webp',  char:'hinata' },
+    { key:'earring_hayate', name:'黄色い石のピアス', img:'../../item/earring_hayate.webp',  char:'hayate' },
+  ];
+
+  /* ── Tarot cards ── */
+  var TAROT = {
+    yes: [
+      { msg:'見えている。その音は重なっている' },
+      { msg:'流れは悪くない' },
+      { msg:'置いたままの気持ちは消えていない' },
+      { msg:'小さな追い風が吹いている' },
+      { msg:'進む音が聞こえている' },
+      { msg:'向かう先は同じ' },
+      { msg:'その選択は間違っていない' },
+      { msg:'まだ続いている音がある' },
+    ],
+    no: [
+      { msg:'……今は触れない方がいい' },
+      { msg:'少し距離を置いた音が聞こえている' },
+      { msg:'急ぐと音が濁る' },
+      { msg:'まだ扉は開いていない' },
+      { msg:'今は選ぶ時ではない' },
+      { msg:'止まる理由が見えている' },
+      { msg:'今日は沈黙が近くにある' },
+      { msg:'答えはまだ先にある' },
+    ],
+    hold: [
+      { msg:'答えが途中で止まっている' },
+      { msg:'まだ名前がついていない' },
+      { msg:'半分のまま続いている' },
+      { msg:'今は余白の時間' },
+      { msg:'その答えは少し先に置かれている' },
+      { msg:'輪郭がまだ薄く見えている' },
+      { msg:'音がまだ小さい' },
+      { msg:'続きは先にある' },
+    ],
+    rare: [
+      { msg:'……少し、珍しい音がしている' },
+      { msg:'いつもとは流れが違っている' },
+      { msg:'見えていないものが重なっている' },
+      { msg:'止まっていたものが動いている' },
+      { msg:'遠かった音が近づいている' },
+      { msg:'まだ来ていないはずの音が聞こえている' },
+      { msg:'消えたはずのものが残っている' },
+      { msg:'答えが、こちらを見ている' },
+    ],
+  };
+
+  /* category config */
+  var CAT_CFG = {
+    yes:  { label:'YES',  labelEn:'— YES —',  color:'#93c5fd', colorDim:'rgba(147,197,253,0.35)', rare:false },
+    no:   { label:'NO',   labelEn:'— NO —',   color:'#94a3b8', colorDim:'rgba(148,163,184,0.3)', rare:false },
+    hold: { label:'——',   labelEn:'— — —',    color:'#475569', colorDim:'rgba(71,85,105,0.3)', rare:false },
+    rare: { label:'★',    labelEn:'R A R E',   color:'#fde68a', colorDim:'rgba(253,230,138,0.3)', rare:true },
+  };
+
+  /* ── Hotspot data ── */
+  var HOTSPOTS = [
+    // Scene 1
+    [
+      { label:'POSTER',       desc:'雨に濡れた告知の紙。\n"Snow flakes Live"──\n日付は、もう読めない',
+        x:'18%', y:'28%', speech:'貼ってあるじゃないかよ、俺たちのやつ' },
+      { label:'STREET LAMP',  desc:'点いたり消えたりしている。\nリズムがある気がした',
+        x:'78%', y:'18%', speech:null },
+      { label:'SOMETHING',    desc:'石畳の隙間に、何か光るものがある。\n手が届かない',
+        x:'48%', y:'78%', speech:'拾えないのか。もったいない' },
+    ],
+    // Scene 2
+    [
+      { label:'WINDOW',       desc:'薄明かりが漏れている。\n誰かいるのかもしれない',
+        x:'22%', y:'32%', speech:null },
+      { label:'SIGN',         desc:'古い看板。文字が掠れていて、\nかろうじて「──tone」と読める',
+        x:'68%', y:'22%', speech:'Under tone… 聞いたことある気がする' },
+      { label:'PUDDLE',       desc:'水たまりに、街灯が映っている。\n揺れるたびに形が変わった',
+        x:'50%', y:'76%', speech:null },
+    ],
+    // Scene 3
+    [
+      { label:'SIGN',         desc:'Under tone\n── ひとつ多い音に、気づく場所 ──',
+        x:'50%', y:'16%', speech:'なんか、呼ばれてる感じがするんだけど俺だけ？' },
+      { label:'SHOW WINDOW',  desc:'古い宝石と見たことのない道具が\nガラスケースの中に並んでいる',
+        x:'24%', y:'54%', speech:null },
+      { label:'DOOR',         desc:'くすんだ金の取っ手。\nかすかに、音がした気がした',
+        x:'72%', y:'66%', speech:'入るのか？', entrance:true },
+    ],
+  ];
+
+  /* ── State ── */
+  var currentScene = 0;
+  var visited = localStorage.getItem('sf_undertone_visited') === 'true';
+  var cardFlipped = false;
+  var currentCat = null;
+
+  /* ── Init ── */
+  function init() {
+    SfSnow.updateUI();
+    var locked = document.getElementById('locked-state');
+    if (!isCoreFan()) {
+      locked.style.display = 'block';
+      return;
+    }
+    locked.style.display = 'none';
+    if (visited) {
+      goShop();
+    } else {
+      goExplore();
+    }
+  }
+
+  /* ── Explore ── */
+  window.goExplore = function() {
+    document.getElementById('explore-state').style.display = 'block';
+    document.getElementById('shop-state').style.display = 'none';
+    currentScene = 0;
+    renderScene();
+  };
+
+  function renderScene() {
+    var sceneFiles = ['scene1.webp','scene2.webp','scene3.webp'];
+    var img = document.getElementById('scene-img');
+    img.classList.add('fade');
+    setTimeout(function() {
+      img.src = sceneFiles[currentScene];
+      img.classList.remove('fade');
+    }, 260);
+    document.getElementById('scene-counter').textContent = (currentScene + 1) + ' / 3';
+    hideSpeech();
+    renderHotspots();
+    var btn = document.getElementById('advance-btn');
+    btn.textContent = currentScene === 2 ? '── 扉の前に立つ ──' : '進む →';
+  }
+
+  function renderHotspots() {
+    var wrap = document.getElementById('scene-wrap');
+    wrap.querySelectorAll('.hotspot').forEach(function(h) { h.parentNode.removeChild(h); });
+    (HOTSPOTS[currentScene] || []).forEach(function(spot) {
+      var btn = document.createElement('button');
+      btn.className = 'hotspot';
+      btn.style.left = spot.x;
+      btn.style.top  = spot.y;
+      btn.textContent = '+';
+      btn.addEventListener('click', function() { clickHotspot(spot); });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function clickHotspot(spot) {
+    document.getElementById('hotspot-label').textContent = spot.label;
+    document.getElementById('hotspot-desc').textContent  = spot.desc;
+    document.getElementById('hotspot-popup').classList.add('show');
+    if (spot.speech) showSpeech(spot.speech);
+    if (spot.entrance) {
+      setTimeout(function() {
+        document.getElementById('hotspot-popup').classList.remove('show');
+        document.getElementById('entrance-overlay').classList.add('show');
+      }, 1400);
+    }
+  }
+
+  window.closeHotspot = function() {
+    document.getElementById('hotspot-popup').classList.remove('show');
+  };
+
+  function showSpeech(text) {
+    document.getElementById('speech-text').textContent = text;
+    document.getElementById('speech-bubble').classList.add('show');
+  }
+  function hideSpeech() {
+    document.getElementById('speech-bubble').classList.remove('show');
+  }
+
+  window.advanceScene = function() {
+    hideSpeech();
+    if (currentScene < 2) {
+      currentScene++;
+      renderScene();
+    } else {
+      document.getElementById('entrance-overlay').classList.add('show');
+    }
+  };
+
+  /* ── Entrance ── */
+  window.entranceNo = function() {
+    document.getElementById('entrance-overlay').classList.remove('show');
+    window.location.href = '../../sweets/';
+  };
+  window.entranceYes = function() {
+    document.getElementById('entrance-overlay').classList.remove('show');
+    localStorage.setItem('sf_undertone_visited','true');
+    visited = true;
+    goShop();
+  };
+
+  /* ── Shop ── */
+  function goShop() {
+    document.getElementById('explore-state').style.display = 'none';
+    document.getElementById('shop-state').style.display   = 'block';
+    renderStones();
+
+    var visitCount = getDailyVisitCount();
+    var greetings = [
+      '──「初めてかい」<br>棚の奥から、静かな声がした',
+      '──「また来たね」<br>棚の奥から、静かな声がした',
+      '──「音が聞こえてきたよ」<br>店主が、ゆっくりと顔を上げた',
+      '──「今日は、どんな問いを持ってきた？」<br>古い宝石が、かすかに光った',
+      '──「座っていきな」<br>古いランプが、少し明るくなった気がした',
+    ];
+    var totalVisits = parseInt(localStorage.getItem('sf_undertone_count_total') || '0', 10) + 1;
+    localStorage.setItem('sf_undertone_count_total', totalVisits);
+    var g = totalVisits === 1 ? greetings[0] : greetings[1 + ((totalVisits - 2) % (greetings.length - 1))];
+    document.getElementById('shop-greeting').innerHTML = g;
+
+    // Chibi popup
+    setTimeout(function() {
+      showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
+    }, 700);
+  }
+
+  function renderStones() {
+    var wrap = document.getElementById('stone-counter');
+    wrap.innerHTML = '';
+    var obtained = 0;
+    STONE_ITEMS.forEach(function(item) {
+      var got = SfSnow.isUnlocked(item.key);
+      if (got) obtained++;
+      var div = document.createElement('div');
+      div.className = 'stone-slot' + (got ? ' obtained' : '');
+      div.innerHTML =
+        '<img src="' + item.img + '" alt="' + item.name + '" class="' + (got ? '' : 'grey') + '">' +
+        '<span class="stone-label">' + (got ? item.name : '？？？') + '</span>';
+      wrap.appendChild(div);
+    });
+    document.getElementById('stone-progress').textContent =
+      obtained + ' / ' + STONE_ITEMS.length + '  RARE ITEMS';
+  }
+
+  /* ── Tarot ── */
+  window.openTarot = function() {
+    closeSKPopup();
+    setTimeout(function() { showSKPopup('', 'そろそろ選ぶか'); }, 500);
+    cardFlipped = false;
+    currentCat = rollCategory();
+
+    // Pick message
+    var pool = TAROT[currentCat];
+    var entry = pool[Math.floor(Math.random() * pool.length)];
+    var cfg   = CAT_CFG[currentCat];
+
+    // Set card front
+    document.getElementById('tarot-verdict').textContent    = cfg.label;
+    document.getElementById('tarot-verdict-en').textContent = cfg.labelEn;
+    document.getElementById('tarot-verdict').style.setProperty('--vclr',     cfg.color);
+    document.getElementById('tarot-verdict-en').style.setProperty('--vclr-dim', cfg.colorDim);
+    // Apply color via parent style prop
+    var face = document.querySelector('.tarot-face');
+    face.style.setProperty('--vclr',     cfg.color);
+    face.style.setProperty('--vclr-dim', cfg.colorDim);
+    document.getElementById('tarot-verdict').style.color    = cfg.color;
+    document.getElementById('tarot-verdict-en').style.color = cfg.colorDim;
+    document.getElementById('tarot-msg').textContent = entry.msg;
+    var rareBadge = document.getElementById('tarot-rare-badge');
+    rareBadge.style.display = cfg.rare ? 'block' : 'none';
+
+    // Reset state
+    document.getElementById('tarot-card').classList.remove('flipped');
+    document.getElementById('tarot-hint').classList.remove('hide');
+    document.getElementById('tarot-stone-reveal').style.display = 'none';
+    document.getElementById('tarot-stone-reveal').classList.remove('stone-reveal-animate');
+    document.getElementById('tarot-close-btn').style.display = 'none';
+
+    // Show overlay
+    var ov = document.getElementById('tarot-overlay');
+    ov.classList.add('ready');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { ov.classList.add('show'); });
+    });
+  };
+
+  function rollCategory() {
+    var r = Math.random();
+    if (r < 0.05) return 'rare';  // 5%
+    r -= 0.05;
+    if (r < 0.345) return 'yes';  // 34.5%
+    r -= 0.345;
+    if (r < 0.345) return 'no';   // 34.5%
+    return 'hold';                 // 26%
+  }
+
+  window.flipCard = function() {
+    if (cardFlipped) return;
+    cardFlipped = true;
+    closeSKPopup();
+    document.getElementById('tarot-card').classList.add('flipped');
+    document.getElementById('tarot-hint').classList.add('hide');
+
+    setTimeout(function() {
+      checkStoneItem();
+      document.getElementById('tarot-close-btn').style.display = 'block';
+    }, 950);
+  };
+
+  function checkStoneItem() {
+    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
+    if (!available.length) return;
+
+    if (Math.random() < 1/30) {
+      var item = available[Math.floor(Math.random() * available.length)];
+      SfSnow.unlockItem(item.key);
+      renderStones();
+
+      document.getElementById('tarot-stone-img').src = item.img;
+      document.getElementById('tarot-stone-name').textContent = item.name;
+      var reveal = document.getElementById('tarot-stone-reveal');
+      reveal.style.display = 'block';
+      reveal.classList.add('stone-reveal-animate');
+    }
+  }
+
+  window.closeTarot = function() {
+    var ov = document.getElementById('tarot-overlay');
+    ov.classList.remove('show');
+    setTimeout(function() { ov.classList.remove('ready'); }, 500);
+  };
+
+  /* ── Chibi popup ── */
+  function getDailyVisitCount() {
+    var today = new Date().toLocaleDateString('ja-JP');
+    var raw  = localStorage.getItem('sf_undertone_visits');
+    var data = raw ? JSON.parse(raw) : { days:[], total:0 };
+    if (data.days.indexOf(today) === -1) {
+      data.days.push(today);
+      if (data.days.length > 365) data.days = data.days.slice(-365);
+      data.total = (data.total || 0) + 1;
+      localStorage.setItem('sf_undertone_visits', JSON.stringify(data));
+    }
+    return data.total;
+  }
+
+  function showSKPopup(line1, line2) {
+    var pop = document.getElementById('sk-popup');
+    document.getElementById('sk-line1').textContent = line1 || '';
+    document.getElementById('sk-line2').textContent = line2 || '';
+    pop.style.pointerEvents = 'auto';
+    pop.style.opacity = '0';
+    pop.style.transform = 'translateY(28px)';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        pop.style.opacity = '1';
+        pop.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  window.closeSKPopup = function() {
+    var pop = document.getElementById('sk-popup');
+    pop.style.opacity = '0';
+    pop.style.transform = 'translateY(28px)';
+    pop.style.pointerEvents = 'none';
+  };
+
+  /* ── Boot ── */
+  document.addEventListener('DOMContentLoaded', init);
+
+})();
+</script>
+
+<!-- Snow (purple tint) -->
+<script>
+  var c = document.getElementById('snow'), cx = c.getContext('2d');
+  function rsz(){ c.width=innerWidth; c.height=innerHeight; }
+  window.addEventListener('resize', rsz); rsz();
+  var fl = Array.from({length:35}, function(){return{
+    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    r:Math.random()*1.2+0.2, s:Math.random()*0.28+0.07, d:(Math.random()-.5)*0.13
+  };});
+  function draw(){
+    cx.clearRect(0,0,c.width,c.height);
+    cx.fillStyle='rgba(196,181,253,0.5)';
+    fl.forEach(function(f){
+      cx.beginPath(); cx.arc(f.x,f.y,f.r,0,Math.PI*2); cx.fill();
+      f.y+=f.s; f.x+=f.d;
+      if(f.y>c.height+4){f.y=-4; f.x=Math.random()*c.width;}
+      if(f.x<-4)f.x=c.width+4; if(f.x>c.width+4)f.x=-4;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>

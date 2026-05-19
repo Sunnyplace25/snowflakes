@@ -677,6 +677,22 @@
       </div>
     </div>
 
+    <!-- Under tone section -->
+    <div class="section" id="undertone-section" style="display:none;">
+      <div class="section-label">路地裏</div>
+      <p class="section-req" style="margin-bottom:16px;">三人の物語をすべて知ると、路地裏への扉が開く</p>
+      <div style="max-width:480px;margin:0 auto;">
+        <a href="../room/undertone/" style="display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:6px;">UNDER TONE</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">路地裏</p>
+            <p style="font-size:11px;color:#475569;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
+          </div>
+          <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Exchange section -->
     <div class="section">
       <div class="section-label">exchange</div>
@@ -4104,6 +4120,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof renderRooms === 'function') renderRooms();
       if (typeof renderItemRows === 'function') renderItemRows();
       if (typeof renderMusic === 'function') renderMusic();
+      // Under tone 路地裏 section
+      checkUndertoneSection();
+    }
+
+    function checkUndertoneSection() {
+      var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
+      var ok = ['hinata','kouta','hayate'].every(function(ch) {
+        try {
+          var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
+          return CORE.every(function(b) { return arr.indexOf(b) !== -1; });
+        } catch(e) { return false; }
+      });
+      var sec = document.getElementById('undertone-section');
+      if (sec) sec.style.display = ok ? '' : 'none';
     }
 
     // ページロード時：保存済みかつ同シーズンならコードを自動入力
