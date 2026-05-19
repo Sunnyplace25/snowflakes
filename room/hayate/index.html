@@ -508,7 +508,7 @@
 
   <div class="main">
     <div class="room-scene-wrap" id="hayate-scene">
-      <img id="room-hero-img" src="room_top.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
+      <img id="room-hero-img" src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
       <!-- hotspot 1 -->
       <button class="room-hotspot" style="left:25%;top:30%;display:none;" onclick="openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
       <!-- hotspot 2 -->
@@ -966,7 +966,7 @@
         heroShowing = 'room';
         spots.forEach(function(b) { b.style.display = 'flex'; });
       } else {
-        img.src = 'room_top.webp';
+        img.src = 'room_face.webp';
         heroShowing = 'face';
         spots.forEach(function(b) { b.style.display = 'none'; });
       }
