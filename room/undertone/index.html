@@ -626,7 +626,7 @@
     .prose-scroll::-webkit-scrollbar-track { background:transparent; }
     .prose-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
     .prose-text {
-      font-size:14px; color:#e2e8f0; line-height:2.0;
+      font-size:14px; color:#e2e8f0; line-height:1.75;
       font-weight:400; white-space:pre-line; text-align:left;
     }
     .prose-close {
@@ -814,17 +814,6 @@
   <img src="shopkeeper_chibi.webp" alt="" style="width:90px;display:block;flex-shrink:0;">
 </div>
 
-<!-- Back confirm modal -->
-<div class="entrance-overlay" id="back-confirm-overlay">
-  <div class="entrance-card">
-    <p class="entrance-eyebrow">UNDER TONE</p>
-    <p class="entrance-msg">本当に戻りますか？</p>
-    <div class="entrance-btns">
-      <button class="entrance-yes" onclick="backConfirmEnter()">やっぱり入る</button>
-      <button class="entrance-no" onclick="backConfirmLeave()">もう一度考える</button>
-    </div>
-  </div>
-</div>
 
 <!-- Dual choice overlay -->
 <div id="dual-overlay" style="position:fixed;inset:0;z-index:400;background:rgba(8,13,24,0.97);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;opacity:0;pointer-events:none;transition:opacity 0.5s;">
@@ -1145,6 +1134,7 @@
   var spreadDraws = [];
   var spreadFlipped = [false, false, false];
   var _proseCloseCallback = null;
+  var _seenProseScenes = new Set();
 
   /* ── Character data ── */
   var CHARS = {
@@ -1401,9 +1391,10 @@
     // Chapter accordion (閉じた状態で表示)
     renderChapterList();
 
-    // Show prose popup for this scene (初回のみ)
+    // Show prose popup for this scene (初回のみ・1回きり)
     var ch = ALL_CHAPTERS[currentScene];
-    if (ch && !visited) {
+    if (ch && !visited && !_seenProseScenes.has(currentScene)) {
+      _seenProseScenes.add(currentScene);
       document.getElementById('prose-label').textContent = ch.label;
       document.getElementById('prose-text').textContent  = ch.text;
       document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
@@ -1526,24 +1517,6 @@
   /* ── Entrance ── */
   window.entranceNo = function() {
     document.getElementById('entrance-overlay').classList.remove('show');
-    var noLines = [
-      { char:'hayate', speech:'今日はやめとくか' },
-      { char:'kouta',  speech:'今はいい' },
-      { char:'hinata', speech:'……聞こえない' },
-    ];
-    var pick = noLines[Math.floor(Math.random() * noLines.length)];
-    showSpeech(pick.char, pick.speech);
-    setTimeout(function() {
-      document.getElementById('back-confirm-overlay').classList.add('show');
-    }, 1600);
-  };
-  window.backConfirmEnter = function() {
-    document.getElementById('back-confirm-overlay').classList.remove('show');
-    hideSpeech();
-    document.getElementById('entrance-overlay').classList.add('show');
-  };
-  window.backConfirmLeave = function() {
-    document.getElementById('back-confirm-overlay').classList.remove('show');
     // UIに戻る（シーン3探索画面）
     document.getElementById('shop-state').style.display = 'none';
     document.getElementById('explore-state').style.display = 'block';
@@ -1586,7 +1559,7 @@
 
     var visitCount = getDailyVisitCount();
     var greetings = [
-      '──「初めてかい」<br>棚の奥から、静かな声がした',
+      '──「また来ると思ってた」<br>棚の奥から、静かな声がした',
       '──「また来たね」<br>棚の奥から、静かな声がした',
       '──「音が聞こえてきたよ」<br>店主が、ゆっくりと顔を上げた',
       '──「今日は、どんな問いを持ってきた？」<br>古い宝石が、かすかに光った',
