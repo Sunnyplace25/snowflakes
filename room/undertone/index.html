@@ -970,7 +970,14 @@
     </div>
   </div>
 
-  <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
+  <!-- Total advice -->
+  <div id="spread-total" style="display:none;text-align:center;padding:4px 8px 0;animation:fadeSlide 0.6s ease;">
+    <div style="width:32px;height:1px;background:rgba(196,181,253,0.18);margin:0 auto 14px;"></div>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#475569;margin-bottom:10px;">TOTAL ADVICE</p>
+    <p id="spread-total-msg" style="font-size:13px;color:#c4b5fd;line-height:2.0;font-weight:400;white-space:pre-line;"></p>
+  </div>
+
+  <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;margin-top:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
   <button class="tarot-close" id="spread-close-btn" style="display:none;" onclick="closeSpread()">閉じる</button>
 </div>
 
@@ -1559,7 +1566,7 @@
 
     var visitCount = getDailyVisitCount();
     var greetings = [
-      '──「また来ると思ってた」<br>棚の奥から、静かな声がした',
+      '──「見慣れない顔だな」<br>棚の奥から、静かな声がした',
       '──「また来たね」<br>棚の奥から、静かな声がした',
       '──「音が聞こえてきたよ」<br>店主が、ゆっくりと顔を上げた',
       '──「今日は、どんな問いを持ってきた？」<br>古い宝石が、かすかに光った',
@@ -1779,6 +1786,34 @@
     setTimeout(function() { ov.style.display = 'none'; }, 500);
   };
 
+  /* ── Spread total advice pool ── */
+  var SPREAD_TOTAL = {
+    3: [
+      '三枚とも、流れはこちら側にある。\n動くなら、今がいい。',
+      '過去・現在・未来、どこを切っても光が見える。\nそのまま進んで。',
+      '音は整っている。\n信じていい。',
+      '何かが始まる気配がする。\n邪魔しないで、そのまま待っていて。',
+    ],
+    2: [
+      '大きな流れはいい方向に向いている。\nひとつだけ、引っかかっているものを手放せたら軽くなる。',
+      '進んでいい。\nただ、急ぎすぎないで。',
+      '光はある。\nでも少し、立ち止まって確かめてから。',
+      '全部うまくいくとは限らない。\nそれでも前に進む価値はある。',
+    ],
+    1: [
+      '動くには、まだ少し早い。\nもう少しだけ、内側を整えてから。',
+      '今はひとつのことに集中する時期。\n全部を同時に解こうとしない。',
+      'ぼんやりしていていい。\n答えは、焦らないほうが来る。',
+      'ひとつ手放したら、残りが見えてくる。',
+    ],
+    0: [
+      '今は止まること自体が、正しい選択かもしれない。\n動かない時間にも意味がある。',
+      '全部手放したくなる時期。\nそれでも残るものが、本当に必要なもの。',
+      'まだ答えを出さなくていい。\nそこを通り抜けた先に、音がある。',
+      '暗い中でしか見えない星もある。',
+    ],
+  };
+
   /* ── Spread (深く見る) ── */
   window.openSpread = function() {
     spreadDraws = [];
@@ -1801,6 +1836,7 @@
       document.getElementById('spread-result-' + j).style.display = 'none';
     }
     document.getElementById('spread-close-btn').style.display = 'none';
+    document.getElementById('spread-total').style.display = 'none';
     document.getElementById('spread-hint').style.opacity = '1';
     closeSKPopup();
     setTimeout(function() { showSKPopup('', '深く見るか'); }, 500);
@@ -1823,6 +1859,12 @@
       if (spreadFlipped[0] && spreadFlipped[1] && spreadFlipped[2]) {
         document.getElementById('spread-close-btn').style.display = 'block';
         document.getElementById('spread-hint').style.opacity = '0';
+        // Total advice
+        var upCount = spreadDraws.filter(function(d) { return d.up; }).length;
+        var pool = SPREAD_TOTAL[upCount];
+        var advice = pool[Math.floor(Math.random() * pool.length)];
+        document.getElementById('spread-total-msg').textContent = advice;
+        document.getElementById('spread-total').style.display = 'block';
         checkStoneItem();
       }
     }, 950);
