@@ -117,6 +117,10 @@
         0 0 6px rgba(255,255,255,0.15);
       animation: ballBob ease-in-out infinite;
     }
+    @keyframes undertonePopIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
     @keyframes ballBob {
       0%,100% { transform: translateY(0); }
       50%      { transform: translateY(-6px); }
@@ -604,6 +608,16 @@
   <!-- Under tone 占い shortcut (shows after first visit) -->
   <div id="undertone-shortcut" style="display:none;margin-top:20px;">
     <a href="../room/undertone/" style="display:inline-flex;padding:12px 32px;border-radius:9999px;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.25);align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#c4b5fd;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(196,181,253,0.15)';this.style.borderColor='rgba(196,181,253,0.5)'" onmouseleave="this.style.background='rgba(196,181,253,0.07)';this.style.borderColor='rgba(196,181,253,0.25)'">Under tone 占い →</a>
+  </div>
+</div>
+
+<!-- Undertone visited popup -->
+<div id="undertone-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
+  <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopIn 0.4s cubic-bezier(0.22,1,0.36,1);">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:10px;">HINATA</p>
+    <p style="font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2;">……まだ音、鳴ってない</p>
+    <p style="margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#a78bfa;">2026 SUMMER 公開予定！</p>
+    <button onclick="document.getElementById('undertone-popup').style.display='none'" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#8b7fd4'" onmouseleave="this.style.color='#4c3f8a'">── 閉じる ──</button>
   </div>
 </div>
 
@@ -1127,10 +1141,12 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     renderGachaItems();
-    // Under tone shortcut
+    // Under tone shortcut & popup
     if (localStorage.getItem('sf_undertone_visited') === 'true') {
       var s = document.getElementById('undertone-shortcut');
       if (s) s.style.display = '';
+      var p = document.getElementById('undertone-popup');
+      if (p) { p.style.display = 'flex'; }
     }
   });
 
