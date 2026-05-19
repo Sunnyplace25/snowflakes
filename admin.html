@@ -200,6 +200,44 @@
     <p id="stone-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
 
+  <div class="card" style="border-color:rgba(196,181,253,0.2);margin-top:16px;">
+    <h2 style="color:#c4b5fd;">スタジオ 入室</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 16px;line-height:2;">三人の部屋への入室状態を操作します。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <p style="font-size:11px;letter-spacing:2px;color:#475569;">── 解放 ──</p>
+
+      <button onclick="unlockRoom('hinata')" style="padding:12px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:10px;color:#93c5fd;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.14)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">
+        HINATA の部屋 解放
+      </button>
+      <button onclick="unlockRoom('kouta')" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:10px;color:#fca5a5;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        KOUTA の部屋 解放
+      </button>
+      <button onclick="unlockRoom('hayate')" style="padding:12px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:10px;color:#fde68a;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(253,230,138,0.14)'" onmouseleave="this.style.background='rgba(253,230,138,0.06)'">
+        HAYATE の部屋 解放
+      </button>
+      <button onclick="unlockAllRooms()" style="padding:12px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.25);border-radius:10px;color:#c4b5fd;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(196,181,253,0.18)'" onmouseleave="this.style.background='rgba(196,181,253,0.08)'">
+        全員まとめて解放
+      </button>
+
+      <p style="font-size:11px;letter-spacing:2px;color:#475569;margin-top:6px;">── リセット ──</p>
+
+      <button onclick="resetRoom('hinata')" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
+        HINATA リセット
+      </button>
+      <button onclick="resetRoom('kouta')" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
+        KOUTA リセット
+      </button>
+      <button onclick="resetRoom('hayate')" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
+        HAYATE リセット
+      </button>
+      <button onclick="resetAllRooms()" style="padding:10px;background:rgba(252,165,165,0.08);border:1px solid rgba(252,165,165,0.25);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.18)'" onmouseleave="this.style.background='rgba(252,165,165,0.08)'">
+        全員まとめてリセット
+      </button>
+    </div>
+    <p id="room-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
   <div class="card" style="border-color:rgba(134,239,172,0.2);margin-top:16px;">
     <h2 style="color:#86efac;">SWEETs キャラクター リセット</h2>
     <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">ヒナタ・コウタ・ハヤテのプロフィール解放状態をリセットします。</p>
@@ -553,6 +591,39 @@ function resetRareByChar(ch) {
 function resetAllRareItems() {
   localStorage.removeItem('sf_unlocked');
   setStoneStatus('✓ 全員のレアアイテムをリセットしました。');
+}
+
+/* ── スタジオ 入室 ── */
+var ROOM_KEYS = { hinata: 'room_hinata', kouta: 'room_kouta', hayate: 'room_hayate' };
+function setRoomStatus(msg) {
+  document.getElementById('room-status').textContent = msg;
+}
+function unlockRoom(ch) {
+  var key = ROOM_KEYS[ch];
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  if (arr.indexOf(key) === -1) arr.push(key);
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setRoomStatus('✓ ' + ch.toUpperCase() + ' の部屋を解放しました。');
+}
+function unlockAllRooms() {
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  Object.values(ROOM_KEYS).forEach(function(k) { if (arr.indexOf(k) === -1) arr.push(k); });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setRoomStatus('✓ 全員の部屋を解放しました。');
+}
+function resetRoom(ch) {
+  var key = ROOM_KEYS[ch];
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  arr = arr.filter(function(k) { return k !== key; });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setRoomStatus('✓ ' + ch.toUpperCase() + ' の部屋をリセットしました。');
+}
+function resetAllRooms() {
+  var keys = Object.values(ROOM_KEYS);
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  arr = arr.filter(function(k) { return keys.indexOf(k) === -1; });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setRoomStatus('✓ 全員の部屋をリセットしました。');
 }
 
 /* ── SWEETs リセット ── */
