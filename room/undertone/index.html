@@ -1404,6 +1404,8 @@
       _proseCloseCallback = null;
       closeSKPopup();
       setTimeout(function() {
+        var sc = document.querySelector('.prose-scroll');
+        if (sc) sc.scrollTop = 0;
         document.getElementById('prose-popup').classList.add('show');
       }, 400);
     }
@@ -1554,6 +1556,8 @@
     document.getElementById('prose-close-btn').textContent = '── 入る ──';
     _proseCloseCallback = function() { goShop(); };
     setTimeout(function() {
+      var sc = document.querySelector('.prose-scroll');
+      if (sc) sc.scrollTop = 0;
       document.getElementById('prose-popup').classList.add('show');
     }, 200);
   };
