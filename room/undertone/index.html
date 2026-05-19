@@ -901,12 +901,6 @@
     <p class="res-special"></p>
   </div>
 
-  <div id="tarot-stone-reveal">
-    <img id="tarot-stone-img" src="" alt="">
-    <p id="tarot-stone-name"></p>
-    <p id="tarot-stone-sub">アイテムログに追加されました</p>
-  </div>
-
   <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
   <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
@@ -980,6 +974,17 @@
 
   <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;margin-top:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
   <button class="tarot-close" id="spread-close-btn" style="display:none;" onclick="closeSpread()">閉じる</button>
+</div>
+
+<!-- Rare item reveal popup (fixed, always on top) -->
+<div id="tarot-stone-reveal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.25);border-radius:20px;padding:32px 28px;max-width:280px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#475569;margin-bottom:16px;">RARE ITEM</p>
+    <img id="tarot-stone-img" src="" alt="" style="width:80px;margin:0 auto 14px;display:block;">
+    <p id="tarot-stone-name" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:3px;color:#c4b5fd;margin-bottom:8px;"></p>
+    <p id="tarot-stone-sub" style="font-size:10px;color:#475569;letter-spacing:2px;margin-bottom:24px;">アイテムログに追加されました</p>
+    <button onclick="document.getElementById('tarot-stone-reveal').style.display='none';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
 </div>
 
 <!-- Prose popup (scene text) -->
@@ -1683,7 +1688,6 @@
     var ynEl = document.getElementById('tarot-yesno');
     if (ynEl) { ynEl.style.display = 'none'; ynEl.className = 'res-yesno'; }
     document.getElementById('tarot-stone-reveal').style.display = 'none';
-    document.getElementById('tarot-stone-reveal').classList.remove('stone-reveal-animate');
     document.getElementById('tarot-close-btn').style.display = 'none';
 
     var ov = document.getElementById('tarot-overlay');
@@ -1717,8 +1721,7 @@
       document.getElementById('tarot-stone-img').src = item.img;
       document.getElementById('tarot-stone-name').textContent = item.name;
       var reveal = document.getElementById('tarot-stone-reveal');
-      reveal.style.display = 'block';
-      reveal.classList.add('stone-reveal-animate');
+      reveal.style.display = 'flex';
     }
   }
 
