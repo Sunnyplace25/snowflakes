@@ -651,6 +651,24 @@
         </div>
       </div>
 
+      <!-- 青い音の欠片 -->
+      <div class="il-item" id="il-pendant-item">
+        <div class="il-header" onclick="toggleIlItem('il-pendant-item')">
+          <span class="item-log-tag" id="il-pendant-tag"><img src="../../item/pendant_hinata.webp" alt="item">？？？</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-pendant-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">もっていません</span>
+          </div>
+          <div id="il-pendant-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/pendant_hinata.webp" alt="青い音の欠片" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">青い音の欠片</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">路地裏の小さな店で、ヒナタが足を止めた青い石のネックレス。<br>ヒナタ曰く「音が聞こえる」。誰にも聞こえないらしい。</p>
+          </div>
+        </div>
+      </div>
+
       <!-- ヒナタの折りたたみ傘 -->
       <div class="il-item" id="il-umbrella-item">
         <div class="il-header" onclick="toggleIlItem('il-umbrella-item')">
@@ -863,6 +881,17 @@
         if (usbOwned)  usbOwned.style.display  = '';
         var usbItem = document.getElementById('il-usb-item');
         if (usbItem) usbItem.classList.add('open');
+      }
+
+      // 青い音の欠片（解放条件：後に設定）
+      if (SfSnow.isUnlocked('pendant_hinata')) {
+        revealItemTag('il-pendant-tag', '../../item/pendant_hinata.webp', '青い音の欠片');
+        var pLocked = document.getElementById('il-pendant-locked');
+        var pOwned  = document.getElementById('il-pendant-owned');
+        if (pLocked) pLocked.style.display = 'none';
+        if (pOwned)  pOwned.style.display  = '';
+        var pendantItem = document.getElementById('il-pendant-item');
+        if (pendantItem) pendantItem.classList.add('open');
       }
 
       // ヒナタの折りたたみ傘
