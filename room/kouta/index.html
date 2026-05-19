@@ -439,7 +439,7 @@
     .room-scene-wrap img {
       width: 100%; display: block; object-fit: cover;
       border-radius: 0 0 24px 24px;
-      aspect-ratio: 1403/1121; /* room interior default */
+      aspect-ratio: 1122/1402; /* face image default */
     }
     .room-hotspot {
       position: absolute; width: 30px; height: 30px;
@@ -516,7 +516,7 @@
 
   <div class="main">
     <div class="room-scene-wrap" id="kouta-scene">
-      <img id="room-hero-img" src="room_interior.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
+      <img id="room-hero-img" src="room_face.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
       <!-- hotspot 1 -->
       <button class="room-hotspot" style="left:20%;top:35%;" onclick="openRoomHotspot('SCORE','楽譜が広げっぱなしになっている。\n付箋が何枚も貼ってある')">+</button>
       <!-- hotspot 2 -->
@@ -960,25 +960,28 @@
 
   <script>
   (function() {
-    var heroShowing = 'room';
+    var heroShowing = 'face';
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
+    });
     window.addEventListener('pageshow', function() {
       var img = document.getElementById('room-hero-img');
-      if (img) { img.src = 'room_interior.webp'; img.style.aspectRatio = '1403/1121'; heroShowing = 'room'; }
-      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'flex'; });
+      if (img) { img.src = 'room_face.webp'; img.style.aspectRatio = '1122/1402'; heroShowing = 'face'; }
+      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
     });
     window.toggleRoomHero = function() {
       var img = document.getElementById('room-hero-img');
       var spots = document.querySelectorAll('#kouta-scene .room-hotspot');
-      if (heroShowing === 'room') {
-        img.src = 'room_face.webp';
-        img.style.aspectRatio = '1122/1402';
-        heroShowing = 'face';
-        spots.forEach(function(b) { b.style.display = 'none'; });
-      } else {
+      if (heroShowing === 'face') {
         img.src = 'room_interior.webp';
         img.style.aspectRatio = '1403/1121';
         heroShowing = 'room';
         spots.forEach(function(b) { b.style.display = 'flex'; });
+      } else {
+        img.src = 'room_face.webp';
+        img.style.aspectRatio = '1122/1402';
+        heroShowing = 'face';
+        spots.forEach(function(b) { b.style.display = 'none'; });
       }
     };
   })();
