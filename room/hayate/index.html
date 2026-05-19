@@ -313,11 +313,22 @@
       border-radius: 12px;
     }
     .item-log-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 12px; letter-spacing: 3px;
-      color: #fde68a;
+      font-size: 10px; letter-spacing: 3px;
+      color: #475569;
       white-space: nowrap;
     }
+    .item-log-tag img {
+      width: 30px;
+      opacity: 0.3;
+      filter: grayscale(1);
+      transition: opacity 0.3s, filter 0.3s;
+    }
+    .item-log-tag.owned { color: #fde68a; }
+    .item-log-tag.owned img { opacity: 1; filter: none; }
     .item-log-desc {
       font-size: 13px; letter-spacing: 1px;
       color: #cbd5e1;
@@ -601,7 +612,7 @@
       <!-- 古いリストバンド -->
       <div class="il-item" id="il-1-item">
         <div class="il-header" onclick="toggleIlItem('il-1-item')">
-          <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
+          <span class="item-log-tag" id="il-1-tag"><img src="../../item/wristband_hayate.webp" alt="item">？？？</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -613,7 +624,7 @@
       <!-- STARSの紙製コースター -->
       <div class="il-item" id="il-2-item">
         <div class="il-header" onclick="toggleIlItem('il-2-item')">
-          <span class="item-log-tag" id="il-2-tag">［　　　　　　　　　　］</span>
+          <span class="item-log-tag" id="il-2-tag"><img src="../../item/coaster_hayate.webp" alt="item">？？？</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -806,35 +817,30 @@
       }
 
       // ITEM LOG
-      var tag1  = document.getElementById('il-1-tag');
-      var desc1 = document.getElementById('il-1-desc');
-      if (tag1) tag1.textContent = '［古いリストバンド］';
-      if (desc1) {
-        if (SfSnow.isUnlocked(ITEM_KEY)) {
-          desc1.className = 'item-log-desc';
-          desc1.textContent = '';
-          var el1 = document.getElementById('il-1-item');
-          if (el1) el1.classList.add('open');
-        } else {
-          desc1.className = 'item-log-desc locked';
-          desc1.textContent = '持っていません';
-        }
+      function revealItemTag(tagId, imgSrc, name) {
+        var tag = document.getElementById(tagId);
+        if (!tag) return;
+        tag.innerHTML = '<img src="' + imgSrc + '" alt="item">' + name;
+        tag.classList.add('owned');
       }
 
+      // 古いリストバンド
+      var desc1 = document.getElementById('il-1-desc');
+      if (SfSnow.isUnlocked(ITEM_KEY)) {
+        revealItemTag('il-1-tag', '../../item/wristband_hayate.webp', '古いリストバンド');
+        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+        var el1 = document.getElementById('il-1-item');
+        if (el1) el1.classList.add('open');
+      }
+
+      // STARSの紙製コースター
       var COASTER_KEY = 'coaster_hayate';
-      var tag2  = document.getElementById('il-2-tag');
       var desc2 = document.getElementById('il-2-desc');
-      if (tag2) tag2.textContent = '［STARSの紙製コースター］';
-      if (desc2) {
-        if (SfSnow.isUnlocked(COASTER_KEY)) {
-          desc2.className = 'item-log-desc';
-          desc2.textContent = 'ハヤテの行きつけのバー"STARS"の紙製コースター。地味に集めている。';
-          var el2 = document.getElementById('il-2-item');
-          if (el2) el2.classList.add('open');
-        } else {
-          desc2.className = 'item-log-desc locked';
-          desc2.textContent = '持っていません';
-        }
+      if (SfSnow.isUnlocked(COASTER_KEY)) {
+        revealItemTag('il-2-tag', '../../item/coaster_hayate.webp', 'STARSの紙製コースター');
+        if (desc2) { desc2.className = 'item-log-desc'; desc2.textContent = 'ハヤテの行きつけのバー"STARS"の紙製コースター。地味に集めている。'; }
+        var el2 = document.getElementById('il-2-item');
+        if (el2) el2.classList.add('open');
       }
     });
   </script>

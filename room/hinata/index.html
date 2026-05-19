@@ -304,7 +304,6 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 10px;
     }
     .item-log-row {
       display: flex;
@@ -316,10 +315,26 @@
       border-radius: 12px;
     }
     .item-log-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 12px; letter-spacing: 3px;
-      color: #93c5fd;
+      font-size: 10px; letter-spacing: 3px;
+      color: #475569;
       white-space: nowrap;
+    }
+    .item-log-tag img {
+      width: 30px;
+      opacity: 0.3;
+      filter: grayscale(1);
+      transition: opacity 0.3s, filter 0.3s;
+    }
+    .item-log-tag.owned {
+      color: #93c5fd;
+    }
+    .item-log-tag.owned img {
+      opacity: 1;
+      filter: none;
     }
     .item-log-desc {
       font-size: 13px; letter-spacing: 1px;
@@ -331,6 +346,7 @@
       font-size: 13px; letter-spacing: 3px;
       color: #94a3b8;
     }
+    .il-icon { font-size: 16px; }
 
     /* Dialog */
     .dialog-overlay {
@@ -607,7 +623,7 @@
       <!-- 古いカセットテープ -->
       <div class="il-item" id="il-1-item">
         <div class="il-header" onclick="toggleIlItem('il-1-item')">
-          <span class="item-log-tag" id="il-1-tag">［　　　　　　　　　　］</span>
+          <span class="item-log-tag" id="il-1-tag"><img src="../../item/cassette_hinata.webp" alt="item">？？？</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -620,7 +636,7 @@
       <!-- Little Snow USBメモリ -->
       <div class="il-item" id="il-usb-item">
         <div class="il-header" onclick="toggleIlItem('il-usb-item')">
-          <span class="item-log-tag">［Little Snow（Law）USBメモリ］</span>
+          <span class="item-log-tag" id="il-usb-tag"><img src="../../item/usb_hinata.webp" alt="item">？？？</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -638,7 +654,7 @@
       <!-- ヒナタの折りたたみ傘 -->
       <div class="il-item" id="il-umbrella-item">
         <div class="il-header" onclick="toggleIlItem('il-umbrella-item')">
-          <span class="item-log-tag">［ヒナタの折りたたみ傘］</span>
+          <span class="item-log-tag" id="il-umbrella-tag"><img src="../../item/umbrella_hinata.webp" alt="item">？？？</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -824,21 +840,23 @@
       }
 
       // ITEM LOG
-      var tag1  = document.getElementById('il-1-tag');
+      function revealItemTag(tagId, imgSrc, name) {
+        var tag = document.getElementById(tagId);
+        if (!tag) return;
+        tag.innerHTML = '<img src="' + imgSrc + '" alt="item">' + name;
+        tag.classList.add('owned');
+      }
+
+      // 古いカセットテープ
       var desc1 = document.getElementById('il-1-desc');
-      if (tag1) tag1.textContent = '［古いカセットテープ］';
-      if (desc1) {
-        if (SfSnow.isUnlocked('item_hinata_cassette')) {
-          desc1.className = 'item-log-desc';
-          desc1.textContent = '';
-        } else {
-          desc1.className = 'item-log-desc locked';
-          desc1.textContent = '持っていません';
-        }
+      if (SfSnow.isUnlocked('item_hinata_cassette')) {
+        revealItemTag('il-1-tag', '../../item/cassette_hinata.webp', '古いカセットテープ');
+        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
       }
 
       // Little Snow USBメモリ
       if (SfSnow.isUnlocked('usb_hinata')) {
+        revealItemTag('il-usb-tag', '../../item/usb_hinata.webp', 'Little Snow（Law）USBメモリ');
         var usbLocked = document.getElementById('il-usb-locked');
         var usbOwned  = document.getElementById('il-usb-owned');
         if (usbLocked) usbLocked.style.display = 'none';
@@ -849,6 +867,7 @@
 
       // ヒナタの折りたたみ傘
       if (SfSnow.isUnlocked('umbrella_hinata')) {
+        revealItemTag('il-umbrella-tag', '../../item/umbrella_hinata.webp', 'ヒナタの折りたたみ傘');
         var locked = document.getElementById('il-umbrella-locked');
         var owned  = document.getElementById('il-umbrella-owned');
         if (locked) locked.style.display = 'none';
