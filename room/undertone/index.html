@@ -490,10 +490,9 @@
       overflow:hidden;
     }
     .dual-back {
-      background:#0d1526;
-      border:1px solid rgba(255,255,255,0.08);
+      background:transparent;
     }
-    .dual-back img { width:100%; height:100%; object-fit:cover; display:block; }
+    .dual-back img { width:100%; height:100%; object-fit:contain; display:block; }
     .dual-face {
       background:transparent;
       border:1px solid rgba(196,181,253,0.3);
@@ -569,8 +568,8 @@
       position:absolute; inset:0;
       border-radius:12px; backface-visibility:hidden; overflow:hidden;
     }
-    .spread-card-back { background:#0d1526; border:1px solid rgba(255,255,255,0.08); }
-    .spread-card-back img { width:100%; height:100%; object-fit:cover; display:block; }
+    .spread-card-back { background:transparent; }
+    .spread-card-back img { width:100%; height:100%; object-fit:contain; display:block; }
     .spread-card-face {
       background:transparent;
       border:1px solid rgba(196,181,253,0.3);
@@ -812,7 +811,7 @@
     <p id="sk-line2" style="font-size:15px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-weight:300;line-height:2.1;"></p>
     <button onclick="closeSKPopup()" style="position:absolute;top:10px;right:12px;font-size:13px;color:#334155;cursor:pointer;background:none;border:none;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">✕</button>
   </div>
-  <img src="shopkeeper_chibi.webp" alt="" style="width:130px;display:block;flex-shrink:0;">
+  <img src="shopkeeper_chibi.webp" alt="" style="width:170px;display:block;flex-shrink:0;">
 </div>
 
 
@@ -1805,25 +1804,25 @@
   var SPREAD_TOTAL = {
     3: [
       '三枚とも、流れはこちら側にある。\n動くなら、今がいい。',
-      '過去・現在・未来、どこを切っても光が見える。\nそのまま進んで。',
+      '過去・現在・未来、どこを切っても光が見える。\nそのまま進め。',
       '音は整っている。\n信じていい。',
-      '何かが始まる気配がする。\n邪魔しないで、そのまま待っていて。',
+      '何かが始まる気配がする。\n邪魔するな、そのまま待て。',
       '今までの積み重ねが、ここで形になる。\n恐れなくていい。',
       '全部がちゃんと繋がっている。\n一本の線として見えてくる時期。',
       '追い風が吹いている。\n思いきって踏み出していい。',
-      '今この瞬間の選択が、未来を変える。\n後悔しない方を選んで。',
-      '止まっていた音が動き始める。\nそのまま手を離さないで。',
+      '今この瞬間の選択が、未来を変える。\n後悔しない方を選べ。',
+      '止まっていた音が動き始める。\nそのまま手を離すな。',
     ],
     2: [
       '大きな流れはいい方向に向いている。\nひとつだけ、引っかかっているものを手放せたら軽くなる。',
-      '進んでいい。\nただ、急ぎすぎないで。',
+      '進んでいい。\nただ、急ぎすぎるな。',
       '光はある。\nでも少し、立ち止まって確かめてから。',
       '全部うまくいくとは限らない。\nそれでも前に進む価値はある。',
       'ほとんど整っている。\nあとひとつだけ、正直になれたら。',
-      '方向は合っている。\nペースだけ、少し落としてみて。',
+      '方向は合っている。\nペースだけ、少し落とせ。',
       '迷いはあっていい。\n迷いながら進んでいる人の方が、深いところに辿り着く。',
       '動きながら考えていい時期。\n完璧を待たなくていい。',
-      '何かを犠牲にしながら進んでいる。\nそれがどこに向かっているか、たまに確かめて。',
+      '何かを犠牲にしながら進んでいる。\nそれがどこに向かっているか、たまに確かめろ。',
     ],
     1: [
       '動くには、まだ少し早い。\nもう少しだけ、内側を整えてから。',
@@ -1833,8 +1832,8 @@
       '抵抗を感じているなら、それは合図かもしれない。\n無理に押し進めなくていい。',
       '今は準備の時間。\n表に出るのは、もう少し後。',
       'うまくいかないのは、方向が違うからじゃない。\nタイミングの問題。',
-      '声に出す前に、もう一度だけ確かめて。\n言葉にしてからじゃ遅いことがある。',
-      '焦りを感じているなら、その焦り自体を観察してみて。\n何が怖いのかが見えてくる。',
+      '声に出す前に、もう一度だけ確かめろ。\n言葉にしてからじゃ遅いことがある。',
+      '焦りを感じているなら、その焦り自体を観察しろ。\n何が怖いのかが見えてくる。',
     ],
     0: [
       '今は止まること自体が、正しい選択かもしれない。\n動かない時間にも意味がある。',
@@ -1842,7 +1841,7 @@
       'まだ答えを出さなくていい。\nそこを通り抜けた先に、音がある。',
       '暗い中でしか見えない星もある。',
       'ここは底じゃない。\n次のステージへの助走をしている場所。',
-      '無理に光を探さなくていい。\n目が暗闇に慣れるのを待って。',
+      '無理に光を探さなくていい。\n目が暗闇に慣れるのを待て。',
       '今は自分の内側と向き合う時間。\n外に答えを求めなくていい。',
       '何もうまくいかないと感じるなら、何かが大きく変わる前触れかもしれない。',
       '全部を壊したくなる気持ちは、新しい何かが生まれる前の音。',
