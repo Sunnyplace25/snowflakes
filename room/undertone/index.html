@@ -1279,6 +1279,7 @@
   /* ── State ── */
   var currentScene = 0;
   var visited = localStorage.getItem('sf_undertone_visited') === 'true';
+  var maxScene = parseInt(localStorage.getItem('sf_undertone_max_scene') || '0', 10);
   var cardFlipped = false;
   var currentCat = null;
 
@@ -1320,6 +1321,11 @@
     var btn = document.getElementById('advance-btn');
     btn.textContent = currentScene === 2 ? '── 扉の前に立つ ──' : '進む →';
 
+    // Update maxScene progress
+    if (currentScene > maxScene) {
+      maxScene = currentScene;
+      localStorage.setItem('sf_undertone_max_scene', maxScene);
+    }
     // Chapter accordion
     renderChapterList();
     // Auto-expand current chapter
@@ -1342,12 +1348,14 @@
   function renderChapterList() {
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
+    // maxScene が進むたびに章が解放 (0→ch1, 1→ch2, 2→ch3, visited→ch4)
     ALL_CHAPTERS.forEach(function(ch, i) {
       document.getElementById('chapter-text-' + i).textContent = ch.text;
       var item = document.getElementById('chapter-item-' + i);
-      // Chapter 3 (店主) only visible after visiting shop
       if (i === 3) {
         item.style.display = visited ? '' : 'none';
+      } else {
+        item.style.display = i <= maxScene ? '' : 'none';
       }
     });
   }
