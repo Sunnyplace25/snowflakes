@@ -107,7 +107,12 @@
     }
     .hero-roles {
       font-size: clamp(12px, 1.8vw, 15px); color: var(--muted);
-      letter-spacing: 5px; margin-bottom: 32px;
+      letter-spacing: 5px; margin-bottom: 10px;
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    }
+    .hero-project {
+      font-size: clamp(11px, 1.6vw, 13px); color: rgba(203,213,225,0.5);
+      letter-spacing: 4px; margin-bottom: 32px;
       font-family: 'Cormorant Garamond', serif; font-weight: 300;
     }
     .hero-tagline {
@@ -367,7 +372,8 @@
   <div class="hero-snowflake">❄</div>
   <h1 class="hero-name">山吹ことり</h1>
   <p style="font-size:13px;letter-spacing:5px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-weight:300;margin-bottom:20px;">Yamabuki Kotori</p>
-  <p class="hero-roles" data-i18n="hero-roles">クロスメディアクリエイター　／　Story &amp; Music Project</p>
+  <p class="hero-roles" data-i18n="hero-roles">クロスメディアクリエイター</p>
+  <p class="hero-project" data-i18n="hero-project">Snow flakes｜Story &amp; Music Project</p>
   <p class="hero-tagline" data-i18n="hero-tagline">言葉にならない感情を、音に。</p>
 </section>
 
@@ -657,8 +663,12 @@
   var T = {
     'nav-app': { ja: 'アプリ', en: 'App' },
     'hero-roles': {
-      ja: 'クロスメディアクリエイター　／　Story &amp; Music Project',
-      en: 'Cross-Media Creator &nbsp;/&nbsp; Story &amp; Music Project'
+      ja: 'クロスメディアクリエイター',
+      en: 'Cross-Media Creator'
+    },
+    'hero-project': {
+      ja: 'Snow flakes｜Story &amp; Music Project',
+      en: 'Snow flakes｜Story &amp; Music Project'
     },
     'hero-tagline': {
       ja: '言葉にならない感情を、音に。',
