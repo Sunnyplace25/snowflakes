@@ -679,17 +679,22 @@
 
     <!-- Under tone section -->
     <div class="section" id="undertone-section" style="display:none;">
-      <div class="section-label">路地裏</div>
-      <p class="section-req" style="margin-bottom:16px;">三人の物語をすべて知ると、路地裏への扉が開く</p>
-      <div style="max-width:480px;margin:0 auto;">
-        <a href="../room/undertone/" style="display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
-          <div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:6px;">UNDER TONE</p>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">路地裏</p>
-            <p style="font-size:11px;color:#475569;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
-          </div>
-          <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
-        </a>
+      <!-- Teaser: non-fans -->
+      <div id="undertone-teaser" style="display:none;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#334155;text-align:center;padding:24px 0;">2026 Summer  ·  Coming soon</p>
+      </div>
+      <!-- Link: fans -->
+      <div id="undertone-link" style="display:none;">
+        <div style="max-width:480px;margin:0 auto;">
+          <a href="../room/undertone/" style="display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
+            <div>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:6px;">UNDER TONE</p>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">Under tone</p>
+              <p style="font-size:11px;color:#475569;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
+            </div>
+            <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -4133,7 +4138,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         } catch(e) { return false; }
       });
       var sec = document.getElementById('undertone-section');
-      if (sec) sec.style.display = ok ? '' : 'none';
+      if (!sec) return;
+      sec.style.display = '';
+      document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
+      document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
 
     // ページロード時：保存済みかつ同シーズンならコードを自動入力

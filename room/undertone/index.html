@@ -460,7 +460,7 @@
       margin-bottom:8px;
     }
     .result-panel .res-keyword {
-      font-size:11px; color:#64748b; letter-spacing:2px;
+      font-size:11px; color:#94a3b8; letter-spacing:2px;
       margin-bottom:12px;
     }
     .result-panel .res-msg {
@@ -468,7 +468,7 @@
       font-weight:400; margin-bottom:12px;
     }
     .result-panel .res-special {
-      font-size:12px; color:#64748b; letter-spacing:1px;
+      font-size:12px; color:#94a3b8; letter-spacing:1px;
       line-height:2.2; font-style:italic; white-space:pre-line;
       font-weight:400;
     }
@@ -509,6 +509,158 @@
     .dual-face .tf-position { font-size:20px; }
     .dual-face .tf-name     { font-size:11px; }
 
+    /* ── SHOP 3-CHOICE UI ── */
+    .shop-quote {
+      text-align:center; font-family:'Cormorant Garamond',serif;
+      font-size:15px; color:#94a3b8; line-height:2.2;
+      margin-bottom:24px; font-style:italic;
+    }
+    .shop-choose-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:6px; color:#475569;
+      text-align:center; margin-bottom:14px;
+    }
+    .choose-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+    .choose-item {
+      display:flex; align-items:center; gap:16px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px; padding:18px 20px;
+      cursor:pointer; transition:all 0.25s; text-align:left; width:100%;
+    }
+    .choose-item:hover { background:rgba(196,181,253,0.07); border-color:rgba(196,181,253,0.22); }
+    .choose-mark { font-family:'Cormorant Garamond',serif; font-size:18px; color:#475569; flex-shrink:0; line-height:1; }
+    .choose-text { flex:1; font-size:14px; color:#cbd5e1; font-family:'Noto Serif JP',serif; font-weight:400; }
+    .choose-sub  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:#334155; }
+    .choose-item--gold:hover { background:rgba(253,230,138,0.05); border-color:rgba(253,230,138,0.22); }
+    .choose-item--gold .choose-text { color:#fde68a; }
+    .choose-item--gold .choose-mark { color:#a16207; }
+
+    /* ── YES/NO VERDICT ── */
+    .res-yesno {
+      font-family:'Cormorant Garamond',serif;
+      font-size:52px; font-weight:300; letter-spacing:6px;
+      margin-bottom:10px; line-height:1; display:none;
+    }
+    .res-yesno.yes { color:#86efac; text-shadow:0 0 30px rgba(134,239,172,0.5); }
+    .res-yesno.no  { color:#7dd3fc; text-shadow:0 0 30px rgba(125,211,252,0.5); }
+
+    /* ── SPREAD OVERLAY ── */
+    #spread-overlay {
+      position:fixed; inset:0; z-index:400;
+      background:rgba(8,13,24,0.97); backdrop-filter:blur(20px);
+      display:none; flex-direction:column;
+      align-items:center; justify-content:flex-start;
+      padding:50px 16px 40px; overflow-y:auto;
+      opacity:0; pointer-events:none; transition:opacity 0.5s;
+    }
+    #spread-overlay.ready { display:flex; }
+    #spread-overlay.show  { opacity:1; pointer-events:auto; }
+    .spread-cards-row { display:flex; gap:8px; margin-bottom:20px; align-items:flex-start; width:100%; }
+    .spread-col { display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; }
+    .spread-card {
+      width:100%; max-width:110px; aspect-ratio:5/8;
+      position:relative; transform-style:preserve-3d;
+      transition:transform 0.9s cubic-bezier(0.25,0.8,0.25,1);
+      cursor:pointer;
+    }
+    .spread-card.flipped { transform:rotateY(180deg); pointer-events:none; }
+    .spread-card-face, .spread-card-back {
+      position:absolute; inset:0;
+      border-radius:12px; backface-visibility:hidden; overflow:hidden;
+    }
+    .spread-card-back { background:#0d1526; border:1px solid rgba(255,255,255,0.08); }
+    .spread-card-back img { width:100%; height:100%; object-fit:cover; display:block; }
+    .spread-card-face {
+      background:transparent;
+      border:1px solid rgba(196,181,253,0.3);
+      box-shadow:0 0 24px rgba(196,181,253,0.28);
+      backdrop-filter:blur(10px);
+      transform:rotateY(180deg);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:10px 8px; text-align:center;
+    }
+    .spread-card-face .tf-num      { font-size:9px; margin-bottom:5px; }
+    .spread-card-face .tf-position { font-size:14px; margin-bottom:5px; }
+    .spread-card-face .tf-name     { font-size:9px; letter-spacing:1px; }
+    .spread-pos-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:8px; letter-spacing:4px; color:#475569;
+    }
+    .spread-result { display:none; padding:6px 4px; text-align:center; animation:fadeSlide 0.5s ease; width:100%; }
+    .spread-result .res-keyword { font-size:9px; color:#94a3b8; letter-spacing:1px; margin-bottom:5px; line-height:1.6; }
+    .spread-result .res-msg { font-size:11px; color:#e2e8f0; line-height:1.9; font-weight:400; }
+
+    /* ── PROSE POPUP ── */
+    #prose-popup {
+      position:fixed; inset:0; z-index:250;
+      display:none; align-items:center; justify-content:center;
+      padding:20px; background:rgba(8,13,24,0.8);
+      backdrop-filter:blur(12px);
+    }
+    #prose-popup.show { display:flex; }
+    .prose-card {
+      background:rgba(13,21,38,0.99);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:20px; padding:28px 24px 24px;
+      max-width:340px; width:100%;
+      max-height:88vh; display:flex; flex-direction:column;
+      animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .prose-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:9px; letter-spacing:6px; color:#334155;
+      text-align:center; margin-bottom:20px; flex-shrink:0;
+    }
+    .prose-scroll {
+      flex:1; overflow-y:auto; margin-bottom:20px;
+      padding-right:6px;
+    }
+    .prose-scroll::-webkit-scrollbar { width:3px; }
+    .prose-scroll::-webkit-scrollbar-track { background:transparent; }
+    .prose-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
+    .prose-text {
+      font-size:14px; color:#e2e8f0; line-height:2.6;
+      font-weight:400; white-space:pre-line; text-align:left;
+    }
+    .prose-close {
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:4px; color:#475569;
+      background:none; border:none; cursor:pointer;
+      transition:color 0.25s; flex-shrink:0; text-align:center;
+      width:100%;
+    }
+    .prose-close:hover { color:#94a3b8; }
+
+    /* ── CHAPTER ACCORDION ── */
+    .chapter-list { margin-top:16px; }
+    .chapter-item { border-top:1px solid rgba(255,255,255,0.04); }
+    .chapter-item:last-of-type { border-bottom:1px solid rgba(255,255,255,0.04); }
+    .chapter-header {
+      width:100%; display:flex; align-items:center; gap:12px;
+      background:none; border:none; padding:14px 16px;
+      cursor:pointer; text-align:left; transition:background 0.2s;
+    }
+    .chapter-header:hover { background:rgba(255,255,255,0.02); }
+    .chapter-num {
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px; color:#334155; flex-shrink:0; width:14px;
+    }
+    .chapter-title {
+      flex:1; font-family:'Cormorant Garamond',serif;
+      font-size:12px; letter-spacing:4px; color:#64748b;
+      transition:color 0.2s;
+    }
+    .chapter-header:hover .chapter-title { color:#94a3b8; }
+    .chapter-arr { font-size:10px; color:#475569; transition:transform 0.25s; }
+    .chapter-arr.open { transform:rotate(180deg); }
+    .chapter-body { display:none; padding:0 16px 20px; }
+    .chapter-text {
+      font-size:13px; color:#94a3b8; line-height:2.4;
+      font-weight:400; white-space:pre-line;
+    }
+
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
     }
@@ -526,8 +678,8 @@
 
   <!-- LOCKED -->
   <div id="locked-state">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e2d40;margin-bottom:18px;">LOCKED</p>
-    <p style="font-size:13px;color:#334155;line-height:2.4;font-weight:300;">三人の物語をすべて知ると、<br>路地裏への扉が開く</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#334155;margin-bottom:18px;">LOCKED</p>
+    <p style="font-size:13px;color:#475569;line-height:2.4;font-weight:400;">三人のプロフィールをすべて解放すると、<br>路地裏への扉が開く</p>
   </div>
 
   <!-- EXPLORE -->
@@ -536,6 +688,42 @@
       <img class="scene-img" id="scene-img" src="scene1.webp" alt="路地裏">
     </div>
     <p class="scene-counter" id="scene-counter">1 / 3</p>
+
+    <!-- Chapter accordion (re-readable) -->
+    <div class="chapter-list" id="chapter-list" style="display:none;">
+      <div class="chapter-item" id="chapter-item-0">
+        <button class="chapter-header" onclick="toggleChapter(0)">
+          <span class="chapter-num">1</span>
+          <span class="chapter-title">分かれ道</span>
+          <span class="chapter-arr" id="chapter-arr-0">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-0"><p class="chapter-text" id="chapter-text-0"></p></div>
+      </div>
+      <div class="chapter-item" id="chapter-item-1">
+        <button class="chapter-header" onclick="toggleChapter(1)">
+          <span class="chapter-num">2</span>
+          <span class="chapter-title">路地裏</span>
+          <span class="chapter-arr" id="chapter-arr-1">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-1"><p class="chapter-text" id="chapter-text-1"></p></div>
+      </div>
+      <div class="chapter-item" id="chapter-item-2">
+        <button class="chapter-header" onclick="toggleChapter(2)">
+          <span class="chapter-num">3</span>
+          <span class="chapter-title">Under tone</span>
+          <span class="chapter-arr" id="chapter-arr-2">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-2"><p class="chapter-text" id="chapter-text-2"></p></div>
+      </div>
+      <div class="chapter-item" id="chapter-item-3" style="display:none;">
+        <button class="chapter-header" onclick="toggleChapter(3)">
+          <span class="chapter-num">4</span>
+          <span class="chapter-title">店主</span>
+          <span class="chapter-arr" id="chapter-arr-3">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-3"><p class="chapter-text" id="chapter-text-3"></p></div>
+      </div>
+    </div>
 
     <div class="speech-bubble" id="speech-bubble">
       <img class="speech-char-img" id="speech-char-img" src="../../plofile/chibi_kouta.webp" alt="">
@@ -559,10 +747,27 @@
 
     <div class="stone-counter" id="stone-counter"></div>
     <p class="stone-progress" id="stone-progress"></p>
-    <p class="prob-note">rare item ── 1 / 30</p>
 
-    <button class="fortune-btn" onclick="openTarot()">ワンオラクル</button>
-    <button class="fortune-btn" style="background:rgba(253,230,138,0.06);border-color:rgba(253,230,138,0.2);color:#fde68a;margin-bottom:20px;" onmouseenter="this.style.background='rgba(253,230,138,0.14)';this.style.borderColor='rgba(253,230,138,0.45)'" onmouseleave="this.style.background='rgba(253,230,138,0.06)';this.style.borderColor='rgba(253,230,138,0.2)'" onclick="openDual()">二者択一</button>
+    <p class="shop-quote">「今鳴っているものは、<br>　隠せない」</p>
+    <p class="shop-choose-label">今日の音を選ぶ</p>
+    <div class="choose-list">
+      <button class="choose-item" onclick="openTarot('oracle')">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">一枚引く</span>
+        <span class="choose-sub">ONE ORACLE</span>
+      </button>
+      <button class="choose-item" onclick="openTarot('yesno')">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">Yes / No を聞く</span>
+        <span class="choose-sub">YES · NO</span>
+      </button>
+      <button class="choose-item choose-item--gold" onclick="openSpread()">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">深く見る</span>
+        <span class="choose-sub">3 CARDS</span>
+      </button>
+    </div>
+    <p class="prob-note" style="margin-bottom:20px;">rare item ── 1 / 30</p>
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
   </div>
 </div>
@@ -667,7 +872,7 @@
 
 <!-- Tarot overlay -->
 <div id="tarot-overlay">
-  <p class="tarot-eyebrow">ONE ORACLE</p>
+  <p class="tarot-eyebrow" id="tarot-eyebrow-text">ONE ORACLE</p>
 
   <div class="tarot-card-wrap">
     <div class="tarot-card" id="tarot-card" onclick="flipCard()">
@@ -687,6 +892,7 @@
 
   <!-- Result panel -->
   <div id="tarot-result-panel" class="result-panel" style="display:none;">
+    <p class="res-yesno" id="tarot-yesno"></p>
     <p class="res-arch"></p>
     <p class="res-keyword"></p>
     <div style="width:20px;height:1px;background:rgba(255,255,255,0.1);margin:12px auto;"></div>
@@ -703,6 +909,80 @@
   <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
   <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
+</div>
+
+<!-- Spread overlay (深く見る) -->
+<div id="spread-overlay">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:8px;color:#1e2d40;margin-bottom:10px;">DEEP READING</p>
+  <p id="spread-hint" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;margin-bottom:28px;transition:opacity 0.4s;">カードに触れて、ひとつずつ開く</p>
+
+  <div class="spread-cards-row">
+    <!-- 過去 -->
+    <div class="spread-col">
+      <div class="spread-card" id="spread-card-0" onclick="pickSpreadCard(0)">
+        <div class="spread-card-face">
+          <p class="tf-num" id="spread-num-0"></p>
+          <p class="tf-position" id="spread-pos-0"></p>
+          <div class="tarot-sep"></div>
+          <p class="tf-name" id="spread-name-0"></p>
+        </div>
+        <div class="spread-card-back"><img src="tarot_back.webp" alt=""></div>
+      </div>
+      <p class="spread-pos-label">過去</p>
+      <div class="spread-result" id="spread-result-0">
+        <p class="res-keyword" id="spread-key-0"></p>
+        <p class="res-msg" id="spread-msg-0"></p>
+      </div>
+    </div>
+    <!-- 現在 -->
+    <div class="spread-col">
+      <div class="spread-card" id="spread-card-1" onclick="pickSpreadCard(1)">
+        <div class="spread-card-face">
+          <p class="tf-num" id="spread-num-1"></p>
+          <p class="tf-position" id="spread-pos-1"></p>
+          <div class="tarot-sep"></div>
+          <p class="tf-name" id="spread-name-1"></p>
+        </div>
+        <div class="spread-card-back"><img src="tarot_back.webp" alt=""></div>
+      </div>
+      <p class="spread-pos-label">現在</p>
+      <div class="spread-result" id="spread-result-1">
+        <p class="res-keyword" id="spread-key-1"></p>
+        <p class="res-msg" id="spread-msg-1"></p>
+      </div>
+    </div>
+    <!-- 未来 -->
+    <div class="spread-col">
+      <div class="spread-card" id="spread-card-2" onclick="pickSpreadCard(2)">
+        <div class="spread-card-face">
+          <p class="tf-num" id="spread-num-2"></p>
+          <p class="tf-position" id="spread-pos-2"></p>
+          <div class="tarot-sep"></div>
+          <p class="tf-name" id="spread-name-2"></p>
+        </div>
+        <div class="spread-card-back"><img src="tarot_back2.webp" alt=""></div>
+      </div>
+      <p class="spread-pos-label">未来</p>
+      <div class="spread-result" id="spread-result-2">
+        <p class="res-keyword" id="spread-key-2"></p>
+        <p class="res-msg" id="spread-msg-2"></p>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#1a2535;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
+  <button class="tarot-close" id="spread-close-btn" style="display:none;" onclick="closeSpread()">閉じる</button>
+</div>
+
+<!-- Prose popup (scene text) -->
+<div id="prose-popup">
+  <div class="prose-card">
+    <p class="prose-label" id="prose-label"></p>
+    <div class="prose-scroll">
+      <p class="prose-text" id="prose-text"></p>
+    </div>
+    <button class="prose-close" id="prose-close-btn" onclick="closeProse()">── 歩き出す ──</button>
+  </div>
 </div>
 
 <script>
@@ -823,6 +1103,36 @@
     var up = Math.random() < 0.5;
     return { card: c, up: up, data: up ? c.up : c.rev, pos: up ? '正位置' : '逆位置' };
   }
+
+  /* ── Chapter texts (prose) ── */
+  var ALL_CHAPTERS = [
+    {
+      label: '1.  分かれ道',
+      text:
+'ライブ終わり。\n\n　夜の空気が少しだけ冷たい。\n\n　コンビニの袋を片手に、\n　三人で駅へ向かって歩いていた。\n\n「腹減った」\n\n　ハヤテが言う。\n\n「さっき食っただろ」\n\n「ラーメンは別腹」\n\n「それ使い方違うだろ」\n\n　コウタが呆れた顔をする。\n\n　ヒナタは少し後ろを歩きながら、\n　何も言わない。\n\n　ただ、\n　ふと足を止めた。\n\n「……ん」\n\n「どうした？」\n\n　ヒナタは、\n　道路脇の細い道を見ていた。\n\n　路地裏。\n\n　前にも通った場所。\n\n　古いビルと古い壁に挟まれた、\n　少し暗い道。\n\n「……ここ」\n\n　コウタが少し眉を上げる。\n\n「あ」\n\n　ハヤテも思い出した顔をした。\n\n　前に来た時。\n\n　あの店があった場所。\n\n　地図にもなくて、\n　帰る頃には消えていた店。\n\n　少しだけ静かになる。\n\n「……行く？」\n\n　ハヤテが笑う。\n\n　誰も返事をしないまま、\n　三人は路地裏を見た。'
+    },
+    {
+      label: '2.  路地裏',
+      text:
+'路地に入る。\n\n　少し進んだだけなのに、\n　外の音が遠くなった気がした。\n\n　車の音も、\n　人の話し声も、\n　少しだけ薄くなる。\n\n「……こんな長かったっけ」\n\n　ハヤテが辺りを見回す。\n\n「いや」\n\n　コウタが短く返す。\n\n　前に来た時も、\n　同じことを思った気がした。\n\n　古い壁。\n\n　並んだ室外機。\n\n　ひび割れたアスファルト。\n\n　何も変わっていないのに、\n　少しだけ違う。\n\n　その時。\n\n　奥の方に、\n　白い灯りが見えた。\n\n　ヒナタが少しだけ目を細める。\n\n「……あった」'
+    },
+    {
+      label: '3.  Under tone',
+      text:
+'店の前に立つ。\n\n　前と変わらない。\n\n　小さな白い灯り。\n\n　看板のない入口。\n\n　少し曇ったガラス越しに、\n　棚だけがぼんやり見えている。\n\n　でも、\n　前と同じはずなのに。\n\n「……なんか増えてない？」\n\n　ハヤテがガラスに顔を近づける。\n\n「増えてる」\n\n　コウタが即答した。\n\n　前はなかった棚。\n\n　前はなかった小さな箱。\n\n　奥には、\n　見覚えのないものも並んでいる。\n\n　ヒナタは黙ったまま、\n　入口の横を見ていた。\n\n「……前なかった」\n\n「なにが？」\n\n　指先の先。\n\n　小さな木のプレート。\n\n　手書きで文字が書かれている。\n\n『置いていった音を返しています』\n\n　少しだけ静かになる。\n\n　ハヤテが笑った。\n\n「……入る？」'
+    },
+    {
+      label: '4.  店主',
+      text:
+'店主は店の奥に静かに座っていた。\n\n　コウタは少し眉をひそめる。\n\n　違和感。\n\n　前に来た時は、\n　もっと年上に見えた。\n\n　でも今日は、\n　同じくらい。\n\n　……いや、\n　もっと下かもしれない。\n\n　ランプに照らされた白い髪が、\n　薄暗い店内でぼんやり光っている。\n\n「なあ、やっぱり……」\n\n　コウタが言いかける。\n\n「……鳴ってる」\n\n　ヒナタだった。\n\n「また？」\n\n　ハヤテが笑う。\n\n　いつもの調子。\n\n　でも、\n　ヒナタはもう歩き出していた。\n\n　迷わない。\n\n　ハヤテは小さく息を吐いて、\n　諦めたように後ろをついていく。\n\n　コウタだけが、\n　その場に残った。\n\n　足が進まない。\n\n　その時。\n\n『迷っているな』\n\n　知らない声。\n\n『そろそろ選ぶか』\n\n　また別の声。\n\n『これで、よかったの？』\n\n　老人。\n\n　女の人。\n\n　若い男。\n\n　誰の声なのか分からない。\n\n　頭の中で、\n　順番もなく重なっていく。\n\n　違和感だけが先に立つ。\n\n　ふと顔を上げる。\n\n　店主と目が合った。\n\n　店主は静かに笑った。\n\n「……また、来ると思ってた」\n\n　コウタは少しだけ眉をひそめる。\n\n「……俺？」\n\n　店主は答えない。\n\n　代わりに、\n　カウンターの横へ手を伸ばした。\n\n　カサ、と小さな音。\n\n　古びた箱が置かれる。\n\n　白い縁。\n\n　少し擦れた角。\n\n　見たことのないカード。\n\n「選べ」\n\n「は？」\n\n　ハヤテが笑う。\n\n「急だな」\n\n　ヒナタは何も言わない。\n\n　ただ、\n　カードを見ていた。\n\n　店主が静かに言う。\n\n「今鳴っているものは、\n　隠せない」\n\n　ランプの灯りが、\n　カードの端を少しだけ照らした。\n\n　───────────────────'
+    }
+  ];
+
+  /* ── State vars ── */
+  var tarotMode = 'oracle';
+  var spreadDraws = [];
+  var spreadFlipped = [false, false, false];
+  var _proseCloseCallback = null;
 
   /* ── Character data ── */
   var CHARS = {
@@ -1008,7 +1318,64 @@
     renderHotspots();
     var btn = document.getElementById('advance-btn');
     btn.textContent = currentScene === 2 ? '── 扉の前に立つ ──' : '進む →';
+
+    // Chapter accordion
+    renderChapterList();
+    // Auto-expand current chapter
+    openChapter(currentScene);
+
+    // Show prose popup for this scene
+    var ch = ALL_CHAPTERS[currentScene];
+    if (ch) {
+      document.getElementById('prose-label').textContent = ch.label;
+      document.getElementById('prose-text').textContent  = ch.text;
+      document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
+      _proseCloseCallback = null;
+      closeSKPopup();
+      setTimeout(function() {
+        document.getElementById('prose-popup').classList.add('show');
+      }, 400);
+    }
   }
+
+  function renderChapterList() {
+    var cl = document.getElementById('chapter-list');
+    cl.style.display = 'block';
+    ALL_CHAPTERS.forEach(function(ch, i) {
+      document.getElementById('chapter-text-' + i).textContent = ch.text;
+      var item = document.getElementById('chapter-item-' + i);
+      // Chapter 3 (店主) only visible after visiting shop
+      if (i === 3) {
+        item.style.display = visited ? '' : 'none';
+      }
+    });
+  }
+
+  function openChapter(idx) {
+    // Close all
+    for (var i = 0; i < 4; i++) {
+      document.getElementById('chapter-body-' + i).style.display = 'none';
+      var arr = document.getElementById('chapter-arr-' + i);
+      if (arr) arr.classList.remove('open');
+    }
+    // Open target
+    var body = document.getElementById('chapter-body-' + idx);
+    var arrEl = document.getElementById('chapter-arr-' + idx);
+    if (body) body.style.display = 'block';
+    if (arrEl) arrEl.classList.add('open');
+  }
+
+  window.toggleChapter = function(idx) {
+    var body = document.getElementById('chapter-body-' + idx);
+    var arrEl = document.getElementById('chapter-arr-' + idx);
+    var isOpen = body.style.display !== 'none' && body.style.display !== '';
+    if (isOpen) {
+      body.style.display = 'none';
+      if (arrEl) arrEl.classList.remove('open');
+    } else {
+      openChapter(idx);
+    }
+  };
 
   function renderHotspots() {
     var wrap = document.getElementById('scene-wrap');
@@ -1095,7 +1462,25 @@
     document.getElementById('entrance-overlay').classList.remove('show');
     localStorage.setItem('sf_undertone_visited','true');
     visited = true;
-    goShop();
+    // Show chapter 4 (店主) prose popup before entering shop
+    var ch = ALL_CHAPTERS[3];
+    document.getElementById('prose-label').textContent = ch.label;
+    document.getElementById('prose-text').textContent  = ch.text;
+    document.getElementById('prose-close-btn').textContent = '── 入る ──';
+    _proseCloseCallback = function() { goShop(); };
+    setTimeout(function() {
+      document.getElementById('prose-popup').classList.add('show');
+    }, 200);
+  };
+
+  window.closeProse = function() {
+    document.getElementById('prose-popup').classList.remove('show');
+    document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
+    if (_proseCloseCallback) {
+      var cb = _proseCloseCallback;
+      _proseCloseCallback = null;
+      cb();
+    }
   };
 
   /* ── Shop ── */
@@ -1152,41 +1537,74 @@
     nameEl.textContent = draw.card.name;
   }
 
-  function showResultPanel(panelId, draw) {
+  function showResultPanel(panelId, draw, mode) {
     var p = document.getElementById(panelId);
-    p.querySelector('.res-arch').textContent    = draw.card.arch + '  |  ' + draw.card.archJP;
-    p.querySelector('.res-keyword').textContent = draw.data.key;
-    p.querySelector('.res-msg').textContent     = draw.data.msg;
-    var sp = p.querySelector('.res-special');
-    if (draw.card.note) {
-      sp.textContent     = draw.card.note;
-      sp.style.display   = 'block';
-    } else {
-      sp.style.display   = 'none';
+    var archEl    = p.querySelector('.res-arch');
+    var keyEl     = p.querySelector('.res-keyword');
+    var msgEl     = p.querySelector('.res-msg');
+    var spEl      = p.querySelector('.res-special');
+    var ynEl      = p.querySelector('.res-yesno');
+
+    if (archEl) archEl.textContent = draw.card.arch + '  |  ' + draw.card.archJP;
+    if (keyEl)  keyEl.textContent  = draw.data.key;
+    if (msgEl)  msgEl.textContent  = draw.data.msg;
+    if (spEl) {
+      if (draw.card.note) {
+        spEl.textContent   = draw.card.note;
+        spEl.style.display = 'block';
+      } else {
+        spEl.style.display = 'none';
+      }
+    }
+    // YES/NO verdict
+    if (ynEl) {
+      if (mode === 'yesno') {
+        var isYes = draw.up;
+        ynEl.textContent   = isYes ? 'YES' : 'NO';
+        ynEl.className     = 'res-yesno ' + (isYes ? 'yes' : 'no');
+        ynEl.style.display = 'block';
+      } else {
+        ynEl.style.display = 'none';
+      }
     }
     p.style.display = 'block';
-    // Special effects
     if (draw.card.special === 'snow') triggerSnowBurst();
     if (draw.card.special === 'tape') triggerTapeNoise();
   }
 
-  window.openTarot = function() {
+  window.openTarot = function(mode) {
+    tarotMode = mode || 'oracle';
     closeSKPopup();
-    setTimeout(function() { showSKPopup('', 'そろそろ選ぶか'); }, 500);
+    var skText = tarotMode === 'yesno' ? '聞いてみるか' : 'そろそろ選ぶか';
+    setTimeout(function() { showSKPopup('', skText); }, 500);
     cardFlipped = false;
     pendingDraw = drawCard();
 
+    // Title
+    var eyebrow = tarotMode === 'yesno' ? 'YES  ·  NO' : 'ONE ORACLE';
+    document.getElementById('tarot-eyebrow-text').textContent = eyebrow;
+
+    // Card face
     applyCardFace(
       document.getElementById('tarot-card-num'),
       document.getElementById('tarot-position'),
       document.getElementById('tarot-card-name-sm'),
       pendingDraw
     );
+    // YES/NO: override position text on card
+    if (tarotMode === 'yesno') {
+      var posEl = document.getElementById('tarot-position');
+      posEl.textContent = pendingDraw.up ? 'YES' : 'NO';
+      posEl.style.color = pendingDraw.up ? '#86efac' : '#7dd3fc';
+    }
 
     // Reset
     document.getElementById('tarot-card').classList.remove('flipped');
     document.getElementById('tarot-hint').classList.remove('hide');
-    document.getElementById('tarot-result-panel').style.display = 'none';
+    var rp = document.getElementById('tarot-result-panel');
+    rp.style.display = 'none';
+    var ynEl = document.getElementById('tarot-yesno');
+    if (ynEl) { ynEl.style.display = 'none'; ynEl.className = 'res-yesno'; }
     document.getElementById('tarot-stone-reveal').style.display = 'none';
     document.getElementById('tarot-stone-reveal').classList.remove('stone-reveal-animate');
     document.getElementById('tarot-close-btn').style.display = 'none';
@@ -1206,7 +1624,7 @@
     document.getElementById('tarot-hint').classList.add('hide');
 
     setTimeout(function() {
-      showResultPanel('tarot-result-panel', pendingDraw);
+      showResultPanel('tarot-result-panel', pendingDraw, tarotMode);
       checkStoneItem();
       document.getElementById('tarot-close-btn').style.display = 'block';
     }, 950);
@@ -1293,6 +1711,61 @@
     setTimeout(function() { ov.style.display = 'none'; }, 500);
   };
 
+  /* ── Spread (深く見る) ── */
+  window.openSpread = function() {
+    spreadDraws = [];
+    spreadFlipped = [false, false, false];
+    var usedNums = [];
+    for (var i = 0; i < 3; i++) {
+      var d; var tries = 0;
+      do { d = drawCard(); tries++; } while (usedNums.indexOf(d.card.num) !== -1 && tries < 80);
+      usedNums.push(d.card.num);
+      spreadDraws.push(d);
+    }
+    for (var j = 0; j < 3; j++) {
+      var draw = spreadDraws[j];
+      var posColor = draw.up ? '#fde68a' : '#7dd3fc';
+      document.getElementById('spread-num-' + j).textContent    = draw.card.num;
+      document.getElementById('spread-pos-' + j).textContent    = draw.pos;
+      document.getElementById('spread-pos-' + j).style.color    = posColor;
+      document.getElementById('spread-name-' + j).textContent   = draw.card.name;
+      document.getElementById('spread-card-' + j).classList.remove('flipped');
+      document.getElementById('spread-result-' + j).style.display = 'none';
+    }
+    document.getElementById('spread-close-btn').style.display = 'none';
+    document.getElementById('spread-hint').style.opacity = '1';
+    closeSKPopup();
+    setTimeout(function() { showSKPopup('', '深く見るか'); }, 500);
+    var ov = document.getElementById('spread-overlay');
+    ov.classList.add('ready');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { ov.classList.add('show'); });
+    });
+  };
+
+  window.pickSpreadCard = function(idx) {
+    if (spreadFlipped[idx]) return;
+    spreadFlipped[idx] = true;
+    document.getElementById('spread-card-' + idx).classList.add('flipped');
+    setTimeout(function() {
+      var d = spreadDraws[idx];
+      document.getElementById('spread-key-' + idx).textContent = d.data.key;
+      document.getElementById('spread-msg-' + idx).textContent = d.data.msg;
+      document.getElementById('spread-result-' + idx).style.display = 'block';
+      if (spreadFlipped[0] && spreadFlipped[1] && spreadFlipped[2]) {
+        document.getElementById('spread-close-btn').style.display = 'block';
+        document.getElementById('spread-hint').style.opacity = '0';
+        checkStoneItem();
+      }
+    }, 950);
+  };
+
+  window.closeSpread = function() {
+    var ov = document.getElementById('spread-overlay');
+    ov.classList.remove('show');
+    setTimeout(function() { ov.classList.remove('ready'); }, 500);
+  };
+
   /* ── Special effects ── */
   function triggerSnowBurst() {
     var canvas = document.getElementById('snow');
@@ -1347,7 +1820,9 @@
     return data.total;
   }
 
+  var _skTimer = null;
   function showSKPopup(line1, line2) {
+    if (_skTimer) clearTimeout(_skTimer);
     var pop = document.getElementById('sk-popup');
     document.getElementById('sk-line1').textContent = line1 || '';
     document.getElementById('sk-line2').textContent = line2 || '';
@@ -1360,9 +1835,11 @@
         pop.style.transform = 'translateY(0)';
       });
     });
+    _skTimer = setTimeout(function() { window.closeSKPopup(); }, 7000);
   }
 
   window.closeSKPopup = function() {
+    if (_skTimer) { clearTimeout(_skTimer); _skTimer = null; }
     var pop = document.getElementById('sk-popup');
     pop.style.opacity = '0';
     pop.style.transform = 'translateY(28px)';
