@@ -468,19 +468,7 @@
   </div>
 
   <div class="main">
-    <div onclick="showHinataComingSoon()" style="width:calc(100% + 48px);max-width:calc(480px + 48px);height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:-32px -24px 0;border-radius:0 0 24px 24px;background:linear-gradient(160deg,rgba(147,197,253,0.06) 0%,rgba(8,15,30,0.9) 100%);border-bottom:1px solid rgba(147,197,253,0.1);cursor:pointer;transition:background 0.3s;" onmouseenter="this.style.background='linear-gradient(160deg,rgba(147,197,253,0.1) 0%,rgba(8,15,30,0.85) 100%)'" onmouseleave="this.style.background='linear-gradient(160deg,rgba(147,197,253,0.06) 0%,rgba(8,15,30,0.9) 100%)'">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:8px;color:rgba(147,197,253,0.3);margin-bottom:12px;">HINATA — ROOM</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:6px;color:rgba(147,197,253,0.5);">COMING SOON</p>
-    </div>
-
-    <!-- Hinata coming soon popup -->
-    <div id="hinata-cs-popup" style="display:none;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;padding:20px;background:rgba(8,13,24,0.8);backdrop-filter:blur(12px);" onclick="this.style.display='none'">
-      <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(147,197,253,0.12);border-radius:20px;padding:32px 24px;max-width:300px;width:100%;text-align:center;animation:cardIn 0.35s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:20px;">HINATA</p>
-        <p style="font-size:14px;color:#e2e8f0;line-height:2.4;font-weight:400;margin-bottom:24px;">……まだ片付いてないから</p>
-        <button onclick="document.getElementById('hinata-cs-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
-      </div>
-    </div>
+    <img src="room_top.webp" alt="ヒナタ 環陽向 Snow flakes スノーフレークス スノフレ ギター キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;object-fit:cover;border-radius:0 0 24px 24px;">
 
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;text-align:center;padding:14px 0 32px;">NEW GAME — COMING SOON</p>
 
@@ -918,11 +906,7 @@
       }
     });
 
-  function showHinataComingSoon() {
-    var popup = document.getElementById('hinata-cs-popup');
-    popup.style.display = 'flex';
-  }
-  </script>
+</script>
 
   <footer style="text-align:center;padding:48px 24px;font-size:11px;letter-spacing:3px;color:#64748b;">
     <p>Snow flakes — ROOM / HINATA</p>
