@@ -660,7 +660,13 @@
     .chapter-header:hover .chapter-title { color:#94a3b8; }
     .chapter-arr { font-size:10px; color:#475569; transition:transform 0.25s; }
     .chapter-arr.open { transform:rotate(180deg); }
-    .chapter-body { display:none; padding:0 16px 20px; }
+    .chapter-body {
+      display:none; padding:0 16px 16px;
+      max-height:220px; overflow-y:auto;
+    }
+    .chapter-body::-webkit-scrollbar { width:3px; }
+    .chapter-body::-webkit-scrollbar-track { background:transparent; }
+    .chapter-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
     .chapter-text {
       font-size:13px; color:#94a3b8; line-height:2.4;
       font-weight:400; white-space:pre-line;
