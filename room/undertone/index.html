@@ -1711,6 +1711,10 @@
     }, 950);
   };
 
+  var STONE_SPEECHES = {
+    pendant_hinata: '持っていくといい',
+  };
+
   function checkStoneItem() {
     var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
     if (!available.length) return;
@@ -1722,6 +1726,10 @@
       document.getElementById('tarot-stone-name').textContent = item.name;
       var reveal = document.getElementById('tarot-stone-reveal');
       reveal.style.display = 'flex';
+      var speech = STONE_SPEECHES[item.key];
+      if (speech) {
+        setTimeout(function() { showSKPopup('FUKASE', speech); }, 600);
+      }
     }
   }
 
