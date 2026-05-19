@@ -101,6 +101,7 @@
 
 <div class="tab-nav">
   <button class="tab active" onclick="switchTab('topics')">TOPICS追加</button>
+  <button class="tab" onclick="switchTab('test')">テスト</button>
   <button class="tab" onclick="switchTab('settings')">設定</button>
 </div>
 
@@ -138,6 +139,43 @@
   <div style="text-align:center;margin-top:20px;">
     <button class="btn btn-danger" onclick="loadTopics()">現在のTOPICSを読み込む</button>
   </div>
+</div>
+
+<!-- テスト -->
+<div id="tab-test" class="section">
+
+  <div class="card" style="border-color:rgba(196,181,253,0.2);">
+    <h2 style="color:#c4b5fd;">Under tone テスト</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">isCoreFan 条件をスキップして Under tone に入るための設定です。</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="unlockUndertone()" style="padding:12px;background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.3);border-radius:10px;color:#c4b5fd;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.2)'" onmouseleave="this.style.background='rgba(196,181,253,0.1)'">
+        全プロフィール解放 → Under tone を開く
+      </button>
+      <button onclick="unlockUndertoneShop()" style="padding:12px;background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:10px;color:#a78bfa;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.14)'" onmouseleave="this.style.background='rgba(196,181,253,0.06)'">
+        入店済みにして Under tone を開く（占いから直接）
+      </button>
+      <button onclick="resetUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        Under tone の状態をリセット（入店・訪問カウントを消す）
+      </button>
+    </div>
+    <p id="test-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
+  <div class="card" style="border-color:rgba(253,230,138,0.2);margin-top:16px;">
+    <h2 style="color:#fde68a;">レアアイテム テスト</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">Under tone で出るレアアイテムを手動で解放・リセットできます。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="unlockAllStones()" style="padding:12px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(253,230,138,0.18)'" onmouseleave="this.style.background='rgba(253,230,138,0.08)'">
+        3つ全部解放（青・黄・黒の石）
+      </button>
+      <button onclick="resetAllStones()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        3つ全部リセット
+      </button>
+    </div>
+    <p id="stone-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
 </div>
 
 <!-- 設定 -->
@@ -366,6 +404,62 @@ function encodeBase64(str) {
     `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
   checkPat();
 })();
+</script>
+
+<script>
+/* ── Under tone テスト ── */
+var CORE_BLOCKS = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
+var STONE_KEYS  = ['pendant_hinata','earring_hayate','ring_kouta'];
+
+function setTestStatus(msg) {
+  document.getElementById('test-status').textContent = msg;
+}
+function setStoneStatus(msg) {
+  document.getElementById('stone-status').textContent = msg;
+}
+
+function setAllProfiles() {
+  ['hinata','kouta','hayate'].forEach(function(ch) {
+    localStorage.setItem('sf_pf_' + ch + '_v2', JSON.stringify(CORE_BLOCKS));
+  });
+}
+
+function unlockUndertone() {
+  setAllProfiles();
+  localStorage.removeItem('sf_undertone_visited');
+  setTestStatus('✓ プロフィール解放済み。路地裏探索から始まります。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+}
+
+function unlockUndertoneShop() {
+  setAllProfiles();
+  localStorage.setItem('sf_undertone_visited', 'true');
+  setTestStatus('✓ 入店済みにしました。占いページが直接開きます。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+}
+
+function resetUndertone() {
+  localStorage.removeItem('sf_undertone_visited');
+  localStorage.removeItem('sf_undertone_visits');
+  localStorage.removeItem('sf_undertone_count_total');
+  setTestStatus('✓ リセットしました（入店・訪問カウント消去）');
+}
+
+function unlockAllStones() {
+  var raw = localStorage.getItem('sf_unlocked');
+  var arr = raw ? JSON.parse(raw) : [];
+  STONE_KEYS.forEach(function(k) { if (arr.indexOf(k) === -1) arr.push(k); });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setStoneStatus('✓ 3つ全部解放しました。');
+}
+
+function resetAllStones() {
+  var raw = localStorage.getItem('sf_unlocked');
+  var arr = raw ? JSON.parse(raw) : [];
+  arr = arr.filter(function(k) { return STONE_KEYS.indexOf(k) === -1; });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  setStoneStatus('✓ 3つ全部リセットしました。');
+}
 </script>
 </body>
 </html>
