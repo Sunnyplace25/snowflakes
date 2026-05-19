@@ -429,6 +429,38 @@
     }
     .tarot-close:hover { color:#64748b; border-color:rgba(255,255,255,0.15); }
 
+    /* ── DUAL CARDS ── */
+    .dual-card {
+      width:120px; height:192px;
+      position:relative; transform-style:preserve-3d;
+      transition:transform 0.9s cubic-bezier(0.25,0.8,0.25,1);
+      cursor:pointer;
+    }
+    .dual-card.flipped { transform:rotateY(180deg); }
+    .dual-card.dimmed  { opacity:0.3; pointer-events:none; transition:opacity 0.6s, transform 0.9s; }
+
+    .dual-face, .dual-back {
+      position:absolute; inset:0;
+      border-radius:14px; backface-visibility:hidden;
+      overflow:hidden;
+    }
+    .dual-back {
+      background:#0d1526;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .dual-back img { width:100%; height:100%; object-fit:cover; display:block; }
+    .dual-face {
+      background:rgba(13,21,38,0.99);
+      border:1px solid rgba(255,255,255,0.08);
+      transform:rotateY(180deg);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:14px 10px; text-align:center;
+    }
+    .dual-face .tarot-verdict   { font-size:28px; }
+    .dual-face .tarot-verdict-en{ font-size:7px; letter-spacing:4px; }
+    .dual-face .tarot-msg       { font-size:10px; }
+
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
     }
@@ -481,7 +513,8 @@
     <p class="stone-progress" id="stone-progress"></p>
     <p class="prob-note">rare item ── 1 / 30</p>
 
-    <button class="fortune-btn" onclick="openTarot()">占いをお願いする</button>
+    <button class="fortune-btn" onclick="openTarot()">ワンオラクル</button>
+    <button class="fortune-btn" style="background:rgba(253,230,138,0.06);border-color:rgba(253,230,138,0.2);color:#fde68a;margin-bottom:20px;" onmouseenter="this.style.background='rgba(253,230,138,0.14)';this.style.borderColor='rgba(253,230,138,0.45)'" onmouseleave="this.style.background='rgba(253,230,138,0.06)';this.style.borderColor='rgba(253,230,138,0.2)'" onclick="openDual()">二者択一</button>
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
   </div>
 </div>
@@ -515,6 +548,51 @@
     <button onclick="closeSKPopup()" style="position:absolute;top:10px;right:12px;font-size:13px;color:#334155;cursor:pointer;background:none;border:none;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">✕</button>
   </div>
   <img src="shopkeeper_chibi.webp" alt="" style="width:90px;display:block;flex-shrink:0;">
+</div>
+
+<!-- Dual choice overlay -->
+<div id="dual-overlay" style="position:fixed;inset:0;z-index:400;background:rgba(8,13,24,0.97);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;opacity:0;pointer-events:none;transition:opacity 0.5s;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:8px;color:#1e2d40;margin-bottom:10px;">TWO CHOICES</p>
+  <p id="dual-hint" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;margin-bottom:32px;transition:opacity 0.4s;">どちらかを選んで</p>
+
+  <!-- Two cards -->
+  <div style="display:flex;gap:24px;margin-bottom:28px;align-items:flex-start;">
+
+    <!-- Card A -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div class="dual-card" id="dual-card-a" onclick="pickDual('a')">
+        <div class="dual-face" id="dual-face-a">
+          <p class="tarot-verdict" id="dual-verdict-a"></p>
+          <p class="tarot-verdict-en" id="dual-verdict-en-a"></p>
+          <div class="tarot-sep"></div>
+          <p class="tarot-msg" id="dual-msg-a"></p>
+        </div>
+        <div class="dual-back">
+          <img src="tarot_back.webp" alt="">
+        </div>
+      </div>
+      <p id="dual-label-a" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;">A</p>
+    </div>
+
+    <!-- Card B -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div class="dual-card" id="dual-card-b" onclick="pickDual('b')">
+        <div class="dual-face" id="dual-face-b">
+          <p class="tarot-verdict" id="dual-verdict-b"></p>
+          <p class="tarot-verdict-en" id="dual-verdict-en-b"></p>
+          <div class="tarot-sep"></div>
+          <p class="tarot-msg" id="dual-msg-b"></p>
+        </div>
+        <div class="dual-back">
+          <img src="tarot_back2.webp" alt="">
+        </div>
+      </div>
+      <p id="dual-label-b" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;">B</p>
+    </div>
+
+  </div>
+
+  <button class="tarot-close" id="dual-close-btn" style="display:none;" onclick="closeDual()">閉じる</button>
 </div>
 
 <!-- Tarot overlay -->
@@ -886,6 +964,68 @@
     var ov = document.getElementById('tarot-overlay');
     ov.classList.remove('show');
     setTimeout(function() { ov.classList.remove('ready'); }, 500);
+  };
+
+  /* ── Dual choice ── */
+  window.openDual = function() {
+    closeSKPopup();
+
+    // Roll two independent cards
+    var catA = rollCategory();
+    var catB = rollCategory();
+    var entA = TAROT[catA][Math.floor(Math.random() * TAROT[catA].length)];
+    var entB = TAROT[catB][Math.floor(Math.random() * TAROT[catB].length)];
+
+    function setCard(suffix, cat, entry) {
+      var cfg = CAT_CFG[cat];
+      document.getElementById('dual-verdict' + suffix).textContent    = cfg.label;
+      document.getElementById('dual-verdict' + suffix).style.color    = cfg.color;
+      document.getElementById('dual-verdict-en' + suffix).textContent = cfg.labelEn;
+      document.getElementById('dual-verdict-en' + suffix).style.color = cfg.colorDim;
+      document.getElementById('dual-msg' + suffix).textContent = entry.msg;
+    }
+    setCard('-a', catA, entA);
+    setCard('-b', catB, entB);
+
+    // Reset state
+    ['a','b'].forEach(function(s) {
+      document.getElementById('dual-card-' + s).classList.remove('flipped','dimmed');
+      document.getElementById('dual-label-' + s).style.color = '#334155';
+    });
+    document.getElementById('dual-hint').style.opacity = '1';
+    document.getElementById('dual-close-btn').style.display = 'none';
+
+    var ov = document.getElementById('dual-overlay');
+    ov.style.display = 'flex';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        ov.style.opacity = '1';
+        ov.style.pointerEvents = 'auto';
+      });
+    });
+
+    setTimeout(function() { showSKPopup('', 'そろそろ選ぶか'); }, 500);
+  };
+
+  window.pickDual = function(picked) {
+    var other = picked === 'a' ? 'b' : 'a';
+    // Flip picked, dim other
+    document.getElementById('dual-card-' + picked).classList.add('flipped');
+    document.getElementById('dual-card-' + other).classList.add('dimmed');
+    document.getElementById('dual-hint').style.opacity = '0';
+    // Show label
+    document.getElementById('dual-label-' + picked).style.color = '#c4b5fd';
+    closeSKPopup();
+    setTimeout(function() {
+      document.getElementById('dual-close-btn').style.display = 'block';
+    }, 950);
+  };
+
+  window.closeDual = function() {
+    var ov = document.getElementById('dual-overlay');
+    ov.style.opacity = '0';
+    ov.style.pointerEvents = 'none';
+    setTimeout(function() { ov.style.display = 'none'; }, 500);
   };
 
   /* ── Chibi popup ── */
