@@ -958,6 +958,7 @@
   <script>
   (function() {
     var heroShowing = 'face';
+    window.addEventListener('pageshow', function() { var img = document.getElementById('room-hero-img'); if (img) { img.src = 'room_face.webp'; heroShowing = 'face'; } });
     window.toggleRoomHero = function() {
       var img = document.getElementById('room-hero-img');
       var spots = document.querySelectorAll('#hayate-scene .room-hotspot');

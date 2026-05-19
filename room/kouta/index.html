@@ -964,6 +964,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
     });
+    window.addEventListener('pageshow', function() { var img = document.getElementById('room-hero-img'); if (img) { img.src = 'room_face.webp'; heroShowing = 'face'; } });
     window.toggleRoomHero = function() {
       var img = document.getElementById('room-hero-img');
       var spots = document.querySelectorAll('#kouta-scene .room-hotspot');
