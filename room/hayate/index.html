@@ -507,17 +507,16 @@
   </div>
 
   <div class="main">
-    <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\3f173a35-eb56-4d16-865e-22e7b4d6cc8c.png -->
     <div class="room-scene-wrap" id="hayate-scene">
-      <img src="room_top.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説">
+      <img id="room-hero-img" src="room_top.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
       <!-- hotspot 1 -->
-      <button class="room-hotspot" style="left:25%;top:30%;" onclick="openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
+      <button class="room-hotspot" style="left:25%;top:30%;display:none;" onclick="openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
       <!-- hotspot 2 -->
-      <button class="room-hotspot" style="left:60%;top:20%;" onclick="openRoomHotspot('NOTEBOOK','ノートが開きっぱなし。\n数字とリズムのメモが書き込まれている')">+</button>
+      <button class="room-hotspot" style="left:60%;top:20%;display:none;" onclick="openRoomHotspot('NOTEBOOK','ノートが開きっぱなし。\n数字とリズムのメモが書き込まれている')">+</button>
       <!-- hotspot 3 -->
-      <button class="room-hotspot" style="left:40%;top:65%;" onclick="openRoomHotspot('SNEAKERS','脱ぎっぱなしの靴。\n左右逆に置いてある')">+</button>
+      <button class="room-hotspot" style="left:40%;top:65%;display:none;" onclick="openRoomHotspot('SNEAKERS','脱ぎっぱなしの靴。\n左右逆に置いてある')">+</button>
       <!-- hotspot 4 -->
-      <button class="room-hotspot" style="left:78%;top:55%;" onclick="openRoomHotspot('ENERGY DRINK','空き缶が三本並んでいる。\n今日だけで？')">+</button>
+      <button class="room-hotspot" style="left:78%;top:55%;display:none;" onclick="openRoomHotspot('ENERGY DRINK','空き缶が三本並んでいる。\n今日だけで？')">+</button>
     </div>
 
     <!-- Room hotspot popup -->
@@ -529,12 +528,10 @@
       </div>
     </div>
 
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;text-align:center;padding:14px 0 32px;">NEW GAME — COMING SOON</p>
-
     <p class="eyebrow">Snow flakes — ROOM</p>
 
     <p class="name-en">HAYATE</p>
-    <h1>ハヤテの部屋</h1>
+    <h1 style="cursor:pointer;" onclick="toggleRoomHero()">ハヤテの部屋</h1>
     <p class="role">drums</p>
 
     <div class="divider"></div>
@@ -956,6 +953,25 @@
         if (el2) el2.classList.add('open');
       }
     });
+  </script>
+
+  <script>
+  (function() {
+    var heroShowing = 'face';
+    window.toggleRoomHero = function() {
+      var img = document.getElementById('room-hero-img');
+      var spots = document.querySelectorAll('#hayate-scene .room-hotspot');
+      if (heroShowing === 'face') {
+        img.src = 'room_interior.webp';
+        heroShowing = 'room';
+        spots.forEach(function(b) { b.style.display = 'flex'; });
+      } else {
+        img.src = 'room_top.webp';
+        heroShowing = 'face';
+        spots.forEach(function(b) { b.style.display = 'none'; });
+      }
+    };
+  })();
   </script>
 </body>
 </html>

@@ -514,9 +514,8 @@
   </div>
 
   <div class="main">
-    <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\b4e91d09-8826-4ee0-a2d9-caf0f4ed36c8.png -->
     <div class="room-scene-wrap" id="kouta-scene">
-      <img src="room_top.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説">
+      <img id="room-hero-img" src="room_top.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
       <!-- hotspot 1 -->
       <button class="room-hotspot" style="left:20%;top:35%;" onclick="openRoomHotspot('SCORE','楽譜が広げっぱなしになっている。\n付箋が何枚も貼ってある')">+</button>
       <!-- hotspot 2 -->
@@ -536,12 +535,10 @@
       </div>
     </div>
 
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;text-align:center;padding:14px 0 32px;">NEW GAME — COMING SOON</p>
-
     <p class="eyebrow">Snow flakes — ROOM</p>
 
     <p class="name-en">KOUTA</p>
-    <h1>コウタの部屋</h1>
+    <h1 style="cursor:pointer;" onclick="toggleRoomHero()">コウタの部屋</h1>
     <p class="role">bass</p>
 
     <div class="divider"></div>
@@ -959,5 +956,28 @@
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
     <img src="room_full.webp" alt="コウタの部屋">
   </div>
+
+  <script>
+  (function() {
+    var heroShowing = 'face';
+    // 初期状態でホットスポット非表示
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('#kouta-scene .room-hotspot').forEach(function(b) { b.style.display = 'none'; });
+    });
+    window.toggleRoomHero = function() {
+      var img = document.getElementById('room-hero-img');
+      var spots = document.querySelectorAll('#kouta-scene .room-hotspot');
+      if (heroShowing === 'face') {
+        img.src = 'room_interior.webp';
+        heroShowing = 'room';
+        spots.forEach(function(b) { b.style.display = 'flex'; });
+      } else {
+        img.src = 'room_top.webp';
+        heroShowing = 'face';
+        spots.forEach(function(b) { b.style.display = 'none'; });
+      }
+    };
+  })();
+  </script>
 </body>
 </html>
