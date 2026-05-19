@@ -422,6 +422,58 @@
     }
     h1 { cursor: pointer; transition: opacity 0.2s; }
     h1:hover { opacity: 0.75; }
+
+    /* ── Room hotspot ── */
+    .room-scene-wrap {
+      width: calc(100% + 48px); max-width: calc(480px + 48px);
+      margin: -32px -24px 0; position: relative;
+      border-radius: 0 0 24px 24px; overflow: hidden;
+    }
+    .room-scene-wrap img {
+      width: 100%; display: block; object-fit: cover;
+      border-radius: 0 0 24px 24px;
+    }
+    .room-hotspot {
+      position: absolute; width: 30px; height: 30px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(253,230,138,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: rgba(253,230,138,0.5);
+      cursor: pointer; transform: translate(-50%,-50%);
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+      backdrop-filter: blur(2px);
+    }
+    .room-hotspot:hover {
+      background: rgba(253,230,138,0.15);
+      border-color: rgba(253,230,138,0.5);
+      color: #fde68a;
+    }
+    .room-hs-popup {
+      position: fixed; inset: 0; z-index: 300;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(8,13,24,0.8);
+      backdrop-filter: blur(12px);
+    }
+    .room-hs-popup.show { display: flex; }
+    .room-hs-card {
+      background: rgba(13,21,38,0.99);
+      border: 1px solid rgba(253,230,138,0.12);
+      border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 100%; text-align: center;
+      animation: roomCardIn 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes roomCardIn {
+      from { opacity: 0; transform: scale(0.94) translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .room-hs-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px; color: #475569; margin-bottom: 14px;
+    }
+    .room-hs-desc {
+      font-size: 13px; color: #e2e8f0; line-height: 2.4;
+      font-weight: 400; margin-bottom: 22px; white-space: pre-line;
+    }
   </style>
 </head>
 <body>
@@ -456,7 +508,26 @@
 
   <div class="main">
     <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\3f173a35-eb56-4d16-865e-22e7b4d6cc8c.png -->
-    <img src="room_top.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;object-fit:cover;border-radius:0 0 24px 24px;">
+    <div class="room-scene-wrap" id="hayate-scene">
+      <img src="room_top.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説">
+      <!-- hotspot 1 -->
+      <button class="room-hotspot" style="left:25%;top:30%;" onclick="openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
+      <!-- hotspot 2 -->
+      <button class="room-hotspot" style="left:60%;top:20%;" onclick="openRoomHotspot('NOTEBOOK','ノートが開きっぱなし。\n数字とリズムのメモが書き込まれている')">+</button>
+      <!-- hotspot 3 -->
+      <button class="room-hotspot" style="left:40%;top:65%;" onclick="openRoomHotspot('SNEAKERS','脱ぎっぱなしの靴。\n左右逆に置いてある')">+</button>
+      <!-- hotspot 4 -->
+      <button class="room-hotspot" style="left:78%;top:55%;" onclick="openRoomHotspot('ENERGY DRINK','空き缶が三本並んでいる。\n今日だけで？')">+</button>
+    </div>
+
+    <!-- Room hotspot popup -->
+    <div class="room-hs-popup" id="hayate-hs-popup" onclick="this.classList.remove('show')">
+      <div class="room-hs-card" onclick="event.stopPropagation()">
+        <p class="room-hs-label" id="hayate-hs-label">FOUND</p>
+        <p class="room-hs-desc" id="hayate-hs-desc"></p>
+        <button onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
+      </div>
+    </div>
 
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;text-align:center;padding:14px 0 32px;">NEW GAME — COMING SOON</p>
 
@@ -682,6 +753,12 @@
     }
     function closeRoomLight() {
       document.getElementById('room-light').classList.remove('open');
+    }
+
+    function openRoomHotspot(label, desc) {
+      document.getElementById('hayate-hs-label').textContent = label;
+      document.getElementById('hayate-hs-desc').textContent  = desc;
+      document.getElementById('hayate-hs-popup').classList.add('show');
     }
 
     document.addEventListener('DOMContentLoaded', function() {

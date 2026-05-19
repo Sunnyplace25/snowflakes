@@ -810,7 +810,7 @@
     <p class="entrance-msg">本当に戻りますか？</p>
     <div class="entrance-btns">
       <button class="entrance-yes" onclick="backConfirmEnter()">やっぱり入る</button>
-      <button class="entrance-no" onclick="backConfirmLeave()">帰る</button>
+      <button class="entrance-no" onclick="backConfirmLeave()">もう一度考える</button>
     </div>
   </div>
 </div>
@@ -1276,6 +1276,67 @@
     ],
   ];
 
+  /* ── 2周目限定ホットスポット（ランダムで1つ表示） ── */
+  var HOTSPOTS_2ND = [
+    // Scene 1
+    [
+      { label:'SETLIST',
+        desc:'引き裂かれた紙が石畳に落ちている。\nセットリストだ。\n最後の曲名だけ、読める',
+        x:'32%', y:'62%',
+        chars:[
+          { char:'kouta',  speech:'……拾っておこうか', weight:2 },
+          { char:'hayate', speech:'誰のだろ', weight:2 },
+          { char:'hinata', speech:'……知ってる曲だ', weight:1 },
+        ]},
+      { label:'SHADOW',
+        desc:'壁に、誰かの影が映っている。\n振り向いても、誰もいない',
+        x:'55%', y:'38%',
+        chars:[
+          { char:'hinata', speech:'……いる', weight:3 },
+          { char:'kouta',  speech:'気のせいだろ', weight:2 },
+          { char:'hayate', speech:'え、怖いんだけど', weight:1 },
+        ]},
+    ],
+    // Scene 2
+    [
+      { label:'FOOTPRINTS',
+        desc:'濡れた石畳に、足跡が続いている。\n先に行った人間がいる',
+        x:'35%', y:'68%',
+        chars:[
+          { char:'kouta',  speech:'誰か先に行ってるな', weight:3 },
+          { char:'hayate', speech:'追いかける？', weight:2 },
+          { char:'hinata', speech:'……さっきいた', weight:1 },
+        ]},
+      { label:'BROKEN GLASS',
+        desc:'割れた鏡の欠片が落ちている。\n自分の顔が、バラバラに映った',
+        x:'62%', y:'44%',
+        chars:[
+          { char:'hinata', speech:'……映らない', weight:2 },
+          { char:'kouta',  speech:'踏むなよ、危ない', weight:3 },
+          { char:'hayate', speech:'なんか意味深だな', weight:1 },
+        ]},
+    ],
+    // Scene 3
+    [
+      { label:'REFLECTION',
+        desc:'ショーウィンドウのガラスに、\n自分の顔が映っている。\nひとつ多い音に、気づいているか？',
+        x:'24%', y:'28%',
+        chars:[
+          { char:'hinata', speech:'……変わってない', weight:2 },
+          { char:'kouta',  speech:'俺、疲れた顔してるな', weight:3 },
+          { char:'hayate', speech:'ちょっと怖くない？', weight:1 },
+        ]},
+      { label:'SOUND',
+        desc:'扉の隙間から、かすかな音がする。\nメロディ、というより、息のような音だ',
+        x:'72%', y:'38%',
+        chars:[
+          { char:'hinata', speech:'……聞こえる', weight:3 },
+          { char:'kouta',  speech:'中から聞こえるか？', weight:2 },
+          { char:'hayate', speech:'入ろうぜ、もう', weight:1 },
+        ]},
+    ],
+  ];
+
   /* ── State ── */
   var currentScene = 0;
   var visited = localStorage.getItem('sf_undertone_visited') === 'true';
@@ -1326,14 +1387,12 @@
       maxScene = currentScene;
       localStorage.setItem('sf_undertone_max_scene', maxScene);
     }
-    // Chapter accordion
+    // Chapter accordion (閉じた状態で表示)
     renderChapterList();
-    // Auto-expand current chapter
-    openChapter(currentScene);
 
-    // Show prose popup for this scene
+    // Show prose popup for this scene (初回のみ)
     var ch = ALL_CHAPTERS[currentScene];
-    if (ch) {
+    if (ch && !visited) {
       document.getElementById('prose-label').textContent = ch.label;
       document.getElementById('prose-text').textContent  = ch.text;
       document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
@@ -1389,7 +1448,15 @@
   function renderHotspots() {
     var wrap = document.getElementById('scene-wrap');
     wrap.querySelectorAll('.hotspot').forEach(function(h) { h.parentNode.removeChild(h); });
-    (HOTSPOTS[currentScene] || []).forEach(function(spot) {
+    var spots = (HOTSPOTS[currentScene] || []).slice();
+    // 2周目以降：ランダムで1つ追加
+    if (visited) {
+      var extras = HOTSPOTS_2ND[currentScene] || [];
+      if (extras.length) {
+        spots = spots.concat([extras[Math.floor(Math.random() * extras.length)]]);
+      }
+    }
+    spots.forEach(function(spot) {
       var btn = document.createElement('button');
       btn.className = 'hotspot';
       btn.style.left = spot.x;
@@ -1464,7 +1531,11 @@
   };
   window.backConfirmLeave = function() {
     document.getElementById('back-confirm-overlay').classList.remove('show');
-    window.location.href = '../../sweets/';
+    // UIに戻る（シーン3探索画面）
+    document.getElementById('shop-state').style.display = 'none';
+    document.getElementById('explore-state').style.display = 'block';
+    currentScene = 2;
+    renderScene();
   };
 
   window.entranceYes = function() {

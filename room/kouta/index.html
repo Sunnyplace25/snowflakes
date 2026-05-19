@@ -429,6 +429,58 @@
     }
     h1 { cursor: pointer; transition: opacity 0.2s; }
     h1:hover { opacity: 0.75; }
+
+    /* ── Room hotspot ── */
+    .room-scene-wrap {
+      width: calc(100% + 48px); max-width: calc(480px + 48px);
+      margin: -32px -24px 0; position: relative;
+      border-radius: 0 0 24px 24px; overflow: hidden;
+    }
+    .room-scene-wrap img {
+      width: 100%; display: block; object-fit: cover;
+      border-radius: 0 0 24px 24px;
+    }
+    .room-hotspot {
+      position: absolute; width: 30px; height: 30px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(252,165,165,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: rgba(252,165,165,0.5);
+      cursor: pointer; transform: translate(-50%,-50%);
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+      backdrop-filter: blur(2px);
+    }
+    .room-hotspot:hover {
+      background: rgba(252,165,165,0.15);
+      border-color: rgba(252,165,165,0.5);
+      color: #fca5a5;
+    }
+    .room-hs-popup {
+      position: fixed; inset: 0; z-index: 300;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(8,13,24,0.8);
+      backdrop-filter: blur(12px);
+    }
+    .room-hs-popup.show { display: flex; }
+    .room-hs-card {
+      background: rgba(13,21,38,0.99);
+      border: 1px solid rgba(252,165,165,0.12);
+      border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 100%; text-align: center;
+      animation: roomCardIn 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes roomCardIn {
+      from { opacity: 0; transform: scale(0.94) translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .room-hs-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px; color: #475569; margin-bottom: 14px;
+    }
+    .room-hs-desc {
+      font-size: 13px; color: #e2e8f0; line-height: 2.4;
+      font-weight: 400; margin-bottom: 22px; white-space: pre-line;
+    }
   </style>
 </head>
 <body>
@@ -463,7 +515,26 @@
 
   <div class="main">
     <!-- room_top.webp 差し替え用: D:\❄Snow flakes\⑥画像データ\b4e91d09-8826-4ee0-a2d9-caf0f4ed36c8.png -->
-    <img src="room_top.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);display:block;margin:-32px -24px 0;object-fit:cover;border-radius:0 0 24px 24px;">
+    <div class="room-scene-wrap" id="kouta-scene">
+      <img src="room_top.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ ベース キャラクター 山吹ことり 小説">
+      <!-- hotspot 1 -->
+      <button class="room-hotspot" style="left:20%;top:35%;" onclick="openRoomHotspot('SCORE','楽譜が広げっぱなしになっている。\n付箋が何枚も貼ってある')">+</button>
+      <!-- hotspot 2 -->
+      <button class="room-hotspot" style="left:65%;top:25%;" onclick="openRoomHotspot('POSTER','壁に貼ったバンドのフライヤー。\n端が少し剥がれかけている')">+</button>
+      <!-- hotspot 3 -->
+      <button class="room-hotspot" style="left:45%;top:70%;" onclick="openRoomHotspot('GUITAR CASE','ベースケースが立てかけてある。\nステッカーが一枚だけ貼ってある')">+</button>
+      <!-- hotspot 4 -->
+      <button class="room-hotspot" style="left:80%;top:60%;" onclick="openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
+    </div>
+
+    <!-- Room hotspot popup -->
+    <div class="room-hs-popup" id="kouta-hs-popup" onclick="this.classList.remove('show')">
+      <div class="room-hs-card" onclick="event.stopPropagation()">
+        <p class="room-hs-label" id="kouta-hs-label">FOUND</p>
+        <p class="room-hs-desc" id="kouta-hs-desc"></p>
+        <button onclick="document.getElementById('kouta-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
+      </div>
+    </div>
 
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#334155;text-align:center;padding:14px 0 32px;">NEW GAME — COMING SOON</p>
 
@@ -679,6 +750,12 @@
     }
     function closeRoomLight() {
       document.getElementById('room-light').classList.remove('open');
+    }
+
+    function openRoomHotspot(label, desc) {
+      document.getElementById('kouta-hs-label').textContent = label;
+      document.getElementById('kouta-hs-desc').textContent  = desc;
+      document.getElementById('kouta-hs-popup').classList.add('show');
     }
 
     document.addEventListener('DOMContentLoaded', function() {

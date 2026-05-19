@@ -4143,15 +4143,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function checkUndertoneSection() {
-      var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
-      var isFan = ['hinata','kouta','hayate'].every(function(ch) {
-        try {
-          var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
-          return CORE.every(function(b) { return arr.indexOf(b) !== -1; });
-        } catch(e) { return false; }
-      });
       var isAdmin = localStorage.getItem('sf_undertone_admin') === 'true';
-      var ok = isFan || isAdmin;
+      var ok = isAdmin;
       var sec = document.getElementById('undertone-section');
       if (!sec) return;
       sec.style.display = '';

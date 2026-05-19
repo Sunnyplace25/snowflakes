@@ -176,6 +176,43 @@
     <p id="stone-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
 
+  <div class="card" style="border-color:rgba(134,239,172,0.2);margin-top:16px;">
+    <h2 style="color:#86efac;">SWEETs キャラクター リセット</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">ヒナタ・コウタ・ハヤテのプロフィール解放状態をリセットします。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="resetSweets('hinata')" style="padding:12px;background:rgba(134,239,172,0.06);border:1px solid rgba(134,239,172,0.2);border-radius:10px;color:#86efac;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(134,239,172,0.14)'" onmouseleave="this.style.background='rgba(134,239,172,0.06)'">
+        ヒナタ リセット
+      </button>
+      <button onclick="resetSweets('kouta')" style="padding:12px;background:rgba(134,239,172,0.06);border:1px solid rgba(134,239,172,0.2);border-radius:10px;color:#86efac;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(134,239,172,0.14)'" onmouseleave="this.style.background='rgba(134,239,172,0.06)'">
+        コウタ リセット
+      </button>
+      <button onclick="resetSweets('hayate')" style="padding:12px;background:rgba(134,239,172,0.06);border:1px solid rgba(134,239,172,0.2);border-radius:10px;color:#86efac;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(134,239,172,0.14)'" onmouseleave="this.style.background='rgba(134,239,172,0.06)'">
+        ハヤテ リセット
+      </button>
+      <button onclick="resetSweetsAll()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        全員まとめてリセット
+      </button>
+    </div>
+    <p id="sweets-reset-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
+  <div class="card" style="border-color:rgba(147,197,253,0.2);margin-top:16px;">
+    <h2 style="color:#93c5fd;">アイテム・❄ 無限</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">テスト用に各アイテムと❄スノーを大量付与します。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="addInfiniteItems()" style="padding:12px;background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.25);border-radius:10px;color:#93c5fd;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.18)'" onmouseleave="this.style.background='rgba(147,197,253,0.08)'">
+        アイテム全種 999個付与
+      </button>
+      <button onclick="addInfiniteSnow()" style="padding:12px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:10px;color:#7dd3fc;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.14)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">
+        ❄ 99999枚付与
+      </button>
+      <button onclick="resetAllItems()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        アイテム全部リセット
+      </button>
+    </div>
+    <p id="item-inf-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
 </div>
 
 <!-- 設定 -->
@@ -237,7 +274,7 @@ function checkPat() {
 
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['topics','settings'][i] === name);
+    t.classList.toggle('active', ['topics','test','settings'][i] === name);
   });
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -459,6 +496,51 @@ function resetAllStones() {
   arr = arr.filter(function(k) { return STONE_KEYS.indexOf(k) === -1; });
   localStorage.setItem('sf_unlocked', JSON.stringify(arr));
   setStoneStatus('✓ 3つ全部リセットしました。');
+}
+
+/* ── SWEETs リセット ── */
+function setSweetsStatus(msg) {
+  document.getElementById('sweets-reset-status').textContent = msg;
+}
+
+function resetSweets(ch) {
+  localStorage.removeItem('sf_pf_' + ch + '_v2');
+  setSweetsStatus('✓ ' + ch + ' のプロフィールをリセットしました。');
+}
+
+function resetSweetsAll() {
+  ['hinata','kouta','hayate'].forEach(function(ch) {
+    localStorage.removeItem('sf_pf_' + ch + '_v2');
+  });
+  setSweetsStatus('✓ 全員リセット完了。');
+}
+
+/* ── アイテム無限 ── */
+function setItemInfStatus(msg) {
+  document.getElementById('item-inf-status').textContent = msg;
+}
+
+function addInfiniteItems() {
+  // キャンディー
+  localStorage.setItem('sf_candy', JSON.stringify({ milk: 999, honey: 999, cassis: 999 }));
+  // マンスリーアイテム（プロテインコーヒー）
+  localStorage.setItem('sf_monthly_items', JSON.stringify({ proteincoffee: 99 }));
+  // ギターピック
+  localStorage.setItem('sf_picks', '99');
+  setItemInfStatus('✓ キャンディー各999・プロテインコーヒー99・ピック99 付与しました。');
+}
+
+function addInfiniteSnow() {
+  localStorage.setItem('sf_snow', '99999');
+  setItemInfStatus('✓ ❄ 99999枚付与しました。');
+}
+
+function resetAllItems() {
+  localStorage.removeItem('sf_candy');
+  localStorage.removeItem('sf_monthly_items');
+  localStorage.removeItem('sf_picks');
+  localStorage.setItem('sf_snow', '0');
+  setItemInfStatus('✓ アイテム・❄ を全部リセットしました。');
 }
 </script>
 </body>
