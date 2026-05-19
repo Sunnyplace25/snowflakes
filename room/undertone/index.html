@@ -592,6 +592,18 @@
   <img src="shopkeeper_chibi.webp" alt="" style="width:90px;display:block;flex-shrink:0;">
 </div>
 
+<!-- Back confirm modal -->
+<div class="entrance-overlay" id="back-confirm-overlay">
+  <div class="entrance-card">
+    <p class="entrance-eyebrow">UNDER TONE</p>
+    <p class="entrance-msg">本当に戻りますか？</p>
+    <div class="entrance-btns">
+      <button class="entrance-yes" onclick="backConfirmEnter()">やっぱり入る</button>
+      <button class="entrance-no" onclick="backConfirmLeave()">帰る</button>
+    </div>
+  </div>
+</div>
+
 <!-- Dual choice overlay -->
 <div id="dual-overlay" style="position:fixed;inset:0;z-index:400;background:rgba(8,13,24,0.97);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;opacity:0;pointer-events:none;transition:opacity 0.5s;">
   <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:8px;color:#1e2d40;margin-bottom:10px;">TWO CHOICES</p>
@@ -1059,8 +1071,20 @@
     ];
     var pick = noLines[Math.floor(Math.random() * noLines.length)];
     showSpeech(pick.char, pick.speech);
-    setTimeout(function() { window.location.href = '../../sweets/'; }, 1800);
+    setTimeout(function() {
+      document.getElementById('back-confirm-overlay').classList.add('show');
+    }, 1600);
   };
+  window.backConfirmEnter = function() {
+    document.getElementById('back-confirm-overlay').classList.remove('show');
+    hideSpeech();
+    document.getElementById('entrance-overlay').classList.add('show');
+  };
+  window.backConfirmLeave = function() {
+    document.getElementById('back-confirm-overlay').classList.remove('show');
+    window.location.href = '../../sweets/';
+  };
+
   window.entranceYes = function() {
     document.getElementById('entrance-overlay').classList.remove('show');
     localStorage.setItem('sf_undertone_visited','true');
