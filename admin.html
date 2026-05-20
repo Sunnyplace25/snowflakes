@@ -155,6 +155,9 @@
       <button onclick="unlockUndertoneShop()" style="padding:12px;background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:10px;color:#a78bfa;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.14)'" onmouseleave="this.style.background='rgba(196,181,253,0.06)'">
         入店済みにして Under tone を開く（占いから直接）
       </button>
+      <button onclick="unlockUndertoneCh2()" style="padding:12px;background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.35);border-radius:10px;color:#e9d5ff;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.22)'" onmouseleave="this.style.background='rgba(196,181,253,0.1)'">
+        第2章状態で Under tone を開く
+      </button>
       <button onclick="resetUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
         Under tone の状態をリセット（入店・訪問カウントを消す）
       </button>
@@ -541,6 +544,18 @@ function unlockUndertoneShop() {
   setAllProfiles();
   localStorage.setItem('sf_undertone_visited', 'true');
   setTestStatus('✓ 入店済みにしました。占いページが直接開きます。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+}
+
+function unlockUndertoneCh2() {
+  setAllProfiles();
+  localStorage.setItem('sf_undertone_visited', 'true');
+  localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+  localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
+  localStorage.setItem('sf_undertone_max_scene', '3');
+  localStorage.setItem('sf_undertone_explore_count', '2');
+  localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:1 }));
+  setTestStatus('✓ 第2章状態にしました。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
