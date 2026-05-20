@@ -2082,7 +2082,7 @@ function submitUtPw() {
     stoneFoundEl.style.display = 'none';
     stoneFoundEl.textContent = '';
     var stoneFound = false;
-    if (exploreCount >= 1 && Math.random() < 0.10) {
+    if (exploreCount >= 1 && Math.random() < 0.15) {
       var raw = rollRawStone();
       addRawStone(raw.id);
       stoneFoundEl.textContent = '── 小さな石を拾った';
