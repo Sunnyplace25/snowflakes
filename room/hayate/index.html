@@ -707,6 +707,24 @@
         </div>
       </div>
 
+      <!-- 一粒のチョコレート -->
+      <div class="il-item" id="il-chocolate-item">
+        <div class="il-header" onclick="toggleIlItem('il-chocolate-item')">
+          <span class="item-log-tag" id="il-chocolate-tag"><img src="../../item/chocolate.png" alt="item">一粒のチョコレート</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-chocolate-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-chocolate-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/chocolate.png" alt="一粒のチョコレート" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;">一粒のチョコレート</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ファンからの差し入れ。甘い。</p>
+          </div>
+        </div>
+      </div>
+
       <!-- 黄色い石のピアス -->
       <div class="il-item" id="il-earring-item">
         <div class="il-header" onclick="toggleIlItem('il-earring-item')">
@@ -928,6 +946,17 @@
         if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
         var el1 = document.getElementById('il-1-item');
         if (el1) el1.classList.add('open');
+      }
+
+      // 一粒のチョコレート
+      if (SfSnow.isUnlocked('chocolate_hayate')) {
+        revealItemTag('il-chocolate-tag', '../../item/chocolate.png', '一粒のチョコレート');
+        var chocLocked = document.getElementById('il-chocolate-locked');
+        var chocOwned  = document.getElementById('il-chocolate-owned');
+        if (chocLocked) chocLocked.style.display = 'none';
+        if (chocOwned)  chocOwned.style.display  = '';
+        var chocItem = document.getElementById('il-chocolate-item');
+        if (chocItem) chocItem.classList.add('open');
       }
 
       // 黄色い石のピアス（解放条件：後日設定、キー：earring_hayate）
