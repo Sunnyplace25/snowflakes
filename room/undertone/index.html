@@ -1124,10 +1124,14 @@ function submitUtPw() {
 <div id="equip-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(8,13,24,0.97);overflow-y:auto;padding:48px 20px 80px;">
   <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:8px;color:#475569;text-align:center;margin-bottom:6px;">INVENTORY</p>
   <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;color:#e2e8f0;text-align:center;margin-bottom:24px;">持ち物</p>
-  <div id="equip-rawstone-row" style="max-width:480px;margin:0 auto 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;">
-    <img src="../../item/rawstone.png" alt="未鑑定の石" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#94a3b8;flex:1;">未鑑定の石</p>
-    <p id="equip-rawstone-count" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;">× 0</p>
+  <div style="max-width:480px;margin:0 auto 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;overflow:hidden;">
+    <div onclick="toggleRawstoneAccordion()" style="display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;">
+      <img src="../../item/rawstone.png" alt="未鑑定の石" style="width:40px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#94a3b8;flex:1;">未鑑定の石</p>
+      <p id="equip-rawstone-count" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-right:8px;">× 0</p>
+      <span id="equip-rawstone-arrow" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#475569;transition:transform 0.25s;">▶</span>
+    </div>
+    <div id="equip-rawstone-slots" style="display:none;padding:0 18px 16px;display:none;gap:12px;flex-direction:row;"></div>
   </div>
   <div id="equip-cols" style="display:flex;gap:12px;max-width:480px;margin:0 auto;"></div>
   <div style="text-align:center;margin-top:32px;">
@@ -2455,6 +2459,11 @@ function submitUtPw() {
     var arr = getRawStones();
     arr.push(typeId);
     localStorage.setItem('sf_ut_rawstones', JSON.stringify(arr));
+    var seen = getSeenRawTypes();
+    if (seen.indexOf(typeId) === -1) { seen.push(typeId); localStorage.setItem('sf_ut_rawstone_seen', JSON.stringify(seen)); }
+  }
+  function getSeenRawTypes() {
+    try { return JSON.parse(localStorage.getItem('sf_ut_rawstone_seen') || '[]'); } catch(e) { return []; }
   }
   function shiftRawStone() {
     var arr = getRawStones();
@@ -2524,6 +2533,15 @@ function submitUtPw() {
   };
 
   /* ── Equipment ── */
+  window.toggleRawstoneAccordion = function() {
+    var slots = document.getElementById('equip-rawstone-slots');
+    var arrow = document.getElementById('equip-rawstone-arrow');
+    if (!slots) return;
+    var open = slots.style.display === 'flex';
+    slots.style.display = open ? 'none' : 'flex';
+    if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
+  };
+
   window.openEquip = function() {
     renderEquip();
     document.getElementById('equip-overlay').style.display = 'block';
@@ -2532,9 +2550,36 @@ function submitUtPw() {
     document.getElementById('equip-overlay').style.display = 'none';
   };
 
+  var RAW_STONE_IMG = {
+    kirei:    '../../item/rawstone_kirei.png',
+    hikaru:   '../../item/rawstone.png',
+    tsumetai: '../../item/rawstone_tsumetai.png',
+  };
+
   function renderEquip() {
     var rawCount = document.getElementById('equip-rawstone-count');
     if (rawCount) rawCount.textContent = '× ' + getRawStones().length;
+
+    // 3種の石ころスロット
+    var slotsWrap = document.getElementById('equip-rawstone-slots');
+    if (slotsWrap) {
+      var seen = getSeenRawTypes();
+      slotsWrap.innerHTML = '';
+      RAW_STONE_TYPES.forEach(function(t) {
+        var found = seen.indexOf(t.id) !== -1;
+        var div = document.createElement('div');
+        div.style.cssText = 'flex:1;min-width:0;text-align:center;';
+        var img = document.createElement('img');
+        img.src = RAW_STONE_IMG[t.id] || '../../item/rawstone.png';
+        img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:8px;display:block;margin:0 auto 6px;' + (found ? '' : 'filter:grayscale(1);opacity:0.3;');
+        var txt = document.createElement('p');
+        txt.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:' + (found ? '#94a3b8' : '#334155') + ';';
+        txt.textContent = found ? t.label : '???';
+        div.appendChild(img);
+        div.appendChild(txt);
+        slotsWrap.appendChild(div);
+      });
+    }
     var cols = document.getElementById('equip-cols');
     cols.innerHTML = '';
     ['hinata','kouta','hayate'].forEach(function(ch) {
