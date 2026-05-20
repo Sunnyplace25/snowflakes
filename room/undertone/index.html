@@ -2025,7 +2025,7 @@ function submitUtPw() {
     var stoneFoundEl = document.getElementById('hotspot-stone-found');
     stoneFoundEl.style.display = 'none';
     stoneFoundEl.textContent = '';
-    if (Math.random() < 0.20) {
+    if (exploreCount >= 1 && Math.random() < 0.20) {
       var raw = rollRawStone();
       addRawStone(raw.id);
       stoneFoundEl.textContent = '── 小さな石を拾った';
