@@ -921,7 +921,7 @@ function closeUtPwModal() {
 function submitUtPw() {
   var val = document.getElementById('ut-pw-input').value;
   if (val === 'HARDGUMI') {
-    localStorage.setItem('sf_undertone_admin', 'true');
+    sessionStorage.setItem('sf_undertone_session', 'true');
     document.getElementById('ut-pw-modal').style.display = 'none';
     if (window.utInit) window.utInit();
   } else {
@@ -1165,14 +1165,15 @@ function submitUtPw() {
 <script>
 (function() {
 
-  /* ── URL unlock shortcut ── */
+  /* ── URL unlock shortcut (admin only) ── */
   if (new URLSearchParams(location.search).get('unlock') === '1') {
-    localStorage.setItem('sf_undertone_admin', 'true');
+    sessionStorage.setItem('sf_undertone_session', 'true');
   }
 
   /* ── isCoreFan / admin check ── */
   function isCoreFan() {
     if (localStorage.getItem('sf_undertone_admin') === 'true') return true;
+    if (sessionStorage.getItem('sf_undertone_session') === 'true') return true;
     var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
     return ['hinata','kouta','hayate'].every(function(ch) {
       try {
