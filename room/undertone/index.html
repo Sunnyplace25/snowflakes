@@ -659,8 +659,16 @@
     .chapter-header:hover { background:rgba(255,255,255,0.02); }
     .chapter-num {
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; color:#94a3b8; flex-shrink:0; width:14px;
+      font-size:11px; color:#94a3b8; flex-shrink:0; width:24px;
     }
+    .chapter-section-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px; letter-spacing:6px; color:#475569;
+      padding:18px 16px 6px; text-align:left;
+      border-top:1px solid rgba(255,255,255,0.04);
+      margin-top:8px;
+    }
+    .chapter-section-label:first-child { margin-top:0; border-top:none; }
     .chapter-title {
       flex:1; font-family:'Cormorant Garamond',serif;
       font-size:13px; letter-spacing:4px; color:#94a3b8;
@@ -726,9 +734,10 @@
 
     <!-- Chapter accordion (re-readable) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
+      <p class="chapter-section-label">第一章</p>
       <div class="chapter-item" id="chapter-item-0">
         <button class="chapter-header" onclick="toggleChapter(0)">
-          <span class="chapter-num">1</span>
+          <span class="chapter-num">1-1</span>
           <span class="chapter-title">分かれ道</span>
           <span class="chapter-arr" id="chapter-arr-0">▾</span>
         </button>
@@ -736,7 +745,7 @@
       </div>
       <div class="chapter-item" id="chapter-item-1">
         <button class="chapter-header" onclick="toggleChapter(1)">
-          <span class="chapter-num">2</span>
+          <span class="chapter-num">1-2</span>
           <span class="chapter-title">路地裏</span>
           <span class="chapter-arr" id="chapter-arr-1">▾</span>
         </button>
@@ -744,7 +753,7 @@
       </div>
       <div class="chapter-item" id="chapter-item-2">
         <button class="chapter-header" onclick="toggleChapter(2)">
-          <span class="chapter-num">3</span>
+          <span class="chapter-num">1-3</span>
           <span class="chapter-title">Under tone</span>
           <span class="chapter-arr" id="chapter-arr-2">▾</span>
         </button>
@@ -752,7 +761,7 @@
       </div>
       <div class="chapter-item" id="chapter-item-3" style="display:none;">
         <button class="chapter-header" onclick="toggleChapter(3)">
-          <span class="chapter-num">4</span>
+          <span class="chapter-num">1-4</span>
           <span class="chapter-title">店主</span>
           <span class="chapter-arr" id="chapter-arr-3">▾</span>
         </button>
@@ -760,11 +769,20 @@
       </div>
       <div class="chapter-item" id="chapter-item-4" style="display:none;">
         <button class="chapter-header" onclick="toggleChapter(4)">
-          <span class="chapter-num">5</span>
+          <span class="chapter-num">1-5</span>
           <span class="chapter-title">帰り道</span>
           <span class="chapter-arr" id="chapter-arr-4">▾</span>
         </button>
         <div class="chapter-body" id="chapter-body-4"><p class="chapter-text" id="chapter-text-4"></p></div>
+      </div>
+      <p class="chapter-section-label" id="chapter-section-2" style="display:none;">第二章</p>
+      <div class="chapter-item" id="chapter-item-5" style="display:none;">
+        <button class="chapter-header" onclick="toggleChapter(5)">
+          <span class="chapter-num">2-1</span>
+          <span class="chapter-title">仕事終わり</span>
+          <span class="chapter-arr" id="chapter-arr-5">▾</span>
+        </button>
+        <div class="chapter-body" id="chapter-body-5"><p class="chapter-text" id="chapter-text-5"></p></div>
       </div>
     </div>
   </div>
@@ -1145,33 +1163,39 @@
   /* ── Chapter texts (prose) ── */
   var ALL_CHAPTERS = [
     {
-      label: '1.  分かれ道',
+      label: '1-1.  分かれ道',
       text:
 '　ライブ終わり。\n\n　夜の空気が少しだけ冷たい。\n\n　コンビニの袋を片手に、\n　三人で駅へ向かって歩いていた。\n\n「腹減った」\n\n　ハヤテが言う。\n\n「さっき食っただろ」\n\n「ラーメンは別腹」\n\n「それ使い方違うだろ」\n\n　コウタが呆れた顔をする。\n\n　ヒナタは少し後ろを歩きながら、\n　何も言わない。\n\n　ただ、\n　ふと足を止めた。\n\n「……ん」\n\n「どうした？」\n\n　ヒナタは、\n　道路脇の細い道を見ていた。\n\n　路地裏。\n\n　前にも通った場所。\n\n　古いビルと古い壁に挟まれた、\n　少し暗い道。\n\n「……ここ」\n\n　コウタが少し眉を上げる。\n\n「あ」\n\n　ハヤテも思い出した顔をした。\n\n　前に来た時。\n\n　あの店があった場所。\n\n　地図にもなくて、\n　帰る頃には消えていた店。\n\n　少しだけ静かになる。\n\n「……行く？」\n\n　ハヤテが笑う。\n\n　誰も返事をしないまま、\n　三人は路地裏を見た。'
     },
     {
-      label: '2.  路地裏',
+      label: '1-2.  路地裏',
       text:
 '　路地に入る。\n\n　少し進んだだけなのに、\n　外の音が遠くなった気がした。\n\n　車の音も、\n　人の話し声も、\n　少しだけ薄くなる。\n\n「……こんな長かったっけ」\n\n　ハヤテが辺りを見回す。\n\n「いや」\n\n　コウタが短く返す。\n\n　前に来た時も、\n　同じことを思った気がした。\n\n　古い壁。\n\n　並んだ室外機。\n\n　ひび割れたアスファルト。\n\n　何も変わっていないのに、\n　少しだけ違う。\n\n　その時。\n\n　奥の方に、\n　白い灯りが見えた。\n\n　ヒナタが少しだけ目を細める。\n\n「……あった」'
     },
     {
-      label: '3.  Under tone',
+      label: '1-3.  Under tone',
       text:
 '　店の前に立つ。\n\n　前と変わらない。\n\n　小さな白い灯り。\n\n　看板のない入口。\n\n　少し曇ったガラス越しに、\n　棚だけがぼんやり見えている。\n\n　でも、\n　前と同じはずなのに。\n\n「……なんか増えてない？」\n\n　ハヤテがガラスに顔を近づける。\n\n「増えてる」\n\n　コウタが即答した。\n\n　前はなかった棚。\n\n　前はなかった小さな箱。\n\n　奥には、\n　見覚えのないものも並んでいる。\n\n　ヒナタは黙ったまま、\n　入口の横を見ていた。\n\n「……前なかった」\n\n「なにが？」\n\n　指先の先。\n\n　小さな木のプレート。\n\n　手書きで文字が書かれている。\n\n『置いていった音を返しています』\n\n　少しだけ静かになる。\n\n　ハヤテが笑った。\n\n「……入る？」'
     },
     {
-      label: '4.  店主',
+      label: '1-4.  店主',
       text:
 '　店主は店の奥に静かに座っていた。\n\n　コウタは少し眉をひそめる。\n\n　違和感。\n\n　前に来た時は、\n　もっと年上に見えた。\n\n　でも今日は、\n　同じくらい。\n\n　……いや、\n　もっと下かもしれない。\n\n　ランプに照らされた白い髪が、\n　薄暗い店内でぼんやり光っている。\n\n「なあ、やっぱり……」\n\n　コウタが言いかける。\n\n「……鳴ってる」\n\n　ヒナタだった。\n\n「また？」\n\n　ハヤテが笑う。\n\n　いつもの調子。\n\n　でも、\n　ヒナタはもう歩き出していた。\n\n　迷わない。\n\n　ハヤテは小さく息を吐いて、\n　諦めたように後ろをついていく。\n\n　コウタだけが、\n　その場に残った。\n\n　足が進まない。\n\n　その時。\n\n『迷っているな』\n\n　知らない声。\n\n『そろそろ選ぶか』\n\n　また別の声。\n\n『これで、よかったの？』\n\n　老人。\n\n　女の人。\n\n　若い男。\n\n　誰の声なのか分からない。\n\n　頭の中で、\n　順番もなく重なっていく。\n\n　違和感だけが先に立つ。\n\n　ふと顔を上げる。\n\n　店主と目が合った。\n\n　静かに笑う。\n\n「……また、来ると思ってた」\n\n　コウタは少しだけ眉をひそめる。\n\n「……俺？」\n\n　返事はない。\n\n　代わりに、\n　カウンターの横へ手を伸ばした。\n\n　カサ、と小さな音。\n\n　古びた箱が置かれる。\n\n　白い縁。\n\n　少し擦れた角。\n\n　見たことのないカード。\n\n「選べ」\n\n「は？」\n\n　ハヤテが笑う。\n\n「急だな」\n\n　ヒナタは何も言わない。\n\n　ただ、\n　カードを見ていた。\n\n「今鳴っているものは、\n　隠せない」\n\n　ランプの灯りが、\n　カードの端を少しだけ照らした。'
     },
     {
-      label: '5.  帰り道',
+      label: '1-5.  帰り道',
       text:
 '「見てこれ。買っちゃった」\n\n　ハヤテが嬉しそうに、\n　二人へ見せる。\n\n　手のひらサイズの、\n　よく分からないマスコット。\n\n　丸い目。\n\n　口だけ笑っている。\n\n「何だそれ。怖すぎるだろ」\n\n　コウタが眉をひそめる。\n\n　ヒナタも少しだけ見る。\n\n「趣味悪い」\n\n　短く刺す。\n\n「ひどくない？」\n\n　ハヤテが笑った。\n\n　指先でマスコットをくるくる回しながら、\n　前を歩く。\n\n「変な店だったな」\n\n　少しだけ間が空く。\n\n「……でも、悪くない」\n\n　ヒナタが小さく息を吐いた。\n\n　コウタは何も言わない。\n\n　少し歩いたところで、\n　一度だけ振り返る。\n\n　店の灯りは、\n　まだ静かに点いていた。\n\n　その時。\n\n「まだ、迷ってる？」\n\n　耳元で、\n　声が聞こえた気がした。\n\n　背筋が冷える。\n\n　思わず店の方を見る。\n\n　ランプの灯りの奥。\n\n　店主がこちらを見ていた。\n\n　口元だけ、\n　少し笑っている。\n\n「……きっと、また来る」\n\n　聞こえないはずの声が、\n　聞こえた気がした。\n\n　コウタは目をそらす。\n\n　二人の後を追う。\n\n　またひとつ、\n　足音が多く聞こえた気がした。'
+    },
+    {
+      label: '2-1.  仕事終わり',
+      text:
+'仕事終わり。\n\n　いつものバーを出る。\n\n　カクテルの甘い香りが、\n　まだ少しだけ残っていた。\n\n　夜風が気持ちいい。\n\n　街はもう静かになり始めていて、\n　閉まりかけの店のシャッター音や、\n　遠くの車の走る音だけが残っている。\n\n　ハヤテはポケットに手を入れて、\n　なんとなく歩いた。\n\n　街灯の下。\n\n　壁際に並んだ自転車。\n\n　誰かが落としたレシート。\n\n　細い路地。\n\n　ふと、気になるものがあるたび、\n　立ち止まっては少し覗く。\n\n　なんとなく。\n\n　ほんとに、なんとなく。\n\n　足が止まった。\n\n　薄暗い路地の先。\n\n　見覚えのある看板。\n\n　Under tone\n\n　──ひとつ多い音に、気づく場所。\n\n「また来ちゃった」\n\n　小さく笑う。\n\n　ドアを開ける。\n\n　チリン。\n\n　鈴が鳴る。\n\n　店の奥。\n\n　相変わらず店主は座っていた。\n\n「……ども」\n\n　軽く手を上げる。\n\n「……」\n\n　歓迎も拒否もない。\n\n　ただ見ている。\n\n　ハヤテは適当に棚を見始める。\n\n　透明な石。\n\n　小さな鈴。\n\n　古い鍵。\n\n　よく分からないものばかり。\n\n　鈴を軽く鳴らす。\n\n　チリ、と小さい音。\n\n　次に、\n　半透明の石をランプへかざす。\n\n「なあ」\n\n「この店、なんなの」\n\n　振り返らずに聞く。\n\n　少しだけ間。\n\n「……ひとつ多い音を置いている」\n\n「音？」\n\n　ハヤテが笑う。\n\n「ヒナタみたいなこと言うな」\n\n　店主の視線が、\n　ふと止まる。\n\n　ハヤテの手の中。\n\n　小さな石ころ。\n\n「……それ」\n\n「ん？」\n\n「交換してやってもいい」\n\n　ポケットを探る。\n\n　出てきたのは、\n　バーでもらった紙のコースター。\n\n「嫌だよ」\n\n「これ、地味に集めてんだ」\n\n「違う」\n\n「逆」\n\n　視線はコースターじゃない。\n\n　石の方だった。\n\n「……あ、これ？」\n\n　さっき、\n　なんとなく拾ったやつ。\n\n「見せて」\n\n　店主はルーペを出した。\n\n　光に当てる。\n\n　角度を変える。\n\n　小さく表面を削る。\n\n　パキ。\n\n　欠けた断面を見て、\n　少し止まる。\n\n「……悪くない」\n\n　ハヤテが身を乗り出す。\n\n「え、面白」\n\n「なあ」\n\n「名前なんていうの」\n\n　店主は答えない。\n\n「これから通うならさ」\n\n「覚えといた方がいいじゃん？」\n\n　少し沈黙。\n\n「……ナギ」\n\n「ナギ」\n\n　確かめるみたいに繰り返す。\n\n　カウンターへ座る。\n\n　肘をついて身を乗り出した。\n\n「何歳？」\n\n「彼女いる？」\n\n「好きな食べ物は？」\n\n「店、繁盛してる？」\n\n「歌とか好き？」\n\n「……」\n\n　ナギは黙っている。\n\n　ハヤテは気にしない。\n\n　欠けた石の欠片を指先で転がした。\n\n「こういうのってさ」\n\n「カラスとか拾っていくのかな」\n\n「……お前」\n\n　ナギが少し笑う。\n\n「距離詰めるの早すぎだろ」'
     }
   ];
 
   /* ── State vars ── */
+  var ch21Unlocked = localStorage.getItem('sf_undertone_ch21_unlocked') === 'true';
   var tarotMode = 'oracle';
   var spreadDraws = [];
   var spreadFlipped = [false, false, false];
@@ -1571,7 +1595,9 @@
       if (textEl) textEl.textContent = ch.text;
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
-      if (i === 4) {
+      if (i === 5) {
+        item.style.display = ch21Unlocked ? '' : 'none';
+      } else if (i === 4) {
         item.style.display = ch5Unlocked ? '' : 'none';
       } else if (i === 3) {
         item.style.display = visited ? '' : 'none';
@@ -1579,11 +1605,14 @@
         item.style.display = i <= maxScene ? '' : 'none';
       }
     });
+    // 第二章ラベルはchapter-item-5の表示に連動
+    var sec2 = document.getElementById('chapter-section-2');
+    if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
   }
 
   function openChapter(idx) {
     // Close all
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 6; i++) {
       var b = document.getElementById('chapter-body-' + i);
       if (b) b.style.display = 'none';
       var arr = document.getElementById('chapter-arr-' + i);
