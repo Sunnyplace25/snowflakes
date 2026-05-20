@@ -1788,10 +1788,13 @@ function submitUtPw() {
   }
 
   /* ── Explore ── */
+  var _firstHotspotOfLoop = false;
+
   window.goExplore = function() {
     document.getElementById('explore-state').style.display = 'block';
     document.getElementById('shop-state').style.display = 'none';
     currentScene = 0;
+    if (exploreCount >= 1) _firstHotspotOfLoop = true;
     // 2回目以降は「店内へ」ボタンを横並びで表示
     var skipBtn = document.getElementById('skip-to-shop-btn');
     if (skipBtn) skipBtn.style.display = visited ? '' : 'none';
@@ -2075,13 +2078,13 @@ function submitUtPw() {
     });
   }
 
-  function showStoneDiscovery(raw) {
+  function showStoneDiscovery(raw, isLoopFirst) {
     var pop = document.getElementById('stone-discovery-popup');
     var img = document.getElementById('stone-discovery-img');
     var cap = document.getElementById('stone-discovery-caption');
     if (!pop) return;
     img.src = RAW_STONE_IMG[raw.id] || '../../item/rawstone.png';
-    cap.textContent = 'なぜか、気になる。';
+    cap.textContent = 'なぜか、気になる。他にもあるかもしれない。';
     pop.style.display = 'flex';
     requestAnimationFrame(function() {
       requestAnimationFrame(function() { pop.style.opacity = '1'; });
@@ -2109,17 +2112,22 @@ function submitUtPw() {
     stoneFoundEl.style.display = 'none';
     stoneFoundEl.textContent = '';
     var stoneFound = false;
-    if (exploreCount >= 1 && Math.random() < 0.15) {
+    var dropRate = (_firstHotspotOfLoop) ? 1.0 : 0.15;
+    if (exploreCount >= 1 && Math.random() < dropRate) {
       var seenBefore = getSeenRawTypes();
       var raw = rollRawStone();
       var isFirstFind = seenBefore.indexOf(raw.id) === -1;
+      var isLoopFirst = _firstHotspotOfLoop;
+      _firstHotspotOfLoop = false;
       addRawStone(raw.id);
       stoneFoundEl.textContent = '── 小さな石を拾った';
       stoneFoundEl.style.display = 'block';
       stoneFound = true;
-      if (isFirstFind) {
-        setTimeout(function() { showStoneDiscovery(raw); }, 600);
+      if (isFirstFind || isLoopFirst) {
+        setTimeout(function() { showStoneDiscovery(raw, isLoopFirst); }, 600);
       }
+    } else {
+      _firstHotspotOfLoop = false;
     }
     document.getElementById('hotspot-popup').classList.add('show');
     if (stoneFound) {
