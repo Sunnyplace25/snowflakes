@@ -621,11 +621,11 @@ function sfShare() {
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td style="padding:4px 0;color:#94a3b8;">❄5 リプレイ</td>
-            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">3%</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">8%</td>
           </tr>
           <tr>
             <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
-            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">5%</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">12%</td>
           </tr>
         </table>
 
@@ -1020,7 +1020,7 @@ function sfShare() {
     var rc = CTYPES[Math.floor(Math.random() * CTYPES.length)];
     var count = Math.floor(Math.random() * 4) + 2; // 2〜5個確定
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
-    var replayProtein = Math.random() < 0.03;
+    var replayProtein = Math.random() < 0.08;
     if (replayProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
@@ -1073,8 +1073,8 @@ function sfShare() {
     var pickAmt = Math.random() < 0.05 ? 2 : 1;
     SfSnow.addPick(pickAmt);
     pickCount = pickAmt;
-    // プロテインコーヒー：5%
-    var tenProtein = Math.random() < 0.05;
+    // プロテインコーヒー：12%
+    var tenProtein = Math.random() < 0.12;
     if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
