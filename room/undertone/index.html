@@ -686,6 +686,26 @@
 
     /* ── CHAPTER LIST ── */
     .chapter-list { margin-top:16px; }
+    /* アコーディオン章セクション */
+    .ch-section { border-top:1px solid rgba(255,255,255,0.05); }
+    .ch-section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      width:100%; background:none; border:none; cursor:pointer;
+      padding:14px 16px; text-align:left;
+    }
+    .ch-section-name {
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:6px; color:#64748b;
+    }
+    .ch-section-arr {
+      font-size:18px; color:#475569;
+      transition:transform 0.3s ease; display:inline-block;
+    }
+    .ch-section-arr.open { transform:rotate(90deg); }
+    .ch-section-body {
+      overflow:hidden; max-height:0;
+      transition:max-height 0.35s ease;
+    }
     .chapter-item { border-top:1px solid rgba(255,255,255,0.04); }
     .chapter-item:last-of-type { border-bottom:1px solid rgba(255,255,255,0.04); }
     .chapter-header {
@@ -775,54 +795,74 @@
 
     <!-- Chapter list (tap to open prose popup) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
-      <p class="chapter-section-label">第一章</p>
-      <div class="chapter-item" id="chapter-item-0">
-        <button class="chapter-header" onclick="openChapterPopup(0)">
-          <span class="chapter-num">1-1</span>
-          <span class="chapter-title">分かれ道</span>
-          <span class="chapter-arr">▶</span>
+
+      <!-- 第一章 アコーディオン -->
+      <div class="ch-section" id="ch-section-1">
+        <button class="ch-section-header" onclick="toggleChSection(1)">
+          <span class="ch-section-name">第一章</span>
+          <span class="ch-section-arr" id="ch-arr-1">›</span>
         </button>
+        <div class="ch-section-body" id="ch-body-1">
+          <div class="chapter-item" id="chapter-item-0">
+            <button class="chapter-header" onclick="openChapterPopup(0)">
+              <span class="chapter-num">1-1</span>
+              <span class="chapter-title">分かれ道</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+          <div class="chapter-item" id="chapter-item-1">
+            <button class="chapter-header" onclick="openChapterPopup(1)">
+              <span class="chapter-num">1-2</span>
+              <span class="chapter-title">路地裏</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+          <div class="chapter-item" id="chapter-item-2">
+            <button class="chapter-header" onclick="openChapterPopup(2)">
+              <span class="chapter-num">1-3</span>
+              <span class="chapter-title">Under tone</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+          <div class="chapter-item" id="chapter-item-3" style="display:none;">
+            <button class="chapter-header" onclick="openChapterPopup(3)">
+              <span class="chapter-num">1-4</span>
+              <span class="chapter-title">店主</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+          <div class="chapter-item" id="chapter-item-4" style="display:none;">
+            <button class="chapter-header" onclick="openChapterPopup(4)">
+              <span class="chapter-num">1-5</span>
+              <span class="chapter-title">帰り道</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="chapter-item" id="chapter-item-1">
-        <button class="chapter-header" onclick="openChapterPopup(1)">
-          <span class="chapter-num">1-2</span>
-          <span class="chapter-title">路地裏</span>
-          <span class="chapter-arr">▶</span>
+
+      <!-- 第二章 アコーディオン -->
+      <div class="ch-section" id="ch-section-2" style="display:none;">
+        <button class="ch-section-header" onclick="toggleChSection(2)">
+          <span class="ch-section-name">第二章</span>
+          <span class="ch-section-arr" id="ch-arr-2">›</span>
         </button>
+        <div class="ch-section-body" id="ch-body-2">
+          <div class="chapter-item" id="chapter-item-5">
+            <button class="chapter-header" onclick="openChapterPopup(5)">
+              <span class="chapter-num">2-1</span>
+              <span class="chapter-title">仕事終わり</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="chapter-item" id="chapter-item-2">
-        <button class="chapter-header" onclick="openChapterPopup(2)">
-          <span class="chapter-num">1-3</span>
-          <span class="chapter-title">Under tone</span>
-          <span class="chapter-arr">▶</span>
-        </button>
-      </div>
-      <div class="chapter-item" id="chapter-item-3" style="display:none;">
-        <button class="chapter-header" onclick="openChapterPopup(3)">
-          <span class="chapter-num">1-4</span>
-          <span class="chapter-title">店主</span>
-          <span class="chapter-arr">▶</span>
-        </button>
-      </div>
-      <div class="chapter-item" id="chapter-item-4" style="display:none;">
-        <button class="chapter-header" onclick="openChapterPopup(4)">
-          <span class="chapter-num">1-5</span>
-          <span class="chapter-title">帰り道</span>
-          <span class="chapter-arr">▶</span>
-        </button>
-      </div>
-      <p class="chapter-section-label" id="chapter-section-2" style="display:none;">第二章</p>
-      <div class="chapter-item" id="chapter-item-5" style="display:none;">
-        <button class="chapter-header" onclick="openChapterPopup(5)">
-          <span class="chapter-num">2-1</span>
-          <span class="chapter-title">仕事終わり</span>
-          <span class="chapter-arr">▶</span>
-        </button>
-      </div>
+
+      <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
-        <a href="../../sweets/index.html" class="ch-back-btn">帰る</a>
         <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()">第2章に進む</button>
         <p class="ch-next-cond" id="ch-next-cond"></p>
+        <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;margin-top:20px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
       </div>
     </div>
   </div>
@@ -1787,9 +1827,32 @@ function submitUtPw() {
     }
   }
 
+  window.toggleChSection = function(n) {
+    var body = document.getElementById('ch-body-' + n);
+    var arr  = document.getElementById('ch-arr-' + n);
+    if (!body) return;
+    var isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    if (isOpen) {
+      body.style.maxHeight = '0px';
+      if (arr) arr.classList.remove('open');
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      if (arr) arr.classList.add('open');
+    }
+  };
+
+  function openChSection(n) {
+    var body = document.getElementById('ch-body-' + n);
+    var arr  = document.getElementById('ch-arr-' + n);
+    if (!body) return;
+    body.style.maxHeight = body.scrollHeight + 'px';
+    if (arr) arr.classList.add('open');
+  }
+
   function renderChapterList() {
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
+    // 各話の表示制御
     ALL_CHAPTERS.forEach(function(ch, i) {
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
@@ -1803,9 +1866,15 @@ function submitUtPw() {
         item.style.display = i <= maxScene ? '' : 'none';
       }
     });
-    var sec2 = document.getElementById('chapter-section-2');
-    if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
-    // フッター（帰る・第2章へ）は1-5解放後に表示
+    // 第二章セクション表示
+    var sec2 = document.getElementById('ch-section-2');
+    if (sec2) {
+      sec2.style.display = ch21Unlocked ? '' : 'none';
+      if (ch21Unlocked) openChSection(2);
+    }
+    // 最新解放話が属する章を自動オープン
+    openChSection(1);
+    // フッター
     var footer = document.getElementById('chapter-footer');
     if (footer) footer.style.display = ch5Unlocked ? '' : 'none';
     if (ch5Unlocked) updateCh2Btn();
