@@ -905,6 +905,32 @@
   </div>
 </div>
 
+<script>
+/* パスワードモーダル（IIFE外で独立定義） */
+function openUtPwModal() {
+  var m = document.getElementById('ut-pw-modal');
+  m.style.display = 'flex';
+  var inp = document.getElementById('ut-pw-input');
+  inp.value = '';
+  document.getElementById('ut-pw-err').textContent = '';
+  setTimeout(function() { inp.focus(); }, 100);
+}
+function closeUtPwModal() {
+  document.getElementById('ut-pw-modal').style.display = 'none';
+}
+function submitUtPw() {
+  var val = document.getElementById('ut-pw-input').value;
+  if (val === 'HARDGUMI') {
+    localStorage.setItem('sf_undertone_admin', 'true');
+    document.getElementById('ut-pw-modal').style.display = 'none';
+    location.reload();
+  } else {
+    document.getElementById('ut-pw-err').textContent = '── incorrect ──';
+    document.getElementById('ut-pw-input').value = '';
+  }
+}
+</script>
+
 <!-- Hotspot popup -->
 <div class="hotspot-popup" id="hotspot-popup">
   <div class="hotspot-card">
@@ -1143,29 +1169,6 @@
   if (new URLSearchParams(location.search).get('unlock') === '1') {
     localStorage.setItem('sf_undertone_admin', 'true');
   }
-
-  /* ── Password modal ── */
-  window.openUtPwModal = function() {
-    var m = document.getElementById('ut-pw-modal');
-    m.style.display = 'flex';
-    document.getElementById('ut-pw-input').value = '';
-    document.getElementById('ut-pw-err').textContent = '';
-    setTimeout(function() { document.getElementById('ut-pw-input').focus(); }, 100);
-  };
-  window.closeUtPwModal = function() {
-    document.getElementById('ut-pw-modal').style.display = 'none';
-  };
-  window.submitUtPw = function() {
-    var val = document.getElementById('ut-pw-input').value;
-    if (val === 'HARDGUMI') {
-      localStorage.setItem('sf_undertone_admin', 'true');
-      document.getElementById('ut-pw-modal').style.display = 'none';
-      init();
-    } else {
-      document.getElementById('ut-pw-err').textContent = '── incorrect ──';
-      document.getElementById('ut-pw-input').value = '';
-    }
-  };
 
   /* ── isCoreFan / admin check ── */
   function isCoreFan() {
