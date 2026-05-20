@@ -146,22 +146,23 @@
 
     /* Hotspot popup */
     .hotspot-popup {
-      position:fixed; inset:0; z-index:200;
-      display:none; align-items:center; justify-content:center;
-      padding:20px;
-      background:rgba(8,13,24,0.88);
-      backdrop-filter:blur(10px);
+      position:fixed; bottom:0; left:0; right:0; z-index:200;
+      display:none; align-items:flex-end; justify-content:center;
+      padding:0 16px 32px;
+      pointer-events:none;
     }
     .hotspot-popup.show { display:flex; }
     .hotspot-card {
-      background:rgba(13,21,38,0.99);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:20px; padding:28px 24px;
-      max-width:320px; width:100%; text-align:center;
+      background:rgba(10,16,30,0.97);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px 20px 16px 16px; padding:24px 24px 20px;
+      max-width:480px; width:100%; text-align:center;
       animation:cardIn 0.35s cubic-bezier(0.22,1,0.36,1);
+      pointer-events:auto;
+      box-shadow:0 -8px 32px rgba(0,0,0,0.5);
     }
     @keyframes cardIn {
-      from { opacity:0; transform:scale(0.94) translateY(10px); }
+      from { opacity:0; transform:translateY(20px); }
       to   { opacity:1; transform:none; }
     }
     .hotspot-label {
