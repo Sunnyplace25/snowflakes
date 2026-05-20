@@ -4348,8 +4348,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           if (!SfSnow.isUnlocked(itemId)) {
             SfSnow.unlockItem(itemId);
             if (typeof renderItemRows === 'function') renderItemRows();
+            showNoteItemGet(itemId); // 初回のみアイテム入手表示
+          } else {
+            showCharaPopupOnly(itemId); // 2回目以降はキャラポップアップのみ
           }
-          showNoteItemGet(itemId);
         }
       });
     }
@@ -4371,6 +4373,26 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       closeBtn.style.borderColor  = d.color;
       closeBtn.style.background   = 'rgba(255,255,255,0.05)';
       document.getElementById('note-item-popup').classList.add('show');
+    }
+
+    // キャラポップアップのみ表示（アイテム入手表示なし・毎回用）
+    function showCharaPopupOnly(id) {
+      var d = NOTE_ITEM_DATA[id];
+      if (!d) return;
+      var popup  = document.getElementById('chara-popup');
+      var nameEl = document.getElementById('chara-name');
+      var lineEl = document.getElementById('chara-line');
+      var faceEl = document.getElementById('chara-face');
+      if (!popup) return;
+      nameEl.textContent = d.chara;
+      nameEl.style.color = d.charaColor;
+      lineEl.textContent = d.charaLine;
+      faceEl.src = d.charaImg;
+      faceEl.classList.remove('bg-remove');
+      faceEl.style.width = (d.chara === 'AKARI') ? '420px' : '';
+      popup.style.display = '';
+      popup.classList.add('show');
+      setTimeout(function() { popup.classList.remove('show'); }, 5000);
     }
 
     function closeNoteItemPopup() {
@@ -5158,8 +5180,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!SfSnow.isUnlocked(key)) {
       SfSnow.unlockItem(key);
       if (typeof renderItemRows === 'function') renderItemRows();
+      showNoteItemGet(key); // 初回のみアイテム入手表示
+    } else {
+      showCharaPopupOnly(key); // 2回目以降はキャラポップアップのみ
     }
-    showNoteItemGet(key);
   }
 
   function doUnlockSong(id) {
