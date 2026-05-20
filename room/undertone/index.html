@@ -923,7 +923,7 @@ function submitUtPw() {
   if (val === 'HARDGUMI') {
     localStorage.setItem('sf_undertone_admin', 'true');
     document.getElementById('ut-pw-modal').style.display = 'none';
-    location.reload();
+    if (window.utInit) window.utInit();
   } else {
     document.getElementById('ut-pw-err').textContent = '── incorrect ──';
     document.getElementById('ut-pw-input').value = '';
@@ -2759,6 +2759,7 @@ function submitUtPw() {
 
   /* ── Boot ── */
   document.addEventListener('DOMContentLoaded', init);
+  window.utInit = init;
 
 })();
 </script>
