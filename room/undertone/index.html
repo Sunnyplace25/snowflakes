@@ -904,25 +904,24 @@
       <button class="choose-item" onclick="openTarot('oracle')">
         <span class="choose-mark">◯</span>
         <span class="choose-text">一枚引く</span>
-        <span class="choose-sub">ONE ORACLE</span>
+        <span class="choose-sub">ONE ORACLE · 5 Snow</span>
       </button>
       <button class="choose-item" onclick="openTarot('yesno')">
         <span class="choose-mark">◯</span>
         <span class="choose-text">Yes / No を聞く</span>
-        <span class="choose-sub">YES · NO</span>
+        <span class="choose-sub">YES · NO · 10 Snow</span>
       </button>
       <button class="choose-item choose-item--gold" onclick="openSpread()">
         <span class="choose-mark">◯</span>
         <span class="choose-text">深く見る</span>
-        <span class="choose-sub">3 CARDS</span>
+        <span class="choose-sub">3 CARDS · 15 Snow</span>
       </button>
       <button class="choose-item choose-item--stone" id="appraise-btn" onclick="appraiseStone()" style="display:none;">
         <span class="choose-mark">◎</span>
         <span class="choose-text">石を見てもらう</span>
-        <span class="choose-sub" id="rawstone-sub">APPRAISE</span>
+        <span class="choose-sub" id="rawstone-sub">APPRAISE · 5 Snow</span>
       </button>
     </div>
-    <p id="snow-insufficient-msg" style="display:none;text-align:center;font-size:12px;color:#7dd3fc;margin-top:10px;letter-spacing:1px;opacity:0.8;">Snow が足りない</p>
     </div><!-- /shop-panel-oracle -->
 
     <!-- 店内を見る パネル（ch21解放後） -->
@@ -942,7 +941,7 @@
     </div>
 
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
-    <button id="equip-open-btn" onclick="openEquip()" style="display:none;margin-top:10px;width:100%;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;">装備を見る</button>
+    <button id="equip-open-btn" onclick="openEquip()" style="display:none;margin-top:10px;width:100%;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;">持ち物を見る</button>
     <p class="top-credit">Snow flakes Tarot · Words &amp; Interpretation · Kotori Yamabuki</p>
   </div>
 </div>
@@ -1008,6 +1007,23 @@ function submitUtPw() {
 
 <!-- Shopkeeper chibi popup (removed) -->
 
+<!-- Snow insufficient dialog -->
+<div id="snow-dialog" style="display:none;position:fixed;inset:0;z-index:450;background:rgba(8,13,24,0.9);backdrop-filter:blur(16px);align-items:flex-end;justify-content:center;padding:0 16px 40px;">
+  <div style="background:rgba(10,16,30,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:20px 20px 16px 16px;padding:28px 24px 24px;max-width:480px;width:100%;animation:cardIn 0.35s cubic-bezier(0.22,1,0.36,1);">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#475569;text-align:center;margin-bottom:14px;">UNDER TONE</p>
+    <p id="snow-dialog-msg" style="font-size:14px;color:#cbd5e1;line-height:2.2;text-align:center;margin-bottom:22px;white-space:pre-line;"></p>
+    <div id="snow-dialog-btns" style="display:flex;flex-direction:column;gap:10px;">
+      <button id="snow-dialog-exchange-btn" onclick="exchangeStoneForSnow()" style="display:none;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">する</button>
+      <button onclick="closeSnowDialog()" style="background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">やめる</button>
+      <button onclick="toggleSnowEarnLinks()" style="background:none;border:none;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;padding:6px;">貯める ↓</button>
+    </div>
+    <div id="snow-earn-links" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">
+      <a href="https://ncode.syosetu.com/n9009lo/" target="_blank" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">→ 小説を読む（SWEETsでSnow獲得）</a>
+      <a href="../../sweets/" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">→ SWEETsでSnowを集める</a>
+      <a href="../../" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;">→ トップページを見る</a>
+    </div>
+  </div>
+</div>
 
 <!-- Dual choice overlay -->
 <div id="dual-overlay" style="position:fixed;inset:0;z-index:400;background:rgba(8,13,24,0.97);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;opacity:0;pointer-events:none;transition:opacity 0.5s;">
@@ -1104,8 +1120,12 @@ function submitUtPw() {
 
 <!-- Equipment overlay -->
 <div id="equip-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(8,13,24,0.97);overflow-y:auto;padding:48px 20px 80px;">
-  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:8px;color:#475569;text-align:center;margin-bottom:6px;">EQUIPMENT</p>
-  <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;color:#e2e8f0;text-align:center;margin-bottom:32px;">装備</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:8px;color:#475569;text-align:center;margin-bottom:6px;">INVENTORY</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;color:#e2e8f0;text-align:center;margin-bottom:24px;">持ち物</p>
+  <div id="equip-rawstone-row" style="max-width:480px;margin:0 auto 20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#94a3b8;">未鑑定の石</p>
+    <p id="equip-rawstone-count" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;">× 0</p>
+  </div>
   <div id="equip-cols" style="display:flex;gap:12px;max-width:480px;margin:0 auto;"></div>
   <div style="text-align:center;margin-top:32px;">
     <button onclick="closeEquip()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#475569;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px 32px;cursor:pointer;">閉じる</button>
@@ -2319,12 +2339,37 @@ function submitUtPw() {
   }
 
   function showSnowInsufficient() {
-    var msg = document.getElementById('snow-insufficient-msg');
-    if (!msg) return;
-    msg.style.display = 'block';
-    clearTimeout(msg._hideTimer);
-    msg._hideTimer = setTimeout(function() { msg.style.display = 'none'; }, 2500);
+    var dialog = document.getElementById('snow-dialog');
+    if (!dialog) return;
+    var hasStone = getRawStones().length > 0;
+    var msg = document.getElementById('snow-dialog-msg');
+    var exBtn = document.getElementById('snow-dialog-exchange-btn');
+    var earnLinks = document.getElementById('snow-earn-links');
+    if (msg) msg.textContent = hasStone ? 'Snow がないなら\n石と交換してやる' : 'Snow が足りない';
+    if (exBtn) exBtn.style.display = hasStone ? 'block' : 'none';
+    if (earnLinks) earnLinks.style.display = 'none';
+    dialog.style.display = 'flex';
   }
+
+  window.closeSnowDialog = function() {
+    var dialog = document.getElementById('snow-dialog');
+    if (dialog) dialog.style.display = 'none';
+  };
+
+  window.toggleSnowEarnLinks = function() {
+    var links = document.getElementById('snow-earn-links');
+    if (!links) return;
+    links.style.display = links.style.display === 'none' ? 'block' : 'none';
+  };
+
+  window.exchangeStoneForSnow = function() {
+    var arr = getRawStones();
+    if (!arr.length) return;
+    shiftRawStone();
+    SfSnow.spend(-50);
+    updateAppraiseBtn();
+    closeSnowDialog();
+  };
 
   window.openTarot = function(mode) {
     var cost = (mode === 'yesno') ? 10 : 5;
@@ -2438,6 +2483,8 @@ function submitUtPw() {
   window.appraiseStone = function() {
     var arr = getRawStones();
     if (!arr.length) return;
+    if (SfSnow.getBalance() < 5) { showSnowInsufficient(); return; }
+    SfSnow.spend(5);
     var rawId = shiftRawStone();
     var rawLabel = (RAW_STONE_TYPES.filter(function(t){ return t.id === rawId; })[0] || {}).label || rawId;
     updateAppraiseBtn();
@@ -2483,6 +2530,8 @@ function submitUtPw() {
   };
 
   function renderEquip() {
+    var rawCount = document.getElementById('equip-rawstone-count');
+    if (rawCount) rawCount.textContent = '× ' + getRawStones().length;
     var cols = document.getElementById('equip-cols');
     cols.innerHTML = '';
     ['hinata','kouta','hayate'].forEach(function(ch) {

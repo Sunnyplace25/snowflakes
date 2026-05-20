@@ -497,6 +497,9 @@
     .door-hotspot.unlocked:hover .door-chibi {
       transform:translateX(-50%) translateY(-14px);
     }
+    .door-hotspot.unlocked .door-label {
+      opacity:1;
+    }
     .door-label {
       position:absolute; bottom:0; left:0; right:0;
       padding:20px 4px 10px;
@@ -4944,7 +4947,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (unlocked) {
         el.classList.remove('locked');
         el.classList.add('unlocked');
-        el.onclick = function(e) { e.stopPropagation(); location.href = d.url; };
+        var url = d.url;
+        el.onclick = function(e) { e.stopPropagation(); location.href = url; };
+        var chibi = el.querySelector('.door-chibi');
+        var label = el.querySelector('.door-label');
+        if (chibi) { chibi.style.pointerEvents = 'auto'; chibi.onclick = function(e) { e.stopPropagation(); location.href = url; }; }
+        if (label) { label.style.pointerEvents = 'auto'; label.onclick = function(e) { e.stopPropagation(); location.href = url; }; }
       } else {
         el.classList.add('locked');
         el.classList.remove('unlocked');

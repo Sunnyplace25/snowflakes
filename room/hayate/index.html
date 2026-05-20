@@ -510,13 +510,13 @@
     <div class="room-scene-wrap" id="hayate-scene">
       <img id="room-hero-img" src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
       <!-- hotspot 1 -->
-      <button class="room-hotspot" style="left:25%;top:30%;display:none;" onclick="openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
+      <button class="room-hotspot" style="left:25%;top:30%;display:none;" onclick="event.stopPropagation();openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
       <!-- hotspot 2 -->
-      <button class="room-hotspot" style="left:60%;top:20%;display:none;" onclick="openRoomHotspot('NOTEBOOK','ノートが開きっぱなし。\n数字とリズムのメモが書き込まれている')">+</button>
+      <button class="room-hotspot" style="left:60%;top:20%;display:none;" onclick="event.stopPropagation();openRoomHotspot('NOTEBOOK','ノートが開きっぱなし。\n数字とリズムのメモが書き込まれている')">+</button>
       <!-- hotspot 3 -->
-      <button class="room-hotspot" style="left:40%;top:65%;display:none;" onclick="openRoomHotspot('SNEAKERS','脱ぎっぱなしの靴。\n左右逆に置いてある')">+</button>
+      <button class="room-hotspot" style="left:40%;top:65%;display:none;" onclick="event.stopPropagation();openRoomHotspot('SNEAKERS','脱ぎっぱなしの靴。\n左右逆に置いてある')">+</button>
       <!-- hotspot 4 -->
-      <button class="room-hotspot" style="left:78%;top:55%;display:none;" onclick="openRoomHotspot('ENERGY DRINK','空き缶が三本並んでいる。\n今日だけで？')">+</button>
+      <button class="room-hotspot" style="left:78%;top:55%;display:none;" onclick="event.stopPropagation();openRoomHotspot('ENERGY DRINK','空き缶が三本並んでいる。\n今日だけで？')">+</button>
     </div>
 
     <!-- Room hotspot popup -->
