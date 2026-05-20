@@ -871,9 +871,18 @@
 
     <!-- 店内を見る パネル（ch21解放後） -->
     <div id="shop-panel-interior" style="display:none;">
-      <p class="shop-choose-label">棚を見る</p>
-      <div id="shop-interior-stones" style="margin-bottom:16px;"></div>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-top:8px;">── 準備中 ──</p>
+      <div class="scene-wrap" id="interior-scene-wrap" style="margin-bottom:14px;">
+        <img class="scene-img" id="interior-scene-img" src="shop1.png" alt="店内">
+      </div>
+      <p class="scene-counter" id="interior-counter">棚 1 / 3</p>
+      <div class="speech-bubble" id="interior-speech" style="display:none;">
+        <img class="speech-char-img" id="interior-speech-img" src="" alt="">
+        <div>
+          <p class="speech-char-name" id="interior-speech-name"></p>
+          <p class="speech-text" id="interior-speech-text"></p>
+        </div>
+      </div>
+      <button class="advance-btn" id="interior-advance-btn" onclick="advanceInterior()">次の棚を見る →</button>
     </div>
 
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
@@ -1988,7 +1997,121 @@
       oPanel.style.display = 'none'; iPanel.style.display = 'block';
       if (tOracle)   tOracle.classList.remove('active');
       if (tInterior) tInterior.classList.add('active');
+      renderInteriorScene();
     }
+  };
+
+  /* ── Interior exploration（店内） ── */
+  var interiorScene = 0;
+  var INTERIOR_SCENES = ['shop1.png','shop2.png','shop3.png'];
+
+  var INTERIOR_HOTSPOTS = [
+    // shop1 — 宝石・クリスタル棚
+    [
+      { label:'CRYSTAL',    desc:'水晶の塊。\nランプの光を集めて、内側から輝いている',        x:'52%', y:'75%',
+        chars:[{ char:'hinata', speech:'……きれい', weight:3 },{ char:'hayate', speech:'これ、触っていいの', weight:2 },{ char:'kouta', speech:'値段ついてないな', weight:1 }] },
+      { label:'LANTERN',    desc:'古いオイルランプ。\n今も静かに灯っている',                   x:'72%', y:'22%',
+        chars:[{ char:'hinata', speech:'……音が聞こえる', weight:2 },{ char:'kouta', speech:'オイルが減らない気がする', weight:3 },{ char:'hayate', speech:'雰囲気あるな', weight:1 }] },
+      { label:'GLASS BOTTLE', desc:'色のついたガラス瓶。\n中に、何かが沈んでいる',             x:'32%', y:'48%',
+        chars:[{ char:'kouta', speech:'何が入ってるんだ', weight:3 },{ char:'hayate', speech:'開けたら絶対だめなやつ', weight:2 },{ char:'hinata', speech:'……触らない方がいい', weight:1 }] },
+      { label:'JEWELRY TRAY', desc:'小さな宝石が並んでいる。\n値段はついていない',              x:'22%', y:'82%',
+        chars:[{ char:'hayate', speech:'全部欲しい', weight:2 },{ char:'hinata', speech:'……これ', weight:2 },{ char:'kouta', speech:'値段聞いていいか', weight:1 }] },
+      { label:'GLASS BALL',   desc:'霧がかかったような水晶球。\n見つめると、何かが動いた気がした', x:'82%', y:'68%',
+        chars:[{ char:'hinata', speech:'……見えてる', weight:3 },{ char:'kouta', speech:'気のせいだろ', weight:2 },{ char:'hayate', speech:'何か映ってる？', weight:1 }] },
+    ],
+    // shop2 — メトロノーム・音楽道具棚
+    [
+      { label:'METRONOME',   desc:'メトロノーム。\n動いていないのに、音が聞こえた気がした',      x:'20%', y:'28%',
+        chars:[{ char:'kouta', speech:'……動いてないのに', weight:3 },{ char:'hayate', speech:'リズム感じる', weight:2 },{ char:'hinata', speech:'……音がある', weight:1 }] },
+      { label:'TUNING FORK', desc:'音叉。\n触れると、指先が震えた',                              x:'48%', y:'22%',
+        chars:[{ char:'hinata', speech:'……共鳴してる', weight:3 },{ char:'kouta', speech:'A音だ', weight:2 },{ char:'hayate', speech:'え、震えた', weight:1 }] },
+      { label:'LIVE PASS',   desc:'Snow flakes のライブパス。\n日付が読める。\n──これは、あの日のものだ', x:'18%', y:'60%',
+        chars:[{ char:'kouta', speech:'……俺たちのやつ、なんで', weight:3 },{ char:'hayate', speech:'なんでここにあるの', weight:2 },{ char:'hinata', speech:'……置いてあった', weight:1 }] },
+      { label:'POCKET WATCH', desc:'懐中時計。\n針が止まっている。\n同じ時刻を、ずっと指している', x:'72%', y:'58%',
+        chars:[{ char:'kouta', speech:'何時に止まってるんだ', weight:2 },{ char:'hayate', speech:'直せるのかな', weight:1 },{ char:'hinata', speech:'……止まったまま', weight:3 }] },
+      { label:'LANTERN',     desc:'オイルランプ。\n棚の奥で静かに燃えている',                    x:'80%', y:'18%',
+        chars:[{ char:'hayate', speech:'奥まで光が届いてる', weight:2 },{ char:'kouta', speech:'火、消えないのか', weight:3 },{ char:'hinata', speech:'……あたたかい', weight:1 }] },
+    ],
+    // shop3 — レコード・カセット棚
+    [
+      { label:'VINYL RECORD', desc:'レコード盤。\n盤面に、傷のような模様がある',                 x:'18%', y:'78%',
+        chars:[{ char:'kouta', speech:'これ、かけられるのか', weight:3 },{ char:'hayate', speech:'レコード、初めて触った', weight:2 },{ char:'hinata', speech:'……音が残ってる', weight:1 }] },
+      { label:'CASSETTE',     desc:'ラベルのないカセットテープ。\n再生したら、何が聞こえるだろう', x:'18%', y:'48%',
+        chars:[{ char:'hinata', speech:'……聞きたい', weight:3 },{ char:'hayate', speech:'うちにウォークマンあるわ', weight:2 },{ char:'kouta', speech:'ラベル剥がしたのか最初からないのか', weight:1 }] },
+      { label:'KEYS',         desc:'山積みの古い鍵。\nどれも、用途が分からない',                  x:'68%', y:'52%',
+        chars:[{ char:'hayate', speech:'どこ開けるんだろ', weight:2 },{ char:'kouta', speech:'対応する錠前がなさそう', weight:3 },{ char:'hinata', speech:'……この形、見たことある', weight:1 }] },
+      { label:'GLASS SPHERES', desc:'小さなガラスの球が並んでいる。\nそれぞれ、色が微妙に違う',   x:'38%', y:'18%',
+        chars:[{ char:'hinata', speech:'……きれい', weight:2 },{ char:'hayate', speech:'全部ほしい', weight:2 },{ char:'kouta', speech:'何に使うんだ', weight:1 }] },
+      { label:'LANTERN',      desc:'棚の上のランプ。\nここにも、静かに火がある',                  x:'18%', y:'18%',
+        chars:[{ char:'kouta', speech:'どこにでもランプがある', weight:3 },{ char:'hayate', speech:'電気じゃないんだな', weight:2 },{ char:'hinata', speech:'……好き', weight:1 }] },
+    ],
+  ];
+
+  function renderInteriorScene() {
+    var img = document.getElementById('interior-scene-img');
+    img.classList.add('fade');
+    setTimeout(function() {
+      img.src = INTERIOR_SCENES[interiorScene];
+      img.classList.remove('fade');
+    }, 260);
+    document.getElementById('interior-counter').textContent = '棚 ' + (interiorScene + 1) + ' / ' + INTERIOR_SCENES.length;
+    document.getElementById('interior-advance-btn').textContent = interiorScene === INTERIOR_SCENES.length - 1 ? '最初の棚へ ↩' : '次の棚を見る →';
+    hideInteriorSpeech();
+    renderInteriorHotspots();
+  }
+
+  function renderInteriorHotspots() {
+    var wrap = document.getElementById('interior-scene-wrap');
+    wrap.querySelectorAll('.hotspot').forEach(function(h) { h.parentNode.removeChild(h); });
+    (INTERIOR_HOTSPOTS[interiorScene] || []).forEach(function(spot) {
+      var btn = document.createElement('button');
+      btn.className = 'hotspot';
+      btn.style.left = spot.x; btn.style.top = spot.y;
+      btn.textContent = '✦';
+      btn.onclick = function() { clickInteriorHotspot(spot); };
+      wrap.appendChild(btn);
+    });
+  }
+
+  function clickInteriorHotspot(spot) {
+    document.getElementById('hotspot-label').textContent = spot.label;
+    document.getElementById('hotspot-desc').textContent  = spot.desc;
+    var stoneFoundEl = document.getElementById('hotspot-stone-found');
+    stoneFoundEl.style.display = 'none';
+    // 20%で石ドロップ（店内でも）
+    if (Math.random() < 0.10) {
+      var raw = rollRawStone();
+      addRawStone(raw.id);
+      stoneFoundEl.textContent = '── ' + raw.label + ' を見つけた';
+      stoneFoundEl.style.display = 'block';
+      updateAppraiseBtn();
+    }
+    document.getElementById('hotspot-popup').classList.add('show');
+    if (spot.chars && spot.chars.length) {
+      var pool = [];
+      spot.chars.forEach(function(c) { for (var i = 0; i < c.weight; i++) pool.push(c); });
+      var pick = pool[Math.floor(Math.random() * pool.length)];
+      var meta = CHARS[pick.char] || CHARS.kouta;
+      showInteriorSpeech(meta, pick.speech);
+    }
+  }
+
+  function showInteriorSpeech(meta, text) {
+    var el = document.getElementById('interior-speech');
+    document.getElementById('interior-speech-img').src = meta.img;
+    document.getElementById('interior-speech-name').textContent = meta.name;
+    document.getElementById('interior-speech-name').style.color = meta.color;
+    document.getElementById('interior-speech-text').textContent = text;
+    el.style.display = 'flex';
+  }
+  function hideInteriorSpeech() {
+    document.getElementById('interior-speech').style.display = 'none';
+  }
+
+  window.advanceInterior = function() {
+    hideInteriorSpeech();
+    interiorScene = (interiorScene + 1) % INTERIOR_SCENES.length;
+    renderInteriorScene();
   };
 
   function renderStones() {
