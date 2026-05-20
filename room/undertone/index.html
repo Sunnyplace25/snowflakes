@@ -791,7 +791,10 @@
       </div>
     </div>
 
-    <button class="advance-btn" id="advance-btn" onclick="advanceScene()">進む →</button>
+    <div id="advance-wrap" style="display:flex;gap:8px;">
+      <button class="advance-btn" id="advance-btn" onclick="advanceScene()" style="flex:1;">進む →</button>
+      <button id="skip-to-shop-btn" onclick="goShop()" style="display:none;flex:1;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">店内へ →</button>
+    </div>
 
     <!-- Chapter list (tap to open prose popup) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
@@ -1743,17 +1746,9 @@ function submitUtPw() {
       return;
     }
     locked.style.display = 'none';
-    if (!visited && maxScene < 2) {
-      // 初回
+    {
+      // 常に路地裏から開始
       goExplore();
-    } else {
-      var vc = getDailyVisitCount();
-      // 3の倍数日目は再探索
-      if (vc % 3 === 0) {
-        goExplore();
-      } else {
-        goShop();
-      }
     }
   }
 
@@ -1762,6 +1757,9 @@ function submitUtPw() {
     document.getElementById('explore-state').style.display = 'block';
     document.getElementById('shop-state').style.display = 'none';
     currentScene = 0;
+    // 2回目以降は「店内へ」ボタンを横並びで表示
+    var skipBtn = document.getElementById('skip-to-shop-btn');
+    if (skipBtn) skipBtn.style.display = visited ? '' : 'none';
     // 章5: 初めてもう一度歩くを押した時（ショップ訪問後）に解放
     if (exploreCount >= 1 && !ch5Unlocked) {
       ch5Unlocked = true;
