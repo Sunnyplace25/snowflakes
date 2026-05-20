@@ -1949,9 +1949,35 @@ function submitUtPw() {
     }
   };
 
+  /* ── Sound ── */
+  var _sounds = {};
+  function getSound(key, src) {
+    if (!_sounds[key]) {
+      var a = new Audio(src);
+      a.loop = true;
+      _sounds[key] = a;
+    }
+    return _sounds[key];
+  }
+  function playProseSound(idx) {
+    stopProseSound();
+    if (idx === 1) {
+      var s = getSound('footsteps', 'sound/footsteps.mp3');
+      s.currentTime = 0;
+      s.play().catch(function(){});
+    }
+  }
+  function stopProseSound() {
+    Object.values(_sounds).forEach(function(a) {
+      a.pause();
+      a.currentTime = 0;
+    });
+  }
+
   window.openChapterPopup = function(idx) {
     var ch = ALL_CHAPTERS[idx];
     if (!ch) return;
+    playProseSound(idx);
     // 既読フラグ（2-1: index 5 を読んだか）
     if (!_seenProseScenes.has(idx)) {
       _seenProseScenes.add(idx);
@@ -2119,6 +2145,7 @@ function submitUtPw() {
   };
 
   window.closeProse = function() {
+    stopProseSound();
     document.getElementById('prose-popup').classList.remove('show');
     document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
     if (_proseCloseCallback) {
