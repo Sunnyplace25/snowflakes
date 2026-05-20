@@ -1030,13 +1030,9 @@ function submitUtPw() {
     <div id="snow-dialog-btns" style="display:flex;flex-direction:column;gap:10px;">
       <button id="snow-dialog-exchange-btn" onclick="exchangeStoneForSnow()" style="display:none;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">する</button>
       <button onclick="closeSnowDialog()" style="background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">やめる</button>
-      <button onclick="toggleSnowEarnLinks()" style="background:none;border:none;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;padding:6px;">貯める ↓</button>
+      <button id="ut-snow-checklist-toggle" onclick="toggleUtSnowChecklist()" style="background:none;border:none;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;padding:6px;">▼ 今日のSnow</button>
     </div>
-    <div id="snow-earn-links" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;">
-      <a href="https://ncode.syosetu.com/n9009lo/" target="_blank" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">→ 小説を読む（SWEETsでSnow獲得）</a>
-      <a href="../../sweets/" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">→ SWEETsでSnowを集める</a>
-      <a href="../../" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#7dd3fc;text-decoration:none;padding:8px 0;">→ トップページを見る</a>
-    </div>
+    <div id="ut-snow-checklist" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;"></div>
   </div>
 </div>
 
@@ -2463,10 +2459,67 @@ function submitUtPw() {
     if (dialog) dialog.style.display = 'none';
   };
 
-  window.toggleSnowEarnLinks = function() {
-    var links = document.getElementById('snow-earn-links');
-    if (!links) return;
-    links.style.display = links.style.display === 'none' ? 'block' : 'none';
+  var UT_SNOW_CHECKLIST = [
+    { action: 'visit_top',          label: 'トップページを見る',          pts: 10, href: '../../',                                                                        ext: false },
+    { action: 'visit_sweets',       label: 'SWEETsを見る',                pts: 10, href: '../../sweets/',                                                               ext: false },
+    { action: 'link_narou_today',   label: 'サイトバナーから最新話を読む', pts: 10, href: 'https://ncode.syosetu.com/n9009lo/',                                          ext: true  },
+    { action: 'link_novel',         label: '小説を読む',                   pts: 5,  href: 'https://ncode.syosetu.com/n9009lo/',                                          ext: true  },
+    { action: 'link_spotify',       label: 'Spotify',                      pts: 5,  href: 'https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN',                    ext: true  },
+    { action: 'link_amazon',        label: 'Amazon Music',                 pts: 5,  href: 'https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L', ext: true },
+    { action: 'link_youtube',       label: 'YouTube',                      pts: 5,  href: 'https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw',                  ext: true  },
+    { action: 'link_instagram',     label: 'Instagram',                    pts: 5,  href: 'https://www.instagram.com/snowflakes_story',                                  ext: true  },
+    { action: 'link_x',             label: 'X',                            pts: 5,  href: 'https://x.com/yayuyoyamabuki',                                                ext: true  },
+    { action: 'link_tiktok',        label: 'TikTok',                       pts: 5,  href: 'https://www.tiktok.com/@snowflakes.music',                                    ext: true  },
+    { action: 'link_taskapp',       label: 'タスクアプリ',                  pts: 5,  href: 'https://sunnyplace25.github.io/taskpwa/',                                    ext: true  },
+    { action: 'like_chara_hinata',  label: 'ヒナタをお気に入り',            pts: 5,  href: '../../',                                                                      ext: false },
+    { action: 'like_chara_kouta',   label: 'コウタをお気に入り',            pts: 5,  href: '../../',                                                                      ext: false },
+    { action: 'like_chara_hayate',  label: 'ハヤテをお気に入り',            pts: 5,  href: '../../',                                                                      ext: false },
+    { action: 'visit_kotori_room',  label: '山吹ことりの部屋を見る',        pts: 5,  href: '../../kotori.html',                                                           ext: false },
+  ];
+
+  function renderUtSnowChecklist() {
+    var container = document.getElementById('ut-snow-checklist');
+    if (!container || typeof SfSnow === 'undefined') return;
+    container.innerHTML = UT_SNOW_CHECKLIST.map(function(item) {
+      var done = SfSnow.isDone(item.action);
+      var style = 'display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);' + (item.href ? 'cursor:pointer;' : '');
+      var labelColor = done ? '#374151' : (item.href ? '#cbd5e1' : '#64748b');
+      var labelStyle = done ? 'text-decoration:line-through;color:#374151;' : '';
+      var onclick = item.href
+        ? ' onclick="handleUtChecklistClick(\'' + item.action + '\',\'' + item.href.replace(/'/g, "\\'") + '\',' + (item.ext ? 'true' : 'false') + ')"'
+        : '';
+      return '<div style="' + style + '"' + onclick + '>' +
+        '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:' + labelColor + ';letter-spacing:0.5px;">' +
+        '<span style="font-size:13px;line-height:1;">' + (done ? '☑' : '☐') + '</span>' +
+        '<span style="' + labelStyle + '">' + item.label + '</span>' +
+        '</span>' +
+        '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;color:' + (done ? '#374151' : '#64748b') + ';letter-spacing:1px;">+' + item.pts + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  window.handleUtChecklistClick = function(action, href, ext) {
+    var done = SfSnow.isDone(action);
+    if (!done) {
+      var item = UT_SNOW_CHECKLIST.filter(function(c) { return c.action === action; })[0];
+      SfSnow.addWithToast(action, item ? item.label : null);
+      renderUtSnowChecklist();
+    }
+    if (ext) {
+      window.open(href, '_blank');
+    } else {
+      location.href = href;
+    }
+  };
+
+  window.toggleUtSnowChecklist = function() {
+    var list = document.getElementById('ut-snow-checklist');
+    var btn  = document.getElementById('ut-snow-checklist-toggle');
+    if (!list) return;
+    var open = list.style.display === 'none';
+    list.style.display = open ? 'block' : 'none';
+    if (btn) btn.textContent = (open ? '▲' : '▼') + ' 今日のSnow';
+    if (open) renderUtSnowChecklist();
   };
 
   window.exchangeStoneForSnow = function() {
