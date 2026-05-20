@@ -5087,6 +5087,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (el) el.classList.add('open');
       var btn = el ? el.previousElementSibling.querySelector('.read-btn') : null;
       if (btn) btn.textContent = '閉じる';
+      // スクロール読了トリガーを登録（初回オープン時）
+      var itemId = Object.keys(NOTE_ITEM_DATA).find(function(k) {
+        return NOTE_ITEM_DATA[k].noteCardId === id;
+      });
+      if (itemId && el) attachScrollItemTrigger(el, itemId);
     }, 50);
     }); /* showConfirm callback end */
   }
