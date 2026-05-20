@@ -306,6 +306,35 @@
       transition:color 0.25s, border-color 0.25s;
     }
     .explore-btn:hover { color:#64748b; border-color:rgba(255,255,255,0.12); }
+    .chapter-footer {
+      margin-top:24px; display:flex; flex-direction:column; gap:10px;
+    }
+    .ch-back-btn {
+      display:block; width:100%; background:none;
+      border:1px solid rgba(255,255,255,0.06); border-radius:50px; padding:12px;
+      color:#475569; font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:4px; cursor:pointer;
+      text-decoration:none; text-align:center;
+      transition:color 0.25s, border-color 0.25s;
+    }
+    .ch-back-btn:hover { color:#64748b; border-color:rgba(255,255,255,0.12); }
+    .ch-next-btn {
+      display:block; width:100%; background:none;
+      border:1px solid rgba(196,181,253,0.18); border-radius:50px; padding:13px;
+      color:#c4b5fd; font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:4px; cursor:pointer;
+      transition:background 0.25s, border-color 0.25s;
+    }
+    .ch-next-btn:hover { background:rgba(196,181,253,0.05); border-color:rgba(196,181,253,0.3); }
+    .ch-next-btn:disabled {
+      color:#334155; border-color:rgba(255,255,255,0.05); cursor:default;
+    }
+    .ch-next-btn:disabled:hover { background:none; }
+    .ch-next-cond {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px; letter-spacing:2px; color:#334155;
+      text-align:center; margin-top:4px;
+    }
 
     /* ── TAROT OVERLAY ── */
     #tarot-overlay {
@@ -768,6 +797,11 @@
           <span class="chapter-title">仕事終わり</span>
           <span class="chapter-arr">▶</span>
         </button>
+      </div>
+      <div class="chapter-footer" id="chapter-footer" style="display:none;">
+        <a href="../../sweets/index.html" class="ch-back-btn">帰る</a>
+        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()">第2章に進む</button>
+        <p class="ch-next-cond" id="ch-next-cond"></p>
       </div>
     </div>
   </div>
@@ -1595,7 +1629,58 @@
     });
     var sec2 = document.getElementById('chapter-section-2');
     if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
+    // フッター（帰る・第2章へ）は1-5解放後に表示
+    var footer = document.getElementById('chapter-footer');
+    if (footer) footer.style.display = ch5Unlocked ? '' : 'none';
+    if (ch5Unlocked) updateCh2Btn();
   }
+
+  function updateCh2Btn() {
+    var btn  = document.getElementById('ch-next-btn');
+    var cond = document.getElementById('ch-next-cond');
+    if (!btn) return;
+    if (ch21Unlocked) {
+      btn.textContent = '第2章を読む';
+      btn.disabled = false;
+      if (cond) cond.textContent = '';
+      return;
+    }
+    // 条件チェック（仮：キャンディ合計×1000 ＆ 石3種すべて解放）
+    var candies = SfSnow.getCandies();
+    var totalCandy = 0;
+    for (var k in candies) totalCandy += (candies[k] || 0);
+    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
+    var ok = totalCandy >= 1000 && allStones;
+    btn.disabled = !ok;
+    if (ok) {
+      if (cond) cond.textContent = '';
+    } else {
+      var missing = [];
+      if (totalCandy < 1000) missing.push('キャンディ ' + totalCandy + ' / 1000');
+      if (!allStones) {
+        var got = STONE_ITEMS.filter(function(s) { return SfSnow.isUnlocked(s.key); }).length;
+        missing.push('石 ' + got + ' / 3');
+      }
+      if (cond) cond.textContent = missing.join('　');
+    }
+  }
+
+  window.tryUnlockCh2 = function() {
+    if (ch21Unlocked) {
+      openChapterPopup(5);
+      return;
+    }
+    var candies = SfSnow.getCandies();
+    var totalCandy = 0;
+    for (var k in candies) totalCandy += (candies[k] || 0);
+    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
+    if (totalCandy >= 1000 && allStones) {
+      ch21Unlocked = true;
+      localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+      renderChapterList();
+      openChapterPopup(5);
+    }
+  };
 
   window.openChapterPopup = function(idx) {
     var ch = ALL_CHAPTERS[idx];
