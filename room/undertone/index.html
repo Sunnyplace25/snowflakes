@@ -1972,7 +1972,7 @@ function submitUtPw() {
   function getSound(key, src) {
     if (!_sounds[key]) {
       var a = new Audio(src);
-      a.loop = true;
+      a.loop = false;
       _sounds[key] = a;
     }
     return _sounds[key];
