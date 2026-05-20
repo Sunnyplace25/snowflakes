@@ -540,6 +540,9 @@
     .choose-item--gold:hover { background:rgba(253,230,138,0.05); border-color:rgba(253,230,138,0.22); }
     .choose-item--gold .choose-text { color:#fde68a; }
     .choose-item--gold .choose-mark { color:#a16207; }
+    .choose-item--stone:hover { background:rgba(196,181,253,0.05); border-color:rgba(196,181,253,0.22); }
+    .choose-item--stone .choose-text { color:#c4b5fd; }
+    .choose-item--stone .choose-mark { color:#7c3aed; }
 
     /* ── YES/NO VERDICT ── */
     .res-yesno {
@@ -799,8 +802,12 @@
         <span class="choose-text">深く見る</span>
         <span class="choose-sub">3 CARDS</span>
       </button>
+      <button class="choose-item choose-item--stone" id="appraise-btn" onclick="appraiseStone()" style="display:none;">
+        <span class="choose-mark">◎</span>
+        <span class="choose-text">石を見てもらう</span>
+        <span class="choose-sub" id="rawstone-sub">APPRAISE</span>
+      </button>
     </div>
-    <p class="prob-note" style="margin-bottom:20px;">rare item ── 1 / 30</p>
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
   </div>
 </div>
@@ -810,6 +817,7 @@
   <div class="hotspot-card">
     <p class="hotspot-label" id="hotspot-label">FOUND</p>
     <p class="hotspot-desc" id="hotspot-desc"></p>
+    <p id="hotspot-stone-found" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#c4b5fd;margin-top:10px;"></p>
     <button class="popup-close" onclick="closeHotspot()">閉じる</button>
   </div>
 </div>
@@ -1634,6 +1642,16 @@
   function clickHotspot(spot) {
     document.getElementById('hotspot-label').textContent = spot.label;
     document.getElementById('hotspot-desc').textContent  = spot.desc;
+    // 石発見チャンス（20%）
+    var stoneFoundEl = document.getElementById('hotspot-stone-found');
+    stoneFoundEl.style.display = 'none';
+    stoneFoundEl.textContent = '';
+    if (Math.random() < 0.20) {
+      var raw = rollRawStone();
+      addRawStone(raw.id);
+      stoneFoundEl.textContent = '── ' + raw.label + ' を拾った';
+      stoneFoundEl.style.display = 'block';
+    }
     document.getElementById('hotspot-popup').classList.add('show');
     if (spot.chars && spot.chars.length) {
       var pick = pickChar(spot.chars);
@@ -1724,6 +1742,7 @@
     document.getElementById('explore-state').style.display = 'none';
     document.getElementById('shop-state').style.display   = 'block';
     renderStones();
+    updateAppraiseBtn();
 
     var visitCount = getDailyVisitCount();
     var greetings = [
@@ -1862,7 +1881,6 @@
 
     setTimeout(function() {
       showResultPanel('tarot-result-panel', pendingDraw, tarotMode);
-      checkStoneItem();
       document.getElementById('tarot-close-btn').style.display = 'block';
     }, 950);
   };
@@ -1873,23 +1891,70 @@
     ring_kouta:     '選んだな',
   };
 
-  function checkStoneItem() {
-    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
-    if (!available.length) return;
-    if (Math.random() < 1/30) {
-      var item = available[Math.floor(Math.random() * available.length)];
-      SfSnow.unlockItem(item.key);
-      renderStones();
-      document.getElementById('tarot-stone-img').src = item.img;
-      document.getElementById('tarot-stone-name').textContent = item.name;
-      var reveal = document.getElementById('tarot-stone-reveal');
-      reveal.style.display = 'flex';
-      var speech = STONE_SPEECHES[item.key];
-      if (speech) {
-        setTimeout(function() { showSKPopup('NAGI', speech); }, 600);
-      }
+  /* ── Raw stone system ── */
+  var RAW_STONE_TYPES = [
+    { id: 'kirei',    label: '綺麗な石',      prob: 0.70 },
+    { id: 'hikaru',   label: '少し光る石',     prob: 0.25 },
+    { id: 'tsumetai', label: '妙に冷たい石',   prob: 0.05 },
+  ];
+
+  function getRawStones() {
+    try { return JSON.parse(localStorage.getItem('sf_ut_rawstones') || '[]'); }
+    catch(e) { return []; }
+  }
+  function addRawStone(typeId) {
+    var arr = getRawStones();
+    arr.push(typeId);
+    localStorage.setItem('sf_ut_rawstones', JSON.stringify(arr));
+  }
+  function shiftRawStone() {
+    var arr = getRawStones();
+    var top = arr.shift();
+    localStorage.setItem('sf_ut_rawstones', JSON.stringify(arr));
+    return top;
+  }
+  function rollRawStone() {
+    var r = Math.random();
+    if (r < 0.05) return RAW_STONE_TYPES[2];
+    if (r < 0.30) return RAW_STONE_TYPES[1];
+    return RAW_STONE_TYPES[0];
+  }
+  function updateAppraiseBtn() {
+    var arr = getRawStones();
+    var btn = document.getElementById('appraise-btn');
+    var sub = document.getElementById('rawstone-sub');
+    if (!btn) return;
+    if (arr.length > 0) {
+      btn.style.display = '';
+      if (sub) sub.textContent = '所持 ' + arr.length + ' 個';
+    } else {
+      btn.style.display = 'none';
     }
   }
+
+  window.appraiseStone = function() {
+    var arr = getRawStones();
+    if (!arr.length) return;
+    var rawId = shiftRawStone();
+    var rawLabel = (RAW_STONE_TYPES.filter(function(t){ return t.id === rawId; })[0] || {}).label || rawId;
+    updateAppraiseBtn();
+    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
+    if (!available.length) {
+      showSKPopup('NAGI', '……全部、揃ってる');
+      return;
+    }
+    var item = available[Math.floor(Math.random() * available.length)];
+    SfSnow.unlockItem(item.key);
+    renderStones();
+    document.getElementById('tarot-stone-img').src = item.img;
+    document.getElementById('tarot-stone-name').textContent = item.name;
+    document.getElementById('tarot-stone-sub').textContent = rawLabel + ' ── 鑑定済み';
+    document.getElementById('tarot-stone-reveal').style.display = 'flex';
+    var speech = STONE_SPEECHES[item.key];
+    if (speech) {
+      setTimeout(function() { showSKPopup('NAGI', speech); }, 600);
+    }
+  };
 
   window.closeTarot = function() {
     var ov = document.getElementById('tarot-overlay');
@@ -2056,8 +2121,7 @@
         var advice = pool[Math.floor(Math.random() * pool.length)];
         document.getElementById('spread-total-msg').textContent = advice;
         document.getElementById('spread-total').style.display = 'block';
-        checkStoneItem();
-      }
+        }
     }, 950);
   };
 
