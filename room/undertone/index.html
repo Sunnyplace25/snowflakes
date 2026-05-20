@@ -765,15 +765,13 @@
   <p class="page-eyebrow">Snow flakes</p>
   <h1 class="page-title">Under tone</h1>
   <p class="page-subtitle">── ひとつ多い音に、気づく場所 ──</p>
-  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#64748b;margin:10px 0 6px;text-align:center;">NOVEL GAME &amp; FORTUNE</p>
-  <button onclick="openUtPwModal()" style="display:block;width:100%;background:none;border:none;cursor:pointer;padding:0;margin:0 0 28px;text-align:center;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:5px;color:#94a3b8;transition:color 0.2s;" onmouseover="this.style.color='#c4b5fd'" onmouseout="this.style.color='#94a3b8'">2026 SUMMER Coming soon</p>
-  </button>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#64748b;margin:10px 0 24px;text-align:center;">NOVEL GAME &amp; FORTUNE</p>
 
   <!-- LOCKED -->
   <div id="locked-state">
     <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#64748b;margin-bottom:18px;">LOCKED</p>
-    <p style="font-size:13px;color:#94a3b8;line-height:2.4;font-weight:400;">三人のプロフィールをすべて解放すると、<br>路地裏への扉が開く</p>
+    <p style="font-size:13px;color:#94a3b8;line-height:2.4;font-weight:400;">2026 SUMMER 公開予定</p>
+    <button onclick="openUtPwModal()" style="margin-top:20px;background:none;border:1px solid rgba(100,116,139,0.3);border-radius:50px;padding:10px 28px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(100,116,139,0.3)';this.style.color='#64748b'">enter</button>
   </div>
 
   <!-- EXPLORE -->
@@ -1212,16 +1210,11 @@ function submitUtPw() {
   }
 
   /* ── isCoreFan / admin check ── */
+  // 一般公開前: adminフラグ or セッションパスワードのみ許可
   function isCoreFan() {
     if (localStorage.getItem('sf_undertone_admin') === 'true') return true;
     if (sessionStorage.getItem('sf_undertone_session') === 'true') return true;
-    var CORE = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
-    return ['hinata','kouta','hayate'].every(function(ch) {
-      try {
-        var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
-        return CORE.every(function(b) { return arr.indexOf(b) !== -1; });
-      } catch(e) { return false; }
-    });
+    return false;
   }
 
   /* ── Stone items ── */

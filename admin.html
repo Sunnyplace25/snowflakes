@@ -161,6 +161,9 @@
       <button onclick="resetUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
         Under tone の状態をリセット（入店・訪問カウントを消す）
       </button>
+      <button onclick="lockUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.3);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.16)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
+        Under tone をロック（管理フラグを解除）
+      </button>
     </div>
     <p id="test-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
@@ -563,7 +566,16 @@ function resetUndertone() {
   localStorage.removeItem('sf_undertone_visited');
   localStorage.removeItem('sf_undertone_visits');
   localStorage.removeItem('sf_undertone_count_total');
+  localStorage.removeItem('sf_undertone_ch21_unlocked');
+  localStorage.removeItem('sf_undertone_ch5_unlocked');
+  localStorage.removeItem('sf_undertone_max_scene');
+  localStorage.removeItem('sf_undertone_explore_count');
   setTestStatus('✓ リセットしました（入店・訪問カウント消去）');
+}
+
+function lockUndertone() {
+  localStorage.removeItem('sf_undertone_admin');
+  setTestStatus('✓ Under tone をロックしました（sf_undertone_admin 削除）');
 }
 
 function unlockAllStones() {
