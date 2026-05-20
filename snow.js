@@ -199,6 +199,13 @@
     updateMonthlyItemUI();
     return items[itemId];
   }
+  // Add monthly item directly without monthly-action restriction (for gacha drops etc.)
+  function addMItemDirect(itemId, count) {
+    var items = getMonthlyItems();
+    items[itemId] = (items[itemId] || 0) + (count || 1);
+    localStorage.setItem(KEY_MITEMS, JSON.stringify(items));
+    updateMonthlyItemUI();
+  }
   function updateMonthlyItemUI() {
     var items = getMonthlyItems();
     var el = document.getElementById('sf-mitem-proteincoffee');
@@ -342,6 +349,7 @@
     rollCandyAll:       rollCandyAll,
     isMonthlyDone:      isMonthlyDone,
     addMonthlyItem:     addMonthlyItem,
+    addMItemDirect:     addMItemDirect,
     getMonthlyItems:    getMonthlyItems,
     spendCandy:         spendCandy,
     spendMonthlyItem:   spendMonthlyItem,

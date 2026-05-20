@@ -690,11 +690,12 @@
 
     <!-- Under tone section -->
     <div class="section" id="undertone-section" style="display:none;">
-      <!-- Teaser: non-fans (clickable → password) -->
+      <!-- Teaser: non-fans (clickable → popup) -->
       <div id="undertone-teaser" style="display:none;">
-        <button onclick="openUndertonePassword()" style="display:block;width:100%;background:none;border:none;cursor:pointer;padding:20px 0;">
+        <button onclick="openUndertoneComingSoon()" style="display:block;width:100%;background:none;border:none;cursor:pointer;padding:20px 0;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:6px;color:#c4b5fd;text-align:center;margin-bottom:8px;">Under tone</p>
           <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#e2e8f0;text-align:center;opacity:0.5;">2026 Summer  ·  Coming Soon</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#4c3f8a;text-align:center;margin-top:10px;">NOVEL GAME &amp; FORTUNE</p>
         </button>
       </div>
 
@@ -716,9 +717,22 @@
               <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:6px;">UNDER TONE</p>
               <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">Under tone</p>
               <p style="font-size:11px;color:#475569;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#4c3f8a;margin-top:10px;">NOVEL GAME &amp; FORTUNE</p>
             </div>
             <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
           </a>
+        </div>
+      </div>
+      <!-- Under tone teaser popup (Coming Soon) -->
+      <div id="undertone-coming-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
+        <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopInSw 0.4s cubic-bezier(0.22,1,0.36,1);display:flex;align-items:flex-end;gap:12px;">
+          <div style="flex:1;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:10px;">HINATA</p>
+            <p style="font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2;">……まだ音、鳴ってない</p>
+            <p style="margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#a78bfa;">2026 SUMMER 公開予定！</p>
+            <button onclick="closeUndertoneComingSoon()" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#8b7fd4'" onmouseleave="this.style.color='#4c3f8a'">── 閉じる ──</button>
+          </div>
+          <img src="../plofile/chibi_hinata.webp" alt="HINATA" style="width:76px;flex-shrink:0;">
         </div>
       </div>
     </div>
@@ -3905,7 +3919,8 @@
       <!-- EXCHANGE解放コンテンツ（動的） -->
       <div id="notes-dynamic-wrap"></div>
 
-      <div class="post-card" style="margin-top:32px;">
+      <div class="post-card" style="margin-top:32px;position:relative;">
+        <img id="static-note-ring-icon" src="../item/ring_kouta.webp" title="???" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:0.22;filter:grayscale(1);z-index:1;pointer-events:none;">
         <div class="post-header">
           <div class="post-header-left">
             <div class="post-tag">note</div>
@@ -4156,6 +4171,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
+
+    window.openUndertoneComingSoon = function() {
+      var p = document.getElementById('undertone-coming-popup');
+      if (p) p.style.display = 'flex';
+    };
+    window.closeUndertoneComingSoon = function() {
+      var p = document.getElementById('undertone-coming-popup');
+      if (p) p.style.display = 'none';
+    };
 
     window.openUndertonePassword = function() {
       var modal = document.getElementById('undertone-pw-modal');
@@ -4420,6 +4444,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
   #note-item-popup.show #note-item-box { transform: none; }
   @keyframes noteItemFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  @keyframes undertonePopInSw { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
   #note-item-img { animation: noteItemFloat 3s ease-in-out infinite; display:block; margin:0 auto 28px; width:160px; }
   @media (max-width:480px) { #note-item-img { width:120px; } }
 </style>
@@ -4665,6 +4690,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-bassstrings-img',   'ri-bassstrings-name',   'ri-bassstrings-check',   'bass_strings_kouta',      'Snow flakes ライブチケット');
     updateRareItem('ri-firststrings-img',  'ri-firststrings-name',  'ri-firststrings-check',  'item_kouta_first_strings','初めて張りかえたベースの弦');
     updateRareItem('ri-coaster-img',     'ri-coaster-name',     'ri-coaster-check',     'coaster_hayate',     'STARSの紙製コースター');
+    // 静的NOTEカードのアイコン更新
+    var staticNoteIcon = document.getElementById('static-note-ring-icon');
+    if (staticNoteIcon) {
+      if (SfSnow.isUnlocked('ring_kouta')) {
+        staticNoteIcon.style.opacity = '0.82';
+        staticNoteIcon.style.filter = 'none';
+        staticNoteIcon.title = '黒い石のシルバーリング';
+      } else {
+        staticNoteIcon.style.opacity = '0.22';
+        staticNoteIcon.style.filter = 'grayscale(1)';
+        staticNoteIcon.title = '???';
+      }
+    }
   }
 
   function toggleRareSection(chara) {
@@ -4919,7 +4957,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         contentHtml += '<p style="font-size:14px;color:#cbd5e1;line-height:2.0;font-weight:300;margin-bottom:0;">\u3000</p>';
       });
 
-      html += '<div class="post-card" style="margin-top:24px;">';
+      // NOTEカードのアイテムアイコン検索
+      var noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) {
+        return NOTE_ITEM_DATA[k].noteCardId === item.id;
+      });
+      var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
+      var noteItemOk = noteItemD ? SfSnow.isUnlocked(noteItemKey) : false;
+      html += '<div class="post-card" style="margin-top:24px;position:relative;">';
+      if (noteItemD) {
+        html += '<img src="' + noteItemD.img + '" title="' + (noteItemOk ? noteItemD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
+      }
       html += '<div class="post-header">';
       html += '<div class="post-header-left">';
       html += '<div class="post-tag">note</div>';
@@ -5000,8 +5047,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
       html += '<div class="post-card" style="margin-top:0;position:relative;">';
+      // アイテムアイコン（右上、さりげなく）
+      var rewD = (item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
+      var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
+      var newRight = '12px';
+      if (rewD) {
+        html += '<img src="' + rewD.img + '" title="' + (rewOk ? rewD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (rewOk ? '0.82' : '0.22') + ';filter:' + (rewOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
+        newRight = '36px';
+      }
       if (item.isNew) {
-        html += '<span style="position:absolute;top:12px;right:12px;font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
+        html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
       }
       html += '<div class="post-header">';
       // タイトル・コスト（左）

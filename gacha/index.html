@@ -591,9 +591,17 @@
             <td style="padding:4px 0;color:#94a3b8;">山吹ことりの部屋</td>
             <td style="padding:4px 0;text-align:right;color:#cbd5e1;">月1回 ×1個</td>
           </tr>
-          <tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td style="padding:4px 0;color:#94a3b8;">ノート解放</td>
             <td style="padding:4px 0;text-align:right;color:#cbd5e1;">各1個</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">❄5 リプレイ</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">3%</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">5%</td>
           </tr>
         </table>
 
@@ -613,11 +621,14 @@
 
 <!-- Undertone visited popup -->
 <div id="undertone-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
-  <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopIn 0.4s cubic-bezier(0.22,1,0.36,1);">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:10px;">HINATA</p>
-    <p style="font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2;">……まだ音、鳴ってない</p>
-    <p style="margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#a78bfa;">2026 SUMMER 公開予定！</p>
-    <button onclick="document.getElementById('undertone-popup').style.display='none'" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#8b7fd4'" onmouseleave="this.style.color='#4c3f8a'">── 閉じる ──</button>
+  <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopIn 0.4s cubic-bezier(0.22,1,0.36,1);display:flex;align-items:flex-end;gap:12px;">
+    <div style="flex:1;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:10px;">HINATA</p>
+      <p style="font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2;">……まだ音、鳴ってない</p>
+      <p style="margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#a78bfa;">2026 SUMMER 公開予定！</p>
+      <button onclick="document.getElementById('undertone-popup').style.display='none'" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#8b7fd4'" onmouseleave="this.style.color='#4c3f8a'">── 閉じる ──</button>
+    </div>
+    <img src="../plofile/chibi_hinata.webp" alt="HINATA" style="width:76px;flex-shrink:0;">
   </div>
 </div>
 
@@ -691,6 +702,15 @@
         <div>
           <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:5px;">CANDY</p>
           <p id="res-candy-name" style="font-size:13px;color:#f9a8d4;letter-spacing:1px;">—</p>
+        </div>
+      </div>
+    </div>
+    <div id="res-protein-wrap" style="display:none;margin-bottom:16px;">
+      <div style="background:rgba(139,111,224,0.06);border:1px solid rgba(139,111,224,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+        <img src="../item/proteincoffee.webp" alt="" style="width:40px;flex-shrink:0;opacity:0.85;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
+          <p style="font-size:13px;color:#c4b5fd;letter-spacing:1px;">プロテインコーヒー × 1</p>
         </div>
       </div>
     </div>
@@ -877,7 +897,11 @@
 
   document.getElementById('closeBtn').addEventListener('click', function() {
     resultOverlay.classList.remove('show');
-    setTimeout(function() { resultOverlay.classList.remove('ready'); }, 500);
+    setTimeout(function() {
+      resultOverlay.classList.remove('ready');
+      var pw = document.getElementById('res-protein-wrap');
+      if (pw) pw.style.display = 'none';
+    }, 500);
     belowMachine.classList.add('show');
   });
 
@@ -976,9 +1000,13 @@
     var rc = CTYPES[Math.floor(Math.random() * CTYPES.length)];
     var count = Math.floor(Math.random() * 4) + 2; // 2〜5個確定
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
+    var replayProtein = Math.random() < 0.03;
+    if (replayProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
       showResult(f, rc, count);
+      var pw = document.getElementById('res-protein-wrap');
+      if (pw) pw.style.display = replayProtein ? '' : 'none';
       leverBtn.disabled = false;
     });
   });
@@ -1025,6 +1053,9 @@
     var pickAmt = Math.random() < 0.05 ? 2 : 1;
     SfSnow.addPick(pickAmt);
     pickCount = pickAmt;
+    // プロテインコーヒー：5%
+    var tenProtein = Math.random() < 0.05;
+    if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       results.push({ fortune: f, candy: null, pick: 0 });
@@ -1082,6 +1113,9 @@
     });
     if (pickCount > 0) {
       html += itemRow.replace('{img}', '../item/pick.webp').replace('{label}', 'ギターピック').replace('{count}', pickCount);
+    }
+    if (tenProtein) {
+      html += itemRow.replace('{img}', '../item/proteincoffee.webp').replace('{label}', 'プロテインコーヒー').replace('{count}', 1);
     }
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;
