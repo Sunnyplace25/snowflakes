@@ -486,20 +486,20 @@
     .result-panel .res-arch {
       font-family:'Cormorant Garamond',serif;
       font-size:11px; letter-spacing:5px; color:#94a3b8;
-      margin-bottom:8px;
+      margin-bottom:14px;
     }
     .result-panel .res-keyword {
       font-size:12px; color:#94a3b8; letter-spacing:2px;
-      margin-bottom:12px;
+      margin-bottom:18px;
     }
     .result-panel .res-msg {
-      font-size:14px; color:#e2e8f0; line-height:2.0;
-      font-weight:400; margin-bottom:12px;
+      font-size:14px; color:#e2e8f0; line-height:2.4;
+      font-weight:400; margin-bottom:18px; white-space:pre-line;
     }
     .result-panel .res-advice {
       font-family:'Noto Serif JP',serif;
-      font-size:13px; color:#c4b5fd; line-height:2.0;
-      font-weight:300; white-space:pre-line;
+      font-size:13px; color:#c4b5fd; line-height:2.4;
+      font-weight:300; white-space:pre-line; margin-bottom:8px;
     }
     .result-panel .res-special {
       font-size:13px; color:#94a3b8; letter-spacing:1px;
@@ -555,7 +555,7 @@
       font-size:11px; letter-spacing:6px; color:#94a3b8;
       text-align:center; margin-bottom:14px;
     }
-    .choose-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+    .choose-list { display:flex; flex-direction:column; gap:14px; margin-bottom:32px; }
     .choose-item {
       display:flex; align-items:center; gap:16px;
       background:rgba(255,255,255,0.02);
@@ -1116,8 +1116,8 @@ function submitUtPw() {
 
   <p class="tarot-credit" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
-  <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
-  <a href="index.html" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;margin-top:10px;" id="tarot-top-link">TOPへ戻る</a>
+  <button class="tarot-close" id="tarot-close-btn" style="display:none;margin-top:32px;" onclick="closeTarot()">閉じる</button>
+  <a href="index.html" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;margin-top:20px;" id="tarot-top-link">TOPへ戻る</a>
 </div>
 
 <!-- Equipment overlay -->
@@ -2313,7 +2313,7 @@ function submitUtPw() {
 
     if (archEl) archEl.textContent = draw.card.arch + '  |  ' + draw.card.archJP;
     if (keyEl)  keyEl.textContent  = draw.data.key;
-    if (msgEl)  msgEl.textContent  = draw.data.msg;
+    if (msgEl)  { msgEl.style.whiteSpace = 'pre-line'; msgEl.textContent = (draw.data.msg || '').replace(/。/g, '。\n'); }
     var advEl = p.querySelector('.res-advice');
     if (advEl) advEl.textContent = draw.data.advice || '';
     if (spEl) {
