@@ -1726,17 +1726,23 @@
     visited = true;
     exploreCount++;
     localStorage.setItem('sf_undertone_explore_count', exploreCount);
-    // Show chapter 4 (店主) prose popup before entering shop
-    var ch = ALL_CHAPTERS[3];
-    document.getElementById('prose-label').textContent = ch.label;
-    document.getElementById('prose-text').textContent  = ch.text;
-    document.getElementById('prose-close-btn').textContent = '── 入る ──';
-    _proseCloseCallback = function() { goShop(); };
-    setTimeout(function() {
-      var sc = document.querySelector('.prose-scroll');
-      if (sc) sc.scrollTop = 0;
-      document.getElementById('prose-popup').classList.add('show');
-    }, 200);
+    // 1-4（店主）は初回のみポップアップ、2回目以降は直接入店
+    if (!_seenProseScenes.has(3)) {
+      _seenProseScenes.add(3);
+      localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
+      var ch = ALL_CHAPTERS[3];
+      document.getElementById('prose-label').textContent = ch.label;
+      document.getElementById('prose-text').textContent  = ch.text;
+      document.getElementById('prose-close-btn').textContent = '── 入る ──';
+      _proseCloseCallback = function() { goShop(); };
+      setTimeout(function() {
+        var sc = document.querySelector('.prose-scroll');
+        if (sc) sc.scrollTop = 0;
+        document.getElementById('prose-popup').classList.add('show');
+      }, 200);
+    } else {
+      goShop();
+    }
   };
 
   window.closeProse = function() {
