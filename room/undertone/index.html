@@ -886,6 +886,7 @@
     </div>
 
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
+    <button id="equip-open-btn" onclick="openEquip()" style="display:none;margin-top:10px;width:100%;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;">装備を見る</button>
   </div>
 </div>
 
@@ -1016,6 +1017,16 @@
   <a href="index.html" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;margin-top:10px;" id="tarot-top-link">TOPへ戻る</a>
 </div>
 
+<!-- Equipment overlay -->
+<div id="equip-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(8,13,24,0.97);overflow-y:auto;padding:48px 20px 80px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:8px;color:#475569;text-align:center;margin-bottom:6px;">EQUIPMENT</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:6px;color:#e2e8f0;text-align:center;margin-bottom:32px;">装備</p>
+  <div id="equip-cols" style="display:flex;gap:12px;max-width:480px;margin:0 auto;"></div>
+  <div style="text-align:center;margin-top:32px;">
+    <button onclick="closeEquip()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#475569;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px 32px;cursor:pointer;">閉じる</button>
+  </div>
+</div>
+
 <!-- Spread overlay (深く見る) -->
 <div id="spread-overlay">
   <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:8px;color:#94a3b8;margin-bottom:10px;">DEEP READING</p>
@@ -1127,10 +1138,28 @@
 
   /* ── Stone items ── */
   var STONE_ITEMS = [
-    { key:'pendant_hinata', name:'青い石のネックレス',        img:'../../item/pendant_hinata.webp', char:'hinata' },
-    { key:'earring_hayate', name:'黄色い石のピアス',    img:'../../item/earring_hayate.webp', char:'hayate' },
-    { key:'ring_kouta',     name:'黒い石のシルバーリング', img:'../../item/ring_kouta.webp',    char:'kouta'  },
+    { key:'pendant_hinata', name:'青い石のネックレス',         nameAppraised:'カイヤナイトのネックレス',          img:'../../item/pendant_hinata.webp', char:'hinata' },
+    { key:'earring_hayate', name:'黄色い石のピアス',           nameAppraised:'シトリンのピアス',                  img:'../../item/earring_hayate.webp', char:'hayate' },
+    { key:'ring_kouta',     name:'黒い石のシルバーリング',     nameAppraised:'スモーキークォーツのシルバーリング', img:'../../item/ring_kouta.webp',    char:'kouta'  },
   ];
+
+  // キャラクター別に選べる他のレアアイテム
+  var CHAR_RARE_ITEMS = {
+    hinata: [
+      { key:'cassette_hinata',  name:'白いカセットテープ',    img:'../../item/cassette_hinata.webp' },
+      { key:'umbrella_hinata',  name:'折り畳み傘',            img:'../../item/umbrella_hinata.webp' },
+      { key:'usb_hinata',       name:'古いUSBメモリ',          img:'../../item/usb_hinata.webp' },
+    ],
+    kouta: [
+      { key:'bass_strings_kouta',  name:'切れたベース弦',      img:'../../item/bass_strings_kouta.webp' },
+      { key:'first_strings_kouta', name:'最初の弦',             img:'../../item/first_strings_kouta.webp' },
+      { key:'zippo_kouta',         name:'Zippoライター',         img:'../../item/zippo_kouta.webp' },
+    ],
+    hayate: [
+      { key:'coaster_hayate',    name:'バーのコースター',       img:'../../item/coaster_hayate.webp' },
+      { key:'wristband_hayate',  name:'リストバンド',            img:'../../item/wristband_hayate.webp' },
+    ],
+  };
 
   /* ── Tarot deck (27 cards × 正/逆) ── */
   var CARDS = [
@@ -1975,6 +2004,7 @@
     // ch21解放時はタブ表示
     var shopNav = document.getElementById('shop-nav');
     if (shopNav) shopNav.style.display = ch21Unlocked ? 'flex' : 'none';
+    updateEquipBtn();
     // 常にoracle panel を先に表示
     switchShopTab('oracle');
 
@@ -2302,6 +2332,7 @@
     renderStones();
     // 装備画面解放フラグ
     localStorage.setItem('sf_undertone_equip_unlocked', 'true');
+    updateEquipBtn();
     document.getElementById('tarot-stone-img').src = item.img;
     document.getElementById('tarot-stone-name').textContent = item.name;
     document.getElementById('tarot-stone-sub').textContent = rawLabel + ' ── 鑑定済み';
@@ -2319,6 +2350,84 @@
     document.getElementById('tarot-close-btn').style.display = 'none';
     document.getElementById('tarot-top-link').style.display = 'none';
   };
+
+  /* ── Equipment ── */
+  window.openEquip = function() {
+    renderEquip();
+    document.getElementById('equip-overlay').style.display = 'block';
+  };
+  window.closeEquip = function() {
+    document.getElementById('equip-overlay').style.display = 'none';
+  };
+
+  function renderEquip() {
+    var cols = document.getElementById('equip-cols');
+    cols.innerHTML = '';
+    ['hinata','kouta','hayate'].forEach(function(ch) {
+      var meta  = CHARS[ch];
+      var stone = STONE_ITEMS.filter(function(s) { return s.char === ch; })[0];
+      var appraised = stone && SfSnow.isUnlocked(stone.key);
+      var stoneName = stone ? (appraised ? stone.nameAppraised : stone.name + '（未鑑定）') : '──';
+      var rares = (CHAR_RARE_ITEMS[ch] || []).filter(function(r) { return SfSnow.isUnlocked(r.key); });
+
+      var col = document.createElement('div');
+      col.style.cssText = 'flex:1;min-width:0;border-radius:14px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);overflow:hidden;';
+
+      // ヘッダー
+      var hdr = document.createElement('p');
+      hdr.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:4px;color:' + meta.color + ';text-align:center;padding:12px 8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);';
+      hdr.textContent = meta.name;
+      col.appendChild(hdr);
+
+      // 石スロット
+      if (stone) {
+        var stoneWrap = document.createElement('div');
+        stoneWrap.style.cssText = 'padding:14px 10px;border-bottom:1px solid rgba(255,255,255,0.05);';
+        var stoneImg = document.createElement('img');
+        stoneImg.src = stone.img;
+        stoneImg.style.cssText = 'width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;margin-bottom:8px;' + (!appraised ? 'filter:grayscale(0.7);opacity:0.7;' : '');
+        var stoneTxt = document.createElement('p');
+        stoneTxt.style.cssText = 'font-size:10px;color:' + (appraised ? '#e2e8f0' : '#475569') + ';text-align:center;line-height:1.6;letter-spacing:1px;word-break:break-all;';
+        stoneTxt.textContent = stoneName;
+        stoneWrap.appendChild(stoneImg);
+        stoneWrap.appendChild(stoneTxt);
+        col.appendChild(stoneWrap);
+      }
+
+      // 他のレアアイテム
+      if (rares.length) {
+        var rareSection = document.createElement('div');
+        rareSection.style.cssText = 'padding:10px 10px 14px;';
+        rares.forEach(function(r) {
+          var rDiv = document.createElement('div');
+          rDiv.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);';
+          var rImg = document.createElement('img');
+          rImg.src = r.img;
+          rImg.style.cssText = 'width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;';
+          var rTxt = document.createElement('p');
+          rTxt.style.cssText = 'font-size:10px;color:#94a3b8;line-height:1.5;letter-spacing:1px;';
+          rTxt.textContent = r.name;
+          rDiv.appendChild(rImg);
+          rDiv.appendChild(rTxt);
+          rareSection.appendChild(rDiv);
+        });
+        col.appendChild(rareSection);
+      } else {
+        var emptyP = document.createElement('p');
+        emptyP.style.cssText = 'font-size:10px;color:#1e293b;text-align:center;padding:14px 8px;letter-spacing:2px;';
+        emptyP.textContent = '── なし ──';
+        col.appendChild(emptyP);
+      }
+
+      cols.appendChild(col);
+    });
+  }
+
+  // 装備ボタンの表示制御
+  function updateEquipBtn() {
+    var btn = document.getElementById('equip-open-btn');
+    if (btn) btn.style.display = localStorage.getItem('sf_undertone_equip_unlocked') === 'true' ? 'block' : 'none';
+  }
 
   /* ── Dual choice ── */
   var dualDraws = {};
