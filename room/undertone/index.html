@@ -993,16 +993,7 @@ function submitUtPw() {
   </div>
 </div>
 
-<!-- Shopkeeper chibi popup -->
-<div id="sk-popup" style="position:fixed;bottom:-30px;right:20px;z-index:450;display:flex;align-items:flex-end;gap:10px;opacity:0;transform:translateY(28px);transition:opacity 0.5s ease,transform 0.5s ease;pointer-events:none;">
-  <div id="sk-bubble" style="background:rgba(10,18,34,0.97);border:1px solid rgba(196,181,253,0.15);border-radius:20px 20px 4px 20px;padding:16px 18px 14px;max-width:210px;backdrop-filter:blur(16px);position:relative;margin-bottom:60px;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#64748b;margin-bottom:4px;">NAGI</p>
-    <p id="sk-line1" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;margin-bottom:6px;"></p>
-    <p id="sk-line2" style="font-size:15px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-weight:300;line-height:2.1;"></p>
-    <button onclick="closeSKPopup()" style="position:absolute;top:10px;right:12px;font-size:13px;color:#64748b;cursor:pointer;background:none;border:none;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">✕</button>
-  </div>
-  <img src="shopkeeper_chibi.png" alt="" style="width:310px;display:block;flex-shrink:0;">
-</div>
+<!-- Shopkeeper chibi popup (removed) -->
 
 
 <!-- Dual choice overlay -->
@@ -2790,30 +2781,8 @@ function submitUtPw() {
   }
 
   var _skTimer = null;
-  function showSKPopup(line1, line2) {
-    if (_skTimer) clearTimeout(_skTimer);
-    var pop = document.getElementById('sk-popup');
-    document.getElementById('sk-line1').textContent = line1 || '';
-    document.getElementById('sk-line2').textContent = line2 || '';
-    pop.style.pointerEvents = 'auto';
-    pop.style.opacity = '0';
-    pop.style.transform = 'translateY(28px)';
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        pop.style.opacity = '1';
-        pop.style.transform = 'translateY(0)';
-      });
-    });
-    _skTimer = setTimeout(function() { window.closeSKPopup(); }, 7000);
-  }
-
-  window.closeSKPopup = function() {
-    if (_skTimer) { clearTimeout(_skTimer); _skTimer = null; }
-    var pop = document.getElementById('sk-popup');
-    pop.style.opacity = '0';
-    pop.style.transform = 'translateY(28px)';
-    pop.style.pointerEvents = 'none';
-  };
+  function showSKPopup(line1, line2) { /* popup removed */ }
+  window.closeSKPopup = function() { /* popup removed */ };
 
   /* ── Boot ── */
   document.addEventListener('DOMContentLoaded', init);
