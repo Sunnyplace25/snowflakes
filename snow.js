@@ -26,6 +26,7 @@
     like_chara_kouta:    5,
     like_chara_hayate:   5,
     visit_kotori_room:   5,
+    share_site:          10,
   };
   var DAILY_MAX = (function() {
     var s = 0;

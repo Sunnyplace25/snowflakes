@@ -490,7 +490,31 @@
 <body>
 <canvas id="snow"></canvas>
 <a class="back-link" href="../">← Snow flakes</a>
-<div style="position:fixed;top:22px;right:22px;z-index:50;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;">❄ <span class="sf-snow-val">0</span></div>
+<div style="position:fixed;top:22px;right:22px;z-index:50;display:flex;align-items:center;gap:14px;">
+  <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#475569;transition:color 0.2s;padding:0;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">↗ share</button>
+  <span style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;">❄ <span class="sf-snow-val">0</span></span>
+</div>
+
+<script>
+function sfShare() {
+  var shareData = {
+    title: 'Snow flakes',
+    text: '山吹ことりの小説・音楽・キャラクターサイト',
+    url: 'https://sunnyplace25.github.io/snowflakes/'
+  };
+  function giveReward() {
+    SfSnow.addOnce('share_first', 50, '初回シェア');
+    SfSnow.addWithToast('share_site', 'シェア');
+  }
+  if (navigator.share) {
+    navigator.share(shareData).then(giveReward).catch(function(){});
+  } else {
+    var tw = 'https://x.com/intent/tweet?text=' + encodeURIComponent('山吹ことりの小説・音楽・キャラクターサイト Snow flakes') + '&url=' + encodeURIComponent('https://sunnyplace25.github.io/snowflakes/');
+    window.open(tw, '_blank');
+    giveReward();
+  }
+}
+</script>
 
 <div class="page-head">
   <p class="page-eyebrow">Snow flakes</p>

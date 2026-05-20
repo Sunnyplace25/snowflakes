@@ -599,10 +599,32 @@
     <a class="nav-back" href="../index.html">← Snow flakes</a>
     <span class="nav-label">SWEETs ROOM</span>
     <span style="display:inline-flex;align-items:center;gap:12px;">
+      <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#475569;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">↗ share</button>
       <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#94a3b8;"><img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.8;"> <span id="sf-pick-count">0</span></span>
       <span class="sf-snow-nav" style="font-size:12px;letter-spacing:3px;color:#94a3b8;">❄ <span class="sf-snow-val">0</span></span>
     </span>
   </nav>
+
+  <script>
+  function sfShare() {
+    var shareData = {
+      title: 'Snow flakes',
+      text: '山吹ことりの小説・音楽・キャラクターサイト',
+      url: 'https://sunnyplace25.github.io/snowflakes/'
+    };
+    function giveReward() {
+      SfSnow.addOnce('share_first', 50, '初回シェア');
+      SfSnow.addWithToast('share_site', 'シェア');
+    }
+    if (navigator.share) {
+      navigator.share(shareData).then(giveReward).catch(function(){});
+    } else {
+      var tw = 'https://x.com/intent/tweet?text=' + encodeURIComponent('山吹ことりの小説・音楽・キャラクターサイト Snow flakes') + '&url=' + encodeURIComponent('https://sunnyplace25.github.io/snowflakes/');
+      window.open(tw, '_blank');
+      giveReward();
+    }
+  }
+  </script>
 
   <!-- Snow GET popup -->
   <div id="snow-get-popup">
@@ -5185,13 +5207,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { action: 'like_chara_kouta',  label: 'コウタをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
     { action: 'like_chara_hayate',  label: 'ハヤテをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
     { action: 'visit_kotori_room',  label: '山吹ことりの部屋を見る',      pts: 5,  href: '../kotori.html',                                                 ext: false },
+    { action: 'share_site',         label: 'サイトをシェアする',           pts: 10, href: null,                                                            shareBtn: true },
   ];
 
-  function handleChecklistClick(action, href, ext) {
+  function handleChecklistClick(action, href, ext, isShare) {
+    if (isShare) {
+      if (typeof sfShare === 'function') sfShare();
+      return;
+    }
     if (!href) return;
     var done = SfSnow.isDone(action);
     if (!done) {
-      var item = SNOW_CHECKLIST.find(function(c) { return c.action === action; });
+      var item = SNOW_CHECKLIST_ITEMS.find(function(c) { return c.action === action; });
       SfSnow.addWithToast(action, item ? item.label : null);
       renderSnowChecklist();
     }
@@ -5211,7 +5238,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var style = 'display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);' + (hasLink ? 'cursor:pointer;' : '');
       var labelColor = done ? '#374151' : (hasLink ? '#cbd5e1' : '#64748b');
       var labelStyle = done ? 'text-decoration:line-through;color:#374151;' : '';
-      var onclick = hasLink ? ' onclick="handleChecklistClick(\'' + item.action + '\',\'' + item.href + '\',' + (item.ext ? 'true' : 'false') + ')"' : '';
+      var onclick = item.shareBtn
+        ? ' onclick="handleChecklistClick(\'' + item.action + '\',null,false,true)" style="' + style + 'cursor:pointer;"'
+        : hasLink ? ' onclick="handleChecklistClick(\'' + item.action + '\',\'' + item.href + '\',' + (item.ext ? 'true' : 'false') + ')"' : '';
       return '<div style="' + style + '"' + onclick + '>' +
         '<span style="display:flex;align-items:center;gap:6px;font-size:11px;color:' + labelColor + ';letter-spacing:0.5px;">' +
         '<span style="font-size:13px;line-height:1;">' + (done ? '☑' : '☐') + '</span>' +
