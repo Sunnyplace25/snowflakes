@@ -443,7 +443,6 @@
 <nav>
   <div style="flex:1;display:flex;align-items:center;gap:12px;">
     <span class="sf-snow-nav">❄ <span class="sf-snow-val">0</span></span>
-    <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#475569;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">↗ share</button>
   </div>
   <span class="nav-label">Snow flakes</span>
   <div class="nav-right" style="flex:1;justify-content:flex-end;">
@@ -511,7 +510,10 @@ function sfShare() {
 <!-- Topics -->
 <section style="padding:80px 24px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">TOPICS</p>
-  <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:48px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
+  <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:16px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
+  <div style="text-align:center;margin-bottom:36px;">
+    <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
+  </div>
   <!-- 本編更新バナー -->
   <div style="max-width:680px;margin:0 auto 40px;">
     <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/159" target="_blank"
