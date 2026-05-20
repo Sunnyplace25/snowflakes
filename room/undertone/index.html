@@ -988,6 +988,13 @@ function submitUtPw() {
 }
 </script>
 
+<!-- Stone discovery popup -->
+<div id="stone-discovery-popup" style="display:none;position:fixed;inset:0;z-index:350;background:rgba(8,13,24,0.82);backdrop-filter:blur(6px);align-items:center;justify-content:center;flex-direction:column;gap:20px;opacity:0;transition:opacity 0.4s;">
+  <img id="stone-discovery-img" src="" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:16px;box-shadow:0 0 40px rgba(196,181,253,0.2);">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#c4b5fd;">── 小さな石を拾った ──</p>
+  <p id="stone-discovery-caption" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:2px;"></p>
+</div>
+
 <!-- Hotspot popup -->
 <div class="hotspot-popup" id="hotspot-popup">
   <div class="hotspot-card">
@@ -2068,6 +2075,26 @@ function submitUtPw() {
     });
   }
 
+  function showStoneDiscovery(raw) {
+    var pop = document.getElementById('stone-discovery-popup');
+    var img = document.getElementById('stone-discovery-img');
+    var cap = document.getElementById('stone-discovery-caption');
+    if (!pop) return;
+    img.src = RAW_STONE_IMG[raw.id] || '../../item/rawstone.png';
+    cap.textContent = 'なぜか、気になる。';
+    pop.style.display = 'flex';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { pop.style.opacity = '1'; });
+    });
+    var dismiss = function() {
+      pop.style.opacity = '0';
+      setTimeout(function() { pop.style.display = 'none'; }, 400);
+      pop.removeEventListener('click', dismiss);
+    };
+    pop.addEventListener('click', dismiss);
+    setTimeout(dismiss, 3000);
+  }
+
   var STONE_FOUND_SPEECHES = [
     { char: 'hayate', speech: 'やった！取れた！' },
     { char: 'kouta',  speech: '拾えた。なかなかいい' },
@@ -2083,11 +2110,16 @@ function submitUtPw() {
     stoneFoundEl.textContent = '';
     var stoneFound = false;
     if (exploreCount >= 1 && Math.random() < 0.15) {
+      var seenBefore = getSeenRawTypes();
       var raw = rollRawStone();
+      var isFirstFind = seenBefore.indexOf(raw.id) === -1;
       addRawStone(raw.id);
       stoneFoundEl.textContent = '── 小さな石を拾った';
       stoneFoundEl.style.display = 'block';
       stoneFound = true;
+      if (isFirstFind) {
+        setTimeout(function() { showStoneDiscovery(raw); }, 600);
+      }
     }
     document.getElementById('hotspot-popup').classList.add('show');
     if (stoneFound) {
