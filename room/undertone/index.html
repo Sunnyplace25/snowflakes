@@ -802,8 +802,8 @@
     </div>
 
     <div id="advance-wrap" style="display:flex;gap:8px;">
-      <button class="advance-btn" id="advance-btn" onclick="advanceScene()" style="flex:1;">進む →</button>
-      <button id="skip-to-shop-btn" onclick="goShop()" style="display:none;flex:1;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">店内へ →</button>
+      <button class="advance-btn" id="advance-btn" onclick="advanceScene()" style="flex:1;margin-top:0;">進む →</button>
+      <button id="skip-to-shop-btn" onclick="goShop()" style="display:none;flex:1;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:14px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">店内へ →</button>
     </div>
 
     <!-- Chapter list (tap to open prose popup) -->
@@ -2090,7 +2090,7 @@ function submitUtPw() {
   };
 
   /* ── Shop ── */
-  function goShop() {
+  window.goShop = function goShop() {
     document.getElementById('explore-state').style.display = 'none';
     document.getElementById('shop-state').style.display   = 'block';
     renderStones();
