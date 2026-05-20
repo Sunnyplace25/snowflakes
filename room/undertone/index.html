@@ -922,6 +922,7 @@
         <span class="choose-sub" id="rawstone-sub">APPRAISE</span>
       </button>
     </div>
+    <p id="snow-insufficient-msg" style="display:none;text-align:center;font-size:12px;color:#7dd3fc;margin-top:10px;letter-spacing:1px;opacity:0.8;">Snow が足りない</p>
     </div><!-- /shop-panel-oracle -->
 
     <!-- 店内を見る パネル（ch21解放後） -->
@@ -2317,7 +2318,18 @@ function submitUtPw() {
     if (draw.card.special === 'tape') triggerTapeNoise();
   }
 
+  function showSnowInsufficient() {
+    var msg = document.getElementById('snow-insufficient-msg');
+    if (!msg) return;
+    msg.style.display = 'block';
+    clearTimeout(msg._hideTimer);
+    msg._hideTimer = setTimeout(function() { msg.style.display = 'none'; }, 2500);
+  }
+
   window.openTarot = function(mode) {
+    var cost = (mode === 'yesno') ? 10 : 5;
+    if (SfSnow.getBalance() < cost) { showSnowInsufficient(); return; }
+    SfSnow.spend(cost);
     tarotMode = mode || 'oracle';
     closeSKPopup();
     var skText = tarotMode === 'yesno' ? '聞いてみるか' : 'そろそろ選ぶか';
@@ -2679,6 +2691,8 @@ function submitUtPw() {
 
   /* ── Spread (深く見る) ── */
   window.openSpread = function() {
+    if (SfSnow.getBalance() < 15) { showSnowInsufficient(); return; }
+    SfSnow.spend(15);
     spreadDraws = [];
     spreadFlipped = [false, false, false];
     var usedNums = [];
