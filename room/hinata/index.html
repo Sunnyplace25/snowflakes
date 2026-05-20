@@ -684,6 +684,24 @@
           </div>
         </div>
       </div>
+
+      <!-- 白いピック -->
+      <div class="il-item" id="il-whitepick-item">
+        <div class="il-header" onclick="toggleIlItem('il-whitepick-item')">
+          <span class="item-log-tag" id="il-whitepick-tag"><img src="../../item/white_pick_hinata.png" alt="item">白いピック</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-whitepick-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-whitepick-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/white_pick_hinata.png" alt="白いピック" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;">白いピック</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">ヒナタがアコギを弾くときによく使うピック。<br>柔らかい音がする。</p>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -901,6 +919,17 @@
         if (owned)  owned.style.display  = '';
         var umbrellaItem = document.getElementById('il-umbrella-item');
         if (umbrellaItem) umbrellaItem.classList.add('open');
+      }
+
+      // 白いピック
+      if (SfSnow.isUnlocked('white_pick_hinata')) {
+        revealItemTag('il-whitepick-tag', '../../item/white_pick_hinata.png', '白いピック');
+        var wpLocked = document.getElementById('il-whitepick-locked');
+        var wpOwned  = document.getElementById('il-whitepick-owned');
+        if (wpLocked) wpLocked.style.display = 'none';
+        if (wpOwned)  wpOwned.style.display  = '';
+        var wpItem = document.getElementById('il-whitepick-item');
+        if (wpItem) wpItem.classList.add('open');
       }
     });
 
