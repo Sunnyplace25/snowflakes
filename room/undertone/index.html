@@ -946,7 +946,7 @@
       <button class="advance-btn" id="interior-advance-btn" onclick="advanceInterior()">次の棚を見る →</button>
     </div>
 
-    <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
+    <button class="explore-btn" id="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
     <p class="top-credit">Snow flakes Tarot · Words &amp; Interpretation · Kotori Yamabuki</p>
   </div>
 </div>
@@ -2183,6 +2183,8 @@ function submitUtPw() {
     document.getElementById('shop-state').style.display   = 'block';
     renderStones();
     updateAppraiseBtn();
+    var exploreBtn = document.getElementById('explore-btn');
+    if (exploreBtn) exploreBtn.textContent = visited ? '路地裏をもう一度歩く' : '店を出る';
 
     var visitCount = getDailyVisitCount();
     var greetings = [
