@@ -772,6 +772,7 @@
 <body>
 <canvas id="snow"></canvas>
 <a class="back-link" href="../../sweets/">← SWEETs</a>
+<button id="sound-toggle" onclick="toggleSound()" style="position:fixed;top:20px;right:100px;z-index:50;background:none;border:none;cursor:pointer;font-size:15px;color:#475569;font-family:'Cormorant Garamond',serif;letter-spacing:2px;padding:2px 6px;transition:color 0.2s;" title="サウンド ON/OFF">♪</button>
 <div class="snow-bal">❄ <span class="sf-snow-val">0</span></div>
 
 <div class="main">
@@ -1950,7 +1951,24 @@ function submitUtPw() {
   };
 
   /* ── Sound ── */
+  var _soundOn = localStorage.getItem('sf_ut_sound') !== 'off';
   var _sounds = {};
+
+  function updateSoundBtn() {
+    var btn = document.getElementById('sound-toggle');
+    if (btn) {
+      btn.textContent = _soundOn ? '♪' : '♪̶';
+      btn.style.color = _soundOn ? '#475569' : '#1e293b';
+      btn.title = _soundOn ? 'サウンド OFF' : 'サウンド ON';
+    }
+  }
+  window.toggleSound = function() {
+    _soundOn = !_soundOn;
+    localStorage.setItem('sf_ut_sound', _soundOn ? 'on' : 'off');
+    if (!_soundOn) stopProseSound();
+    updateSoundBtn();
+  };
+
   function getSound(key, src) {
     if (!_sounds[key]) {
       var a = new Audio(src);
@@ -1961,6 +1979,7 @@ function submitUtPw() {
   }
   function playProseSound(idx) {
     stopProseSound();
+    if (!_soundOn) return;
     if (idx === 1) {
       var s = getSound('footsteps', 'sound/footsteps.mp3');
       s.currentTime = 0;
@@ -1973,6 +1992,8 @@ function submitUtPw() {
       a.currentTime = 0;
     });
   }
+
+  document.addEventListener('DOMContentLoaded', updateSoundBtn);
 
   window.openChapterPopup = function(idx) {
     var ch = ALL_CHAPTERS[idx];
