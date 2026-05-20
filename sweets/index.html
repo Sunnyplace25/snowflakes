@@ -816,9 +816,9 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-usb-img" src="../item/usb_hinata.webp" alt="usb" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-usb-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-usb-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
-                <tr id="item-row-draftscore" style="cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-draftscore-img" src="../item/draft_score_hinata.webp" alt="draft_score" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-draftscore-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
-                  <td id="ri-draftscore-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                <tr id="item-row-whitepick" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-whitepick-img" src="../item/white_pick_hinata.webp" alt="white_pick" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-whitepick-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-whitepick-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -4310,14 +4310,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_koyuki.png',
         charaLine: 'ずっと、半分のまま？'
       },
-      draft_score_hinata: {
+      white_pick_hinata: {
         noteCardId: 'note_sf_1',
-        img: '../item/draft_score_hinata.webp',
-        name: '途中の楽譜',
+        img: '../item/white_pick_hinata.webp',
+        name: '白いピック',
+        desc: 'ヒナタがアコギを弾くときによく使うピック。柔らかい音がする。',
         color: '#93c5fd',
         chara: 'HINATA', charaColor: '#93c5fd',
         charaImg: '../plofile/chibi_hinata.webp',
-        charaLine: '……まだ、途中のまま'
+        charaLine: '……すぐ無くす'
       },
       usb_hinata: {
         noteCardId: 'note_hinata_1',
@@ -4375,11 +4376,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _noteItemPendingChara = d;
       var imgEl   = document.getElementById('note-item-img');
       var nameEl  = document.getElementById('note-item-name');
+      var descEl  = document.getElementById('note-item-desc');
       var labelEl = document.getElementById('note-item-label');
       var closeBtn = document.getElementById('note-item-close-btn');
       imgEl.src          = d.img;
       imgEl.alt          = d.name;
       nameEl.textContent = d.name;
+      if (descEl) {
+        if (d.desc) { descEl.textContent = d.desc; descEl.style.display = ''; }
+        else { descEl.style.display = 'none'; }
+      }
       labelEl.style.color = d.color;
       closeBtn.textContent        = '閉じる';
       closeBtn.style.color        = d.color;
@@ -4530,7 +4536,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <img id="note-item-img" src="" alt="">
     <p id="note-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;margin-bottom:10px;">ITEM</p>
     <p id="note-item-name" style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;"></p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:44px;">を入手しました</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">を入手しました</p>
+    <p id="note-item-desc" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:32px;line-height:1.8;display:none;"></p>
     <button id="note-item-close-btn" onclick="closeNoteItemPopup()" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:12px 36px;cursor:pointer;transition:background 0.25s;color:#e2e8f0;">閉じる</button>
   </div>
 </div>
@@ -4763,7 +4770,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           'カイヤナイトのネックレス');
     updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘');
     updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little Snow（Law）USBメモリ');
-    updateRareItem('ri-draftscore-img', 'ri-draftscore-name', 'ri-draftscore-check', 'draft_score_hinata', '途中の楽譜');
+    updateRareItem('ri-whitepick-img', 'ri-whitepick-name', 'ri-whitepick-check', 'white_pick_hinata', '白いピック');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',              '黒い石のシルバーリング');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',      'Snow flakes ライブチケット');
     updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
