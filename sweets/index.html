@@ -816,6 +816,10 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-usb-img" src="../item/usb_hinata.webp" alt="usb" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-usb-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-usb-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
+                <tr id="item-row-draftscore" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-draftscore-img" src="../item/draft_score_hinata.webp" alt="draft_score" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-draftscore-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-draftscore-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
               </table>
             </div>
           </div>
@@ -4306,6 +4310,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_koyuki.png',
         charaLine: 'ずっと、半分のまま？'
       },
+      draft_score_hinata: {
+        noteCardId: 'note_sf_1',
+        img: '../item/draft_score_hinata.webp',
+        name: '途中の楽譜',
+        color: '#93c5fd',
+        chara: 'HINATA', charaColor: '#93c5fd',
+        charaImg: '../plofile/chibi_hinata.webp',
+        charaLine: '……まだ、途中のまま'
+      },
       usb_hinata: {
         noteCardId: 'note_hinata_1',
         img: '../item/usb_hinata.webp',
@@ -4750,6 +4763,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           'カイヤナイトのネックレス');
     updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘');
     updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little Snow（Law）USBメモリ');
+    updateRareItem('ri-draftscore-img', 'ri-draftscore-name', 'ri-draftscore-check', 'draft_score_hinata', '途中の楽譜');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',              '黒い石のシルバーリング');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',      'Snow flakes ライブチケット');
     updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
@@ -4838,7 +4852,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       ]
     },
     {
-      id: 'note_sf_1', type: 'note',
+      id: 'note_sf_1', type: 'note', isNew: '2026-05-27',
       title: '「白い音」解説',
       sub: '― Snow flakesという"三人の音"が重なり始める前夜 ―',
       origin: '',
@@ -4854,7 +4868,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       ]
     },
     { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 } },
-    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:true, reward:'coaster_hayate' },
+    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate' },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -5047,8 +5061,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
       var noteItemOk = noteItemD ? SfSnow.isUnlocked(noteItemKey) : false;
       html += '<div class="post-card" style="margin-top:24px;position:relative;">';
+      var noteNewRight = '12px';
       if (noteItemD) {
         html += '<img src="' + noteItemD.img + '" title="' + (noteItemOk ? noteItemD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
+        noteNewRight = '36px';
+      }
+      var showNoteNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+      if (showNoteNew) {
+        html += '<span style="position:absolute;top:12px;right:' + noteNewRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
       }
       html += '<div class="post-header">';
       html += '<div class="post-header-left">';
@@ -5143,7 +5163,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<img src="' + rewD.img + '" title="' + (rewOk ? rewD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (rewOk ? '0.82' : '0.22') + ';filter:' + (rewOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
         newRight = '36px';
       }
-      if (item.isNew) {
+      var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+      if (showNew) {
         html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
       }
       html += '<div class="post-header">';
