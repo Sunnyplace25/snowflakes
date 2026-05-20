@@ -1795,6 +1795,8 @@ function submitUtPw() {
       var ch5 = ALL_CHAPTERS[4];
       document.getElementById('prose-label').textContent = ch5.label;
       document.getElementById('prose-text').textContent  = ch5.text;
+      var si = document.getElementById('prose-scene-img'); if (si) si.style.display = 'none';
+      var t2 = document.getElementById('prose-text-2');   if (t2) t2.style.display = 'none';
       document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
       _proseCloseCallback = function() { renderScene(); };
       closeSKPopup();
@@ -2184,7 +2186,7 @@ function submitUtPw() {
     renderStones();
     updateAppraiseBtn();
     var exploreBtn = document.getElementById('explore-btn');
-    if (exploreBtn) exploreBtn.textContent = visited ? '路地裏をもう一度歩く' : '店を出る';
+    if (exploreBtn) exploreBtn.textContent = exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
 
     var visitCount = getDailyVisitCount();
     var greetings = [
