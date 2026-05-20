@@ -2333,6 +2333,9 @@
     // 装備画面解放フラグ
     localStorage.setItem('sf_undertone_equip_unlocked', 'true');
     updateEquipBtn();
+
+    // タロット画像を1枚解放
+    unlockRandomTarotImg();
     document.getElementById('tarot-stone-img').src = item.img;
     document.getElementById('tarot-stone-name').textContent = item.name;
     document.getElementById('tarot-stone-sub').textContent = rawLabel + ' ── 鑑定済み';
@@ -2427,6 +2430,36 @@
   function updateEquipBtn() {
     var btn = document.getElementById('equip-open-btn');
     if (btn) btn.style.display = localStorage.getItem('sf_undertone_equip_unlocked') === 'true' ? 'block' : 'none';
+  }
+
+  /* ── Tarot image unlock ── */
+  var KEY_TAROT_IMGS = 'sf_undertone_tarot_imgs';
+  function getTarotImgs() {
+    try { return JSON.parse(localStorage.getItem(KEY_TAROT_IMGS) || '[]'); }
+    catch(e) { return []; }
+  }
+  function unlockRandomTarotImg() {
+    var revealed = getTarotImgs();
+    var available = [];
+    for (var i = 0; i < CARDS.length; i++) {
+      if (revealed.indexOf(i) === -1) available.push(i);
+    }
+    if (!available.length) return null;
+    var pick = available[Math.floor(Math.random() * available.length)];
+    revealed.push(pick);
+    localStorage.setItem(KEY_TAROT_IMGS, JSON.stringify(revealed));
+    var card = CARDS[pick];
+    // 解放通知を石鑑定結果の下に表示
+    var sub = document.getElementById('tarot-stone-sub');
+    if (sub) {
+      setTimeout(function() {
+        var line = document.createElement('p');
+        line.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#7c3aed;margin-top:8px;';
+        line.textContent = '── タロット「' + card.name + '」 解放 ──';
+        sub.parentNode.insertBefore(line, sub.nextSibling);
+      }, 1200);
+    }
+    return pick;
   }
 
   /* ── Dual choice ── */
