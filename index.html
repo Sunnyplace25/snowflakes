@@ -715,18 +715,29 @@ function sfShare() {
   <script>
     (function() {
       var BASE_EP   = 160;
-      var BASE_TIME = new Date('2026-05-12T21:00:00'); // #160 が公開される時刻
+      var BASE_TIME = new Date('2026-05-11T21:00:00'); // #160 が公開される時刻
+
+      // 21時以外に公開される追加話（幕間など）— 時刻順に並べる
+      var EXTRA_EPISODES = [
+        new Date('2026-05-23T12:00:00'), // ep.172 幕間｜白い花の影
+        new Date('2026-05-25T18:00:00'), // ep.175 幕間｜二つ
+      ];
 
       function getEpisode(now) {
         var ms = now - BASE_TIME;
-        if (ms < 0) return BASE_EP - 1; // まだ未公開
+        if (ms < 0) return BASE_EP - 1;
         var days = Math.floor(ms / 86400000);
-        return BASE_EP + days;
+        var extras = 0;
+        for (var i = 0; i < EXTRA_EPISODES.length; i++) {
+          if (now >= EXTRA_EPISODES[i]) extras++;
+        }
+        return BASE_EP + days + extras;
       }
 
-      // 更新時間の指定（複数可）例: '2026-05-19': [18, 21]  単発: '2026-05-20': 18
+      // 更新時間の指定（複数可）例: '2026-05-23': [12, 21]
       var UPDATE_SCHEDULE = {
-        '2026-05-19': [18, 21],
+        '2026-05-23': [12, 21],
+        '2026-05-25': [18, 21],
       };
 
       function getTodayKey(d) {

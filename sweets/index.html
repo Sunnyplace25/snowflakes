@@ -5428,11 +5428,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 <script>
   (function() {
     var BASE_EP   = 160;
-    var BASE_TIME = new Date('2026-05-12T21:00:00');
+    var BASE_TIME = new Date('2026-05-11T21:00:00');
+    var EXTRA_EPISODES = [
+      new Date('2026-05-23T12:00:00'),
+      new Date('2026-05-25T18:00:00'),
+    ];
     var now  = new Date();
     var ms   = now - BASE_TIME;
-    var ep   = ms < 0 ? BASE_EP - 1 : BASE_EP + Math.floor(ms / 86400000);
-    var el   = document.getElementById('novel-latest-link');
+    if (ms < 0) return;
+    var days   = Math.floor(ms / 86400000);
+    var extras = EXTRA_EPISODES.filter(function(d) { return now >= d; }).length;
+    var ep     = BASE_EP + days + extras;
+    var el     = document.getElementById('novel-latest-link');
     if (el) el.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
   })();
 </script>
