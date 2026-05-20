@@ -4882,7 +4882,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n　きっと\n　ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n　ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 } },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, pickReward:1 },
     { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate' },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
@@ -5232,7 +5232,32 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   function onMusicEnd(songId) {
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
-    if (!song || !song.reward) return;
+    if (!song) return;
+
+    // ギターピック報酬（初回のみ）
+    if (song.pickReward) {
+      var flagKey = songId + '_pick_done';
+      if (!SfSnow.isUnlocked(flagKey)) {
+        SfSnow.addPick(song.pickReward);
+        SfSnow.unlockItem(flagKey);
+        SfSnow.updateUI();
+        var imgEl    = document.getElementById('note-item-img');
+        var nameEl   = document.getElementById('note-item-name');
+        var descEl   = document.getElementById('note-item-desc');
+        var labelEl  = document.getElementById('note-item-label');
+        var closeBtn = document.getElementById('note-item-close-btn');
+        if (imgEl)    imgEl.src = '../item/pick.webp';
+        if (nameEl)   nameEl.textContent = 'ギターピック × ' + song.pickReward;
+        if (descEl)   { descEl.textContent = 'ファンからの差し入れ。甘い。'; descEl.style.display = ''; }
+        if (labelEl)  labelEl.style.color = '#f9a8d4';
+        if (closeBtn) { closeBtn.textContent = '閉じる'; closeBtn.style.color = '#f9a8d4'; closeBtn.style.borderColor = '#f9a8d4'; closeBtn.style.background = 'rgba(255,255,255,0.05)'; }
+        _noteItemPendingChara = { chara: 'HAYATE', charaColor: '#fde68a', charaImg: '../plofile/chibi_hayate.webp', charaLine: 'うま！もう一個！' };
+        document.getElementById('note-item-popup').classList.add('show');
+      }
+      return;
+    }
+
+    if (!song.reward) return;
     var key = song.reward;
     if (!SfSnow.isUnlocked(key)) {
       SfSnow.unlockItem(key);
