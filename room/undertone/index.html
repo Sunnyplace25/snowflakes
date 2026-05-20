@@ -2028,7 +2028,7 @@ function submitUtPw() {
     if (Math.random() < 0.20) {
       var raw = rollRawStone();
       addRawStone(raw.id);
-      stoneFoundEl.textContent = '── ' + raw.label + ' を拾った';
+      stoneFoundEl.textContent = '── 小さな石を拾った';
       stoneFoundEl.style.display = 'block';
     }
     document.getElementById('hotspot-popup').classList.add('show');
@@ -2244,14 +2244,6 @@ function submitUtPw() {
     document.getElementById('hotspot-desc').textContent  = spot.desc;
     var stoneFoundEl = document.getElementById('hotspot-stone-found');
     stoneFoundEl.style.display = 'none';
-    // 20%で石ドロップ（店内でも）
-    if (Math.random() < 0.10) {
-      var raw = rollRawStone();
-      addRawStone(raw.id);
-      stoneFoundEl.textContent = '── ' + raw.label + ' を見つけた';
-      stoneFoundEl.style.display = 'block';
-      updateAppraiseBtn();
-    }
     document.getElementById('hotspot-popup').classList.add('show');
     if (spot.chars && spot.chars.length) {
       var pool = [];
