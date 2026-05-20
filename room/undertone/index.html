@@ -670,6 +670,11 @@
       font-size:14px; color:#e2e8f0; line-height:1.75;
       font-weight:400; white-space:pre-line; text-align:left;
     }
+    .prose-scene-img {
+      display:none; width:100%; border-radius:10px; margin:20px 0;
+      object-fit:cover; max-height:200px;
+      border:1px solid rgba(255,255,255,0.06);
+    }
     .prose-close {
       font-family:'Cormorant Garamond',serif;
       font-size:11px; letter-spacing:4px; color:#94a3b8;
@@ -708,6 +713,18 @@
     }
     .chapter-header:hover .chapter-title { color:#cbd5e1; }
     .chapter-arr { font-size:9px; color:#475569; }
+
+    /* Shop nav tabs */
+    .shop-nav-tab {
+      flex:1; padding:10px; border-radius:50px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+      color:#64748b; font-family:'Cormorant Garamond',serif;
+      font-size:11px; letter-spacing:3px; cursor:pointer; transition:all 0.2s;
+    }
+    .shop-nav-tab.active {
+      background:rgba(196,181,253,0.1); border-color:rgba(196,181,253,0.3);
+      color:#c4b5fd;
+    }
 
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
@@ -819,7 +836,15 @@
     <p class="stone-progress" id="stone-progress"></p>
 
     <p class="shop-quote">「今鳴っているものは、<br>　隠せない」</p>
-    <p class="shop-choose-label">今日の音を選ぶ</p>
+
+    <!-- ch21解放後のみ表示 -->
+    <div id="shop-nav" style="display:none;gap:10px;margin-bottom:20px;">
+      <button class="shop-nav-tab active" id="tab-oracle" onclick="switchShopTab('oracle')">今日の音を選ぶ</button>
+      <button class="shop-nav-tab" id="tab-interior" onclick="switchShopTab('interior')">店内を見る</button>
+    </div>
+
+    <div id="shop-panel-oracle">
+    <p class="shop-choose-label" id="shop-choose-label-inner">今日の音を選ぶ</p>
     <div class="choose-list">
       <button class="choose-item" onclick="openTarot('oracle')">
         <span class="choose-mark">◯</span>
@@ -842,6 +867,15 @@
         <span class="choose-sub" id="rawstone-sub">APPRAISE</span>
       </button>
     </div>
+    </div><!-- /shop-panel-oracle -->
+
+    <!-- 店内を見る パネル（ch21解放後） -->
+    <div id="shop-panel-interior" style="display:none;">
+      <p class="shop-choose-label">棚を見る</p>
+      <div id="shop-interior-stones" style="margin-bottom:16px;"></div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-top:8px;">── 準備中 ──</p>
+    </div>
+
     <button class="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
   </div>
 </div>
@@ -970,6 +1004,7 @@
   <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
   <button class="tarot-close" id="tarot-close-btn" style="display:none;" onclick="closeTarot()">閉じる</button>
+  <a href="index.html" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;margin-top:10px;" id="tarot-top-link">TOPへ戻る</a>
 </div>
 
 <!-- Spread overlay (深く見る) -->
@@ -1059,6 +1094,8 @@
     <p class="prose-label" id="prose-label"></p>
     <div class="prose-scroll">
       <p class="prose-text" id="prose-text"></p>
+      <img class="prose-scene-img" id="prose-scene-img" src="" alt="">
+      <p class="prose-text" id="prose-text-2" style="display:none;"></p>
     </div>
     <button class="prose-close" id="prose-close-btn" onclick="closeProse()">── 歩き出す ──</button>
   </div>
@@ -1367,6 +1404,60 @@
     ],
   ];
 
+    // Scene 4（夜の路地 · ch21解放後）
+    [
+      { label:'GLOWING SIGN',
+        desc:'Under tone\n── ひとつ多い音に、気づく場所 ──\n看板の灯りが、揺れている',
+        x:'18%', y:'28%',
+        chars:[
+          { char:'hayate', speech:'また来ちゃった', weight:3 },
+          { char:'hinata', speech:'……ここだ', weight:2 },
+          { char:'kouta',  speech:'呼ばれてる気がする', weight:1 },
+        ],
+        entrance:true },
+      { label:'BICYCLE',
+        desc:'壁際に並んだ自転車。\n誰かが鍵をかけたまま帰ってきていない',
+        x:'50%', y:'68%',
+        chars:[
+          { char:'hayate', speech:'これ、ずっとここにあるやつ', weight:3 },
+          { char:'hinata', speech:'……誰のだろう', weight:2 },
+          { char:'kouta',  speech:'持ち主、来るのかな', weight:1 },
+        ]},
+      { label:'OLD POSTER',
+        desc:'褪せたポスター。\n日付は読めないが、音楽のライブ告知らしい',
+        x:'68%', y:'42%',
+        chars:[
+          { char:'kouta',  speech:'昔のやつだな。誰のだろ', weight:3 },
+          { char:'hayate', speech:'これ、ヒナタたちじゃない？', weight:2 },
+          { char:'hinata', speech:'……違う', weight:1 },
+        ]},
+      { label:'BACK OF ALLEY',
+        desc:'路地の奥。\n灯りが届かない。\nでも、何かいる気がした',
+        x:'84%', y:'52%',
+        chars:[
+          { char:'hinata', speech:'……奥に、音がある', weight:3 },
+          { char:'hayate', speech:'ちょっと怖いな', weight:2 },
+          { char:'kouta',  speech:'行くな', weight:1 },
+        ]},
+      { label:'RECEIPT',
+        desc:'誰かが落としたレシート。\n読もうとしたが、雨で滲んでいた',
+        x:'32%', y:'80%',
+        chars:[
+          { char:'hayate', speech:'なんか気になる', weight:2 },
+          { char:'kouta',  speech:'他人のだろ', weight:3 },
+          { char:'hinata', speech:'……', weight:1 },
+        ]},
+      { label:'FLOOR',
+        desc:'石畳の隙間。\n雨の後、何かが光っていた',
+        x:'62%', y:'82%',
+        chars:[
+          { char:'hinata', speech:'……きれい', weight:3 },
+          { char:'hayate', speech:'石？拾っていいかな', weight:2 },
+          { char:'kouta',  speech:'何かあるぞ', weight:1 },
+        ]},
+    ],
+  ];
+
   /* ── 2周目限定ホットスポット（ランダムで1つ表示） ── */
   var HOTSPOTS_2ND = [
     // Scene 1
@@ -1573,17 +1664,19 @@
 
   function renderScene() {
     var sceneFiles = ['scene1.webp','scene2.webp','scene3.webp'];
+    if (ch21Unlocked) sceneFiles.push('scene4.png');
+    var total = sceneFiles.length;
     var img = document.getElementById('scene-img');
     img.classList.add('fade');
     setTimeout(function() {
       img.src = sceneFiles[currentScene];
       img.classList.remove('fade');
     }, 260);
-    document.getElementById('scene-counter').textContent = (currentScene + 1) + ' / 3';
+    document.getElementById('scene-counter').textContent = (currentScene + 1) + ' / ' + total;
     hideSpeech();
     renderHotspots();
     var btn = document.getElementById('advance-btn');
-    btn.textContent = currentScene === 2 ? '── 扉の前に立つ ──' : '進む →';
+    btn.textContent = currentScene === total - 1 ? '── 扉の前に立つ ──' : '進む →';
 
     // Update maxScene progress
     if (currentScene > maxScene) {
@@ -1693,7 +1786,27 @@
       if (idx === 5) updateAppraiseBtn();
     }
     document.getElementById('prose-label').textContent = ch.label;
-    document.getElementById('prose-text').textContent  = ch.text;
+
+    // 2-1（idx=5）は途中で scene4 画像を挿入
+    var sceneImg = document.getElementById('prose-scene-img');
+    var text2El  = document.getElementById('prose-text-2');
+    if (idx === 5) {
+      var SPLIT = 'なんとなく歩いた。';
+      var si = ch.text.indexOf(SPLIT);
+      if (si !== -1) {
+        document.getElementById('prose-text').textContent = ch.text.slice(0, si + SPLIT.length);
+        sceneImg.src = 'scene4.png'; sceneImg.style.display = 'block';
+        text2El.textContent = ch.text.slice(si + SPLIT.length).replace(/^\n+/, '');
+        text2El.style.display = 'block';
+      } else {
+        document.getElementById('prose-text').textContent = ch.text;
+        sceneImg.style.display = 'none'; text2El.style.display = 'none';
+      }
+    } else {
+      document.getElementById('prose-text').textContent = ch.text;
+      sceneImg.style.display = 'none'; text2El.style.display = 'none';
+    }
+
     document.getElementById('prose-close-btn').textContent = '── 閉じる ──';
     _proseCloseCallback = null;
     var sc = document.querySelector('.prose-scroll');
@@ -1776,7 +1889,8 @@
 
   window.advanceScene = function() {
     hideSpeech();
-    if (currentScene < 2) {
+    var total = ch21Unlocked ? 4 : 3;
+    if (currentScene < total - 1) {
       currentScene++;
       renderScene();
     } else {
@@ -1849,11 +1963,33 @@
     var g = totalVisits === 1 ? greetings[0] : greetings[1 + ((totalVisits - 2) % (greetings.length - 1))];
     document.getElementById('shop-greeting').innerHTML = g;
 
+    // ch21解放時はタブ表示
+    var shopNav = document.getElementById('shop-nav');
+    if (shopNav) shopNav.style.display = ch21Unlocked ? 'flex' : 'none';
+    // 常にoracle panel を先に表示
+    switchShopTab('oracle');
+
     // Chibi popup
     setTimeout(function() {
       showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
     }, 700);
   }
+
+  window.switchShopTab = function(tab) {
+    var oPanel = document.getElementById('shop-panel-oracle');
+    var iPanel = document.getElementById('shop-panel-interior');
+    var tOracle   = document.getElementById('tab-oracle');
+    var tInterior = document.getElementById('tab-interior');
+    if (tab === 'oracle') {
+      oPanel.style.display = 'block'; iPanel.style.display = 'none';
+      if (tOracle)   tOracle.classList.add('active');
+      if (tInterior) tInterior.classList.remove('active');
+    } else {
+      oPanel.style.display = 'none'; iPanel.style.display = 'block';
+      if (tOracle)   tOracle.classList.remove('active');
+      if (tInterior) tInterior.classList.add('active');
+    }
+  };
 
   function renderStones() {
     var wrap = document.getElementById('stone-counter');
@@ -1974,6 +2110,7 @@
     setTimeout(function() {
       showResultPanel('tarot-result-panel', pendingDraw, tarotMode);
       document.getElementById('tarot-close-btn').style.display = 'block';
+      document.getElementById('tarot-top-link').style.display = 'block';
     }, 950);
   };
 
@@ -2056,6 +2193,8 @@
     var ov = document.getElementById('tarot-overlay');
     ov.classList.remove('show');
     setTimeout(function() { ov.classList.remove('ready'); }, 500);
+    document.getElementById('tarot-close-btn').style.display = 'none';
+    document.getElementById('tarot-top-link').style.display = 'none';
   };
 
   /* ── Dual choice ── */
