@@ -345,6 +345,14 @@
       cursor: default;
     }
     .post-card:hover { border-color: rgba(249,168,212,0.25); }
+    @keyframes sf-new-glow {
+      0%, 100% { box-shadow: 0 0 8px 1px rgba(253,230,138,0.18), 0 0 0 0 rgba(253,230,138,0); }
+      50%       { box-shadow: 0 0 18px 4px rgba(253,230,138,0.38), 0 0 32px 8px rgba(253,230,138,0.10); }
+    }
+    .post-card-new {
+      border-color: rgba(253,230,138,0.30) !important;
+      animation: sf-new-glow 2.8s ease-in-out infinite;
+    }
 
     .post-header {
       display: flex;
@@ -5067,13 +5075,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       });
       var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
       var noteItemOk = noteItemD ? SfSnow.isUnlocked(noteItemKey) : false;
-      html += '<div class="post-card" style="margin-top:24px;position:relative;">';
+      var showNoteNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+      html += '<div class="post-card' + (showNoteNew ? ' post-card-new' : '') + '" style="margin-top:24px;position:relative;">';
       var noteNewRight = '12px';
       if (noteItemD) {
         html += '<img src="' + noteItemD.img + '" title="' + (noteItemOk ? noteItemD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
         noteNewRight = '36px';
       }
-      var showNoteNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
       if (showNoteNew) {
         html += '<span style="position:absolute;top:12px;right:' + noteNewRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
       }
@@ -5161,7 +5169,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = SfSnow.isUnlocked(item.id);
       var picks = SfSnow.getPicks();
       var ok = unlocked || picks >= item.cost.pick;
-      html += '<div class="post-card" style="margin-top:0;position:relative;">';
+      var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+      html += '<div class="post-card' + (showNew ? ' post-card-new' : '') + '" style="margin-top:0;position:relative;">';
       // アイテムアイコン（右上、さりげなく）
       var rewD = (item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
       var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
@@ -5170,7 +5179,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<img src="' + rewD.img + '" title="' + (rewOk ? rewD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (rewOk ? '0.82' : '0.22') + ';filter:' + (rewOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
         newRight = '36px';
       }
-      var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
       if (showNew) {
         html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
       }
