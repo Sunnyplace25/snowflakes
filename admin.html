@@ -149,6 +149,9 @@
     <p style="font-size:13px;color:var(--muted);margin:12px 0 20px;line-height:2;">isCoreFan 条件をスキップして Under tone に入るための設定です。</p>
 
     <div style="display:flex;flex-direction:column;gap:10px;">
+      <button onclick="fullResetUndertone()" style="padding:14px;background:rgba(196,181,253,0.18);border:2px solid rgba(196,181,253,0.5);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.18)'">
+        ▶ 完全に最初から（第1章）Under tone を開く
+      </button>
       <button onclick="unlockUndertone()" style="padding:12px;background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.3);border-radius:10px;color:#c4b5fd;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.2)'" onmouseleave="this.style.background='rgba(196,181,253,0.1)'">
         全プロフィール解放 → Under tone を開く
       </button>
@@ -534,6 +537,23 @@ function setAllProfiles() {
     localStorage.setItem('sf_pf_' + ch + '_v2', JSON.stringify(CORE_BLOCKS));
   });
   localStorage.setItem('sf_undertone_admin', 'true');
+}
+
+function fullResetUndertone() {
+  // Under tone の全状態を消去して第1章の最初から
+  var utKeys = [
+    'sf_undertone_visited', 'sf_undertone_visits', 'sf_undertone_count_total',
+    'sf_undertone_ch21_unlocked', 'sf_undertone_ch5_unlocked',
+    'sf_undertone_max_scene', 'sf_undertone_explore_count',
+    'sf_undertone_seen_prose', 'sf_undertone_equip_unlocked',
+    'sf_undertone_tarot_imgs',
+    'sf_ut_rawstones', 'sf_ut_rawstone_seen',
+  ];
+  utKeys.forEach(function(k) { localStorage.removeItem(k); });
+  setAllProfiles();
+  localStorage.setItem('sf_undertone_admin', 'true');
+  setTestStatus('✓ 完全リセット済み。第1章の最初から始まります。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
 function unlockUndertone() {
