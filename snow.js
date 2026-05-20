@@ -200,6 +200,25 @@
     updateMonthlyItemUI();
     return items[itemId];
   }
+  // N日間隔クールダウン
+  var KEY_NDAY = 'sf_nday_';
+  function isNDaysDone(action, n) {
+    var last = parseInt(localStorage.getItem(KEY_NDAY + action) || '0', 10);
+    return last > 0 && (Date.now() - last) < n * 86400000;
+  }
+  function markNDaysDone(action) {
+    localStorage.setItem(KEY_NDAY + action, String(Date.now()));
+  }
+  function addNDaysItem(action, itemId, n) {
+    if (isNDaysDone(action, n)) return 0;
+    var items = getMonthlyItems();
+    items[itemId] = (items[itemId] || 0) + 1;
+    localStorage.setItem(KEY_MITEMS, JSON.stringify(items));
+    markNDaysDone(action);
+    updateMonthlyItemUI();
+    return items[itemId];
+  }
+
   // Add monthly item directly without monthly-action restriction (for gacha drops etc.)
   function addMItemDirect(itemId, count) {
     var items = getMonthlyItems();
@@ -350,6 +369,9 @@
     rollCandyAll:       rollCandyAll,
     isMonthlyDone:      isMonthlyDone,
     addMonthlyItem:     addMonthlyItem,
+    isNDaysDone:        isNDaysDone,
+    markNDaysDone:      markNDaysDone,
+    addNDaysItem:       addNDaysItem,
     addMItemDirect:     addMItemDirect,
     getMonthlyItems:    getMonthlyItems,
     spendCandy:         spendCandy,
