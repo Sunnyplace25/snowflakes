@@ -4336,17 +4336,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     };
     var _noteItemPendingChara = null;
 
-    // スクロール読了でアイテムを付与する
+    // スクロール読了でアイテムを付与する（毎回ポップアップ表示）
     function attachScrollItemTrigger(el, itemId) {
-      if (!el || SfSnow.isUnlocked(itemId)) return;
+      if (!el) return;
       if (el.dataset.sfItemTrigger === itemId) return; // 二重登録防止
       el.dataset.sfItemTrigger = itemId;
       el.addEventListener('scroll', function handler() {
-        if (SfSnow.isUnlocked(itemId)) { el.removeEventListener('scroll', handler); return; }
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 28) {
           el.removeEventListener('scroll', handler);
-          SfSnow.unlockItem(itemId);
-          if (typeof renderItemRows === 'function') renderItemRows();
+          delete el.dataset.sfItemTrigger;
+          if (!SfSnow.isUnlocked(itemId)) {
+            SfSnow.unlockItem(itemId);
+            if (typeof renderItemRows === 'function') renderItemRows();
+          }
           showNoteItemGet(itemId);
         }
       });
@@ -5124,7 +5126,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (unlocked) {
         html += '<div class="post-content" id="player-' + item.id + '">';
         html += '<div class="divider"></div>';
-        var onended = (item.reward && !SfSnow.isUnlocked(item.reward))
+        var onended = item.reward
           ? ' onended="onMusicEnd(\'' + item.id + '\')"' : '';
         html += '<div style="padding:16px 0 4px;">'
           + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls controlsList="nodownload" oncontextmenu="return false;"' + onended + '></audio>'
@@ -5152,9 +5154,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
     if (!song || !song.reward) return;
     var key = song.reward;
-    if (SfSnow.isUnlocked(key)) return;
-    SfSnow.unlockItem(key);
-    if (typeof renderItemRows === 'function') renderItemRows();
+    if (!SfSnow.isUnlocked(key)) {
+      SfSnow.unlockItem(key);
+      if (typeof renderItemRows === 'function') renderItemRows();
+    }
     showNoteItemGet(key);
   }
 
