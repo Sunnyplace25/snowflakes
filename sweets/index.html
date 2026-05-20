@@ -4321,7 +4321,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         name: 'Snow flakes ライブチケット',
         color: '#fca5a5',
         chara: 'AKARI', charaColor: '#fca5a5',
-        charaImg: '../plofile/chibi_akari.webp',
+        charaImg: '../plofile/chibi_akari.png',
         charaLine: '好きになりました！'
       },
       coaster_hayate: {
@@ -4385,7 +4385,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         nameEl.style.color = d.charaColor;
         lineEl.textContent = d.charaLine;
         faceEl.src = d.charaImg;
-        faceEl.classList.toggle('bg-remove', (d.charaImg || '').indexOf('akari') !== -1);
+        faceEl.classList.remove('bg-remove');
         popup.style.display = '';
         popup.classList.add('show');
         setTimeout(function() { popup.classList.remove('show'); }, 5000);
