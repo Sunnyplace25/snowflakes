@@ -915,7 +915,7 @@
       <button class="choose-item" onclick="openTarot('yesno')">
         <span class="choose-mark">◯</span>
         <span class="choose-text">Yes / No を聞く</span>
-        <span class="choose-sub">YES · NO · 5 Snow</span>
+        <span class="choose-sub">YES · NO · 10 Snow</span>
       </button>
       <button class="choose-item choose-item--gold" onclick="openSpread()">
         <span class="choose-mark">◯</span>
@@ -2432,7 +2432,7 @@ function submitUtPw() {
   };
 
   window.openTarot = function(mode) {
-    var cost = 5;
+    var cost = (mode === 'yesno') ? 10 : 5;
     if (SfSnow.getBalance() < cost) { showSnowInsufficient(); return; }
     SfSnow.spend(cost);
     tarotMode = mode || 'oracle';
