@@ -1124,6 +1124,11 @@
 <script>
 (function() {
 
+  /* ── URL unlock shortcut ── */
+  if (new URLSearchParams(location.search).get('unlock') === '1') {
+    localStorage.setItem('sf_undertone_admin', 'true');
+  }
+
   /* ── isCoreFan / admin check ── */
   function isCoreFan() {
     if (localStorage.getItem('sf_undertone_admin') === 'true') return true;
