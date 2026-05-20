@@ -647,7 +647,7 @@
     }
     .prose-close:hover { color:#94a3b8; }
 
-    /* ── CHAPTER ACCORDION ── */
+    /* ── CHAPTER LIST ── */
     .chapter-list { margin-top:16px; }
     .chapter-item { border-top:1px solid rgba(255,255,255,0.04); }
     .chapter-item:last-of-type { border-bottom:1px solid rgba(255,255,255,0.04); }
@@ -659,7 +659,7 @@
     .chapter-header:hover { background:rgba(255,255,255,0.02); }
     .chapter-num {
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; color:#94a3b8; flex-shrink:0; width:24px;
+      font-size:11px; color:#64748b; flex-shrink:0; width:24px;
     }
     .chapter-section-label {
       font-family:'Cormorant Garamond',serif;
@@ -675,19 +675,7 @@
       transition:color 0.2s;
     }
     .chapter-header:hover .chapter-title { color:#cbd5e1; }
-    .chapter-arr { font-size:10px; color:#94a3b8; transition:transform 0.25s; }
-    .chapter-arr.open { transform:rotate(180deg); }
-    .chapter-body {
-      display:none; padding:0 16px 16px;
-      max-height:220px; overflow-y:auto;
-    }
-    .chapter-body::-webkit-scrollbar { width:3px; }
-    .chapter-body::-webkit-scrollbar-track { background:transparent; }
-    .chapter-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
-    .chapter-text {
-      font-size:13px; color:#cbd5e1; line-height:2.4;
-      font-weight:400; white-space:pre-line;
-    }
+    .chapter-arr { font-size:9px; color:#475569; }
 
     @media (max-width:480px) {
       body { padding:65px 16px 50px; }
@@ -732,57 +720,51 @@
 
     <button class="advance-btn" id="advance-btn" onclick="advanceScene()">進む →</button>
 
-    <!-- Chapter accordion (re-readable) -->
+    <!-- Chapter list (tap to open prose popup) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
       <p class="chapter-section-label">第一章</p>
       <div class="chapter-item" id="chapter-item-0">
-        <button class="chapter-header" onclick="toggleChapter(0)">
+        <button class="chapter-header" onclick="openChapterPopup(0)">
           <span class="chapter-num">1-1</span>
           <span class="chapter-title">分かれ道</span>
-          <span class="chapter-arr" id="chapter-arr-0">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-0"><p class="chapter-text" id="chapter-text-0"></p></div>
       </div>
       <div class="chapter-item" id="chapter-item-1">
-        <button class="chapter-header" onclick="toggleChapter(1)">
+        <button class="chapter-header" onclick="openChapterPopup(1)">
           <span class="chapter-num">1-2</span>
           <span class="chapter-title">路地裏</span>
-          <span class="chapter-arr" id="chapter-arr-1">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-1"><p class="chapter-text" id="chapter-text-1"></p></div>
       </div>
       <div class="chapter-item" id="chapter-item-2">
-        <button class="chapter-header" onclick="toggleChapter(2)">
+        <button class="chapter-header" onclick="openChapterPopup(2)">
           <span class="chapter-num">1-3</span>
           <span class="chapter-title">Under tone</span>
-          <span class="chapter-arr" id="chapter-arr-2">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-2"><p class="chapter-text" id="chapter-text-2"></p></div>
       </div>
       <div class="chapter-item" id="chapter-item-3" style="display:none;">
-        <button class="chapter-header" onclick="toggleChapter(3)">
+        <button class="chapter-header" onclick="openChapterPopup(3)">
           <span class="chapter-num">1-4</span>
           <span class="chapter-title">店主</span>
-          <span class="chapter-arr" id="chapter-arr-3">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-3"><p class="chapter-text" id="chapter-text-3"></p></div>
       </div>
       <div class="chapter-item" id="chapter-item-4" style="display:none;">
-        <button class="chapter-header" onclick="toggleChapter(4)">
+        <button class="chapter-header" onclick="openChapterPopup(4)">
           <span class="chapter-num">1-5</span>
           <span class="chapter-title">帰り道</span>
-          <span class="chapter-arr" id="chapter-arr-4">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-4"><p class="chapter-text" id="chapter-text-4"></p></div>
       </div>
       <p class="chapter-section-label" id="chapter-section-2" style="display:none;">第二章</p>
       <div class="chapter-item" id="chapter-item-5" style="display:none;">
-        <button class="chapter-header" onclick="toggleChapter(5)">
+        <button class="chapter-header" onclick="openChapterPopup(5)">
           <span class="chapter-num">2-1</span>
           <span class="chapter-title">仕事終わり</span>
-          <span class="chapter-arr" id="chapter-arr-5">▾</span>
+          <span class="chapter-arr">▶</span>
         </button>
-        <div class="chapter-body" id="chapter-body-5"><p class="chapter-text" id="chapter-text-5"></p></div>
       </div>
     </div>
   </div>
@@ -1591,8 +1573,6 @@
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
     ALL_CHAPTERS.forEach(function(ch, i) {
-      var textEl = document.getElementById('chapter-text-' + i);
-      if (textEl) textEl.textContent = ch.text;
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
       if (i === 5) {
@@ -1605,36 +1585,20 @@
         item.style.display = i <= maxScene ? '' : 'none';
       }
     });
-    // 第二章ラベルはchapter-item-5の表示に連動
     var sec2 = document.getElementById('chapter-section-2');
     if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
   }
 
-  function openChapter(idx) {
-    // Close all
-    for (var i = 0; i < 6; i++) {
-      var b = document.getElementById('chapter-body-' + i);
-      if (b) b.style.display = 'none';
-      var arr = document.getElementById('chapter-arr-' + i);
-      if (arr) arr.classList.remove('open');
-    }
-    // Open target
-    var body = document.getElementById('chapter-body-' + idx);
-    var arrEl = document.getElementById('chapter-arr-' + idx);
-    if (body) body.style.display = 'block';
-    if (arrEl) arrEl.classList.add('open');
-  }
-
-  window.toggleChapter = function(idx) {
-    var body = document.getElementById('chapter-body-' + idx);
-    var arrEl = document.getElementById('chapter-arr-' + idx);
-    var isOpen = body.style.display !== 'none' && body.style.display !== '';
-    if (isOpen) {
-      body.style.display = 'none';
-      if (arrEl) arrEl.classList.remove('open');
-    } else {
-      openChapter(idx);
-    }
+  window.openChapterPopup = function(idx) {
+    var ch = ALL_CHAPTERS[idx];
+    if (!ch) return;
+    document.getElementById('prose-label').textContent = ch.label;
+    document.getElementById('prose-text').textContent  = ch.text;
+    document.getElementById('prose-close-btn').textContent = '── 閉じる ──';
+    _proseCloseCallback = null;
+    var sc = document.querySelector('.prose-scroll');
+    if (sc) sc.scrollTop = 0;
+    document.getElementById('prose-popup').classList.add('show');
   };
 
   function renderHotspots() {
