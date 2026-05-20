@@ -5180,7 +5180,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var isNew = item.isNew && new Date() <= new Date(item.isNew);
     var iconRight = '10px';
 
-    var html = '<div class="post-card" style="position:relative;">';
+    var html = '<div class="post-card" style="position:relative;border-color:rgba(147,197,253,0.22);box-shadow:0 0 40px rgba(147,197,253,0.10);">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (isNew) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
     html += '<div class="post-header"><div class="post-header-left"><div class="post-tag">note</div><div class="post-title">' + item.title + '</div>';
