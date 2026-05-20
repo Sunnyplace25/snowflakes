@@ -813,6 +813,10 @@
             </div>
             <div id="rare-hinata-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-pendant" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-pendant-img" src="../item/pendant_hinata.webp" alt="pendant" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-pendant-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-pendant-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
                 <tr id="item-row-umbrella" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-umbrella-img" src="../item/umbrella_hinata.webp" alt="umbrella" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-umbrella-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-umbrella-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
@@ -845,6 +849,10 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-firststrings-img" src="../item/first_strings_kouta.webp" alt="first_strings" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-firststrings-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-firststrings-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
+                <tr id="item-row-zippo" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-zippo-img" src="../item/zippo_kouta.webp" alt="zippo" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-zippo-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-zippo-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
+                </tr>
               </table>
             </div>
           </div>
@@ -857,6 +865,14 @@
             </div>
             <div id="rare-hayate-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;" id="rare-hayate-table">
+                <tr id="item-row-earring" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-earring-img" src="../item/earring_hayate.webp" alt="earring" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-earring-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-earring-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+                <tr id="item-row-wristband" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-wristband-img" src="../item/wristband_hayate.webp" alt="wristband" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-wristband-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-wristband-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
+                </tr>
                 <tr id="item-row-coaster" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-coaster-img" src="../item/coaster_hayate.webp" alt="coaster" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-coaster-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-coaster-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
@@ -4715,12 +4731,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (check) check.textContent = '✓';
       }
     }
-    updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata', 'ヒナタの折りたたみ傘');
-    updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',      'Little Snow（Law）USBメモリ');
-    updateRareItem('ri-ring-img',          'ri-ring-name',          'ri-ring-check',          'ring_kouta',              '黒い石のシルバーリング');
-    updateRareItem('ri-bassstrings-img',   'ri-bassstrings-name',   'ri-bassstrings-check',   'bass_strings_kouta',      'Snow flakes ライブチケット');
-    updateRareItem('ri-firststrings-img',  'ri-firststrings-name',  'ri-firststrings-check',  'item_kouta_first_strings','初めて張りかえたベースの弦');
-    updateRareItem('ri-coaster-img',     'ri-coaster-name',     'ri-coaster-check',     'coaster_hayate',     'STARSの紙製コースター');
+    updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           'カイヤナイトのネックレス');
+    updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘');
+    updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little Snow（Law）USBメモリ');
+    updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',              '黒い石のシルバーリング');
+    updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',      'Snow flakes ライブチケット');
+    updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
+    updateRareItem('ri-zippo-img',        'ri-zippo-name',        'ri-zippo-check',        'zippo_kouta',             'コウタのジッポライター');
+    updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   'シトリンのピアス');
+    updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
+    updateRareItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター');
     // 静的NOTEカードのアイコン更新
     var staticNoteIcon = document.getElementById('static-note-ring-icon');
     if (staticNoteIcon) {
