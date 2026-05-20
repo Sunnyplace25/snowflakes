@@ -170,7 +170,7 @@
       <p style="font-size:11px;letter-spacing:2px;color:#475569;">── 解放 ──</p>
 
       <button onclick="unlockRareByChar('hinata')" style="padding:12px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:10px;color:#93c5fd;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.14)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">
-        HINATA 解放（傘・USB・青い石）
+        HINATA 解放（カセット・傘・USB・青い石）
       </button>
       <button onclick="unlockRareByChar('kouta')" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:10px;color:#fca5a5;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
         KOUTA 解放（リング・ライブチケット）
@@ -510,7 +510,7 @@ function encodeBase64(str) {
 var CORE_BLOCKS = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
 var STONE_KEYS  = ['pendant_hinata','earring_hayate','ring_kouta'];
 var RARE_BY_CHAR = {
-  hinata: ['pendant_hinata', 'umbrella_hinata', 'usb_hinata'],
+  hinata: ['pendant_hinata', 'umbrella_hinata', 'usb_hinata', 'cassette_hinata'],
   kouta:  ['ring_kouta', 'bass_strings_kouta'],
   hayate: ['earring_hayate', 'coaster_hayate'],
 };
@@ -527,6 +527,7 @@ function setAllProfiles() {
   ['hinata','kouta','hayate'].forEach(function(ch) {
     localStorage.setItem('sf_pf_' + ch + '_v2', JSON.stringify(CORE_BLOCKS));
   });
+  localStorage.setItem('sf_undertone_admin', 'true');
 }
 
 function unlockUndertone() {
