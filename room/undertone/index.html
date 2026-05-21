@@ -1830,12 +1830,14 @@ function submitUtPw() {
   /* ── Init ── */
   function init() {
     try { SfSnow.updateUI(); } catch(e) {}
-    if (!isCoreFan()) {
-      document.getElementById('locked-state').style.display = 'block';
-      return;
+    try {
+      goExplore();
+    } catch(e) {
+      // fallback: force explore-state visible
+      var ex = document.getElementById('explore-state');
+      if (ex) ex.style.display = 'block';
+      try { renderScene(); } catch(e2) {}
     }
-    // 常に路地裏から開始
-    goExplore();
   }
 
   /* ── Explore ── */
