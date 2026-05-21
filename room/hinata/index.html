@@ -833,6 +833,25 @@
         pendingAction = null;
       });
 
+      // コスト変更還元（一度のみ）
+      (function() {
+        var REFUND_FLAG = 'sf_pf_hinata_refund_v1';
+        if (localStorage.getItem(REFUND_FLAG)) return;
+        var refund = 0;
+        saved.forEach(function(id) {
+          if (id === 'mini') refund += 50;
+          else refund += 20;
+        });
+        localStorage.setItem(REFUND_FLAG, 'done');
+        if (refund > 0) {
+          var c = SfSnow.getCandies();
+          c['milk'] = (c['milk'] || 0) + refund;
+          localStorage.setItem('sf_candy', JSON.stringify(c));
+          SfSnow.updateUI();
+          showAlert('コスト変更のお知らせ\nミルクキャンディー ' + refund + ' 個を返還しました');
+        }
+      })();
+
       // プロフィールボタン
       var cur = getCandy();
       PROFILE.forEach(function(p) {
