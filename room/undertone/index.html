@@ -1253,12 +1253,6 @@ function submitUtPw() {
     <img id="tarot-stone-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 10px;display:block;box-shadow:0 0 24px rgba(196,181,253,0.15);">
     <p id="tarot-stone-name" style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:2px;"></p>
     <p id="tarot-stone-sub" style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:24px;font-family:'Cormorant Garamond',serif;"></p>
-    <!-- new rare item (shown only when newly unlocked) -->
-    <div id="appraise-new-item" style="display:none;background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:14px;padding:16px;margin-bottom:20px;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#c4b5fd;margin-bottom:10px;">NEW ITEM</p>
-      <img id="appraise-new-item-img" src="" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:10px;margin:0 auto 8px;display:block;">
-      <p id="appraise-new-item-name" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:2px;color:#c4b5fd;"></p>
-    </div>
     <!-- 3 appraised stones collection -->
     <div id="appraise-collection" style="display:flex;justify-content:center;gap:14px;margin-bottom:24px;"></div>
     <button onclick="closeAppraisePopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
@@ -2756,15 +2750,6 @@ function submitUtPw() {
     document.getElementById('tarot-stone-img').src = rawImg;
     document.getElementById('tarot-stone-name').textContent = rawLabel + 'だった';
     document.getElementById('tarot-stone-sub').textContent = '── 鑑定済み ──';
-    // new rare item
-    var newEl = document.getElementById('appraise-new-item');
-    if (newItem) {
-      document.getElementById('appraise-new-item-img').src = newItem.img;
-      document.getElementById('appraise-new-item-name').textContent = newItem.nameAppraised || newItem.name;
-      newEl.style.display = 'block';
-    } else {
-      newEl.style.display = 'none';
-    }
     // collection status
     var col = document.getElementById('appraise-collection');
     col.innerHTML = '';
