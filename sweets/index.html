@@ -4800,6 +4800,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-cassis',        count: candies['cassis'] || 0 },
       { rowId: 'item-row-proteincoffee', count: items['proteincoffee'] || 0 },
       { rowId: 'item-row-pick',          count: picks },
+      { rowId: 'item-row-chocolate', count: (items['chocolate_hayate'] || 0) + (SfSnow.isUnlocked('chocolate_hayate') ? 1 : 0) },
+      { rowId: 'item-row-coaster',   count: (items['coaster_hayate']   || 0) + (SfSnow.isUnlocked('coaster_hayate')   ? 1 : 0) },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
@@ -4841,8 +4843,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-zippo-img',        'ri-zippo-name',        'ri-zippo-check',        'zippo_kouta',             'コウタのジッポライター');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   'シトリンのピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
-    updateRareItem('ri-coaster-img',     'ri-coaster-name',     'ri-coaster-check',     'coaster_hayate',     'STARSの紙製コースター');
-    updateRareItem('ri-chocolate-img',   'ri-chocolate-name',   'ri-chocolate-check',   'chocolate_hayate',   '一粒のチョコレート');
+    // 繰り返し取得アイテム（コースター・チョコレート）: count表示
+    function updateCountableItem(imgId, nameId, checkId, itemKey, itemName) {
+      var img   = document.getElementById(imgId);
+      var name  = document.getElementById(nameId);
+      var check = document.getElementById(checkId);
+      var count = (SfSnow.getMonthlyItems()[itemKey] || 0);
+      var hasAny = SfSnow.isUnlocked(itemKey) || count > 0;
+      if (!img || !name) return;
+      if (hasAny) {
+        img.style.opacity = '0.85'; img.style.filter = '';
+        name.textContent = itemName; name.style.color = '#fde68a';
+        name.style.fontFamily = ''; name.style.fontSize = ''; name.style.letterSpacing = '';
+        if (check) { check.textContent = '× ' + count; check.style.color = '#fde68a'; }
+      }
+    }
+    updateCountableItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター');
+    updateCountableItem('ri-chocolate-img', 'ri-chocolate-name', 'ri-chocolate-check', 'chocolate_hayate', '一粒のチョコレート');
     // 静的NOTEカードのアイコン更新
     var staticNoteIcon = document.getElementById('static-note-ring-icon');
     if (staticNoteIcon) {
@@ -4939,8 +4956,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n　きっと\n　ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n　ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, reward:'chocolate_hayate', isNew:'2026-05-27' },
-    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate' },
+    { id:'song_sweets_brass', type:'song', title:'一粒のチョコレート', sub:'SWEETs – Brass Band Ver.', sub2:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, reward:'chocolate_hayate', rewardRepeatable:true, isNew:true },
+    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate', rewardRepeatable:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -5180,7 +5197,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var isNew = item.isNew && new Date() <= new Date(item.isNew);
     var iconRight = '10px';
 
-    var glowStyle = isNew ? 'border-color:rgba(147,197,253,0.22);box-shadow:0 0 40px rgba(147,197,253,0.10);' : '';
+    var glowStyle = isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (isNew) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
@@ -5278,6 +5295,46 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }); /* showConfirm callback end */
   }
 
+  /* ── Music listen tracker (30s real playback, anti-seek) ── */
+  var _listenTracker = {};
+  function _initListen(songId) {
+    _listenTracker[songId] = { played: 0, lastTime: -1 };
+  }
+  window._onTimeUpdate = function(songId, audio) {
+    var t = _listenTracker[songId];
+    if (!t) { _initListen(songId); t = _listenTracker[songId]; }
+    var ct = audio.currentTime;
+    if (t.lastTime >= 0) {
+      var diff = ct - t.lastTime;
+      if (diff > 0 && diff < 2) {        // 自然な再生のみカウント
+        t.played += diff;
+        if (t.played >= 30) {
+          t.played = 0;                   // リセット（次の30秒でまた付与）
+          _awardListen(songId);
+        }
+      } else if (diff < 0 || diff > 2) { // シーク検知 → リセット
+        t.played = 0;
+      }
+    }
+    t.lastTime = ct;
+  };
+  window._onAudioSeeked = function(songId) {
+    _initListen(songId);
+  };
+  function _awardListen(songId) {
+    var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
+    if (!song || !song.reward || !song.rewardRepeatable) return;
+    var key = song.reward;
+    SfSnow.addMItemDirect(key, 1);
+    if (typeof renderItemRows === 'function') renderItemRows();
+    if (!SfSnow.isUnlocked(key)) {
+      SfSnow.unlockItem(key);
+      showNoteItemGet(key);
+    } else {
+      showCharaPopupOnly(key);
+    }
+  }
+
   /* ── Music section ── */
   function renderMusic() {
     var wrap = document.getElementById('music-wrap');
@@ -5318,6 +5375,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       html += '<div class="post-header-left">';
       html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
       if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
+      if (item.sub2) html += '<div class="post-date">' + item.sub2 + '</div>';
       if (!unlocked) {
         html += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">'
           + '<img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.75;">'
@@ -5327,7 +5385,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       html += '</div>';
       // ボタン（右固定）
       if (unlocked) {
+        html += '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">';
         html += '<button class="read-btn" id="play-btn-' + item.id + '" onclick="togglePlay(\'' + item.id + '\', \'' + item.src + '\')">▶ 聴く</button>';
+        html += '</div>';
       } else if (ok) {
         html += '<button class="read-btn" onclick="doUnlockSong(\'' + item.id + '\')">交換する</button>';
       } else {
@@ -5337,11 +5397,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (unlocked) {
         html += '<div class="post-content" id="player-' + item.id + '">';
         html += '<div class="divider"></div>';
-        var onended = item.reward
-          ? ' onended="onMusicEnd(\'' + item.id + '\')"' : '';
+        // 繰り返し報酬あり → 30秒トラッカー使用
+        var audioEvents = item.rewardRepeatable
+          ? ' ontimeupdate="_onTimeUpdate(\'' + item.id + '\', this)" onseeked="_onAudioSeeked(\'' + item.id + '\')"'
+          : (item.reward ? ' onended="onMusicEnd(\'' + item.id + '\')"' : '');
         html += '<div style="padding:16px 0 4px;">'
-          + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls controlsList="nodownload" oncontextmenu="return false;"' + onended + '></audio>'
+          + '<audio id="audio-' + item.id + '" src="' + item.src + '" preload="none" style="width:100%;accent-color:#93c5fd;" controls controlsList="nodownload" oncontextmenu="return false;"' + audioEvents + '></audio>'
           + '</div>';
+        if (item.rewardRepeatable) {
+          html += '<p style="font-size:10px;letter-spacing:1px;color:#475569;text-align:center;padding-bottom:8px;">30秒以上聴くとアイテムがもらえる</p>';
+        }
         html += '</div>';
       }
       html += '</div>';
