@@ -1309,7 +1309,7 @@ function submitUtPw() {
 (function() {
 
   /* ── isCoreFan / admin check ── */
-  function isCoreFan() { return true; }
+  function isCoreFan() { return localStorage.getItem('sf_undertone_admin') === 'true'; }
 
   /* ── Stone items ── */
   var STONE_ITEMS = [

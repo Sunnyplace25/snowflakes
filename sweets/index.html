@@ -605,6 +605,8 @@
   /* ── Notes 3D Carousel ── */
   .nc-card{position:absolute;width:260px;height:140px;top:0;left:0;border-radius:14px;padding:18px 20px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
   .nc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
+  .nc-card.nc-red{border-color:rgba(252,165,165,0.32);}
+  .nc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.55);box-shadow:0 0 40px rgba(252,165,165,0.16);}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
@@ -4160,12 +4162,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       <a href="../#short-stories" class="section-label" style="text-decoration:none;display:block;" onmouseover="this.style.color='#c4b5fd'" onmouseout="this.style.color=''">短篇作品 ›</a>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
 
-        <a href="https://ncode.syosetu.com/n0964mc/" target="_blank" style="display:flex;align-items:baseline;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.07)'">
+        <a href="https://ncode.syosetu.com/n0964mc/" target="_blank" id="hito-link" onclick="onReadHito()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;position:relative;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.07)'">
           <div>
             <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:5px;">2026.05.15 / 短編</p>
             <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;font-weight:300;">ひとつ多い音</p>
           </div>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#64748b;flex-shrink:0;margin-left:16px;">読む →</span>
+          <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;margin-left:16px;">
+            <img id="hito-necklace-icon" src="../item/pendant_hinata.webp" alt="青い石のネックレス" style="width:28px;height:28px;object-fit:cover;border-radius:6px;filter:grayscale(1) brightness(0.4);transition:filter 0.4s;">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#64748b;">読む →</span>
+          </div>
         </a>
 
         <a href="https://ncode.syosetu.com/n0082lu/" target="_blank" style="display:flex;align-items:baseline;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.07)'">
@@ -4200,6 +4205,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           <span style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#64748b;flex-shrink:0;margin-left:16px;">読む →</span>
         </a>
 
+      </div>
+    </div>
+
+    <!-- 短篇読了アイテム解放ポップアップ -->
+    <div id="hito-item-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
+      <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:36px 28px;max-width:300px;width:100%;text-align:center;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#475569;margin-bottom:24px;">NEW ITEM</p>
+        <img src="../item/pendant_hinata.webp" alt="カイヤナイトのネックレス" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin:0 auto 20px;display:block;box-shadow:0 0 40px rgba(196,181,253,0.2);">
+        <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:1px;">カイヤナイトのネックレス</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:28px;">HINATA</p>
+        <button onclick="closeHitoItemPopup()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">── 受け取る ──</button>
+        <a href="../sweets/" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-decoration:none;padding:8px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">SWEETs へ →</a>
       </div>
     </div>
 
@@ -5193,6 +5210,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
+      if (item.id === 'note_hitotsu_1') c.classList.add('nc-red');
       c.innerHTML = '<div class="nc-tag">note' + (isNew ? '<span class="nc-new">NEW</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '読む ›' : 'プロテインコーヒー × 1') + '</div>';
@@ -5245,7 +5263,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var isNew = item.isNew && new Date() <= new Date(item.isNew);
     var iconRight = '10px';
 
-    var glowStyle = isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '';
+    var isHitotsu = item.id === 'note_hitotsu_1';
+    var glowStyle = isHitotsu ? 'border-color:rgba(252,165,165,0.38);box-shadow:0 0 40px rgba(252,165,165,0.13);' : (isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '');
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (isNew) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
