@@ -2187,6 +2187,7 @@ function submitUtPw() {
       var isLoopFirst = _firstHotspotOfLoop;
       _firstHotspotOfLoop = false;
       addRawStone(raw.id);
+      updateAppraiseBtn();
       stoneFound = true;
       setTimeout(function() { showStoneDiscovery(raw, isLoopFirst); }, 600);
     } else {
