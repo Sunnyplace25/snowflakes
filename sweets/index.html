@@ -351,6 +351,10 @@
       0%, 100% { box-shadow: 0 0 8px 1px rgba(253,230,138,0.18), 0 0 0 0 rgba(253,230,138,0); }
       50%       { box-shadow: 0 0 18px 4px rgba(253,230,138,0.38), 0 0 32px 8px rgba(253,230,138,0.10); }
     }
+    @keyframes red-pulse {
+      0%, 100% { box-shadow: 0 0 8px 2px rgba(239,68,68,0.25), 0 0 0 0 rgba(239,68,68,0); border-color: rgba(239,68,68,0.45); }
+      50%       { box-shadow: 0 0 28px 8px rgba(239,68,68,0.55), 0 0 48px 16px rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.85); }
+    }
     .post-card-new {
       border-color: rgba(253,230,138,0.30) !important;
       animation: sf-new-glow 2.8s ease-in-out infinite;
@@ -605,8 +609,8 @@
   /* ── Notes 3D Carousel ── */
   .nc-card{position:absolute;width:260px;height:140px;top:0;left:0;border-radius:14px;padding:18px 20px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
   .nc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
-  .nc-card.nc-red{border-color:rgba(252,165,165,0.32);}
-  .nc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.55);box-shadow:0 0 40px rgba(252,165,165,0.16);}
+  .nc-card.nc-red{border-color:rgba(239,68,68,0.45);animation:red-pulse 2s ease-in-out infinite;}
+  .nc-card.nc-red.nc-active{border-color:rgba(239,68,68,0.85);box-shadow:0 0 40px rgba(239,68,68,0.4);animation:red-pulse 2s ease-in-out infinite;}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
@@ -5264,7 +5268,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var iconRight = '10px';
 
     var isHitotsu = item.id === 'note_hitotsu_1';
-    var glowStyle = isHitotsu ? 'border-color:rgba(252,165,165,0.38);box-shadow:0 0 40px rgba(252,165,165,0.13);' : (isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '');
+    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '');
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (isNew) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
