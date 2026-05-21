@@ -2695,13 +2695,9 @@ function submitUtPw() {
     // shop内の未鑑定の石カウント表示
     var shopCount = document.getElementById('shop-rawstone-count');
     if (shopCount) {
-      if (arr.length > 0) {
-        var countText = document.getElementById('shop-rawstone-count-text');
-        if (countText) countText.textContent = '未鑑定の石 × ' + arr.length;
-        shopCount.style.display = 'flex';
-      } else {
-        shopCount.style.display = 'none';
-      }
+      var countText = document.getElementById('shop-rawstone-count-text');
+      if (countText) countText.textContent = '未鑑定の石 × ' + arr.length;
+      shopCount.style.display = 'flex';
     }
     if (!btn) return;
     // 2-1読了後かつ生の石所持時のみ表示
