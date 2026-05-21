@@ -796,7 +796,7 @@
   <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#64748b;margin:0 0 40px;text-align:center;">NOVEL GAME &amp; FORTUNE</p>
 
   <!-- LOCKED -->
-  <div id="locked-state">
+  <div id="locked-state" style="display:none;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#64748b;margin-bottom:18px;">LOCKED</p>
     <p style="font-size:13px;color:#94a3b8;line-height:2.4;font-weight:400;">2026 SUMMER 公開予定</p>
     <button onclick="openUtPwModal()" style="margin-top:20px;background:none;border:1px solid rgba(100,116,139,0.3);border-radius:50px;padding:10px 28px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(100,116,139,0.3)';this.style.color='#64748b'">enter</button>
@@ -1841,16 +1841,12 @@ function submitUtPw() {
   /* ── Init ── */
   function init() {
     try { SfSnow.updateUI(); } catch(e) {}
-    var locked = document.getElementById('locked-state');
     if (!isCoreFan()) {
-      locked.style.display = 'block';
+      document.getElementById('locked-state').style.display = 'block';
       return;
     }
-    locked.style.display = 'none';
-    {
-      // 常に路地裏から開始
-      goExplore();
-    }
+    // 常に路地裏から開始
+    goExplore();
   }
 
   /* ── Explore ── */
