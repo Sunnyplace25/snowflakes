@@ -906,6 +906,11 @@
 
     <div class="stone-counter" id="stone-counter"></div>
     <p class="stone-progress" id="stone-progress"></p>
+    <div id="shop-chocolate-row" style="display:none;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;">
+      <img src="../../item/chocolate.png" alt="一粒のチョコレート" style="width:28px;height:28px;object-fit:cover;border-radius:6px;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#94a3b8;">一粒のチョコレート</span>
+      <span id="shop-chocolate-count" style="font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:2px;color:#c4b5fd;">× 0</span>
+    </div>
     <div id="shop-rawstone-count" style="display:none;flex-direction:column;align-items:center;gap:12px;margin-top:10px;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.06);">
       <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
         <img src="../../item/rawstone.png" style="width:24px;height:24px;object-fit:cover;border-radius:5px;">
@@ -2452,6 +2457,15 @@ function submitUtPw() {
     });
     document.getElementById('stone-progress').textContent =
       obtained + ' / ' + STONE_ITEMS.length + '  RARE ITEMS';
+    // チョコレート表示
+    var chocoRow = document.getElementById('shop-chocolate-row');
+    var chocoCount = document.getElementById('shop-chocolate-count');
+    if (chocoRow && chocoCount) {
+      var items = SfSnow.getMonthlyItems();
+      var cnt = items['chocolate_hayate'] || 0;
+      chocoCount.textContent = '× ' + cnt;
+      chocoRow.style.display = 'flex';
+    }
   }
 
   /* ── Tarot ── */
