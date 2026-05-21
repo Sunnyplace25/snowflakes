@@ -1312,11 +1312,9 @@ function submitUtPw() {
   }
 
   /* ── isCoreFan / admin check ── */
-  // 一般公開前: adminフラグ or パスワード認証済みのみ許可
+  // 公開前テスト中: 常に許可（公開時にロック復活）
   function isCoreFan() {
-    if (localStorage.getItem('sf_undertone_admin') === 'true') return true;
-    if (localStorage.getItem('sf_undertone_session') === 'true') return true;
-    return false;
+    return true;
   }
 
   /* ── Stone items ── */
