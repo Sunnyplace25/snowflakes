@@ -302,14 +302,15 @@
     }
     .explore-btn {
       display:block; width:100%;
-      background:none;
-      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(196,181,253,0.05);
+      border:1px solid rgba(196,181,253,0.25);
       border-radius:50px; padding:12px;
       color:#64748b; font-family:'Cormorant Garamond',serif;
-      font-size:11px; letter-spacing:4px; cursor:pointer;
-      transition:color 0.25s, border-color 0.25s;
+      font-size:11px; letter-spacing:4px; cursor:pointer; color:#c4b5fd;
+      transition:color 0.25s, border-color 0.25s, background 0.25s;
+      margin-top:16px;
     }
-    .explore-btn:hover { color:#64748b; border-color:rgba(255,255,255,0.12); }
+    .explore-btn:hover { background:rgba(196,181,253,0.1); border-color:rgba(196,181,253,0.5); }
     .chapter-footer {
       margin-top:24px; display:flex; flex-direction:column; gap:10px;
     }
@@ -1234,12 +1235,21 @@ function submitUtPw() {
 
 <!-- Rare item reveal popup (fixed, always on top) -->
 <div id="tarot-stone-reveal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
-  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.25);border-radius:20px;padding:32px 28px;max-width:280px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#94a3b8;margin-bottom:16px;">RARE ITEM</p>
-    <img id="tarot-stone-img" src="" alt="" style="width:80px;margin:0 auto 14px;display:block;">
-    <p id="tarot-stone-name" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:3px;color:#c4b5fd;margin-bottom:8px;"></p>
-    <p id="tarot-stone-sub" style="font-size:10px;color:#94a3b8;letter-spacing:2px;margin-bottom:24px;">アイテムログに追加されました</p>
-    <button onclick="document.getElementById('tarot-stone-reveal').style.display='none';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#94a3b8'">── 閉じる ──</button>
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.25);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">APPRAISE</p>
+    <!-- raw stone -->
+    <img id="tarot-stone-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 10px;display:block;box-shadow:0 0 24px rgba(196,181,253,0.15);">
+    <p id="tarot-stone-name" style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:2px;"></p>
+    <p id="tarot-stone-sub" style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:24px;font-family:'Cormorant Garamond',serif;"></p>
+    <!-- new rare item (shown only when newly unlocked) -->
+    <div id="appraise-new-item" style="display:none;background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#c4b5fd;margin-bottom:10px;">NEW ITEM</p>
+      <img id="appraise-new-item-img" src="" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:10px;margin:0 auto 8px;display:block;">
+      <p id="appraise-new-item-name" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:2px;color:#c4b5fd;"></p>
+    </div>
+    <!-- 3 appraised stones collection -->
+    <div id="appraise-collection" style="display:flex;justify-content:center;gap:14px;margin-bottom:24px;"></div>
+    <button onclick="closeAppraisePopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
 </div>
 
@@ -2703,7 +2713,8 @@ function submitUtPw() {
     updateAppraiseBtn();
     var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
     if (!available.length) {
-      showSKPopup('NAGI', '……全部、揃ってる');
+      showAppraisePopup(rawId, rawLabel, null);
+      setTimeout(function() { showSKPopup('NAGI', '……全部、揃ってる'); }, 800);
       return;
     }
     var item = available[Math.floor(Math.random() * available.length)];
@@ -2715,14 +2726,51 @@ function submitUtPw() {
 
     // タロット画像を1枚解放
     unlockRandomTarotImg();
-    document.getElementById('tarot-stone-img').src = item.img;
-    document.getElementById('tarot-stone-name').textContent = item.name;
-    document.getElementById('tarot-stone-sub').textContent = rawLabel + ' ── 鑑定済み';
-    document.getElementById('tarot-stone-reveal').style.display = 'flex';
+    showAppraisePopup(rawId, rawLabel, item);
     var speech = STONE_SPEECHES[item.key];
     if (speech) {
-      setTimeout(function() { showSKPopup('NAGI', speech); }, 600);
+      setTimeout(function() { showSKPopup('NAGI', speech); }, 1200);
     }
+  };
+
+  function showAppraisePopup(rawId, rawLabel, newItem) {
+    // raw stone image
+    var rawImg = RAW_STONE_IMG[rawId] || '../../item/rawstone.png';
+    document.getElementById('tarot-stone-img').src = rawImg;
+    document.getElementById('tarot-stone-name').textContent = rawLabel + 'だった';
+    document.getElementById('tarot-stone-sub').textContent = '── 鑑定済み ──';
+    // new rare item
+    var newEl = document.getElementById('appraise-new-item');
+    if (newItem) {
+      document.getElementById('appraise-new-item-img').src = newItem.img;
+      document.getElementById('appraise-new-item-name').textContent = newItem.nameAppraised || newItem.name;
+      newEl.style.display = 'block';
+    } else {
+      newEl.style.display = 'none';
+    }
+    // collection status
+    var col = document.getElementById('appraise-collection');
+    col.innerHTML = '';
+    STONE_ITEMS.forEach(function(s) {
+      var unlocked = SfSnow.isUnlocked(s.key);
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;';
+      var img = document.createElement('img');
+      img.src = s.img;
+      img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:10px;display:block;margin:0 auto 4px;' + (unlocked ? 'box-shadow:0 0 12px rgba(196,181,253,0.2);' : 'filter:grayscale(1);opacity:0.3;');
+      var cnt = document.createElement('p');
+      cnt.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:1px;color:' + (unlocked ? '#c4b5fd' : '#334155') + ';';
+      cnt.textContent = unlocked ? '× 1' : '× 0';
+      wrap.appendChild(img);
+      wrap.appendChild(cnt);
+      col.appendChild(wrap);
+    });
+    var pop = document.getElementById('tarot-stone-reveal');
+    pop.style.display = 'flex';
+  }
+
+  window.closeAppraisePopup = function() {
+    document.getElementById('tarot-stone-reveal').style.display = 'none';
   };
 
   window.closeTarot = function() {
