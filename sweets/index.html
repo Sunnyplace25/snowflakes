@@ -5222,7 +5222,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-      if (item.id === 'note_hitotsu_1') c.classList.add('nc-red');
       c.innerHTML = '<div class="nc-tag">note' + (isNew ? '<span class="nc-new">NEW</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '読む ›' : 'プロテインコーヒー × 1') + '</div>';
