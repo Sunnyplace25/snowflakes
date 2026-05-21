@@ -1305,6 +1305,15 @@ function submitUtPw() {
 </div>
 
 <script>
+window.onerror = function(msg, src, line) {
+  var d = document.createElement('p');
+  d.style.cssText = 'color:#f87171;font-size:11px;padding:8px;background:#1a0a0a;border-radius:6px;margin:8px 0;word-break:break-all;';
+  d.textContent = 'JS ERROR: ' + msg + ' (line ' + line + ')';
+  var m = document.querySelector('.main');
+  if (m) m.insertBefore(d, m.firstChild);
+};
+</script>
+<script>
 (function() {
 
   /* ── isCoreFan / admin check ── */
