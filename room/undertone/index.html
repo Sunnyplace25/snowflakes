@@ -873,7 +873,7 @@
               <span class="chapter-arr">▶</span>
             </button>
           </div>
-          <div class="chapter-item" id="chapter-item-6" style="display:none;">
+          <div class="chapter-item" id="chapter-item-6">
             <button class="chapter-header" onclick="openChapterPopup(6)">
               <span class="chapter-num">2-2</span>
               <span class="chapter-title">深夜の店</span>
@@ -1910,7 +1910,7 @@ function submitUtPw() {
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
       if (i === 6) {
-        item.style.display = ch22Unlocked ? '' : 'none';
+        item.style.display = ch21Unlocked ? '' : 'none';
       } else if (i === 5) {
         item.style.display = ch21Unlocked ? '' : 'none';
       } else if (i === 4) {
