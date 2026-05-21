@@ -2470,10 +2470,10 @@ function submitUtPw() {
       var cnt = items['chocolate_hayate'] || 0;
       chocoCount.textContent = '× ' + cnt;
       chocoRow.style.display = 'flex';
-      // 2-2読了後かつ所持1個以上でボタン表示
+      // 2-2読了後はボタン常時表示
       if (chocoGiveBtn) {
         var ch22Read = _seenProseScenes.has(6);
-        chocoGiveBtn.style.display = (ch22Read && cnt > 0) ? 'block' : 'none';
+        chocoGiveBtn.style.display = ch22Read ? 'block' : 'none';
       }
     }
   }
@@ -2867,7 +2867,10 @@ function submitUtPw() {
   window.giveChocolateToNagi = function() {
     var items = SfSnow.getMonthlyItems();
     var cnt = items['chocolate_hayate'] || 0;
-    if (cnt <= 0) return;
+    if (cnt <= 0) {
+      showSKPopup('NAGI', '持っていません');
+      return;
+    }
     // 1個消費
     items['chocolate_hayate'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
