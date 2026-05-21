@@ -1015,6 +1015,7 @@ function closeUtPwModal() {
 function submitUtPw() {
   var val = document.getElementById('ut-pw-input').value;
   if (val === 'HARDGUMI') {
+    localStorage.setItem('sf_undertone_admin', 'true');
     localStorage.setItem('sf_undertone_session', 'true');
     document.getElementById('ut-pw-modal').style.display = 'none';
     if (window.utInit) window.utInit();
@@ -1839,7 +1840,7 @@ function submitUtPw() {
 
   /* ── Init ── */
   function init() {
-    SfSnow.updateUI();
+    try { SfSnow.updateUI(); } catch(e) {}
     var locked = document.getElementById('locked-state');
     if (!isCoreFan()) {
       locked.style.display = 'block';
