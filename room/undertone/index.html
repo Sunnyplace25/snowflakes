@@ -2868,7 +2868,7 @@ function submitUtPw() {
     var items = SfSnow.getMonthlyItems();
     var cnt = items['chocolate_hayate'] || 0;
     if (cnt <= 0) {
-      showSKPopup('NAGI', '持っていません');
+      alert('持っていません');
       return;
     }
     // 1個消費
