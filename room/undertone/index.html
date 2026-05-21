@@ -742,13 +742,17 @@
     /* Shop nav tabs */
     .shop-nav-tab {
       flex:1; padding:10px; border-radius:50px;
-      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
-      color:#64748b; font-family:'Cormorant Garamond',serif;
+      background:rgba(253,230,138,0.04); border:1px solid rgba(253,230,138,0.2);
+      color:#a16207; font-family:'Cormorant Garamond',serif;
       font-size:11px; letter-spacing:3px; cursor:pointer; transition:all 0.2s;
     }
+    .shop-nav-tab:hover {
+      background:rgba(253,230,138,0.1); border-color:rgba(253,230,138,0.45);
+      color:#fde68a;
+    }
     .shop-nav-tab.active {
-      background:rgba(196,181,253,0.1); border-color:rgba(196,181,253,0.3);
-      color:#c4b5fd;
+      background:rgba(253,230,138,0.12); border-color:rgba(253,230,138,0.55);
+      color:#fde68a;
     }
 
     .tarot-credit { display:none; }
@@ -1016,6 +1020,14 @@ function submitUtPw() {
     <p class="hotspot-label" id="hotspot-label">FOUND</p>
     <p class="hotspot-desc" id="hotspot-desc"></p>
     <p id="hotspot-stone-found" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#c4b5fd;margin-top:10px;"></p>
+    <!-- interior speech inside popup -->
+    <div id="hotspot-speech" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);display:none;align-items:center;gap:12px;">
+      <img id="hotspot-speech-img" src="" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+      <div>
+        <p id="hotspot-speech-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;margin-bottom:4px;"></p>
+        <p id="hotspot-speech-text" style="font-size:13px;color:#e2e8f0;line-height:1.9;"></p>
+      </div>
+    </div>
     <button class="popup-close" onclick="closeHotspot()">閉じる</button>
   </div>
 </div>
@@ -2184,6 +2196,7 @@ function submitUtPw() {
 
   window.closeHotspot = function() {
     document.getElementById('hotspot-popup').classList.remove('show');
+    hideInteriorSpeech();
   };
 
   function showSpeech(char, text) {
@@ -2396,15 +2409,19 @@ function submitUtPw() {
   }
 
   function showInteriorSpeech(meta, text) {
-    var el = document.getElementById('interior-speech');
-    document.getElementById('interior-speech-img').src = meta.img;
-    document.getElementById('interior-speech-name').textContent = meta.name;
-    document.getElementById('interior-speech-name').style.color = meta.color;
-    document.getElementById('interior-speech-text').textContent = text;
+    var el = document.getElementById('hotspot-speech');
+    document.getElementById('hotspot-speech-img').src = meta.img;
+    document.getElementById('hotspot-speech-name').textContent = meta.name;
+    document.getElementById('hotspot-speech-name').style.color = meta.color;
+    document.getElementById('hotspot-speech-text').textContent = text;
     el.style.display = 'flex';
   }
   function hideInteriorSpeech() {
-    document.getElementById('interior-speech').style.display = 'none';
+    var el = document.getElementById('hotspot-speech');
+    if (el) el.style.display = 'none';
+    // 旧ページ内吹き出しも念のため
+    var old = document.getElementById('interior-speech');
+    if (old) old.style.display = 'none';
   }
 
   window.advanceInterior = function() {
