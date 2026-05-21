@@ -1016,7 +1016,6 @@ function submitUtPw() {
   var val = document.getElementById('ut-pw-input').value;
   if (val === 'HARDGUMI') {
     localStorage.setItem('sf_undertone_admin', 'true');
-    localStorage.setItem('sf_undertone_session', 'true');
     document.getElementById('ut-pw-modal').style.display = 'none';
     if (window.utInit) window.utInit();
   } else {
@@ -1307,14 +1306,17 @@ function submitUtPw() {
 (function() {
 
   /* ── URL unlock shortcut (admin only) ── */
-  if (new URLSearchParams(location.search).get('unlock') === '1') {
-    localStorage.setItem('sf_undertone_session', 'true');
+  var _params = new URLSearchParams(location.search);
+  if (_params.get('key') === 'snowflakes') {
+    localStorage.setItem('sf_undertone_admin', 'true');
+  }
+  if (_params.get('unlock') === '1') {
+    localStorage.setItem('sf_undertone_admin', 'true');
   }
 
   /* ── isCoreFan / admin check ── */
-  // 公開前テスト中: 常に許可（公開時にロック復活）
   function isCoreFan() {
-    return true;
+    return localStorage.getItem('sf_undertone_admin') === 'true';
   }
 
   /* ── Stone items ── */
