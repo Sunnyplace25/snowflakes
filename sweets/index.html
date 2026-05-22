@@ -738,6 +738,15 @@
           <div class="door-label">コウタの部屋</div>
         </div>
       </div>
+      <!-- 推しキャラ設定 -->
+      <div id="oshi-section" style="max-width:480px;margin:16px auto 0;display:none;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-bottom:12px;">推しキャラ</p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button onclick="setOshi('hayate')" id="oshi-btn-hayate" style="flex:1;max-width:120px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HAYATE</button>
+          <button onclick="setOshi('hinata')" id="oshi-btn-hinata" style="flex:1;max-width:120px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HINATA</button>
+          <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
+        </div>
+      </div>
     </div>
 
     <!-- Exchange section -->
@@ -754,6 +763,14 @@
     <!-- Under tone section -->
     <div class="section" id="undertone-section" style="display:none;">
       <div class="section-label" style="display:flex;align-items:center;gap:12px;">novel game &amp; fortune <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f1f5f9;font-style:italic;">Coming soon</span></div>
+
+      <!-- Rare items stone-counter (always visible in undertone section) -->
+      <div style="max-width:480px;margin:0 auto;width:100%;padding-bottom:4px;">
+        <div id="ut-stone-counter" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;width:100%;"></div>
+        <p id="ut-stone-progress" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;text-align:center;margin-bottom:8px;"></p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#334155;text-align:center;margin-bottom:20px;line-height:1.8;">2026 Summer 公開（キーワード変更日より）<br>＋ 三つのレアアイテム入手済み</p>
+      </div>
+
       <!-- Teaser: non-fans (clickable → popup) -->
       <div id="undertone-teaser" style="display:none;">
         <button onclick="openUndertoneComingSoon()" style="display:block;width:100%;background:none;border:none;cursor:pointer;padding:20px 0;">
@@ -787,6 +804,16 @@
           </a>
         </div>
       </div>
+      <!-- All items collected popup -->
+      <div id="ut-items-ready-popup" style="position:fixed;inset:0;z-index:710;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
+        <div style="pointer-events:auto;background:rgba(13,10,25,0.95);border:1px solid rgba(196,181,253,0.3);border-radius:16px;padding:24px 28px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopInSw 0.4s cubic-bezier(0.22,1,0.36,1);">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:12px;text-align:center;">UNDER TONE</p>
+          <p style="font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:1.8;text-align:center;margin-bottom:6px;">必要なアイテムが揃いました</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#94a3b8;text-align:center;margin-bottom:16px;">── 三つの石がここに集まる ──</p>
+          <button onclick="document.getElementById('ut-items-ready-popup').style.display='none'" style="display:block;width:100%;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#8b7fd4'" onmouseleave="this.style.color='#4c3f8a'">── 閉じる ──</button>
+        </div>
+      </div>
+
       <!-- Under tone teaser popup (Coming Soon) -->
       <div id="undertone-coming-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
         <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopInSw 0.4s cubic-bezier(0.22,1,0.36,1);display:flex;align-items:flex-end;gap:12px;">
@@ -804,6 +831,7 @@
     <!-- Items section -->
     <div class="section" id="items-section" style="display:none;">
       <div class="section-label">items</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-bottom:20px;">ガチャやコンテンツを回ってアイテムをゲットしよう</p>
       <div id="items-body" style="display:flex;max-width:480px;margin:0 auto;flex-direction:column;gap:16px;width:100%;">
 
         <!-- 通常アイテム -->
@@ -846,6 +874,10 @@
             </div>
             <div id="rare-hinata-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
               <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-cassette" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-cassette-img" src="../item/cassette_hinata.webp" alt="cassette" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-cassette-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-cassette-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
                 <tr id="item-row-pendant" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-pendant-img" src="../item/pendant_hinata.webp" alt="pendant" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-pendant-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-pendant-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
@@ -929,9 +961,10 @@
 
     <!-- 短編先行 -->
     <div class="section">
-      <div class="section-label">short stories</div>
+      <div class="section-label">another</div>
 
-      <div class="post-card" style="display:none;">
+      <div class="post-card" style="display:none;position:relative;">
+        <img id="story-pendant-icon" src="../item/pendant_hinata.webp" title="青い石のネックレス" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;z-index:1;pointer-events:none;opacity:0.22;filter:grayscale(1);">
         <div class="post-header">
           <div class="post-header-left">
             <div class="post-tag">short story</div>
@@ -3989,7 +4022,7 @@
     <div class="section" id="music-section">
       <div class="section-label">music</div>
       <p class="section-req" id="music-req">
-        <img src="../item/pick.webp"> ギターピック
+        <img src="../item/pick.webp"> ギターピック　交換アイテム
       </p>
       <div id="music-scene" style="width:100%;height:170px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
         <div id="music-drum" style="width:260px;height:140px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
@@ -4174,8 +4207,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <div id="hito-item-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
       <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:36px 28px;max-width:300px;width:100%;text-align:center;">
         <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#475569;margin-bottom:24px;">NEW ITEM</p>
-        <img src="../item/pendant_hinata.webp" alt="カイヤナイトのネックレス" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin:0 auto 20px;display:block;box-shadow:0 0 40px rgba(196,181,253,0.2);">
-        <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:1px;">カイヤナイトのネックレス</p>
+        <img src="../item/pendant_hinata.webp" alt="青い石のネックレス" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin:0 auto 20px;display:block;box-shadow:0 0 40px rgba(196,181,253,0.2);">
+        <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:1px;">青い石のネックレス</p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:28px;">HINATA</p>
         <button onclick="closeHitoItemPopup()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">── 受け取る ──</button>
         <a href="../sweets/" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-decoration:none;padding:8px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">SWEETs へ →</a>
@@ -4282,11 +4315,54 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       // ログイン後にNOTES・EXCHANGEを再描画
       if (typeof renderNotes === 'function') renderNotes();
       if (typeof renderExchange === 'function') renderExchange();
-      if (typeof renderRooms === 'function') renderRooms();
+      if (typeof renderRooms === 'function') { renderRooms(); initOshi(); }
       if (typeof renderItemRows === 'function') renderItemRows();
       if (typeof renderMusic === 'function') renderMusic();
       // Under tone 路地裏 section
       checkUndertoneSection();
+    }
+
+    var UT_STONE_ITEMS = [
+      { key: 'pendant_hinata', name: '青い石のネックレス', img: '../item/pendant_hinata.webp' },
+      { key: 'earring_hayate', name: '黄色い石のピアス',   img: '../item/earring_hayate.webp', alwaysGrey: true },
+      { key: 'ring_kouta',     name: '黒い石のシルバーリング', img: '../item/ring_kouta.webp' },
+    ];
+
+    var _utItemsReadyShown = false;
+
+    function renderUndertoneStones() {
+      var wrap = document.getElementById('ut-stone-counter');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      var obtained = 0;
+      UT_STONE_ITEMS.forEach(function(item) {
+        var got = !item.alwaysGrey && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key);
+        if (got) obtained++;
+        var div = document.createElement('div');
+        div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;'
+          + 'background:' + (got ? 'rgba(196,181,253,0.04)' : 'rgba(255,255,255,0.02)') + ';'
+          + 'border:1px solid ' + (got ? 'rgba(196,181,253,0.2)' : 'rgba(255,255,255,0.06)') + ';'
+          + 'border-radius:14px;padding:14px 8px;';
+        var imgStyle = 'width:56px;height:56px;object-fit:contain;border-radius:10px;transition:filter 0.5s;'
+          + (got ? '' : 'filter:grayscale(1) brightness(0.4);');
+        var labelStyle = 'font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;'
+          + 'color:' + (got ? '#94a3b8' : '#334155') + ';text-align:center;line-height:1.5;';
+        div.innerHTML = '<img src="' + item.img + '" alt="' + item.name + '" style="' + imgStyle + '">'
+          + '<span style="' + labelStyle + '">' + (got ? item.name : '？？？') + '</span>';
+        wrap.appendChild(div);
+      });
+      var prog = document.getElementById('ut-stone-progress');
+      if (prog) prog.textContent = obtained + ' / ' + UT_STONE_ITEMS.length + '  RARE ITEMS';
+
+      // 3つ全て揃ったら初回のみポップアップ表示
+      var allGot = UT_STONE_ITEMS.every(function(item) {
+        return item.alwaysGrey ? false : (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key));
+      });
+      if (allGot && !_utItemsReadyShown) {
+        _utItemsReadyShown = true;
+        var popup = document.getElementById('ut-items-ready-popup');
+        if (popup) popup.style.display = 'flex';
+      }
     }
 
     function checkUndertoneSection() {
@@ -4295,6 +4371,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var sec = document.getElementById('undertone-section');
       if (!sec) return;
       sec.style.display = '';
+      renderUndertoneStones();
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
@@ -4469,10 +4546,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var nameEl  = document.getElementById('note-item-name');
       var descEl  = document.getElementById('note-item-desc');
       var labelEl = document.getElementById('note-item-label');
+      var msgEl   = document.getElementById('note-item-msg');
       var closeBtn = document.getElementById('note-item-close-btn');
       imgEl.src          = d.img;
       imgEl.alt          = d.name;
       nameEl.textContent = d.name;
+      if (msgEl) msgEl.textContent = 'を入手しました';
       if (descEl) {
         if (d.desc) { descEl.textContent = d.desc; descEl.style.display = ''; }
         else { descEl.style.display = 'none'; }
@@ -4533,10 +4612,34 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (el) attachScrollItemTrigger(el, 'ring_kouta');
     }
 
+    // ── 交換系アイテムポップアップ（キャラポップアップなし・入手済み対応） ──
+    // img: 画像パス, name: アイテム名, alreadyHad: true=入手済みメッセージ
+    function showItemExchangePopup(img, name, alreadyHad) {
+      _noteItemPendingChara = null; // 閉じてもキャラポップアップを出さない
+      var imgEl    = document.getElementById('note-item-img');
+      var nameEl   = document.getElementById('note-item-name');
+      var descEl   = document.getElementById('note-item-desc');
+      var labelEl  = document.getElementById('note-item-label');
+      var msgEl    = document.getElementById('note-item-msg');
+      var closeBtn = document.getElementById('note-item-close-btn');
+      imgEl.src          = img;
+      imgEl.alt          = name;
+      nameEl.textContent = name;
+      if (descEl) descEl.style.display = 'none';
+      labelEl.style.color = '#94a3b8';
+      if (msgEl) msgEl.textContent = alreadyHad ? 'このアイテムは入手済みです' : 'を入手しました';
+      closeBtn.textContent       = '閉じる';
+      closeBtn.style.color       = '#e2e8f0';
+      closeBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+      closeBtn.style.background  = 'rgba(255,255,255,0.05)';
+      document.getElementById('note-item-popup').classList.add('show');
+    }
+
     function notesExchange() {
       showConfirm('交換しますか？', function() {
         if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
           unlockNotes();
+          showItemExchangePopup('../item/proteincoffee.webp', 'プロテインコーヒー', false);
         } else {
           alert('プロテインコーヒーが足りません');
         }
@@ -4627,7 +4730,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <img id="note-item-img" src="" alt="">
     <p id="note-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;margin-bottom:10px;">ITEM</p>
     <p id="note-item-name" style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;"></p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">を入手しました</p>
+    <p id="note-item-msg" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">を入手しました</p>
     <p id="note-item-desc" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:32px;line-height:1.8;display:none;"></p>
     <button id="note-item-close-btn" onclick="closeNoteItemPopup()" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:12px 36px;cursor:pointer;transition:background 0.25s;color:#e2e8f0;">閉じる</button>
   </div>
@@ -4860,7 +4963,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (check) check.textContent = '✓';
       }
     }
-    updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           'カイヤナイトのネックレス');
+    updateRareItem('ri-cassette-img', 'ri-cassette-name', 'ri-cassette-check', 'cassette_hinata',           '古いカセットテープ');
+    updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           '青い石のネックレス');
     updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘');
     updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little Snow（Law）USBメモリ');
     updateRareItem('ri-whitepick-img', 'ri-whitepick-name', 'ri-whitepick-check', 'white_pick_hinata', '白いピック');
@@ -4913,7 +5017,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   // SfSnow.updateUI が呼ばれるたびにアイテム行の表示も更新
   var _origSfUI = SfSnow.updateUI;
-  SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); if (typeof renderMusic === 'function') renderMusic(); };
+  SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); if (typeof renderMusic === 'function') renderMusic(); if (typeof renderUndertoneStones === 'function') renderUndertoneStones(); };
 
   document.addEventListener('DOMContentLoaded', function() {
     SfSnow.addWithToast('visit_sweets', 'SWEETsを訪問');
@@ -4923,6 +5027,50 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderItemRows();
     renderMusic();
     if (typeof checkUndertoneSection === 'function') checkUndertoneSection();
+    // story-pendant-icon の表示状態を更新
+    (function() {
+      var icon = document.getElementById('story-pendant-icon');
+      if (!icon) return;
+      if (SfSnow.isUnlocked('pendant_hinata')) {
+        icon.style.opacity = '0.9';
+        icon.style.filter  = 'none';
+      } else {
+        icon.style.opacity = '0.22';
+        icon.style.filter  = 'grayscale(1)';
+      }
+    })();
+    // セクション並び替え: ITEMS → NOTES → MUSIC → ANOTHER
+    (function() {
+      var main = document.querySelector('.wrapper') || document.body;
+      var itemsSection   = document.getElementById('items-section');
+      var musicSection   = document.getElementById('music-section');
+      // NOTESセクション: section-label が "notes" を含む div.section
+      var notesSection   = (function() {
+        var sections = document.querySelectorAll('.section');
+        for (var i = 0; i < sections.length; i++) {
+          var lbl = sections[i].querySelector('.section-label');
+          if (lbl && lbl.textContent.trim() === 'notes') return sections[i];
+        }
+        return null;
+      })();
+      // ANOTHERセクション: section-label が "another" を含む div.section
+      var anotherSection = (function() {
+        var sections = document.querySelectorAll('.section');
+        for (var i = 0; i < sections.length; i++) {
+          var lbl = sections[i].querySelector('.section-label');
+          if (lbl && lbl.textContent.trim() === 'another') return sections[i];
+        }
+        return null;
+      })();
+      if (!itemsSection || !notesSection || !musicSection || !anotherSection) return;
+      var parent = itemsSection.parentNode;
+      if (!parent) return;
+      // itemsSection の直後に NOTES → MUSIC → ANOTHER の順で挿入
+      var anchor = itemsSection.nextSibling;
+      parent.insertBefore(notesSection, anchor);
+      parent.insertBefore(musicSection, anchor);
+      parent.insertBefore(anotherSection, anchor);
+    })();
   });
 
   // ── ひとつ多い音 読了アイテム ────────────────────────
@@ -4944,6 +5092,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (popup) popup.style.display = 'none';
     SfSnow.unlockItem('pendant_hinata');
     if (typeof renderItemRows === 'function') renderItemRows();
+    if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
+    // story-pendant-icon を入手済みに更新
+    var icon = document.getElementById('story-pendant-icon');
+    if (icon) { icon.style.opacity = '0.9'; icon.style.filter = 'none'; }
   };
   // ────────────────────────────────────────────────────
 </script>
@@ -5069,6 +5221,36 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       el.onmouseenter = function() { overlay.style.background = d.color; };
       el.onmouseleave = function() { overlay.style.background = 'transparent'; };
     });
+  }
+
+  /* ── 推しキャラ設定 ── */
+  var OSHI_COLORS = { hayate:'#fde68a', hinata:'#93c5fd', kouta:'#fca5a5' };
+  function updateOshiButtons(selected) {
+    ['hayate','hinata','kouta'].forEach(function(ch) {
+      var btn = document.getElementById('oshi-btn-' + ch);
+      if (!btn) return;
+      var col = OSHI_COLORS[ch];
+      if (ch === selected) {
+        btn.style.color = col;
+        btn.style.borderColor = col;
+        btn.style.background = 'rgba(' + (col === '#fde68a' ? '253,230,138' : col === '#93c5fd' ? '147,197,253' : '252,165,165') + ',0.15)';
+      } else {
+        btn.style.color = '#475569';
+        btn.style.borderColor = 'rgba(255,255,255,0.1)';
+        btn.style.background = 'transparent';
+      }
+    });
+  }
+  window.setOshi = function(ch) {
+    localStorage.setItem('sf_oshi', ch);
+    updateOshiButtons(ch);
+  };
+  function initOshi() {
+    var anyUnlocked = DOOR_CONFIG.some(function(d) { return SfSnow.isUnlocked(d.roomId); });
+    var sec = document.getElementById('oshi-section');
+    if (sec) sec.style.display = anyUnlocked ? 'block' : 'none';
+    var saved = localStorage.getItem('sf_oshi');
+    if (saved) updateOshiButtons(saved);
   }
 
   function renderExchange() {
@@ -5351,9 +5533,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       alert('プロテインコーヒーが足りません');
       return;
     }
+    var alreadyHad = SfSnow.isUnlocked(id);
     SfSnow.unlockItem(id);
     renderNotes(); // → initNotesCarousel()
     setTimeout(function() { scrollToNotes(id); }, 100);
+    showItemExchangePopup('../item/proteincoffee.webp', 'プロテインコーヒー', alreadyHad);
     }); /* showConfirm callback end */
   }
 
@@ -5568,8 +5752,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     showConfirm('交換しますか？', function() {
       if (!SfSnow.spendPick(item.cost.pick)) { alert('ギターピックが足りません'); return; }
+      var alreadyHad = SfSnow.isUnlocked(id);
       SfSnow.unlockItem(id);
       renderMusic();
+      var coverImg = item.cover || '../item/pick.webp';
+      showItemExchangePopup(coverImg, item.title, alreadyHad);
     });
   }
 

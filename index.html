@@ -455,6 +455,16 @@
 </nav>
 
 <script>
+function toggleSweetsAccordion() {
+  var body = document.getElementById('sweets-accordion-body');
+  var btn  = document.getElementById('sweets-accordion-btn');
+  if (!body || !btn) return;
+  var open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? '詳細を見る ↓' : '閉じる ↑';
+}
+</script>
+<script>
 function sfShare() {
   var shareData = {
     title: 'Snow flakes',
@@ -552,22 +562,27 @@ function sfShare() {
           <p style="font-size:10px;letter-spacing:7px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:12px;">2026.05.20</p>
           <p style="font-size:clamp(18px,3vw,24px);font-weight:300;color:#f9a8d4;font-family:'Cormorant Garamond',serif;letter-spacing:4px;margin-bottom:20px;">SWEETs 更新</p>
 
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">トップページ 軽微な修正を行いました</p>
+          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:8px;">トップページ 軽微な修正を行いました</p>
 
-          <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">NOTE</p>
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">「白い音」解説 追加</p>
+          <!-- アコーディオン詳細 -->
+          <button id="sweets-accordion-btn" onclick="toggleSweetsAccordion()" style="margin-top:4px;background:none;border:1px solid rgba(249,168,212,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(249,168,212,0.5)';this.style.color='#f9a8d4'" onmouseleave="this.style.borderColor='rgba(249,168,212,0.2)';this.style.color='#94a3b8'">詳細を見る ↓</button>
 
-          <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STUDIO</p>
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">コウタの部屋 クリックアドベンチャー追加</p>
+          <div id="sweets-accordion-body" style="display:none;margin-top:14px;">
+            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">NOTE</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">「白い音」解説 追加</p>
 
-          <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STORY</p>
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">Under tone ── 2026 SUMMER 解放予定<br>ビジュアルノベルゲーム＆占い</p>
+            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STUDIO</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">コウタの部屋 クリックアドベンチャー追加</p>
 
-          <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">MUSIC</p>
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs – Brass Band Ver. 獲得アイテム追加</p>
+            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STORY</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">Under tone ── 2026 SUMMER 解放予定<br>ビジュアルノベルゲーム＆占い</p>
 
-          <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">GACHA</p>
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;">プロテインコーヒー 排出確率 増加</p>
+            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">MUSIC</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs – Brass Band Ver. 獲得アイテム追加</p>
+
+            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">GACHA</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;">プロテインコーヒー 排出確率 増加</p>
+          </div>
         </div>
         <p style="font-size:20px;color:#f9a8d4;flex-shrink:0;margin-top:4px;">→</p>
       </div>
@@ -577,7 +592,7 @@ function sfShare() {
   <!-- 活動報告リスト -->
   <div style="max-width:680px;margin:0 auto 40px;">
     <div style="border-radius:20px;padding:28px 36px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
-      <ul style="list-style:none;padding:0;margin:0;">
+      <ul style="list-style:none;padding:0;margin:0;overflow-y:auto;max-height:calc(3 * 56px);">
         <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
           <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3637366/" target="_blank" style="display:flex;gap:20px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
             <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.21</span>
@@ -1092,27 +1107,65 @@ function sfShare() {
     <!-- QF -->
     <div style="grid-column:1/-1;padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(240,171,252,0.25);">
       <p style="font-size:11px;letter-spacing:4px;color:#f0abfc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;">INSTAGRAM / 書き下ろしシリーズ</p>
-      <p style="font-size:22px;font-weight:400;color:white;margin-bottom:8px;font-family:'Cormorant Garamond',serif;letter-spacing:2px;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
-      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
-      <div class="qf-list">
-        <a class="qf-row" href="https://www.instagram.com/p/DUiTkqXiZnX/" target="_blank"><span class="qf-ep">ep.01</span><span class="qf-title">節分</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DUuSVSgCZdL/" target="_blank"><span class="qf-ep">ep.02</span><span class="qf-title">バレンタイン / ヒナタ</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DUuS_7CCZAr/" target="_blank"><span class="qf-ep">ep.03</span><span class="qf-title">バレンタイン / コウタ</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DUuTdtFiUm-/" target="_blank"><span class="qf-ep">ep.04</span><span class="qf-title">バレンタイン / ハヤテ</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DVNsuIeF2D-/" target="_blank"><span class="qf-ep">ep.05</span><span class="qf-title">SWEETs</span><span style="font-size:11px;color:#64748b;margin-left:8px;">ショーケース編 ep.79 前段</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DWjSdMCEZP-/" target="_blank"><span class="qf-ep">ep.06</span><span class="qf-title">Spring Waltz</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DV4BOSdkvo4/" target="_blank"><span class="qf-ep">ep.07</span><span class="qf-title">いつかのホワイトデー</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DWoEzizDheI/" target="_blank"><span class="qf-ep">ep.08</span><span class="qf-title">置いた音</span><span style="font-size:11px;color:#64748b;margin-left:8px;">大学編 ep.27.5</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DW8zbStCd1p/" target="_blank"><span class="qf-ep">ep.09</span><span class="qf-title">うまかった</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DW_b7avjmf0/" target="_blank"><span class="qf-ep">ep.10</span><span class="qf-title">帰り道</span><span style="font-size:11px;color:#64748b;margin-left:8px;">ポジション編 ep.124.5</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DXHBLwmCBVd/" target="_blank"><span class="qf-ep">ep.11</span><span class="qf-title">プリン</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DXMhjm3mj5T/" target="_blank"><span class="qf-ep">ep.12</span><span class="qf-title">デート</span><span style="font-size:11px;color:#64748b;margin-left:8px;">カクテル編 ep.136.5</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DXhJx4QDybN/" target="_blank"><span class="qf-ep">ep.13</span><span class="qf-title">予備の傘</span><span style="font-size:11px;color:#64748b;margin-left:8px;">短篇「白い音」前段</span></a>
-        <a class="qf-row" href="https://www.instagram.com/reel/DYCuIrXJJoU/" target="_blank"><span class="qf-ep">ep.14</span><span class="qf-title">柏餅食ってから</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DYKRPW7sfN6/" target="_blank"><span class="qf-ep">ep.15</span><span class="qf-title">母の日</span></a>
-        <a class="qf-row" href="https://www.instagram.com/p/DYfVsFWHGmS/" target="_blank"><span class="qf-ep">ep.16</span><span class="qf-title">懐かしい写真</span></a>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <p style="font-size:22px;font-weight:400;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin:0;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
+        <button id="qf-order-btn" onclick="toggleQFOrder()" style="background:none;border:1px solid rgba(240,171,252,0.25);border-radius:100px;padding:5px 14px;font-size:11px;letter-spacing:2px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;white-space:nowrap;" onmouseenter="this.style.borderColor='rgba(240,171,252,0.55)';this.style.color='#f0abfc'" onmouseleave="this.style.borderColor='rgba(240,171,252,0.25)';this.style.color='#94a3b8'">↕ 古い順</button>
       </div>
+      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:16px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
+      <div id="qf-list-container" class="qf-list"></div>
     </div>
+    <script>
+    (function() {
+      var QF_EPISODES = [
+        { ep: 'ep.01', title: '節分', url: 'https://www.instagram.com/p/DUiTkqXiZnX/', note: '' },
+        { ep: 'ep.02', title: 'バレンタイン / ヒナタ', url: 'https://www.instagram.com/p/DUuSVSgCZdL/', note: '' },
+        { ep: 'ep.03', title: 'バレンタイン / コウタ', url: 'https://www.instagram.com/p/DUuS_7CCZAr/', note: '' },
+        { ep: 'ep.04', title: 'バレンタイン / ハヤテ', url: 'https://www.instagram.com/p/DUuTdtFiUm-/', note: '' },
+        { ep: 'ep.05', title: 'SWEETs', url: 'https://www.instagram.com/p/DVNsuIeF2D-/', note: 'ショーケース編 ep.79 前段' },
+        { ep: 'ep.06', title: 'Spring Waltz', url: 'https://www.instagram.com/reel/DWjSdMCEZP-/', note: '' },
+        { ep: 'ep.07', title: 'いつかのホワイトデー', url: 'https://www.instagram.com/p/DV4BOSdkvo4/', note: '' },
+        { ep: 'ep.08', title: '置いた音', url: 'https://www.instagram.com/reel/DWoEzizDheI/', note: '大学編 ep.27.5' },
+        { ep: 'ep.09', title: 'うまかった', url: 'https://www.instagram.com/reel/DW8zbStCd1p/', note: '' },
+        { ep: 'ep.10', title: '帰り道', url: 'https://www.instagram.com/reel/DW_b7avjmf0/', note: 'ポジション編 ep.124.5' },
+        { ep: 'ep.11', title: 'プリン', url: 'https://www.instagram.com/reel/DXHBLwmCBVd/', note: '' },
+        { ep: 'ep.12', title: 'デート', url: 'https://www.instagram.com/reel/DXMhjm3mj5T/', note: 'カクテル編 ep.136.5' },
+        { ep: 'ep.13', title: '予備の傘', url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段' },
+        { ep: 'ep.14', title: '柏餅食ってから', url: 'https://www.instagram.com/reel/DYCuIrXJJoU/', note: '' },
+        { ep: 'ep.15', title: '母の日', url: 'https://www.instagram.com/p/DYKRPW7sfN6/', note: '' },
+        { ep: 'ep.16', title: '懐かしい写真', url: 'https://www.instagram.com/p/DYfVsFWHGmS/', note: '' }
+      ];
+      var QF_SHOW = 4;
+      var qfNewest = true; // デフォルト：最新順
+
+      function renderQF() {
+        var container = document.getElementById('qf-list-container');
+        if (!container) return;
+        var list = qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice();
+        var shown = list.slice(0, QF_SHOW);
+        container.innerHTML = '';
+        shown.forEach(function(item) {
+          var a = document.createElement('a');
+          a.className = 'qf-row';
+          a.href = item.url;
+          a.target = '_blank';
+          a.innerHTML = '<span class="qf-ep">' + item.ep + '</span><span class="qf-title">' + item.title + '</span>'
+            + (item.note ? '<span style="font-size:11px;color:#64748b;margin-left:8px;">' + item.note + '</span>' : '');
+          container.appendChild(a);
+        });
+      }
+
+      window.toggleQFOrder = function() {
+        qfNewest = !qfNewest;
+        var btn = document.getElementById('qf-order-btn');
+        if (btn) btn.textContent = qfNewest ? '↕ 古い順' : '↕ 新しい順';
+        renderQF();
+      };
+
+      document.addEventListener('DOMContentLoaded', renderQF);
+      // DOMContentLoadedが既に済んでいる場合のフォールバック
+      if (document.readyState !== 'loading') renderQF();
+    })();
+    </script>
 
   </div>
 </section>
@@ -1129,41 +1182,6 @@ function sfShare() {
       </div>
       <span style="font-size:20px;color:#f9a8d4;flex-shrink:0;">→</span>
     </a>
-  </div>
-</section>
-
-<!-- Music -->
-<section class="music">
-  <span class="sec-label">MUSIC</span>
-  <h2 class="sec-title" data-i18n="music-h2">音楽</h2>
-  <div class="music-inner">
-    <div class="music-top">
-      <div class="music-card">
-        <p class="music-platform">STREAMING</p>
-        <p class="music-name" data-i18n="music-streaming-name">各ストリーミングサービスで配信中</p>
-        <p class="music-desc" data-i18n="music-streaming-desc">Spotify・Apple Music・Amazon Music・YouTube Musicほか各種ストリーミングサービスで楽曲を配信。小説の世界観をもとに制作した楽曲を、いつでも聴ける。</p>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;">
-          <a class="link-btn btn-green" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" title="Spotify" style="padding:12px 16px;">
-            <i class="fa-brands fa-spotify" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(176,112,112,0.1);border:1.5px solid #b07070;color:#b07070;padding:12px 16px;" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank" title="Apple Music">
-            <i class="fa-brands fa-apple" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(90,143,168,0.1);border:1.5px solid #5a8fa8;color:#5a8fa8;padding:12px 16px;" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank" title="Amazon Music">
-            <i class="fa-brands fa-amazon" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;padding:12px 16px;" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank" title="YouTube Music">
-            <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
-          </a>
-        </div>
-      </div>
-      <div class="music-card">
-        <p class="music-platform">SUNO</p>
-        <p class="music-name">snowflakes_music</p>
-        <p class="music-desc" data-i18n="music-suno-desc">Sunoでも楽曲を公開中。グラスの縁・呼吸の距離など、ストリーミング未配信の楽曲も聴ける。</p>
-        <a class="link-btn btn-purple" href="https://suno.com/@snowflakes_music" target="_blank" data-i18n="music-suno-btn">Sunoで聴く →</a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1281,6 +1299,67 @@ function sfShare() {
   </div>
 </section>
 
+<!-- Music -->
+<section class="music">
+  <span class="sec-label">MUSIC</span>
+  <h2 class="sec-title" data-i18n="music-h2">音楽</h2>
+  <div class="music-inner">
+    <div class="music-top">
+      <div class="music-card">
+        <p class="music-platform">STREAMING</p>
+        <p class="music-name" data-i18n="music-streaming-name">各ストリーミングサービスで配信中</p>
+        <p class="music-desc" data-i18n="music-streaming-desc">Spotify・Apple Music・Amazon Music・YouTube Musicほか各種ストリーミングサービスで楽曲を配信。小説の世界観をもとに制作した楽曲を、いつでも聴ける。</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <a class="link-btn btn-green" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" title="Spotify" style="padding:12px 16px;">
+            <i class="fa-brands fa-spotify" style="font-size:22px;"></i>
+          </a>
+          <a class="link-btn" style="background:rgba(176,112,112,0.1);border:1.5px solid #b07070;color:#b07070;padding:12px 16px;" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank" title="Apple Music">
+            <i class="fa-brands fa-apple" style="font-size:22px;"></i>
+          </a>
+          <a class="link-btn" style="background:rgba(90,143,168,0.1);border:1.5px solid #5a8fa8;color:#5a8fa8;padding:12px 16px;" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank" title="Amazon Music">
+            <i class="fa-brands fa-amazon" style="font-size:22px;"></i>
+          </a>
+          <a class="link-btn" style="background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;padding:12px 16px;" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank" title="YouTube Music">
+            <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
+          </a>
+        </div>
+      </div>
+      <div class="music-card">
+        <p class="music-platform">SUNO</p>
+        <p class="music-name">snowflakes_music</p>
+        <p class="music-desc" data-i18n="music-suno-desc">Sunoでも楽曲を公開中。グラスの縁・呼吸の距離など、ストリーミング未配信の楽曲も聴ける。</p>
+        <a class="link-btn btn-purple" href="https://suno.com/@snowflakes_music" target="_blank" data-i18n="music-suno-btn">Sunoで聴く →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Closing -->
+<section style="padding:100px 24px 60px;position:relative;z-index:1;text-align:center;">
+  <p style="font-size:clamp(22px,3.5vw,32px);font-weight:bold;color:white;line-height:1.8;margin-bottom:56px;" data-i18n="closing-h">あなたの中にも、きっと残る。</p>
+  <p style="font-size:clamp(14px,2vw,17px);color:#94a3b8;line-height:2.2;margin-bottom:48px;" data-i18n="closing-p">
+    少しでも何かが残ったら、<br>
+    いいねや登録で応援していただけると嬉しいです。
+  </p>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:56px;">
+    <a href="https://www.instagram.com/snowflakes_story" target="_blank"
+       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(168,88,112,0.1);border:1.5px solid #a85870;color:#a85870;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
+       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+      <i class="fa-brands fa-instagram" style="font-size:18px;"></i> Instagram
+    </a>
+    <a href="https://www.tiktok.com/@snowflakes.music" target="_blank"
+       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(255,255,255,0.05);border:1.5px solid #ffffff;color:#ffffff;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
+       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+      <i class="fa-brands fa-tiktok" style="font-size:18px;"></i> TikTok
+    </a>
+    <a href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank"
+       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
+       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+      <i class="fa-brands fa-youtube" style="font-size:18px;"></i> YouTube
+    </a>
+  </div>
+</section>
+
 <!-- Links -->
 <section class="links">
   <span class="sec-label">LINKS</span>
@@ -1348,32 +1427,6 @@ function sfShare() {
   </div>
 </section>
 
-<!-- Closing -->
-<section style="padding:100px 24px 60px;position:relative;z-index:1;text-align:center;">
-  <p style="font-size:clamp(22px,3.5vw,32px);font-weight:bold;color:white;line-height:1.8;margin-bottom:56px;" data-i18n="closing-h">あなたの中にも、きっと残る。</p>
-  <p style="font-size:clamp(14px,2vw,17px);color:#94a3b8;line-height:2.2;margin-bottom:48px;" data-i18n="closing-p">
-    少しでも何かが残ったら、<br>
-    いいねや登録で応援していただけると嬉しいです。
-  </p>
-  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:56px;">
-    <a href="https://www.instagram.com/snowflakes_story" target="_blank"
-       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(168,88,112,0.1);border:1.5px solid #a85870;color:#a85870;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
-       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
-      <i class="fa-brands fa-instagram" style="font-size:18px;"></i> Instagram
-    </a>
-    <a href="https://www.tiktok.com/@snowflakes.music" target="_blank"
-       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(255,255,255,0.05);border:1.5px solid #ffffff;color:#ffffff;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
-       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
-      <i class="fa-brands fa-tiktok" style="font-size:18px;"></i> TikTok
-    </a>
-    <a href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank"
-       style="display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:100px;background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;font-size:15px;text-decoration:none;transition:opacity 0.2s;"
-       onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
-      <i class="fa-brands fa-youtube" style="font-size:18px;"></i> YouTube
-    </a>
-  </div>
-</section>
-
 <!-- App CTA -->
 <section class="app-cta">
   <p data-i18n="app-cta-p">Snow flakesの世界観をまとったタスク管理アプリも公開中</p>
@@ -1387,7 +1440,7 @@ function sfShare() {
   <p class="footer-copy">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
   <p class="footer-copy">All rights reserved.</p>
   <p class="footer-copy">Unauthorized reproduction or AI training is prohibited.</p>
-  <p style="margin-top:16px;"><a href="kotori.html" style="font-size:12px;color:#1e293b;text-decoration:none;letter-spacing:2px;transition:color 0.2s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'" data-i18n="footer-kotori">山吹ことり について</a></p>
+  <p style="margin-top:16px;"><a href="kotori.html" style="font-size:12px;color:#475569;text-decoration:none;letter-spacing:2px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'" data-i18n="footer-kotori">山吹ことりの部屋</a></p>
 </footer>
 
 <!-- ── Snow system ── -->

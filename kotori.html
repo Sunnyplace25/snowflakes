@@ -351,6 +351,17 @@
 
 <canvas id="snow"></canvas>
 
+<!-- Backstage Pass popup -->
+<div id="backstage-pass-popup" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(24px);z-index:200;align-items:center;gap:14px;opacity:0;transition:opacity 0.6s ease,transform 0.6s ease;max-width:320px;width:calc(100% - 48px);">
+  <div style="background:rgba(10,18,34,0.97);border:1px solid rgba(253,230,138,0.35);border-radius:20px;padding:20px 24px 18px;backdrop-filter:blur(14px);width:100%;text-align:center;position:relative;">
+    <button onclick="(function(){var p=document.getElementById('backstage-pass-popup');p.style.opacity='0';p.style.transform='translateX(-50%) translateY(24px)';setTimeout(function(){p.style.display='none'},600);})()" style="position:absolute;top:10px;right:14px;background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;line-height:1;">✕</button>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fde68a;margin-bottom:10px;">ITEM UNLOCKED</p>
+    <div style="font-size:36px;margin-bottom:10px;">🎫</div>
+    <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:6px;">バックステージパス</p>
+    <p style="font-size:13px;color:#94a3b8;font-weight:300;">入手しました</p>
+  </div>
+</div>
+
 <!-- Welcome popup -->
 <div id="welcome-popup">
   <div id="welcome-bubble">
@@ -432,56 +443,6 @@
   </div>
 </section>
 
-<!-- Links -->
-<section class="links">
-  <span class="sec-label">LINKS</span>
-  <h2 class="sec-title" data-i18n="links-h2">公式リンク</h2>
-  <div class="links-inner">
-    <a class="link-card site" href="https://sunnyplace25.github.io/snowflakes/" target="_blank">
-      <span class="link-icon">❄</span>
-      <div>
-        <p class="link-name" data-i18n="link-site">Snow flakes 公式サイト</p>
-        <p class="link-platform">Official Website</p>
-      </div>
-    </a>
-    <a class="link-card novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank">
-      <span class="link-icon">📖</span>
-      <div>
-        <p class="link-name" data-i18n="link-novel">小説「Snow flakes」</p>
-        <p class="link-platform" data-i18n="link-novel-platform">小説家になろう</p>
-      </div>
-    </a>
-    <a class="link-card amazon" href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank">
-      <span class="link-icon">📚</span>
-      <div>
-        <p class="link-name">山吹ことり｜Kindle</p>
-        <p class="link-platform">Amazon著者ページ</p>
-      </div>
-    </a>
-    <a class="link-card youtube" href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank">
-      <span class="link-icon"><i class="fa-brands fa-youtube" style="color:#f87171;"></i></span>
-      <div>
-        <p class="link-name">Snow flakes</p>
-        <p class="link-platform">YouTube</p>
-      </div>
-    </a>
-    <a class="link-card insta" href="https://www.instagram.com/snowflakes_story" target="_blank">
-      <span class="link-icon"><i class="fa-brands fa-instagram" style="color:#fca5a5;"></i></span>
-      <div>
-        <p class="link-name">snowflakes_story</p>
-        <p class="link-platform">Instagram</p>
-      </div>
-    </a>
-    <a class="link-card tiktok" href="https://www.tiktok.com/@snowflakes.music" target="_blank">
-      <span class="link-icon"><i class="fa-brands fa-tiktok" style="color:#6ee7b7;"></i></span>
-      <div>
-        <p class="link-name">snowflakes.music</p>
-        <p class="link-platform">TikTok</p>
-      </div>
-    </a>
-  </div>
-</section>
-
 <!-- Q&A -->
 <section class="qa-section" id="qa-section">
   <span class="sec-label">QUESTION</span>
@@ -502,17 +463,66 @@
 
     <!-- コアファンセクション -->
     <div class="qa-core-section">
-      <div class="qa-core-header">ことりと仲良くなると</div>
       <div id="qa-core-locked" class="qa-core-locked">
         <span class="qa-lock-icon">❄</span>
         <p>コアファン認定で解放されます</p>
-        <p class="qa-lock-hint">全キャラクターの部屋をすべて開放しよう</p>
+        <p class="qa-lock-hint">Snow flakes 三人のプロフィールを全て解放しよう</p>
       </div>
       <div id="qa-core-unlocked" style="display:none;">
         <p class="qa-core-badge">CORE FAN UNLOCKED</p>
         <div class="chat-suggestions" id="chat-chips-core"></div>
       </div>
     </div>
+
+    <!-- Links -->
+    <section class="links" style="padding: 60px 0 0; background: none;">
+      <span class="sec-label">LINKS</span>
+      <h2 class="sec-title" data-i18n="links-h2">公式リンク</h2>
+      <div class="links-inner">
+        <a class="link-card site" href="https://sunnyplace25.github.io/snowflakes/" target="_blank">
+          <span class="link-icon">❄</span>
+          <div>
+            <p class="link-name" data-i18n="link-site">Snow flakes 公式サイト</p>
+            <p class="link-platform">Official Website</p>
+          </div>
+        </a>
+        <a class="link-card novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank">
+          <span class="link-icon">📖</span>
+          <div>
+            <p class="link-name" data-i18n="link-novel">小説「Snow flakes」</p>
+            <p class="link-platform" data-i18n="link-novel-platform">小説家になろう</p>
+          </div>
+        </a>
+        <a class="link-card amazon" href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank">
+          <span class="link-icon">📚</span>
+          <div>
+            <p class="link-name">山吹ことり｜Kindle</p>
+            <p class="link-platform">Amazon著者ページ</p>
+          </div>
+        </a>
+        <a class="link-card youtube" href="https://www.youtube.com/channel/UCL70O3byplFl3nUBMaqSoVw" target="_blank">
+          <span class="link-icon"><i class="fa-brands fa-youtube" style="color:#f87171;"></i></span>
+          <div>
+            <p class="link-name">Snow flakes</p>
+            <p class="link-platform">YouTube</p>
+          </div>
+        </a>
+        <a class="link-card insta" href="https://www.instagram.com/snowflakes_story" target="_blank">
+          <span class="link-icon"><i class="fa-brands fa-instagram" style="color:#fca5a5;"></i></span>
+          <div>
+            <p class="link-name">snowflakes_story</p>
+            <p class="link-platform">Instagram</p>
+          </div>
+        </a>
+        <a class="link-card tiktok" href="https://www.tiktok.com/@snowflakes.music" target="_blank">
+          <span class="link-icon"><i class="fa-brands fa-tiktok" style="color:#6ee7b7;"></i></span>
+          <div>
+            <p class="link-name">snowflakes.music</p>
+            <p class="link-platform">TikTok</p>
+          </div>
+        </a>
+      </div>
+    </section>
 
     <div class="qa-contact">
       <p>お仕事のご依頼・ご相談</p>
@@ -705,6 +715,36 @@
       document.getElementById('qa-core-locked').style.display = 'none';
       document.getElementById('qa-core-unlocked').style.display = 'block';
       buildQAChips(QA_CORE, 'chat-chips-core');
+
+      // バックステージパス付与（初回のみポップアップ表示）
+      var bpKey = 'sf_backstage_pass';
+      var bpShownKey = 'sf_backstage_pass_shown';
+      if (localStorage.getItem(bpKey) !== 'true') {
+        localStorage.setItem(bpKey, 'true');
+        if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
+          SfSnow.unlockItem('backstage_pass');
+        }
+      }
+      if (!localStorage.getItem(bpShownKey)) {
+        localStorage.setItem(bpShownKey, '1');
+        setTimeout(function() {
+          var popup = document.getElementById('backstage-pass-popup');
+          if (popup) {
+            popup.style.display = 'flex';
+            requestAnimationFrame(function() {
+              requestAnimationFrame(function() {
+                popup.style.opacity = '1';
+                popup.style.transform = 'translateY(0)';
+              });
+            });
+            setTimeout(function() {
+              popup.style.opacity = '0';
+              popup.style.transform = 'translateY(24px)';
+              setTimeout(function() { popup.style.display = 'none'; }, 600);
+            }, 5000);
+          }
+        }, 1800);
+      }
     }
   });
 </script>
