@@ -417,24 +417,19 @@
       cursor: zoom-out;
     }
     .room-light.open { display: flex; }
-    .room-light img {
+    .room-light-inner {
+      position: relative;
+      display: inline-flex;
+      cursor: default;
+    }
+    .room-light-inner img {
       max-width: 92vw; max-height: 86vh;
       border-radius: 6px;
       box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      display: block;
     }
     h1 { cursor: pointer; transition: opacity 0.2s; }
     h1:hover { opacity: 0.75; }
-
-    /* ── Room hotspot ── */
-    .room-scene-wrap {
-      width: calc(100% + 48px); max-width: calc(480px + 48px);
-      margin: -32px -24px 0; position: relative;
-      border-radius: 0 0 24px 24px; overflow: hidden;
-    }
-    .room-scene-wrap img {
-      width: 100%; display: block; object-fit: cover;
-      border-radius: 0 0 24px 24px;
-    }
     .room-hotspot {
       position: absolute; width: 30px; height: 30px;
       background: rgba(255,255,255,0.06);
@@ -451,7 +446,7 @@
       color: #fde68a;
     }
     .room-hs-popup {
-      position: fixed; inset: 0; z-index: 300;
+      position: fixed; inset: 0; z-index: 600;
       display: none; align-items: center; justify-content: center;
       padding: 20px; background: rgba(8,13,24,0.8);
       backdrop-filter: blur(12px);
@@ -509,16 +504,7 @@
   </div>
 
   <div class="main">
-    <div class="room-scene-wrap" id="hayate-scene">
-      <img id="room-hero-img" src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説">
-      <button class="room-hotspot" style="left:42%;top:65%;display:none;" onclick="event.stopPropagation();openRoomHotspot('酒の空き缶','友だちがよく来る。\n空き缶だけ増えていく。')">+</button>
-      <button class="room-hotspot" style="left:13%;top:70%;display:none;" onclick="event.stopPropagation();openRoomHotspot('ゲーム','やりっぱなし。\n充電は切れている。')">+</button>
-      <button class="room-hotspot" style="left:83%;top:26%;display:none;" onclick="event.stopPropagation();openRoomHotspot('バックステージパス','初めて演ったでかいハコのパス。\nまだ残してある。')">+</button>
-      <button class="room-hotspot" style="left:79%;top:48%;display:none;" onclick="event.stopPropagation();openRoomHotspot('やることリスト','書くけど、あまり減らない。')">+</button>
-      <button class="room-hotspot" style="left:63%;top:60%;display:none;" onclick="event.stopPropagation();openRoomHotspot('ダンボール箱','なんとなく捨てられないものが\n雑に入っている。')">+</button>
-      <button class="room-hotspot" style="left:55%;top:78%;display:none;" onclick="event.stopPropagation();openRoomHotspot('ソファ','寝落ち率が高い。')">+</button>
-      <button class="room-hotspot" style="left:47%;top:73%;display:none;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n1本だけドラムスティックが余分に入っている。')">+</button>
-    </div>
+    <img src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="width:calc(100% + 48px);max-width:calc(480px + 48px);margin:-32px -24px 0;display:block;border-radius:0 0 24px 24px;">
 
     <!-- Room hotspot popup -->
     <div class="room-hs-popup" id="hayate-hs-popup" onclick="this.classList.remove('show')">
@@ -532,7 +518,7 @@
     <p class="eyebrow" style="margin-top:32px;">Snow flakes — ROOM</p>
 
     <p class="name-en">HAYATE</p>
-    <h1 style="cursor:pointer;" onclick="toggleRoomHero()">ハヤテの部屋</h1>
+    <h1 style="cursor:pointer;" onclick="openRoomLight()">ハヤテの部屋</h1>
     <p class="role">drums</p>
 
     <div class="divider"></div>
@@ -755,7 +741,16 @@
 
   <!-- Room Lightbox -->
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
-    <img src="room_full.webp" alt="ハヤテの部屋">
+    <div class="room-light-inner">
+      <img src="room_interior.webp" alt="ハヤテの部屋" onclick="event.stopPropagation()">
+      <button class="room-hotspot" style="left:42%;top:65%;" onclick="event.stopPropagation();openRoomHotspot('酒の空き缶','友だちがよく来る。\n空き缶だけ増えていく。')">+</button>
+      <button class="room-hotspot" style="left:13%;top:70%;" onclick="event.stopPropagation();openRoomHotspot('ゲーム','やりっぱなし。\n充電は切れている。')">+</button>
+      <button class="room-hotspot" style="left:83%;top:26%;" onclick="event.stopPropagation();openRoomHotspot('バックステージパス','初めて演ったでかいハコのパス。\nまだ残してある。')">+</button>
+      <button class="room-hotspot" style="left:79%;top:48%;" onclick="event.stopPropagation();openRoomHotspot('やることリスト','書くけど、あまり減らない。')">+</button>
+      <button class="room-hotspot" style="left:63%;top:60%;" onclick="event.stopPropagation();openRoomHotspot('ダンボール箱','なんとなく捨てられないものが\n雑に入っている。')">+</button>
+      <button class="room-hotspot" style="left:55%;top:78%;" onclick="event.stopPropagation();openRoomHotspot('ソファ','寝落ち率が高い。')">+</button>
+      <button class="room-hotspot" style="left:47%;top:73%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n1本だけドラムスティックが余分に入っている。')">+</button>
+    </div>
   </div>
 
   <script>
@@ -1003,31 +998,5 @@
     });
   </script>
 
-  <script>
-  (function() {
-    var heroShowing = 'face';
-    window.addEventListener('pageshow', function() {
-      var img = document.getElementById('room-hero-img');
-      if (img) { img.src = 'room_face.webp'; img.style.cursor = ''; heroShowing = 'face'; }
-    });
-    window.toggleRoomHero = function() {
-      var img = document.getElementById('room-hero-img');
-      var spots = document.querySelectorAll('#hayate-scene .room-hotspot');
-      if (heroShowing === 'face') {
-        img.src = 'room_interior.webp';
-        img.style.cursor = 'pointer';
-        img.onclick = function(e) { if (document.getElementById('hayate-hs-popup').classList.contains('show')) return; toggleRoomHero(); };
-        heroShowing = 'room';
-        spots.forEach(function(b) { b.style.display = 'flex'; });
-      } else {
-        img.src = 'room_face.webp';
-        img.style.cursor = '';
-        img.onclick = null;
-        heroShowing = 'face';
-        spots.forEach(function(b) { b.style.display = 'none'; });
-      }
-    };
-  })();
-  </script>
 </body>
 </html>
