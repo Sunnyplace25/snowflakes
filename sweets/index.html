@@ -4532,6 +4532,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           if (!alreadyHad) {
             SfSnow.unlockItem(itemId);
             if (typeof renderItemRows === 'function') renderItemRows();
+            if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
             showNoteItemGet(itemId); // 初回: "を入手しました" + キャラポップアップ
           } else {
             showNoteItemGetAgain(itemId); // 2回目以降: アイテム画像 + "このアイテムは入手済みです"
@@ -5011,7 +5012,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',      'Snow flakes ライブチケット');
     updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
     updateRareItem('ri-zippo-img',        'ri-zippo-name',        'ri-zippo-check',        'zippo_kouta',             'コウタのジッポライター');
-    updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   'シトリンのピアス');
+    updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
     // 繰り返し取得アイテム（コースター・チョコレート）: count表示
     function updateCountableItem(imgId, nameId, checkId, itemKey, itemName) {
