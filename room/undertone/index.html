@@ -2339,17 +2339,31 @@ function submitUtPw() {
       showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
     }, 700);
 
-    // 2-2読了：若いナギの顔を解放
+    // shopkeeper 画像切り替え
+    // 2-2未読：大人固定 / 2-2〜2-5未読：ランダム切り替え / 2-5読了：大人に戻る固定
     var shopImg = document.querySelector('.shopkeeper-img');
-    if (shopImg && _seenProseScenes.has(6)) {
+    if (shopImg) {
+      var ch22Read = _seenProseScenes.has(6);
+      var ch25Read = _seenProseScenes.has(9);
       var youngKey = 'sf_ut_young_nagi_revealed';
-      var firstReveal = !localStorage.getItem(youngKey);
-      shopImg.src = 'nagi_shop_young_close.png';
-      if (firstReveal) {
-        localStorage.setItem(youngKey, '1');
+      var targetSrc;
+      if (!ch22Read || ch25Read) {
+        targetSrc = 'shopkeeper.webp';
+      } else {
+        // 初回だけ必ず若いナギ、以降ランダム（50%）
+        var firstReveal = !localStorage.getItem(youngKey);
+        if (firstReveal) {
+          localStorage.setItem(youngKey, '1');
+          targetSrc = 'nagi_shop_young_close.png';
+        } else {
+          targetSrc = Math.random() < 0.5 ? 'nagi_shop_young_close.png' : 'shopkeeper.webp';
+        }
+      }
+      if (shopImg.src.split('/').pop() !== targetSrc) {
         shopImg.style.opacity = '0';
-        shopImg.style.transition = 'opacity 1.4s ease';
-        setTimeout(function() { shopImg.style.opacity = '1'; }, 100);
+        shopImg.style.transition = 'opacity 1.2s ease';
+        shopImg.src = targetSrc;
+        setTimeout(function() { shopImg.style.opacity = '1'; }, 80);
       }
     }
   }
