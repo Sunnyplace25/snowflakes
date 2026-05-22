@@ -1123,14 +1123,13 @@ function sfShare() {
         { ep: 'ep.16', title: '懐かしい写真', url: 'https://www.instagram.com/p/DYfVsFWHGmS/', note: '' },
         { ep: 'ep.17', title: 'セッション', url: 'https://www.instagram.com/p/DYpMK0JvPg8/', note: '' }
       ];
-      var QF_SHOW = 4;
       var qfNewest = true; // デフォルト：最新順
 
       function renderQF() {
         var container = document.getElementById('qf-list-container');
         if (!container) return;
         var list = qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice();
-        var shown = list.slice(0, QF_SHOW);
+        var shown = list;
         container.innerHTML = '';
         shown.forEach(function(item) {
           var a = document.createElement('a');
