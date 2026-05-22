@@ -413,19 +413,17 @@
   @media (max-width: 600px) { .sp-br { display: inline; } }
   .qf-br { display: none; }
   @media (max-width: 600px) { .qf-br { display: block; } }
-  .qf-list { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-.qf-list::-webkit-scrollbar { width: 4px; }
-  .qf-list::-webkit-scrollbar-track { background: transparent; }
-  .qf-list::-webkit-scrollbar-thumb { background: rgba(240,171,252,0.25); border-radius: 2px; }
-  .qf-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 10px;
-    background: rgba(240,171,252,0.04); border: 1px solid rgba(240,171,252,0.15);
-    text-decoration: none; transition: background 0.2s;
-  }
-  .qf-row:hover { background: rgba(240,171,252,0.09); }
-  .qf-ep { font-size: 11px; color: var(--muted); font-family: 'Cormorant Garamond', serif; flex-shrink: 0; width: 36px; }
-  .qf-title { font-size: 14px; color: #f0abfc; }
+  .qf-ticker { display:flex; align-items:center; gap:8px; margin-top:14px; }
+  .qf-ticker-btn { background:none; border:none; color:rgba(240,171,252,0.45); font-size:20px; cursor:pointer; padding:4px 6px; line-height:1; flex-shrink:0; transition:color 0.2s; font-family:'Cormorant Garamond',serif; }
+  .qf-ticker-btn:hover { color:#f0abfc; }
+  .qf-ticker-link { flex:1; min-width:0; display:flex; align-items:center; gap:10px; padding:10px 16px; border-radius:12px; background:rgba(240,171,252,0.04); border:1px solid rgba(240,171,252,0.15); text-decoration:none; transition:background 0.2s,border-color 0.2s; overflow:hidden; }
+  .qf-ticker-link:hover { background:rgba(240,171,252,0.09); border-color:rgba(240,171,252,0.3); }
+  .qf-ticker-ep { font-size:11px; color:var(--muted); font-family:'Cormorant Garamond',serif; flex-shrink:0; letter-spacing:1px; }
+  .qf-ticker-title { font-size:14px; color:#f0abfc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .qf-ticker-note { font-size:11px; color:#64748b; white-space:nowrap; flex-shrink:0; }
+  .qf-ticker-dots { display:flex; gap:4px; justify-content:center; margin-top:8px; }
+  .qf-ticker-dot { width:4px; height:4px; border-radius:50%; background:rgba(240,171,252,0.2); transition:background 0.2s; }
+  .qf-ticker-dot.active { background:rgba(240,171,252,0.7); }
   </style>
   <script src="snow.js"></script>
   <!-- Google Analytics -->
@@ -1100,7 +1098,16 @@ function sfShare() {
         <button id="qf-order-btn" onclick="toggleQFOrder()" style="background:none;border:1px solid rgba(240,171,252,0.25);border-radius:100px;padding:5px 14px;font-size:11px;letter-spacing:2px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;white-space:nowrap;" onmouseenter="this.style.borderColor='rgba(240,171,252,0.55)';this.style.color='#f0abfc'" onmouseleave="this.style.borderColor='rgba(240,171,252,0.25)';this.style.color='#94a3b8'">↕ 古い順</button>
       </div>
       <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:16px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
-      <div id="qf-list-container" class="qf-list"></div>
+      <div class="qf-ticker">
+        <button class="qf-ticker-btn" onclick="qfMove(-1)">&#8249;</button>
+        <a id="qf-ticker-link" class="qf-ticker-link" href="#" target="_blank">
+          <span id="qf-ticker-ep" class="qf-ticker-ep"></span>
+          <span id="qf-ticker-title" class="qf-ticker-title"></span>
+          <span id="qf-ticker-note" class="qf-ticker-note"></span>
+        </a>
+        <button class="qf-ticker-btn" onclick="qfMove(1)">&#8250;</button>
+      </div>
+      <div id="qf-ticker-dots" class="qf-ticker-dots"></div>
     </div>
     <script>
     (function() {
@@ -1117,41 +1124,64 @@ function sfShare() {
         { ep: 'ep.10', title: '帰り道', url: 'https://www.instagram.com/reel/DW_b7avjmf0/', note: 'ポジション編 ep.124.5' },
         { ep: 'ep.11', title: 'プリン', url: 'https://www.instagram.com/reel/DXHBLwmCBVd/', note: '' },
         { ep: 'ep.12', title: 'デート', url: 'https://www.instagram.com/reel/DXMhjm3mj5T/', note: 'カクテル編 ep.136.5' },
-        { ep: 'ep.13', title: '予備の傘', url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段　新エピソード追加' },
+        { ep: 'ep.13', title: '予備の傘', url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段' },
         { ep: 'ep.14', title: '柏餅食ってから', url: 'https://www.instagram.com/reel/DYCuIrXJJoU/', note: '' },
         { ep: 'ep.15', title: '母の日', url: 'https://www.instagram.com/p/DYKRPW7sfN6/', note: '' },
         { ep: 'ep.16', title: '懐かしい写真', url: 'https://www.instagram.com/p/DYfVsFWHGmS/', note: '' },
         { ep: 'ep.17', title: 'セッション', url: 'https://www.instagram.com/p/DYpMK0JvPg8/', note: '' }
       ];
-      var qfNewest = true; // デフォルト：最新順
+      var qfNewest = true;
+      var qfIdx = 0;
+      var qfAutoTimer = null;
 
-      function renderQF() {
-        var container = document.getElementById('qf-list-container');
-        if (!container) return;
-        var list = qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice();
-        var shown = list;
-        container.innerHTML = '';
-        shown.forEach(function(item) {
-          var a = document.createElement('a');
-          a.className = 'qf-row';
-          a.href = item.url;
-          a.target = '_blank';
-          a.innerHTML = '<span class="qf-ep">' + item.ep + '</span><span class="qf-title">' + item.title + '</span>'
-            + (item.note ? '<span style="font-size:11px;color:#64748b;margin-left:8px;">' + item.note + '</span>' : '');
-          container.appendChild(a);
+      function qfList() { return qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice(); }
+
+      function renderQFTicker() {
+        var list = qfList();
+        var item = list[qfIdx];
+        document.getElementById('qf-ticker-ep').textContent    = item.ep;
+        document.getElementById('qf-ticker-title').textContent = item.title;
+        document.getElementById('qf-ticker-note').textContent  = item.note || '';
+        document.getElementById('qf-ticker-link').href = item.url;
+        // dots
+        var dots = document.getElementById('qf-ticker-dots');
+        dots.innerHTML = '';
+        list.forEach(function(_, i) {
+          var d = document.createElement('span');
+          d.className = 'qf-ticker-dot' + (i === qfIdx ? ' active' : '');
+          d.onclick = (function(ii) { return function() { qfIdx = ii; renderQFTicker(); resetQFAuto(); }; })(i);
+          d.style.cursor = 'pointer';
+          dots.appendChild(d);
         });
       }
 
-      window.toggleQFOrder = function() {
-        qfNewest = !qfNewest;
-        var btn = document.getElementById('qf-order-btn');
-        if (btn) btn.textContent = qfNewest ? '↕ 古い順' : '↕ 新しい順';
-        renderQF();
+      function resetQFAuto() {
+        if (qfAutoTimer) clearInterval(qfAutoTimer);
+        qfAutoTimer = setInterval(function() {
+          qfIdx = (qfIdx + 1) % qfList().length;
+          renderQFTicker();
+        }, 4000);
+      }
+
+      window.qfMove = function(dir) {
+        var len = qfList().length;
+        qfIdx = (qfIdx + dir + len) % len;
+        renderQFTicker();
+        resetQFAuto();
       };
 
-      document.addEventListener('DOMContentLoaded', renderQF);
-      // DOMContentLoadedが既に済んでいる場合のフォールバック
-      if (document.readyState !== 'loading') renderQF();
+      window.toggleQFOrder = function() {
+        qfNewest = !qfNewest;
+        qfIdx = 0;
+        var btn = document.getElementById('qf-order-btn');
+        if (btn) btn.textContent = qfNewest ? '↕ 古い順' : '↕ 新しい順';
+        renderQFTicker();
+        resetQFAuto();
+      };
+
+      function init() { renderQFTicker(); resetQFAuto(); }
+      document.addEventListener('DOMContentLoaded', init);
+      if (document.readyState !== 'loading') init();
     })();
     </script>
 
