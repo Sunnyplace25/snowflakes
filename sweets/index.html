@@ -5404,7 +5404,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var _nc = { idx: 0, items: [], N: 0, step: 90, r: 180 };
 
   function _ncBuildItems() {
-    var arr = [{ id:'note_hitotsu_1', title:'「ひとつ多い音」解説', sub:'― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―', isStatic:true, isNew:true, cost:{ item:'proteincoffee', amount:1 }, related:{ url:'https://ncode.syosetu.com/n0964mc/', title:'ひとつ多い音', date:'2026.05.15', type:'短編', onclick:'onReadHito()' } }];
+    var arr = [{ id:'note_hitotsu_1', title:'「ひとつ多い音」解説', sub:'― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―', isStatic:true, isNew:true, cost:{ item:'proteincoffee', amount:1 }, related:{ url:'https://ncode.syosetu.com/n0964mc/', title:'ひとつ多い音', date:'2026.05.15', type:'短編', onclick:'onReadHito()', itemKey:'pendant_hinata', itemImg:'../item/pendant_hinata.webp', itemColor:'#93c5fd' } }];
     EXCHANGE_CATALOG.forEach(function(it) { if (it.type === 'note' && it.sections && it.sections.length) arr.push(it); });
     return arr;
   }
@@ -5533,10 +5533,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // 関連作品リンク
     if (item.related) {
       var rel = item.related;
-      html += '<a href="' + rel.url + '" target="_blank"' + (rel.onclick ? ' onclick="' + rel.onclick + '"' : '') + ' style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;margin-top:10px;" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\';this.style.borderColor=\'rgba(255,255,255,0.14)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\';this.style.borderColor=\'rgba(255,255,255,0.07)\'">'
+      var relItemOk = rel.itemKey ? SfSnow.isUnlocked(rel.itemKey) : true;
+      var relGlowAnim = (!relItemOk && rel.itemKey) ? 'item-glow-hinata 2.4s ease-in-out infinite' : 'none';
+      var relBorderColor = (!relItemOk && rel.itemKey) ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.07)';
+      html += '<a href="' + rel.url + '" target="_blank"' + (rel.onclick ? ' onclick="' + rel.onclick + '"' : '') + ' style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid ' + relBorderColor + ';border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;margin-top:10px;position:relative;animation:' + relGlowAnim + ';" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">'
+        + '<div style="display:flex;align-items:center;gap:12px;">'
+        + (rel.itemImg ? '<img src="' + rel.itemImg + '" style="width:28px;height:28px;border-radius:6px;object-fit:cover;' + (relItemOk ? '' : 'opacity:0.35;filter:grayscale(1);') + 'flex-shrink:0;">' : '')
         + '<div><p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:5px;">' + rel.date + ' / ' + rel.type + '</p>'
         + '<p style="font-family:\'Noto Serif JP\',serif;font-size:15px;color:#e2e8f0;font-weight:300;">' + rel.title + '</p></div>'
-        + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#64748b;flex-shrink:0;margin-left:16px;">読む →</span>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px;">'
+        + (!relItemOk && rel.itemKey ? '<span style="font-size:9px;letter-spacing:1.5px;padding:2px 8px;border-radius:20px;background:rgba(147,197,253,0.12);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);white-space:nowrap;">アイテムあり</span>' : '')
+        + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#64748b;">読む →</span>'
+        + '</div>'
         + '</a>';
     }
     area.innerHTML = html;
