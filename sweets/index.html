@@ -355,6 +355,22 @@
       0%, 100% { box-shadow: 0 0 8px 2px rgba(252,165,165,0.2), 0 0 0 0 rgba(252,165,165,0); border-color: rgba(252,165,165,0.35); }
       50%       { box-shadow: 0 0 22px 6px rgba(252,165,165,0.45), 0 0 40px 12px rgba(252,165,165,0.15); border-color: rgba(252,165,165,0.65); }
     }
+    @keyframes item-glow-hayate {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(253,230,138,0.15);border-color:rgba(253,230,138,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(253,230,138,0.38);border-color:rgba(253,230,138,0.55); }
+    }
+    @keyframes item-glow-kouta {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(252,165,165,0.15);border-color:rgba(252,165,165,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(252,165,165,0.38);border-color:rgba(252,165,165,0.55); }
+    }
+    @keyframes item-glow-hinata {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(147,197,253,0.15);border-color:rgba(147,197,253,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(147,197,253,0.38);border-color:rgba(147,197,253,0.55); }
+    }
+    @keyframes count-blink {
+      0%, 100% { opacity:1; }
+      50%       { opacity:0.3; }
+    }
     .post-card-new {
       border-color: rgba(253,230,138,0.30) !important;
       animation: sf-new-glow 2.8s ease-in-out infinite;
@@ -4461,6 +4477,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_kouta.webp',
         charaLine: 'なぜか、手放せない'
       },
+      pendant_hinata: {
+        noteCardId: 'note_hitotsu_1',
+        img: '../item/pendant_hinata.webp',
+        name: '青い石のネックレス',
+        color: '#93c5fd',
+        chara: 'HINATA', charaColor: '#93c5fd',
+        charaImg: '../plofile/chibi_hinata.webp',
+        charaLine: '……大事にしてる'
+      },
       umbrella_hinata: {
         noteCardId: 'note_hinata_2',
         img: '../item/umbrella_hinata.webp',
@@ -5025,7 +5050,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         img.style.opacity = '0.85'; img.style.filter = '';
         name.textContent = itemName; name.style.color = '#fde68a';
         name.style.fontFamily = ''; name.style.fontSize = ''; name.style.letterSpacing = '';
-        if (check) { check.textContent = '× ' + count; check.style.color = '#fde68a'; }
+        if (check) { check.textContent = '× ' + count; check.style.color = '#fde68a'; check.style.animation = 'count-blink 2s ease-in-out infinite'; }
       }
     }
     updateCountableItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター');
@@ -5412,13 +5437,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     items.forEach(function(item, i) {
       var unlocked = _ncIsUnlocked(item);
-      var isNew = item.isNew && new Date() <= new Date(item.isNew);
+      var _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
+      if (!_nck && item.isStatic) _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
+      var _nkHasItem = _nck && !SfSnow.isUnlocked(_nck);
+      var _nkChara = _nck ? (_nck.indexOf('kouta') !== -1 ? 'kouta' : _nck.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
+      var _nkColor = _nkChara === 'kouta' ? '#fca5a5' : _nkChara === 'hinata' ? '#93c5fd' : '#fde68a';
       var c = document.createElement('div');
       c.className = 'nc-card';
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">note' + (isNew ? '<span class="nc-new">NEW</span>' : '') + '</div>' +
+      c.innerHTML = '<div class="nc-tag">note' + (_nkHasItem ? '<span class="nc-new" style="color:' + _nkColor + ';">アイテムあり</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '読む ›' : 'プロテインコーヒー × 1') + '</div>';
       drum.appendChild(c);
@@ -5462,19 +5491,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!area) return;
     var item = _nc.items[idx]; if (!item) return;
     var unlocked = _ncIsUnlocked(item);
-    var noteItemKey = item.isStatic
-      ? Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; })
-      : Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
+    var noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
+    if (!noteItemKey && item.isStatic) noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
     var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
     var noteItemOk = noteItemD ? SfSnow.isUnlocked(noteItemKey) : false;
-    var isNew = item.isNew && new Date() <= new Date(item.isNew);
     var iconRight = '10px';
 
     var isHitotsu = item.id === 'note_hitotsu_1';
-    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (isNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '');
+    var hasNoteItem = noteItemD && !noteItemOk;
+    var _nc_chara = noteItemD ? (noteItemKey.indexOf('kouta') !== -1 ? 'kouta' : noteItemKey.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
+    var _nc_col   = _nc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _nc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
+    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : '');
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
-    if (isNew) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
+    if (hasNoteItem) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _nc_col[0] + ';border:1px solid ' + _nc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
     html += '<div class="post-header"><div class="post-header-left"><div class="post-tag">note</div><div class="post-title">' + item.title + '</div>';
     if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
     html += '</div>';
@@ -5653,13 +5683,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     songs.forEach(function(item, i) {
       var unlocked = SfSnow.isUnlocked(item.id);
-      var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+      var _mHasItem = item.reward && (!SfSnow.isUnlocked(item.reward) || item.rewardRepeatable);
+      var _mChara = item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
+      var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : '#fde68a';
       var c = document.createElement('div');
       c.className = 'nc-card';
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">music' + (showNew ? '<span class="nc-new">NEW</span>' : '') + '</div>' +
+      c.innerHTML = '<div class="nc-tag">music' + (_mHasItem ? '<span class="nc-new" style="color:' + _mColor + ';">アイテムあり</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '▶ 聴く ›' : 'ギターピック × ' + item.cost.pick) + '</div>';
       drum.appendChild(c);
@@ -5708,14 +5740,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var rewD = (item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
     var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
-    var glowStyle = showNew ? 'border-color:rgba(253,230,138,0.30);box-shadow:0 0 40px rgba(253,230,138,0.11);' : '';
+    var _mc_hasItem = item.reward && (!rewOk || item.rewardRepeatable);
+    var _mc_chara = item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
+    var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
+    var glowStyle = _mc_hasItem ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     var newRight = '12px';
     if (rewD) {
       html += '<img src="' + rewD.img + '" title="' + (rewOk ? rewD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (rewOk ? '0.82' : '0.22') + ';filter:' + (rewOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
       newRight = '36px';
     }
-    if (showNew) html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;">NEW</span>';
+    if (_mc_hasItem) html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _mc_col[0] + ';border:1px solid ' + _mc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
     html += '<div class="post-header"><div class="post-header-left">';
     html += '<div class="post-tag">music</div>';
     html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
