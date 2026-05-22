@@ -1284,7 +1284,8 @@ function submitUtPw() {
   <div style="position:relative;z-index:1;background:rgba(8,13,24,0.65);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 26px;max-width:320px;width:calc(100% - 48px);backdrop-filter:blur(10px);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:12px;">NAGI</p>
     <p id="choco-scene-line" style="font-family:'Noto Serif JP',serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;line-height:2.2;min-height:1.5em;"></p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#2d3748;text-align:right;margin-top:14px;">tap</p>
+    <p id="choco-scene-tap" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#2d3748;text-align:right;margin-top:14px;">tap</p>
+    <button id="choco-scene-fortune-btn" onclick="event.stopPropagation();startSpecialFortune()" style="display:none;width:100%;margin-top:16px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">占ってもらう</button>
   </div>
 </div>
 
@@ -2891,6 +2892,22 @@ function submitUtPw() {
   ];
   var _chocoScene = { steps: [], idx: 0 };
 
+  var SF_SPECIAL_KEY = 'sf_special_fortune_unlocked';
+
+  function _chocoSceneRender(step) {
+    document.getElementById('choco-scene-img').src = step.img;
+    document.getElementById('choco-scene-line').textContent = step.line;
+    var tap = document.getElementById('choco-scene-tap');
+    var btn = document.getElementById('choco-scene-fortune-btn');
+    if (step.isOrei) {
+      if (tap) tap.style.display = 'none';
+      if (btn) btn.style.display = 'block';
+    } else {
+      if (tap) tap.style.display = '';
+      if (btn) btn.style.display = 'none';
+    }
+  }
+
   window.showChocoScene = function(total) {
     var s;
     if (total === 1)      s = CHOCO_STAGES[0];
@@ -2905,8 +2922,13 @@ function submitUtPw() {
       s.lines.forEach(function(l) { steps.push({ img: s.img, line: l }); });
     }
 
-    // レアイベント：2回目以降、約20%の確率でカード画像＋「もうないのか」
-    if (total >= 2 && Math.random() < 0.2) {
+    // 3個目解放：「お礼に」→占ってもらうボタン
+    if (total === 3) {
+      steps.push({ img: 'nagi_choco_3.png', line: 'お礼に', isOrei: true });
+    }
+
+    // レアイベント：2回目以降（3個目解放時を除く）、約20%の確率
+    if (total >= 2 && total !== 3 && Math.random() < 0.2) {
       steps.push({ img: 'nagi_choco_3.png', line: 'もうないのか' });
     }
 
@@ -2915,21 +2937,27 @@ function submitUtPw() {
 
     var popup = document.getElementById('choco-scene-popup');
     if (!popup) return;
-    document.getElementById('choco-scene-img').src = steps[0].img;
-    document.getElementById('choco-scene-line').textContent = steps[0].line;
+    _chocoSceneRender(steps[0]);
     popup.style.display = 'flex';
   };
 
   window.chocoSceneNext = function() {
+    var step = _chocoScene.steps[_chocoScene.idx];
+    if (step && step.isOrei) return; // ボタン待ち、tap では進めない
     _chocoScene.idx++;
     var popup = document.getElementById('choco-scene-popup');
     if (_chocoScene.idx >= _chocoScene.steps.length) {
       popup.style.display = 'none';
       return;
     }
-    var step = _chocoScene.steps[_chocoScene.idx];
-    document.getElementById('choco-scene-img').src = step.img;
-    document.getElementById('choco-scene-line').textContent = step.line;
+    _chocoSceneRender(_chocoScene.steps[_chocoScene.idx]);
+  };
+
+  window.startSpecialFortune = function() {
+    localStorage.setItem(SF_SPECIAL_KEY, 'true');
+    document.getElementById('choco-scene-popup').style.display = 'none';
+    // TODO: スプレッド占い画面を開く
+    showSKPopup('NAGI', '……何を知りたい');
   };
 
   window.giveChocolateToNagi = function() {
