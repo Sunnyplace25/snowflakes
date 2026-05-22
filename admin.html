@@ -666,16 +666,24 @@ function unlockAllRareItems() {
   setStoneStatus('✓ 全員のレアアイテムを解放しました。');
 }
 
+var RARE_EXTRA_KEYS = {
+  kouta: ['sf_kouta_found_first_strings'],
+};
+
 function resetRareByChar(ch) {
   var keys = RARE_BY_CHAR[ch] || [];
   var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
   arr = arr.filter(function(k) { return keys.indexOf(k) === -1; });
   localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  (RARE_EXTRA_KEYS[ch] || []).forEach(function(k) { localStorage.removeItem(k); });
   setStoneStatus('✓ ' + ch.toUpperCase() + ' のレアアイテムをリセットしました。');
 }
 
 function resetAllRareItems() {
   localStorage.removeItem('sf_unlocked');
+  Object.values(RARE_EXTRA_KEYS).forEach(function(arr) {
+    arr.forEach(function(k) { localStorage.removeItem(k); });
+  });
   setStoneStatus('✓ 全員のレアアイテムをリセットしました。');
 }
 
