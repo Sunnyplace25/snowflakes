@@ -5157,6 +5157,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // story-pendant-icon を入手済みに更新
     var icon = document.getElementById('story-pendant-icon');
     if (icon) { icon.style.opacity = '0.9'; icon.style.filter = 'none'; }
+    // ノートカード内の関連リンクを入手済み状態に更新
+    var relLink = document.getElementById('nc-related-item-link');
+    if (relLink) { relLink.style.animation = 'none'; relLink.style.borderColor = 'rgba(255,255,255,0.07)'; }
+    var relIcon = document.getElementById('nc-related-item-icon');
+    if (relIcon) { relIcon.style.opacity = '1'; relIcon.style.filter = 'none'; }
+    var relBadge = document.getElementById('nc-related-item-badge');
+    if (relBadge) relBadge.remove();
   };
   // ────────────────────────────────────────────────────
 </script>
@@ -5536,14 +5543,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var relItemOk = rel.itemKey ? SfSnow.isUnlocked(rel.itemKey) : true;
       var relGlowAnim = (!relItemOk && rel.itemKey) ? 'item-glow-hinata 2.4s ease-in-out infinite' : 'none';
       var relBorderColor = (!relItemOk && rel.itemKey) ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.07)';
-      html += '<a href="' + rel.url + '" target="_blank"' + (rel.onclick ? ' onclick="' + rel.onclick + '"' : '') + ' style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid ' + relBorderColor + ';border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;margin-top:10px;position:relative;animation:' + relGlowAnim + ';" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">'
+      var relLinkId = rel.itemKey ? ' id="nc-related-item-link"' : '';
+      var relIconId = rel.itemImg ? ' id="nc-related-item-icon"' : '';
+      var relBadgeHtml = (!relItemOk && rel.itemKey) ? '<span id="nc-related-item-badge" style="font-size:9px;letter-spacing:1.5px;padding:2px 8px;border-radius:20px;background:rgba(147,197,253,0.12);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);white-space:nowrap;">アイテムあり</span>' : '';
+      html += '<a href="' + rel.url + '" target="_blank"' + relLinkId + (rel.onclick ? ' onclick="' + rel.onclick + '"' : '') + ' style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid ' + relBorderColor + ';border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;margin-top:10px;position:relative;animation:' + relGlowAnim + ';" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">'
         + '<div style="display:flex;align-items:center;gap:12px;">'
-        + (rel.itemImg ? '<img src="' + rel.itemImg + '" style="width:28px;height:28px;border-radius:6px;object-fit:cover;' + (relItemOk ? '' : 'opacity:0.35;filter:grayscale(1);') + 'flex-shrink:0;">' : '')
+        + (rel.itemImg ? '<img src="' + rel.itemImg + '"' + relIconId + ' style="width:28px;height:28px;border-radius:6px;object-fit:cover;' + (relItemOk ? '' : 'opacity:0.35;filter:grayscale(1);') + 'flex-shrink:0;">' : '')
         + '<div><p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:5px;">' + rel.date + ' / ' + rel.type + '</p>'
         + '<p style="font-family:\'Noto Serif JP\',serif;font-size:15px;color:#e2e8f0;font-weight:300;">' + rel.title + '</p></div>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px;">'
-        + (!relItemOk && rel.itemKey ? '<span style="font-size:9px;letter-spacing:1.5px;padding:2px 8px;border-radius:20px;background:rgba(147,197,253,0.12);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);white-space:nowrap;">アイテムあり</span>' : '')
+        + relBadgeHtml
         + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#64748b;">読む →</span>'
         + '</div>'
         + '</a>';
