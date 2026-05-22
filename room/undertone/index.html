@@ -2338,6 +2338,20 @@ function submitUtPw() {
     setTimeout(function() {
       showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
     }, 700);
+
+    // 2-2読了：若いナギの顔を解放
+    var shopImg = document.querySelector('.shopkeeper-img');
+    if (shopImg && _seenProseScenes.has(6)) {
+      var youngKey = 'sf_ut_young_nagi_revealed';
+      var firstReveal = !localStorage.getItem(youngKey);
+      shopImg.src = 'nagi_shop_young_close.png';
+      if (firstReveal) {
+        localStorage.setItem(youngKey, '1');
+        shopImg.style.opacity = '0';
+        shopImg.style.transition = 'opacity 1.4s ease';
+        setTimeout(function() { shopImg.style.opacity = '1'; }, 100);
+      }
+    }
   }
 
   window.switchShopTab = function(tab) {
