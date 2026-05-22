@@ -3150,7 +3150,7 @@ function submitUtPw() {
       var meta  = CHARS[ch];
       var stone = STONE_ITEMS.filter(function(s) { return s.char === ch; })[0];
       var appraised = stone && SfSnow.isUnlocked(stone.key);
-      var stoneName = stone ? (appraised ? stone.nameAppraised : stone.name + '（未鑑定）') : '──';
+      var stoneName = stone ? stone.name + (appraised ? '' : '（未鑑定）') : '──';
       var rares = (CHAR_RARE_ITEMS[ch] || []).filter(function(r) { return SfSnow.isUnlocked(r.key); });
 
       var col = document.createElement('div');
@@ -3188,7 +3188,7 @@ function submitUtPw() {
           rImg.src = r.img;
           rImg.style.cssText = 'width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;';
           var rTxt = document.createElement('p');
-          rTxt.style.cssText = 'font-size:10px;color:#94a3b8;line-height:1.5;letter-spacing:1px;';
+          rTxt.style.cssText = 'font-size:10px;color:' + meta.color + ';line-height:1.5;letter-spacing:1px;';
           rTxt.textContent = r.name;
           rDiv.appendChild(rImg);
           rDiv.appendChild(rTxt);
