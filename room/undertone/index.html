@@ -953,7 +953,7 @@
       <!-- 店内を見る パネル（ch21解放後） -->
       <div id="shop-panel-interior" style="display:none;">
         <div class="scene-wrap" id="interior-scene-wrap" style="margin-bottom:14px;">
-          <img class="scene-img" id="interior-scene-img" src="shop1.png" alt="店内">
+          <img class="scene-img" id="interior-scene-img" src="shop1.webp" alt="店内">
         </div>
         <p class="scene-counter" id="interior-counter">棚 1 / 3</p>
         <div class="speech-bubble" id="interior-speech" style="display:none;">
@@ -1929,7 +1929,7 @@ function submitUtPw() {
 
   function renderScene() {
     var sceneFiles = ['scene1.webp','scene2.webp','scene3.webp'];
-    if (ch21Unlocked) sceneFiles.push('scene4.png');
+    if (ch21Unlocked) sceneFiles.push('scene4.webp');
     var total = sceneFiles.length;
     var img = document.getElementById('scene-img');
     img.classList.add('fade');
@@ -2144,7 +2144,7 @@ function submitUtPw() {
       var si = ch.text.indexOf(SPLIT);
       if (si !== -1) {
         document.getElementById('prose-text').textContent = ch.text.slice(0, si + SPLIT.length);
-        sceneImg.src = 'scene4.png'; sceneImg.style.display = 'block';
+        sceneImg.src = 'scene4.webp'; sceneImg.style.display = 'block';
         text2El.textContent = ch.text.slice(si + SPLIT.length).replace(/^\n+/, '');
         text2El.style.display = 'block';
       } else {
@@ -2383,9 +2383,9 @@ function submitUtPw() {
         var firstReveal = !localStorage.getItem(youngKey);
         if (firstReveal) {
           localStorage.setItem(youngKey, '1');
-          targetSrc = 'nagi_shop_young_close.png';
+          targetSrc = 'nagi_shop_young_close.webp';
         } else {
-          targetSrc = Math.random() < 0.5 ? 'nagi_shop_young_close.png' : 'shopkeeper.webp';
+          targetSrc = Math.random() < 0.5 ? 'nagi_shop_young_close.webp' : 'shopkeeper.webp';
         }
       }
       if (shopImg.src.split('/').pop() !== targetSrc) {
@@ -2416,7 +2416,7 @@ function submitUtPw() {
 
   /* ── Interior exploration（店内） ── */
   var interiorScene = 0;
-  var INTERIOR_SCENES = ['shop1.png','shop2.png','shop3.png'];
+  var INTERIOR_SCENES = ['shop1.webp','shop2.webp','shop3.webp'];
 
   var INTERIOR_HOTSPOTS = [
     // shop1 — 宝石・クリスタル棚
@@ -2955,15 +2955,15 @@ function submitUtPw() {
 
   var CHOCO_STAGES = [
     {
-      img: 'nagi_choco_1.png',
+      img: 'nagi_choco_1.webp',
       lines: ['……俺に？', '間違えてないか', '変わったことをする', '……受け取る']
     },
     {
-      img: 'nagi_choco_2.png',
+      img: 'nagi_choco_2.webp',
       lines: ['甘いものは嫌いじゃない', '……これ、結構好きかもしれない', '悪くない', 'もう一個あるのか']
     },
     {
-      img: 'nagi_choco_3.png',
+      img: 'nagi_choco_3.webp',
       lines: ['……また持ってきたのか', '覚えていたのか', '困る', '……ありがとう']
     }
   ];
@@ -3007,13 +3007,13 @@ function submitUtPw() {
 
     // 3個目解放：「お礼に」→占ってもらうボタン（カード画像はここのみ例外）
     if (total === 3) {
-      steps.push({ img: 'nagi_choco_3.png', line: 'お礼に', isOrei: true });
+      steps.push({ img: 'nagi_choco_3.webp', line: 'お礼に', isOrei: true });
     }
 
     // レアイベント「もうないのか」：2回目以降（3個目解放時を除く）、約20%の確率
     // カード画像はこのレア演出のみ使用
     if (total >= 2 && total !== 3 && Math.random() < 0.2) {
-      steps.push({ img: 'nagi_choco_3.png', line: 'もうないのか', isOrei: true });
+      steps.push({ img: 'nagi_choco_3.webp', line: 'もうないのか', isOrei: true });
     }
 
     _chocoScene.steps = steps;
