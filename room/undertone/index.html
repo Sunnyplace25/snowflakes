@@ -1277,6 +1277,15 @@ function submitUtPw() {
   </div>
 </div>
 
+<!-- Special fortune: 問い入力画面 -->
+<div id="special-fortune-overlay" style="display:none;position:fixed;inset:0;z-index:660;background:rgba(8,13,24,0.96);backdrop-filter:blur(14px);flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:40px;">SPECIAL FORTUNE</p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#94a3b8;letter-spacing:3px;margin-bottom:32px;">何を占う？</p>
+  <input id="special-fortune-input" type="text" maxlength="40" placeholder="問いを置いていく" style="width:100%;max-width:320px;background:rgba(255,255,255,0.03);border:none;border-bottom:1px solid rgba(255,255,255,0.15);padding:12px 4px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-size:15px;letter-spacing:2px;outline:none;text-align:center;margin-bottom:48px;" onkeydown="if(event.key==='Enter')submitSpecialFortune()">
+  <button onclick="submitSpecialFortune()" style="background:none;border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:13px 40px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='#64748b'">占う</button>
+  <button onclick="closeSpecialFortune()" style="margin-top:20px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#2d3748;cursor:pointer;">── 戻る ──</button>
+</div>
+
 <!-- Choco scene popup -->
 <div id="choco-scene-popup" style="display:none;position:fixed;inset:0;z-index:650;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:64px;cursor:pointer;" onclick="chocoSceneNext()">
   <img id="choco-scene-img" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
@@ -2956,8 +2965,22 @@ function submitUtPw() {
   window.startSpecialFortune = function() {
     localStorage.setItem(SF_SPECIAL_KEY, 'true');
     document.getElementById('choco-scene-popup').style.display = 'none';
-    // TODO: スプレッド占い画面を開く
-    showSKPopup('NAGI', '……何を知りたい');
+    var ov = document.getElementById('special-fortune-overlay');
+    var input = document.getElementById('special-fortune-input');
+    if (ov) { ov.style.display = 'flex'; }
+    if (input) { input.value = ''; setTimeout(function() { input.focus(); }, 200); }
+  };
+
+  window.submitSpecialFortune = function() {
+    var input = document.getElementById('special-fortune-input');
+    var question = (input ? input.value.trim() : '') || '…';
+    document.getElementById('special-fortune-overlay').style.display = 'none';
+    // TODO: ケルト十字スプレッドを開く（questionを渡す）
+    showSKPopup('NAGI', '……' + question);
+  };
+
+  window.closeSpecialFortune = function() {
+    document.getElementById('special-fortune-overlay').style.display = 'none';
   };
 
   window.giveChocolateToNagi = function() {
