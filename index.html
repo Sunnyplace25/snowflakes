@@ -414,8 +414,7 @@
   .qf-br { display: none; }
   @media (max-width: 600px) { .qf-br { display: block; } }
   .qf-list { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-  .activity-list::-webkit-scrollbar { display: none; }
-  .qf-list::-webkit-scrollbar { width: 4px; }
+.qf-list::-webkit-scrollbar { width: 4px; }
   .qf-list::-webkit-scrollbar-track { background: transparent; }
   .qf-list::-webkit-scrollbar-thumb { background: rgba(240,171,252,0.25); border-radius: 2px; }
   .qf-row {
@@ -555,46 +554,10 @@ function sfShare() {
   </div>
 
 
-  <!-- SWEETs お知らせ -->
-  <div style="max-width:680px;margin:0 auto 40px;">
-    <a href="./sweets/" style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(249,168,212,0.03);border:1px solid rgba(249,168,212,0.2);transition:all 0.3s;" onmouseover="this.style.background='rgba(249,168,212,0.06)';this.style.borderColor='rgba(249,168,212,0.4)'" onmouseout="this.style.background='rgba(249,168,212,0.03)';this.style.borderColor='rgba(249,168,212,0.2)'">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;">
-        <div style="flex:1;min-width:0;">
-          <p style="font-size:10px;letter-spacing:7px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:12px;">2026.05.20</p>
-          <p style="font-size:clamp(18px,3vw,24px);font-weight:300;color:#f9a8d4;font-family:'Cormorant Garamond',serif;letter-spacing:4px;margin-bottom:20px;">SWEETs 更新</p>
-
-          <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:8px;">トップページ 軽微な修正を行いました</p>
-
-          <!-- アコーディオン詳細 -->
-          <button id="sweets-accordion-btn" onclick="event.preventDefault();event.stopPropagation();toggleSweetsAccordion()" style="margin-top:4px;background:none;border:1px solid rgba(249,168,212,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(249,168,212,0.5)';this.style.color='#f9a8d4'" onmouseleave="this.style.borderColor='rgba(249,168,212,0.2)';this.style.color='#94a3b8'">詳細を見る ↓</button>
-
-          <div id="sweets-accordion-body" style="display:none;margin-top:14px;">
-            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">NOTE</p>
-            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">「白い音」解説 追加</p>
-
-            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STUDIO</p>
-            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">コウタの部屋 クリックアドベンチャー追加</p>
-
-            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STORY</p>
-            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">Under tone ── 2026 SUMMER 解放予定<br>ビジュアルノベルゲーム＆占い</p>
-
-            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">MUSIC</p>
-            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs – Brass Band Ver. 獲得アイテム追加</p>
-
-            <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">GACHA</p>
-            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;">プロテインコーヒー 排出確率 増加</p>
-          </div>
-        </div>
-        <p style="font-size:20px;color:#f9a8d4;flex-shrink:0;margin-top:4px;">→</p>
-      </div>
-    </a>
-  </div>
-
   <!-- 活動報告リスト -->
   <div style="max-width:680px;margin:0 auto 40px;">
-    <div style="border-radius:20px;padding:28px 36px 0;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);position:relative;">
-      <div style="position:absolute;bottom:52px;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,rgba(10,15,26,0.9));border-radius:0 0 20px 20px;pointer-events:none;z-index:1;"></div>
-      <ul style="list-style:none;padding:0;margin:0;overflow-y:auto;max-height:calc(3 * 56px);scrollbar-width:none;-ms-overflow-style:none;" class="activity-list">
+    <div style="border-radius:20px;padding:28px 36px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+      <ul style="list-style:none;padding:0;margin:0;">
         <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
           <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3637366/" target="_blank" style="display:flex;gap:20px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
             <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.21</span>
@@ -607,29 +570,50 @@ function sfShare() {
             <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">【Instagram】書き下ろしエピソード公開</span>
           </a>
         </li>
-        <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <li>
           <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3636238/" target="_blank" style="display:flex;gap:20px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
             <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.18</span>
             <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">公式サイト コンテンツ追加 — SWEETs ROOM</span>
           </a>
         </li>
-        <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-          <a href="./kotori.html" style="display:flex;gap:20px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-            <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.17</span>
-            <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">ことりの部屋 公開</span>
-          </a>
-        </li>
-        <li>
-          <a href="./sweets/" style="display:flex;gap:20px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-            <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.17</span>
-            <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">SWEETs 更新（NOTE / STUDIO / MUSIC）</span>
-          </a>
-        </li>
       </ul>
-      <div style="padding:16px 0 28px;text-align:right;position:relative;z-index:2;">
+      <div style="padding:14px 0 0;text-align:right;">
         <a href="https://mypage.syosetu.com/mypageblog/list/userid/2212173/" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">活動報告をすべて見る →</a>
       </div>
     </div>
+  </div>
+
+  <!-- SWEETs -->
+  <div style="max-width:680px;margin:0 auto 40px;">
+    <a href="./sweets/" style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(249,168,212,0.03);border:1px solid rgba(249,168,212,0.2);transition:all 0.3s;" onmouseover="this.style.background='rgba(249,168,212,0.06)';this.style.borderColor='rgba(249,168,212,0.4)'" onmouseout="this.style.background='rgba(249,168,212,0.03)';this.style.borderColor='rgba(249,168,212,0.2)'">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-size:11px;letter-spacing:5px;color:#f0abfc;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SPECIAL ROOM</p>
+          <p style="font-size:22px;font-weight:300;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin-bottom:10px;">SWEETs</p>
+          <p style="font-size:13px;color:#cbd5e1;font-weight:300;line-height:2;margin-bottom:6px;" data-i18n="sweets-desc1">三人のお気に入りのお菓子と、少し特別な時間。<br>未公開短編や作品解説などのスペシャルコンテンツをまとめています。<br>随時更新予定。</p>
+          <p style="font-size:12px;color:#94a3b8;margin-bottom:24px;" data-i18n="sweets-desc2">SWEETs CODEはInstagramのリールをチェック。</p>
+          <div style="border-top:1px solid rgba(249,168,212,0.12);padding-top:20px;">
+            <p style="font-size:10px;letter-spacing:7px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:12px;">2026.05.20</p>
+            <p style="font-size:clamp(18px,3vw,24px);font-weight:300;color:#f9a8d4;font-family:'Cormorant Garamond',serif;letter-spacing:4px;margin-bottom:20px;">SWEETs 更新</p>
+            <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:8px;">トップページ 軽微な修正を行いました</p>
+            <button id="sweets-accordion-btn" onclick="event.preventDefault();event.stopPropagation();toggleSweetsAccordion()" style="margin-top:4px;background:none;border:1px solid rgba(249,168,212,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(249,168,212,0.5)';this.style.color='#f9a8d4'" onmouseleave="this.style.borderColor='rgba(249,168,212,0.2)';this.style.color='#94a3b8'">詳細を見る ↓</button>
+            <div id="sweets-accordion-body" style="display:none;margin-top:14px;">
+              <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">NOTE</p>
+              <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">「白い音」解説 追加</p>
+              <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STUDIO</p>
+              <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">コウタの部屋 クリックアドベンチャー追加</p>
+              <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">STORY</p>
+              <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">Under tone ── 2026 SUMMER 解放予定<br>ビジュアルノベルゲーム＆占い</p>
+              <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">MUSIC</p>
+              <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs – Brass Band Ver. 獲得アイテム追加</p>
+              <p style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:4px;">GACHA</p>
+              <p style="font-size:13px;color:#cbd5e1;letter-spacing:1px;line-height:2;">プロテインコーヒー 排出確率 増加</p>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:20px;color:#f9a8d4;flex-shrink:0;margin-top:4px;">→</p>
+      </div>
+    </a>
   </div>
 
   <!-- 短篇カード（公開から3日間だけ表示） -->
@@ -1172,25 +1156,11 @@ function sfShare() {
   </div>
 </section>
 
-<!-- SWEETs Banner -->
-<section style="padding:0 24px 64px;position:relative;z-index:1;">
-  <div style="max-width:800px;margin:0 auto;">
-    <a href="sweets/" class="sweets-banner" style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 36px;border-radius:20px;background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.25);text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.11)'" onmouseout="this.style.background='rgba(249,168,212,0.06)'">
-      <div>
-        <p style="font-size:11px;letter-spacing:5px;color:#f0abfc;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SPECIAL ROOM</p>
-        <p style="font-size:22px;font-weight:300;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin-bottom:10px;">SWEETs</p>
-        <p style="font-size:13px;color:#cbd5e1;font-weight:300;line-height:2;" data-i18n="sweets-desc1">三人のお気に入りのお菓子と、少し特別な時間。<br>未公開短編や作品解説などのスペシャルコンテンツをまとめています。<br>随時更新予定。</p>
-        <p style="font-size:12px;color:#94a3b8;margin-top:10px;" data-i18n="sweets-desc2">SWEETs CODEはInstagramのリールをチェック。</p>
-      </div>
-      <span style="font-size:20px;color:#f9a8d4;flex-shrink:0;">→</span>
-    </a>
-  </div>
-</section>
 
-<!-- Discography -->
-<section class="discography" id="discography">
-  <span class="sec-label" style="text-align:center;display:block;margin-bottom:12px;">DISCOGRAPHY</span>
-  <h2 class="sec-title" data-i18n="disco-h2">ディスコグラフィ</h2>
+<!-- Music -->
+<section class="discography" id="music">
+  <span class="sec-label" style="text-align:center;display:block;margin-bottom:12px;">MUSIC</span>
+  <h2 class="sec-title">音楽</h2>
   <div class="disco-inner">
 
     <!-- Singles -->
@@ -1298,41 +1268,37 @@ function sfShare() {
       </div>
     </div>
 
-  </div>
-</section>
-
-<!-- Music -->
-<section class="music">
-  <span class="sec-label">MUSIC</span>
-  <h2 class="sec-title" data-i18n="music-h2">音楽</h2>
-  <div class="music-inner">
-    <div class="music-top">
-      <div class="music-card">
-        <p class="music-platform">STREAMING</p>
-        <p class="music-name" data-i18n="music-streaming-name">各ストリーミングサービスで配信中</p>
-        <p class="music-desc" data-i18n="music-streaming-desc">Spotify・Apple Music・Amazon Music・YouTube Musicほか各種ストリーミングサービスで楽曲を配信。小説の世界観をもとに制作した楽曲を、いつでも聴ける。</p>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;">
-          <a class="link-btn btn-green" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" title="Spotify" style="padding:12px 16px;">
-            <i class="fa-brands fa-spotify" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(176,112,112,0.1);border:1.5px solid #b07070;color:#b07070;padding:12px 16px;" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank" title="Apple Music">
-            <i class="fa-brands fa-apple" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(90,143,168,0.1);border:1.5px solid #5a8fa8;color:#5a8fa8;padding:12px 16px;" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank" title="Amazon Music">
-            <i class="fa-brands fa-amazon" style="font-size:22px;"></i>
-          </a>
-          <a class="link-btn" style="background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;padding:12px 16px;" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank" title="YouTube Music">
-            <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
-          </a>
+    <!-- Streaming -->
+    <div class="disco-group" style="margin-top:24px;">
+      <div class="music-top">
+        <div class="music-card">
+          <p class="music-platform">STREAMING</p>
+          <p class="music-name" data-i18n="music-streaming-name">各ストリーミングサービスで配信中</p>
+          <p class="music-desc" data-i18n="music-streaming-desc">Spotify・Apple Music・Amazon Music・YouTube Musicほか各種ストリーミングサービスで楽曲を配信。小説の世界観をもとに制作した楽曲を、いつでも聴ける。</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <a class="link-btn btn-green" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" title="Spotify" style="padding:12px 16px;">
+              <i class="fa-brands fa-spotify" style="font-size:22px;"></i>
+            </a>
+            <a class="link-btn" style="background:rgba(176,112,112,0.1);border:1.5px solid #b07070;color:#b07070;padding:12px 16px;" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank" title="Apple Music">
+              <i class="fa-brands fa-apple" style="font-size:22px;"></i>
+            </a>
+            <a class="link-btn" style="background:rgba(90,143,168,0.1);border:1.5px solid #5a8fa8;color:#5a8fa8;padding:12px 16px;" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank" title="Amazon Music">
+              <i class="fa-brands fa-amazon" style="font-size:22px;"></i>
+            </a>
+            <a class="link-btn" style="background:rgba(192,96,96,0.1);border:1.5px solid #c06060;color:#c06060;padding:12px 16px;" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank" title="YouTube Music">
+              <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
+            </a>
+          </div>
+        </div>
+        <div class="music-card">
+          <p class="music-platform">SUNO</p>
+          <p class="music-name">snowflakes_music</p>
+          <p class="music-desc" data-i18n="music-suno-desc">Sunoでも楽曲を公開中。グラスの縁・呼吸の距離など、ストリーミング未配信の楽曲も聴ける。</p>
+          <a class="link-btn btn-purple" href="https://suno.com/@snowflakes_music" target="_blank" data-i18n="music-suno-btn">Sunoで聴く →</a>
         </div>
       </div>
-      <div class="music-card">
-        <p class="music-platform">SUNO</p>
-        <p class="music-name">snowflakes_music</p>
-        <p class="music-desc" data-i18n="music-suno-desc">Sunoでも楽曲を公開中。グラスの縁・呼吸の距離など、ストリーミング未配信の楽曲も聴ける。</p>
-        <a class="link-btn btn-purple" href="https://suno.com/@snowflakes_music" target="_blank" data-i18n="music-suno-btn">Sunoで聴く →</a>
-      </div>
     </div>
+
   </div>
 </section>
 
