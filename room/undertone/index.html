@@ -924,24 +924,40 @@
     </div>
     <button id="shop-chocolate-give-btn" onclick="giveChocolateToNagi()" style="display:none;width:100%;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.25);border-radius:50px;padding:13px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;margin-bottom:20px;" onmouseover="this.style.background='rgba(253,230,138,0.12)'" onmouseout="this.style.background='rgba(253,230,138,0.06)'">ナギに渡す</button>
     <div id="shop-rawstone-count" style="display:none;flex-direction:column;gap:12px;margin-bottom:20px;padding:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;">
+      <!-- 未鑑定の石ヘッダー -->
       <div style="display:flex;align-items:center;gap:12px;">
         <img src="../../item/rawstone.png" style="width:44px;height:44px;object-fit:cover;border-radius:9px;flex-shrink:0;">
         <div style="flex:1;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:4px;">RAW STONE</p>
-          <span id="shop-rawstone-count-text" style="font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:1px;color:#64748b;"></span>
+          <p style="font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:1px;color:#94a3b8;">未鑑定の石</p>
         </div>
+        <span id="shop-rawstone-count-text" style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:2px;color:#c4b5fd;">× 0</span>
       </div>
-      <div id="shop-rawstone-types" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      <!-- 鑑定ボタン -->
       <button class="choose-item choose-item--stone" id="appraise-btn" onclick="appraiseStone()" style="display:none;width:100%;margin:0;">
         <span class="choose-mark">◎</span>
         <span class="choose-text">石を見てもらう</span>
-        <span class="choose-sub" id="rawstone-sub">APPRAISE · 5 Snow</span>
+        <span class="choose-sub" id="rawstone-sub">所持 0個 · 5 Snow</span>
       </button>
+      <!-- 鑑定済み3種 -->
+      <div id="shop-rawstone-types" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      <!-- ナギに渡す（ロック中） -->
+      <button onclick="nagiveStone()" style="width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:50px;padding:12px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">ナギに渡す</button>
     </div>
 
     <button id="equip-open-btn" onclick="openEquip()" style="display:none;width:100%;background:none;border:1px solid rgba(255,255,255,0.07);border-radius:50px;padding:13px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;margin-bottom:16px;">持ち物を見る</button>
 
     <p class="shop-quote">「今鳴っているものは、<br>　隠せない」</p>
+
+    <!-- デバッグパネル（管理者のみ） -->
+    <div id="debug-panel" style="display:none;flex-direction:column;gap:8px;margin-bottom:20px;padding:14px;background:rgba(255,0,0,0.04);border:1px dashed rgba(255,80,80,0.2);border-radius:12px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:4px;">DEBUG</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="dbgAddChoco()" style="flex:1;padding:10px 8px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.2);border-radius:8px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;cursor:pointer;">チョコ +50</button>
+        <button onclick="dbgAddCoaster()" style="flex:1;padding:10px 8px;background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.2);border-radius:8px;color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;cursor:pointer;">コースター +50</button>
+        <button onclick="dbgAddStone()" style="flex:1;padding:10px 8px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.2);border-radius:8px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;cursor:pointer;">石 +50</button>
+      </div>
+    </div>
 
     <!-- ch21解放後のみ表示 -->
     <div id="shop-nav" style="display:none;gap:10px;margin-bottom:20px;">
@@ -1284,6 +1300,15 @@ function submitUtPw() {
   <input id="special-fortune-input" type="text" maxlength="40" placeholder="問いを置いていく" style="width:100%;max-width:320px;background:rgba(255,255,255,0.03);border:none;border-bottom:1px solid rgba(255,255,255,0.15);padding:12px 4px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-size:15px;letter-spacing:2px;outline:none;text-align:center;margin-bottom:48px;" onkeydown="if(event.key==='Enter')submitSpecialFortune()">
   <button onclick="submitSpecialFortune()" style="background:none;border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:13px 40px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='#64748b'">占う</button>
   <button onclick="closeSpecialFortune()" style="margin-top:20px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#2d3748;cursor:pointer;">── 戻る ──</button>
+</div>
+
+<!-- Item message popup (もっていません等) -->
+<div id="item-msg-popup" style="display:none;position:fixed;inset:0;z-index:680;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('item-msg-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
+    <img id="item-msg-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;filter:grayscale(0.3);opacity:0.6;">
+    <p id="item-msg-text" style="font-family:'Noto Serif JP',serif;font-size:14px;color:#94a3b8;letter-spacing:2px;line-height:2.2;white-space:pre-line;margin-bottom:24px;"></p>
+    <button onclick="document.getElementById('item-msg-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
 </div>
 
 <!-- Choco scene popup -->
@@ -2311,8 +2336,11 @@ function submitUtPw() {
     document.getElementById('shop-state').style.display   = 'block';
     renderStones();
     updateAppraiseBtn();
+    // デバッグパネル（管理者のみ表示）
+    var dbgPanel = document.getElementById('debug-panel');
+    if (dbgPanel) dbgPanel.style.display = isCoreFan() ? 'flex' : 'none';
     var exploreBtn = document.getElementById('explore-btn');
-    if (exploreBtn) exploreBtn.textContent = exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
+    if (exploreBtn) exploreBtn.textContent = exploreCount === 0 ? '路地裏を歩いてみよう' : exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
 
     var visitCount = getDailyVisitCount();
     var greetings = [
@@ -2773,29 +2801,36 @@ function submitUtPw() {
     if (r < 0.30) return RAW_STONE_TYPES[1];
     return RAW_STONE_TYPES[0];
   }
+  /* ── Appraised stone counts ── */
+  function getAppraisedStones() {
+    try { return JSON.parse(localStorage.getItem('sf_ut_appraised') || '{}'); }
+    catch(e) { return {}; }
+  }
+  function addAppraisedStone(typeId) {
+    var a = getAppraisedStones();
+    a[typeId] = (a[typeId] || 0) + 1;
+    localStorage.setItem('sf_ut_appraised', JSON.stringify(a));
+  }
+
   function updateAppraiseBtn() {
     var arr = getRawStones();
     var btn = document.getElementById('appraise-btn');
     var sub = document.getElementById('rawstone-sub');
-    // shop内の未鑑定の石カウント表示
     var shopCount = document.getElementById('shop-rawstone-count');
     if (shopCount) {
+      // 未鑑定の石カウント（右端 × N）
       var countText = document.getElementById('shop-rawstone-count-text');
-      if (countText) countText.textContent = '未鑑定の石 × ' + arr.length;
+      if (countText) countText.textContent = '× ' + arr.length;
       shopCount.style.display = 'flex';
-      // 3種内訳
+      // 鑑定済み3種グリッド
       var typesWrap = document.getElementById('shop-rawstone-types');
       if (typesWrap) {
         typesWrap.innerHTML = '';
+        var appraised = getAppraisedStones();
         RAW_STONE_TYPES.forEach(function(t) {
-          var cnt = arr.filter(function(id) { return id === t.id; }).length;
+          var cnt = appraised[t.id] || 0;
           var div = document.createElement('div');
-          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';';
-          (function(stoneType, stoneCnt) {
-            div.addEventListener('click', function() { openRawstoneDetail(stoneType, stoneCnt); });
-            div.addEventListener('mouseover', function() { div.style.background = 'rgba(196,181,253,0.07)'; });
-            div.addEventListener('mouseout', function() { div.style.background = 'rgba(255,255,255,0.02)'; });
-          })(t, cnt);
+          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';';
           var img = document.createElement('img');
           img.src = RAW_STONE_IMG[t.id] || '../../item/rawstone.png';
           img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:9px;display:block;' + (cnt === 0 ? 'filter:grayscale(1);opacity:0.25;' : '');
@@ -2811,24 +2846,53 @@ function submitUtPw() {
       }
     }
     if (!btn) return;
-    // 2-1読了後かつ生の石所持時のみ表示
     var ch21Read = _seenProseScenes.has(5);
-    if (ch21Read && arr.length > 0) {
-      btn.style.display = '';
+    if (ch21Read) {
       btn.style.display = '';
       if (sub) sub.textContent = '所持 ' + arr.length + ' 個 · 5 Snow';
-      btn.disabled = arr.length === 0;
-      btn.style.opacity = arr.length === 0 ? '0.4' : '1';
+      // 所持0でもボタンは表示、半透明で押せる（押したら「もっていません」）
+      btn.disabled = false;
+      btn.style.opacity = arr.length === 0 ? '0.45' : '1';
     }
   }
 
+  window.nagiveStone = function() {
+    showSKPopup('NAGI', 'まだ、持ってろ');
+  };
+
+  /* ── デバッグ関数（管理者のみ） ── */
+  window.dbgAddChoco = function() {
+    var items = SfSnow.getMonthlyItems();
+    items['chocolate_hayate'] = (items['chocolate_hayate'] || 0) + 50;
+    localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+    renderStones();
+    updateChocoBtn();
+    alert('チョコレート +50');
+  };
+  window.dbgAddCoaster = function() {
+    var items = SfSnow.getMonthlyItems();
+    items['coaster_hayate'] = (items['coaster_hayate'] || 0) + 50;
+    localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+    renderStones();
+    alert('コースター +50');
+  };
+  window.dbgAddStone = function() {
+    for (var i = 0; i < 50; i++) {
+      var t = rollRawStone();
+      addRawStone(t.id);
+    }
+    updateAppraiseBtn();
+    alert('未鑑定の石 +50');
+  };
+
   window.appraiseStone = function() {
     var arr = getRawStones();
-    if (!arr.length) return;
+    if (!arr.length) { showItemMsgPopup('../../item/rawstone.png', 'もっていません'); return; }
     if (SfSnow.getBalance() < 5) { showSnowInsufficient(); return; }
     SfSnow.spend(5);
     var rawId = shiftRawStone();
     var rawLabel = (RAW_STONE_TYPES.filter(function(t){ return t.id === rawId; })[0] || {}).label || rawId;
+    addAppraisedStone(rawId);
     updateAppraiseBtn();
     var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
     if (!available.length) {
@@ -3015,7 +3079,7 @@ function submitUtPw() {
     var items = SfSnow.getMonthlyItems();
     var cnt = items['chocolate_hayate'] || 0;
     if (cnt <= 0) {
-      alert('持っていません');
+      showItemMsgPopup('../../item/chocolate.png', 'もっていません\n\nSWEETs ROOM で楽曲を聴いてみよう');
       return;
     }
     // 1個消費
@@ -3405,6 +3469,13 @@ function submitUtPw() {
       localStorage.setItem('sf_undertone_visits', JSON.stringify(data));
     }
     return data.total;
+  }
+
+  /* ── アイテム画像付きメッセージポップアップ ── */
+  function showItemMsgPopup(imgSrc, msg) {
+    document.getElementById('item-msg-img').src = imgSrc;
+    document.getElementById('item-msg-text').textContent = msg;
+    document.getElementById('item-msg-popup').style.display = 'flex';
   }
 
   var _skTimer = null;
