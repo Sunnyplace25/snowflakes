@@ -3013,7 +3013,7 @@ function submitUtPw() {
     // レアイベント「もうないのか」：2回目以降（3個目解放時を除く）、約20%の確率
     // カード画像はこのレア演出のみ使用
     if (total >= 2 && total !== 3 && Math.random() < 0.2) {
-      steps.push({ img: 'nagi_choco_3.png', line: 'もうないのか' });
+      steps.push({ img: 'nagi_choco_3.png', line: 'もうないのか', isOrei: true });
     }
 
     _chocoScene.steps = steps;
