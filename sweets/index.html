@@ -5730,9 +5730,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
   }
 
+  var _mcAutoTimer = null;
+  function _mcResetAuto() {
+    if (_mcAutoTimer) clearInterval(_mcAutoTimer);
+    _mcAutoTimer = setInterval(function() {
+      _mc.idx = (_mc.idx + 1) % _mc.N;
+      _mcUpdate(); _mcShowContent(_mc.idx);
+    }, 5000);
+  }
+  _mcResetAuto();
+
   window.musicCarouselRotate = function(dir) {
     _mc.idx = (_mc.idx + dir + _mc.N) % _mc.N;
     _mcUpdate(); _mcShowContent(_mc.idx);
+    _mcResetAuto();
   };
 
   function _mcSelect(i) { _mc.idx = i; _mcUpdate(); _mcShowContent(i); }
