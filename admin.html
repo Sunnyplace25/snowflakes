@@ -179,7 +179,7 @@
       <p style="font-size:11px;letter-spacing:2px;color:#475569;">── 解放 ──</p>
 
       <button onclick="unlockRareByChar('hinata')" style="padding:12px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:10px;color:#93c5fd;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.14)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">
-        HINATA 解放（カセット・傘・USB・青い石）
+        HINATA 解放（カセット・青い石・傘・USB・白いピック）
       </button>
       <button onclick="unlockRareByChar('kouta')" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:10px;color:#fca5a5;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
         KOUTA 解放（リング・ライブチケット・ジッポ）
@@ -207,6 +207,21 @@
       </button>
     </div>
     <p id="stone-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
+  <div class="card" style="border-color:rgba(253,230,138,0.15);margin-top:16px;">
+    <h2 style="color:#fde68a;">ことりページ テスト</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 16px;line-height:2;">kotori.html で付与されるアイテムのテストです。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <p style="font-size:11px;letter-spacing:2px;color:#475569;">── バックステージパス ──</p>
+      <button onclick="unlockBackstagePass()" style="padding:12px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-size:14px;cursor:pointer;" onmouseenter="this.style.background='rgba(253,230,138,0.18)'" onmouseleave="this.style.background='rgba(253,230,138,0.08)'">
+        バックステージパス 解放
+      </button>
+      <button onclick="resetBackstagePass()" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
+        バックステージパス リセット（ポップアップ再表示も）
+      </button>
+    </div>
+    <p id="kotori-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
 
   <div class="card" style="border-color:rgba(196,181,253,0.2);margin-top:16px;">
@@ -662,6 +677,26 @@ function resetRareByChar(ch) {
 function resetAllRareItems() {
   localStorage.removeItem('sf_unlocked');
   setStoneStatus('✓ 全員のレアアイテムをリセットしました。');
+}
+
+/* ── ことりページ ── */
+function setKotoriStatus(msg) {
+  document.getElementById('kotori-status').textContent = msg;
+}
+function unlockBackstagePass() {
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  if (arr.indexOf('backstage_pass') === -1) arr.push('backstage_pass');
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  localStorage.setItem('sf_backstage_pass', 'true');
+  setKotoriStatus('✓ バックステージパスを解放しました。');
+}
+function resetBackstagePass() {
+  var arr = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+  arr = arr.filter(function(k) { return k !== 'backstage_pass'; });
+  localStorage.setItem('sf_unlocked', JSON.stringify(arr));
+  localStorage.removeItem('sf_backstage_pass');
+  localStorage.removeItem('sf_backstage_pass_shown');
+  setKotoriStatus('✓ バックステージパスをリセットしました（ポップアップも再表示されます）。');
 }
 
 /* ── スタジオ 入室 ── */
