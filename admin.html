@@ -284,6 +284,28 @@
     <p id="item-inf-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
 
+  <div class="card" style="border-color:rgba(253,230,138,0.2);margin-top:16px;">
+    <h2 style="color:#fde68a;">Under tone アイテム付与</h2>
+    <p style="font-size:13px;color:var(--muted);margin:12px 0 16px;line-height:2;">Under tone テスト用アイテムを個別に追加します。</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="addUtItem('chocolate_hayate',50)" style="flex:1;padding:12px 8px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.2);border-radius:10px;color:#fde68a;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(253,230,138,0.18)'" onmouseleave="this.style.background='rgba(253,230,138,0.08)'">
+          チョコ +50
+        </button>
+        <button onclick="addUtItem('coaster_hayate',50)" style="flex:1;padding:12px 8px;background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.2);border-radius:10px;color:#93c5fd;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(147,197,253,0.18)'" onmouseleave="this.style.background='rgba(147,197,253,0.08)'">
+          コースター +50
+        </button>
+        <button onclick="addUtRawStones(50)" style="flex:1;padding:12px 8px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.2);border-radius:10px;color:#c4b5fd;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(196,181,253,0.18)'" onmouseleave="this.style.background='rgba(196,181,253,0.08)'">
+          石 +50
+        </button>
+      </div>
+      <button onclick="resetUtItems()" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
+        Under tone アイテムをリセット
+      </button>
+    </div>
+    <p id="ut-item-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
+  </div>
+
 </div>
 
 <!-- 設定 -->
@@ -694,6 +716,39 @@ function resetSweetsAll() {
 /* ── アイテム無限 ── */
 function setItemInfStatus(msg) {
   document.getElementById('item-inf-status').textContent = msg;
+}
+
+/* ── Under tone アイテム付与 ── */
+function setUtItemStatus(msg) {
+  document.getElementById('ut-item-status').textContent = msg;
+}
+
+function addUtItem(key, n) {
+  var items = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
+  items[key] = (items[key] || 0) + n;
+  localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+  setUtItemStatus('✓ ' + key + ' +' + n + ' 付与しました（計 ' + items[key] + '個）');
+}
+
+function addUtRawStones(n) {
+  var stones = JSON.parse(localStorage.getItem('sf_ut_rawstones') || '[]');
+  var types = ['kirei','kirei','kirei','kirei','hikaru','hikaru','tsumetai'];
+  for (var i = 0; i < n; i++) {
+    stones.push(types[Math.floor(Math.random() * types.length)]);
+  }
+  localStorage.setItem('sf_ut_rawstones', JSON.stringify(stones));
+  setUtItemStatus('✓ 未鑑定の石 +' + n + ' 付与しました（計 ' + stones.length + '個）');
+}
+
+function resetUtItems() {
+  var items = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
+  delete items['chocolate_hayate'];
+  delete items['coaster_hayate'];
+  localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+  localStorage.removeItem('sf_ut_rawstones');
+  localStorage.removeItem('sf_ut_appraised');
+  localStorage.removeItem('sf_nagi_choco_total');
+  setUtItemStatus('✓ チョコ・コースター・石をリセットしました。');
 }
 
 function addInfiniteItems() {
