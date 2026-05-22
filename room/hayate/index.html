@@ -510,7 +510,7 @@
 
   <div class="main">
     <div class="room-scene-wrap" id="hayate-scene">
-      <img id="room-hero-img" src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説" style="cursor:pointer;" onclick="toggleRoomHero()">
+      <img id="room-hero-img" src="room_face.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ ドラム キャラクター 山吹ことり 小説">
       <!-- hotspot 1 -->
       <button class="room-hotspot" style="left:25%;top:30%;display:none;" onclick="event.stopPropagation();openRoomHotspot('DRUM STICK','スティックが机の上に転がっている。\n先が少し削れている')">+</button>
       <!-- hotspot 2 -->
@@ -1008,16 +1008,23 @@
   <script>
   (function() {
     var heroShowing = 'face';
-    window.addEventListener('pageshow', function() { var img = document.getElementById('room-hero-img'); if (img) { img.src = 'room_face.webp'; heroShowing = 'face'; } });
+    window.addEventListener('pageshow', function() {
+      var img = document.getElementById('room-hero-img');
+      if (img) { img.src = 'room_face.webp'; img.style.cursor = ''; heroShowing = 'face'; }
+    });
     window.toggleRoomHero = function() {
       var img = document.getElementById('room-hero-img');
       var spots = document.querySelectorAll('#hayate-scene .room-hotspot');
       if (heroShowing === 'face') {
         img.src = 'room_interior.webp';
+        img.style.cursor = 'pointer';
+        img.onclick = function(e) { if (document.getElementById('hayate-hs-popup').classList.contains('show')) return; toggleRoomHero(); };
         heroShowing = 'room';
         spots.forEach(function(b) { b.style.display = 'flex'; });
       } else {
         img.src = 'room_face.webp';
+        img.style.cursor = '';
+        img.onclick = null;
         heroShowing = 'face';
         spots.forEach(function(b) { b.style.display = 'none'; });
       }
