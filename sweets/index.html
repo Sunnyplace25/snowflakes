@@ -4527,13 +4527,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 28) {
           el.removeEventListener('scroll', handler);
           delete el.dataset.sfItemTrigger;
-          if (!SfSnow.isUnlocked(itemId)) {
+          var alreadyHad = SfSnow.isUnlocked(itemId);
+          if (!alreadyHad) {
             SfSnow.unlockItem(itemId);
             if (typeof renderItemRows === 'function') renderItemRows();
-            showNoteItemGet(itemId); // 初回のみアイテム入手表示
+            showNoteItemGet(itemId); // 初回: "を入手しました" + キャラポップアップ
           } else {
-            showCharaPopupOnly(itemId); // 2回目以降はキャラポップアップのみ
+            showNoteItemGetAgain(itemId); // 2回目以降: アイテム画像 + "このアイテムは入手済みです"
           }
+          // 次回読了でも再表示できるように再登録
+          setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
         }
       });
     }
@@ -4543,13 +4546,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!d) return;
       _noteItemPendingChara = d;
       var imgEl   = document.getElementById('note-item-img');
+      var emojiEl = document.getElementById('note-item-emoji');
       var nameEl  = document.getElementById('note-item-name');
       var descEl  = document.getElementById('note-item-desc');
       var labelEl = document.getElementById('note-item-label');
       var msgEl   = document.getElementById('note-item-msg');
       var closeBtn = document.getElementById('note-item-close-btn');
-      imgEl.src          = d.img;
-      imgEl.alt          = d.name;
+      if (imgEl) { imgEl.src = d.img; imgEl.alt = d.name; imgEl.style.display = ''; }
+      if (emojiEl) emojiEl.style.display = 'none';
       nameEl.textContent = d.name;
       if (msgEl) msgEl.textContent = 'を入手しました';
       if (descEl) {
@@ -4561,6 +4565,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       closeBtn.style.color        = d.color;
       closeBtn.style.borderColor  = d.color;
       closeBtn.style.background   = 'rgba(255,255,255,0.05)';
+      document.getElementById('note-item-popup').classList.add('show');
+    }
+
+    // 2回目以降: アイテム画像付きポップアップ "このアイテムは入手済みです"
+    function showNoteItemGetAgain(id) {
+      var d = NOTE_ITEM_DATA[id];
+      if (!d) return;
+      _noteItemPendingChara = null; // 閉じてもキャラポップアップを出さない
+      var imgEl    = document.getElementById('note-item-img');
+      var emojiEl  = document.getElementById('note-item-emoji');
+      var nameEl   = document.getElementById('note-item-name');
+      var descEl   = document.getElementById('note-item-desc');
+      var labelEl  = document.getElementById('note-item-label');
+      var msgEl    = document.getElementById('note-item-msg');
+      var closeBtn = document.getElementById('note-item-close-btn');
+      if (imgEl) { imgEl.src = d.img; imgEl.alt = d.name; imgEl.style.display = ''; }
+      if (emojiEl) emojiEl.style.display = 'none';
+      nameEl.textContent = d.name;
+      if (descEl) descEl.style.display = 'none';
+      labelEl.style.color = '#94a3b8';
+      if (msgEl) msgEl.textContent = 'このアイテムは入手済みです';
+      closeBtn.textContent       = '閉じる';
+      closeBtn.style.color       = '#e2e8f0';
+      closeBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+      closeBtn.style.background  = 'rgba(255,255,255,0.05)';
       document.getElementById('note-item-popup').classList.add('show');
     }
 
@@ -4613,17 +4642,25 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     // ── 交換系アイテムポップアップ（キャラポップアップなし・入手済み対応） ──
-    // img: 画像パス, name: アイテム名, alreadyHad: true=入手済みメッセージ
+    // img: 画像パス or 絵文字, name: アイテム名, alreadyHad: true=入手済みメッセージ
     function showItemExchangePopup(img, name, alreadyHad) {
       _noteItemPendingChara = null; // 閉じてもキャラポップアップを出さない
       var imgEl    = document.getElementById('note-item-img');
+      var emojiEl  = document.getElementById('note-item-emoji');
       var nameEl   = document.getElementById('note-item-name');
       var descEl   = document.getElementById('note-item-desc');
       var labelEl  = document.getElementById('note-item-label');
       var msgEl    = document.getElementById('note-item-msg');
       var closeBtn = document.getElementById('note-item-close-btn');
-      imgEl.src          = img;
-      imgEl.alt          = name;
+      // 絵文字かパスかを判定（パスは必ず . か / で始まる）
+      var isEmoji = img && img.charAt(0) !== '.' && img.charAt(0) !== '/';
+      if (isEmoji) {
+        if (imgEl) imgEl.style.display = 'none';
+        if (emojiEl) { emojiEl.textContent = img; emojiEl.style.display = 'block'; }
+      } else {
+        if (imgEl) { imgEl.src = img; imgEl.alt = name; imgEl.style.display = ''; }
+        if (emojiEl) emojiEl.style.display = 'none';
+      }
       nameEl.textContent = name;
       if (descEl) descEl.style.display = 'none';
       labelEl.style.color = '#94a3b8';
@@ -4639,7 +4676,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       showConfirm('交換しますか？', function() {
         if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
           unlockNotes();
-          showItemExchangePopup('../item/proteincoffee.webp', 'プロテインコーヒー', false);
+          showItemExchangePopup('☕', 'プロテインコーヒー', false);
         } else {
           alert('プロテインコーヒーが足りません');
         }
@@ -4728,6 +4765,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   <div id="note-item-box">
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:7px;color:#64748b;margin-bottom:32px;">Snow flakes</p>
     <img id="note-item-img" src="" alt="">
+    <span id="note-item-emoji" style="display:none;font-size:90px;margin:0 auto 28px;animation:noteItemFloat 3s ease-in-out infinite;line-height:1;"></span>
     <p id="note-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;margin-bottom:10px;">ITEM</p>
     <p id="note-item-name" style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;"></p>
     <p id="note-item-msg" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">を入手しました</p>
@@ -5475,7 +5513,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     area.innerHTML = html;
 
-    if (unlocked && noteItemKey && !noteItemOk) {
+    if (unlocked && noteItemKey) {
       var bodyEl = document.getElementById('nc-content-body');
       if (bodyEl) attachScrollItemTrigger(bodyEl, noteItemKey);
     }
@@ -5537,7 +5575,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     SfSnow.unlockItem(id);
     renderNotes(); // → initNotesCarousel()
     setTimeout(function() { scrollToNotes(id); }, 100);
-    showItemExchangePopup('../item/proteincoffee.webp', 'プロテインコーヒー', alreadyHad);
+    showItemExchangePopup('☕', 'プロテインコーヒー', alreadyHad);
     }); /* showConfirm callback end */
   }
 
@@ -5582,7 +5620,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       SfSnow.unlockItem(key);
       showNoteItemGet(key);
     } else {
-      showCharaPopupOnly(key);
+      showNoteItemGetAgain(key); // 2回目以降: "このアイテムは入手済みです"
     }
   }
 
