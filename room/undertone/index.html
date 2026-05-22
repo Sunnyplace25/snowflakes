@@ -914,6 +914,50 @@
 
     <div class="stone-counter" id="stone-counter"></div>
     <p class="stone-progress" id="stone-progress"></p>
+
+    <!-- ch21解放後のみ表示 -->
+    <div id="shop-nav" style="display:none;gap:10px;margin-bottom:20px;">
+      <button class="shop-nav-tab active" id="tab-oracle" onclick="switchShopTab('oracle')">今日の音を選ぶ</button>
+      <button class="shop-nav-tab" id="tab-interior" onclick="switchShopTab('interior')">店の商品を見る</button>
+    </div>
+
+    <div id="shop-panel-oracle">
+    <p class="shop-choose-label" id="shop-choose-label-inner">今日の音を選ぶ</p>
+    <div class="choose-list">
+      <button class="choose-item" onclick="openTarot('oracle')">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">一枚引く</span>
+        <span class="choose-sub">ONE ORACLE · 5 Snow</span>
+      </button>
+      <button class="choose-item" onclick="openTarot('yesno')">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">Yes / No を聞く</span>
+        <span class="choose-sub">YES · NO · 10 Snow</span>
+      </button>
+      <button class="choose-item choose-item--gold" onclick="openSpread()">
+        <span class="choose-mark">◯</span>
+        <span class="choose-text">深く見る</span>
+        <span class="choose-sub">3 CARDS · 15 Snow</span>
+      </button>
+    </div>
+    </div><!-- /shop-panel-oracle -->
+
+    <!-- 店内を見る パネル（ch21解放後） -->
+    <div id="shop-panel-interior" style="display:none;">
+      <div class="scene-wrap" id="interior-scene-wrap" style="margin-bottom:14px;">
+        <img class="scene-img" id="interior-scene-img" src="shop1.png" alt="店内">
+      </div>
+      <p class="scene-counter" id="interior-counter">棚 1 / 3</p>
+      <div class="speech-bubble" id="interior-speech" style="display:none;">
+        <img class="speech-char-img" id="interior-speech-img" src="" alt="">
+        <div>
+          <p class="speech-char-name" id="interior-speech-name"></p>
+          <p class="speech-text" id="interior-speech-text"></p>
+        </div>
+      </div>
+      <button class="advance-btn" id="interior-advance-btn" onclick="advanceInterior()">次の棚を見る →</button>
+    </div>
+
     <div id="shop-chocolate-row" style="display:none;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px 18px;margin-bottom:10px;align-items:center;gap:14px;">
       <img src="../../item/chocolate.png" alt="一粒のチョコレート" style="width:52px;height:52px;object-fit:cover;border-radius:10px;flex-shrink:0;">
       <div style="flex:1;">
@@ -957,49 +1001,6 @@
         <button onclick="dbgAddCoaster()" style="flex:1;padding:10px 8px;background:rgba(147,197,253,0.08);border:1px solid rgba(147,197,253,0.2);border-radius:8px;color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;cursor:pointer;">コースター +50</button>
         <button onclick="dbgAddStone()" style="flex:1;padding:10px 8px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.2);border-radius:8px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;cursor:pointer;">石 +50</button>
       </div>
-    </div>
-
-    <!-- ch21解放後のみ表示 -->
-    <div id="shop-nav" style="display:none;gap:10px;margin-bottom:20px;">
-      <button class="shop-nav-tab active" id="tab-oracle" onclick="switchShopTab('oracle')">今日の音を選ぶ</button>
-      <button class="shop-nav-tab" id="tab-interior" onclick="switchShopTab('interior')">店の商品を見る</button>
-    </div>
-
-    <div id="shop-panel-oracle">
-    <p class="shop-choose-label" id="shop-choose-label-inner">今日の音を選ぶ</p>
-    <div class="choose-list">
-      <button class="choose-item" onclick="openTarot('oracle')">
-        <span class="choose-mark">◯</span>
-        <span class="choose-text">一枚引く</span>
-        <span class="choose-sub">ONE ORACLE · 5 Snow</span>
-      </button>
-      <button class="choose-item" onclick="openTarot('yesno')">
-        <span class="choose-mark">◯</span>
-        <span class="choose-text">Yes / No を聞く</span>
-        <span class="choose-sub">YES · NO · 10 Snow</span>
-      </button>
-      <button class="choose-item choose-item--gold" onclick="openSpread()">
-        <span class="choose-mark">◯</span>
-        <span class="choose-text">深く見る</span>
-        <span class="choose-sub">3 CARDS · 15 Snow</span>
-      </button>
-    </div>
-    </div><!-- /shop-panel-oracle -->
-
-    <!-- 店内を見る パネル（ch21解放後） -->
-    <div id="shop-panel-interior" style="display:none;">
-      <div class="scene-wrap" id="interior-scene-wrap" style="margin-bottom:14px;">
-        <img class="scene-img" id="interior-scene-img" src="shop1.png" alt="店内">
-      </div>
-      <p class="scene-counter" id="interior-counter">棚 1 / 3</p>
-      <div class="speech-bubble" id="interior-speech" style="display:none;">
-        <img class="speech-char-img" id="interior-speech-img" src="" alt="">
-        <div>
-          <p class="speech-char-name" id="interior-speech-name"></p>
-          <p class="speech-text" id="interior-speech-text"></p>
-        </div>
-      </div>
-      <button class="advance-btn" id="interior-advance-btn" onclick="advanceInterior()">次の棚を見る →</button>
     </div>
 
     <button class="explore-btn" id="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
@@ -2340,7 +2341,7 @@ function submitUtPw() {
     var dbgPanel = document.getElementById('debug-panel');
     if (dbgPanel) dbgPanel.style.display = isCoreFan() ? 'flex' : 'none';
     var exploreBtn = document.getElementById('explore-btn');
-    if (exploreBtn) exploreBtn.textContent = exploreCount === 0 ? '路地裏を歩いてみよう' : exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
+    if (exploreBtn) exploreBtn.textContent = exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
 
     var visitCount = getDailyVisitCount();
     var greetings = [
@@ -2887,7 +2888,7 @@ function submitUtPw() {
 
   window.appraiseStone = function() {
     var arr = getRawStones();
-    if (!arr.length) { showItemMsgPopup('../../item/rawstone.png', 'もっていません'); return; }
+    if (!arr.length) { showItemMsgPopup('../../item/rawstone.png', 'もっていません\n\n路地裏を歩いてみよう'); return; }
     if (SfSnow.getBalance() < 5) { showSnowInsufficient(); return; }
     SfSnow.spend(5);
     var rawId = shiftRawStone();
