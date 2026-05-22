@@ -717,7 +717,7 @@
       <!-- 初めて張り替えたベースの弦 -->
       <div class="il-item" id="il-strings-item">
         <div class="il-header" onclick="toggleIlItem('il-strings-item')">
-          <span class="item-log-tag" id="il-strings-tag"><img src="../../item/first_strings_kouta.webp" alt="item">初めて張り替えたベースの弦</span>
+          <span class="item-log-tag" id="il-strings-tag">初めて張り替えたベースの弦</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -779,7 +779,10 @@
 
     function revealStringsItem() {
       var tag = document.getElementById('il-strings-tag');
-      if (tag) { tag.classList.add('owned'); }
+      if (tag) {
+        tag.innerHTML = '<img src="../../item/first_strings_kouta.webp" alt="item">初めて張り替えたベースの弦';
+        tag.classList.add('owned');
+      }
       var locked = document.getElementById('il-strings-locked');
       var owned  = document.getElementById('il-strings-owned');
       if (locked) locked.style.display = 'none';
