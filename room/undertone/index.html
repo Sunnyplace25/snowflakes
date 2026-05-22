@@ -2986,10 +2986,16 @@ function submitUtPw() {
   }
 
   window.showChocoScene = function(total) {
+    // 通常画像は1・2のみ（カード画像はレア演出専用）
     var s;
-    if (total === 1)      s = CHOCO_STAGES[0];
-    else if (total === 2) s = CHOCO_STAGES[1];
-    else                  s = CHOCO_STAGES[2];
+    if (total === 1) {
+      s = CHOCO_STAGES[0];
+    } else if (total === 2) {
+      s = CHOCO_STAGES[1];
+    } else {
+      // 3回目以降はランダムで1か2
+      s = Math.random() < 0.5 ? CHOCO_STAGES[0] : CHOCO_STAGES[1];
+    }
 
     var steps = [];
     if (total >= 3) {
@@ -2999,12 +3005,13 @@ function submitUtPw() {
       s.lines.forEach(function(l) { steps.push({ img: s.img, line: l }); });
     }
 
-    // 3個目解放：「お礼に」→占ってもらうボタン
+    // 3個目解放：「お礼に」→占ってもらうボタン（カード画像はここのみ例外）
     if (total === 3) {
       steps.push({ img: 'nagi_choco_3.png', line: 'お礼に', isOrei: true });
     }
 
-    // レアイベント：2回目以降（3個目解放時を除く）、約20%の確率
+    // レアイベント「もうないのか」：2回目以降（3個目解放時を除く）、約20%の確率
+    // カード画像はこのレア演出のみ使用
     if (total >= 2 && total !== 3 && Math.random() < 0.2) {
       steps.push({ img: 'nagi_choco_3.png', line: 'もうないのか' });
     }
