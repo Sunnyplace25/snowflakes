@@ -2841,7 +2841,7 @@ function submitUtPw() {
           img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:9px;display:block;' + (cnt === 0 ? 'filter:grayscale(1);opacity:0.25;' : '');
           var lbl = document.createElement('p');
           lbl.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:' + (cnt > 0 ? '#94a3b8' : '#334155') + ';line-height:1.4;';
-          lbl.textContent = t.label;
+          lbl.textContent = cnt > 0 ? t.label : '???';
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
           num.textContent = '× ' + cnt;
