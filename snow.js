@@ -311,6 +311,14 @@
     return true;
   }
 
+  // 直接加算（回数制限なし）
+  function addDirect(amount, label) {
+    setBalance(getBalance() + amount);
+    updateUI();
+    if (label) toast(amount, label);
+    return amount;
+  }
+
   // 初回のみポイント付与（unlockItemをフラグとして使用）
   function addOnce(key, amount, label) {
     if (isUnlocked(key)) return 0;
@@ -378,6 +386,7 @@
     spendMonthlyItem:   spendMonthlyItem,
     isUnlocked:         isUnlocked,
     unlockItem:         unlockItem,
+    addDirect:          addDirect,
     addOnce:            addOnce,
     getPicks:           getPicks,
     addPick:            addPick,
