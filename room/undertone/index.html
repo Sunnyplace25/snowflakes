@@ -925,6 +925,14 @@
         </div>
       </div>
 
+      <!-- 第3章ロックボタン（2-5読了後・3章未公開時） -->
+      <div id="ch-between-3" style="display:none;padding:24px 0 8px;">
+        <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
+          <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第三章</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;">coming soon</span>
+        </button>
+      </div>
+
       <!-- 第三章 アコーディオン -->
       <div class="ch-section" id="ch-section-3" style="display:none;">
         <button class="ch-section-header" onclick="toggleChSection(3)">
@@ -2137,6 +2145,9 @@ function submitUtPw() {
     var between = document.getElementById('ch-between');
     if (between) between.style.display = (ch5Unlocked && !ch21Unlocked) ? '' : 'none';
     if (ch5Unlocked && !ch21Unlocked) updateCh2Btn();
+    // 2-5読了後・3章未公開時のみロックボタンを表示
+    var between3 = document.getElementById('ch-between-3');
+    if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
   }
 
   var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
