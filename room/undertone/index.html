@@ -3099,12 +3099,8 @@ function submitUtPw() {
     }
 
     var steps = [];
-    if (total >= 3) {
-      var picked = s.lines[Math.floor(Math.random() * s.lines.length)];
-      steps.push({ img: s.img, line: picked });
-    } else {
-      s.lines.forEach(function(l) { steps.push({ img: s.img, line: l }); });
-    }
+    var picked = s.lines[Math.floor(Math.random() * s.lines.length)];
+    steps.push({ img: s.img, line: picked });
 
     // 3個目解放：「お礼に」→占ってもらうボタン（カード画像はここのみ例外）
     if (total === 3) {
