@@ -3102,14 +3102,13 @@ function submitUtPw() {
     var picked = s.lines[Math.floor(Math.random() * s.lines.length)];
     steps.push({ img: s.img, line: picked });
 
-    // 3個目解放：「お礼に」→占ってもらうボタン（カード画像はここのみ例外）
-    if (total === 3) {
+    // 3回目以降：ランダムコメントのあと「お礼に」→占ってもらうボタン
+    if (total >= 3) {
       steps.push({ img: 'nagi_choco_3.webp', line: 'お礼に', isOrei: true });
     }
 
-    // レアイベント「もうないのか」：2回目以降（3個目解放時を除く）、約20%の確率
-    // カード画像はこのレア演出のみ使用
-    if (total >= 2 && total !== 3 && Math.random() < 0.2) {
+    // レアイベント「もうないのか」：2回目以降（3回目以降は除く）、約20%の確率
+    if (total >= 2 && total < 3 && Math.random() < 0.2) {
       steps.push({ img: 'nagi_choco_3.webp', line: 'もうないのか', isOrei: true });
     }
 
