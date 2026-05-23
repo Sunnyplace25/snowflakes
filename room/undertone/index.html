@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-6 -->
+<!DOCTYPE html><!-- v20260523-7 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -2084,12 +2084,7 @@ function submitUtPw() {
   var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
 
   function ch2ConditionMet() {
-    if (new Date() >= CH2_UNLOCK_DATE) return true;
-    var candies = SfSnow.getCandies();
-    var totalCandy = 0;
-    for (var k in candies) totalCandy += (candies[k] || 0);
-    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
-    return totalCandy >= 1000 && allStones;
+    return new Date() >= CH2_UNLOCK_DATE;
   }
 
   function updateCh2Btn() {
@@ -2110,21 +2105,10 @@ function submitUtPw() {
       if (cond) cond.textContent = '';
       if (cdEl) cdEl.textContent = '';
     } else {
-      var candies = SfSnow.getCandies();
-      var totalCandy = 0;
-      for (var k in candies) totalCandy += (candies[k] || 0);
-      var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
-      var missing = [];
-      if (totalCandy < 1000) missing.push('キャンディ ' + totalCandy + ' / 1000');
-      if (!allStones) {
-        var got = STONE_ITEMS.filter(function(s) { return SfSnow.isUnlocked(s.key); }).length;
-        missing.push('石 ' + got + ' / 3');
-      }
-      if (cond) cond.textContent = missing.join('　');
+      if (cond) cond.textContent = '';
       // カウントダウン
       if (cdEl) {
-        var now = new Date();
-        var diff = CH2_UNLOCK_DATE - now;
+        var diff = CH2_UNLOCK_DATE - new Date();
         if (diff > 0) {
           var days = Math.ceil(diff / 86400000);
           cdEl.textContent = days + ' days';
