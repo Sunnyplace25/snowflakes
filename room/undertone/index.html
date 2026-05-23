@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-4 -->
+<!DOCTYPE html><!-- v20260523-5 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -2078,6 +2078,17 @@ function submitUtPw() {
     if (ch5Unlocked) updateCh2Btn();
   }
 
+  var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
+
+  function ch2ConditionMet() {
+    if (new Date() >= CH2_UNLOCK_DATE) return true;
+    var candies = SfSnow.getCandies();
+    var totalCandy = 0;
+    for (var k in candies) totalCandy += (candies[k] || 0);
+    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
+    return totalCandy >= 1000 && allStones;
+  }
+
   function updateCh2Btn() {
     var btn  = document.getElementById('ch-next-btn');
     var cond = document.getElementById('ch-next-cond');
@@ -2088,16 +2099,15 @@ function submitUtPw() {
       if (cond) cond.textContent = '';
       return;
     }
-    // 条件チェック（仮：キャンディ合計×1000 ＆ 石3種すべて解放）
-    var candies = SfSnow.getCandies();
-    var totalCandy = 0;
-    for (var k in candies) totalCandy += (candies[k] || 0);
-    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
-    var ok = totalCandy >= 1000 && allStones;
+    var ok = ch2ConditionMet();
     btn.disabled = !ok;
     if (ok) {
       if (cond) cond.textContent = '';
     } else {
+      var candies = SfSnow.getCandies();
+      var totalCandy = 0;
+      for (var k in candies) totalCandy += (candies[k] || 0);
+      var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
       var missing = [];
       if (totalCandy < 1000) missing.push('キャンディ ' + totalCandy + ' / 1000');
       if (!allStones) {
@@ -2113,11 +2123,7 @@ function submitUtPw() {
       openChapterPopup(5);
       return;
     }
-    var candies = SfSnow.getCandies();
-    var totalCandy = 0;
-    for (var k in candies) totalCandy += (candies[k] || 0);
-    var allStones = STONE_ITEMS.every(function(s) { return SfSnow.isUnlocked(s.key); });
-    if (totalCandy >= 1000 && allStones) {
+    if (ch2ConditionMet()) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
       renderChapterList();
