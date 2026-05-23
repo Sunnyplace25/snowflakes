@@ -3201,15 +3201,11 @@ function submitUtPw() {
   window.giveBeerToNagi = function() {
     var items = SfSnow.getMonthlyItems();
     var cnt = items['beer'] || 0;
-    if (cnt <= 0) return;
-    var monthly = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
-    monthly['beer'] = cnt - 1;
-    localStorage.setItem('sf_monthly_items', JSON.stringify(monthly));
-    SfSnow.addDirect(80);
-    var beerCount = document.getElementById('shop-beer-count');
-    if (beerCount) beerCount.textContent = '× ' + (cnt - 1);
-    var beerGiveBtn = document.getElementById('shop-beer-give-btn');
-    if (cnt - 1 <= 0 && beerGiveBtn) beerGiveBtn.style.display = 'none';
+    if (cnt <= 0) { showItemMsgPopup('../../item/beer.webp', 'ビールがありません\n\nガチャで手に入る'); return; }
+    items['beer'] = cnt - 1;
+    localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+    SfSnow.addDirect(80, 'ナギにビールを渡す');
+    renderStones();
     // ナギポップアップ
     var pool = [
       { img: 'nagi_beer_1.webp', line: '……もらっとく' },
