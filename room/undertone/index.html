@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-7 -->
+<!DOCTYPE html><!-- v20260523-8 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -922,6 +922,7 @@
         <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
         <p class="ch-next-cond" id="ch-next-cond"></p>
         <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
+        <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;text-align:center;margin-top:6px;line-height:2;"></p>
         <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;margin-top:20px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
       </div>
     </div>
@@ -2107,13 +2108,16 @@ function submitUtPw() {
     } else {
       if (cond) cond.textContent = '';
       // カウントダウン
+      var hintEl = document.getElementById('ch2-hint');
       if (cdEl) {
         var diff = CH2_UNLOCK_DATE - new Date();
         if (diff > 0) {
           var days = Math.ceil(diff / 86400000);
           cdEl.textContent = days + ' days';
+          if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
         } else {
           cdEl.textContent = '';
+          if (hintEl) hintEl.textContent = '';
         }
       }
     }
