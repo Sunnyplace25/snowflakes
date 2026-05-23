@@ -1350,6 +1350,41 @@ function submitUtPw() {
   <button onclick="closeSpecialFortune()" style="margin-top:20px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#2d3748;cursor:pointer;">── 戻る ──</button>
 </div>
 
+<!-- Celtic Cross spread overlay -->
+<div id="celtic-cross-overlay" style="display:none;position:fixed;inset:0;z-index:665;background:rgba(4,8,18,0.97);overflow-y:auto;">
+
+  <!-- Phase A: cards + nagi dialogue -->
+  <div id="celtic-phase-a" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px;box-sizing:border-box;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;">SPECIAL FORTUNE</p>
+    <p id="celtic-question-display" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:44px;text-align:center;max-width:280px;line-height:2.2;"></p>
+    <div id="celtic-card-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:300px;margin-bottom:40px;"></div>
+    <div id="celtic-nagi-box" style="display:none;background:rgba(8,13,24,0.75);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;max-width:300px;width:100%;cursor:pointer;" onclick="celticDialogueNext()">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:12px;">NAGI</p>
+      <p id="celtic-nagi-line" style="font-family:'Noto Serif JP',serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;line-height:2.2;"></p>
+      <p id="celtic-nagi-tap" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#2d3748;text-align:right;margin-top:14px;">tap</p>
+      <button id="celtic-see-btn" onclick="event.stopPropagation();showCelticList()" style="display:none;width:100%;margin-top:16px;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">▶ 見る</button>
+    </div>
+  </div>
+
+  <!-- Phase B: card list -->
+  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px 28px 160px;box-sizing:border-box;max-width:420px;margin:0 auto;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;text-align:center;">SPECIAL FORTUNE</p>
+    <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:52px;text-align:center;"></p>
+    <div id="celtic-cards-list" style="display:flex;flex-direction:column;gap:36px;"></div>
+    <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">終わり</button>
+  </div>
+
+  <!-- Ending dialogue (appears over list) -->
+  <div id="celtic-end-dialogue" style="display:none;position:fixed;bottom:0;left:0;right:0;padding:24px 24px 52px;background:linear-gradient(to top,rgba(4,8,18,1) 55%,transparent);cursor:pointer;" onclick="celticEndNext()">
+    <div style="background:rgba(8,13,24,0.85);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;max-width:360px;margin:0 auto;backdrop-filter:blur(10px);">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:12px;">NAGI</p>
+      <p id="celtic-end-line" style="font-family:'Noto Serif JP',serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;line-height:2.2;"></p>
+      <p id="celtic-end-tap" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#2d3748;text-align:right;margin-top:14px;">tap</p>
+    </div>
+  </div>
+
+</div>
+
 <!-- Item message popup (もっていません等) -->
 <div id="item-msg-popup" style="display:none;position:fixed;inset:0;z-index:680;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('item-msg-popup').style.display='none'">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
@@ -3146,12 +3181,186 @@ function submitUtPw() {
     var input = document.getElementById('special-fortune-input');
     var question = (input ? input.value.trim() : '') || '…';
     document.getElementById('special-fortune-overlay').style.display = 'none';
-    // TODO: ケルト十字スプレッドを開く（questionを渡す）
-    showSKPopup('NAGI', '……' + question);
+    startCelticCross(question);
   };
 
   window.closeSpecialFortune = function() {
     document.getElementById('special-fortune-overlay').style.display = 'none';
+  };
+
+  /* ── Celtic Cross ── */
+  var CELTIC_POSITIONS = [
+    '今置いている音', '邪魔している音', '隠れている音', '過去に残った音', '近づいている音',
+    '手の中の音', '自分でも知らない音', '外から来る音', '怖れている音', '続く音'
+  ];
+  var CELTIC_NAGI_LINES = ['……十枚か', '普段は見ない', '見えすぎるからな'];
+  var CELTIC_END_LINES  = ['忘れるなら今のうち', '残る時は、勝手に残る'];
+
+  var CARD_READINGS = {
+    'FOOL':             'まだ名付けていない。それでいい。音はいつでも先に始まる。',
+    'MAGICIAN':         '始めた瞬間がある。それを信じることから、ここは動き出す。',
+    'HIGH PRIESTESS':   '何も置かれていない空間に、一番大事なものが見える。',
+    'EMPRESS':          '一人では聴こえなかったものが、重なることで形になる。',
+    'EMPEROR':          '場所を決めることが、音の始まりになる。',
+    'HIEROPHANT':       '引き継いだものがある。その音は、まだ鳴っている。',
+    'LOVERS':           '片方だけでは完成しない。それがここの正直な答えだ。',
+    'CHARIOT':          '迷っている暇はない。音はもう動き始めている。',
+    'STRENGTH':         '乱れたままでいい。その音の方が、本当のことを言っている。',
+    'HERMIT':           '少し離れたところから聴く。それが今必要な距離だ。',
+    'WHEEL OF FORTUNE': '安定しないことが、今の正直な状態だ。揺れを否定しなくていい。',
+    'JUSTICE':          '決断した音がある。その重さを、ここはそのまま受け取る。',
+    'HANGED MAN':       '見方を変えると、同じ音が別の意味を持ち始める。',
+    'DEATH':            '消えたものの場所に、次のものが置かれる。終わりは始まりの形だ。',
+    'TEMPERANCE':       '混ぜない。溶かす。今はそのやり方でいい。',
+    'DEVIL':            'つながっているものがある。それを無理に切ろうとしなくていい。',
+    'TOWER':            '崩れた音の中に、本当の音が残る。',
+    'STAR':             '残ったものがある。それは消えなかったということだ。',
+    'MOON':             '全部は見えない。でも音はそこにある。信じて進む。',
+    'SUN':              '隠さなくていい。その音を、外に出す時だ。',
+    'JUDGEMENT':        'もう一度、最初から聴き直す。それが今できることだ。',
+    'WORLD':            '音は終わらなかった。それだけのことが、ここにある。',
+    'THE PLACED SOUND': '誰かが置いていった音がある。それが今、ここにある。',
+    'SNOW FLAKES':      '全部が交わる瞬間がある。それが今だ。',
+    'WHITE TAPE':       '録った音がある。もう一度聴く時が来た。',
+    'HALFWAY SOUND':    '完成していなくていい。途中であることが、今の形だ。',
+    'EMPTY CHAIR':      '空いたままの場所がある。それが何かを教えている。'
+  };
+
+  var _celtic = { cards: [], question: '', nagiIdx: 0 };
+  var _celticEndIdx = 0;
+
+  function drawCelticCards() {
+    var idx = [];
+    for (var i = 0; i < CARDS.length; i++) idx.push(i);
+    for (var i = idx.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = idx[i]; idx[i] = idx[j]; idx[j] = t;
+    }
+    return idx.slice(0, 10).map(function(i) { return CARDS[i]; });
+  }
+
+  window.startCelticCross = function(question) {
+    _celtic.cards   = drawCelticCards();
+    _celtic.question = question;
+    _celtic.nagiIdx  = 0;
+
+    document.getElementById('celtic-question-display').textContent = question || '';
+    document.getElementById('celtic-list-question').textContent    = question || '';
+    document.getElementById('celtic-phase-a').style.display = 'flex';
+    document.getElementById('celtic-phase-b').style.display = 'none';
+    document.getElementById('celtic-nagi-box').style.display = 'none';
+    document.getElementById('celtic-end-dialogue').style.display = 'none';
+    document.getElementById('celtic-see-btn').style.display  = 'none';
+    document.getElementById('celtic-nagi-tap').style.display = '';
+
+    // Build card slots
+    var grid = document.getElementById('celtic-card-grid');
+    grid.innerHTML = '';
+    for (var i = 0; i < 10; i++) {
+      var slot = document.createElement('div');
+      slot.id = 'celtic-slot-' + i;
+      slot.style.cssText = 'aspect-ratio:2/3;border:1px solid rgba(255,255,255,0.04);border-radius:6px;background:rgba(255,255,255,0.01);opacity:0;transition:opacity 0.5s,border-color 0.5s;display:flex;align-items:center;justify-content:center;';
+      grid.appendChild(slot);
+    }
+
+    var ov = document.getElementById('celtic-cross-overlay');
+    ov.scrollTop = 0;
+    ov.style.display = 'block';
+
+    // Animate cards in one by one
+    for (var k = 0; k < 10; k++) {
+      (function(idx) {
+        setTimeout(function() {
+          var s = document.getElementById('celtic-slot-' + idx);
+          if (!s) return;
+          s.style.opacity = '1';
+          s.style.borderColor = 'rgba(196,181,253,0.15)';
+          s.style.background  = 'rgba(196,181,253,0.03)';
+          var num = document.createElement('p');
+          num.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:1px;color:#334155;line-height:1;';
+          num.textContent = _celtic.cards[idx].num;
+          s.appendChild(num);
+          if (idx === 9) {
+            setTimeout(function() {
+              var box  = document.getElementById('celtic-nagi-box');
+              var line = document.getElementById('celtic-nagi-line');
+              if (line) line.textContent = CELTIC_NAGI_LINES[0];
+              if (box)  box.style.display = 'block';
+            }, 900);
+          }
+        }, 350 + idx * 420);
+      })(k);
+    }
+  };
+
+  window.celticDialogueNext = function() {
+    if (_celtic.nagiIdx >= CELTIC_NAGI_LINES.length - 1) return;
+    _celtic.nagiIdx++;
+    var line = document.getElementById('celtic-nagi-line');
+    var tap  = document.getElementById('celtic-nagi-tap');
+    var btn  = document.getElementById('celtic-see-btn');
+    if (line) line.textContent = CELTIC_NAGI_LINES[_celtic.nagiIdx];
+    if (_celtic.nagiIdx === CELTIC_NAGI_LINES.length - 1) {
+      if (tap) tap.style.display = 'none';
+      if (btn) btn.style.display = 'block';
+    }
+  };
+
+  window.showCelticList = function() {
+    document.getElementById('celtic-phase-a').style.display = 'none';
+    document.getElementById('celtic-phase-b').style.display = 'block';
+    document.getElementById('celtic-cross-overlay').scrollTop = 0;
+
+    var list = document.getElementById('celtic-cards-list');
+    list.innerHTML = '';
+    var nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+
+    for (var i = 0; i < 10; i++) {
+      var card = _celtic.cards[i];
+      var reading = CARD_READINGS[card.arch] || '';
+
+      var item = document.createElement('div');
+      item.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:32px;';
+
+      var pos = document.createElement('p');
+      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:4px;color:#1e293b;margin-bottom:10px;';
+      pos.textContent = nums[i] + '   ' + CELTIC_POSITIONS[i];
+
+      var name = document.createElement('p');
+      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:17px;color:#64748b;letter-spacing:2px;margin-bottom:6px;';
+      name.textContent = card.name;
+
+      var sub = document.createElement('p');
+      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#1e293b;margin-bottom:14px;';
+      sub.textContent = card.num + '  ' + card.arch;
+
+      var txt = document.createElement('p');
+      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:12px;color:#475569;letter-spacing:1px;line-height:2.4;';
+      txt.textContent = reading;
+
+      item.appendChild(pos);
+      item.appendChild(name);
+      item.appendChild(sub);
+      item.appendChild(txt);
+      list.appendChild(item);
+    }
+  };
+
+  window.endCelticFortune = function() {
+    _celticEndIdx = 0;
+    document.getElementById('celtic-end-line').textContent = CELTIC_END_LINES[0];
+    document.getElementById('celtic-end-tap').style.display = '';
+    document.getElementById('celtic-end-dialogue').style.display = 'block';
+  };
+
+  window.celticEndNext = function() {
+    _celticEndIdx++;
+    if (_celticEndIdx >= CELTIC_END_LINES.length) {
+      document.getElementById('celtic-cross-overlay').style.display = 'none';
+      document.getElementById('celtic-end-dialogue').style.display = 'none';
+      return;
+    }
+    document.getElementById('celtic-end-line').textContent = CELTIC_END_LINES[_celticEndIdx];
   };
 
   window.eatChocolate = function() {
