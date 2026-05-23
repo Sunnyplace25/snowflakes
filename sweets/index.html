@@ -4828,6 +4828,21 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   </div>
 </div>
 
+<!-- 1日1回 取得済みトースト -->
+<style>
+  #daily-limit-toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(12px);
+    z-index: 9200; background: rgba(15,20,40,0.95); border: 1px solid rgba(147,197,253,0.25);
+    border-radius: 100px; padding: 10px 28px;
+    font-family: 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 1px; color: #93c5fd;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    white-space: nowrap;
+  }
+  #daily-limit-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+<div id="daily-limit-toast">今日は入手済みです</div>
+
 <!-- キャラポップアップ（SWEETs ROOM用） -->
 <style>
   #chara-popup {
@@ -5775,13 +5790,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   window._onAudioSeeked = function(songId) {
     _initListen(songId);
   };
+  function showDailyLimitToast() {
+    var t = document.getElementById('daily-limit-toast');
+    if (!t) return;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2800);
+  }
+
   window._awardListen = function _awardListen(songId) {
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
     if (!song || !song.reward || !song.rewardRepeatable) return;
     // 1日1回チェック
     var today = new Date().toISOString().slice(0, 10);
     var dailyKey = 'sf_reward_daily_' + songId;
-    if (localStorage.getItem(dailyKey) === today) return;
+    if (localStorage.getItem(dailyKey) === today) { showDailyLimitToast(); return; }
     localStorage.setItem(dailyKey, today);
     var key = Array.isArray(song.reward)
       ? song.reward[Math.floor(Math.random() * song.reward.length)]
