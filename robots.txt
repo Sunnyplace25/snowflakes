@@ -1,3 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sunnyplace25.github.io/snowflakes/sitemap.xml
+
 User-agent: GPTBot
 Disallow: /
 
