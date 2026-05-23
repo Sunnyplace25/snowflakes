@@ -871,6 +871,14 @@
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/proteincoffee.webp" alt="" style="width:32px;opacity:0.85;"> プロテインコーヒー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-proteincoffee">0</span></td>
             </tr>
+            <tr id="item-row-chocolate" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/chocolate.png" alt="" style="width:32px;opacity:0.85;"> 一粒のチョコレート</td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-chocolate">0</span></td>
+            </tr>
+            <tr id="item-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/beer.webp" alt="" style="width:32px;opacity:0.85;"> ビール</td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-beer">0</span></td>
+            </tr>
             <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count">0</span></td>
@@ -4991,7 +4999,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-milk',          count: candies['milk']   || 0 },
       { rowId: 'item-row-honey',         count: candies['honey']  || 0 },
       { rowId: 'item-row-cassis',        count: candies['cassis'] || 0 },
-      { rowId: 'item-row-proteincoffee', count: items['proteincoffee'] || 0 },
+      { rowId: 'item-row-proteincoffee', count: items['proteincoffee']    || 0 },
+      { rowId: 'item-row-chocolate',     count: items['chocolate_hayate'] || 0, spanId: 'sf-mitem-chocolate' },
+      { rowId: 'item-row-beer',          count: items['beer']             || 0, spanId: 'sf-mitem-beer' },
       { rowId: 'item-row-pick',          count: picks },
     ];
     var anyVisible = false;
@@ -5001,6 +5011,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var show = m.count > 0;
       row.style.display = show ? '' : 'none';
       if (show) anyVisible = true;
+      if (m.spanId) { var sp = document.getElementById(m.spanId); if (sp) sp.textContent = m.count; }
     });
     var emptyMsg = document.getElementById('items-empty-msg');
     if (emptyMsg) emptyMsg.style.display = anyVisible ? 'none' : '';
