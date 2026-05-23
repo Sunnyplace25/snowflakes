@@ -529,6 +529,19 @@ function sfShare() {
     <div class="machine-window" id="dome"></div>
     <div class="machine-controls">
       <p class="daily-note" id="dailyNote"></p>
+      <!-- Snow不足時のアイテム消費パネル -->
+      <div id="low-snow-panel" style="display:none;margin:10px 0 4px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;">
+        <div id="low-snow-choco" style="display:none;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);transition:background 0.15s;" onclick="consumeForSnow('choco')" onmouseenter="this.style.background='rgba(253,186,116,0.08)'" onmouseleave="this.style.background=''">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
+          <span style="font-size:12px;color:#fdba74;letter-spacing:1px;margin-left:10px;">チョコを食べる</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 100</span>
+        </div>
+        <div id="low-snow-beer" style="display:none;padding:11px 16px;cursor:pointer;transition:background 0.15s;" onclick="consumeForSnow('beer')" onmouseenter="this.style.background='rgba(251,191,36,0.08)'" onmouseleave="this.style.background=''">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
+          <span style="font-size:12px;color:#fbbf24;letter-spacing:1px;margin-left:10px;">ビールを飲む</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 120</span>
+        </div>
+      </div>
       <button class="lever-btn" id="leverBtn" onclick="doPull()">まわす</button>
       <button class="lever-btn" id="tenBtn" onclick="doTenPull()" style="margin-top:4px;font-size:13px;padding:11px 0;opacity:0.85;font-family:'Noto Serif JP',serif;"><span style="font-family:'Noto Serif JP',serif;">10</span>回まわす　<span style="color:#93c5fd;letter-spacing:2px;">❄ <span style="font-family:'Noto Serif JP',serif;">50</span></span></button>
     </div>
@@ -558,6 +571,14 @@ function sfShare() {
         <tr id="gi-row-proteincoffee" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
           <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/proteincoffee.webp" alt="" style="width:28px;opacity:0.85;"> プロテインコーヒー</td>
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-proteincoffee">0</span></td>
+        </tr>
+        <tr id="gi-row-chocolate" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/chocolate.png" alt="" style="width:28px;opacity:0.85;"> 一粒のチョコレート</td>
+          <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-chocolate">0</span></td>
+        </tr>
+        <tr id="gi-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/beer.webp" alt="" style="width:28px;opacity:0.85;"> ビール</td>
+          <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-beer">0</span></td>
         </tr>
         <tr id="gi-row-pick" style="display:none;">
           <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/pick.webp" alt="" style="width:28px;opacity:0.85;"> ギターピック</td>
@@ -592,6 +613,48 @@ function sfShare() {
           <tr>
             <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
             <td style="padding:4px 0;text-align:right;color:#cbd5e1;">3種 確定 各10〜15個</td>
+          </tr>
+        </table>
+
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:10px;">CHOCOLATE</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <img src="../item/chocolate.png" style="width:20px;opacity:0.7;">
+          <span style="color:#cbd5e1;">一粒のチョコレート</span>
+        </div>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +100</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">❄5 リプレイ</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">×1 確定（10% で ×2）</td>
+          </tr>
+        </table>
+
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:10px;">BEER</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <img src="../item/beer.webp" style="width:20px;opacity:0.7;">
+          <span style="color:#cbd5e1;">ビール</span>
+        </div>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">飲むと Snow +120</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">❄5 リプレイ</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">×1 確定（10% で ×2）</td>
           </tr>
         </table>
 
@@ -736,6 +799,26 @@ function sfShare() {
         </div>
       </div>
     </div>
+    <div id="res-beer-wrap" style="display:none;margin-bottom:16px;">
+      <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+        <img src="../item/beer.webp" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
+          <p id="res-beer-count" style="font-size:13px;color:#fbbf24;letter-spacing:1px;">ビール × 1</p>
+          <p style="font-size:10px;color:#64748b;letter-spacing:1px;margin-top:3px;">飲むと Snow +120</p>
+        </div>
+      </div>
+    </div>
+    <div id="res-choco-wrap" style="display:none;margin-bottom:16px;">
+      <div style="background:rgba(253,186,116,0.06);border:1px solid rgba(253,186,116,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+        <img src="../item/chocolate.png" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
+          <p id="res-choco-count" style="font-size:13px;color:#fdba74;letter-spacing:1px;">一粒のチョコレート × 1</p>
+          <p style="font-size:10px;color:#64748b;letter-spacing:1px;margin-top:3px;">食べると Snow +100</p>
+        </div>
+      </div>
+    </div>
     <button class="close-btn" id="closeBtn">閉じる</button>
   </div>
 </div>
@@ -873,7 +956,7 @@ function sfShare() {
   });
 
   /* ── Show full result card ── */
-  function showResult(fortune, candy, candyCount) {
+  function showResult(fortune, candy, candyCount, chocoCount, beerCount) {
     var meta = CHAR_META[fortune.char];
     document.getElementById('resFortuneName').textContent = fortune.name;
     document.getElementById('resFortuneName').style.color = fortune.color;
@@ -910,6 +993,17 @@ function sfShare() {
     } else {
       candyWrap.style.display = 'none';
     }
+
+    // Chocolate
+    var cw = document.getElementById('res-choco-wrap');
+    if (cw) cw.style.display = chocoCount ? '' : 'none';
+    var cn = document.getElementById('res-choco-count');
+    if (cn) cn.textContent = '一粒のチョコレート × ' + (chocoCount || 1);
+    // Beer
+    var bw = document.getElementById('res-beer-wrap');
+    if (bw) bw.style.display = beerCount ? '' : 'none';
+    var bn = document.getElementById('res-beer-count');
+    if (bn) bn.textContent = 'ビール × ' + (beerCount || 1);
 
     resultOverlay.classList.add('ready');
     requestAnimationFrame(function() {
@@ -973,7 +1067,7 @@ function sfShare() {
     if (loadSaved()) {
       // すでに引いた → ❄5 リプレイ
       if (SfSnow.getBalance() < 5) {
-        dailyNote.textContent = 'Snow が足りません（❄ 5 必要）';
+        dailyNote.textContent = 'Snow が足りません（❄ 5 必要）'; showLowSnowPanel();
         return;
       }
       pendingReplayFortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
@@ -987,8 +1081,12 @@ function sfShare() {
       var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       save(fortune);
       var candy = SfSnow.rollCandy();
+      var dailyChoco = Math.random() < 0.15 ? 1 : 0;
+      if (dailyChoco) SfSnow.addMItemDirect('chocolate_hayate', dailyChoco);
+      var dailyBeer = Math.random() < 0.15 ? 1 : 0;
+      if (dailyBeer) SfSnow.addMItemDirect('beer', dailyBeer);
       runCapsule(fortune, function() {
-        showResult(fortune, candy);
+        showResult(fortune, candy, undefined, dailyChoco, dailyBeer);
         leverBtn.disabled = false;
         dailyNote.textContent = '❄ 5 で もう一回まわせます';
         savedViewBtn.style.display = 'inline-block';
@@ -999,6 +1097,39 @@ function sfShare() {
   }
   window.doPull = doPull;
   leverBtn.addEventListener('click', doPull);
+
+  function showLowSnowPanel() {
+    var items   = SfSnow.getMonthlyItems();
+    var hasChoco = (items['chocolate_hayate'] || 0) > 0;
+    var hasBeer  = (items['beer'] || 0) > 0;
+    var panel    = document.getElementById('low-snow-panel');
+    var chocoRow = document.getElementById('low-snow-choco');
+    var beerRow  = document.getElementById('low-snow-beer');
+    if (chocoRow) chocoRow.style.display = hasChoco ? '' : 'none';
+    if (beerRow)  beerRow.style.display  = hasBeer  ? '' : 'none';
+    if (panel)    panel.style.display    = (hasChoco || hasBeer) ? '' : 'none';
+  }
+
+  window.consumeForSnow = function(type) {
+    var items = SfSnow.getMonthlyItems();
+    if (type === 'choco') {
+      var cnt = items['chocolate_hayate'] || 0;
+      if (cnt <= 0) return;
+      items['chocolate_hayate'] = cnt - 1;
+      localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+      SfSnow.addDirect(100, '甘い。');
+    } else if (type === 'beer') {
+      var cnt = items['beer'] || 0;
+      if (cnt <= 0) return;
+      items['beer'] = cnt - 1;
+      localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+      SfSnow.addDirect(120, '苦い。');
+    }
+    SfSnow.updateUI();
+    renderGachaItems();
+    showLowSnowPanel();
+    dailyNote.textContent = '';
+  };
 
   function hideConfirm() {
     confirmOverlay.classList.remove('show');
@@ -1024,9 +1155,13 @@ function sfShare() {
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
     var replayProtein = Math.random() < 0.08;
     if (replayProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
+    var replayChoco = Math.random() < 0.15 ? 1 : 0;
+    if (replayChoco) SfSnow.addMItemDirect('chocolate_hayate', replayChoco);
+    var replayBeer = Math.random() < 0.15 ? 1 : 0;
+    if (replayBeer) SfSnow.addMItemDirect('beer', replayBeer);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
-      showResult(f, rc, count);
+      showResult(f, rc, count, replayChoco, replayBeer);
       var pw = document.getElementById('res-protein-wrap');
       if (pw) pw.style.display = replayProtein ? '' : 'none';
       leverBtn.disabled = false;
@@ -1039,7 +1174,7 @@ function sfShare() {
 
   function doTenPull() {
     if (SfSnow.getBalance() < 50) {
-      dailyNote.textContent = 'Snow が足りません（❄ 50 必要）';
+      dailyNote.textContent = 'Snow が足りません（❄ 50 必要）'; showLowSnowPanel();
       return;
     }
     tenConfirmOverlay.style.display = 'flex';
@@ -1063,7 +1198,7 @@ function sfShare() {
   document.getElementById('tenOk').addEventListener('click', function() {
     hideTenConfirm();
     if (!SfSnow.spend(50)) {
-      dailyNote.textContent = 'Snow が足りません（❄ 50 必要）';
+      dailyNote.textContent = 'Snow が足りません（❄ 50 必要）'; showLowSnowPanel();
       return;
     }
 
@@ -1078,6 +1213,12 @@ function sfShare() {
     // プロテインコーヒー：12%
     var tenProtein = Math.random() < 0.12;
     if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
+    // チョコレート：1個確定 + 10%で2個目
+    var tenChoco = 1 + (Math.random() < 0.10 ? 1 : 0);
+    SfSnow.addMItemDirect('chocolate_hayate', tenChoco);
+    // ビール：1個確定 + 10%で2個目
+    var tenBeer = 1 + (Math.random() < 0.10 ? 1 : 0);
+    SfSnow.addMItemDirect('beer', tenBeer);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       results.push({ fortune: f, candy: null, pick: 0 });
@@ -1139,6 +1280,8 @@ function sfShare() {
     if (tenProtein) {
       html += itemRow.replace('{img}', '../item/proteincoffee.webp').replace('{label}', 'プロテインコーヒー').replace('{count}', 1);
     }
+    html += itemRow.replace('{img}', '../item/chocolate.png').replace('{label}', '一粒のチョコレート').replace('{count}', tenChoco);
+    html += itemRow.replace('{img}', '../item/beer.webp').replace('{label}', 'ビール').replace('{count}', tenBeer);
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;
 
@@ -1178,7 +1321,9 @@ function sfShare() {
       { rowId: 'gi-row-milk',          spanId: 'gi-candy-milk',         count: candies['milk']   || 0 },
       { rowId: 'gi-row-honey',         spanId: 'gi-candy-honey',        count: candies['honey']  || 0 },
       { rowId: 'gi-row-cassis',        spanId: 'gi-candy-cassis',       count: candies['cassis'] || 0 },
-      { rowId: 'gi-row-proteincoffee', spanId: 'gi-mitem-proteincoffee',count: items['proteincoffee'] || 0 },
+      { rowId: 'gi-row-proteincoffee', spanId: 'gi-mitem-proteincoffee',count: items['proteincoffee']    || 0 },
+      { rowId: 'gi-row-chocolate',     spanId: 'gi-mitem-chocolate',    count: items['chocolate_hayate'] || 0 },
+      { rowId: 'gi-row-beer',          spanId: 'gi-mitem-beer',         count: items['beer']             || 0 },
       { rowId: 'gi-row-pick',          spanId: 'gi-pick-count',         count: picks },
     ];
     var any = false;
