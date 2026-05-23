@@ -5913,8 +5913,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     html += '</div>';
     if (unlocked) {
       var audioEvents = item.rewardRepeatable
-        ? ' onended="_awardListen(\'' + item.id + '\')"'
-        : (item.reward ? ' onended="onMusicEnd(\'' + item.id + '\')"' : '');
+        ? ' onended="_awardListen(\'' + item.id + '\');if(!_mcAutoTimer)_mcResetAuto();"'
+        : (item.reward
+          ? ' onended="onMusicEnd(\'' + item.id + '\');if(!_mcAutoTimer)_mcResetAuto();"'
+          : ' onended="if(!_mcAutoTimer)_mcResetAuto();"');
       html += '<div class="post-content" id="player-' + item.id + '">';
       html += '<div class="divider"></div>';
       html += '<div style="padding:16px 0 4px;">'
