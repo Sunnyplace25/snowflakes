@@ -5554,6 +5554,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (_ncAutoTimer) clearInterval(_ncAutoTimer);
     _ncAutoTimer = setInterval(function() {
       if (_ncIsReading()) return;
+      var allDone = _nc.items.every(function(s) { return _ncIsUnlocked(s); });
+      if (allDone) { clearInterval(_ncAutoTimer); _ncAutoTimer = null; return; }
       _nc.idx = (_nc.idx + 1) % _nc.N;
       _ncUpdate(); _ncShowContent(_nc.idx);
     }, 15000);
@@ -5841,6 +5843,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (_mcAutoTimer) clearInterval(_mcAutoTimer);
     _mcAutoTimer = setInterval(function() {
       if (_mcIsPlaying()) return;
+      var allDone = _mc.items.every(function(s) { return SfSnow.isUnlocked(s.id); });
+      if (allDone) { clearInterval(_mcAutoTimer); _mcAutoTimer = null; return; }
       _mc.idx = (_mc.idx + 1) % _mc.N;
       _mcUpdate(); _mcShowContent(_mc.idx);
     }, 15000);
