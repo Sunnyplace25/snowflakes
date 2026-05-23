@@ -881,7 +881,7 @@
             </tr>
             <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count">0</span></td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count-items">0</span></td>
             </tr>
           </table>
           <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
@@ -971,10 +971,6 @@
                 <tr id="item-row-coaster" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-coaster-img" src="../item/coaster_hayate.webp" alt="coaster" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-coaster-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-coaster-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
-                </tr>
-                <tr id="item-row-chocolate" style="cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-chocolate-img" src="../item/chocolate.png" alt="chocolate" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-chocolate-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
-                  <td id="ri-chocolate-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -4531,16 +4527,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_rin.webp',
         charaLine: 'それ、嫌いじゃないよ'
       },
-      chocolate_hayate: {
-        noteCardId: null,
-        img: '../item/chocolate.png',
-        name: '一粒のチョコレート',
-        desc: 'ファンからの差し入れ。甘い。',
-        color: '#fde68a',
-        chara: 'HAYATE', charaColor: '#fde68a',
-        charaImg: '../plofile/chibi_hayate.webp',
-        charaLine: 'うま！もう一個！'
-      }
     };
     var _noteItemPendingChara = null;
 
@@ -5002,7 +4988,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-proteincoffee', count: items['proteincoffee']    || 0 },
       { rowId: 'item-row-chocolate',     count: items['chocolate_hayate'] || 0, spanId: 'sf-mitem-chocolate' },
       { rowId: 'item-row-beer',          count: items['beer']             || 0, spanId: 'sf-mitem-beer' },
-      { rowId: 'item-row-pick',          count: picks },
+      { rowId: 'item-row-pick',          count: picks,                            spanId: 'sf-pick-count-items' },
     ];
     var anyVisible = false;
     map.forEach(function(m) {
@@ -5062,7 +5048,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     }
     updateCountableItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター');
-    updateCountableItem('ri-chocolate-img', 'ri-chocolate-name', 'ri-chocolate-check', 'chocolate_hayate', '一粒のチョコレート');
     // 静的NOTEカードのアイコン更新
     var staticNoteIcon = document.getElementById('static-note-ring-icon');
     if (staticNoteIcon) {
@@ -5239,7 +5224,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n　きっと\n　ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n　ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, reward:'chocolate_hayate', rewardRepeatable:true, isNew:true },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, isNew:true },
     { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate', rewardRepeatable:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
@@ -5487,6 +5472,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
 
   window.notesCarouselRotate = function(dir) {
+    if (_nc.N <= 1) {
+      var drum = document.getElementById('notes-drum');
+      if (drum) {
+        drum.style.transition = 'transform 0.18s ease-out';
+        drum.style.transform = 'rotateY(' + (dir * 28) + 'deg)';
+        setTimeout(function() {
+          drum.style.transition = 'transform 0.32s ease-in-out';
+          drum.style.transform = 'rotateY(0deg)';
+        }, 180);
+      }
+      return;
+    }
     _nc.idx = (_nc.idx + dir + _nc.N) % _nc.N;
     _ncUpdate(); _ncShowContent(_nc.idx);
   };
