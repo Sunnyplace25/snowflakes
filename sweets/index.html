@@ -5935,9 +5935,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!player) return;
     var isOpen = player.classList.toggle('open');
     if (btn) btn.textContent = isOpen ? '閉じる' : '▶ 聴く';
-    if (isOpen) {
-      if (!_mcAutoTimer) _mcResetAuto();
-    } else {
+    if (!isOpen) {
       var audio = document.getElementById('audio-' + id);
       if (audio) audio.pause();
     }
