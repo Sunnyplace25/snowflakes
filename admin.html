@@ -164,6 +164,9 @@
       <button onclick="unlockUndertoneCh3()" style="padding:12px;background:rgba(196,181,253,0.15);border:1px solid rgba(196,181,253,0.5);border-radius:10px;color:#f3e8ff;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.15)'">
         第3章状態で Under tone を開く
       </button>
+      <button onclick="publishCh3()" style="padding:12px;background:rgba(134,239,172,0.1);border:1px solid rgba(134,239,172,0.35);border-radius:10px;color:#86efac;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(134,239,172,0.22)'" onmouseleave="this.style.background='rgba(134,239,172,0.1)'">
+        ▶ 第3章を公開する（sf_undertone_ch3_unlocked）
+      </button>
       <button onclick="resetUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
         Under tone の状態をリセット（入店・訪問カウントを消す）
       </button>
@@ -637,13 +640,18 @@ function unlockUndertoneCh3() {
   localStorage.setItem('sf_undertone_ch23_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch24_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch25_unlocked', 'true');
+  localStorage.setItem('sf_undertone_ch3_unlocked',  'true');
   localStorage.setItem('sf_undertone_max_scene', '3');
   localStorage.setItem('sf_undertone_explore_count', '3');
   localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:3 }));
-  // 第2章までの全話を既読に
   localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4,5,6,7,8,9]));
-  setTestStatus('✓ 第3章状態にしました（第2章全話読了済み）。');
+  setTestStatus('✓ 第3章状態にしました（第2章全話読了済み・第3章セクション開放）。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+}
+
+function publishCh3() {
+  localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
+  setTestStatus('✓ 第3章を公開しました（sf_undertone_ch3_unlocked = true）。Under tone を開いて確認してください。');
 }
 
 function resetUndertone() {

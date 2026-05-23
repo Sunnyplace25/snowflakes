@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-8 -->
+<!DOCTYPE html><!-- v20260523-9 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -917,6 +917,17 @@
         </div>
       </div>
 
+      <!-- 第三章 アコーディオン -->
+      <div class="ch-section" id="ch-section-3" style="display:none;">
+        <button class="ch-section-header" onclick="toggleChSection(3)">
+          <span class="ch-section-name">第三章</span>
+          <span class="ch-section-arr" id="ch-arr-3">›</span>
+        </button>
+        <div class="ch-section-body" id="ch-body-3">
+          <!-- テキスト実装後にここへ追加 -->
+        </div>
+      </div>
+
       <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
         <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
@@ -1578,6 +1589,7 @@ function submitUtPw() {
   var ch23Unlocked = localStorage.getItem('sf_undertone_ch23_unlocked') === 'true';
   var ch24Unlocked = localStorage.getItem('sf_undertone_ch24_unlocked') === 'true';
   var ch25Unlocked = localStorage.getItem('sf_undertone_ch25_unlocked') === 'true';
+  var ch3Unlocked  = localStorage.getItem('sf_undertone_ch3_unlocked')  === 'true';
   var tarotMode = 'oracle';
   var spreadDraws = [];
   var spreadFlipped = [false, false, false];
@@ -2073,6 +2085,12 @@ function submitUtPw() {
     if (sec2) {
       sec2.style.display = ch21Unlocked ? '' : 'none';
       if (ch21Unlocked) openChSection(2);
+    }
+    // 第三章セクション表示
+    var sec3 = document.getElementById('ch-section-3');
+    if (sec3) {
+      sec3.style.display = ch3Unlocked ? '' : 'none';
+      if (ch3Unlocked) openChSection(3);
     }
     // 最新解放話が属する章を自動オープン
     openChSection(1);
