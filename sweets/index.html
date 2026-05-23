@@ -672,6 +672,20 @@
   }
   </script>
 
+  <!-- Fix notice popup -->
+  <div id="fix-notice-popup" style="position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div id="fix-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(148,163,184,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 18px;">NOTICE</p>
+      <p style="font-size:13px;line-height:1.9;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 6px;">楽曲の再生中にカルーセルが<br>動いてしまう不具合を修正しました。</p>
+      <p style="font-size:12px;line-height:1.8;color:#94a3b8;letter-spacing:0.5px;margin:0 0 24px;">ご不便をおかけしたお詫びとして<br>ギターピックをプレゼントします。</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;">
+        <img src="../item/pick.webp" alt="pick" style="width:36px;opacity:0.9;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#93c5fd;letter-spacing:2px;">× 4</span>
+      </div>
+      <button onclick="closeFixNotice()" style="background:none;border:1px solid rgba(148,163,184,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(148,163,184,0.3)'">受け取る</button>
+    </div>
+  </div>
+
   <!-- Snow GET popup -->
   <div id="snow-get-popup">
     <div id="snow-get-box">
@@ -5101,7 +5115,22 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
+  window.closeFixNotice = function() {
+    var pop = document.getElementById('fix-notice-popup');
+    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
+    if (!localStorage.getItem('sf_fix_notice_230526')) {
+      localStorage.setItem('sf_fix_notice_230526', '1');
+      SfSnow.addPick(4);
+      setTimeout(function() {
+        var pop = document.getElementById('fix-notice-popup');
+        var box = document.getElementById('fix-notice-box');
+        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
+        if (box) box.style.transform = 'none';
+      }, 800);
+    }
     SfSnow.addWithToast('visit_sweets', 'SWEETsを訪問');
     renderRooms();
     renderExchange();
@@ -5765,9 +5794,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
 
   var _mcAutoTimer = null;
+  function _mcIsPlaying() {
+    var audios = document.querySelectorAll('#music-content-area audio');
+    for (var i = 0; i < audios.length; i++) {
+      if (!audios[i].paused) return true;
+    }
+    return false;
+  }
   function _mcResetAuto() {
     if (_mcAutoTimer) clearInterval(_mcAutoTimer);
     _mcAutoTimer = setInterval(function() {
+      if (_mcIsPlaying()) return;
       _mc.idx = (_mc.idx + 1) % _mc.N;
       _mcUpdate(); _mcShowContent(_mc.idx);
     }, 5000);
