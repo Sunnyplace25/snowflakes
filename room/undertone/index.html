@@ -2550,11 +2550,25 @@ function submitUtPw() {
       var youngKey = 'sf_ut_young_nagi_revealed';
       var targetSrc;
       if (ch3Unlocked) {
-        targetSrc = 'nagi_ch3.webp';
+        // 3-2〜3-4：青年ナギ（初回必ず、以降50%ランダム）
+        var ch32Read = _seenProseScenes.has(11);
+        var ch35Read = _seenProseScenes.has(14);
+        var youngKeyCh3 = 'sf_ut_young_nagi_revealed_ch3';
+        if (!ch32Read || ch35Read) {
+          targetSrc = 'shopkeeper.webp';
+        } else {
+          var firstRevealCh3 = !localStorage.getItem(youngKeyCh3);
+          if (firstRevealCh3) {
+            localStorage.setItem(youngKeyCh3, '1');
+            targetSrc = 'nagi_ch3.webp';
+          } else {
+            targetSrc = Math.random() < 0.5 ? 'nagi_ch3.webp' : 'shopkeeper.webp';
+          }
+        }
       } else if (!ch22Read || ch25Read) {
         targetSrc = 'shopkeeper.webp';
       } else {
-        // 初回だけ必ず若いナギ、以降ランダム（50%）
+        // 2-2〜2-4：子どもナギ（初回必ず、以降50%ランダム）
         var firstReveal = !localStorage.getItem(youngKey);
         if (firstReveal) {
           localStorage.setItem(youngKey, '1');
