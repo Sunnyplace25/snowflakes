@@ -5935,7 +5935,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!player) return;
     var isOpen = player.classList.toggle('open');
     if (btn) btn.textContent = isOpen ? '閉じる' : '▶ 聴く';
-    if (!isOpen) {
+    if (isOpen) {
+      if (!_mcAutoTimer) _mcResetAuto();
+    } else {
       var audio = document.getElementById('audio-' + id);
       if (audio) audio.pause();
     }
@@ -5966,6 +5968,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!SfSnow.spendPick(item.cost.pick)) { alert('ギターピックが足りません'); return; }
       var alreadyHad = SfSnow.isUnlocked(id);
       SfSnow.unlockItem(id);
+      if (_mcAutoTimer) { clearInterval(_mcAutoTimer); _mcAutoTimer = null; }
       renderMusic();
       var coverImg = item.cover || '../item/pick.webp';
       showItemExchangePopup(coverImg, item.title, alreadyHad);
