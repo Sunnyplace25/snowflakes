@@ -872,6 +872,14 @@
         </div>
       </div>
 
+      <!-- 第2章を読むボタン（1-5読了後・2章未解放時） -->
+      <div id="ch-between" style="display:none;padding:24px 0 8px;">
+        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
+        <p class="ch-next-cond" id="ch-next-cond"></p>
+        <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
+        <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;text-align:center;margin-top:6px;line-height:2;"></p>
+      </div>
+
       <!-- 第二章 アコーディオン -->
       <div class="ch-section" id="ch-section-2" style="display:none;">
         <button class="ch-section-header" onclick="toggleChSection(2)">
@@ -930,11 +938,7 @@
 
       <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
-        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
-        <p class="ch-next-cond" id="ch-next-cond"></p>
-        <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
-        <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;text-align:center;margin-top:6px;line-height:2;"></p>
-        <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;margin-top:20px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
+        <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
       </div>
     </div>
   </div>
@@ -2129,7 +2133,10 @@ function submitUtPw() {
     // フッター
     var footer = document.getElementById('chapter-footer');
     if (footer) footer.style.display = ch5Unlocked ? '' : 'none';
-    if (ch5Unlocked) updateCh2Btn();
+    // 1-5読了後・2章未解放時のみボタンを表示
+    var between = document.getElementById('ch-between');
+    if (between) between.style.display = (ch5Unlocked && !ch21Unlocked) ? '' : 'none';
+    if (ch5Unlocked && !ch21Unlocked) updateCh2Btn();
   }
 
   var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
