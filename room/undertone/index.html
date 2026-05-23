@@ -3102,13 +3102,13 @@ function submitUtPw() {
     var picked = s.lines[Math.floor(Math.random() * s.lines.length)];
     steps.push({ img: s.img, line: picked });
 
-    // 3回目以降：ランダムコメントのあと「お礼に」→占ってもらうボタン
-    if (total >= 3) {
+    // 3個ごと（3, 6, 9…）：ランダムコメントのあと「お礼に」→占ってもらうボタン
+    if (total >= 3 && total % 3 === 0) {
       steps.push({ img: 'nagi_choco_3.webp', line: 'お礼に', isOrei: true });
     }
 
-    // レアイベント「もうないのか」：2回目以降（3回目以降は除く）、約20%の確率
-    if (total >= 2 && total < 3 && Math.random() < 0.2) {
+    // レアイベント「もうないのか」：2回目以降（レア占いの回を除く）、約20%の確率
+    if (total >= 2 && !(total >= 3 && total % 3 === 0) && Math.random() < 0.2) {
       steps.push({ img: 'nagi_choco_3.webp', line: 'もうないのか', isOrei: true });
     }
 
