@@ -5876,15 +5876,27 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var ok = unlocked || picks >= item.cost.pick;
     var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
 
-    var rewD = (item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
+    var _rewKeys = Array.isArray(item.reward) ? item.reward : (item.reward ? [item.reward] : []);
+    var rewD = (!Array.isArray(item.reward) && item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
     var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
     var _mc_hasItem = item.reward && (!rewOk || item.rewardRepeatable);
-    var _mc_chara = item.chara || (item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '');
+    var _mc_chara = item.chara || (item.reward ? (Array.isArray(item.reward) ? 'hayate' : (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate')) : '');
     var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
     var glowStyle = _mc_hasItem ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     var newRight = '12px';
-    if (rewD) {
+    if (Array.isArray(item.reward) && item.reward.length) {
+      var iconsHtml = '';
+      var iconOffset = 10;
+      item.reward.slice().reverse().forEach(function(k) {
+        var d = NOTE_ITEM_DATA[k];
+        if (!d) return;
+        iconsHtml += '<img src="' + d.img + '" title="' + d.name + '" style="position:absolute;top:10px;right:' + iconOffset + 'px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:0.7;z-index:1;pointer-events:none;">';
+        iconOffset += 24;
+      });
+      html += iconsHtml;
+      newRight = (iconOffset + 2) + 'px';
+    } else if (rewD) {
       html += '<img src="' + rewD.img + '" title="' + (rewOk ? rewD.name : '???') + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (rewOk ? '0.82' : '0.22') + ';filter:' + (rewOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
       newRight = '36px';
     }
