@@ -1369,7 +1369,7 @@ function submitUtPw() {
   <div id="celtic-phase-a" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px;box-sizing:border-box;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;">SPECIAL FORTUNE</p>
     <p id="celtic-question-display" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:44px;text-align:center;max-width:280px;line-height:2.2;"></p>
-    <div id="celtic-card-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:300px;margin-bottom:40px;"></div>
+    <div id="celtic-card-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:min(400px,80vw);margin-bottom:40px;"></div>
     <div id="celtic-nagi-box" style="display:none;background:rgba(8,13,24,0.75);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;max-width:300px;width:100%;cursor:pointer;" onclick="celticDialogueNext()">
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:12px;">NAGI</p>
       <p id="celtic-nagi-line" style="font-family:'Noto Serif JP',serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;line-height:2.2;"></p>
@@ -1379,10 +1379,10 @@ function submitUtPw() {
   </div>
 
   <!-- Phase B: card list -->
-  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px 28px 160px;box-sizing:border-box;max-width:420px;margin:0 auto;">
+  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px clamp(28px,6vw,120px) 160px;box-sizing:border-box;max-width:860px;margin:0 auto;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;text-align:center;">SPECIAL FORTUNE</p>
     <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:52px;text-align:center;"></p>
-    <div id="celtic-cards-list" style="display:flex;flex-direction:column;gap:36px;"></div>
+    <div id="celtic-cards-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 48px;"></div>
     <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">終わり</button>
   </div>
 
@@ -3207,6 +3207,30 @@ function submitUtPw() {
   };
 
   /* ── Celtic Cross ── */
+  var CARD_IMGS = {
+    'FOOL':             'cards/00_fool.png',
+    'MAGICIAN':         'cards/01_magician.png',
+    'HIGH PRIESTESS':   'cards/02_high_priestess.png',
+    'EMPEROR':          'cards/04_emperor.png',
+    'HIEROPHANT':       'cards/05_hierophant.png',
+    'LOVERS':           'cards/06_lovers.png',
+    'CHARIOT':          'cards/07_chariot.png',
+    'STRENGTH':         'cards/08_strength.png',
+    'HERMIT':           'cards/09_hermit.png',
+    'WHEEL OF FORTUNE': 'cards/10_wheel.png',
+    'JUSTICE':          'cards/11_justice.png',
+    'HANGED MAN':       'cards/12_hanged_man.png',
+    'DEATH':            'cards/13_death.png',
+    'TEMPERANCE':       'cards/14_temperance.png',
+    'TOWER':            'cards/16_tower.png',
+    'STAR':             'cards/17_star.png',
+    'MOON':             'cards/18_moon.png',
+    'JUDGEMENT':        'cards/20_judgement.png',
+    'THE PLACED SOUND': 'cards/ori_placed_sound.png',
+    'WHITE TAPE':       'cards/ori_white_tape.png',
+  };
+  function getCardImg(card) { return CARD_IMGS[card.arch] || 'card_back_a.webp'; }
+
   var CELTIC_POSITIONS = [
     '今置いている音', '邪魔している音', '隠れている音', '過去に残った音', '近づいている音',
     '手の中の音', '自分でも知らない音', '外から来る音', '怖れている音', '続く音'
@@ -3271,13 +3295,31 @@ function submitUtPw() {
     document.getElementById('celtic-see-btn').style.display  = 'none';
     document.getElementById('celtic-nagi-tap').style.display = '';
 
-    // Build card slots
+    // Build card slots (flip reveal)
     var grid = document.getElementById('celtic-card-grid');
     grid.innerHTML = '';
     for (var i = 0; i < 10; i++) {
       var slot = document.createElement('div');
       slot.id = 'celtic-slot-' + i;
-      slot.style.cssText = 'aspect-ratio:2/3;border:1px solid rgba(255,255,255,0.04);border-radius:6px;background:rgba(255,255,255,0.01);opacity:0;transition:opacity 0.5s,border-color 0.5s;display:flex;align-items:center;justify-content:center;';
+      slot.style.cssText = 'aspect-ratio:2/3;border-radius:8px;opacity:0;transition:opacity 0.4s;perspective:400px;';
+      var inner = document.createElement('div');
+      inner.id = 'celtic-slot-inner-' + i;
+      inner.style.cssText = 'width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1),box-shadow 0.6s;border-radius:8px;';
+      var front = document.createElement('div');
+      front.style.cssText = 'position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;overflow:hidden;';
+      var bImg = document.createElement('img');
+      bImg.src = 'card_back_a.webp';
+      bImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;opacity:0.55;';
+      front.appendChild(bImg);
+      var back = document.createElement('div');
+      back.style.cssText = 'position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:8px;overflow:hidden;';
+      var fImg = document.createElement('img');
+      fImg.src = getCardImg(_celtic.cards[i]);
+      fImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;';
+      back.appendChild(fImg);
+      inner.appendChild(front);
+      inner.appendChild(back);
+      slot.appendChild(inner);
       grid.appendChild(slot);
     }
 
@@ -3285,28 +3327,34 @@ function submitUtPw() {
     ov.scrollTop = 0;
     ov.style.display = 'block';
 
-    // Animate cards in one by one
+    // Animate: fade in (face-down) → flip to reveal
     for (var k = 0; k < 10; k++) {
       (function(idx) {
+        var t0 = 350 + idx * 440;
+        // フェードイン（裏面）
         setTimeout(function() {
           var s = document.getElementById('celtic-slot-' + idx);
-          if (!s) return;
-          s.style.opacity = '1';
-          s.style.borderColor = 'rgba(196,181,253,0.15)';
-          s.style.background  = 'rgba(196,181,253,0.03)';
-          var num = document.createElement('p');
-          num.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:1px;color:#334155;line-height:1;';
-          num.textContent = _celtic.cards[idx].num;
-          s.appendChild(num);
+          if (s) s.style.opacity = '1';
+        }, t0);
+        // グロー＋フリップ（表面）
+        setTimeout(function() {
+          var inn = document.getElementById('celtic-slot-inner-' + idx);
+          if (!inn) return;
+          inn.style.transform  = 'rotateY(180deg)';
+          inn.style.boxShadow  = '0 0 18px rgba(196,181,253,0.55), 0 0 36px rgba(196,181,253,0.25)';
+          setTimeout(function() {
+            var inn2 = document.getElementById('celtic-slot-inner-' + idx);
+            if (inn2) inn2.style.boxShadow = '0 0 6px rgba(196,181,253,0.15)';
+          }, 900);
           if (idx === 9) {
             setTimeout(function() {
               var box  = document.getElementById('celtic-nagi-box');
               var line = document.getElementById('celtic-nagi-line');
               if (line) line.textContent = CELTIC_NAGI_LINES[0];
               if (box)  box.style.display = 'block';
-            }, 900);
+            }, 1100);
           }
-        }, 350 + idx * 420);
+        }, t0 + 380);
       })(k);
     }
   };
@@ -3338,29 +3386,61 @@ function submitUtPw() {
       var reading = CARD_READINGS[card.arch] || '';
 
       var item = document.createElement('div');
-      item.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.04);padding-bottom:32px;';
+      item.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:32px;display:flex;gap:18px;align-items:flex-start;';
+
+      // カード画像
+      var imgWrap = document.createElement('div');
+      imgWrap.style.cssText = 'flex-shrink:0;';
+      var cImg = document.createElement('img');
+      cImg.src = getCardImg(card);
+      cImg.style.cssText = 'width:52px;height:auto;border-radius:6px;display:block;box-shadow:0 0 10px rgba(196,181,253,0.12);';
+      imgWrap.appendChild(cImg);
+
+      // テキスト
+      var textWrap = document.createElement('div');
+      textWrap.style.cssText = 'flex:1;min-width:0;';
 
       var pos = document.createElement('p');
-      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:4px;color:#1e293b;margin-bottom:10px;';
+      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:8px;';
       pos.textContent = nums[i] + '   ' + CELTIC_POSITIONS[i];
 
       var name = document.createElement('p');
-      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:17px;color:#64748b;letter-spacing:2px;margin-bottom:6px;';
+      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;margin-bottom:4px;';
       name.textContent = card.name;
 
       var sub = document.createElement('p');
-      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#1e293b;margin-bottom:14px;';
+      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#334155;margin-bottom:10px;';
       sub.textContent = card.num + '  ' + card.arch;
 
       var txt = document.createElement('p');
-      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:12px;color:#475569;letter-spacing:1px;line-height:2.4;';
+      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;';
       txt.textContent = reading;
 
-      item.appendChild(pos);
-      item.appendChild(name);
-      item.appendChild(sub);
-      item.appendChild(txt);
+      textWrap.appendChild(pos);
+      textWrap.appendChild(name);
+      textWrap.appendChild(sub);
+      textWrap.appendChild(txt);
+      item.appendChild(imgWrap);
+      item.appendChild(textWrap);
       list.appendChild(item);
+    }
+
+    // まとめアドバイス（①今置いている音 のカードから）
+    var coreCard = _celtic.cards[0];
+    var coreData = coreCard.up || {};
+    var summary = (coreData.advice || CARD_READINGS[coreCard.arch] || '');
+    if (summary) {
+      var sumWrap = document.createElement('div');
+      sumWrap.style.cssText = 'margin-top:40px;padding:28px 24px;border:1px solid rgba(196,181,253,0.15);border-radius:16px;background:rgba(196,181,253,0.03);';
+      var sumLabel = document.createElement('p');
+      sumLabel.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:16px;';
+      sumLabel.textContent = 'NAGI';
+      var sumText = document.createElement('p');
+      sumText.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2.4;';
+      sumText.textContent = summary;
+      sumWrap.appendChild(sumLabel);
+      sumWrap.appendChild(sumText);
+      list.appendChild(sumWrap);
     }
   };
 
