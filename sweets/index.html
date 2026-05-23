@@ -5515,6 +5515,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
     _ncUpdate();
     _ncShowContent(_nc.idx);
+    _ncResetAuto();
 
     // タッチスワイプ
     var scene = document.getElementById('notes-scene');
@@ -5524,6 +5525,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       scene.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
       scene.addEventListener('touchend', function(e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) notesCarouselRotate(dx < 0 ? 1 : -1); });
     }
+  }
+
+  var _ncAutoTimer = null;
+  function _ncIsReading() {
+    return !!document.querySelector('#nc-content-body.open');
+  }
+  function _ncResetAuto() {
+    if (_ncAutoTimer) clearInterval(_ncAutoTimer);
+    _ncAutoTimer = setInterval(function() {
+      if (_ncIsReading()) return;
+      _nc.idx = (_nc.idx + 1) % _nc.N;
+      _ncUpdate(); _ncShowContent(_nc.idx);
+    }, 5000);
   }
 
   window.notesCarouselRotate = function(dir) {
@@ -5541,6 +5555,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     _nc.idx = (_nc.idx + dir + _nc.N) % _nc.N;
     _ncUpdate(); _ncShowContent(_nc.idx);
+    _ncResetAuto();
   };
 
   function _ncSelect(i) { _nc.idx = i; _ncUpdate(); _ncShowContent(i); }
