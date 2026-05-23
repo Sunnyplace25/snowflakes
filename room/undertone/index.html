@@ -3314,8 +3314,8 @@ function submitUtPw() {
       var back = document.createElement('div');
       back.style.cssText = 'position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:8px;overflow:hidden;';
       var fImg = document.createElement('img');
-      fImg.src = getCardImg(_celtic.cards[i]);
-      fImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;';
+      fImg.src = 'card_back_a.webp';
+      fImg.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;opacity:0.55;';
       back.appendChild(fImg);
       inner.appendChild(front);
       inner.appendChild(back);
