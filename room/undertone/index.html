@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-5 -->
+<!DOCTYPE html><!-- v20260523-6 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -919,6 +919,9 @@
 
       <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
+        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
+        <p class="ch-next-cond" id="ch-next-cond"></p>
+        <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
         <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;margin-top:20px;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
       </div>
     </div>
@@ -2092,17 +2095,20 @@ function submitUtPw() {
   function updateCh2Btn() {
     var btn  = document.getElementById('ch-next-btn');
     var cond = document.getElementById('ch-next-cond');
+    var cdEl = document.getElementById('ch2-countdown');
     if (!btn) return;
     if (ch21Unlocked) {
       btn.textContent = '第2章を読む';
       btn.disabled = false;
       if (cond) cond.textContent = '';
+      if (cdEl) cdEl.textContent = '';
       return;
     }
     var ok = ch2ConditionMet();
     btn.disabled = !ok;
     if (ok) {
       if (cond) cond.textContent = '';
+      if (cdEl) cdEl.textContent = '';
     } else {
       var candies = SfSnow.getCandies();
       var totalCandy = 0;
@@ -2115,6 +2121,17 @@ function submitUtPw() {
         missing.push('石 ' + got + ' / 3');
       }
       if (cond) cond.textContent = missing.join('　');
+      // カウントダウン
+      if (cdEl) {
+        var now = new Date();
+        var diff = CH2_UNLOCK_DATE - now;
+        if (diff > 0) {
+          var days = Math.ceil(diff / 86400000);
+          cdEl.textContent = days + ' days';
+        } else {
+          cdEl.textContent = '';
+        }
+      }
     }
   }
 
