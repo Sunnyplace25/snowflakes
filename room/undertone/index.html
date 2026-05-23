@@ -2549,7 +2549,7 @@ function submitUtPw() {
       var ch25Read = _seenProseScenes.has(9);
       var youngKey = 'sf_ut_young_nagi_revealed';
       var targetSrc;
-      if (!ch22Read || ch25Read) {
+      if (!ch22Read || ch25Read || ch3Unlocked) {
         targetSrc = 'shopkeeper.webp';
       } else {
         // 初回だけ必ず若いナギ、以降ランダム（50%）
