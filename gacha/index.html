@@ -999,6 +999,19 @@ function sfShare() {
     if (cw) cw.style.display = chocoCount ? '' : 'none';
     var cn = document.getElementById('res-choco-count');
     if (cn) cn.textContent = '一粒のチョコレート × ' + (chocoCount || 1);
+    // HAYATE chibi popup on chocolate obtain
+    if (chocoCount) {
+      var _hayateDelay = candy ? 6200 : 900;
+      if (candy) { setTimeout(function() { getCandyPopup().classList.remove('show'); }, 5900); }
+      setTimeout(function() {
+        document.getElementById('candy-char-name').textContent = 'HAYATE';
+        document.getElementById('candy-char-name').style.color = '#fde68a';
+        document.getElementById('candy-char-line').textContent = 'うま！もう一個！';
+        document.getElementById('candy-char-img').src = '../plofile/chibi_hayate.webp';
+        document.getElementById('candy-char-img').alt = 'HAYATE';
+        getCandyPopup().classList.add('show');
+      }, _hayateDelay);
+    }
     // Beer
     var bw = document.getElementById('res-beer-wrap');
     if (bw) bw.style.display = beerCount ? '' : 'none';
@@ -1290,7 +1303,18 @@ function sfShare() {
     // Show overlay
     tenOverlay.classList.add('ready');
     requestAnimationFrame(function() {
-      requestAnimationFrame(function() { tenOverlay.classList.add('show'); });
+      requestAnimationFrame(function() {
+        tenOverlay.classList.add('show');
+        // HAYATE chibi popup (チョコは10連で必ず入手)
+        setTimeout(function() {
+          document.getElementById('candy-char-name').textContent = 'HAYATE';
+          document.getElementById('candy-char-name').style.color = '#fde68a';
+          document.getElementById('candy-char-line').textContent = 'うま！もう一個！';
+          document.getElementById('candy-char-img').src = '../plofile/chibi_hayate.webp';
+          document.getElementById('candy-char-img').alt = 'HAYATE';
+          getCandyPopup().classList.add('show');
+        }, 900);
+      });
     });
   });
 
