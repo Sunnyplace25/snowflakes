@@ -3206,6 +3206,9 @@ function submitUtPw() {
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
     SfSnow.addDirect(80, 'ナギにビールを渡す');
     renderStones();
+    // 累計カウント更新
+    var total = parseInt(localStorage.getItem('sf_nagi_beer_total') || '0') + 1;
+    localStorage.setItem('sf_nagi_beer_total', String(total));
     // ナギポップアップ
     var pool = [
       { img: 'nagi_beer_1.webp', line: '……もらっとく' },
@@ -3214,10 +3217,25 @@ function submitUtPw() {
     ];
     var pick = pool[Math.floor(Math.random() * pool.length)];
     var pop = document.getElementById('nagi-beer-popup');
+    var beerFortBtn = document.getElementById('nagi-beer-fortune-btn');
     document.getElementById('nagi-beer-img').src = pick.img;
     document.getElementById('nagi-beer-line').textContent = pick.line;
+    if (beerFortBtn) beerFortBtn.style.display = 'none';
     pop.classList.add('show');
-    setTimeout(function() { pop.classList.remove('show'); }, 4500);
+    // 3回ごと：「お礼に」→ 占いボタン表示
+    if (total % 3 === 0) {
+      setTimeout(function() {
+        document.getElementById('nagi-beer-line').textContent = 'お礼に';
+        if (beerFortBtn) beerFortBtn.style.display = 'block';
+      }, 2000);
+    } else {
+      setTimeout(function() { pop.classList.remove('show'); }, 4500);
+    }
+  };
+  window.startBeerFortune = function() {
+    var pop = document.getElementById('nagi-beer-popup');
+    pop.classList.remove('show');
+    openTarot('oracle');
   };
 
   window.toggleRawstoneDetail = function() { /* 常時展開のため無効 */ };
@@ -4151,6 +4169,7 @@ function submitUtPw() {
   <div id="nagi-beer-bubble">
     <p id="nagi-beer-name">NAGI</p>
     <p id="nagi-beer-line"></p>
+    <button id="nagi-beer-fortune-btn" onclick="startBeerFortune()" style="display:none;margin-top:10px;width:100%;background:rgba(196,181,253,0.12);border:1px solid rgba(196,181,253,0.35);border-radius:50px;padding:8px 12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">占う</button>
   </div>
   <img id="nagi-beer-img" src="" alt="NAGI">
 </div>
