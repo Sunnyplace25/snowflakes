@@ -1043,8 +1043,8 @@
         <span id="choco-detail-arrow" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#475569;transition:transform 0.25s;display:inline-block;">›</span>
       </div>
       <div id="choco-detail-body" style="display:flex;flex-direction:column;gap:8px;padding:0 16px 16px;">
-        <button id="shop-chocolate-eat-btn" onclick="eatChocolate()" style="width:100%;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.25);border-radius:50px;padding:12px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.12)'" onmouseout="this.style.background='rgba(253,230,138,0.06)'">自分で食べる</button>
-        <button id="shop-chocolate-give-btn" onclick="giveChocolateToNagi()" style="display:none;width:100%;background:rgba(253,230,138,0.03);border:1px solid rgba(253,230,138,0.15);border-radius:50px;padding:12px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.09)'" onmouseout="this.style.background='rgba(253,230,138,0.03)'">渡す</button>
+        <button id="shop-chocolate-eat-btn" onclick="eatChocolate()" style="width:100%;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">食べる</button>
+        <button id="shop-chocolate-give-btn" onclick="giveChocolateToNagi()" style="display:none;width:100%;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
       </div>
     </div>
 
@@ -1379,8 +1379,6 @@ function submitUtPw() {
     <img id="tarot-stone-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 10px;display:block;box-shadow:0 0 24px rgba(196,181,253,0.15);">
     <p id="tarot-stone-name" style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:2px;"></p>
     <p id="tarot-stone-sub" style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:24px;font-family:'Cormorant Garamond',serif;"></p>
-    <!-- 3 appraised stones collection -->
-    <div id="appraise-collection" style="display:flex;justify-content:center;gap:14px;margin-bottom:24px;"></div>
     <button onclick="closeAppraisePopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
 </div>
@@ -3018,23 +3016,6 @@ function submitUtPw() {
     document.getElementById('tarot-stone-img').src = rawImg;
     document.getElementById('tarot-stone-name').textContent = rawLabel + 'だった';
     document.getElementById('tarot-stone-sub').textContent = '── 鑑定済み ──';
-    // collection status
-    var col = document.getElementById('appraise-collection');
-    col.innerHTML = '';
-    STONE_ITEMS.forEach(function(s) {
-      var unlocked = SfSnow.isUnlocked(s.key);
-      var wrap = document.createElement('div');
-      wrap.style.cssText = 'text-align:center;';
-      var img = document.createElement('img');
-      img.src = s.img;
-      img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:10px;display:block;margin:0 auto 4px;' + (unlocked ? 'box-shadow:0 0 12px rgba(196,181,253,0.2);' : 'filter:grayscale(1);opacity:0.3;');
-      var cnt = document.createElement('p');
-      cnt.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:1px;color:' + (unlocked ? '#c4b5fd' : '#334155') + ';';
-      cnt.textContent = unlocked ? '× 1' : '× 0';
-      wrap.appendChild(img);
-      wrap.appendChild(cnt);
-      col.appendChild(wrap);
-    });
     var pop = document.getElementById('tarot-stone-reveal');
     pop.style.display = 'flex';
   }
@@ -3187,9 +3168,9 @@ function submitUtPw() {
     }
     items['chocolate_hayate'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(100, 'うまい');
+    SfSnow.addDirect(100, '甘い。');
     renderStones();
-    showItemMsgPopup('../../item/chocolate.png', 'うまい\n\n+ 100 Snow');
+    showItemMsgPopup('../../item/chocolate.png', '甘い。\n\n+ 100 Snow');
   };
 
   window.giveChocolateToNagi = function() {
@@ -3350,16 +3331,6 @@ function submitUtPw() {
     revealed.push(pick);
     localStorage.setItem(KEY_TAROT_IMGS, JSON.stringify(revealed));
     var card = CARDS[pick];
-    // 解放通知を石鑑定結果の下に表示
-    var sub = document.getElementById('tarot-stone-sub');
-    if (sub) {
-      setTimeout(function() {
-        var line = document.createElement('p');
-        line.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#7c3aed;margin-top:8px;';
-        line.textContent = '── タロット「' + card.name + '」 解放 ──';
-        sub.parentNode.insertBefore(line, sub.nextSibling);
-      }, 1200);
-    }
     return pick;
   }
 
