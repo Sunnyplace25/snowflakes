@@ -2179,6 +2179,14 @@ function submitUtPw() {
     if (arr) arr.classList.add('open');
   }
 
+  function closeChSection(n) {
+    var body = document.getElementById('ch-body-' + n);
+    var arr  = document.getElementById('ch-arr-' + n);
+    if (!body) return;
+    body.style.maxHeight = '0px';
+    if (arr) arr.classList.remove('open');
+  }
+
   function renderChapterList() {
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
@@ -2216,18 +2224,18 @@ function submitUtPw() {
     });
     // 第二章セクション表示
     var sec2 = document.getElementById('ch-section-2');
-    if (sec2) {
-      sec2.style.display = ch21Unlocked ? '' : 'none';
-      if (ch21Unlocked) openChSection(2);
-    }
+    if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
     // 第三章セクション表示
     var sec3 = document.getElementById('ch-section-3');
-    if (sec3) {
-      sec3.style.display = ch3Unlocked ? '' : 'none';
-      if (ch3Unlocked) openChSection(3);
+    if (sec3) sec3.style.display = ch3Unlocked ? '' : 'none';
+    // 最新の章だけ開く、それ以外は閉じる
+    if (ch3Unlocked) {
+      closeChSection(1); closeChSection(2); openChSection(3);
+    } else if (ch21Unlocked) {
+      closeChSection(1); openChSection(2);
+    } else {
+      openChSection(1);
     }
-    // 最新解放話が属する章を自動オープン
-    openChSection(1);
     // フッター
     var footer = document.getElementById('chapter-footer');
     if (footer) footer.style.display = ch5Unlocked ? '' : 'none';
