@@ -672,6 +672,15 @@
   }
   </script>
 
+  <!-- Update notice popup (2026-05-24) -->
+  <div id="update-notice-popup" style="position:fixed;inset:0;z-index:9050;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div id="update-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(249,168,212,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f0abfc;margin:0 0 20px;">UPDATE</p>
+      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">MUSIC<br>帰らないほどでもない<br>追加しました</p>
+      <button onclick="closeUpdateNotice()" style="background:none;border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#f9a8d4';this.style.borderColor='rgba(249,168,212,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(249,168,212,0.3)'">OK</button>
+    </div>
+  </div>
+
   <!-- Fix notice popup -->
   <div id="fix-notice-popup" style="position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
     <div id="fix-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(148,163,184,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
@@ -5133,12 +5142,27 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
+  window.closeUpdateNotice = function() {
+    var pop = document.getElementById('update-notice-popup');
+    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
+  };
+
   window.closeFixNotice = function() {
     var pop = document.getElementById('fix-notice-popup');
     if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
   };
 
   document.addEventListener('DOMContentLoaded', function() {
+    if (!localStorage.getItem('sf_update_240524')) {
+      localStorage.setItem('sf_update_240524', '1');
+      setTimeout(function() {
+        var pop = document.getElementById('update-notice-popup');
+        var box = document.getElementById('update-notice-box');
+        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
+        if (box) { box.style.transform = 'none'; }
+      }, 800);
+    }
+
     if (!localStorage.getItem('sf_fix_notice_230526')) {
       localStorage.setItem('sf_fix_notice_230526', '1');
       SfSnow.addPick(4);
