@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260523-9 -->
+<!DOCTYPE html><!-- v20260523-10 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -1007,18 +1007,17 @@
 
     <!-- RAW STONE セクション -->
     <div id="shop-rawstone-count" style="display:none;flex-direction:column;gap:0;margin-bottom:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;">
-      <!-- 未鑑定の石ヘッダー（タップで折りたたみ） -->
-      <div onclick="toggleRawstoneDetail()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;">
+      <!-- 未鑑定の石ヘッダー -->
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
         <img src="../../item/rawstone.png" style="width:44px;height:44px;object-fit:cover;border-radius:9px;flex-shrink:0;">
         <div style="flex:1;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:4px;">RAW STONE</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:1px;color:#94a3b8;">未鑑定の石</p>
         </div>
         <span id="shop-rawstone-count-text" style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:2px;color:#c4b5fd;margin-right:8px;">× 0</span>
-        <span id="rawstone-detail-arrow" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#475569;transition:transform 0.25s;display:inline-block;">›</span>
       </div>
       <!-- 折りたたみ内容 -->
-      <div id="rawstone-detail-body" style="display:none;flex-direction:column;gap:12px;padding:0 16px 16px;">
+      <div id="rawstone-detail-body" style="display:flex;flex-direction:column;gap:12px;padding:0 16px 16px;">
         <!-- 鑑定ボタン -->
         <button class="choose-item choose-item--stone" id="appraise-btn" onclick="appraiseStone()" style="display:none;width:100%;margin:0;">
           <span class="choose-mark">◎</span>
@@ -2980,14 +2979,7 @@ function submitUtPw() {
     if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
   };
 
-  window.toggleRawstoneDetail = function() {
-    var body = document.getElementById('rawstone-detail-body');
-    var arrow = document.getElementById('rawstone-detail-arrow');
-    if (!body) return;
-    var open = body.style.display === 'flex';
-    body.style.display = open ? 'none' : 'flex';
-    if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
-  };
+  window.toggleRawstoneDetail = function() { /* 常時展開のため無効 */ };
 
   window.appraiseStone = function() {
     var arr = getRawStones();
