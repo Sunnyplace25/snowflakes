@@ -5076,6 +5076,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var _origSfUI = SfSnow.updateUI;
   SfSnow.updateUI = function() { _origSfUI(); renderItemRows(); if (typeof renderMusic === 'function') renderMusic(); if (typeof renderUndertoneStones === 'function') renderUndertoneStones(); };
 
+  // 石アコーディオン：未確認の石があれば初回のみ開いて自動クローズ
+  function checkStoneAccordion() {
+    var stoneMap = [
+      { chara: 'hinata', key: 'pendant_hinata' },
+      { chara: 'kouta',  key: 'ring_kouta'     },
+      { chara: 'hayate', key: 'earring_hayate'  },
+    ];
+    stoneMap.forEach(function(s) {
+      if (!SfSnow.isUnlocked(s.key)) return;
+      var seenKey = 'sf_stone_seen_' + s.chara;
+      if (localStorage.getItem(seenKey)) return;
+      localStorage.setItem(seenKey, 'true');
+      var body  = document.getElementById('rare-' + s.chara + '-body');
+      var arrow = document.getElementById('rare-' + s.chara + '-arrow');
+      if (body) body.style.maxHeight = '600px';
+      if (arrow) arrow.style.transform = 'rotate(90deg)';
+      setTimeout(function() {
+        var b = document.getElementById('rare-' + s.chara + '-body');
+        var a = document.getElementById('rare-' + s.chara + '-arrow');
+        if (b) b.style.maxHeight = '0';
+        if (a) a.style.transform = '';
+      }, 4500);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     SfSnow.addWithToast('visit_sweets', 'SWEETsを訪問');
     renderRooms();
@@ -5084,6 +5109,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderItemRows();
     renderMusic();
     if (typeof checkUndertoneSection === 'function') checkUndertoneSection();
+    checkStoneAccordion();
     // story-pendant-icon の表示状態を更新
     (function() {
       var icon = document.getElementById('story-pendant-icon');
