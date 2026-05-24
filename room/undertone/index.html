@@ -1227,6 +1227,10 @@ function submitUtPw() {
 <div class="entrance-overlay" id="entrance-overlay">
   <div class="entrance-card">
     <p class="entrance-eyebrow">UNDER TONE</p>
+    <div id="entrance-char-line" style="display:none;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <p id="entrance-char-name" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:10px;"></p>
+      <p id="entrance-char-text" style="font-size:15px;color:#cbd5e1;line-height:2;letter-spacing:1px;"></p>
+    </div>
     <p class="entrance-msg">古い扉の前に立っている<br>くすんだ金の取っ手に、手をかけた</p>
     <div class="entrance-btns">
       <button class="entrance-no" onclick="entranceNo()">いいえ</button>
@@ -2603,7 +2607,7 @@ function submitUtPw() {
     if (spot.entrance) {
       setTimeout(function() {
         document.getElementById('hotspot-popup').classList.remove('show');
-        document.getElementById('entrance-overlay').classList.add('show');
+        showEntranceOverlay();
       }, 1400);
     }
   }
@@ -2633,9 +2637,60 @@ function submitUtPw() {
       currentScene++;
       renderScene();
     } else {
-      document.getElementById('entrance-overlay').classList.add('show');
+      showEntranceOverlay();
     }
   };
+
+  /* ── Entrance lines ── */
+  var _ENTRANCE = {
+    hinata: [
+      '……行くか', '今日も、いるかな', 'なんとなく、寄る', '別に理由はない',
+      '帰り道だし', '……まだ気になる', 'ちょっとだけ', '音、残ってる気がする',
+    ],
+    kouta: [
+      '……また来るのか', 'なんか嫌なんだよな', 'ここ、空気おかしくない？', '……長くね？この道',
+      '前と違う気がする', 'なんで来てるんだろ', '帰ってもいい？', '……嫌な予感しかしない',
+    ],
+    hayate: [
+      '今日なんかありそうじゃない？', 'よし、何買おっかな', 'ちょっと楽しみなんだけど',
+      '新しいの入ってないかな', 'なんかワクワクする', '今日は当たり引けそう',
+      '行こう行こう', '俺ちょっと好きかも、この店',
+    ],
+  };
+  var _ENTRANCE_NAMES = { hinata: 'HINATA', kouta: 'KOUTA', hayate: 'HAYATE' };
+
+  function showEntranceOverlay() {
+    var ch4Active = _seenProseScenes.has(15); // 4-1読了（仮・確定後更新）
+    var char, pool;
+    if (ch4Active) {
+      char = 'kouta';
+      if (exploreCount <= 2) {
+        pool = ['……帰りたい'];
+      } else if (exploreCount <= 8) {
+        pool = _ENTRANCE.kouta.concat(['……気になる']);
+      } else {
+        pool = _ENTRANCE.kouta.concat(['今日、開いてるかな']);
+      }
+    } else if (ch3Unlocked) {
+      char = 'hinata';
+      pool = _ENTRANCE.hinata;
+    } else if (ch21Unlocked) {
+      char = 'hayate';
+      pool = _ENTRANCE.hayate;
+    } else {
+      var _chars = ['hinata', 'kouta', 'hayate'];
+      char = _chars[Math.floor(Math.random() * 3)];
+      pool = _ENTRANCE[char];
+    }
+    var line = pool[Math.floor(Math.random() * pool.length)];
+    var nameEl = document.getElementById('entrance-char-name');
+    var textEl = document.getElementById('entrance-char-text');
+    var wrapEl = document.getElementById('entrance-char-line');
+    if (nameEl) nameEl.textContent = _ENTRANCE_NAMES[char];
+    if (textEl) textEl.textContent = line;
+    if (wrapEl) wrapEl.style.display = 'block';
+    document.getElementById('entrance-overlay').classList.add('show');
+  }
 
   /* ── Entrance ── */
   window.entranceNo = function() {
