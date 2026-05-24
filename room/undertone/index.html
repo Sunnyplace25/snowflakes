@@ -2854,7 +2854,8 @@ function submitUtPw() {
     document.getElementById('stone-progress').textContent =
       obtained + ' / ' + STONE_ITEMS.length + '  RARE ITEMS';
     var _mItems = SfSnow.getMonthlyItems();
-    // チョコレート表示（第2章：ch21解放後〜ch3解放前）
+    // チョコレート表示（ch21解���後〜3-1読了前）
+    var ch31Read = _seenProseScenes.has(10);
     var chocoRow = document.getElementById('shop-chocolate-row');
     var chocoCount = document.getElementById('shop-chocolate-count');
     var chocoEatBtn = document.getElementById('shop-chocolate-eat-btn');
@@ -2862,7 +2863,7 @@ function submitUtPw() {
     if (chocoRow && chocoCount) {
       var cnt = _mItems['chocolate_hayate'] || 0;
       chocoCount.textContent = '× ' + cnt;
-      chocoRow.style.display = (ch21Unlocked && !ch3Unlocked) ? 'flex' : 'none';
+      chocoRow.style.display = (ch21Unlocked && !ch31Read) ? 'flex' : 'none';
       if (chocoEatBtn) chocoEatBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       if (chocoGiveBtn) {
         var ch22Read = _seenProseScenes.has(6);
@@ -2870,7 +2871,7 @@ function submitUtPw() {
         if (ch22Read) chocoGiveBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       }
     }
-    // ビール表示（第3章：ch3解放後）
+    // ビール表示（3-1読了後）
     var beerRow      = document.getElementById('shop-beer-row');
     var beerCount    = document.getElementById('shop-beer-count');
     var beerDrinkBtn = document.getElementById('shop-beer-drink-btn');
@@ -2878,7 +2879,7 @@ function submitUtPw() {
     if (beerRow && beerCount) {
       var bCnt = _mItems['beer'] || 0;
       beerCount.textContent = '× ' + bCnt;
-      beerRow.style.display = ch3Unlocked ? 'flex' : 'none';
+      beerRow.style.display = ch31Read ? 'flex' : 'none';
       if (beerDrinkBtn) beerDrinkBtn.style.opacity = bCnt > 0 ? '1' : '0.4';
       if (beerGiveBtn) beerGiveBtn.style.display = bCnt > 0 ? 'block' : 'none';
     }
