@@ -3636,10 +3636,10 @@ function submitUtPw() {
       var isRev = !card.up;
       var slot = document.createElement('div');
       slot.id = 'celtic-slot-' + i;
-      slot.style.cssText = 'aspect-ratio:2/3;border-radius:8px;opacity:0;transition:opacity 0.4s;perspective:400px;';
+      slot.style.cssText = 'aspect-ratio:2/3;border-radius:8px;opacity:0;transition:opacity 0.4s,box-shadow 0.6s;perspective:400px;overflow:hidden;';
       var inner = document.createElement('div');
       inner.id = 'celtic-slot-inner-' + i;
-      inner.style.cssText = 'width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1),box-shadow 0.6s;border-radius:8px;';
+      inner.style.cssText = 'width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);border-radius:8px;';
       // 表面（裏向き・フリップ前）
       var front = document.createElement('div');
       front.style.cssText = 'position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;overflow:hidden;';
@@ -3689,12 +3689,13 @@ function submitUtPw() {
         // グロー＋フリップ（表面）
         setTimeout(function() {
           var inn = document.getElementById('celtic-slot-inner-' + idx);
+          var sl  = document.getElementById('celtic-slot-' + idx);
           if (!inn) return;
-          inn.style.transform  = 'rotateY(180deg)';
-          inn.style.boxShadow  = '0 0 18px rgba(196,181,253,0.55), 0 0 36px rgba(196,181,253,0.25)';
+          inn.style.transform = 'rotateY(180deg)';
+          if (sl) sl.style.boxShadow = '0 0 18px rgba(196,181,253,0.55), 0 0 36px rgba(196,181,253,0.25)';
           setTimeout(function() {
-            var inn2 = document.getElementById('celtic-slot-inner-' + idx);
-            if (inn2) inn2.style.boxShadow = '0 0 6px rgba(196,181,253,0.15)';
+            var sl2 = document.getElementById('celtic-slot-' + idx);
+            if (sl2) sl2.style.boxShadow = '0 0 6px rgba(196,181,253,0.15)';
           }, 900);
           if (idx === 9) {
             setTimeout(function() {
