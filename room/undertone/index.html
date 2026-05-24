@@ -3884,12 +3884,17 @@ function submitUtPw() {
 
     var c = _celtic.cards[idx];
     var reading = CARD_READINGS[c.arch] || '';
-    var cardImg = (CARD_IMAGES && CARD_IMAGES[c.arch]) ? CARD_IMAGES[c.arch] : 'card_back_b.webp';
+    var cardImg = (CARD_IMGS[c.arch]) ? CARD_IMGS[c.arch] : 'card_back_b.webp';
+    var isRev = !c.up;
 
     if (prog)  prog.textContent  = _celticBNums[idx] + '  /  10';
-    if (imgEl) { imgEl.src = cardImg; imgEl.style.display = ''; }
+    if (imgEl) {
+      imgEl.src = cardImg;
+      imgEl.style.display = '';
+      imgEl.style.transform = isRev ? 'rotate(180deg)' : '';
+    }
     if (posEl) posEl.textContent  = _celticBNums[idx] + '   ' + CELTIC_POSITIONS[idx];
-    if (nameEl) nameEl.textContent = c.name;
+    if (nameEl) nameEl.textContent = c.name + (isRev ? '　逆位置' : '');
     if (archEl) archEl.textContent = c.num + '  ' + c.arch;
     if (readEl) { readEl.textContent = reading; readEl.style.color = '#94a3b8'; readEl.style.fontSize = '13px'; }
     if (tapEl)  tapEl.style.display = '';
@@ -3908,7 +3913,7 @@ function submitUtPw() {
   window.celticBNext = function() {
     _celticBIdx++;
     if (_celticBIdx > 10) {
-      endCelticFortune();
+      window.endCelticFortune();
       return;
     }
     _celticBRender(_celticBIdx);
