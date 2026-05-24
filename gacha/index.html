@@ -578,7 +578,7 @@ function sfShare() {
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-proteincoffee">0</span></td>
         </tr>
         <tr id="gi-row-chocolate" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
-          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/chocolate.png" alt="" style="width:28px;opacity:0.85;"> 一粒のチョコレート</td>
+          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/chocolate.webp" alt="" style="width:28px;opacity:0.85;"> 一粒のチョコレート</td>
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-chocolate">0</span></td>
         </tr>
         <tr id="gi-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
@@ -586,7 +586,7 @@ function sfShare() {
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-beer">0</span></td>
         </tr>
         <tr id="gi-row-cookie" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
-          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/cookie.png" alt="" style="width:28px;opacity:0.85;"> クッキー</td>
+          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/cookie.webp" alt="" style="width:28px;opacity:0.85;"> クッキー</td>
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-cookie">0</span></td>
         </tr>
         <tr id="gi-row-pick" style="display:none;">
@@ -627,7 +627,7 @@ function sfShare() {
 
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:10px;">CHOCOLATE</p>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <img src="../item/chocolate.png" style="width:20px;opacity:0.7;">
+          <img src="../item/chocolate.webp" style="width:20px;opacity:0.7;">
           <span style="color:#cbd5e1;">一粒のチョコレート</span>
         </div>
         <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +100</p>
@@ -669,7 +669,7 @@ function sfShare() {
 
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:10px;">COOKIE</p>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <img src="../item/cookie.png" style="width:20px;opacity:0.7;">
+          <img src="../item/cookie.webp" style="width:20px;opacity:0.7;">
           <span style="color:#cbd5e1;">クッキー</span>
         </div>
         <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +80</p>
@@ -841,7 +841,7 @@ function sfShare() {
     </div>
     <div id="res-cookie-wrap" style="display:none;margin-bottom:16px;">
       <div style="background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
-        <img src="../item/cookie.png" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
+        <img src="../item/cookie.webp" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
         <div>
           <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
           <p id="res-cookie-count" style="font-size:13px;color:#c4b5fd;letter-spacing:1px;">クッキー × 1</p>
@@ -851,7 +851,7 @@ function sfShare() {
     </div>
     <div id="res-choco-wrap" style="display:none;margin-bottom:16px;">
       <div style="background:rgba(253,186,116,0.06);border:1px solid rgba(253,186,116,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
-        <img src="../item/chocolate.png" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
+        <img src="../item/chocolate.webp" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
         <div>
           <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
           <p id="res-choco-count" style="font-size:13px;color:#fdba74;letter-spacing:1px;">一粒のチョコレート × 1</p>
@@ -1360,9 +1360,9 @@ function sfShare() {
     if (tenProtein) {
       html += itemRow.replace('{img}', '../item/proteincoffee.webp').replace('{label}', 'プロテインコーヒー').replace('{count}', 1);
     }
-    if (tenChoco) html += itemRow.replace('{img}', '../item/chocolate.png').replace('{label}', '一粒のチョコレート').replace('{count}', tenChoco);
+    if (tenChoco) html += itemRow.replace('{img}', '../item/chocolate.webp').replace('{label}', '一粒のチョコレート').replace('{count}', tenChoco);
     if (tenBeer)  html += itemRow.replace('{img}', '../item/beer.webp').replace('{label}', 'ビール').replace('{count}', tenBeer);
-    if (tenCookie) html += itemRow.replace('{img}', '../item/cookie.png').replace('{label}', 'クッキー').replace('{count}', tenCookie);
+    if (tenCookie) html += itemRow.replace('{img}', '../item/cookie.webp').replace('{label}', 'クッキー').replace('{count}', tenCookie);
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;
 

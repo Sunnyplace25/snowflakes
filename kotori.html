@@ -370,7 +370,7 @@
     <button id="welcome-qa-btn" style="display:none;" onclick="document.getElementById('qa-section').scrollIntoView({behavior:'smooth'});document.getElementById('welcome-popup').classList.remove('show');">ききたいこと、ある？</button>
     <button id="welcome-close" onclick="document.getElementById('welcome-popup').classList.remove('show')">✕</button>
   </div>
-  <div id="welcome-img"><img src="kotori_chibi.png" alt="山吹ことり"></div>
+  <div id="welcome-img"><img src="kotori_chibi.webp" alt="山吹ことり"></div>
 </div>
 
 <nav>
@@ -453,7 +453,7 @@
     <div class="chat-window" id="chat-window">
       <!-- 初期メッセージ -->
       <div class="chat-row">
-        <div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>
+        <div class="chat-avatar"><img src="kotori_chibi.webp" alt="ことり"></div>
         <div class="chat-bubble bot">なんでも聞いてね。</div>
       </div>
     </div>
@@ -612,7 +612,7 @@
     var row = document.createElement('div');
     row.className = 'chat-row' + (type === 'user' ? ' user' : '');
     if (type === 'bot') {
-      row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>'
+      row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.webp" alt="ことり"></div>'
         + '<div class="chat-bubble bot">' + text + '</div>';
     } else {
       row.innerHTML = '<div class="chat-bubble user">' + text + '</div>';
@@ -627,7 +627,7 @@
     var row = document.createElement('div');
     row.className = 'chat-row';
     row.id = 'chat-typing-row';
-    row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.png" alt="ことり"></div>'
+    row.innerHTML = '<div class="chat-avatar"><img src="kotori_chibi.webp" alt="ことり"></div>'
       + '<div class="chat-bubble bot chat-typing"><span></span><span></span><span></span></div>';
     win.appendChild(row);
     win.scrollTop = win.scrollHeight;
