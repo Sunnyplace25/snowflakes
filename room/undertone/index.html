@@ -189,29 +189,16 @@
     /* ── ENTRANCE ── */
     .entrance-overlay {
       position:fixed; inset:0; z-index:300;
-      display:none; align-items:center; justify-content:center;
-      padding:20px;
-      background:rgba(8,13,24,0.92);
-      backdrop-filter:blur(14px);
+      display:none; flex-direction:column;
+      align-items:center; justify-content:space-between;
+      padding:48px 28px 44px;
+      background:rgba(4,8,18,0.97);
+      box-sizing:border-box;
+      overflow:hidden;
     }
-    .entrance-overlay.show { display:flex; }
-    .entrance-card {
-      background:rgba(13,21,38,0.99);
-      border:1px solid rgba(196,181,253,0.12);
-      border-radius:24px; padding:36px 28px;
-      max-width:320px; width:100%; text-align:center;
-      animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);
-    }
-    .entrance-eyebrow {
-      font-family:'Cormorant Garamond',serif;
-      font-size:11px; letter-spacing:7px; color:#64748b;
-      margin-bottom:18px;
-    }
-    .entrance-msg {
-      font-size:15px; color:#e2e8f0; line-height:2.6;
-      margin-bottom:30px; font-weight:400;
-    }
-    .entrance-btns { display:flex; gap:10px; }
+    .entrance-overlay.show { display:flex; animation:fadeIn 0.55s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .entrance-btns { display:flex; gap:10px; width:100%; max-width:320px; }
     .entrance-no {
       flex:1; padding:13px;
       background:none; border:1px solid rgba(255,255,255,0.09);
@@ -1225,13 +1212,21 @@ function submitUtPw() {
 
 <!-- Entrance modal -->
 <div class="entrance-overlay" id="entrance-overlay">
-  <div class="entrance-card">
-    <p class="entrance-eyebrow">UNDER TONE</p>
-    <div id="entrance-char-line" style="display:none;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.06);">
-      <p id="entrance-char-name" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:10px;"></p>
-      <p id="entrance-char-text" style="font-size:15px;color:#cbd5e1;line-height:2;letter-spacing:1px;"></p>
+  <!-- top label -->
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:7px;color:#1e293b;">UNDER TONE</p>
+
+  <!-- character image + line -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;width:100%;max-width:360px;padding:24px 0 8px;">
+    <img id="entrance-char-img" src="" alt="" style="height:clamp(200px,45vh,340px);width:auto;max-width:100%;object-fit:contain;object-position:top;display:block;filter:drop-shadow(0 0 40px rgba(196,181,253,0.12));">
+    <div id="entrance-char-line" style="display:none;text-align:center;">
+      <p id="entrance-char-name" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:14px;"></p>
+      <p id="entrance-char-text" style="font-family:'Noto Serif JP',serif;font-size:clamp(18px,4.5vw,24px);color:#e2e8f0;letter-spacing:2px;line-height:1.9;"></p>
     </div>
-    <p class="entrance-msg">古い扉の前に立っている<br>くすんだ金の取っ手に、手をかけた</p>
+  </div>
+
+  <!-- scene description + buttons -->
+  <div style="text-align:center;width:100%;max-width:320px;">
+    <p style="font-size:12px;color:#334155;line-height:2.4;margin-bottom:24px;letter-spacing:1px;">古い扉の前に立っている<br>くすんだ金の取っ手に、手をかけた</p>
     <div class="entrance-btns">
       <button class="entrance-no" onclick="entranceNo()">いいえ</button>
       <button class="entrance-yes" onclick="entranceYes()">入る</button>
@@ -2658,6 +2653,7 @@ function submitUtPw() {
     ],
   };
   var _ENTRANCE_NAMES = { hinata: 'HINATA', kouta: 'KOUTA', hayate: 'HAYATE' };
+  var _ENTRANCE_IMGS  = { hinata: 'char_hinata.webp', kouta: 'char_kouta.webp', hayate: 'char_hayate.webp' };
 
   function showEntranceOverlay() {
     var ch4Active = _seenProseScenes.has(15); // 4-1読了（仮・確定後更新）
@@ -2686,9 +2682,11 @@ function submitUtPw() {
     var nameEl = document.getElementById('entrance-char-name');
     var textEl = document.getElementById('entrance-char-text');
     var wrapEl = document.getElementById('entrance-char-line');
+    var imgEl  = document.getElementById('entrance-char-img');
     if (nameEl) nameEl.textContent = _ENTRANCE_NAMES[char];
     if (textEl) textEl.textContent = line;
     if (wrapEl) wrapEl.style.display = 'block';
+    if (imgEl)  imgEl.src = _ENTRANCE_IMGS[char];
     document.getElementById('entrance-overlay').classList.add('show');
   }
 
