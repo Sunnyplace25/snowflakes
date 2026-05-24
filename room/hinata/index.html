@@ -605,7 +605,7 @@
     <div class="mini-info">
       <div class="mini-lock" id="mini-lock">
         <button class="unlock-btn" id="mini-unlock-btn">
-          <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 50
+          <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 60
         </button>
       </div>
       <p class="mini-info-item" id="mi-1"></p>
@@ -614,6 +614,12 @@
       <p class="mini-info-item" id="mi-4"></p>
       <p class="mini-info-item" id="mi-5"></p>
       <p class="mini-info-item" id="mi-6"></p>
+      <div class="mini-lock" id="mi-extra-lock" style="display:none;padding-top:8px;">
+        <button class="unlock-btn" id="mi-extra-btn">
+          <img src="../../item/candy_milk.webp" class="candy-ic">ミルクキャンディー × 10
+        </button>
+      </div>
+      <p class="mini-info-item" id="mi-7"></p>
     </div>
 
     <div class="section-divider"></div>
@@ -733,7 +739,7 @@
       var SAVE_KEY   = 'sf_pf_hinata_v2';
       var CANDY_TYPE = 'milk';
       var CANDY_COST = 10;
-      var MINI_COST  = 50;
+      var MINI_COST  = 60;
 
       var saved = [];
       try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'); } catch(e) {}
@@ -885,6 +891,14 @@
       });
 
       // MINI INFO ボタン
+      var EXTRA_MI_KEY = 'mi_extra_hinata';
+      var extraMiLock = document.getElementById('mi-extra-lock');
+      var extraMiBtn  = document.getElementById('mi-extra-btn');
+      var extraMiItem = document.getElementById('mi-7');
+      function revealExtraMini() {
+        if (extraMiLock) extraMiLock.style.display = 'none';
+        if (extraMiItem) { extraMiItem.textContent = '悩むと曲が増える'; extraMiItem.style.display = 'block'; }
+      }
       var miniBtn = document.getElementById('mini-unlock-btn');
       if (miniBtn && saved.indexOf('mini') === -1) {
         if (cur >= MINI_COST) miniBtn.classList.add('ready');
@@ -895,8 +909,26 @@
             saved.push('mini');
             localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
             revealMini();
+            localStorage.setItem(EXTRA_MI_KEY, 'done');
+            revealExtraMini();
           });
         });
+      }
+      if (localStorage.getItem(EXTRA_MI_KEY)) {
+        revealExtraMini();
+      } else if (saved.indexOf('mini') !== -1) {
+        if (extraMiLock) extraMiLock.style.display = 'flex';
+        if (extraMiBtn) {
+          if (cur >= 10) extraMiBtn.classList.add('ready');
+          extraMiBtn.addEventListener('click', function() {
+            if (!extraMiBtn.classList.contains('ready')) { showAlert('数が足りません'); return; }
+            showDialog('ミルクキャンディー × 10', function() {
+              if (!SfSnow.spendCandy(CANDY_TYPE, 10)) return;
+              localStorage.setItem(EXTRA_MI_KEY, 'done');
+              revealExtraMini();
+            });
+          });
+        }
       }
 
       // ITEM LOG
