@@ -536,10 +536,15 @@ function sfShare() {
           <span style="font-size:12px;color:#fdba74;letter-spacing:1px;margin-left:10px;">チョコを食べる</span>
           <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 100</span>
         </div>
-        <div id="low-snow-beer" style="display:none;padding:11px 16px;cursor:pointer;transition:background 0.15s;" onclick="consumeForSnow('beer')" onmouseenter="this.style.background='rgba(251,191,36,0.08)'" onmouseleave="this.style.background=''">
+        <div id="low-snow-beer" style="display:none;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);transition:background 0.15s;" onclick="consumeForSnow('beer')" onmouseenter="this.style.background='rgba(251,191,36,0.08)'" onmouseleave="this.style.background=''">
           <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
           <span style="font-size:12px;color:#fbbf24;letter-spacing:1px;margin-left:10px;">ビールを飲む</span>
           <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 120</span>
+        </div>
+        <div id="low-snow-cookie" style="display:none;padding:11px 16px;cursor:pointer;transition:background 0.15s;" onclick="consumeForSnow('cookie')" onmouseenter="this.style.background='rgba(196,181,253,0.08)'" onmouseleave="this.style.background=''">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
+          <span style="font-size:12px;color:#c4b5fd;letter-spacing:1px;margin-left:10px;">クッキーを食べる</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 80</span>
         </div>
       </div>
       <button class="lever-btn" id="leverBtn" onclick="doPull()">まわす</button>
@@ -579,6 +584,10 @@ function sfShare() {
         <tr id="gi-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
           <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/beer.webp" alt="" style="width:28px;opacity:0.85;"> ビール</td>
           <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-beer">0</span></td>
+        </tr>
+        <tr id="gi-row-cookie" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/cookie.png" alt="" style="width:28px;opacity:0.85;"> クッキー</td>
+          <td style="padding:9px 0;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="gi-mitem-cookie">0</span></td>
         </tr>
         <tr id="gi-row-pick" style="display:none;">
           <td style="padding:9px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:8px;"><img src="../item/pick.webp" alt="" style="width:28px;opacity:0.85;"> ギターピック</td>
@@ -633,7 +642,7 @@ function sfShare() {
           </tr>
           <tr>
             <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
-            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">×1 確定（10% で ×2）</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">80%（10% で ×2）</td>
           </tr>
         </table>
 
@@ -654,7 +663,28 @@ function sfShare() {
           </tr>
           <tr>
             <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
-            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">×1 確定（10% で ×2）</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">80%（10% で ×2）</td>
+          </tr>
+        </table>
+
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:10px;">COOKIE</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <img src="../item/cookie.png" style="width:20px;opacity:0.7;">
+          <span style="color:#cbd5e1;">クッキー</span>
+        </div>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +80</p>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <td style="padding:4px 0;color:#94a3b8;">❄5 リプレイ</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">15%</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 0;color:#94a3b8;">❄50 10連</td>
+            <td style="padding:4px 0;text-align:right;color:#cbd5e1;">80%（10% で ×2）</td>
           </tr>
         </table>
 
@@ -809,6 +839,16 @@ function sfShare() {
         </div>
       </div>
     </div>
+    <div id="res-cookie-wrap" style="display:none;margin-bottom:16px;">
+      <div style="background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
+        <img src="../item/cookie.png" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
+        <div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;">BONUS DROP</p>
+          <p id="res-cookie-count" style="font-size:13px;color:#c4b5fd;letter-spacing:1px;">クッキー × 1</p>
+          <p style="font-size:10px;color:#64748b;letter-spacing:1px;margin-top:3px;">食べると Snow +80</p>
+        </div>
+      </div>
+    </div>
     <div id="res-choco-wrap" style="display:none;margin-bottom:16px;">
       <div style="background:rgba(253,186,116,0.06);border:1px solid rgba(253,186,116,0.2);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;text-align:left;">
         <img src="../item/chocolate.png" alt="" style="width:40px;flex-shrink:0;opacity:0.9;">
@@ -956,7 +996,7 @@ function sfShare() {
   });
 
   /* ── Show full result card ── */
-  function showResult(fortune, candy, candyCount, chocoCount, beerCount) {
+  function showResult(fortune, candy, candyCount, chocoCount, beerCount, cookieCount) {
     var meta = CHAR_META[fortune.char];
     document.getElementById('resFortuneName').textContent = fortune.name;
     document.getElementById('resFortuneName').style.color = fortune.color;
@@ -999,24 +1039,35 @@ function sfShare() {
     if (cw) cw.style.display = chocoCount ? '' : 'none';
     var cn = document.getElementById('res-choco-count');
     if (cn) cn.textContent = '一粒のチョコレート × ' + (chocoCount || 1);
-    // HAYATE chibi popup on chocolate obtain
+    // Random chibi popup on chocolate obtain
     if (chocoCount) {
-      var _hayateDelay = candy ? 6200 : 900;
+      var _chocoDelay = candy ? 6200 : 900;
       if (candy) { setTimeout(function() { getCandyPopup().classList.remove('show'); }, 5900); }
       setTimeout(function() {
-        document.getElementById('candy-char-name').textContent = 'HAYATE';
-        document.getElementById('candy-char-name').style.color = '#fde68a';
-        document.getElementById('candy-char-line').textContent = 'うま！もう一個！';
-        document.getElementById('candy-char-img').src = '../plofile/chibi_hayate.webp';
-        document.getElementById('candy-char-img').alt = 'HAYATE';
+        var _chocoPool = [
+          { key:'hayate', name:'HAYATE', color:'#fde68a', lines:['うまい！もう一個！', 'もう一個くれ', 'あー、うまい'] },
+          { key:'kouta',  name:'KOUTA',  color:'#fca5a5', lines:['……甘いな', '一個だけか', '悪くない'] },
+          { key:'hinata', name:'HINATA', color:'#93c5fd', lines:['……これ好きかも', '甘い', 'もらっていいか'] },
+        ];
+        var _cc = _chocoPool[Math.floor(Math.random() * _chocoPool.length)];
+        document.getElementById('candy-char-name').textContent = _cc.name;
+        document.getElementById('candy-char-name').style.color = _cc.color;
+        document.getElementById('candy-char-line').textContent = _cc.lines[Math.floor(Math.random() * _cc.lines.length)];
+        document.getElementById('candy-char-img').src = CHAR_META[_cc.key].img;
+        document.getElementById('candy-char-img').alt = _cc.name;
         getCandyPopup().classList.add('show');
-      }, _hayateDelay);
+      }, _chocoDelay);
     }
     // Beer
     var bw = document.getElementById('res-beer-wrap');
     if (bw) bw.style.display = beerCount ? '' : 'none';
     var bn = document.getElementById('res-beer-count');
     if (bn) bn.textContent = 'ビール × ' + (beerCount || 1);
+    // Cookie
+    var cokw = document.getElementById('res-cookie-wrap');
+    if (cokw) cokw.style.display = cookieCount ? '' : 'none';
+    var cokn = document.getElementById('res-cookie-count');
+    if (cokn) cokn.textContent = 'クッキー × ' + (cookieCount || 1);
 
     resultOverlay.classList.add('ready');
     requestAnimationFrame(function() {
@@ -1098,8 +1149,10 @@ function sfShare() {
       if (dailyChoco) SfSnow.addMItemDirect('chocolate_hayate', dailyChoco);
       var dailyBeer = Math.random() < 0.15 ? 1 : 0;
       if (dailyBeer) SfSnow.addMItemDirect('beer', dailyBeer);
+      var dailyCookie = Math.random() < 0.15 ? 1 : 0;
+      if (dailyCookie) SfSnow.addMItemDirect('cookie', dailyCookie);
       runCapsule(fortune, function() {
-        showResult(fortune, candy, undefined, dailyChoco, dailyBeer);
+        showResult(fortune, candy, undefined, dailyChoco, dailyBeer, dailyCookie);
         leverBtn.disabled = false;
         dailyNote.textContent = '❄ 5 で もう一回まわせます';
         savedViewBtn.style.display = 'inline-block';
@@ -1113,14 +1166,17 @@ function sfShare() {
 
   function showLowSnowPanel() {
     var items   = SfSnow.getMonthlyItems();
-    var hasChoco = (items['chocolate_hayate'] || 0) > 0;
-    var hasBeer  = (items['beer'] || 0) > 0;
-    var panel    = document.getElementById('low-snow-panel');
-    var chocoRow = document.getElementById('low-snow-choco');
-    var beerRow  = document.getElementById('low-snow-beer');
-    if (chocoRow) chocoRow.style.display = hasChoco ? '' : 'none';
-    if (beerRow)  beerRow.style.display  = hasBeer  ? '' : 'none';
-    if (panel)    panel.style.display    = (hasChoco || hasBeer) ? '' : 'none';
+    var hasChoco  = (items['chocolate_hayate'] || 0) > 0;
+    var hasBeer   = (items['beer'] || 0) > 0;
+    var hasCookie = (items['cookie'] || 0) > 0;
+    var panel     = document.getElementById('low-snow-panel');
+    var chocoRow  = document.getElementById('low-snow-choco');
+    var beerRow   = document.getElementById('low-snow-beer');
+    var cookieRow = document.getElementById('low-snow-cookie');
+    if (chocoRow)  chocoRow.style.display  = hasChoco  ? '' : 'none';
+    if (beerRow)   beerRow.style.display   = hasBeer   ? '' : 'none';
+    if (cookieRow) cookieRow.style.display = hasCookie ? '' : 'none';
+    if (panel)     panel.style.display     = (hasChoco || hasBeer || hasCookie) ? '' : 'none';
   }
 
   window.consumeForSnow = function(type) {
@@ -1137,6 +1193,12 @@ function sfShare() {
       items['beer'] = cnt - 1;
       localStorage.setItem('sf_monthly_items', JSON.stringify(items));
       SfSnow.addDirect(120, '苦い。');
+    } else if (type === 'cookie') {
+      var cnt = items['cookie'] || 0;
+      if (cnt <= 0) return;
+      items['cookie'] = cnt - 1;
+      localStorage.setItem('sf_monthly_items', JSON.stringify(items));
+      SfSnow.addDirect(80, '甘い。');
     }
     SfSnow.updateUI();
     renderGachaItems();
@@ -1172,9 +1234,11 @@ function sfShare() {
     if (replayChoco) SfSnow.addMItemDirect('chocolate_hayate', replayChoco);
     var replayBeer = Math.random() < 0.15 ? 1 : 0;
     if (replayBeer) SfSnow.addMItemDirect('beer', replayBeer);
+    var replayCookie = Math.random() < 0.15 ? 1 : 0;
+    if (replayCookie) SfSnow.addMItemDirect('cookie', replayCookie);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
-      showResult(f, rc, count, replayChoco, replayBeer);
+      showResult(f, rc, count, replayChoco, replayBeer, replayCookie);
       var pw = document.getElementById('res-protein-wrap');
       if (pw) pw.style.display = replayProtein ? '' : 'none';
       leverBtn.disabled = false;
@@ -1226,12 +1290,15 @@ function sfShare() {
     // プロテインコーヒー：12%
     var tenProtein = Math.random() < 0.12;
     if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
-    // チョコレート：1個確定 + 10%で2個目
-    var tenChoco = 1 + (Math.random() < 0.10 ? 1 : 0);
-    SfSnow.addMItemDirect('chocolate_hayate', tenChoco);
-    // ビール：1個確定 + 10%で2個目
-    var tenBeer = 1 + (Math.random() < 0.10 ? 1 : 0);
-    SfSnow.addMItemDirect('beer', tenBeer);
+    // チョコレート：80%で1個 + 10%で2個目
+    var tenChoco = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    if (tenChoco) SfSnow.addMItemDirect('chocolate_hayate', tenChoco);
+    // ビール：80%で1個 + 10%で2個目
+    var tenBeer = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    if (tenBeer) SfSnow.addMItemDirect('beer', tenBeer);
+    // クッキー：80%で1個 + 10%で2個目
+    var tenCookie = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    if (tenCookie) SfSnow.addMItemDirect('cookie', tenCookie);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       results.push({ fortune: f, candy: null, pick: 0 });
@@ -1293,8 +1360,9 @@ function sfShare() {
     if (tenProtein) {
       html += itemRow.replace('{img}', '../item/proteincoffee.webp').replace('{label}', 'プロテインコーヒー').replace('{count}', 1);
     }
-    html += itemRow.replace('{img}', '../item/chocolate.png').replace('{label}', '一粒のチョコレート').replace('{count}', tenChoco);
-    html += itemRow.replace('{img}', '../item/beer.webp').replace('{label}', 'ビール').replace('{count}', tenBeer);
+    if (tenChoco) html += itemRow.replace('{img}', '../item/chocolate.png').replace('{label}', '一粒のチョコレート').replace('{count}', tenChoco);
+    if (tenBeer)  html += itemRow.replace('{img}', '../item/beer.webp').replace('{label}', 'ビール').replace('{count}', tenBeer);
+    if (tenCookie) html += itemRow.replace('{img}', '../item/cookie.png').replace('{label}', 'クッキー').replace('{count}', tenCookie);
     candyWrap.style.display = '';
     candyWrap.innerHTML = html;
 
@@ -1305,13 +1373,20 @@ function sfShare() {
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
         tenOverlay.classList.add('show');
-        // HAYATE chibi popup (チョコは10連で必ず入手)
+        // Random chibi popup on chocolate obtain (10-pull)
+        if (!tenChoco) return;
         setTimeout(function() {
-          document.getElementById('candy-char-name').textContent = 'HAYATE';
-          document.getElementById('candy-char-name').style.color = '#fde68a';
-          document.getElementById('candy-char-line').textContent = 'うま！もう一個！';
-          document.getElementById('candy-char-img').src = '../plofile/chibi_hayate.webp';
-          document.getElementById('candy-char-img').alt = 'HAYATE';
+          var _chocoPool10 = [
+            { key:'hayate', name:'HAYATE', color:'#fde68a', lines:['うまい！もう一個！', 'もう一個くれ', 'あー、うまい'] },
+            { key:'kouta',  name:'KOUTA',  color:'#fca5a5', lines:['……甘いな', '一個だけか', '悪くない'] },
+            { key:'hinata', name:'HINATA', color:'#93c5fd', lines:['……これ好きかも', '甘い', 'もらっていいか'] },
+          ];
+          var _cc10 = _chocoPool10[Math.floor(Math.random() * _chocoPool10.length)];
+          document.getElementById('candy-char-name').textContent = _cc10.name;
+          document.getElementById('candy-char-name').style.color = _cc10.color;
+          document.getElementById('candy-char-line').textContent = _cc10.lines[Math.floor(Math.random() * _cc10.lines.length)];
+          document.getElementById('candy-char-img').src = CHAR_META[_cc10.key].img;
+          document.getElementById('candy-char-img').alt = _cc10.name;
           getCandyPopup().classList.add('show');
         }, 900);
       });
@@ -1348,6 +1423,7 @@ function sfShare() {
       { rowId: 'gi-row-proteincoffee', spanId: 'gi-mitem-proteincoffee',count: items['proteincoffee']    || 0 },
       { rowId: 'gi-row-chocolate',     spanId: 'gi-mitem-chocolate',    count: items['chocolate_hayate'] || 0 },
       { rowId: 'gi-row-beer',          spanId: 'gi-mitem-beer',         count: items['beer']             || 0 },
+      { rowId: 'gi-row-cookie',        spanId: 'gi-mitem-cookie',       count: items['cookie']           || 0 },
       { rowId: 'gi-row-pick',          spanId: 'gi-pick-count',         count: picks },
     ];
     var any = false;
