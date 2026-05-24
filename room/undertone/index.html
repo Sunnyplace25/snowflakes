@@ -3248,9 +3248,11 @@ function submitUtPw() {
     document.getElementById('nagi-beer-popup').classList.remove('show');
   };
   window.startBeerFortune = function() {
-    var pop = document.getElementById('nagi-beer-popup');
-    pop.classList.remove('show');
-    openTarot('oracle');
+    document.getElementById('nagi-beer-popup').classList.remove('show');
+    var ov = document.getElementById('special-fortune-overlay');
+    var input = document.getElementById('special-fortune-input');
+    if (ov) { ov.style.display = 'flex'; }
+    if (input) { input.value = ''; setTimeout(function() { input.focus(); }, 200); }
   };
 
   window.toggleRawstoneDetail = function() {
