@@ -510,6 +510,7 @@
     <div class="room-hs-popup" id="hayate-hs-popup" onclick="this.classList.remove('show')">
       <div class="room-hs-card" onclick="event.stopPropagation()">
         <p class="room-hs-label" id="hayate-hs-label">FOUND</p>
+        <img id="hayate-hs-img" style="display:none;width:120px;margin:0 auto 16px;display:none;border-radius:8px;" alt="item">
         <p class="room-hs-desc" id="hayate-hs-desc"></p>
         <p id="hayate-hs-note" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;margin-bottom:16px;">入手済みです</p>
         <button onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
@@ -751,7 +752,7 @@
       <button class="room-hotspot" style="left:92%;top:28%;" onclick="event.stopPropagation();openRoomHotspot('やることリスト','書くけど、あまり減らない。')">+</button>
       <button class="room-hotspot" style="left:63%;top:60%;" onclick="event.stopPropagation();openRoomHotspot('ダンボール箱','なんとなく捨てられないものが\n雑に入っている。')">+</button>
       <button class="room-hotspot" style="left:90%;top:78%;" onclick="event.stopPropagation();openRoomHotspot('ソファ','寝落ち率が高い。')">+</button>
-      <button class="room-hotspot" style="left:76%;top:47%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n古いドラムスティックが雑に入っている。','drumstick_hayate')">+</button>
+      <button class="room-hotspot" style="left:76%;top:47%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n古いドラムスティックが雑に入っている。','drumstick_hayate','../../item/drumstick.webp')">+</button>
     </div>
   </div>
 
@@ -768,10 +769,12 @@
       document.getElementById('room-light').classList.remove('open');
     }
 
-    function openRoomHotspot(label, desc, itemKey) {
+    function openRoomHotspot(label, desc, itemKey, imgSrc) {
       document.getElementById('hayate-hs-label').textContent = label;
       document.getElementById('hayate-hs-desc').textContent  = desc;
       document.getElementById('hayate-hs-popup').classList.add('show');
+      var hsImg = document.getElementById('hayate-hs-img');
+      if (hsImg) { hsImg.style.display = 'none'; }
       var note = document.getElementById('hayate-hs-note');
       if (note) note.style.display = 'none';
       if (itemKey && SfSnow.unlockItem) {
@@ -785,6 +788,7 @@
           }, 400);
         } else {
           if (note) note.style.display = 'block';
+          if (hsImg && imgSrc) { hsImg.src = imgSrc; hsImg.style.display = 'block'; }
         }
       }
     }
