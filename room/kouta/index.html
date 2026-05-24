@@ -520,6 +520,7 @@
         <p class="room-hs-label" style="margin-bottom:18px;">FOUND</p>
         <img src="../../item/first_strings_kouta.webp" style="width:110px;margin:0 auto 16px;display:block;">
         <p class="room-hs-desc" style="margin-bottom:4px;">初めて張り替えたベースの弦</p>
+        <p style="font-size:12px;letter-spacing:1px;color:#64748b;line-height:2;margin-bottom:16px;">コウタが初めて自分で張り替えたベースの弦。<br>捨てられずに、今もそこにある。</p>
         <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">を見つけた</p>
         <button id="kouta-item-receive-btn" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#fca5a5'">── 受け取る ──</button>
       </div>
@@ -531,6 +532,7 @@
         <p class="room-hs-label" style="margin-bottom:18px;">FOUND</p>
         <img src="../../item/book_kouta.png" style="width:110px;margin:0 auto 16px;display:block;">
         <p class="room-hs-desc" style="margin-bottom:4px;">返しそびれた本</p>
+        <p style="font-size:12px;letter-spacing:1px;color:#64748b;line-height:2;margin-bottom:16px;">返しそびれた本<br>……読み返すと、少し切なくなる。</p>
         <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">を見つけた</p>
         <button id="kouta-book-receive-btn" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#fca5a5'">── 受け取る ──</button>
       </div>
@@ -542,6 +544,7 @@
         <p class="room-hs-label" style="margin-bottom:18px;">ITEM</p>
         <img id="kouta-owned-img" src="" style="width:110px;margin:0 auto 16px;display:block;">
         <p class="room-hs-desc" id="kouta-owned-name" style="margin-bottom:4px;"></p>
+        <p id="kouta-owned-desc" style="font-size:12px;letter-spacing:1px;color:#64748b;line-height:2;margin-bottom:16px;white-space:pre-line;"></p>
         <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">入手済みです</p>
         <button onclick="document.getElementById('kouta-owned-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
       </div>
@@ -841,7 +844,7 @@
       if (!hasBook()) {
         document.getElementById('kouta-book-found-popup').classList.add('show');
       } else {
-        showOwnedItem('../../item/book_kouta.png', '返しそびれた本');
+        showOwnedItem('../../item/book_kouta.png', '返しそびれた本', '返しそびれた本\n……読み返すと、少し切なくなる。');
       }
     }
 
@@ -859,9 +862,10 @@
       if (item) item.classList.add('open');
     }
 
-    function showOwnedItem(img, name) {
+    function showOwnedItem(img, name, desc) {
       document.getElementById('kouta-owned-img').src = img;
       document.getElementById('kouta-owned-name').textContent = name;
+      document.getElementById('kouta-owned-desc').textContent = desc || '';
       document.getElementById('kouta-owned-popup').classList.add('show');
     }
 
@@ -869,7 +873,7 @@
       if (!hasStrings()) {
         document.getElementById('kouta-item-found-popup').classList.add('show');
       } else {
-        showOwnedItem('../../item/first_strings_kouta.webp', '初めて張り替えたベースの弦');
+        showOwnedItem('../../item/first_strings_kouta.webp', '初めて張り替えたベースの弦', 'コウタが初めて自分で張り替えたベースの弦。\n捨てられずに、今もそこにある。');
       }
     }
 
