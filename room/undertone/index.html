@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260524-02 -->
+<!DOCTYPE html><!-- v20260524-03 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -3385,9 +3385,9 @@ function submitUtPw() {
     if (cnt <= 0) { showItemMsgPopup('../../item/cookie.webp', 'クッキーがありません\n\nガチャで手に入る'); return; }
     items['cookie'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(40, 'クッキーを食べる');
+    SfSnow.addDirect(35, 'クッキーを食べる');
     renderStones();
-    showItemMsgPopup('../../item/cookie.webp', '食べた。\n\n＋ 40 Snow');
+    showItemMsgPopup('../../item/cookie.webp', '食べた。\n\n＋ 35 Snow');
   };
 
   window.giveCakeToNagi = function() {
@@ -3401,7 +3401,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_cookie_total', String(total));
     // 占いトリガー回は Snow 付与なし
     if (total % 3 !== 0) {
-      SfSnow.addDirect(40, 'ナギにクッキーを渡す');
+      SfSnow.addDirect(35, 'ナギにクッキーを渡す');
     }
     renderStones();
     // TODO: ナギのクッキー反応画像・セリフ・ポップアップ（ビールと同構造で実装予定）
@@ -3414,9 +3414,9 @@ function submitUtPw() {
     if (cnt <= 0) { showItemMsgPopup('../../item/beer.webp', 'ビールがありません\n\nガチャで手に入る'); return; }
     items['beer'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(60, 'ビールを飲む');
+    SfSnow.addDirect(45, 'ビールを飲む');
     renderStones();
-    showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 60 Snow');
+    showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 45 Snow');
   };
 
   window.giveBeerToNagi = function() {
@@ -3430,7 +3430,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_beer_total', String(total));
     // 占いトリガー回は Snow 付与なし
     if (total % 3 !== 0) {
-      SfSnow.addDirect(40, 'ナギにビールを渡す');
+      SfSnow.addDirect(45, 'ナギにビールを渡す');
     }
     renderStones();
     // ナギポップアップ
@@ -3944,9 +3944,9 @@ function submitUtPw() {
     }
     items['chocolate_hayate'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(50, '甘い。');
+    SfSnow.addDirect(35, '甘い。');
     renderStones();
-    showItemMsgPopup('../../item/chocolate.webp', '甘い。\n\n+ 50 Snow');
+    showItemMsgPopup('../../item/chocolate.webp', '甘い。\n\n+ 35 Snow');
   };
 
   window.giveChocolateToNagi = function() {

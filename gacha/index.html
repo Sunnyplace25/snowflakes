@@ -534,17 +534,17 @@ function sfShare() {
         <div id="low-snow-choco" style="display:none;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);transition:background 0.15s;" onclick="consumeForSnow('choco')" onmouseenter="this.style.background='rgba(253,186,116,0.08)'" onmouseleave="this.style.background=''">
           <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
           <span style="font-size:12px;color:#fdba74;letter-spacing:1px;margin-left:10px;">チョコを食べる</span>
-          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 50</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 35</span>
         </div>
         <div id="low-snow-beer" style="display:none;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.06);transition:background 0.15s;" onclick="consumeForSnow('beer')" onmouseenter="this.style.background='rgba(251,191,36,0.08)'" onmouseleave="this.style.background=''">
           <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
           <span style="font-size:12px;color:#fbbf24;letter-spacing:1px;margin-left:10px;">ビールを飲む</span>
-          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 60</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 45</span>
         </div>
         <div id="low-snow-cookie" style="display:none;padding:11px 16px;cursor:pointer;transition:background 0.15s;" onclick="consumeForSnow('cookie')" onmouseenter="this.style.background='rgba(196,181,253,0.08)'" onmouseleave="this.style.background=''">
           <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">▶</span>
           <span style="font-size:12px;color:#c4b5fd;letter-spacing:1px;margin-left:10px;">クッキーを食べる</span>
-          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 40</span>
+          <span style="float:right;font-family:'Cormorant Garamond',serif;font-size:12px;color:#64748b;letter-spacing:1px;">+ 35</span>
         </div>
       </div>
       <button class="lever-btn" id="leverBtn" onclick="doPull()">まわす</button>
@@ -630,7 +630,7 @@ function sfShare() {
           <img src="../item/chocolate.webp" style="width:20px;opacity:0.7;">
           <span style="color:#cbd5e1;">一粒のチョコレート</span>
         </div>
-        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +50</p>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +35</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
@@ -651,7 +651,7 @@ function sfShare() {
           <img src="../item/beer.webp" style="width:20px;opacity:0.7;">
           <span style="color:#cbd5e1;">ビール</span>
         </div>
-        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">飲むと Snow +60</p>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">飲むと Snow +45</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
@@ -672,7 +672,7 @@ function sfShare() {
           <img src="../item/cookie.webp" style="width:20px;opacity:0.7;">
           <span style="color:#cbd5e1;">クッキー</span>
         </div>
-        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +40</p>
+        <p style="color:#94a3b8;font-size:11px;margin-bottom:6px;">食べると Snow +35</p>
         <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td style="padding:4px 0;color:#94a3b8;">無料デイリー</td>
@@ -1186,19 +1186,19 @@ function sfShare() {
       if (cnt <= 0) return;
       items['chocolate_hayate'] = cnt - 1;
       localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-      SfSnow.addDirect(50, '甘い。');
+      SfSnow.addDirect(35, '甘い。');
     } else if (type === 'beer') {
       var cnt = items['beer'] || 0;
       if (cnt <= 0) return;
       items['beer'] = cnt - 1;
       localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-      SfSnow.addDirect(60, '苦い。');
+      SfSnow.addDirect(45, '苦い。');
     } else if (type === 'cookie') {
       var cnt = items['cookie'] || 0;
       if (cnt <= 0) return;
       items['cookie'] = cnt - 1;
       localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-      SfSnow.addDirect(40, '甘い。');
+      SfSnow.addDirect(35, '甘い。');
     }
     SfSnow.updateUI();
     renderGachaItems();
