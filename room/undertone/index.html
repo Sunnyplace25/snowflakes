@@ -809,7 +809,7 @@
       </div>
       <div class="cover-char" id="cover-kouta">
         <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto 8px;">
-          <img src="char_kouta.webp" style="width:100%;height:100%;object-fit:cover;object-position:top;">
+          <img src="char_kouta.webp" style="width:130%;height:130%;object-fit:cover;object-position:top;margin-left:-15%;">
         </div>
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#475569;">KOUTA</p>
       </div>
@@ -834,7 +834,7 @@
 
     <div id="advance-wrap" style="display:flex;gap:8px;">
       <button class="advance-btn" id="advance-btn" onclick="advanceScene()" style="flex:1;margin-top:0;">進む →</button>
-      <button id="skip-to-shop-btn" onclick="goShop()" style="display:none;flex:1;background:rgba(253,230,138,0.07);border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:14px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.14)'" onmouseout="this.style.background='rgba(253,230,138,0.07)'">店内へ →</button>
+      <button id="skip-to-shop-btn" onclick="showEntranceOverlay(true)" style="display:none;flex:1;background:rgba(253,230,138,0.07);border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:14px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.14)'" onmouseout="this.style.background='rgba(253,230,138,0.07)'">店内へ →</button>
     </div>
 
     <!-- Chapter list (tap to open prose popup) -->
@@ -1228,8 +1228,8 @@ function submitUtPw() {
   <div style="text-align:center;width:100%;max-width:320px;">
     <p style="font-size:12px;color:#334155;line-height:2.4;margin-bottom:24px;letter-spacing:1px;">古い扉の前に立っている<br>くすんだ金の取っ手に、手をかけた</p>
     <div class="entrance-btns">
-      <button class="entrance-no" onclick="entranceNo()">いいえ</button>
-      <button class="entrance-yes" onclick="entranceYes()">入る</button>
+      <button class="entrance-no" id="entrance-no-btn" onclick="entranceNo()">いいえ</button>
+      <button class="entrance-yes" id="entrance-yes-btn" onclick="entranceYes()">入る</button>
     </div>
   </div>
 </div>
@@ -1544,7 +1544,7 @@ function submitUtPw() {
       <p class="prose-text" id="prose-text-2" style="display:none;"></p>
     </div>
     <button class="prose-close" id="prose-close-btn" onclick="closeProse()">── 歩き出す ──</button>
-    <button id="prose-shop-btn" onclick="closeProse();goShop();" style="display:none;margin-top:10px;width:100%;background:rgba(253,230,138,0.07);border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:14px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.14)'" onmouseout="this.style.background='rgba(253,230,138,0.07)'">店の商品を見る →</button>
+    <button id="prose-shop-btn" onclick="closeProse();showEntranceOverlay(true);" style="display:none;margin-top:10px;width:100%;background:rgba(253,230,138,0.07);border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:14px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.14)'" onmouseout="this.style.background='rgba(253,230,138,0.07)'">店の商品を見る →</button>
   </div>
 </div>
 
@@ -2654,8 +2654,10 @@ function submitUtPw() {
   };
   var _ENTRANCE_NAMES = { hinata: 'HINATA', kouta: 'KOUTA', hayate: 'HAYATE' };
   var _ENTRANCE_IMGS  = { hinata: 'char_hinata.webp', kouta: 'char_kouta.webp', hayate: 'char_hayate.webp' };
+  var _entranceReturning = false;
 
-  function showEntranceOverlay() {
+  function showEntranceOverlay(returning) {
+    _entranceReturning = !!returning;
     var ch4Active = _seenProseScenes.has(15); // 4-1読了（仮・確定後更新）
     var char, pool;
     if (ch4Active) {
@@ -2687,6 +2689,16 @@ function submitUtPw() {
     if (textEl) textEl.textContent = line;
     if (wrapEl) wrapEl.style.display = 'block';
     if (imgEl)  imgEl.src = _ENTRANCE_IMGS[char];
+    // returning モード：いいえ非表示・ボタンを「店内へ →」に
+    var noBtn  = document.getElementById('entrance-no-btn');
+    var yesBtn = document.getElementById('entrance-yes-btn');
+    if (_entranceReturning) {
+      if (noBtn)  noBtn.style.display = 'none';
+      if (yesBtn) yesBtn.textContent  = '店内へ →';
+    } else {
+      if (noBtn)  noBtn.style.display = '';
+      if (yesBtn) yesBtn.textContent  = '入る';
+    }
     document.getElementById('entrance-overlay').classList.add('show');
   }
 
@@ -2702,6 +2714,7 @@ function submitUtPw() {
 
   window.entranceYes = function() {
     document.getElementById('entrance-overlay').classList.remove('show');
+    if (_entranceReturning) { goShop(); return; }
     localStorage.setItem('sf_undertone_visited','true');
     visited = true;
     exploreCount++;
