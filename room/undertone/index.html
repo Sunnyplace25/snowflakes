@@ -2863,7 +2863,8 @@ function submitUtPw() {
     if (chocoRow && chocoCount) {
       var cnt = _mItems['chocolate_hayate'] || 0;
       chocoCount.textContent = '× ' + cnt;
-      chocoRow.style.display = (ch21Unlocked && !ch31Read) ? 'flex' : 'none';
+      chocoRow.style.display = ch21Unlocked ? 'flex' : 'none';
+      if (chocoGiveBtn && ch31Read) chocoGiveBtn.style.display = 'none';
       if (chocoEatBtn) chocoEatBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       if (chocoGiveBtn) {
         var ch22Read = _seenProseScenes.has(6);
