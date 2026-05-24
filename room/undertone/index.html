@@ -1448,6 +1448,17 @@ function submitUtPw() {
 
 </div>
 
+<!-- Card zoom overlay -->
+<div id="card-zoom-overlay" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(4,8,18,0.96);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;cursor:pointer;" onclick="document.getElementById('card-zoom-overlay').style.display='none'">
+  <img id="card-zoom-img" src="" alt="" style="max-height:52vh;max-width:72%;width:auto;border-radius:14px;box-shadow:0 0 40px rgba(196,181,253,0.25);margin-bottom:28px;pointer-events:none;">
+  <div style="text-align:center;max-width:300px;" onclick="event.stopPropagation()">
+    <p id="card-zoom-sub" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;margin-bottom:8px;"></p>
+    <p id="card-zoom-name" style="font-family:'Noto Serif JP',serif;font-size:18px;color:#e2e8f0;letter-spacing:3px;margin-bottom:14px;"></p>
+    <p id="card-zoom-reading" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#64748b;letter-spacing:1px;line-height:2.4;"></p>
+  </div>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#1e293b;margin-top:32px;">tap to close</p>
+</div>
+
 <!-- Item message popup (もっていません等) -->
 <div id="item-msg-popup" style="display:none;position:fixed;inset:0;z-index:680;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('item-msg-popup').style.display='none'">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
@@ -3253,6 +3264,17 @@ function submitUtPw() {
     if (input) { input.value = ''; setTimeout(function() { input.focus(); }, 200); }
   };
 
+  window.openCardZoom = function(src, name, sub, reading, isRev) {
+    var ov = document.getElementById('card-zoom-overlay');
+    var img = document.getElementById('card-zoom-img');
+    img.src = src;
+    img.style.transform = isRev ? 'rotate(180deg)' : '';
+    document.getElementById('card-zoom-name').textContent = name || '';
+    document.getElementById('card-zoom-sub').textContent = sub || '';
+    document.getElementById('card-zoom-reading').textContent = reading || '';
+    ov.style.display = 'flex';
+  };
+
   window.toggleRawstoneDetail = function() {
     var body  = document.getElementById('rawstone-detail-body');
     var arrow = document.getElementById('rawstone-detail-arrow');
@@ -3640,8 +3662,13 @@ function submitUtPw() {
       var imgWrap = document.createElement('div');
       imgWrap.style.cssText = 'flex-shrink:0;';
       var cImg = document.createElement('img');
-      cImg.src = getCardImg(card);
-      cImg.style.cssText = 'width:52px;height:auto;border-radius:6px;display:block;box-shadow:0 0 10px rgba(196,181,253,0.12);';
+      cImg.src = 'card_back_a.webp';
+      cImg.style.cssText = 'width:52px;height:auto;border-radius:6px;display:block;box-shadow:0 0 10px rgba(196,181,253,0.12);cursor:pointer;';
+      (function(c, r) {
+        cImg.addEventListener('click', function() {
+          openCardZoom('card_back_a.webp', c.name, c.num + '  ' + c.arch, r, !c.up);
+        });
+      })(card, reading);
       imgWrap.appendChild(cImg);
 
       // テキスト
