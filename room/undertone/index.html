@@ -3229,20 +3229,18 @@ function submitUtPw() {
     var beerFortBtn = document.getElementById('nagi-beer-fortune-btn');
     var beerTap = document.getElementById('nagi-beer-tap');
     document.getElementById('nagi-beer-img').src = pick.img;
-    document.getElementById('nagi-beer-line').textContent = pick.line;
-    if (beerFortBtn) beerFortBtn.style.display = 'none';
-    if (beerTap) beerTap.style.display = 'block';
-    pop.classList.add('show');
-    // 3回ごと：「お礼に」→ 占いボタン表示
+    // 3回ごと：最初から「お礼に」＋占いボタンを表示（tap で閉じさせない）
     if (total % 3 === 0) {
-      setTimeout(function() {
-        document.getElementById('nagi-beer-line').textContent = 'お礼に';
-        if (beerFortBtn) beerFortBtn.style.display = 'block';
-        if (beerTap) beerTap.style.display = 'none';
-      }, 2000);
+      document.getElementById('nagi-beer-line').textContent = 'お礼に';
+      if (beerFortBtn) beerFortBtn.style.display = 'block';
+      if (beerTap) beerTap.style.display = 'none';
     } else {
+      document.getElementById('nagi-beer-line').textContent = pick.line;
+      if (beerFortBtn) beerFortBtn.style.display = 'none';
+      if (beerTap) beerTap.style.display = 'block';
       setTimeout(function() { pop.classList.remove('show'); }, 4500);
     }
+    pop.classList.add('show');
   };
   window.closeBeerPopup = function() {
     document.getElementById('nagi-beer-popup').classList.remove('show');
