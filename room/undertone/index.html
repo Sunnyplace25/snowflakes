@@ -1434,7 +1434,7 @@ function submitUtPw() {
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;text-align:center;">SPECIAL FORTUNE</p>
     <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:52px;text-align:center;"></p>
     <div id="celtic-cards-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 48px;"></div>
-    <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">終わり</button>
+    <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">── 閉じる ──</button>
   </div>
 
   <!-- Ending dialogue (appears over list) -->
@@ -3224,11 +3224,14 @@ function submitUtPw() {
     if (cnt <= 0) { showItemMsgPopup('../../item/beer.webp', 'ビールがありません\n\nガチャで手に入る'); return; }
     items['beer'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(80, 'ナギにビールを渡す');
-    renderStones();
     // 累計カウント更新
     var total = parseInt(localStorage.getItem('sf_nagi_beer_total') || '0') + 1;
     localStorage.setItem('sf_nagi_beer_total', String(total));
+    // 占いトリガー回は Snow 付与なし
+    if (total % 3 !== 0) {
+      SfSnow.addDirect(80, 'ナギにビールを渡す');
+    }
+    renderStones();
     // ナギポップアップ
     var pool = [
       { img: 'nagi_beer_1.webp', line: '……もらっとく' },
