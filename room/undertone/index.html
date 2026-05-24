@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v20260524-03 -->
+<!DOCTYPE html><!-- v20260524-04 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -3414,9 +3414,9 @@ function submitUtPw() {
     if (cnt <= 0) { showItemMsgPopup('../../item/beer.webp', 'ビールがありません\n\nガチャで手に入る'); return; }
     items['beer'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
-    SfSnow.addDirect(45, 'ビールを飲む');
+    SfSnow.addDirect(35, 'ビールを飲む');
     renderStones();
-    showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 45 Snow');
+    showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 35 Snow');
   };
 
   window.giveBeerToNagi = function() {
@@ -3430,7 +3430,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_beer_total', String(total));
     // 占いトリガー回は Snow 付与なし
     if (total % 3 !== 0) {
-      SfSnow.addDirect(45, 'ナギにビールを渡す');
+      SfSnow.addDirect(35, 'ナギにビールを渡す');
     }
     renderStones();
     // ナギポップアップ
