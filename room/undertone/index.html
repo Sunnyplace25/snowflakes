@@ -1455,10 +1455,10 @@ function submitUtPw() {
   </div>
 
   <!-- Phase B: card list -->
-  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px clamp(28px,6vw,120px) 160px;box-sizing:border-box;max-width:860px;margin:0 auto;">
+  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px clamp(16px,4vw,60px) 160px;box-sizing:border-box;max-width:1060px;margin:0 auto;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;text-align:center;">SPECIAL FORTUNE</p>
     <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:52px;text-align:center;"></p>
-    <div id="celtic-cards-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:36px 48px;"></div>
+    <div id="celtic-cards-list" style="display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(10px,1.5vw,18px);"></div>
     <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">── 閉じる ──</button>
   </div>
 
@@ -3846,46 +3846,43 @@ function submitUtPw() {
       var reading = CARD_READINGS[card.arch] || '';
 
       var item = document.createElement('div');
-      item.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:32px;display:flex;gap:18px;align-items:flex-start;';
+      item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 10px 20px;border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);';
 
       // カード画像
-      var imgWrap = document.createElement('div');
-      imgWrap.style.cssText = 'flex-shrink:0;';
       var cImg = document.createElement('img');
       cImg.src = 'card_back_b.webp';
-      cImg.style.cssText = 'width:52px;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 0 6px rgba(167,139,250,0.3));cursor:pointer;';
+      cImg.style.cssText = 'width:clamp(44px,7vw,64px);height:auto;object-fit:contain;display:block;filter:drop-shadow(0 0 6px rgba(167,139,250,0.3));cursor:pointer;';
       (function(c, r) {
         cImg.addEventListener('click', function() {
           openCardZoom('card_back_b.webp', c.name, c.num + '  ' + c.arch, r, !c.up);
         });
       })(card, reading);
-      imgWrap.appendChild(cImg);
+      item.appendChild(cImg);
 
       // テキスト
       var textWrap = document.createElement('div');
-      textWrap.style.cssText = 'flex:1;min-width:0;';
+      textWrap.style.cssText = 'width:100%;text-align:center;';
 
       var pos = document.createElement('p');
-      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:8px;';
-      pos.textContent = nums[i] + '   ' + CELTIC_POSITIONS[i];
+      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:6px;';
+      pos.textContent = nums[i] + '  ' + CELTIC_POSITIONS[i];
 
       var name = document.createElement('p');
-      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:16px;color:#e2e8f0;letter-spacing:2px;margin-bottom:4px;';
+      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:13px;color:#e2e8f0;letter-spacing:1px;margin-bottom:4px;line-height:1.6;';
       name.textContent = card.name;
 
       var sub = document.createElement('p');
-      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:3px;color:#334155;margin-bottom:10px;';
+      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:2px;color:#334155;margin-bottom:8px;';
       sub.textContent = card.num + '  ' + card.arch;
 
       var txt = document.createElement('p');
-      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;';
+      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:11px;color:#64748b;letter-spacing:0.5px;line-height:2;';
       txt.textContent = reading;
 
       textWrap.appendChild(pos);
       textWrap.appendChild(name);
       textWrap.appendChild(sub);
       textWrap.appendChild(txt);
-      item.appendChild(imgWrap);
       item.appendChild(textWrap);
       list.appendChild(item);
     }
