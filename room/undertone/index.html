@@ -1102,9 +1102,9 @@
         <span id="shop-cake-count" style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:2px;color:#e2e8f0;margin-right:8px;">× 0</span>
         <span id="cake-detail-arrow" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#475569;transition:transform 0.25s;display:inline-block;">›</span>
       </div>
-      <div id="cake-detail-body" style="display:none;flex-direction:column;gap:8px;padding:0 16px 16px;">
-        <button id="shop-cake-eat-btn" onclick="eatCake()" style="width:100%;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">食べる</button>
-        <button id="shop-cake-give-btn" onclick="giveCakeToNagi()" style="display:none;width:100%;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
+      <div id="cake-detail-body" style="display:none;flex-direction:row;gap:8px;padding:0 16px 16px;">
+        <button id="shop-cake-eat-btn" onclick="eatCake()" style="flex:1;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">食べる</button>
+        <button id="shop-cake-give-btn" onclick="giveCakeToNagi()" style="display:none;flex:1;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
       </div>
     </div>
 
@@ -1119,9 +1119,9 @@
         <span id="shop-beer-count" style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:2px;color:#e2e8f0;margin-right:8px;">× 0</span>
         <span id="beer-detail-arrow" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#475569;transition:transform 0.25s;display:inline-block;">›</span>
       </div>
-      <div id="beer-detail-body" style="display:none;flex-direction:column;gap:8px;padding:0 16px 16px;">
-        <button id="shop-beer-drink-btn" onclick="drinkBeer()" style="width:100%;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">飲む</button>
-        <button id="shop-beer-give-btn" onclick="giveBeerToNagi()" style="display:none;width:100%;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
+      <div id="beer-detail-body" style="display:none;flex-direction:row;gap:8px;padding:0 16px 16px;">
+        <button id="shop-beer-drink-btn" onclick="drinkBeer()" style="flex:1;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">飲む</button>
+        <button id="shop-beer-give-btn" onclick="giveBeerToNagi()" style="display:none;flex:1;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
       </div>
     </div>
 
@@ -1455,11 +1455,30 @@ function submitUtPw() {
   </div>
 
   <!-- Phase B: card list -->
-  <div id="celtic-phase-b" style="display:none;width:100%;padding:60px clamp(16px,4vw,60px) 160px;box-sizing:border-box;max-width:1060px;margin:0 auto;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:10px;text-align:center;">SPECIAL FORTUNE</p>
-    <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:52px;text-align:center;"></p>
-    <div id="celtic-cards-list" style="display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(10px,1.5vw,18px);"></div>
-    <button onclick="endCelticFortune()" style="display:block;width:100%;margin-top:64px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:20px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">── 閉じる ──</button>
+  <div id="celtic-phase-b" style="display:none;width:100%;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px 100px;box-sizing:border-box;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#1e293b;margin-bottom:8px;text-align:center;">SPECIAL FORTUNE</p>
+    <p id="celtic-list-question" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-bottom:40px;text-align:center;"></p>
+
+    <!-- 大きいカード表示 -->
+    <div style="width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:0;">
+      <!-- 進捗 -->
+      <p id="celtic-b-progress" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#1e293b;margin-bottom:20px;"></p>
+      <!-- カード枠 -->
+      <div id="celtic-b-card" style="width:100%;border:1px solid rgba(255,255,255,0.1);border-radius:20px;background:rgba(255,255,255,0.025);padding:32px 28px;cursor:pointer;transition:border-color 0.3s;" onclick="celticBNext()">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+          <img id="celtic-b-img" src="" alt="" style="width:clamp(110px,28vw,160px);height:auto;object-fit:contain;filter:drop-shadow(0 0 16px rgba(167,139,250,0.35));">
+          <div style="text-align:center;width:100%;">
+            <p id="celtic-b-pos" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:12px;"></p>
+            <p id="celtic-b-name" style="font-family:'Noto Serif JP',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></p>
+            <p id="celtic-b-arch" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;margin-bottom:20px;"></p>
+            <p id="celtic-b-reading" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:2.4;"></p>
+          </div>
+        </div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#1e293b;text-align:right;margin-top:24px;" id="celtic-b-tap">tap</p>
+      </div>
+    </div>
+
+    <button onclick="endCelticFortune()" style="display:block;margin-top:48px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#1e293b;cursor:pointer;padding:16px 0;transition:color 0.3s;" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#1e293b'">── 閉じる ──</button>
   </div>
 
   <!-- Ending dialogue (appears over list) -->
@@ -3659,6 +3678,7 @@ function submitUtPw() {
     'HANGED MAN':       'cards/12_hanged_man.png',
     'DEATH':            'cards/13_death.png',
     'TEMPERANCE':       'cards/14_temperance.png',
+    'DEVIL':            'cards/15_devil.png',
     'TOWER':            'cards/16_tower.png',
     'STAR':             'cards/17_star.png',
     'MOON':             'cards/18_moon.png',
@@ -3832,78 +3852,66 @@ function submitUtPw() {
     }
   };
 
+  var _celticBIdx = 0;
+  var _celticBNums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+
+  function _celticBRender(idx) {
+    var phaseB = document.getElementById('celtic-phase-b');
+    var prog   = document.getElementById('celtic-b-progress');
+    var card   = document.getElementById('celtic-b-card');
+    var imgEl  = document.getElementById('celtic-b-img');
+    var posEl  = document.getElementById('celtic-b-pos');
+    var nameEl = document.getElementById('celtic-b-name');
+    var archEl = document.getElementById('celtic-b-arch');
+    var readEl = document.getElementById('celtic-b-reading');
+    var tapEl  = document.getElementById('celtic-b-tap');
+
+    // NAGIまとめ（最後のスライド）
+    if (idx >= 10) {
+      var coreCard = _celtic.cards[0];
+      var coreData = coreCard.up || {};
+      var summary  = coreData.advice || CARD_READINGS[coreCard.arch] || '';
+      if (prog)  prog.textContent  = 'NAGI';
+      if (imgEl) imgEl.style.display = 'none';
+      if (posEl) posEl.textContent  = '';
+      if (nameEl) nameEl.textContent = '';
+      if (archEl) archEl.textContent = '';
+      if (readEl) { readEl.textContent = summary; readEl.style.color = '#c4b5fd'; readEl.style.fontSize = '15px'; }
+      if (tapEl)  tapEl.style.display = 'none';
+      if (card)   card.style.borderColor = 'rgba(196,181,253,0.2)';
+      return;
+    }
+
+    var c = _celtic.cards[idx];
+    var reading = CARD_READINGS[c.arch] || '';
+    var cardImg = (CARD_IMAGES && CARD_IMAGES[c.arch]) ? CARD_IMAGES[c.arch] : 'card_back_b.webp';
+
+    if (prog)  prog.textContent  = _celticBNums[idx] + '  /  10';
+    if (imgEl) { imgEl.src = cardImg; imgEl.style.display = ''; }
+    if (posEl) posEl.textContent  = _celticBNums[idx] + '   ' + CELTIC_POSITIONS[idx];
+    if (nameEl) nameEl.textContent = c.name;
+    if (archEl) archEl.textContent = c.num + '  ' + c.arch;
+    if (readEl) { readEl.textContent = reading; readEl.style.color = '#94a3b8'; readEl.style.fontSize = '13px'; }
+    if (tapEl)  tapEl.style.display = '';
+    if (card)   card.style.borderColor = 'rgba(255,255,255,0.1)';
+  }
+
   window.showCelticList = function() {
+    _celticBIdx = 0;
     document.getElementById('celtic-phase-a').style.display = 'none';
-    document.getElementById('celtic-phase-b').style.display = 'block';
+    var phaseB = document.getElementById('celtic-phase-b');
+    phaseB.style.display = 'flex';
     document.getElementById('celtic-cross-overlay').scrollTop = 0;
+    _celticBRender(0);
+  };
 
-    var list = document.getElementById('celtic-cards-list');
-    list.innerHTML = '';
-    var nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
-
-    for (var i = 0; i < 10; i++) {
-      var card = _celtic.cards[i];
-      var reading = CARD_READINGS[card.arch] || '';
-
-      var item = document.createElement('div');
-      item.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 10px 20px;border:1px solid rgba(255,255,255,0.06);border-radius:14px;background:rgba(255,255,255,0.02);';
-
-      // カード画像
-      var cImg = document.createElement('img');
-      cImg.src = 'card_back_b.webp';
-      cImg.style.cssText = 'width:clamp(44px,7vw,64px);height:auto;object-fit:contain;display:block;filter:drop-shadow(0 0 6px rgba(167,139,250,0.3));cursor:pointer;';
-      (function(c, r) {
-        cImg.addEventListener('click', function() {
-          openCardZoom('card_back_b.webp', c.name, c.num + '  ' + c.arch, r, !c.up);
-        });
-      })(card, reading);
-      item.appendChild(cImg);
-
-      // テキスト
-      var textWrap = document.createElement('div');
-      textWrap.style.cssText = 'width:100%;text-align:center;';
-
-      var pos = document.createElement('p');
-      pos.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:6px;';
-      pos.textContent = nums[i] + '  ' + CELTIC_POSITIONS[i];
-
-      var name = document.createElement('p');
-      name.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:13px;color:#e2e8f0;letter-spacing:1px;margin-bottom:4px;line-height:1.6;';
-      name.textContent = card.name;
-
-      var sub = document.createElement('p');
-      sub.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:2px;color:#334155;margin-bottom:8px;';
-      sub.textContent = card.num + '  ' + card.arch;
-
-      var txt = document.createElement('p');
-      txt.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:11px;color:#64748b;letter-spacing:0.5px;line-height:2;';
-      txt.textContent = reading;
-
-      textWrap.appendChild(pos);
-      textWrap.appendChild(name);
-      textWrap.appendChild(sub);
-      textWrap.appendChild(txt);
-      item.appendChild(textWrap);
-      list.appendChild(item);
+  window.celticBNext = function() {
+    _celticBIdx++;
+    if (_celticBIdx > 10) {
+      endCelticFortune();
+      return;
     }
-
-    // まとめアドバイス（①今置いている音 のカードから）
-    var coreCard = _celtic.cards[0];
-    var coreData = coreCard.up || {};
-    var summary = (coreData.advice || CARD_READINGS[coreCard.arch] || '');
-    if (summary) {
-      var sumWrap = document.createElement('div');
-      sumWrap.style.cssText = 'margin-top:40px;padding:28px 24px;border:1px solid rgba(196,181,253,0.15);border-radius:16px;background:rgba(196,181,253,0.03);';
-      var sumLabel = document.createElement('p');
-      sumLabel.style.cssText = 'font-family:"Cormorant Garamond",serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:16px;';
-      sumLabel.textContent = 'NAGI';
-      var sumText = document.createElement('p');
-      sumText.style.cssText = 'font-family:"Noto Serif JP",serif;font-size:14px;color:#c4b5fd;letter-spacing:2px;line-height:2.4;';
-      sumText.textContent = summary;
-      sumWrap.appendChild(sumLabel);
-      sumWrap.appendChild(sumText);
-      list.appendChild(sumWrap);
-    }
+    _celticBRender(_celticBIdx);
   };
 
   window.endCelticFortune = function() {
