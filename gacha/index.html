@@ -1290,14 +1290,14 @@ function sfShare() {
     // プロテインコーヒー：12%
     var tenProtein = Math.random() < 0.12;
     if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
-    // チョコレート：80%で1個 + 10%で2個目
-    var tenChoco = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    // チョコレート：30%で1個
+    var tenChoco = Math.random() < 0.30 ? 1 : 0;
     if (tenChoco) SfSnow.addMItemDirect('chocolate_hayate', tenChoco);
-    // ビール：80%で1個 + 10%で2個目
-    var tenBeer = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    // ビール：30%で1個
+    var tenBeer = Math.random() < 0.30 ? 1 : 0;
     if (tenBeer) SfSnow.addMItemDirect('beer', tenBeer);
-    // クッキー：80%で1個 + 10%で2個目
-    var tenCookie = (Math.random() < 0.80 ? 1 : 0) + (Math.random() < 0.10 ? 1 : 0);
+    // クッキー：30%で1個
+    var tenCookie = Math.random() < 0.30 ? 1 : 0;
     if (tenCookie) SfSnow.addMItemDirect('cookie', tenCookie);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
