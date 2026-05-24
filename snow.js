@@ -395,4 +395,24 @@
 
   document.addEventListener('DOMContentLoaded', updateUI);
 
+  /* ── GA4 自動リンクトラッキング ── */
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.href || '';
+    var ev = null;
+    if (/amzn\.asia|amazon\.co\.jp/i.test(href))          ev = 'click_kindle';
+    else if (/ncode\.syosetu|syosetu\.com/i.test(href))   ev = 'click_novel';
+    else if (/open\.spotify\.com/i.test(href))            ev = 'click_spotify';
+    else if (/instagram\.com/i.test(href))                ev = 'click_instagram';
+    else if (/youtube\.com|music\.youtube/i.test(href))   ev = 'click_youtube';
+    else if (/twitter\.com|x\.com/i.test(href))          ev = 'click_x';
+    else if (/suno\.com/i.test(href))                     ev = 'click_suno';
+    else if (/\/sweets\//i.test(href))                    ev = 'enter_sweets';
+    else if (/\/undertone\//i.test(href))                 ev = 'enter_undertone';
+    if (ev && typeof gtag === 'function') {
+      gtag('event', ev, { link_url: href });
+    }
+  });
+
 })(window);
