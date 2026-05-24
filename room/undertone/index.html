@@ -1802,6 +1802,7 @@ function submitUtPw() {
       { label:'CAT',
         desc:'路地の奥に猫が一匹いる。\nこちらを見て、動かない',
         x:'85%', y:'65%',
+        audio:'sound/cat_meow.mp3',
         chars:[
           { char:'hayate', speech:'猫だ。なつかないか', weight:2 },
           { char:'hinata', speech:'……知ってる顔だ', weight:1 },
@@ -2539,6 +2540,11 @@ function submitUtPw() {
   function clickHotspot(spot) {
     document.getElementById('hotspot-label').textContent = spot.label;
     document.getElementById('hotspot-desc').textContent  = spot.desc;
+    if (spot.audio) {
+      var sfx = new Audio(spot.audio);
+      sfx.volume = 0.7;
+      sfx.play().catch(function(){});
+    }
     // 石発見チャンス（2巡目以降 10%）
     var stoneFoundEl = document.getElementById('hotspot-stone-found');
     stoneFoundEl.style.display = 'none';
