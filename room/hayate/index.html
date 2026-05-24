@@ -694,6 +694,24 @@
         </div>
       </div>
 
+      <!-- 古いドラムスティック -->
+      <div class="il-item" id="il-drumstick-item">
+        <div class="il-header" onclick="toggleIlItem('il-drumstick-item')">
+          <span class="item-log-tag" id="il-drumstick-tag"><img src="../../item/drumstick.webp" alt="item">古いドラムスティック</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-drumstick-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-drumstick-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/drumstick.webp" alt="古いドラムスティック" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;">古いドラムスティック</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">バッグに雑に入っていた1本。<br>折れたわけでも、捨てたわけでもない。</p>
+          </div>
+        </div>
+      </div>
+
       <!-- 黄色い石のピアス -->
       <div class="il-item" id="il-earring-item">
         <div class="il-header" onclick="toggleIlItem('il-earring-item')">
@@ -731,7 +749,7 @@
       <button class="room-hotspot" style="left:79%;top:48%;" onclick="event.stopPropagation();openRoomHotspot('やることリスト','書くけど、あまり減らない。')">+</button>
       <button class="room-hotspot" style="left:63%;top:60%;" onclick="event.stopPropagation();openRoomHotspot('ダンボール箱','なんとなく捨てられないものが\n雑に入っている。')">+</button>
       <button class="room-hotspot" style="left:55%;top:78%;" onclick="event.stopPropagation();openRoomHotspot('ソファ','寝落ち率が高い。')">+</button>
-      <button class="room-hotspot" style="left:47%;top:73%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n1本だけドラムスティックが余分に入っている。')">+</button>
+      <button class="room-hotspot" style="left:47%;top:73%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n古いドラムスティックが雑に入っている。','drumstick_hayate')">+</button>
     </div>
   </div>
 
@@ -748,10 +766,21 @@
       document.getElementById('room-light').classList.remove('open');
     }
 
-    function openRoomHotspot(label, desc) {
+    function openRoomHotspot(label, desc, itemKey) {
       document.getElementById('hayate-hs-label').textContent = label;
       document.getElementById('hayate-hs-desc').textContent  = desc;
       document.getElementById('hayate-hs-popup').classList.add('show');
+      if (itemKey && SfSnow.addUnlocked) {
+        var isNew = !SfSnow.isUnlocked(itemKey);
+        SfSnow.addUnlocked(itemKey);
+        if (isNew) {
+          setTimeout(function() {
+            var il = document.getElementById('il-drumstick-item');
+            if (il) il.classList.add('open');
+            renderDrumstickLog();
+          }, 400);
+        }
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -943,6 +972,18 @@
         var el1 = document.getElementById('il-1-item');
         if (el1) el1.classList.add('open');
       }
+
+      // 古いドラムスティック（バッグホットスポットで入手）
+      function renderDrumstickLog() {
+        if (SfSnow.isUnlocked('drumstick_hayate')) {
+          revealItemTag('il-drumstick-tag', '../../item/drumstick.webp', '古いドラムスティック');
+          var dLocked = document.getElementById('il-drumstick-locked');
+          var dOwned  = document.getElementById('il-drumstick-owned');
+          if (dLocked) dLocked.style.display = 'none';
+          if (dOwned)  dOwned.style.display  = '';
+        }
+      }
+      renderDrumstickLog();
 
       // 黄色い石のピアス（解放条件：後日設定、キー：earring_hayate）
       if (SfSnow.isUnlocked('earring_hayate')) {
