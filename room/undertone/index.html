@@ -2656,7 +2656,7 @@ function submitUtPw() {
   var _ENTRANCE_IMGS  = { hinata: 'char_hinata.webp', kouta: 'char_kouta.webp', hayate: 'char_hayate.webp' };
   var _entranceReturning = false;
 
-  function showEntranceOverlay(returning) {
+  window.showEntranceOverlay = function showEntranceOverlay(returning) {
     _entranceReturning = !!returning;
     var ch4Active = _seenProseScenes.has(15); // 4-1読了（仮・確定後更新）
     var char, pool;
