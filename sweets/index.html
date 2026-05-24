@@ -5083,7 +5083,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (section) section.style.display = anyVisible ? '' : 'none';
 
     // レアアイテム: 入手済みは正式名・アイコン表示、未入手は ???
-    function updateRareItem(imgId, nameId, checkId, itemKey, itemName, normalOpacity) {
+    function updateRareItem(imgId, nameId, checkId, itemKey, itemName, normalOpacity, contentUrl) {
       var img   = document.getElementById(imgId);
       var name  = document.getElementById(nameId);
       var check = document.getElementById(checkId);
@@ -5096,14 +5096,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         name.style.fontSize   = '';
         name.style.letterSpacing = '';
         name.style.color  = '#cbd5e1';
-        if (check) check.textContent = '✓';
+        if (check) {
+          if (contentUrl) {
+            check.innerHTML = '<a href="' + contentUrl + '" target="_blank" style="font-size:9px;color:#93c5fd;text-decoration:none;padding:3px 9px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);letter-spacing:2px;font-family:\'Cormorant Garamond\',serif;white-space:nowrap;">CONTENT</a>';
+          } else {
+            check.textContent = '✓';
+          }
+        }
       }
     }
     updateRareItem('ri-cassette-img', 'ri-cassette-name', 'ri-cassette-check', 'cassette_hinata',           '古いカセットテープ');
     updateRareItem('ri-pendant-img',  'ri-pendant-name',  'ri-pendant-check',  'pendant_hinata',           '青い石のネックレス');
-    updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘');
-    updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little Snow（Law）USBメモリ');
-    updateRareItem('ri-whitepick-img', 'ri-whitepick-name', 'ri-whitepick-check', 'white_pick_hinata', '白いピック');
+    updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘',    null, 'https://www.instagram.com/reel/DXhJx4QDybN/');
+    updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little snow (Raw) USBメモリ', null, 'https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa');
+    updateRareItem('ri-whitepick-img', 'ri-whitepick-name', 'ri-whitepick-check', 'white_pick_hinata', '白いピック',               null, 'https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',              '黒い石のシルバーリング');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',      'Snow flakes ライブチケット');
     updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
