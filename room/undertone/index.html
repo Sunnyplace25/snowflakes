@@ -2602,7 +2602,7 @@ function submitUtPw() {
     if (spot.entrance) {
       setTimeout(function() {
         document.getElementById('hotspot-popup').classList.remove('show');
-        showEntranceOverlay();
+        showEntranceOverlay(visited);
       }, 1400);
     }
   }
@@ -2632,7 +2632,7 @@ function submitUtPw() {
       currentScene++;
       renderScene();
     } else {
-      showEntranceOverlay();
+      showEntranceOverlay(visited);
     }
   };
 
