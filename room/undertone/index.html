@@ -1466,7 +1466,7 @@ function submitUtPw() {
       <!-- カード枠 -->
       <div id="celtic-b-card" style="width:100%;border:1px solid rgba(255,255,255,0.1);border-radius:20px;background:rgba(255,255,255,0.025);padding:32px 28px;cursor:pointer;transition:border-color 0.3s;" onclick="celticBNext()">
         <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
-          <img id="celtic-b-img" src="" alt="" style="width:clamp(110px,28vw,160px);height:auto;object-fit:contain;filter:drop-shadow(0 0 16px rgba(167,139,250,0.35));">
+          <img id="celtic-b-img" src="" alt="" style="width:140px;height:210px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(167,139,250,0.35));flex-shrink:0;">
           <div style="text-align:center;width:100%;">
             <p id="celtic-b-pos" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:12px;"></p>
             <p id="celtic-b-name" style="font-family:'Noto Serif JP',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></p>
@@ -3884,12 +3884,11 @@ function submitUtPw() {
 
     var c = _celtic.cards[idx];
     var reading = CARD_READINGS[c.arch] || '';
-    var cardImg = (CARD_IMGS[c.arch]) ? CARD_IMGS[c.arch] : 'card_back_b.webp';
     var isRev = !c.up;
 
     if (prog)  prog.textContent  = _celticBNums[idx] + '  /  10';
     if (imgEl) {
-      imgEl.src = cardImg;
+      imgEl.src = 'card_back_b.webp';
       imgEl.style.display = '';
       imgEl.style.transform = isRev ? 'rotate(180deg)' : '';
     }
