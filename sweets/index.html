@@ -4718,8 +4718,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     // ── 交換系アイテムポップアップ（キャラポップアップなし・入手済み対応） ──
-    // img: 画像パス or 絵文字, name: アイテム名, alreadyHad: true=入手済みメッセージ
-    function showItemExchangePopup(img, name, alreadyHad) {
+    // img: 画像パス or 絵文字, name: アイテム名, alreadyHad: true=入手済みメッセージ, useMsg: カスタムメッセージ
+    function showItemExchangePopup(img, name, alreadyHad, useMsg) {
       _noteItemPendingChara = null; // 閉じてもキャラポップアップを出さない
       var imgEl    = document.getElementById('note-item-img');
       var emojiEl  = document.getElementById('note-item-emoji');
@@ -4740,7 +4740,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       nameEl.textContent = name;
       if (descEl) descEl.style.display = 'none';
       labelEl.style.color = '#94a3b8';
-      if (msgEl) msgEl.textContent = alreadyHad ? 'このアイテムは入手済みです' : 'を入手しました';
+      if (msgEl) msgEl.textContent = alreadyHad ? 'このアイテムは入手済みです' : (useMsg || 'を入手しました');
       closeBtn.textContent       = '閉じる';
       closeBtn.style.color       = '#e2e8f0';
       closeBtn.style.borderColor = 'rgba(255,255,255,0.2)';
@@ -4752,7 +4752,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       showConfirm('交換しますか？', function() {
         if (typeof SfSnow !== 'undefined' && SfSnow.spendMonthlyItem('proteincoffee', 1)) {
           unlockNotes();
-          showItemExchangePopup('☕', 'プロテインコーヒー', false);
+          showItemExchangePopup('☕', 'プロテインコーヒー', false, 'を飲みました');
         } else {
           alert('プロテインコーヒーが足りません');
         }
@@ -5813,7 +5813,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     SfSnow.unlockItem(id);
     renderNotes(); // → initNotesCarousel()
     setTimeout(function() { scrollToNotes(id); }, 100);
-    showItemExchangePopup('☕', 'プロテインコーヒー', alreadyHad);
+    showItemExchangePopup('☕', 'プロテインコーヒー', alreadyHad, 'を飲みました');
     }); /* showConfirm callback end */
   }
 
