@@ -525,6 +525,17 @@
       </div>
     </div>
 
+    <!-- Book item found popup -->
+    <div class="room-hs-popup" id="kouta-book-found-popup">
+      <div class="room-hs-card" onclick="event.stopPropagation()">
+        <p class="room-hs-label" style="margin-bottom:18px;">FOUND</p>
+        <img src="../../item/book_kouta.png" style="width:110px;margin:0 auto 16px;display:block;">
+        <p class="room-hs-desc" style="margin-bottom:4px;">返しそびれた本</p>
+        <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">を見つけた</p>
+        <button id="kouta-book-receive-btn" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#fca5a5'">── 受け取る ──</button>
+      </div>
+    </div>
+
     <!-- Room hotspot popup -->
     <div class="room-hs-popup" id="kouta-hs-popup" onclick="this.classList.remove('show')">
       <div class="room-hs-card" onclick="event.stopPropagation()">
@@ -716,6 +727,24 @@
         </div>
       </div>
 
+      <!-- 返しそびれた本 -->
+      <div class="il-item" id="il-book-item">
+        <div class="il-header" onclick="toggleIlItem('il-book-item')">
+          <span class="item-log-tag" id="il-book-tag"><img src="../../item/book_kouta.png" alt="item">返しそびれた本</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-book-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-book-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/book_kouta.png" alt="返しそびれた本" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">返しそびれた本</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">返しそびれた本<br>……読み返すと、少し切なくなる。</p>
+          </div>
+        </div>
+      </div>
+
       <!-- 初めて張り替えたベースの弦 -->
       <div class="il-item" id="il-strings-item">
         <div class="il-header" onclick="toggleIlItem('il-strings-item')">
@@ -779,6 +808,32 @@
     var STRINGS_FIND_KEY = 'sf_kouta_found_first_strings';
     function hasStrings() { return localStorage.getItem(STRINGS_FIND_KEY) === '1'; }
 
+    var BOOK_FIND_KEY = 'sf_kouta_found_book';
+    function hasBook() { return localStorage.getItem(BOOK_FIND_KEY) === '1'; }
+
+    function revealBookItem() {
+      var tag = document.getElementById('il-book-tag');
+      if (tag) {
+        tag.innerHTML = '<img src="../../item/book_kouta.png" alt="item">返しそびれた本';
+        tag.classList.add('owned');
+      }
+      var locked = document.getElementById('il-book-locked');
+      var owned  = document.getElementById('il-book-owned');
+      if (locked) locked.style.display = 'none';
+      if (owned)  owned.style.display  = '';
+      var item = document.getElementById('il-book-item');
+      if (item) item.classList.add('open');
+      SfSnow.unlockItem('book_kouta');
+    }
+
+    function openBookHotspot() {
+      if (!hasBook()) {
+        document.getElementById('kouta-book-found-popup').classList.add('show');
+      } else {
+        openRoomHotspot('BOOK', '入手済みです');
+      }
+    }
+
     function revealStringsItem() {
       var tag = document.getElementById('il-strings-tag');
       if (tag) {
@@ -797,7 +852,7 @@
       if (!hasStrings()) {
         document.getElementById('kouta-item-found-popup').classList.add('show');
       } else {
-        openRoomHotspot('BOX', '捨てられないものが溜まっている箱。\nまだ色々と入っている。');
+        openRoomHotspot('BOX', '入手済みです');
       }
     }
 
@@ -984,6 +1039,17 @@
       // 弦アイテム：既取得なら即表示
       if (hasStrings()) revealStringsItem();
 
+      // 本アイテム
+      var bookReceiveBtn = document.getElementById('kouta-book-receive-btn');
+      if (bookReceiveBtn) {
+        bookReceiveBtn.addEventListener('click', function() {
+          localStorage.setItem(BOOK_FIND_KEY, '1');
+          document.getElementById('kouta-book-found-popup').classList.remove('show');
+          revealBookItem();
+        });
+      }
+      if (hasBook()) revealBookItem();
+
       // ITEM LOG
       function revealItemTag(tagId, imgSrc, name) {
         var tag = document.getElementById(tagId);
@@ -1033,7 +1099,7 @@
       <button class="room-hotspot" style="left:59%;top:58%;" onclick="event.stopPropagation();openRoomHotspot('BASS','ケースに入ったベース\n普段は使わない。でも定期的にメンテして鳴らす。')">+</button>
       <button class="room-hotspot" style="left:33%;top:63%;" onclick="event.stopPropagation();openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
       <button class="room-hotspot" style="left:79%;top:46%;" onclick="event.stopPropagation();openRoomHotspot('BOOKSHELF','好きな作家が数人いる。\nじつはハードカバー派。')">+</button>
-      <button class="room-hotspot" style="left:86%;top:54%;" onclick="event.stopPropagation();openRoomHotspot('BOOK','返しそびれた本\n……読み返すと、少し切なくなる。')">+</button>
+      <button class="room-hotspot" style="left:86%;top:54%;" onclick="event.stopPropagation();openBookHotspot()">+</button>
       <button class="room-hotspot" style="left:47%;top:15%;" onclick="event.stopPropagation();openBoxHotspot()">+</button>
     </div>
   </div>
