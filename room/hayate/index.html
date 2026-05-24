@@ -511,6 +511,7 @@
       <div class="room-hs-card" onclick="event.stopPropagation()">
         <p class="room-hs-label" id="hayate-hs-label">FOUND</p>
         <p class="room-hs-desc" id="hayate-hs-desc"></p>
+        <p id="hayate-hs-note" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;margin-bottom:16px;">入手済みです</p>
         <button onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
       </div>
     </div>
@@ -771,15 +772,19 @@
       document.getElementById('hayate-hs-label').textContent = label;
       document.getElementById('hayate-hs-desc').textContent  = desc;
       document.getElementById('hayate-hs-popup').classList.add('show');
-      if (itemKey && SfSnow.addUnlocked) {
+      var note = document.getElementById('hayate-hs-note');
+      if (note) note.style.display = 'none';
+      if (itemKey && SfSnow.unlockItem) {
         var isNew = !SfSnow.isUnlocked(itemKey);
-        SfSnow.addUnlocked(itemKey);
+        SfSnow.unlockItem(itemKey);
         if (isNew) {
           setTimeout(function() {
             var il = document.getElementById('il-drumstick-item');
             if (il) il.classList.add('open');
             renderDrumstickLog();
           }, 400);
+        } else {
+          if (note) note.style.display = 'block';
         }
       }
     }
