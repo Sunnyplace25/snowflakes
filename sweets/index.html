@@ -5898,12 +5898,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       : song.reward;
     SfSnow.addMItemDirect(key, 1);
     if (typeof renderItemRows === 'function') renderItemRows();
-    if (!SfSnow.isUnlocked(key)) {
-      SfSnow.unlockItem(key);
-      showNoteItemGet(key);
-    } else {
-      showNoteItemGetAgain(key); // 2回目以降: "このアイテムは入手済みです"
-    }
+    // 初回unlock（解放フラグ立て）と毎日のポップアップを分離
+    // dailyKeyをセットした直後 = 今日初めての取得 → "ゲットしました"
+    var isFirstEver = !SfSnow.isUnlocked(key);
+    if (isFirstEver) SfSnow.unlockItem(key);
+    showNoteItemGet(key); // 毎日初回は常に "を入手しました"
   }
 
   /* ── Music carousel ── */
