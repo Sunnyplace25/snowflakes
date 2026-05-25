@@ -620,12 +620,19 @@ function fullResetUndertone() {
   // Under tone の全状態を消去して第1章の最初から
   var utKeys = [
     'sf_undertone_visited', 'sf_undertone_visits', 'sf_undertone_count_total',
-    'sf_undertone_ch21_unlocked', 'sf_undertone_ch5_unlocked',
+    'sf_undertone_ch21_unlocked', 'sf_undertone_ch22_unlocked',
+    'sf_undertone_ch23_unlocked', 'sf_undertone_ch24_unlocked',
+    'sf_undertone_ch25_unlocked', 'sf_undertone_ch3_unlocked',
+    'sf_undertone_ch32_unlocked', 'sf_undertone_ch33_unlocked',
+    'sf_undertone_ch34_unlocked', 'sf_undertone_ch35_unlocked',
+    'sf_undertone_ch5_unlocked',
     'sf_undertone_max_scene', 'sf_undertone_explore_count',
     'sf_undertone_seen_prose', 'sf_undertone_equip_unlocked',
     'sf_undertone_tarot_imgs',
     'sf_ut_rawstones', 'sf_ut_rawstone_seen', 'sf_ut_appraised',
-    'sf_nagi_choco_total', 'sf_special_fortune_unlocked', 'sf_ut_young_nagi_revealed',
+    'sf_ut_sound', 'sf_ut_young_nagi_revealed', 'sf_ut_young_nagi_revealed_ch3',
+    'sf_nagi_beer_total', 'sf_nagi_choco_total', 'sf_nagi_cookie_total',
+    'sf_special_fortune_unlocked',
   ];
   utKeys.forEach(function(k) { localStorage.removeItem(k); });
   setAllProfiles();
