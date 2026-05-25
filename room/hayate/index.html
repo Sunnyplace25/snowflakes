@@ -974,9 +974,10 @@
       if (miniBtn && saved.indexOf('mini') === -1) {
         if (cur >= MINI_COST) miniBtn.classList.add('ready');
         miniBtn.addEventListener('click', function() {
-          if (!miniBtn.classList.contains('ready')) { showAlert('数が足りません'); return; }
+          var nowCandy = getCandy();
+          if (nowCandy < MINI_COST) { miniBtn.classList.remove('ready'); showAlert('数が足りません'); return; }
           showDialog('カシスキャンディー × ' + MINI_COST, function() {
-            if (!SfSnow.spendCandy(CANDY_TYPE, MINI_COST)) return;
+            if (!SfSnow.spendCandy(CANDY_TYPE, MINI_COST)) { showAlert('数が足りません'); return; }
             saved.push('mini');
             localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
             revealMini();
