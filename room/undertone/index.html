@@ -774,6 +774,40 @@
   </style>
 </head>
 <body>
+
+<!-- パスワードゲート -->
+<div id="pw-gate" style="position:fixed;inset:0;z-index:99999;background:#0c1220;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:100%;max-width:320px;text-align:center;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#334155;margin-bottom:32px;">UNDER TONE</p>
+    <input id="pw-input" type="password" placeholder="password" autocomplete="off"
+      style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;font-size:16px;padding:14px 16px;outline:none;text-align:center;letter-spacing:4px;font-family:'Cormorant Garamond',serif;">
+    <p id="pw-error" style="font-size:12px;color:#fca5a5;margin-top:12px;min-height:18px;"></p>
+  </div>
+</div>
+
+<script>
+(function() {
+  var PW = 'HARDGUMI';
+  var SK = 'sf_ut_auth';
+  if (sessionStorage.getItem(SK) === '1') {
+    document.getElementById('pw-gate').style.display = 'none';
+    return;
+  }
+  var input = document.getElementById('pw-input');
+  input.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    if (input.value === PW) {
+      sessionStorage.setItem(SK, '1');
+      document.getElementById('pw-gate').style.display = 'none';
+    } else {
+      document.getElementById('pw-error').textContent = 'パスワードが違います';
+      input.value = '';
+    }
+  });
+  input.focus();
+})();
+</script>
+
 <canvas id="snow"></canvas>
 <a class="back-link" href="../../sweets/">← SWEETs</a>
 <button id="sound-toggle" onclick="toggleSound()" style="position:fixed;top:20px;right:100px;z-index:50;background:none;border:none;cursor:pointer;font-size:15px;color:#475569;font-family:'Cormorant Garamond',serif;letter-spacing:2px;padding:2px 6px;transition:color 0.2s;" title="サウンド ON/OFF">♪</button>
