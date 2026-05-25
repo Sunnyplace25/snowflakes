@@ -367,6 +367,10 @@
       0%, 100% { box-shadow:0 0 8px 1px rgba(147,197,253,0.15);border-color:rgba(147,197,253,0.3); }
       50%       { box-shadow:0 0 22px 5px rgba(147,197,253,0.38);border-color:rgba(147,197,253,0.55); }
     }
+    @keyframes item-glow-pink {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(249,168,212,0.15);border-color:rgba(249,168,212,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(249,168,212,0.38);border-color:rgba(249,168,212,0.55); }
+    }
     @keyframes count-blink {
       0%, 100% { opacity:1; }
       50%       { opacity:0.3; }
@@ -928,6 +932,10 @@
             <tr id="item-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/beer.webp" alt="" style="width:32px;opacity:0.85;"> ビール</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-beer">0</span></td>
+            </tr>
+            <tr id="item-row-cookie" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/cookie.webp" alt="" style="width:32px;opacity:0.85;"> クッキー</td>
+              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-cookie">0</span></td>
             </tr>
             <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
@@ -4594,6 +4602,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_hayate.webp',
         charaLine: '一杯どうぞ'
       },
+      cookie: {
+        noteCardId: null,
+        img: '../item/cookie.webp',
+        name: 'クッキー',
+        color: '#f9a8d4',
+        chara: null, charaColor: '#f9a8d4',
+        charaImg: null,
+        charaLine: null
+      },
       chocolate_hayate: {
         noteCardId: null,
         img: '../item/chocolate.webp',
@@ -4705,7 +4722,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function closeNoteItemPopup() {
       document.getElementById('note-item-popup').classList.remove('show');
       var d = _noteItemPendingChara;
-      if (!d) return;
+      if (!d || !d.charaImg) return;
       setTimeout(function() {
         var popup  = document.getElementById('chara-popup');
         var nameEl = document.getElementById('chara-name');
@@ -5079,6 +5096,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-proteincoffee', count: items['proteincoffee']    || 0 },
       { rowId: 'item-row-chocolate',     count: items['chocolate_hayate'] || 0, spanId: 'sf-mitem-chocolate' },
       { rowId: 'item-row-beer',          count: items['beer']             || 0, spanId: 'sf-mitem-beer' },
+      { rowId: 'item-row-cookie',        count: items['cookie']           || 0, spanId: 'sf-mitem-cookie' },
       { rowId: 'item-row-pick',          count: picks,                            spanId: 'sf-pick-count-items' },
     ];
     var anyVisible = false;
@@ -5428,6 +5446,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate', rewardRepeatable:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_hodo_demo.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
+    { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/spring_waltz_sweets.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
@@ -5934,8 +5953,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     songs.forEach(function(item, i) {
       var unlocked = SfSnow.isUnlocked(item.id);
       var _mHasItem = item.reward && (!SfSnow.isUnlocked(item.reward) || item.rewardRepeatable);
-      var _mChara = item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
-      var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : '#fde68a';
+      var _mChara = item.chara || (item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '');
+      var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : _mChara === 'pink' ? '#f9a8d4' : '#fde68a';
       var c = document.createElement('div');
       c.className = 'nc-card';
       c.dataset.idx = i;
@@ -6007,14 +6026,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var unlocked = SfSnow.isUnlocked(item.id);
     var picks = SfSnow.getPicks();
     var ok = unlocked || picks >= item.cost.pick;
-    var showNew = item.isNew && (item.isNew === true || new Date() <= new Date(item.isNew));
+    var showNew = item.isNew && !SfSnow.isUnlocked(item.id) && (item.isNew === true || new Date() <= new Date(item.isNew));
 
     var _rewKeys = Array.isArray(item.reward) ? item.reward : (item.reward ? [item.reward] : []);
     var rewD = (!Array.isArray(item.reward) && item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
     var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
     var _mc_hasItem = item.reward && (!rewOk || item.rewardRepeatable);
     var _mc_chara = item.chara || (item.reward ? (Array.isArray(item.reward) ? 'hayate' : (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate')) : '');
-    var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
+    var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : _mc_chara === 'pink' ? ['#f9a8d4','rgba(249,168,212,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
     var glowStyle = _mc_hasItem ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     var newRight = '12px';
