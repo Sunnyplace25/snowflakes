@@ -4166,6 +4166,42 @@
 
     </div>
 
+    <!-- Live Archive section (backstage pass holders only) -->
+    <div class="section" id="live-archive-section" style="display:none;">
+      <div class="section-label">live archive</div>
+      <div style="max-width:480px;margin:0 auto;">
+
+        <!-- 準備中の表示（LIVE_ARCHIVE_URL が空の間） -->
+        <div id="live-archive-pending" style="text-align:center;padding:32px 0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:20px;">BACKSTAGE PASS</p>
+          <div onclick="openLiveArchivePendingPopup()" style="display:inline-block;cursor:pointer;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 36px;background:rgba(255,255,255,0.02);transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.05)'" onmouseleave="this.style.background='rgba(255,255,255,0.02)'">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:8px;color:#cbd5e1;margin-bottom:8px;">LIVE</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#475569;">▶ tap to enter</p>
+          </div>
+        </div>
+
+        <!-- YouTube 埋め込み（LIVE_ARCHIVE_URL が設定されたら表示） -->
+        <div id="live-archive-video" style="display:none;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-bottom:16px;">BACKSTAGE PASS</p>
+          <div style="position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#0c1220;">
+            <iframe id="live-archive-iframe" src="" title="Snow flakes Live Archive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:10px;"></iframe>
+          </div>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;text-align:center;margin-top:14px;">Sound only — Live Recording</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 次のライブはいつかな ポップアップ -->
+    <div id="live-pending-popup" onclick="closeLiveArchivePendingPopup()" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(12,18,32,0.7);backdrop-filter:blur(10px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.35s;">
+      <div onclick="event.stopPropagation()" style="text-align:center;max-width:300px;padding:0 24px;transform:translateY(16px) scale(0.95);transition:transform 0.35s cubic-bezier(.18,1.2,.45,1);" id="live-pending-box">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:24px;">LIVE ARCHIVE</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#e2e8f0;line-height:1.9;margin-bottom:8px;">次のライブは<br>いつかな</p>
+        <p style="font-size:11px;color:#475569;letter-spacing:1px;line-height:1.8;margin-bottom:28px;">映像準備中です。<br>もう少し待っていてね。</p>
+        <button onclick="closeLiveArchivePendingPopup()" style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:11px 32px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;">── 閉じる ──</button>
+      </div>
+    </div>
+
     <!-- Music section -->
     <div class="section" id="music-section">
       <div class="section-label">music</div>
@@ -4485,6 +4521,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof renderMusic === 'function') renderMusic();
       // Under tone 路地裏 section
       checkUndertoneSection();
+      // Live Archive section
+      checkLiveArchiveSection();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
     }
@@ -4542,6 +4580,47 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
+
+    // ── Live Archive ──
+    // 映像URLが決まったら下記に YouTube embed URL（例: 'https://www.youtube.com/embed/XXXXXXXX'）を入れる
+    var LIVE_ARCHIVE_URL = '';
+
+    function checkLiveArchiveSection() {
+      var hasPass = SfSnow.isUnlocked('backstage_pass');
+      var sec = document.getElementById('live-archive-section');
+      if (!sec) return;
+      if (!hasPass) { sec.style.display = 'none'; return; }
+      sec.style.display = '';
+      if (LIVE_ARCHIVE_URL) {
+        document.getElementById('live-archive-pending').style.display = 'none';
+        var videoWrap = document.getElementById('live-archive-video');
+        videoWrap.style.display = '';
+        var iframe = document.getElementById('live-archive-iframe');
+        if (iframe && !iframe.src) iframe.src = LIVE_ARCHIVE_URL;
+      } else {
+        document.getElementById('live-archive-pending').style.display = '';
+        document.getElementById('live-archive-video').style.display = 'none';
+      }
+    }
+
+    window.openLiveArchivePendingPopup = function() {
+      var pop = document.getElementById('live-pending-popup');
+      if (!pop) return;
+      pop.style.display = 'flex';
+      requestAnimationFrame(function() { requestAnimationFrame(function() {
+        pop.style.opacity = '1';
+        var box = document.getElementById('live-pending-box');
+        if (box) box.style.transform = 'none';
+      }); });
+    };
+    window.closeLiveArchivePendingPopup = function() {
+      var pop = document.getElementById('live-pending-popup');
+      if (!pop) return;
+      pop.style.opacity = '0';
+      var box = document.getElementById('live-pending-box');
+      if (box) box.style.transform = 'translateY(16px) scale(0.95)';
+      setTimeout(function() { pop.style.display = 'none'; }, 380);
+    };
 
     window.openUndertoneComingSoon = function() {
       var p = document.getElementById('undertone-coming-popup');
