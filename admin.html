@@ -607,6 +607,10 @@ function setAllProfiles() {
   localStorage.setItem('sf_undertone_admin', 'true');
 }
 
+function _setUndertoneAuth() {
+  sessionStorage.setItem('sf_ut_auth', '1');
+}
+
 function _clearUndertone() {
   var toRemove = [];
   for (var i = 0; i < localStorage.length; i++) {
@@ -623,12 +627,14 @@ function _clearUndertone() {
 
 function fullResetUndertone() {
   var n = _clearUndertone();
+  _setUndertoneAuth();
   setTestStatus('✓ リセット済み（' + n + 'キー削除）。第1章の最初から開始。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
 function startCh2Undertone() {
   _clearUndertone();
+  _setUndertoneAuth();
   localStorage.setItem('sf_undertone_visited', 'true');
   localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
@@ -642,6 +648,7 @@ function startCh2Undertone() {
 
 function startCh3Undertone() {
   _clearUndertone();
+  _setUndertoneAuth();
   localStorage.setItem('sf_undertone_visited', 'true');
   localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
