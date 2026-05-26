@@ -917,6 +917,7 @@
         <!-- 通常アイテム -->
         <div id="items-normal-wrap" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:14px;">ITEMS</p>
+          <!-- キャンディ3種（常時表示） -->
           <table style="width:100%;border-collapse:collapse;" id="items-table">
             <tr id="item-row-milk" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('milk')">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_milk.webp" alt="" style="width:32px;opacity:0.85;"> ミルクキャンディー</td>
@@ -926,31 +927,42 @@
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_honey.webp" alt="" style="width:32px;opacity:0.85;"> ハニーレモンキャンディー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-honey">0</span></td>
             </tr>
-            <tr id="item-row-cassis" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('cassis')">
+            <tr id="item-row-cassis" style="display:none;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByCandy('cassis')">
               <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/candy_cassis.webp" alt="" style="width:32px;opacity:0.85;"> カシスキャンディー</td>
               <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-candy-cassis">0</span></td>
             </tr>
-            <tr id="item-row-proteincoffee" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByItem()">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/proteincoffee.webp" alt="" style="width:32px;opacity:0.85;"> プロテインコーヒー</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-proteincoffee">0</span></td>
-            </tr>
-            <tr id="item-row-chocolate" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/chocolate.webp" alt="" style="width:32px;opacity:0.85;"> 一粒のチョコレート</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-chocolate">0</span></td>
-            </tr>
-            <tr id="item-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/beer.webp" alt="" style="width:32px;opacity:0.85;"> ビール</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-beer">0</span></td>
-            </tr>
-            <tr id="item-row-cookie" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/cookie.webp" alt="" style="width:32px;opacity:0.85;"> クッキー</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-cookie">0</span></td>
-            </tr>
-            <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
-              <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
-              <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count-items">0</span></td>
-            </tr>
           </table>
+          <!-- その他アイテム アコーディオン -->
+          <div id="items-more-wrap" style="display:none;">
+            <div onclick="toggleItemsMore()" style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 0;cursor:pointer;border-top:1px solid rgba(255,255,255,0.06);user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#64748b;">その他</span>
+              <span id="items-more-arrow" style="font-size:13px;color:#64748b;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="items-more-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;">
+                <tr id="item-row-proteincoffee" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.04)'" onmouseleave="this.style.background=''" onclick="showCharaPopupByItem()">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/proteincoffee.webp" alt="" style="width:32px;opacity:0.85;"> プロテインコーヒー</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-proteincoffee">0</span></td>
+                </tr>
+                <tr id="item-row-chocolate" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/chocolate.webp" alt="" style="width:32px;opacity:0.85;"> 一粒のチョコレート</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-chocolate">0</span></td>
+                </tr>
+                <tr id="item-row-beer" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/beer.webp" alt="" style="width:32px;opacity:0.85;"> ビール</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-beer">0</span></td>
+                </tr>
+                <tr id="item-row-cookie" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/cookie.webp" alt="" style="width:32px;opacity:0.85;"> クッキー</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-cookie">0</span></td>
+                </tr>
+                <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count-items">0</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
           <p id="items-empty-msg" style="font-size:10px;color:#64748b;margin-top:12px;text-align:center;letter-spacing:1px;">ガチャでアイテムを集めよう！</p>
         </div>
 
@@ -987,6 +999,10 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-whitepick-img" src="../item/white_pick_hinata.webp" alt="white_pick" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-whitepick-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-whitepick-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
+                <tr id="item-row-drinkcoin" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-drinkcoin-img" src="../item/drinkcoin_hinata.png" alt="drinkcoin" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-drinkcoin-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-drinkcoin-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
               </table>
             </div>
           </div>
@@ -1018,6 +1034,10 @@
                 <tr id="item-row-ring" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-ring-img" src="../item/ring_kouta.webp" alt="ring" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-ring-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-ring-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+                <tr id="item-row-shiori" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-shiori-img" src="../item/shiori_kouta.png" alt="shiori" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-shiori-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-shiori-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -5158,22 +5178,34 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
-    // 繰り返し取得アイテム（コースター・チョコレート）: count表示
-    function updateCountableItem(imgId, nameId, checkId, itemKey, itemName) {
+    // 繰り返し取得アイテム（コースター・ドリンクコイン・しおり）: count表示
+    function updateCountableItem(imgId, nameId, checkId, itemKey, itemName, color) {
       var img   = document.getElementById(imgId);
       var name  = document.getElementById(nameId);
       var check = document.getElementById(checkId);
       var count = (SfSnow.getMonthlyItems()[itemKey] || 0);
       var hasAny = SfSnow.isUnlocked(itemKey) || count > 0;
+      var c = color || '#fde68a';
       if (!img || !name) return;
       if (hasAny) {
         img.style.opacity = '0.85'; img.style.filter = '';
-        name.textContent = itemName; name.style.color = '#fde68a';
+        name.textContent = itemName; name.style.color = c;
         name.style.fontFamily = ''; name.style.fontSize = ''; name.style.letterSpacing = '';
-        if (check) { check.textContent = '× ' + count; check.style.color = '#fde68a'; check.style.animation = 'count-blink 2s ease-in-out infinite'; }
+        if (check) { check.textContent = '× ' + count; check.style.color = c; check.style.animation = 'count-blink 2s ease-in-out infinite'; }
       }
     }
-    updateCountableItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター');
+    updateCountableItem('ri-coaster-img',   'ri-coaster-name',   'ri-coaster-check',   'coaster_hayate',   'STARSの紙製コースター', '#fde68a');
+    updateCountableItem('ri-drinkcoin-img', 'ri-drinkcoin-name', 'ri-drinkcoin-check', 'drinkcoin_hinata', 'ドリンクコイン',        '#93c5fd');
+    updateCountableItem('ri-shiori-img',    'ri-shiori-name',    'ri-shiori-check',    'shiori_kouta',     'しおり',               '#fca5a5');
+    // items-more-wrap 表示制御（非キャンディアイテムを1件以上持っていれば表示）
+    var moreWrap = document.getElementById('items-more-wrap');
+    if (moreWrap) {
+      var mItems = SfSnow.getMonthlyItems();
+      var moreKeys = ['proteincoffee','chocolate_hayate','beer','cookie'];
+      var pickCount = SfSnow.getPick ? SfSnow.getPick() : (parseInt(localStorage.getItem('sf_pick')||'0',10));
+      var hasMore = pickCount > 0 || moreKeys.some(function(k){ return (mItems[k]||0) > 0; });
+      if (hasMore) moreWrap.style.display = '';
+    }
     // 静的NOTEカードのアイコン更新
     var staticNoteIcon = document.getElementById('static-note-ring-icon');
     if (staticNoteIcon) {
@@ -5187,6 +5219,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         staticNoteIcon.title = '???';
       }
     }
+  }
+
+  function toggleItemsMore() {
+    var body  = document.getElementById('items-more-body');
+    var arrow = document.getElementById('items-more-arrow');
+    if (!body) return;
+    var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+    body.style.maxHeight  = isOpen ? '0' : '500px';
+    if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
   }
 
   function toggleRareSection(chara) {
@@ -5466,7 +5507,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n　きっと\n　ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n　ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, isNew:true, reward:['chocolate_hayate','beer'], rewardRepeatable:true },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, isNew:true, reward:['chocolate_hayate','beer','cookie'], rewardRepeatable:true },
     { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_no_fuchi.mp3', cost:{ pick:2 }, isNew:'2026-05-24', reward:'coaster_hayate', rewardRepeatable:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_site.mp3', cost:{ pick:2 }, reward:'bass_strings_kouta' },
     { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_hodo_demo.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
