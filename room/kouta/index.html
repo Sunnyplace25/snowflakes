@@ -530,7 +530,7 @@
     <div class="room-hs-popup" id="kouta-book-found-popup">
       <div class="room-hs-card" onclick="event.stopPropagation()">
         <p class="room-hs-label" style="margin-bottom:18px;">FOUND</p>
-        <img src="../../item/book_kouta.png" style="width:110px;margin:0 auto 16px;display:block;">
+        <img src="../../item/book_kouta.webp" style="width:110px;margin:0 auto 16px;display:block;">
         <p class="room-hs-desc" style="margin-bottom:4px;">返しそびれた本</p>
         <p style="font-size:12px;letter-spacing:1px;color:#64748b;line-height:2;margin-bottom:16px;">もう、返せないのかもしれない。<br>……読み返すと、少し切なくなる。</p>
         <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">を見つけた</p>
@@ -749,7 +749,7 @@
       <!-- 返しそびれた本 -->
       <div class="il-item" id="il-book-item">
         <div class="il-header" onclick="toggleIlItem('il-book-item')">
-          <span class="item-log-tag" id="il-book-tag"><img src="../../item/book_kouta.png" alt="item">返しそびれた本</span>
+          <span class="item-log-tag" id="il-book-tag"><img src="../../item/book_kouta.webp" alt="item">返しそびれた本</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
@@ -757,7 +757,7 @@
             <span class="item-log-desc locked">まだもっていません</span>
           </div>
           <div id="il-book-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
-            <img src="../../item/book_kouta.png" alt="返しそびれた本" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+            <img src="../../item/book_kouta.webp" alt="返しそびれた本" style="width:180px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
             <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">返しそびれた本</p>
             <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">もう、返せないのかもしれない。<br>……読み返すと、少し切なくなる。</p>
             <a href="https://ncode.syosetu.com/n9009lo/69" target="_blank" style="display:inline-block;margin-top:14px;font-size:12px;color:#fca5a5;text-decoration:none;padding:6px 16px;border-radius:100px;border:1px solid rgba(252,165,165,0.35);background:rgba(252,165,165,0.07);letter-spacing:1px;">▶ 小説を読む ショーケース編</a>
@@ -835,7 +835,7 @@
     function revealBookItem() {
       var tag = document.getElementById('il-book-tag');
       if (tag) {
-        tag.innerHTML = '<img src="../../item/book_kouta.png" alt="item">返しそびれた本';
+        tag.innerHTML = '<img src="../../item/book_kouta.webp" alt="item">返しそびれた本';
         tag.classList.add('owned');
       }
       var locked = document.getElementById('il-book-locked');
@@ -851,7 +851,7 @@
       if (!hasBook()) {
         document.getElementById('kouta-book-found-popup').classList.add('show');
       } else {
-        showOwnedItem('../../item/book_kouta.png', '返しそびれた本', 'もう、返せないのかもしれない。\n……読み返すと、少し切なくなる。');
+        showOwnedItem('../../item/book_kouta.webp', '返しそびれた本', 'もう、返せないのかもしれない。\n……読み返すと、少し切なくなる。');
       }
     }
 
