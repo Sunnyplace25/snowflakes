@@ -1860,6 +1860,108 @@ function submitUtPw() {
   var _proseCloseCallback = null;
   var _seenProseScenes = new Set(JSON.parse(localStorage.getItem('sf_undertone_seen_prose') || '[]'));
 
+  /* ── Timed chapter unlock (1日1エピソード) ── */
+  // key: idx that needs timer, value: idx of previous chapter (must be read first)
+  var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15 };
+
+  function getTimedState(idx) {
+    var prevIdx = TIMED_CHAPTERS[idx];
+    if (!_seenProseScenes.has(prevIdx)) return { state: 'hidden' };
+    var readAt = parseInt(localStorage.getItem('sf_ut_ch_read_at_' + prevIdx) || '0');
+    if (!readAt) return { state: 'available' }; // 旧データ互換
+    var remaining = 86400000 - (Date.now() - readAt);
+    if (remaining <= 0) return { state: 'available' };
+    return { state: 'countdown', remaining: remaining };
+  }
+
+  function formatCountdown(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    return h + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  var _timedFlagMap = {
+    6: function() { ch22Unlocked = true; localStorage.setItem('sf_undertone_ch22_unlocked','true'); },
+    7: function() { ch23Unlocked = true; localStorage.setItem('sf_undertone_ch23_unlocked','true'); },
+    8: function() { ch24Unlocked = true; localStorage.setItem('sf_undertone_ch24_unlocked','true'); },
+    9: function() { ch25Unlocked = true; localStorage.setItem('sf_undertone_ch25_unlocked','true'); },
+   11: function() { ch32Unlocked = true; localStorage.setItem('sf_undertone_ch32_unlocked','true'); },
+   12: function() { ch33Unlocked = true; localStorage.setItem('sf_undertone_ch33_unlocked','true'); },
+   13: function() { ch34Unlocked = true; localStorage.setItem('sf_undertone_ch34_unlocked','true'); },
+   14: function() { ch35Unlocked = true; localStorage.setItem('sf_undertone_ch35_unlocked','true'); },
+   16: function() { ch42Unlocked = true; localStorage.setItem('sf_undertone_ch42_unlocked','true'); },
+  };
+
+  function applyTimedChapter(idx, legacyUnlocked) {
+    var item = document.getElementById('chapter-item-' + idx);
+    if (!item) return;
+    var btn = item.querySelector('.chapter-header');
+    var cdEl = document.getElementById('ch-countdown-' + idx);
+    if (legacyUnlocked) {
+      item.style.display = '';
+      if (btn) btn.style.display = '';
+      if (cdEl) cdEl.style.display = 'none';
+      return;
+    }
+    var ts = getTimedState(idx);
+    if (ts.state === 'hidden') {
+      item.style.display = 'none';
+    } else if (ts.state === 'available') {
+      if (_timedFlagMap[idx]) _timedFlagMap[idx]();
+      item.style.display = '';
+      if (btn) btn.style.display = '';
+      if (cdEl) cdEl.style.display = 'none';
+    } else {
+      // countdown
+      item.style.display = '';
+      if (btn) btn.style.display = 'none';
+      if (!cdEl) {
+        var chNum = (item.querySelector('.chapter-num') || {}).textContent || '';
+        cdEl = document.createElement('div');
+        cdEl.id = 'ch-countdown-' + idx;
+        cdEl.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;';
+        cdEl.innerHTML = '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#334155;">' + chNum + '</span>'
+          + '<span id="ch-timer-' + idx + '" style="font-family:\'Cormorant Garamond\',serif;font-size:13px;letter-spacing:2px;color:#475569;"></span>';
+        item.appendChild(cdEl);
+      }
+      cdEl.style.display = 'flex';
+      var timerEl = document.getElementById('ch-timer-' + idx);
+      if (timerEl) timerEl.textContent = formatCountdown(ts.remaining);
+    }
+  }
+
+  var _countdownInterval = null;
+  function startCountdownTimers() {
+    if (_countdownInterval) return;
+    _countdownInterval = setInterval(function() {
+      var anyActive = false;
+      Object.keys(TIMED_CHAPTERS).forEach(function(k) {
+        var idx = parseInt(k);
+        var ts = getTimedState(idx);
+        if (ts.state === 'countdown') {
+          var timerEl = document.getElementById('ch-timer-' + idx);
+          if (timerEl) timerEl.textContent = formatCountdown(ts.remaining);
+          anyActive = true;
+        } else if (ts.state === 'available') {
+          var flagged = document.getElementById('chapter-item-' + idx);
+          if (flagged && flagged.querySelector('.chapter-header') &&
+              flagged.querySelector('.chapter-header').style.display === 'none') {
+            clearInterval(_countdownInterval);
+            _countdownInterval = null;
+            renderChapterList();
+            return;
+          }
+        }
+      });
+      if (!anyActive) {
+        clearInterval(_countdownInterval);
+        _countdownInterval = null;
+      }
+    }, 1000);
+  }
+
   /* ── Character data ── */
   var CHARS = {
     kouta:  { img:'../../plofile/chibi_kouta.webp',  name:'KOUTA',  color:'#fca5a5' },
@@ -2337,27 +2439,27 @@ function submitUtPw() {
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
       if (i === 16) {
-        item.style.display = ch42Unlocked ? '' : 'none';
+        applyTimedChapter(16, ch42Unlocked);
       } else if (i === 15) {
-        item.style.display = ch4Unlocked ? '' : 'none';
+        item.style.display = ch4Unlocked ? '' : 'none'; // 第三章1話目：即時
       } else if (i === 14) {
-        item.style.display = ch35Unlocked ? '' : 'none';
+        applyTimedChapter(14, ch35Unlocked);
       } else if (i === 13) {
-        item.style.display = ch34Unlocked ? '' : 'none';
+        applyTimedChapter(13, ch34Unlocked);
       } else if (i === 12) {
-        item.style.display = ch33Unlocked ? '' : 'none';
+        applyTimedChapter(12, ch33Unlocked);
       } else if (i === 11) {
-        item.style.display = ch32Unlocked ? '' : 'none';
+        applyTimedChapter(11, ch32Unlocked);
       } else if (i === 10) {
-        item.style.display = ch3Unlocked ? '' : 'none';
+        item.style.display = ch3Unlocked ? '' : 'none'; // 第二章1話目：即時
       } else if (i === 9) {
-        item.style.display = ch25Unlocked ? '' : 'none';
+        applyTimedChapter(9, ch25Unlocked);
       } else if (i === 8) {
-        item.style.display = ch24Unlocked ? '' : 'none';
+        applyTimedChapter(8, ch24Unlocked);
       } else if (i === 7) {
-        item.style.display = ch23Unlocked ? '' : 'none';
+        applyTimedChapter(7, ch23Unlocked);
       } else if (i === 6) {
-        item.style.display = ch22Unlocked ? '' : 'none';
+        applyTimedChapter(6, ch22Unlocked);
       } else if (i === 5) {
         item.style.display = ch21Unlocked ? '' : 'none';
       } else if (i === 4) {
@@ -2401,6 +2503,7 @@ function submitUtPw() {
     var between4 = document.getElementById('ch-between-4');
     if (between4) between4.style.display = (ch35Unlocked && !ch4Unlocked) ? '' : 'none';
     renderCharCover();
+    startCountdownTimers();
   }
 
   var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
@@ -2510,72 +2613,9 @@ function submitUtPw() {
     if (!_seenProseScenes.has(idx)) {
       _seenProseScenes.add(idx);
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
-      // 2-1読了後に鑑定ボタン解放・2-2アンロック
-      if (idx === 5) {
-        updateAppraiseBtn();
-        if (!ch22Unlocked) {
-          ch22Unlocked = true;
-          localStorage.setItem('sf_undertone_ch22_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 2-2読了後に2-3アンロック
-      if (idx === 6) {
-        if (!ch23Unlocked) {
-          ch23Unlocked = true;
-          localStorage.setItem('sf_undertone_ch23_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 2-3読了後に2-4アンロック
-      if (idx === 7) {
-        if (!ch24Unlocked) {
-          ch24Unlocked = true;
-          localStorage.setItem('sf_undertone_ch24_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 2-4読了後に2-5アンロック
-      if (idx === 8) {
-        if (!ch25Unlocked) {
-          ch25Unlocked = true;
-          localStorage.setItem('sf_undertone_ch25_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 3-1読了後に3-2アンロック
-      if (idx === 10) {
-        if (!ch32Unlocked) {
-          ch32Unlocked = true;
-          localStorage.setItem('sf_undertone_ch32_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 3-2読了後に3-3アンロック
-      if (idx === 11) {
-        if (!ch33Unlocked) {
-          ch33Unlocked = true;
-          localStorage.setItem('sf_undertone_ch33_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 3-3読了後に3-4アンロック
-      if (idx === 12) {
-        if (!ch34Unlocked) {
-          ch34Unlocked = true;
-          localStorage.setItem('sf_undertone_ch34_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 3-4読了後に3-5アンロック
-      if (idx === 13) {
-        if (!ch35Unlocked) {
-          ch35Unlocked = true;
-          localStorage.setItem('sf_undertone_ch35_unlocked', 'true');
-          renderChapterList();
-        }
-      }
-      // 2-5読了後に第三章（3-1）解放
+      // 鑑定ボタン解放（1-1読了後）
+      if (idx === 5) updateAppraiseBtn();
+      // 章間アンロック：即時（2-5 → 3-1）
       if (idx === 14) {
         if (!ch4Unlocked) {
           ch4Unlocked = true;
@@ -2583,12 +2623,13 @@ function submitUtPw() {
           renderChapterList();
         }
       }
-      // 3-1読了後に3-2アンロック
-      if (idx === 15) {
-        if (!ch42Unlocked) {
-          ch42Unlocked = true;
-          localStorage.setItem('sf_undertone_ch42_unlocked', 'true');
+      // 章内タイムゲート：初回読了時にタイムスタンプ保存
+      var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15];
+      if (_timedPrevIdxs.indexOf(idx) !== -1) {
+        if (!localStorage.getItem('sf_ut_ch_read_at_' + idx)) {
+          localStorage.setItem('sf_ut_ch_read_at_' + idx, String(Date.now()));
           renderChapterList();
+          startCountdownTimers();
         }
       }
     }
