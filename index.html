@@ -903,9 +903,12 @@ function sfShare() {
         <p class="char-name" style="color:var(--hinata)" data-i18n="char-name-hinata">ヒナタ</p>
         <p class="char-role">Guitar &amp; Vocal</p>
         <p class="char-desc" data-i18n="char-desc-hinata">言葉にしないまま、音に向かう。</p>
-        <button class="like-btn h" id="btn-hinata" onclick="event.stopPropagation();handleLike('hinata')">
-          <span class="like-heart">♡</span><span id="count-hinata">—</span>
-        </button>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+          <button class="like-btn h" id="btn-hinata" style="margin-top:0;" onclick="event.stopPropagation();handleLike('hinata')">
+            <span class="like-heart">♡</span><span id="count-hinata">—</span>
+          </button>
+          <span style="font-size:11px;letter-spacing:2px;color:#93c5fd;pointer-events:none;">←応援する！</span>
+        </div>
       </div>
     </div>
     <div class="char-card k" style="cursor:pointer;" onclick="goRoom('room_kouta','room/kouta/')">
@@ -915,9 +918,12 @@ function sfShare() {
         <p class="char-name" style="color:var(--kouta)" data-i18n="char-name-kouta">コウタ</p>
         <p class="char-role">Bass</p>
         <p class="char-desc" data-i18n="char-desc-kouta">揺れを受け止め、形にする。</p>
-        <button class="like-btn k" id="btn-kouta" onclick="event.stopPropagation();handleLike('kouta')">
-          <span class="like-heart">♡</span><span id="count-kouta">—</span>
-        </button>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+          <button class="like-btn k" id="btn-kouta" style="margin-top:0;" onclick="event.stopPropagation();handleLike('kouta')">
+            <span class="like-heart">♡</span><span id="count-kouta">—</span>
+          </button>
+          <span style="font-size:11px;letter-spacing:2px;color:#fca5a5;pointer-events:none;">←応援する！</span>
+        </div>
       </div>
     </div>
     <div class="char-card y" style="cursor:pointer;" onclick="goRoom('room_hayate','room/hayate/')">
@@ -927,9 +933,12 @@ function sfShare() {
         <p class="char-name" style="color:var(--hayate)" data-i18n="char-name-hayate">ハヤテ</p>
         <p class="char-role">Drums</p>
         <p class="char-desc" data-i18n="char-desc-hayate">迷いごと鳴らして、前へ進む。</p>
-        <button class="like-btn y" id="btn-hayate" onclick="event.stopPropagation();handleLike('hayate')">
-          <span class="like-heart">♡</span><span id="count-hayate">—</span>
-        </button>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+          <button class="like-btn y" id="btn-hayate" style="margin-top:0;" onclick="event.stopPropagation();handleLike('hayate')">
+            <span class="like-heart">♡</span><span id="count-hayate">—</span>
+          </button>
+          <span style="font-size:11px;letter-spacing:2px;color:#fde68a;pointer-events:none;">←応援する！</span>
+        </div>
       </div>
     </div>
   </div>
