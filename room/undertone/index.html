@@ -1104,6 +1104,12 @@
         </button>
         <!-- 鑑定済み3種 -->
         <div id="shop-rawstone-types" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+        <!-- 少し光る石 × 10 交換 -->
+        <button class="choose-item choose-item--stone" id="hikaru-exchange-btn" onclick="exchangeHikaruStones()" style="display:none;width:100%;margin:0;">
+          <span class="choose-mark">✦</span>
+          <span class="choose-text">少し光る石 × 10 で交換</span>
+          <span class="choose-sub" id="hikaru-exchange-sub">所持 0 個</span>
+        </button>
         <!-- 渡す（ロック中） -->
         <button onclick="nagiveStone()" style="width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:50px;padding:12px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">渡す</button>
       </div>
@@ -3373,6 +3379,16 @@ function submitUtPw() {
         });
       }
     }
+    // 少し光る石 交換ボタン更新
+    var hikaruBtn = document.getElementById('hikaru-exchange-btn');
+    var hikaruSub = document.getElementById('hikaru-exchange-sub');
+    if (hikaruBtn) {
+      var hikaruCount = arr.filter(function(s) { return s === 'hikaru'; }).length;
+      hikaruBtn.style.display = '';
+      if (hikaruSub) hikaruSub.textContent = '所持 ' + hikaruCount + ' 個';
+      hikaruBtn.disabled = hikaruCount < 10;
+      hikaruBtn.style.opacity = hikaruCount >= 10 ? '1' : '0.45';
+    }
     if (!btn) return;
     var ch21Read = _seenProseScenes.has(5);
     if (ch21Read) {
@@ -3386,6 +3402,49 @@ function submitUtPw() {
 
   window.nagiveStone = function() {
     showSKPopup('NAGI', 'まだ、持ってろ');
+  };
+
+  window.exchangeHikaruStones = function() {
+    var arr = getRawStones();
+    var hikaruArr = arr.filter(function(s) { return s === 'hikaru'; });
+    if (hikaruArr.length < 10) {
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '少し光る石が足りない\n\nあと ' + (10 - hikaruArr.length) + ' 個必要');
+      return;
+    }
+    // 10個消費
+    var removed = 0;
+    var newArr = arr.filter(function(s) {
+      if (s === 'hikaru' && removed < 10) { removed++; return false; }
+      return true;
+    });
+    localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
+    updateAppraiseBtn();
+    // ランダム報酬（5択）
+    var roll = Math.floor(Math.random() * 5);
+    if (roll === 0) {
+      // お菓子
+      var candyTypes = ['milk', 'honey', 'cassis'];
+      var candyLabels = { milk: 'ミルクキャンディー', honey: 'ハニーレモンキャンディー', cassis: 'カシスキャンディー' };
+      var candyImgs  = { milk: '../../item/candy_milk.webp', honey: '../../item/candy_honey.webp', cassis: '../../item/candy_cassis.webp' };
+      var chosen = candyTypes[Math.floor(Math.random() * 3)];
+      SfSnow.addCandy(chosen);
+      showItemMsgPopup(candyImgs[chosen], candyLabels[chosen] + '\n\n＋ 1 個');
+    } else if (roll === 1) {
+      // Snow
+      SfSnow.addDirect(50, 'ナギ交換（光る石）');
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '＋ 50 Snow');
+    } else if (roll === 2) {
+      // アイテムガチャ券
+      SfSnow.addPick(1);
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', 'アイテムガチャ券\n\n＋ 1 枚');
+    } else if (roll === 3) {
+      // 部屋用小物
+      SfSnow.addMItemDirect('room_kobutsu', 1);
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '部屋用小物\n\n＋ 1 個');
+    } else {
+      // 未公開短編（QF） → まだ持っておけ
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '「まだ持っておけ」\n\n── Nagi');
+    }
   };
 
   window.toggleChocolateDetail = function() {
