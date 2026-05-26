@@ -2441,7 +2441,9 @@ document.addEventListener('visibilitychange', function() {
     if (typeof gtag === 'function') gtag('event', name, params);
   }
 
-  audio.volume = 0.20;
+  var _targetVol = 0.20;
+  audio.volume = 0;
+  audio.muted = true;
   var _autoPlayed = false;
   function _tryAutoPlay() {
     if (_autoPlayed) return;
@@ -2449,9 +2451,18 @@ document.addEventListener('visibilitychange', function() {
     audio.play().then(function() {
       playing = true;
       playBtn.textContent = '❚❚';
+      // muted 解除 → 音量フェードイン
+      audio.muted = false;
+      var step = 0, steps = 20;
+      var t = setInterval(function() {
+        step++;
+        audio.volume = Math.min(_targetVol * step / steps, _targetVol);
+        if (step >= steps) clearInterval(t);
+      }, 60);
     }).catch(function() {
-      // ブラウザにブロックされた場合は初回インタラクションで再生
       _autoPlayed = false;
+      audio.muted = false;
+      audio.volume = _targetVol;
     });
   }
 
@@ -2509,7 +2520,8 @@ document.addEventListener('visibilitychange', function() {
   };
 
   window.sfSetVolume = function(val) {
-    audio.volume = val;
+    _targetVol = parseFloat(val);
+    audio.volume = _targetVol;
   };
 
   window.sfSeek = function(e, bar) {
