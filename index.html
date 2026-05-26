@@ -2473,30 +2473,49 @@ document.addEventListener('visibilitychange', function() {
   #banner-item-img-wrap img { width:100%; height:100%; object-fit:contain; border-radius:10px; }
   #banner-item-label {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 10px; letter-spacing: 7px; color: #475569; margin-bottom: 10px;
+    font-size: 10px; letter-spacing: 7px; color: #475569; margin-bottom: 16px;
+  }
+  #banner-item-acquired {
+    font-size: 13px; color: #f9a8d4; letter-spacing: 2px; margin-bottom: 18px;
   }
   #banner-item-name {
     font-size: 17px; color: #e2e8f0; letter-spacing: 3px; margin-bottom: 14px;
   }
   #banner-item-desc {
     font-size: 13px; color: #94a3b8; line-height: 2; letter-spacing: 1px;
-    white-space: pre-line; margin-bottom: 28px;
+    white-space: pre-line; margin-bottom: 20px;
   }
+  #banner-item-sweets-note {
+    font-size: 11px; color: #64748b; letter-spacing: 1px; line-height: 1.8;
+    margin-bottom: 14px;
+  }
+  #banner-item-sweets-link {
+    display: block; text-decoration: none;
+    border: 1px solid rgba(249,168,212,0.2); border-radius: 50px;
+    padding: 10px 20px; color: #f9a8d4; background: rgba(249,168,212,0.04);
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 4px; transition: all 0.2s; width: 100%;
+    box-sizing: border-box; text-align: center; margin-bottom: 10px;
+  }
+  #banner-item-sweets-link:hover { border-color: rgba(249,168,212,0.5); background: rgba(249,168,212,0.08); }
   #banner-item-close {
-    background: none; border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 50px; padding: 12px 28px; color: #94a3b8;
+    background: none; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50px; padding: 10px 28px; color: #475569;
     font-family: 'Cormorant Garamond', serif; font-size: 11px;
     letter-spacing: 4px; cursor: pointer; transition: all 0.2s; width: 100%;
   }
-  #banner-item-close:hover { border-color: rgba(255,255,255,0.3); color: #e2e8f0; }
+  #banner-item-close:hover { border-color: rgba(255,255,255,0.2); color: #94a3b8; }
 </style>
 
 <div id="banner-item-popup" onclick="closeBannerItemPopup()">
   <div id="banner-item-card" onclick="event.stopPropagation()">
-    <div id="banner-item-img-wrap"><img id="banner-item-img" src="" alt=""></div>
     <p id="banner-item-label">ITEM GET</p>
+    <p id="banner-item-acquired">アイテムを入手しました</p>
+    <div id="banner-item-img-wrap"><img id="banner-item-img" src="" alt=""></div>
     <p id="banner-item-name"></p>
     <p id="banner-item-desc"></p>
+    <p id="banner-item-sweets-note">アイテムはSWEETs 内でコンテンツを<br>使用する鍵となります</p>
+    <a id="banner-item-sweets-link" href="./sweets/">SWEETs →</a>
     <button id="banner-item-close" onclick="closeBannerItemPopup()">── 受け取る ──</button>
   </div>
 </div>
