@@ -3556,7 +3556,7 @@ function submitUtPw() {
     var cookieTap = document.getElementById('nagi-cookie-tap');
     // 3回ごと：占いトリガー
     if (total % 3 === 0) {
-      document.getElementById('nagi-cookie-img').src = 'nagi_cookie_3.webp';
+      document.getElementById('nagi-cookie-img').src = 'nagi_beer_3.webp';
       document.getElementById('nagi-cookie-line').textContent = 'お礼に';
       if (cookieFortBtn) cookieFortBtn.style.display = 'block';
       if (cookieTap) cookieTap.style.display = 'none';
@@ -3565,12 +3565,12 @@ function submitUtPw() {
       var happy = Math.random() < 0.2;
       var pool, pick;
       if (happy) {
-        pool = [{ img: 'nagi_cookie_2.webp', line: 'もう一枚あるか' }];
+        pool = [{ img: 'nagi_beer_2.webp', line: 'もう一枚あるか' }];
         SfSnow.addDirect(35, 'ナギにクッキーを渡す');
       } else {
         pool = [
-          { img: 'nagi_cookie_1.webp', line: '……もらっとく' },
-          { img: 'nagi_cookie_1.webp', line: '悪くない' },
+          { img: 'nagi_beer_1.webp', line: '……もらっとく' },
+          { img: 'nagi_beer_1.webp', line: '悪くない' },
         ];
       }
       pick = pool[Math.floor(Math.random() * pool.length)];
