@@ -678,11 +678,6 @@
     var welcomeText = document.getElementById('welcome-text');
     if (visits === 1) {
       welcomeText.innerHTML = 'よく見つけたね！<br>ことりの部屋へようこそ！';
-    } else if (visits >= 20) {
-      welcomeText.innerHTML = visits + '回目の来訪だね。<br>バックステージパス、渡しておくね。';
-      // TODO: バックステージパス アイテム付与（準備でき次第実装）
-    } else if (visits >= 15) {
-      welcomeText.innerHTML = visits + '回目の来訪だね。<br>バックステージ、興味ある？';
     } else if (visits >= 10) {
       welcomeText.innerHTML = visits + '回目の来訪だね。<br>すっかり常連だね。';
     } else {
