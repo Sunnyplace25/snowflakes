@@ -956,11 +956,11 @@
         </div>
       </div>
 
-      <!-- 第3章ロックボタン（2-5読了後・3章未公開時） -->
+      <!-- 第3章ロックボタン（1-5読了後・2章未解放時） -->
       <div id="ch-between-3" style="display:none;padding:24px 0 8px;">
         <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
           <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第二章</span>
-          <span style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;color:#334155;">7月20日公開予定</span>
+          <span id="ch2-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#334155;"></span>
         </button>
       </div>
 
@@ -1009,11 +1009,11 @@
         </div>
       </div>
 
-      <!-- 第三章ロックボタン（2-5読了後・3章未公開時） -->
+      <!-- 第三章ロックボタン（2-5読了後・3章未解放時） -->
       <div id="ch-between-4" style="display:none;padding:24px 0 8px;">
         <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
           <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第三章</span>
-          <span style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;color:#334155;">近日公開</span>
+          <span id="ch3-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#334155;"></span>
         </button>
       </div>
 
@@ -1062,6 +1062,12 @@
 
     <!-- 仕切り -->
     <div style="border-top:1px solid rgba(255,255,255,0.05);margin:20px 0 24px;"></div>
+
+    <!-- MUSIC UNLOCKED セクション -->
+    <div id="shop-music-section" style="display:none;margin-bottom:24px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#4c4468;text-align:center;margin-bottom:14px;">MUSIC</p>
+      <div id="shop-music-tracks"></div>
+    </div>
 
     <!-- ORACLE セクション（占いメイン・強調） -->
     <div style="border:1px solid rgba(196,181,253,0.22);border-radius:18px;padding:20px 16px 16px;background:rgba(196,181,253,0.025);box-shadow:0 0 40px rgba(196,181,253,0.06) inset;margin-bottom:24px;">
@@ -1932,11 +1938,21 @@ function submitUtPw() {
     }
   }
 
+  function formatLockDays(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var d = Math.floor(s / 86400);
+    var h = Math.floor((s % 86400) / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    if (d > 0) return d + 'd ' + h + ':' + String(m).padStart(2,'0');
+    return h + ':' + String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+  }
+
   var _countdownInterval = null;
   function startCountdownTimers() {
     if (_countdownInterval) return;
     _countdownInterval = setInterval(function() {
       var anyActive = false;
+      // 24h 章内タイマー
       Object.keys(TIMED_CHAPTERS).forEach(function(k) {
         var idx = parseInt(k);
         var ts = getTimedState(idx);
@@ -1955,12 +1971,125 @@ function submitUtPw() {
           }
         }
       });
+      // 14日 章間タイマー
+      var _ch2At = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
+      if (_ch2At) {
+        var _r2 = Math.max(0, 14*86400000 - (Date.now() - _ch2At));
+        var el2 = document.getElementById('ch2-lock-timer');
+        if (el2 && el2.parentElement && el2.parentElement.parentElement &&
+            el2.parentElement.parentElement.style.display !== 'none') {
+          if (_r2 > 0) { el2.textContent = formatLockDays(_r2); anyActive = true; }
+          else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
+        }
+      }
+      var _ch3At = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
+      if (_ch3At) {
+        var _r3 = Math.max(0, 14*86400000 - (Date.now() - _ch3At));
+        var el3 = document.getElementById('ch3-lock-timer');
+        if (el3 && el3.parentElement && el3.parentElement.parentElement &&
+            el3.parentElement.parentElement.style.display !== 'none') {
+          if (_r3 > 0) { el3.textContent = formatLockDays(_r3); anyActive = true; }
+          else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
+        }
+      }
       if (!anyActive) {
         clearInterval(_countdownInterval);
         _countdownInterval = null;
       }
     }, 1000);
   }
+
+  /* ── Chapter Complete & Music Unlock ── */
+  var _SHOP_MUSIC = [
+    { key: 'sf_ut_hayate_unlocked', title: 'Under tone', sub: 'Vo.Hayate', src: 'sound/undertone_hayate.mp3' },
+    { key: 'sf_ut_hinata_unlocked', title: 'Under tone', sub: 'Vo.Hinata', src: 'sound/undertone_hinata.mp3' },
+    { key: 'sf_ut_kouta_unlocked',  title: 'Under tone', sub: 'Vo.Kouta',  src: 'sound/undertone_kouta.mp3'  },
+  ];
+  var _shopMusicAudio = null;
+  var _shopMusicPlaying = false;
+  var _shopMusicCurrent = null;
+
+  function renderShopMusic() {
+    var sec = document.getElementById('shop-music-section');
+    var wrap = document.getElementById('shop-music-tracks');
+    if (!sec || !wrap) return;
+    var unlocked = _SHOP_MUSIC.filter(function(m) { return localStorage.getItem(m.key); });
+    sec.style.display = unlocked.length > 0 ? '' : 'none';
+    wrap.innerHTML = '';
+    unlocked.forEach(function(m) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;margin-bottom:8px;';
+      var info = document.createElement('div');
+      info.innerHTML = '<p style="font-family:\'Cormorant Garamond\',serif;font-size:14px;letter-spacing:3px;color:#e2e8f0;">' + m.title + '</p>'
+        + '<p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-top:2px;">' + m.sub + '</p>';
+      var btn = document.createElement('button');
+      btn.dataset.src = m.src;
+      btn.style.cssText = 'background:none;border:1px solid rgba(196,181,253,0.3);border-radius:50%;width:36px;height:36px;color:#c4b5fd;font-size:14px;cursor:pointer;flex-shrink:0;';
+      btn.textContent = '▶';
+      btn.onclick = function() { toggleShopTrack(m.src, btn); };
+      row.appendChild(info);
+      row.appendChild(btn);
+      wrap.appendChild(row);
+    });
+  }
+
+  window.toggleShopTrack = function(src, btn) {
+    if (_shopMusicAudio && _shopMusicCurrent === src) {
+      if (_shopMusicPlaying) {
+        _shopMusicAudio.pause();
+        _shopMusicPlaying = false;
+        btn.textContent = '▶';
+      } else {
+        _shopMusicAudio.play();
+        _shopMusicPlaying = true;
+        btn.textContent = '❚❚';
+      }
+      return;
+    }
+    if (_shopMusicAudio) { _shopMusicAudio.pause(); }
+    document.querySelectorAll('#shop-music-tracks button').forEach(function(b) { b.textContent = '▶'; });
+    _shopMusicAudio = new Audio(src);
+    _shopMusicCurrent = src;
+    _shopMusicAudio.onended = function() { _shopMusicPlaying = false; btn.textContent = '▶'; };
+    _shopMusicAudio.play();
+    _shopMusicPlaying = true;
+    btn.textContent = '❚❚';
+  };
+
+  window.showChapterComplete = function(chNum, title, sub, src) {
+    var ov = document.getElementById('chapter-complete-overlay');
+    var numEl = document.getElementById('cc-num');
+    var unlockEl = document.getElementById('cc-unlock-block');
+    var trackTitle = document.getElementById('cc-track-title');
+    var trackSub = document.getElementById('cc-track-sub');
+    var ccPlayBtn = document.getElementById('cc-play-btn');
+    if (!ov) return;
+    if (numEl) numEl.textContent = 'CHAPTER ' + chNum + ' COMPLETE';
+    if (trackTitle) trackTitle.textContent = title;
+    if (trackSub) trackSub.textContent = sub;
+    if (unlockEl) unlockEl.style.opacity = '0';
+    ov.style.display = 'flex';
+    // シーケンシャル表示
+    setTimeout(function() {
+      if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
+    }, 1200);
+    // play ボタン
+    var _ccAudio = null;
+    if (ccPlayBtn) {
+      ccPlayBtn.textContent = '▶';
+      ccPlayBtn.onclick = function() {
+        if (!_ccAudio) { _ccAudio = new Audio(src); _ccAudio.onended = function() { ccPlayBtn.textContent = '▶'; }; }
+        if (_ccAudio.paused) { _ccAudio.play(); ccPlayBtn.textContent = '❚❚'; }
+        else { _ccAudio.pause(); ccPlayBtn.textContent = '▶'; }
+      };
+    }
+    renderShopMusic();
+  };
+
+  window.closeChapterComplete = function() {
+    var ov = document.getElementById('chapter-complete-overlay');
+    if (ov) ov.style.display = 'none';
+  };
 
   /* ── Character data ── */
   var CHARS = {
@@ -2499,9 +2628,40 @@ function submitUtPw() {
     // 2-5読了後・3章未公開時のみロックボタンを表示
     var between3 = document.getElementById('ch-between-3');
     if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
-    // 2-5読了後・第三章未解放時のみロックボタンを表示
+    // 14日タイマーチェック：2章自動解放
+    var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
+    if (_ch2UnlockAt && !ch3Unlocked && Date.now() - _ch2UnlockAt >= 14 * 86400000) {
+      ch3Unlocked = true;
+      localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
+    }
+    // 14日タイマーチェック：3章自動解放
+    var _ch3UnlockAt = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
+    if (_ch3UnlockAt && !ch4Unlocked && Date.now() - _ch3UnlockAt >= 14 * 86400000) {
+      ch4Unlocked = true;
+      localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
+    }
+    // ch-between-3：1-5読了後・2章未解放時
+    var ch1Done = !!localStorage.getItem('sf_ut_ch1_complete');
+    var between3 = document.getElementById('ch-between-3');
+    if (between3) {
+      between3.style.display = (ch1Done && !ch3Unlocked) ? '' : 'none';
+      if (ch1Done && !ch3Unlocked) {
+        var _rem2 = _ch2UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch2UnlockAt)) : 0;
+        var el2 = document.getElementById('ch2-lock-timer');
+        if (el2) el2.textContent = _rem2 > 0 ? formatLockDays(_rem2) : '';
+      }
+    }
+    // ch-between-4：2-5読了後・3章未解放時
+    var ch2Done = !!localStorage.getItem('sf_ut_ch2_complete');
     var between4 = document.getElementById('ch-between-4');
-    if (between4) between4.style.display = (ch35Unlocked && !ch4Unlocked) ? '' : 'none';
+    if (between4) {
+      between4.style.display = (ch2Done && !ch4Unlocked) ? '' : 'none';
+      if (ch2Done && !ch4Unlocked) {
+        var _rem3 = _ch3UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch3UnlockAt)) : 0;
+        var el3 = document.getElementById('ch3-lock-timer');
+        if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
+      }
+    }
     renderCharCover();
     startCountdownTimers();
   }
@@ -2615,14 +2775,6 @@ function submitUtPw() {
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
       // 鑑定ボタン解放（1-1読了後）
       if (idx === 5) updateAppraiseBtn();
-      // 章間アンロック：即時（2-5 → 3-1）
-      if (idx === 14) {
-        if (!ch4Unlocked) {
-          ch4Unlocked = true;
-          localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
-          renderChapterList();
-        }
-      }
       // 章内タイムゲート：初回読了時にタイムスタンプ保存
       var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15];
       if (_timedPrevIdxs.indexOf(idx) !== -1) {
@@ -2631,6 +2783,33 @@ function submitUtPw() {
           renderChapterList();
           startCountdownTimers();
         }
+      }
+      // 1-5読了 → CHAPTER 1 COMPLETE + Hayate楽曲解放 + 2章14日ロック
+      if (idx === 9 && !localStorage.getItem('sf_ut_ch1_complete')) {
+        localStorage.setItem('sf_ut_ch1_complete', 'true');
+        localStorage.setItem('sf_ut_hayate_unlocked', 'true');
+        if (!localStorage.getItem('sf_ut_ch2_unlock_at')) {
+          localStorage.setItem('sf_ut_ch2_unlock_at', String(Date.now()));
+        }
+        renderChapterList();
+        setTimeout(function() { showChapterComplete(1, 'Under tone', 'Vo.Hayate', 'sound/undertone_hayate.mp3'); }, 600);
+      }
+      // 2-5読了 → CHAPTER 2 COMPLETE + Hinata楽曲解放 + 3章14日ロック
+      if (idx === 14 && !localStorage.getItem('sf_ut_ch2_complete')) {
+        localStorage.setItem('sf_ut_ch2_complete', 'true');
+        localStorage.setItem('sf_ut_hinata_unlocked', 'true');
+        if (!localStorage.getItem('sf_ut_ch3_unlock_at')) {
+          localStorage.setItem('sf_ut_ch3_unlock_at', String(Date.now()));
+        }
+        renderChapterList();
+        setTimeout(function() { showChapterComplete(2, 'Under tone', 'Vo.Hinata', 'sound/undertone_hinata.mp3'); }, 600);
+      }
+      // 3-5読了 → CHAPTER 3 COMPLETE + Kouta楽曲解放
+      if (idx === 19 && !localStorage.getItem('sf_ut_ch3_complete')) {
+        localStorage.setItem('sf_ut_ch3_complete', 'true');
+        localStorage.setItem('sf_ut_kouta_unlocked', 'true');
+        renderChapterList();
+        setTimeout(function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3'); }, 600);
       }
     }
     document.getElementById('prose-label').textContent = ch.label;
@@ -2910,6 +3089,7 @@ function submitUtPw() {
     document.getElementById('explore-state').style.display = 'none';
     document.getElementById('shop-state').style.display   = 'block';
     renderStones();
+    renderShopMusic();
     updateAppraiseBtn();
     var exploreBtn = document.getElementById('explore-btn');
     if (exploreBtn) exploreBtn.textContent = exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
@@ -4627,6 +4807,16 @@ function submitUtPw() {
   }
   #nagi-beer-popup.show { display: flex; }
 </style>
+<div id="chapter-complete-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p id="cc-num" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;margin-bottom:40px;text-align:center;"></p>
+  <div id="cc-unlock-block" style="text-align:center;opacity:0;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:20px;">🔓 MUSIC UNLOCKED</p>
+    <p id="cc-track-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;"></p>
+    <p id="cc-track-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;margin-bottom:32px;"></p>
+    <button id="cc-play-btn" style="background:none;border:1px solid rgba(196,181,253,0.4);border-radius:50%;width:52px;height:52px;color:#c4b5fd;font-size:16px;cursor:pointer;margin-bottom:48px;">▶</button>
+  </div>
+  <button onclick="closeChapterComplete()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+</div>
 <div id="nagi-cookie-popup" onclick="closeCookiePopup()">
   <img id="nagi-cookie-img" src="" alt="NAGI" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:82vh;max-width:92%;width:auto;object-fit:contain;object-position:bottom center;pointer-events:none;">
   <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(8,13,24,0.85) 22%, rgba(8,13,24,0.05) 55%, transparent 100%);pointer-events:none;"></div>
