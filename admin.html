@@ -178,28 +178,19 @@
 
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button onclick="fullResetUndertone()" style="padding:14px;background:rgba(196,181,253,0.18);border:2px solid rgba(196,181,253,0.5);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.18)'">
-        ▶ 完全に最初から（第1章）Under tone を開く
+        ▶ 完全に頭から1章終わりまで（2章ロック状態）
       </button>
-      <button onclick="unlockUndertone()" style="padding:12px;background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.3);border-radius:10px;color:#c4b5fd;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.2)'" onmouseleave="this.style.background='rgba(196,181,253,0.1)'">
-        全プロフィール解放 → Under tone を開く
+      <button onclick="startCh2Undertone()" style="padding:14px;background:rgba(196,181,253,0.12);border:2px solid rgba(196,181,253,0.35);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.22)'" onmouseleave="this.style.background='rgba(196,181,253,0.12)'">
+        ▶ 2章開始から2章終わりまで（3章ロック状態）
       </button>
-      <button onclick="unlockUndertoneShop()" style="padding:12px;background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.2);border-radius:10px;color:#a78bfa;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.14)'" onmouseleave="this.style.background='rgba(196,181,253,0.06)'">
-        入店済みにして Under tone を開く（占いから直接）
-      </button>
-      <button onclick="unlockUndertoneCh2()" style="padding:12px;background:rgba(196,181,253,0.1);border:1px solid rgba(196,181,253,0.35);border-radius:10px;color:#e9d5ff;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.22)'" onmouseleave="this.style.background='rgba(196,181,253,0.1)'">
-        第2章状態で Under tone を開く
-      </button>
-      <button onclick="unlockUndertoneCh3()" style="padding:12px;background:rgba(196,181,253,0.15);border:1px solid rgba(196,181,253,0.5);border-radius:10px;color:#f3e8ff;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.15)'">
-        第3章状態で Under tone を開く
-      </button>
-      <button onclick="publishCh3()" style="padding:12px;background:rgba(134,239,172,0.1);border:1px solid rgba(134,239,172,0.35);border-radius:10px;color:#86efac;font-size:14px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(134,239,172,0.22)'" onmouseleave="this.style.background='rgba(134,239,172,0.1)'">
-        ▶ 第3章を公開する（sf_undertone_ch3_unlocked）
+      <button onclick="startCh3Undertone()" style="padding:14px;background:rgba(196,181,253,0.08);border:2px solid rgba(196,181,253,0.25);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.18)'" onmouseleave="this.style.background='rgba(196,181,253,0.08)'">
+        ▶ 3章開始から3章終わりまで（4章ロック状態）
       </button>
       <button onclick="resetUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.15);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.14)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
-        Under tone の状態をリセット（入店・訪問カウントを消す）
+        リセット（全undertone状態を消去）
       </button>
       <button onclick="lockUndertone()" style="padding:12px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.3);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(252,165,165,0.16)'" onmouseleave="this.style.background='rgba(252,165,165,0.06)'">
-        Under tone をロック（管理フラグを解除）
+        ロック（管理フラグを解除）
       </button>
     </div>
     <p id="test-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
@@ -616,8 +607,7 @@ function setAllProfiles() {
   localStorage.setItem('sf_undertone_admin', 'true');
 }
 
-function fullResetUndertone() {
-  // sf_undertone / sf_ut / sf_nagi / sf_special から始まるキーを全消去
+function _clearUndertone() {
   var toRemove = [];
   for (var i = 0; i < localStorage.length; i++) {
     var k = localStorage.key(i);
@@ -628,43 +618,30 @@ function fullResetUndertone() {
   toRemove.forEach(function(k) { localStorage.removeItem(k); });
   setAllProfiles();
   localStorage.setItem('sf_undertone_admin', 'true');
-  setTestStatus('✓ 完全リセット済み（' + toRemove.length + 'キー削除）。第1章の最初から始まります。');
+  return toRemove.length;
+}
+
+function fullResetUndertone() {
+  var n = _clearUndertone();
+  setTestStatus('✓ リセット済み（' + n + 'キー削除）。第1章の最初から開始。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
-function unlockUndertone() {
-  setAllProfiles();
-  localStorage.removeItem('sf_undertone_visited');
-  setTestStatus('✓ プロフィール解放済み。路地裏探索から始まります。');
-  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
-}
-
-function unlockUndertoneShop() {
-  setAllProfiles();
+function startCh2Undertone() {
+  _clearUndertone();
   localStorage.setItem('sf_undertone_visited', 'true');
-  setTestStatus('✓ 入店済みにしました。占いページが直接開きます。');
-  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
-}
-
-function unlockUndertoneCh2() {
-  setAllProfiles();
-  localStorage.setItem('sf_undertone_visited', 'true');
-  localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
-  localStorage.setItem('sf_undertone_ch22_unlocked', 'true');
-  localStorage.setItem('sf_undertone_ch23_unlocked', 'true');
-  localStorage.setItem('sf_undertone_ch24_unlocked', 'true');
-  localStorage.setItem('sf_undertone_ch25_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
+  localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
   localStorage.setItem('sf_undertone_max_scene', '3');
   localStorage.setItem('sf_undertone_explore_count', '2');
-  localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:1 }));
-  localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4,5,6,7,8,9]));
-  setTestStatus('✓ 第2章状態にしました（2-1〜2-5全話既読）。');
+  localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:2 }));
+  localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4]));
+  setTestStatus('✓ 第2章開始状態。第1章全読了・2-1から開始。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
-function unlockUndertoneCh3() {
-  setAllProfiles();
+function startCh3Undertone() {
+  _clearUndertone();
   localStorage.setItem('sf_undertone_visited', 'true');
   localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
@@ -672,29 +649,18 @@ function unlockUndertoneCh3() {
   localStorage.setItem('sf_undertone_ch23_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch24_unlocked', 'true');
   localStorage.setItem('sf_undertone_ch25_unlocked', 'true');
-  localStorage.setItem('sf_undertone_ch3_unlocked',  'true');
+  localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
   localStorage.setItem('sf_undertone_max_scene', '3');
   localStorage.setItem('sf_undertone_explore_count', '3');
   localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:3 }));
   localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4,5,6,7,8,9]));
-  setTestStatus('✓ 第3章状態にしました（第2章全話読了済み・第3章セクション開放）。');
+  setTestStatus('✓ 第3章開始状態。第1〜2章全読了・3-1から開始。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
 
-function publishCh3() {
-  localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
-  setTestStatus('✓ 第3章を公開しました（sf_undertone_ch3_unlocked = true）。Under tone を開いて確認してください。');
-}
-
 function resetUndertone() {
-  localStorage.removeItem('sf_undertone_visited');
-  localStorage.removeItem('sf_undertone_visits');
-  localStorage.removeItem('sf_undertone_count_total');
-  localStorage.removeItem('sf_undertone_ch21_unlocked');
-  localStorage.removeItem('sf_undertone_ch5_unlocked');
-  localStorage.removeItem('sf_undertone_max_scene');
-  localStorage.removeItem('sf_undertone_explore_count');
-  setTestStatus('✓ リセットしました（入店・訪問カウント消去）');
+  var n = _clearUndertone();
+  setTestStatus('✓ リセット済み（' + n + 'キー削除）');
 }
 
 function lockUndertone() {
