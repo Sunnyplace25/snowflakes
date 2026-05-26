@@ -1985,6 +1985,13 @@ function submitUtPw() {
           }
         }
       });
+      // 24h 1章解放タイマー
+      var _ch1At = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+      if (_ch1At && !ch21Unlocked) {
+        var _r1 = 86400000 - (Date.now() - _ch1At);
+        if (_r1 > 0) { updateCh2Btn(); anyActive = true; }
+        else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
+      }
       // 14日 章間タイマー
       var _ch2At = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
       if (_ch2At) {
@@ -2691,6 +2698,12 @@ function submitUtPw() {
     // 2-5読了後・3章未公開時のみロックボタンを表示
     var between3 = document.getElementById('ch-between-3');
     if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
+    // 24hタイマーチェック：1章自動解放
+    var _ch1UnlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+    if (_ch1UnlockAt && !ch21Unlocked && Date.now() - _ch1UnlockAt >= 86400000) {
+      ch21Unlocked = true;
+      localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+    }
     // 14日タイマーチェック：2章自動解放
     var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
     if (_ch2UnlockAt && !ch3Unlocked && Date.now() - _ch2UnlockAt >= 14 * 86400000) {
@@ -2737,10 +2750,9 @@ function submitUtPw() {
     startCountdownTimers();
   }
 
-  var CH2_UNLOCK_DATE = new Date('2026-06-22T00:00:00+09:00');
-
   function ch2ConditionMet() {
-    return new Date() >= CH2_UNLOCK_DATE;
+    var unlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+    return unlockAt > 0 && Date.now() - unlockAt >= 86400000;
   }
 
   function updateCh2Btn() {
@@ -2762,14 +2774,19 @@ function submitUtPw() {
       if (cdEl) cdEl.textContent = '';
     } else {
       if (cond) cond.textContent = '';
-      // カウントダウン
+      // カウントダウン（0-5読了から24h）
       var hintEl = document.getElementById('ch2-hint');
       if (cdEl) {
-        var diff = CH2_UNLOCK_DATE - new Date();
-        if (diff > 0) {
-          var days = Math.ceil(diff / 86400000);
-          cdEl.textContent = days + ' days';
-          if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
+        var unlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+        if (unlockAt > 0) {
+          var diff = 86400000 - (Date.now() - unlockAt);
+          if (diff > 0) {
+            cdEl.textContent = formatCountdown(diff);
+            if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
+          } else {
+            cdEl.textContent = '';
+            if (hintEl) hintEl.textContent = '';
+          }
         } else {
           cdEl.textContent = '';
           if (hintEl) hintEl.textContent = '';
@@ -2846,6 +2863,12 @@ function submitUtPw() {
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
       // 鑑定ボタン解放（1-1読了後）
       if (idx === 5) updateAppraiseBtn();
+      // 0-5読了 → 1章24hタイマー開始
+      if (idx === 4 && !localStorage.getItem('sf_ut_ch1_unlock_at')) {
+        localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now()));
+        updateCh2Btn();
+        startCountdownTimers();
+      }
       // 章内タイムゲート：初回読了時にタイムスタンプ保存
       var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15,16];
       if (_timedPrevIdxs.indexOf(idx) !== -1) {

@@ -643,6 +643,8 @@ function fullResetUndertone() {
   if (!confirm('Under tone を完全リセットして第1章の最初から開始しますか？')) return;
   var n = _clearUndertone();
   _setUndertoneAuth();
+  // 24h タイマー OFF（テスト用）
+  _bypassTimers();
   setTestStatus('✓ リセット済み（' + n + 'キー削除）。第1章の最初から開始。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
 }
@@ -712,6 +714,8 @@ function lockUndertone() {
 /* 24h タイマー全OFF（read_at を25時間前に設定） */
 function _bypassTimers() {
   var old = String(Date.now() - 25 * 3600000);
+  // 1章解放タイマー（0-5読了→24h待ち）もバイパス
+  localStorage.setItem('sf_ut_ch1_unlock_at', old);
   [5,6,7,8,10,11,12,13,15].forEach(function(i) {
     localStorage.setItem('sf_ut_ch_read_at_' + i, old);
   });
