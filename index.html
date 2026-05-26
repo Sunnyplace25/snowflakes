@@ -1845,10 +1845,17 @@ function sfShare() {
       }
     }
 
-    if (sessionStorage.getItem('charaShown')) return;
-
+    // 1日1回のみ表示（名前登録済みの場合）、未登録は従来通りsessionStorage
     var storedName = localStorage.getItem('sf_visitor_name');
     var isCoreFan  = localStorage.getItem('sf_backstage_pass') === 'true';
+    var POPUP_DAY_KEY = 'sf_chara_popup_day';
+    if (storedName) {
+      // 名前あり → 日次制御
+      if (localStorage.getItem(POPUP_DAY_KEY) === todayStr) return;
+    } else {
+      // 名前なし → セッション制御（初回のみ名前を聞く）
+      if (sessionStorage.getItem('charaShown')) return;
+    }
 
     var chars = [
       { name: 'HINATA', img: 'plofile/chibi_hinata.webp', color: '#93c5fd' },
@@ -2029,7 +2036,11 @@ function sfShare() {
 
       setTimeout(function() {
         popup.classList.add('show');
-        sessionStorage.setItem('charaShown', '1');
+        if (storedName) {
+          localStorage.setItem(POPUP_DAY_KEY, todayStr);
+        } else {
+          sessionStorage.setItem('charaShown', '1');
+        }
         setTimeout(closePopup, 5000);
       }, 2500);
     }
