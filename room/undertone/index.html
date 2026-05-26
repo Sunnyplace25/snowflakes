@@ -789,7 +789,7 @@
 (function() {
   var PW = 'HARDGUMI';
   var SK = 'sf_ut_auth';
-  if (sessionStorage.getItem(SK) === '1') {
+  if (sessionStorage.getItem(SK) === '1' || localStorage.getItem('sf_undertone_admin') === 'true') {
     document.getElementById('pw-gate').style.display = 'none';
     return;
   }
