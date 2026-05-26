@@ -5510,11 +5510,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         icon.style.filter  = 'grayscale(1)';
       }
     })();
-    // セクション並び替え: ITEMS → NOTES → MUSIC → ANOTHER
+    // セクション並び替え: ITEMS → NOTES → MUSIC → LIVE ARCHIVE → ANOTHER
     (function() {
       var main = document.querySelector('.wrapper') || document.body;
-      var itemsSection   = document.getElementById('items-section');
-      var musicSection   = document.getElementById('music-section');
+      var itemsSection       = document.getElementById('items-section');
+      var musicSection       = document.getElementById('music-section');
+      var liveArchiveSection = document.getElementById('live-archive-section');
       // NOTESセクション: section-label が "notes" を含む div.section
       var notesSection   = (function() {
         var sections = document.querySelectorAll('.section');
@@ -5536,10 +5537,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!itemsSection || !notesSection || !musicSection || !anotherSection) return;
       var parent = itemsSection.parentNode;
       if (!parent) return;
-      // itemsSection の直後に NOTES → MUSIC → ANOTHER の順で挿入
+      // itemsSection の直後に NOTES → MUSIC → LIVE ARCHIVE → ANOTHER の順で挿入
       var anchor = itemsSection.nextSibling;
       parent.insertBefore(notesSection, anchor);
       parent.insertBefore(musicSection, anchor);
+      if (liveArchiveSection) parent.insertBefore(liveArchiveSection, anchor);
       parent.insertBefore(anotherSection, anchor);
     })();
   });
