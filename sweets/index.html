@@ -4494,6 +4494,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _doEnter();
     }
 
+    // Under tone 0-5読了後 → 黄色い石のピアス 初回入手ポップアップ
+    function _checkEarringUnlock() {
+      if (typeof SfSnow === 'undefined') return;
+      if (SfSnow.isUnlocked('earring_hayate')) return;
+      var seen = JSON.parse(localStorage.getItem('sf_undertone_seen_prose') || '[]');
+      if (seen.indexOf(4) === -1) return;
+      SfSnow.unlockItem('earring_hayate');
+      if (typeof renderItemRows === 'function') renderItemRows();
+      if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
+      setTimeout(function() { showNoteItemGet('earring_hayate'); }, 800);
+    }
+
     function _checkShikishiDistribution() {
       // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布
       if (SWEETS_VERSION !== '2026-summer') return;
@@ -4525,6 +4537,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       checkUndertoneSection();
       // Live Archive section
       checkLiveArchiveSection();
+      // Under tone 0-5読了後 ピアス配布チェック
+      _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
     }
@@ -4779,6 +4793,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         chara: 'HAYATE', charaColor: '#fde68a',
         charaImg: '../plofile/chibi_hayate.webp',
         charaLine: 'どうぞ'
+      },
+      earring_hayate: {
+        noteCardId: null,
+        img: '../item/earring_hayate.webp',
+        name: '黄色い石のピアス',
+        color: '#fde68a',
+        chara: 'HAYATE', charaColor: '#fde68a',
+        charaImg: '../plofile/chibi_hayate.webp',
+        charaLine: '……見てた？'
       },
     };
     var _noteItemPendingChara = null;
