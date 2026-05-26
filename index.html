@@ -512,6 +512,25 @@ function sfShare() {
 <!-- Opening -->
 <section style="padding:80px 24px;position:relative;z-index:1;">
   <div style="max-width:580px;margin:0 auto;text-align:center;">
+    <!-- SWEETs 2026 Spring badge -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:26px;flex-wrap:wrap;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#f9a8d4;white-space:nowrap;">SWEETs 2026 Spring</span>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <!-- バックステージパス シルエット -->
+        <div style="text-align:center;opacity:0.28;">
+          <div style="width:36px;height:24px;border:1.5px solid #94a3b8;border-radius:4px;display:flex;align-items:center;justify-content:center;background:rgba(148,163,184,0.12);">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:7px;letter-spacing:1px;color:#94a3b8;">PASS</span>
+          </div>
+          <p style="font-size:7px;letter-spacing:1px;color:#94a3b8;margin-top:3px;">バックステージパス</p>
+        </div>
+        <!-- 色紙 シルエット -->
+        <div style="text-align:center;opacity:0.28;">
+          <img src="./item/shikishi_hinata.webp" alt="色紙" style="width:36px;height:36px;object-fit:contain;filter:grayscale(1) brightness(0.7);">
+          <p style="font-size:7px;letter-spacing:1px;color:#94a3b8;margin-top:3px;">色紙</p>
+        </div>
+      </div>
+    </div>
+
     <p style="font-size:clamp(14px,3.8vw,22px);color:#cbd5e1;line-height:2.2;" data-i18n="opening-p">
       うまく言えなかったこと。<br>
       伝えきれなかった距離。<br>
@@ -1817,32 +1836,30 @@ function sfShare() {
       localStorage.setItem(TOP_DAY, todayStr);
     }
 
-    // バックステージパス：トップ30日以上 → 付与 + 初回ポップアップ
-    var TOP_BP_KEY = 'sf_top_bp_shown';
-    if (topVisits >= 30) {
-      if (localStorage.getItem('sf_backstage_pass') !== 'true') {
-        localStorage.setItem('sf_backstage_pass', 'true');
-        if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
-          SfSnow.unlockItem('backstage_pass');
-        }
+    // バックステージパス：30日訪問毎に1枚付与（カウントリセット → 次の30日へ）
+    var bpCount = parseInt(localStorage.getItem('sf_top_bp_count') || '0', 10);
+    var nextMilestone = (bpCount + 1) * 30;
+    if (topVisits >= nextMilestone) {
+      var newBpCount = Math.floor(topVisits / 30);
+      localStorage.setItem('sf_top_bp_count', String(newBpCount));
+      localStorage.setItem('sf_backstage_pass', 'true');
+      if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
+        SfSnow.unlockItem('backstage_pass');
       }
-      if (!localStorage.getItem(TOP_BP_KEY)) {
-        localStorage.setItem(TOP_BP_KEY, '1');
-        window.addEventListener('load', function() {
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var p = document.getElementById('top-bp-popup');
+          if (!p) return;
+          p.style.display = 'flex';
+          requestAnimationFrame(function() { requestAnimationFrame(function() {
+            p.style.opacity = '1'; p.style.transform = 'translateX(-50%) translateY(0)';
+          }); });
           setTimeout(function() {
-            var p = document.getElementById('top-bp-popup');
-            if (!p) return;
-            p.style.display = 'flex';
-            requestAnimationFrame(function() { requestAnimationFrame(function() {
-              p.style.opacity = '1'; p.style.transform = 'translateX(-50%) translateY(0)';
-            }); });
-            setTimeout(function() {
-              p.style.opacity = '0'; p.style.transform = 'translateX(-50%) translateY(24px)';
-              setTimeout(function() { p.style.display = 'none'; }, 600);
-            }, 6000);
-          }, 2000);
-        });
-      }
+            p.style.opacity = '0'; p.style.transform = 'translateX(-50%) translateY(24px)';
+            setTimeout(function() { p.style.display = 'none'; }, 600);
+          }, 6000);
+        }, 2000);
+      });
     }
 
     // 1日1回のみ表示（名前登録済みの場合）、未登録は従来通りsessionStorage

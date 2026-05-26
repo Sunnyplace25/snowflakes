@@ -716,18 +716,30 @@
       buildQAChips(QA_CORE, 'chat-chips-core');
     }
 
-    // バックステージパス付与：コアファン OR 30日以上来訪（どちらか先に達成した方）
+    // バックステージパス付与：コアファン（初回のみ）OR ことり30日毎に1枚（カウントリセット）
     var bpKey = 'sf_backstage_pass';
-    var bpShownKey = 'sf_backstage_pass_shown';
-    if (isCoreFan() || visits >= 30) {
-      if (localStorage.getItem(bpKey) !== 'true') {
-        localStorage.setItem(bpKey, 'true');
-        if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
-          SfSnow.unlockItem('backstage_pass');
-        }
+    var kotoriBpCount = parseInt(localStorage.getItem('sf_kotori_bp_count') || '0', 10);
+    var kotoriNextMilestone = (kotoriBpCount + 1) * 30;
+    var grantBp = isCoreFan() || visits >= kotoriNextMilestone;
+    if (grantBp) {
+      var newKotoriBpCount = Math.max(kotoriBpCount, Math.floor(visits / 30));
+      if (visits >= kotoriNextMilestone) {
+        localStorage.setItem('sf_kotori_bp_count', String(newKotoriBpCount));
       }
-      if (!localStorage.getItem(bpShownKey)) {
-        localStorage.setItem(bpShownKey, '1');
+      localStorage.setItem(bpKey, 'true');
+      if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
+        SfSnow.unlockItem('backstage_pass');
+      }
+      // マイルストーン到達時のみポップアップ（isCoreFan初回 or 30日到達）
+      var bpShownMilestone = 'sf_kotori_bp_shown_' + newKotoriBpCount;
+      var showBpPopup = visits >= kotoriNextMilestone && !localStorage.getItem(bpShownMilestone);
+      var bpFirstShown = 'sf_backstage_pass_shown';
+      if (isCoreFan() && !localStorage.getItem(bpFirstShown) && !showBpPopup) {
+        showBpPopup = true;
+        localStorage.setItem(bpFirstShown, '1');
+      }
+      if (showBpPopup) {
+        if (visits >= kotoriNextMilestone) localStorage.setItem(bpShownMilestone, '1');
         setTimeout(function() {
           var popup = document.getElementById('backstage-pass-popup');
           if (popup) {

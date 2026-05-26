@@ -147,6 +147,22 @@
     .gate-error.show { opacity: 1; }
     .gate-error.success { color: #6ee7b7; }
 
+    /* 色紙配布ポップアップ */
+    #shikishi-get-popup {
+      position: fixed; inset: 0; z-index: 9100;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(12,18,32,0.82); backdrop-filter: blur(12px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #shikishi-get-popup.show { opacity: 1; pointer-events: auto; }
+    #shikishi-get-box {
+      text-align: center; max-width: 320px; padding: 0 24px;
+      transform: translateY(16px) scale(0.94);
+      transition: transform 0.4s cubic-bezier(.18,1.2,.45,1);
+    }
+    #shikishi-get-popup.show #shikishi-get-box { transform: none; }
+
     #snow-get-popup {
       position: fixed; inset: 0; z-index: 9000;
       display: flex; align-items: center; justify-content: center;
@@ -736,6 +752,17 @@
   </div>
 
   <!-- Snow GET popup -->
+  <!-- 色紙配布ポップアップ (Summer切り替え時) -->
+  <div id="shikishi-get-popup" onclick="document.getElementById('shikishi-get-popup').classList.remove('show')">
+    <div id="shikishi-get-box" onclick="event.stopPropagation()">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;margin-bottom:20px;">SWEETs 2026 Spring</p>
+      <img src="../item/shikishi_hinata.webp" alt="色紙" style="width:80px;height:80px;object-fit:contain;opacity:0.9;margin-bottom:20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#f9a8d4;margin-bottom:6px;">Snow flakes 色紙</p>
+      <p style="font-size:11px;color:#94a3b8;letter-spacing:1px;line-height:1.8;margin-bottom:28px;">Spring シーズンの記念に<br>色紙をお届けします</p>
+      <button onclick="document.getElementById('shikishi-get-popup').classList.remove('show')" style="background:rgba(249,168,212,0.08);border:1px solid rgba(249,168,212,0.3);border-radius:50px;padding:12px 36px;color:#f9a8d4;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">── 受け取る ──</button>
+    </div>
+  </div>
+
   <div id="snow-get-popup">
     <div id="snow-get-box">
       <p class="snow-get-num">❄ <span id="snow-get-amount">0</span></p>
@@ -1002,6 +1029,10 @@
                 <tr id="item-row-drinkcoin" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-drinkcoin-img" src="../item/drinkcoin_hinata.webp" alt="drinkcoin" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-drinkcoin-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-drinkcoin-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+                <tr id="item-row-shikishi" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-shikishi-img" src="../item/shikishi_hinata.webp" alt="shikishi" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-shikishi-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#93c5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -4425,6 +4456,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _doEnter();
     }
 
+    function _checkShikishiDistribution() {
+      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布
+      if (SWEETS_VERSION !== '2026-summer') return;
+      if (SfSnow.isUnlocked('shikishi_hinata')) return;
+      var mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
+      var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+      var hasSpringRecord = Object.keys(mItems).some(function(k){ return (mItems[k]||0) > 0; })
+                         || unlocked.length > 0;
+      if (!hasSpringRecord) return;
+      SfSnow.unlockItem('shikishi_hinata');
+      if (typeof renderItemRows === 'function') renderItemRows();
+      setTimeout(function() {
+        var pop = document.getElementById('shikishi-get-popup');
+        if (pop) pop.classList.add('show');
+      }, 800);
+    }
+
     function _doEnter() {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
@@ -4437,6 +4485,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof renderMusic === 'function') renderMusic();
       // Under tone 路地裏 section
       checkUndertoneSection();
+      // Summer 移行時 色紙配布チェック
+      _checkShikishiDistribution();
     }
 
     var UT_STONE_ITEMS = [
@@ -5175,6 +5225,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-book-kouta-img',   'ri-book-kouta-name',   'ri-book-kouta-check',   'book_kouta',               '返しそびれた本',              null, 'https://ncode.syosetu.com/n9009lo/69');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',       'Snow flakes ライブチケット',  null, 'https://www.instagram.com/reel/DXcFCOZlpRK/');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',               '黒い石のシルバーリング');
+    updateRareItem('ri-shikishi-img',  'ri-shikishi-name',  'ri-shikishi-check',  'shikishi_hinata',  'Snow flakes 色紙 2026 Spring');
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
