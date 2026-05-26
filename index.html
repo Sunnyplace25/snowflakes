@@ -533,6 +533,9 @@ function sfShare() {
     <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
   <!-- 本編更新バナー -->
+  <div style="max-width:680px;margin:0 auto 6px;text-align:right;padding-right:4px;">
+    <button onclick="openDailyInfoPopup()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#3b5f8a;padding:4px 8px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#3b5f8a'">? アイテムについて</button>
+  </div>
   <div style="max-width:680px;margin:0 auto 40px;">
     <a id="update-banner" href="https://ncode.syosetu.com/n9009lo/169" target="_blank"
        style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
@@ -2575,7 +2578,83 @@ document.addEventListener('visibilitychange', function() {
     var b = parseInt(hex.slice(5,7),16);
     return r + ',' + g + ',' + b;
   }
+
+  function openDailyInfoPopup() {
+    document.getElementById('daily-info-popup').classList.add('show');
+  }
+  function closeDailyInfoPopup() {
+    document.getElementById('daily-info-popup').classList.remove('show');
+  }
+  function goToDailyUpdate() {
+    closeDailyInfoPopup();
+    var el = document.getElementById('update-banner');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 </script>
+
+<!-- ── DAILY UPDATE 説明ポップアップ ── -->
+<style>
+  #daily-info-popup {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(8,13,24,0.85); backdrop-filter: blur(14px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #daily-info-popup.show { display: flex; }
+  #daily-info-card {
+    background: rgba(13,21,38,0.99);
+    border: 1px solid rgba(147,197,253,0.15);
+    border-radius: 20px; padding: 36px 28px 28px;
+    max-width: 320px; width: 100%; text-align: center;
+    animation: bannerCardIn 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  #daily-info-card .di-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; letter-spacing: 7px; color: #4e7aa8; margin-bottom: 20px;
+  }
+  #daily-info-card .di-body {
+    font-size: 13px; color: #94a3b8; line-height: 2.2; letter-spacing: 1px;
+    margin-bottom: 24px; text-align: left;
+  }
+  #daily-info-card .di-body em {
+    font-style: normal; color: #cbd5e1;
+  }
+  #daily-info-goto {
+    display: block; text-decoration: none;
+    border: 1px solid rgba(147,197,253,0.25); border-radius: 50px;
+    padding: 10px 20px; color: #93c5fd; background: rgba(147,197,253,0.05);
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 4px; transition: all 0.2s; width: 100%;
+    box-sizing: border-box; text-align: center; margin-bottom: 10px; cursor: pointer;
+  }
+  #daily-info-goto:hover { border-color: rgba(147,197,253,0.5); background: rgba(147,197,253,0.1); }
+  #daily-info-close {
+    background: none; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50px; padding: 10px 28px; color: #475569;
+    font-family: 'Cormorant Garamond', serif; font-size: 11px;
+    letter-spacing: 4px; cursor: pointer; transition: all 0.2s; width: 100%;
+  }
+  #daily-info-close:hover { border-color: rgba(255,255,255,0.2); color: #94a3b8; }
+</style>
+
+<div id="daily-info-popup" onclick="closeDailyInfoPopup()">
+  <div id="daily-info-card" onclick="event.stopPropagation()">
+    <p class="di-label">DAILY UPDATE</p>
+    <div class="di-body">
+      本日の更新から物語を読むと、<br>
+      ランダムでアイテムがひとつ手に入ります。<br>
+      <br>
+      どれが届くかは、読んでからのお楽しみ。<br>
+      <br>
+      集めたアイテムは、<br>
+      <em>SWEETs 内で特別な扉を開く鍵</em>になります。<br>
+      <br>
+      入場には <em>SWEETs Code</em> が必要です。<br>
+      <a href="https://www.instagram.com/snowflakes_story" target="_blank" style="color:#93c5fd;font-size:11px;letter-spacing:2px;text-decoration:none;">→ Instagram</a>
+    </div>
+    <button id="daily-info-goto" onclick="goToDailyUpdate()">DAILY UPDATE へ →</button>
+    <button id="daily-info-close" onclick="closeDailyInfoPopup()">── 閉じる ──</button>
+  </div>
+</div>
 
 </body>
 </html>
