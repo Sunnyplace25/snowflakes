@@ -2073,12 +2073,25 @@ function submitUtPw() {
     setTimeout(function() {
       if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
     }, 1200);
-    // play ボタン
-    var _ccAudio = null;
+    // 自動再生（初回のみ・muted→フェードイン）
+    var _ccAudio = new Audio(src);
+    _ccAudio.volume = 0;
+    _ccAudio.onended = function() { if (ccPlayBtn) ccPlayBtn.textContent = '▶'; };
+    if (ccPlayBtn) ccPlayBtn.textContent = '❚❚';
+    setTimeout(function() {
+      _ccAudio.play().then(function() {
+        var step = 0, steps = 20;
+        var t = setInterval(function() {
+          step++;
+          _ccAudio.volume = Math.min(0.8 * step / steps, 0.8);
+          if (step >= steps) clearInterval(t);
+        }, 60);
+      }).catch(function() {
+        if (ccPlayBtn) ccPlayBtn.textContent = '▶';
+      });
+    }, 1400);
     if (ccPlayBtn) {
-      ccPlayBtn.textContent = '▶';
       ccPlayBtn.onclick = function() {
-        if (!_ccAudio) { _ccAudio = new Audio(src); _ccAudio.onended = function() { ccPlayBtn.textContent = '▶'; }; }
         if (_ccAudio.paused) { _ccAudio.play(); ccPlayBtn.textContent = '❚❚'; }
         else { _ccAudio.pause(); ccPlayBtn.textContent = '▶'; }
       };
