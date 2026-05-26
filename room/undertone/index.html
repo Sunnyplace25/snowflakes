@@ -2856,6 +2856,7 @@ function submitUtPw() {
   window.openChapterPopup = function(idx) {
     var ch = ALL_CHAPTERS[idx];
     if (!ch) return;
+    var _pendingComplete = null; // 閉じるボタン後に発火するチャプターコンプリート
     playProseSound(idx);
     // 既読フラグ
     if (!_seenProseScenes.has(idx)) {
@@ -2886,7 +2887,7 @@ function submitUtPw() {
           localStorage.setItem('sf_ut_ch2_unlock_at', String(Date.now()));
         }
         renderChapterList();
-        setTimeout(function() { showChapterComplete(1, 'Under tone', 'Vo.Hayate', 'sound/undertone_hayate.mp3'); }, 600);
+        _pendingComplete = function() { showChapterComplete(1, 'Under tone', 'Vo.Hayate', 'sound/undertone_hayate.mp3'); };
       }
       // 2-5読了 → CHAPTER 2 COMPLETE + Hinata楽曲解放 + 3章14日ロック
       if (idx === 14 && !localStorage.getItem('sf_ut_ch2_complete')) {
@@ -2896,14 +2897,14 @@ function submitUtPw() {
           localStorage.setItem('sf_ut_ch3_unlock_at', String(Date.now()));
         }
         renderChapterList();
-        setTimeout(function() { showChapterComplete(2, 'Under tone', 'Vo.Hinata', 'sound/undertone_hinata.mp3'); }, 600);
+        _pendingComplete = function() { showChapterComplete(2, 'Under tone', 'Vo.Hinata', 'sound/undertone_hinata.mp3'); };
       }
       // 3-5読了 → CHAPTER 3 COMPLETE + Kouta楽曲解放
       if (idx === 19 && !localStorage.getItem('sf_ut_ch3_complete')) {
         localStorage.setItem('sf_ut_ch3_complete', 'true');
         localStorage.setItem('sf_ut_kouta_unlocked', 'true');
         renderChapterList();
-        setTimeout(function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3'); }, 600);
+        _pendingComplete = function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3'); };
       }
       // アイテム解放：テキストを閉じた後にポップアップ
       if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
@@ -2951,6 +2952,11 @@ function submitUtPw() {
     var shopBtn = document.getElementById('prose-shop-btn');
     if (shopBtn) shopBtn.style.display = idx === 5 ? 'block' : 'none';
     _proseCloseCallback = null;
+    // 閉じるボタン後にチャプターコンプリートを発火（_pendingComplete が設定されている場合）
+    if (_pendingComplete) {
+      var _pc = _pendingComplete;
+      _proseCloseCallback = function() { setTimeout(_pc, 200); };
+    }
     var sc = document.querySelector('.prose-scroll');
     if (sc) sc.scrollTop = 0;
     document.getElementById('prose-popup').classList.add('show');
