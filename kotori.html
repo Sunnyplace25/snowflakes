@@ -676,12 +676,16 @@
 
     // ウェルカムポップアップ
     var welcomeText = document.getElementById('welcome-text');
+    var visitorName = localStorage.getItem('sf_visitor_name') || '';
+    var nameCall = visitorName ? visitorName + '、' : '';
     if (visits === 1) {
       welcomeText.innerHTML = 'よく見つけたね！<br>ことりの部屋へようこそ！';
+    } else if (visits >= 30) {
+      welcomeText.innerHTML = nameCall + visits + '回目の来訪だね。<br>長く来てくれてありがとう。';
     } else if (visits >= 10) {
-      welcomeText.innerHTML = visits + '回目の来訪だね。<br>すっかり常連だね。';
+      welcomeText.innerHTML = nameCall + visits + '回目の来訪だね。<br>すっかり常連だね。';
     } else {
-      welcomeText.innerHTML = visits + '回目の来訪だね。<br>いつもありがとう！';
+      welcomeText.innerHTML = nameCall + visits + '回目の来訪だね。<br>いつもありがとう！';
     }
     var qaBtn = document.getElementById('welcome-qa-btn');
     setTimeout(function() {
@@ -710,10 +714,12 @@
       document.getElementById('qa-core-locked').style.display = 'none';
       document.getElementById('qa-core-unlocked').style.display = 'block';
       buildQAChips(QA_CORE, 'chat-chips-core');
+    }
 
-      // バックステージパス付与（初回のみポップアップ表示）
-      var bpKey = 'sf_backstage_pass';
-      var bpShownKey = 'sf_backstage_pass_shown';
+    // バックステージパス付与：コアファン OR 30日以上来訪（どちらか先に達成した方）
+    var bpKey = 'sf_backstage_pass';
+    var bpShownKey = 'sf_backstage_pass_shown';
+    if (isCoreFan() || visits >= 30) {
       if (localStorage.getItem(bpKey) !== 'true') {
         localStorage.setItem(bpKey, 'true');
         if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {

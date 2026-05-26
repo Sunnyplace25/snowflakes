@@ -1806,9 +1806,49 @@ function sfShare() {
 
 <script>
   (function() {
+    // トップページ日次訪問カウント
+    var TOP_KEY = 'sf_top_visits';
+    var TOP_DAY = 'sf_top_visit_day';
+    var todayStr = new Date().toLocaleDateString('ja-JP');
+    var topVisits = parseInt(localStorage.getItem(TOP_KEY) || '0', 10);
+    if (localStorage.getItem(TOP_DAY) !== todayStr) {
+      topVisits += 1;
+      localStorage.setItem(TOP_KEY, String(topVisits));
+      localStorage.setItem(TOP_DAY, todayStr);
+    }
+
+    // バックステージパス：トップ30日以上 → 付与 + 初回ポップアップ
+    var TOP_BP_KEY = 'sf_top_bp_shown';
+    if (topVisits >= 30) {
+      if (localStorage.getItem('sf_backstage_pass') !== 'true') {
+        localStorage.setItem('sf_backstage_pass', 'true');
+        if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
+          SfSnow.unlockItem('backstage_pass');
+        }
+      }
+      if (!localStorage.getItem(TOP_BP_KEY)) {
+        localStorage.setItem(TOP_BP_KEY, '1');
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            var p = document.getElementById('top-bp-popup');
+            if (!p) return;
+            p.style.display = 'flex';
+            requestAnimationFrame(function() { requestAnimationFrame(function() {
+              p.style.opacity = '1'; p.style.transform = 'translateX(-50%) translateY(0)';
+            }); });
+            setTimeout(function() {
+              p.style.opacity = '0'; p.style.transform = 'translateX(-50%) translateY(24px)';
+              setTimeout(function() { p.style.display = 'none'; }, 600);
+            }, 6000);
+          }, 2000);
+        });
+      }
+    }
+
     if (sessionStorage.getItem('charaShown')) return;
 
     var storedName = localStorage.getItem('sf_visitor_name');
+    var isCoreFan  = localStorage.getItem('sf_backstage_pass') === 'true';
 
     var chars = [
       { name: 'HINATA', img: 'plofile/chibi_hinata.webp', color: '#93c5fd' },
@@ -1946,8 +1986,39 @@ function sfShare() {
       } else {
         // 通常のランダムキャラ
         var c = chars[Math.floor(Math.random() * chars.length)];
-        var pool = charLines[c.name](storedName);
-        var l = pool[Math.floor(Math.random() * pool.length)];
+        var l;
+
+        // コアファン + 名前あり → 名前で呼ぶ
+        if (isCoreFan && storedName) {
+          var nameLines = {
+            HINATA: [
+              storedName + '、また来てくれたんだ',
+              storedName + '、今日も来てくれた',
+              '来てくれたね、' + storedName,
+              storedName + '……ちゃんと、ここにいたよ',
+              'また会えた、' + storedName
+            ],
+            KOUTA: [
+              storedName + '、また来た',
+              'よ、' + storedName,
+              storedName + '、ちゃんと来てくれたんだ',
+              '来てくれてありがと、' + storedName,
+              storedName + '、今日はどこから見る？'
+            ],
+            HAYATE: [
+              storedName + '、来た来た！',
+              'よっ、' + storedName + '！',
+              storedName + '、また来てくれたんだな',
+              '来てくれてありがとな、' + storedName + '！',
+              storedName + '、今日も来てくれた！'
+            ]
+          };
+          var nPool = nameLines[c.name];
+          l = nPool[Math.floor(Math.random() * nPool.length)];
+        } else {
+          var pool = charLines[c.name](storedName);
+          l = pool[Math.floor(Math.random() * pool.length)];
+        }
 
         nameEl.textContent = c.name;
         nameEl.style.color = c.color;
@@ -2591,6 +2662,17 @@ document.addEventListener('visibilitychange', function() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 </script>
+
+<!-- ── バックステージパス入手ポップアップ（トップ30回訪問） ── -->
+<div id="top-bp-popup" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(24px);z-index:2100;opacity:0;transition:opacity 0.6s ease,transform 0.6s ease;max-width:320px;width:calc(100% - 48px);">
+  <div style="background:rgba(10,18,34,0.97);border:1px solid rgba(253,230,138,0.35);border-radius:20px;padding:20px 24px 18px;backdrop-filter:blur(14px);width:100%;text-align:center;position:relative;">
+    <button onclick="(function(){var p=document.getElementById('top-bp-popup');p.style.opacity='0';p.style.transform='translateX(-50%) translateY(24px)';setTimeout(function(){p.style.display='none'},600);})()" style="position:absolute;top:10px;right:14px;background:none;border:none;color:#64748b;font-size:13px;cursor:pointer;line-height:1;">✕</button>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#fde68a;margin-bottom:10px;">ITEM UNLOCKED</p>
+    <div style="font-size:36px;margin-bottom:10px;">🎫</div>
+    <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:6px;">バックステージパス</p>
+    <p style="font-size:13px;color:#94a3b8;font-weight:300;">入手しました</p>
+  </div>
+</div>
 
 <!-- ── DAILY UPDATE 説明ポップアップ ── -->
 <style>
