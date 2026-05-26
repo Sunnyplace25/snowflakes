@@ -1132,7 +1132,7 @@
         <!-- 少し光る石 × 10 交換 -->
         <button class="choose-item choose-item--stone" id="hikaru-exchange-btn" onclick="exchangeHikaruStones()" style="display:none;width:100%;margin:0;">
           <span class="choose-mark">✦</span>
-          <span class="choose-text">少し光る石 × 10 で交換</span>
+          <span class="choose-text">渡す</span>
           <span class="choose-sub" id="hikaru-exchange-sub">所持 0 個</span>
         </button>
         <!-- 渡す（ロック中） -->
@@ -3435,7 +3435,7 @@ function submitUtPw() {
       var hikaruCount = arr.filter(function(s) { return s === 'hikaru'; }).length;
       hikaruBtn.style.display = '';
       if (hikaruSub) hikaruSub.textContent = '所持 ' + hikaruCount + ' 個';
-      hikaruBtn.disabled = hikaruCount < 10;
+      hikaruBtn.disabled = false;
       hikaruBtn.style.opacity = hikaruCount >= 10 ? '1' : '0.45';
     }
     if (!btn) return;
@@ -3457,36 +3457,23 @@ function submitUtPw() {
     var arr = getRawStones();
     var hikaruArr = arr.filter(function(s) { return s === 'hikaru'; });
     if (hikaruArr.length < 10) {
-      showItemMsgPopup('../../item/rawstone_hikaru.webp', '少し光る石が足りない\n\nあと ' + (10 - hikaruArr.length) + ' 個必要');
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '「まだ持っとけ」\n\n── Nagi');
       return;
     }
-    // 10個消費
-    var removed = 0;
-    var newArr = arr.filter(function(s) {
-      if (s === 'hikaru' && removed < 10) { removed++; return false; }
-      return true;
-    });
-    localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
-    updateAppraiseBtn();
-    // ランダム報酬（3択）
-    var roll = Math.floor(Math.random() * 3);
-    if (roll === 0) {
-      // お菓子 × 100
-      var candyTypes = ['milk', 'honey', 'cassis'];
-      var candyLabels = { milk: 'ミルクキャンディー', honey: 'ハニーレモンキャンディー', cassis: 'カシスキャンディー' };
-      var candyImgs  = { milk: '../../item/candy_milk.webp', honey: '../../item/candy_honey.webp', cassis: '../../item/candy_cassis.webp' };
-      var chosen = candyTypes[Math.floor(Math.random() * 3)];
-      var c = SfSnow.getCandies();
-      c[chosen] = (c[chosen] || 0) + 100;
-      localStorage.setItem('sf_candy', JSON.stringify(c));
-      showItemMsgPopup(candyImgs[chosen], candyLabels[chosen] + '\n\n＋ 100 個');
-    } else if (roll === 1) {
-      // Snow
-      SfSnow.addDirect(50, 'ナギ交換（光る石）');
-      showItemMsgPopup('../../item/rawstone_hikaru.webp', '＋ 50 Snow');
+    // ランダム: もらっとく or まだ持っとけ
+    var roll = Math.random();
+    if (roll < 0.5) {
+      // もらっとく → 10個消費（アイテムは今後アプデ）
+      var removed = 0;
+      var newArr = arr.filter(function(s) {
+        if (s === 'hikaru' && removed < 10) { removed++; return false; }
+        return true;
+      });
+      localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
+      updateAppraiseBtn();
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '「もらっとく」\n\n── Nagi');
     } else {
-      // 未公開短編（QF） → まだ持っておけ
-      showItemMsgPopup('../../item/rawstone_hikaru.webp', '「まだ持っておけ」\n\n── Nagi');
+      showItemMsgPopup('../../item/rawstone_hikaru.webp', '「まだ持っとけ」\n\n── Nagi');
     }
   };
 
@@ -3566,28 +3553,34 @@ function submitUtPw() {
     // 累計カウント更新
     var total = parseInt(localStorage.getItem('sf_nagi_beer_total') || '0') + 1;
     localStorage.setItem('sf_nagi_beer_total', String(total));
-    // 占いトリガー回は Snow 付与なし
-    if (total % 3 !== 0) {
-      SfSnow.addDirect(35, 'ナギにビールを渡す');
-    }
     renderStones();
     // ナギポップアップ
-    var pool = [
-      { img: 'nagi_beer_1.webp', line: '……もらっとく' },
-      { img: 'nagi_beer_2.webp', line: '……もう一本あるか' },
-      { img: 'nagi_beer_3.webp', line: '弾きながらでいいか' },
-    ];
-    var pick = pool[Math.floor(Math.random() * pool.length)];
     var pop = document.getElementById('nagi-beer-popup');
     var beerFortBtn = document.getElementById('nagi-beer-fortune-btn');
     var beerTap = document.getElementById('nagi-beer-tap');
-    document.getElementById('nagi-beer-img').src = pick.img;
-    // 3回ごと：最初から「お礼に」＋占いボタンを表示（tap で閉じさせない）
+    // 3回ごと：占いトリガー
     if (total % 3 === 0) {
+      document.getElementById('nagi-beer-img').src = 'nagi_beer_1.webp';
       document.getElementById('nagi-beer-line').textContent = 'お礼に';
       if (beerFortBtn) beerFortBtn.style.display = 'block';
       if (beerTap) beerTap.style.display = 'none';
     } else {
+      // 20% で喜ぶ → Snow +35
+      var happy = Math.random() < 0.2;
+      var pool, pick;
+      if (happy) {
+        pool = [
+          { img: 'nagi_beer_2.webp', line: '……もう一本あるか' },
+        ];
+        SfSnow.addDirect(35, 'ナギにビールを渡す');
+      } else {
+        pool = [
+          { img: 'nagi_beer_1.webp', line: '……もらっとく' },
+          { img: 'nagi_beer_3.webp', line: '弾きながらでいいか' },
+        ];
+      }
+      pick = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById('nagi-beer-img').src = pick.img;
       document.getElementById('nagi-beer-line').textContent = pick.line;
       if (beerFortBtn) beerFortBtn.style.display = 'none';
       if (beerTap) beerTap.style.display = 'block';
