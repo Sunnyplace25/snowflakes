@@ -2104,6 +2104,40 @@ function submitUtPw() {
     if (ov) ov.style.display = 'none';
   };
 
+  /* ── Chapter Unlock Popup ── */
+  var _chUnlockCallback = null;
+  window.showChapterUnlock = function(chNum, firstIdx) {
+    var ov = document.getElementById('chapter-unlock-overlay');
+    var numEl = document.getElementById('cu-num');
+    if (!ov) return;
+    if (numEl) numEl.textContent = '第' + chNum + '章';
+    _chUnlockCallback = function() { openChapterPopup(firstIdx); };
+    ov.style.display = 'flex';
+  };
+  window.closeChapterUnlock = function() {
+    var ov = document.getElementById('chapter-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+    if (_chUnlockCallback) {
+      var cb = _chUnlockCallback; _chUnlockCallback = null;
+      setTimeout(cb, 300);
+    }
+  };
+
+  /* ── Item Unlock Popup ── */
+  window.showItemUnlock = function(name, imgSrc) {
+    var ov = document.getElementById('item-unlock-overlay');
+    var nameEl = document.getElementById('iu-name');
+    var imgEl  = document.getElementById('iu-img');
+    if (!ov) return;
+    if (nameEl) nameEl.textContent = name;
+    if (imgEl)  imgEl.src = imgSrc;
+    ov.style.display = 'flex';
+  };
+  window.closeItemUnlock = function() {
+    var ov = document.getElementById('item-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+  };
+
   /* ── Character data ── */
   var CHARS = {
     kouta:  { img:'../../plofile/chibi_kouta.webp',  name:'KOUTA',  color:'#fca5a5' },
@@ -2646,12 +2680,20 @@ function submitUtPw() {
     if (_ch2UnlockAt && !ch3Unlocked && Date.now() - _ch2UnlockAt >= 14 * 86400000) {
       ch3Unlocked = true;
       localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
+      if (!localStorage.getItem('sf_ut_ch2_unlock_shown')) {
+        localStorage.setItem('sf_ut_ch2_unlock_shown', 'true');
+        setTimeout(function() { showChapterUnlock(2, 10); }, 500);
+      }
     }
     // 14日タイマーチェック：3章自動解放
     var _ch3UnlockAt = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
     if (_ch3UnlockAt && !ch4Unlocked && Date.now() - _ch3UnlockAt >= 14 * 86400000) {
       ch4Unlocked = true;
       localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
+      if (!localStorage.getItem('sf_ut_ch3_unlock_shown')) {
+        localStorage.setItem('sf_ut_ch3_unlock_shown', 'true');
+        setTimeout(function() { showChapterUnlock(3, 15); }, 500);
+      }
     }
     // ch-between-3：1-5読了後・2章未解放時
     var ch1Done = !!localStorage.getItem('sf_ut_ch1_complete');
@@ -2823,6 +2865,25 @@ function submitUtPw() {
         localStorage.setItem('sf_ut_kouta_unlocked', 'true');
         renderChapterList();
         setTimeout(function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3'); }, 600);
+      }
+      // アイテム解放：テキストを閉じた後にポップアップ
+      if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
+        localStorage.setItem('sf_ut_choco_unlock_shown', 'true');
+        _proseCloseCallback = function() {
+          setTimeout(function() { showItemUnlock('チョコレート', '../../item/chocolate.webp'); }, 300);
+        };
+      }
+      if (idx === 11 && !localStorage.getItem('sf_ut_beer_unlock_shown')) {
+        localStorage.setItem('sf_ut_beer_unlock_shown', 'true');
+        _proseCloseCallback = function() {
+          setTimeout(function() { showItemUnlock('コンビニの缶ビール', '../../item/beer.webp'); }, 300);
+        };
+      }
+      if (idx === 16 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
+        localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
+        _proseCloseCallback = function() {
+          setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
+        };
       }
     }
     document.getElementById('prose-label').textContent = ch.label;
@@ -4820,6 +4881,21 @@ function submitUtPw() {
   }
   #nagi-beer-popup.show { display: flex; }
 </style>
+<!-- Chapter Unlock Overlay -->
+<div id="chapter-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:20px;text-align:center;">CHAPTER UNLOCKED</p>
+  <p id="cu-num" style="font-family:'Cormorant Garamond',serif;font-size:36px;letter-spacing:6px;color:#c4b5fd;margin-bottom:16px;text-align:center;"></p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:4px;color:#64748b;margin-bottom:56px;text-align:center;">が解放されました</p>
+  <button onclick="closeChapterUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+</div>
+<!-- Item Unlock Overlay -->
+<div id="item-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:28px;text-align:center;">NEW ITEM</p>
+  <img id="iu-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:14px;margin-bottom:24px;box-shadow:0 0 24px rgba(196,181,253,0.15);">
+  <p id="iu-name" style="font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;"></p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:56px;text-align:center;">が解放されました</p>
+  <button onclick="closeItemUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+</div>
 <div id="chapter-complete-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
   <p id="cc-num" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;margin-bottom:40px;text-align:center;"></p>
   <div id="cc-unlock-block" style="text-align:center;opacity:0;">
