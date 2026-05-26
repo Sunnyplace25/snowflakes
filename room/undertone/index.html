@@ -953,6 +953,16 @@
               <span class="chapter-arr">▶</span>
             </button>
           </div>
+          <!-- 1-5読了後・Hayate Vocal -->
+          <div id="ch1-music-row" style="display:none;padding:8px 0 4px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:12px;">
+              <div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;">Under tone</p>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;margin-top:2px;">Vo.Hayate</p>
+              </div>
+              <button id="ch1-music-btn" class="ut-ch-play-btn" onclick="toggleChTrack('sound/undertone_hayate.mp3',this)" style="background:none;border:1px solid rgba(253,230,138,0.3);border-radius:50%;width:36px;height:36px;color:#fde68a;font-size:14px;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(253,230,138,0.6)'" onmouseout="this.style.borderColor='rgba(253,230,138,0.3)'">▶</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1006,6 +1016,16 @@
               <span class="chapter-arr">▶</span>
             </button>
           </div>
+          <!-- 2-5読了後・Hinata Vocal -->
+          <div id="ch2-music-row" style="display:none;padding:8px 0 4px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(147,197,253,0.04);border:1px solid rgba(147,197,253,0.1);border-radius:12px;">
+              <div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;">Under tone</p>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;margin-top:2px;">Vo.Hinata</p>
+              </div>
+              <button id="ch2-music-btn" class="ut-ch-play-btn" onclick="toggleChTrack('sound/undertone_hinata.mp3',this)" style="background:none;border:1px solid rgba(147,197,253,0.3);border-radius:50%;width:36px;height:36px;color:#93c5fd;font-size:14px;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(147,197,253,0.6)'" onmouseout="this.style.borderColor='rgba(147,197,253,0.3)'">▶</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1044,6 +1064,16 @@
               <span class="chapter-title">――</span>
               <span class="chapter-arr">▶</span>
             </button>
+          </div>
+          <!-- 3-5読了後・Kouta Vocal -->
+          <div id="ch3-music-row" style="display:none;padding:8px 0 4px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.1);border-radius:12px;">
+              <div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;">Under tone</p>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;margin-top:2px;">Vo.Kouta</p>
+              </div>
+              <button id="ch3-music-btn" class="ut-ch-play-btn" onclick="toggleChTrack('sound/undertone_kouta.mp3',this)" style="background:none;border:1px solid rgba(252,165,165,0.3);border-radius:50%;width:36px;height:36px;color:#fca5a5;font-size:14px;cursor:pointer;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(252,165,165,0.6)'" onmouseout="this.style.borderColor='rgba(252,165,165,0.3)'">▶</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2054,6 +2084,10 @@ function submitUtPw() {
     });
   }
 
+  function _resetAllMusicBtns() {
+    document.querySelectorAll('#shop-music-tracks button, .ut-ch-play-btn').forEach(function(b) { b.textContent = '▶'; });
+  }
+
   window.toggleShopTrack = function(src, btn) {
     if (_shopMusicAudio && _shopMusicCurrent === src) {
       if (_shopMusicPlaying) {
@@ -2068,13 +2102,18 @@ function submitUtPw() {
       return;
     }
     if (_shopMusicAudio) { _shopMusicAudio.pause(); }
-    document.querySelectorAll('#shop-music-tracks button').forEach(function(b) { b.textContent = '▶'; });
+    _resetAllMusicBtns();
     _shopMusicAudio = new Audio(src);
     _shopMusicCurrent = src;
     _shopMusicAudio.onended = function() { _shopMusicPlaying = false; btn.textContent = '▶'; };
     _shopMusicAudio.play();
     _shopMusicPlaying = true;
     btn.textContent = '❚❚';
+  };
+
+  // チャプターリスト内インライン再生ボタン
+  window.toggleChTrack = function(src, btn) {
+    toggleShopTrack(src, btn);
   };
 
   window.showChapterComplete = function(chNum, title, sub, src) {
@@ -2691,6 +2730,16 @@ function submitUtPw() {
     // フッター
     var footer = document.getElementById('chapter-footer');
     if (footer) footer.style.display = ch5Unlocked ? '' : 'none';
+    // 章末 Vocal 再生ボタン（2巡目以降：解放済みのみ表示）
+    var _hayateUnlocked = !!localStorage.getItem('sf_ut_hayate_unlocked');
+    var _hinataUnlocked = !!localStorage.getItem('sf_ut_hinata_unlocked');
+    var _koutaUnlocked  = !!localStorage.getItem('sf_ut_kouta_unlocked');
+    var r1 = document.getElementById('ch1-music-row');
+    var r2 = document.getElementById('ch2-music-row');
+    var r3 = document.getElementById('ch3-music-row');
+    if (r1) r1.style.display = _hayateUnlocked ? '' : 'none';
+    if (r2) r2.style.display = _hinataUnlocked ? '' : 'none';
+    if (r3) r3.style.display = _koutaUnlocked  ? '' : 'none';
     // 1-5読了後・2章未解放時のみボタンを表示
     var between = document.getElementById('ch-between');
     if (between) between.style.display = (ch5Unlocked && !ch21Unlocked) ? '' : 'none';
