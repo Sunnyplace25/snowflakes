@@ -3419,28 +3419,22 @@ function submitUtPw() {
     });
     localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
     updateAppraiseBtn();
-    // ランダム報酬（5択）
-    var roll = Math.floor(Math.random() * 5);
+    // ランダム報酬（3択）
+    var roll = Math.floor(Math.random() * 3);
     if (roll === 0) {
-      // お菓子
+      // お菓子 × 100
       var candyTypes = ['milk', 'honey', 'cassis'];
       var candyLabels = { milk: 'ミルクキャンディー', honey: 'ハニーレモンキャンディー', cassis: 'カシスキャンディー' };
       var candyImgs  = { milk: '../../item/candy_milk.webp', honey: '../../item/candy_honey.webp', cassis: '../../item/candy_cassis.webp' };
       var chosen = candyTypes[Math.floor(Math.random() * 3)];
-      SfSnow.addCandy(chosen);
-      showItemMsgPopup(candyImgs[chosen], candyLabels[chosen] + '\n\n＋ 1 個');
+      var c = SfSnow.getCandies();
+      c[chosen] = (c[chosen] || 0) + 100;
+      localStorage.setItem('sf_candy', JSON.stringify(c));
+      showItemMsgPopup(candyImgs[chosen], candyLabels[chosen] + '\n\n＋ 100 個');
     } else if (roll === 1) {
       // Snow
       SfSnow.addDirect(50, 'ナギ交換（光る石）');
       showItemMsgPopup('../../item/rawstone_hikaru.webp', '＋ 50 Snow');
-    } else if (roll === 2) {
-      // アイテムガチャ券
-      SfSnow.addPick(1);
-      showItemMsgPopup('../../item/rawstone_hikaru.webp', 'アイテムガチャ券\n\n＋ 1 枚');
-    } else if (roll === 3) {
-      // 部屋用小物
-      SfSnow.addMItemDirect('room_kobutsu', 1);
-      showItemMsgPopup('../../item/rawstone_hikaru.webp', '部屋用小物\n\n＋ 1 個');
     } else {
       // 未公開短編（QF） → まだ持っておけ
       showItemMsgPopup('../../item/rawstone_hikaru.webp', '「まだ持っておけ」\n\n── Nagi');
