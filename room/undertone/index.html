@@ -1009,6 +1009,31 @@
         </div>
       </div>
 
+      <!-- 第三章ロックボタン（2-5読了後・3章未公開時） -->
+      <div id="ch-between-4" style="display:none;padding:24px 0 8px;">
+        <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
+          <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第三章</span>
+          <span style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;color:#334155;">近日公開</span>
+        </button>
+      </div>
+
+      <!-- 第三章 アコーディオン -->
+      <div class="ch-section" id="ch-section-4" style="display:none;">
+        <button class="ch-section-header" onclick="toggleChSection(4)">
+          <span class="ch-section-name">第三章</span>
+          <span class="ch-section-arr" id="ch-arr-4">›</span>
+        </button>
+        <div class="ch-section-body" id="ch-body-4">
+          <div class="chapter-item" id="chapter-item-15">
+            <button class="chapter-header" onclick="openChapterPopup(15)">
+              <span class="chapter-num">3-1</span>
+              <span class="chapter-title">――</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
         <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
@@ -1796,6 +1821,11 @@ function submitUtPw() {
       label: '2-5.  帰り道',
       text:
 '　相変わらず、夜だった。\n\n　ヒナタは店へ向かう。\n\n　いつも通り。\n\n　でも、少し違う。\n\n　ドアを開けると、ナギはいなかった。\n\n　いつもの場所。\n\n　いつもの灯り。\n\n　音だけが、少し残っている。\n\n　カウンターに、\n　小さなものが置かれていた。\n\n　カセットテープ。\n\n　あの時の、色が抜けたやつ。\n\n　メモが一枚。\n\n『聞ける時に、聞け』\n\n　ヒナタは少し笑う。\n\n「だから、聞けないんだって」\n\n　受け取る。\n\n　かわりに、USBをひとつ置いていく。\n\n\n　帰り道。\n\n　夜の空気が少し冷たい。\n\n　コンビニに寄り、プリンを２つ買う。\n\n　ポケットの中には、\n　なんとなく拾った石と、\n　聞けないカセットテープ。\n\n　中でぶつかって、小さく音が鳴った。\n\n　足音が、自分のだけ響く。\n\n　ライブの日程。\n　仕事の連絡。\n　バンドの話。\n\n　全部、また戻ってくる。\n\n　なにも変わっていない。\n\n　一度だけ、振り向く。\n\n　「……鳴ってる。今も」\n\n　帰る道は\n　変わっていない。\n\n　でも。\n\n　ポケットの重みの分だけ、\n　少しだけ何かが軽くなった気がした。'
+    },
+    {
+      label: '3-1.  ――',
+      text:
+'ハヤテが、いつも以上にチョコレートを持ち帰る。\n\n　ヒナタが、よく笑う。\n\n　音が、ピタリと合う。\n\n　どれも、少し違和感があった。\n\n　いや、ヒナタが笑っているのは、いい。\n　そこだけは、思い直す。\n\n　ヒナタが持ってきた新しい曲には、\n　まだ歌詞がない。\n\n　ハヤテのドラムが先に入り、\n　ヒナタのギターがそこへ乗る。\n\n　コウタの指も、迷わず動いた。\n\n　間違っていない。\n\n　むしろ、\n　気持ち悪いくらいに自然だった。\n\n　次にどこへ行くのか分かる。\n　どこで落とすのか分かる。\n　どこで待てばいいのかも分かる。\n\n　でも。\n\n　音が、ひとつ多い。\n\n　分かってしまう。\n\n　コウタは顔を上げないまま、弾き続けた。\n\n　音はズレない。\n\n　ズレないことが、余計に気持ち悪い。\n\n　今、自分が手を止めても。\n\n　たぶん、\n　この音は進む。\n\n　足元がぐらつく。\n\n　それでも、最後まで鳴らした。\n\n　曲が止まる。\n\n　スタジオに、短い余韻が残る。\n\n「……いいじゃん」\n\n　ハヤテが言った。\n\n「なんか、合ったな」\n\n　ヒナタは小さく息を吐く。\n\n「うん」\n\n　コウタは、ベースから手を離した。\n\n　指先が少し冷えている。\n\n「悪い」\n\n　短く言う。\n\n「今日は帰る」\n\n「え？」\n\n　ハヤテが顔を上げる。\n\n「体調悪い？」\n\n「別に」\n\n　嘘ではなかった。\n\n　体調が悪いわけじゃない。\n\n　ただ、\n　ここにいるのが少しきつい。\n\n「持ってけ」\n\n　ハヤテが、差し入れのお菓子を指さす。\n\n「……気分じゃない」\n\n「いいから」\n\n　適当にひとつ投げて、よこす。\n\n　そのまま流れで受け取り、\n　ポケットに入れた。\n\n　スタジオを出る。\n\n　夜の空気が、思ったより冷たかった。\n\n　帰るつもりだった。\n\n　駅へ向かうつもりだった。\n\n　けれど、\n　足がうまく動かない。\n\n　気がつけば、\n　あの店の前に立っていた。\n\n「……なんで」\n\n　言葉とは逆に、\n　手はドアノブへ伸びていた。'
     }
   ];
 
@@ -1810,6 +1840,7 @@ function submitUtPw() {
   var ch33Unlocked = localStorage.getItem('sf_undertone_ch33_unlocked') === 'true';
   var ch34Unlocked = localStorage.getItem('sf_undertone_ch34_unlocked') === 'true';
   var ch35Unlocked = localStorage.getItem('sf_undertone_ch35_unlocked') === 'true';
+  var ch4Unlocked  = localStorage.getItem('sf_undertone_ch4_unlocked')  === 'true';
   var tarotMode = 'oracle';
   var spreadDraws = [];
   var spreadFlipped = [false, false, false];
@@ -2292,7 +2323,9 @@ function submitUtPw() {
     ALL_CHAPTERS.forEach(function(ch, i) {
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
-      if (i === 14) {
+      if (i === 15) {
+        item.style.display = ch4Unlocked ? '' : 'none';
+      } else if (i === 14) {
         item.style.display = ch35Unlocked ? '' : 'none';
       } else if (i === 13) {
         item.style.display = ch34Unlocked ? '' : 'none';
@@ -2323,11 +2356,16 @@ function submitUtPw() {
     // 第二章セクション表示
     var sec2 = document.getElementById('ch-section-2');
     if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
-    // 第三章セクション表示
+    // 第三章セクション表示（第二章）
     var sec3 = document.getElementById('ch-section-3');
     if (sec3) sec3.style.display = ch3Unlocked ? '' : 'none';
+    // 第四章セクション表示（第三章）
+    var sec4 = document.getElementById('ch-section-4');
+    if (sec4) sec4.style.display = ch4Unlocked ? '' : 'none';
     // 最新の章だけ開く、それ以外は閉じる
-    if (ch3Unlocked) {
+    if (ch4Unlocked) {
+      closeChSection(1); closeChSection(2); closeChSection(3); openChSection(4);
+    } else if (ch3Unlocked) {
       closeChSection(1); closeChSection(2); openChSection(3);
     } else if (ch21Unlocked) {
       closeChSection(1); openChSection(2);
@@ -2344,6 +2382,9 @@ function submitUtPw() {
     // 2-5読了後・3章未公開時のみロックボタンを表示
     var between3 = document.getElementById('ch-between-3');
     if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
+    // 2-5読了後・第三章未解放時のみロックボタンを表示
+    var between4 = document.getElementById('ch-between-4');
+    if (between4) between4.style.display = (ch35Unlocked && !ch4Unlocked) ? '' : 'none';
     renderCharCover();
   }
 
@@ -2516,6 +2557,14 @@ function submitUtPw() {
         if (!ch35Unlocked) {
           ch35Unlocked = true;
           localStorage.setItem('sf_undertone_ch35_unlocked', 'true');
+          renderChapterList();
+        }
+      }
+      // 2-5読了後に第三章（3-1）解放
+      if (idx === 14) {
+        if (!ch4Unlocked) {
+          ch4Unlocked = true;
+          localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
           renderChapterList();
         }
       }
