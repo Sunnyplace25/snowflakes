@@ -629,7 +629,7 @@ function fullResetUndertone() {
   var n = _clearUndertone();
   _setUndertoneAuth();
   setTestStatus('✓ リセット済み（' + n + 'キー削除）。第1章の最初から開始。');
-  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+  setTimeout(function() { window.location.href = './room/undertone/'; }, 400);
 }
 
 function startCh2Undertone() {
@@ -643,7 +643,7 @@ function startCh2Undertone() {
   localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:2 }));
   localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4]));
   setTestStatus('✓ 第2章開始状態。第1章全読了・2-1から開始。');
-  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+  setTimeout(function() { window.location.href = './room/undertone/'; }, 400);
 }
 
 function startCh3Undertone() {
@@ -662,7 +662,7 @@ function startCh3Undertone() {
   localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:3 }));
   localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4,5,6,7,8,9]));
   setTestStatus('✓ 第3章開始状態。第1〜2章全読了・3-1から開始。');
-  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 400);
+  setTimeout(function() { window.location.href = './room/undertone/'; }, 400);
 }
 
 function resetUndertone() {
