@@ -858,44 +858,44 @@
     <!-- Chapter list (tap to open prose popup) -->
     <div class="chapter-list" id="chapter-list" style="display:none;">
 
-      <!-- 第一章 アコーディオン -->
+      <!-- Prologue アコーディオン -->
       <div class="ch-section" id="ch-section-1">
         <button class="ch-section-header" onclick="toggleChSection(1)">
-          <span class="ch-section-name">第一章</span>
+          <span class="ch-section-name">Prologue</span>
           <span class="ch-section-arr" id="ch-arr-1">›</span>
         </button>
         <div class="ch-section-body" id="ch-body-1">
           <div class="chapter-item" id="chapter-item-0">
             <button class="chapter-header" onclick="openChapterPopup(0)">
-              <span class="chapter-num">1-1</span>
+              <span class="chapter-num">0-1</span>
               <span class="chapter-title">分かれ道</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-1">
             <button class="chapter-header" onclick="openChapterPopup(1)">
-              <span class="chapter-num">1-2</span>
+              <span class="chapter-num">0-2</span>
               <span class="chapter-title">路地裏</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-2">
             <button class="chapter-header" onclick="openChapterPopup(2)">
-              <span class="chapter-num">1-3</span>
+              <span class="chapter-num">0-3</span>
               <span class="chapter-title">Under tone</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-3" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(3)">
-              <span class="chapter-num">1-4</span>
+              <span class="chapter-num">0-4</span>
               <span class="chapter-title">店主</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-4" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(4)">
-              <span class="chapter-num">1-5</span>
+              <span class="chapter-num">0-5</span>
               <span class="chapter-title">帰り道</span>
               <span class="chapter-arr">▶</span>
             </button>
@@ -905,7 +905,7 @@
 
       <!-- 第2章を読むボタン（1-5読了後・2章未解放時） -->
       <div id="ch-between" style="display:none;padding:24px 0 8px;">
-        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第2章を読む</button>
+        <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第一章を読む</button>
         <p class="ch-next-cond" id="ch-next-cond"></p>
         <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
         <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;text-align:center;margin-top:6px;line-height:2;"></p>
@@ -914,41 +914,41 @@
       <!-- 第二章 アコーディオン -->
       <div class="ch-section" id="ch-section-2" style="display:none;">
         <button class="ch-section-header" onclick="toggleChSection(2)">
-          <span class="ch-section-name">第二章</span>
+          <span class="ch-section-name">第一章</span>
           <span class="ch-section-arr" id="ch-arr-2">›</span>
         </button>
         <div class="ch-section-body" id="ch-body-2">
           <div class="chapter-item" id="chapter-item-5">
             <button class="chapter-header" onclick="openChapterPopup(5)">
-              <span class="chapter-num">2-1</span>
+              <span class="chapter-num">1-1</span>
               <span class="chapter-title">仕事終わり</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-6">
             <button class="chapter-header" onclick="openChapterPopup(6)">
-              <span class="chapter-num">2-2</span>
+              <span class="chapter-num">1-2</span>
               <span class="chapter-title">深夜の店</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-7" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(7)">
-              <span class="chapter-num">2-3</span>
+              <span class="chapter-num">1-3</span>
               <span class="chapter-title">深夜の店</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-8" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(8)">
-              <span class="chapter-num">2-4</span>
+              <span class="chapter-num">1-4</span>
               <span class="chapter-title">深夜の店</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-9" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(9)">
-              <span class="chapter-num">2-5</span>
+              <span class="chapter-num">1-5</span>
               <span class="chapter-title">帰り道</span>
               <span class="chapter-arr">▶</span>
             </button>
@@ -959,7 +959,7 @@
       <!-- 第3章ロックボタン（2-5読了後・3章未公開時） -->
       <div id="ch-between-3" style="display:none;padding:24px 0 8px;">
         <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
-          <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第三章</span>
+          <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第二章</span>
           <span style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;color:#334155;">7月20日公開予定</span>
         </button>
       </div>
@@ -967,41 +967,41 @@
       <!-- 第三章 アコーディオン -->
       <div class="ch-section" id="ch-section-3" style="display:none;">
         <button class="ch-section-header" onclick="toggleChSection(3)">
-          <span class="ch-section-name">第三章</span>
+          <span class="ch-section-name">第二章</span>
           <span class="ch-section-arr" id="ch-arr-3">›</span>
         </button>
         <div class="ch-section-body" id="ch-body-3">
           <div class="chapter-item" id="chapter-item-10">
             <button class="chapter-header" onclick="openChapterPopup(10)">
-              <span class="chapter-num">3-1</span>
+              <span class="chapter-num">2-1</span>
               <span class="chapter-title">夜の余熱</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-11" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(11)">
-              <span class="chapter-num">3-2</span>
+              <span class="chapter-num">2-2</span>
               <span class="chapter-title">深夜の店</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-12" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(12)">
-              <span class="chapter-num">3-3</span>
+              <span class="chapter-num">2-3</span>
               <span class="chapter-title">スタジオ</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-13" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(13)">
-              <span class="chapter-num">3-4</span>
+              <span class="chapter-num">2-4</span>
               <span class="chapter-title">深夜の店</span>
               <span class="chapter-arr">▶</span>
             </button>
           </div>
           <div class="chapter-item" id="chapter-item-14" style="display:none;">
             <button class="chapter-header" onclick="openChapterPopup(14)">
-              <span class="chapter-num">3-5</span>
+              <span class="chapter-num">2-5</span>
               <span class="chapter-title">帰り道</span>
               <span class="chapter-arr">▶</span>
             </button>
@@ -1723,77 +1723,77 @@ function submitUtPw() {
   /* ── Chapter texts (prose) ── */
   var ALL_CHAPTERS = [
     {
-      label: '1-1.  分かれ道',
+      label: '0-1.  分かれ道',
       text:
 '　ライブ終わり。\n\n　夜の空気が少しだけ冷たい。\n\n　コンビニの袋を片手に、\n　三人で駅へ向かって歩いていた。\n\n「腹減った」\n\n　ハヤテが言う。\n\n「さっき食っただろ」\n\n「ラーメンは別腹」\n\n「それ使い方違うだろ」\n\n　コウタが呆れた顔をする。\n\n　ヒナタは少し後ろを歩きながら、\n　何も言わない。\n\n　ただ、\n　ふと足を止めた。\n\n「……ん」\n\n「どうした？」\n\n　ヒナタは、\n　道路脇の細い道を見ていた。\n\n　路地裏。\n\n　前にも通った場所。\n\n　古いビルと古い壁に挟まれた、\n　少し暗い道。\n\n「……ここ」\n\n　コウタが少し眉を上げる。\n\n「あ」\n\n　前に来た時。\n\n　あの店があった場所。\n\n　地図にもなくて、\n　帰る頃には消えていた店。\n\n　少しだけ静かになる。\n\n「……行く？」\n\n　ハヤテが笑う。\n\n　誰も返事をしないまま、\n　三人は路地裏を見た。'
     },
     {
-      label: '1-2.  路地裏',
+      label: '0-2.  路地裏',
       text:
 '　路地に入る。\n\n　少し進んだだけなのに、\n　外の音が遠くなった気がした。\n\n　車の音も、\n　人の話し声も、\n　少しだけ薄くなる。\n\n　足音だけが、\n　やけに響く。\n\n　コツ。\n\n　コツ。\n\n　コツ。\n\n　歩いている人数より、\n　音が多い気がして、\n　コウタは少し眉を寄せた。\n\n「……こんな長かったっけ」\n\n　ハヤテが辺りを見回す。\n\n「いや」\n\n　コウタが短く返す。\n\n　前に来た時も、\n　同じことを思った気がした。\n\n　古い壁。\n\n　並んだ室外機。\n\n　ひび割れたアスファルト。\n\n　何も変わっていないのに、\n　少しだけ違う。\n\n　隣を歩いていたはずのヒナタが、\n　いつの間にか少し前にいる。\n\n　コウタは無意識に歩幅を速めた。\n\n「また、音聞こえる？」\n\n　ハヤテが冗談っぽく笑う。\n\n「聞こえない」\n\n　ヒナタが短く言う。\n\n　でも、\n　足は止まらない。\n\n「……なあ、やっぱり戻ろう」\n\n　コウタが小さく言った。\n\n「え？」\n\n　ハヤテが振り返る。\n\n　頭の奥で、\n　誰のものか分からない声が鳴る。\n\n『それで、良かったの？』\n\n　コウタの指先が、\n　無意識に中指のリングへ触れる。\n\n　黒く見える石。\n\n　でも、\n　真っ黒じゃない。\n\n　灯りが当たるたび、\n　薄い煙みたいな色が、\n　中で揺れて見えた。\n\n　あの店で受け取ってから。\n\n　似合うとも思わない。\n\n　気に入っているわけでもない。\n\n　ただ、\n　なんとなく外せないでいる。\n\n「ま、面白いものあるかもしれないし」\n\n　ハヤテが軽く笑った。\n\n　その時。\n\n　奥の方に、\n　白い灯りが見えた。\n\n　ヒナタが、\n　少しだけ目を細める。\n\n「……あった」'
     },
     {
-      label: '1-3.  Under tone',
+      label: '0-3.  Under tone',
       text:
 '　店の前に立つ。\n\n　前と変わらない。\n\n　小さな白い灯り。\n\n　前は気づかなかった店の看板。\n\n　少し曇ったガラス越しに、\n　棚だけがぼんやり見えている。\n\n　前と同じはずなのに。\n\n　なんとなく、\n　店だけ少し時間が遅い気がした。\n\n　通り過ぎる車の音。\n\n　誰かの笑い声。\n\n　後ろの世界は動いているのに、\n　ここだけ少し静かだ。\n\n「……なんか増えてない？」\n\n　ハヤテがガラスに顔を近づける。\n\n「増えてる」\n\n　コウタが即答した。\n\n　前はなかった棚。\n\n　前はなかった小さな箱。\n\n　吊るされた小さな鍵。\n\n　見たことのない古いレコード。\n\n　奥には、\n　前より明らかに物が増えていた。\n\n「こんなのあったっけ」\n\n「ない」\n\n　コウタが眉を寄せる。\n\n「覚えてるの？」\n\n「……なんか、違う」\n\n　うまく言えない。\n\n　でも、\n　見落とした感じじゃない。\n\n　増えている。\n\n　そんな感覚だけが残る。\n\n　ヒナタは黙ったまま、\n　入口の横を見ていた。\n\n「……前なかった」\n\n「なにが？」\n\n　ヒナタが指した先。\n\n　小さな木のプレート。\n\n　手書きで文字が書かれている。\n\n『置いていった音を返しています』\n\n　少しだけ静かになる。\n\n　ハヤテが笑った。\n\n「……何それ」\n\n　コウタは笑わなかった。\n\n　なんとなく、\n　言葉が引っかかっていた。\n\n　置いていった音。\n\n　返す。\n\n　何を、誰に。\n\n「……入る？」'
     },
     {
-      label: '1-4.  店主',
+      label: '0-4.  店主',
       text:
 '　店主は店の奥に静かに座っていた。\n\n　コウタは少し眉をひそめる。\n\n　違和感。\n\n　前に来た時は、\n　もっと年上に見えた。\n\n　でも今日は、\n　同じくらい。\n\n　……いや。\n\n　もっと下かもしれない。\n\n　ランプに照らされた白い髪が、\n　薄暗い店内でぼんやり光っている。\n\n　顔は見えているはずなのに、\n　なぜか印象だけが曖昧だった。\n\n　見たはずなのに、\n　次の瞬間には思い出せなくなる。\n\n「なあ、やっぱり……」\n\n　コウタが言いかける。\n\n「……鳴ってる」\n\n　ヒナタだった。\n\n「また？」\n\n　ハヤテが笑う。\n\n　ヒナタはもう歩き出していた。\n\n　迷わない。\n\n　ハヤテは小さく息を吐いて、\n　諦めたように後ろをついていく。\n\n　コウタだけが、\n　その場に残った。\n\n　足が進まない。\n\n　何かがおかしい。\n\n　理由は分からない。\n\n　ただ、\n　胸の奥だけがざわつく。\n\n　その時。\n\n『迷っているな』\n\n　知らない声。\n\n『そろそろ選ぶか』\n\n　また別の声。\n\n『これで、よかったの？』\n\n　誰の声なのか分からない。\n\n　頭の中で、\n　順番もなく重なっていく。\n\n　耳鳴りみたいに、\n　音だけが残る。\n\n　ふと顔を上げた。\n\n　白い髪の隙間。\n\n　見えたわけじゃない。\n\n　でも。\n\n　見られた気がした。\n\n　静かに、\n　口元だけが少し動く。\n\n「……また、来ると思ってた」\n\n　コウタは少し眉をひそめる。\n\n「……俺？」\n\n　返事はない。\n\n　代わりに、\n　カウンターの横へ手を伸ばした。\n\n　カサ、と小さな音。\n\n　古びた箱が置かれる。\n\n　白い縁。\n\n　少し擦れた角。\n\n　見たことのないカード。\n\n「選べ」\n\n　少しだけ間が空いた。\n\n　ハヤテが笑う。\n\n「急だな」\n\n　ヒナタは何も言わない。\n\n　ただ、\n　カードを見ていた。\n\n「今鳴っているものは、\n　隠せない」\n\n　ランプの灯りが、\n　カードの端を少しだけ照らした。'
     },
     {
-      label: '1-5.  帰り道',
+      label: '0-5.  帰り道',
       text:
 '「見てこれ。買っちゃった」\n\n　ハヤテが嬉しそうに、\n　二人へ見せる。\n\n　手のひらサイズの、\n　よく分からないマスコット。\n\n　丸い目。\n\n　口だけ笑っている。\n\n「何だそれ。怖すぎるだろ」\n\n　コウタが眉をひそめる。\n\n　ヒナタも少しだけ見る。\n\n「趣味悪い」\n\n　短く刺す。\n\n「ひどくない？」\n\n　ハヤテが笑った。\n\n　指先でマスコットをくるくる回しながら、\n　前を歩く。\n\n「変な店だったな」\n\n　少しだけ間が空く。\n\n「……でも、悪くない」\n\n　ヒナタが小さく息を吐いた。\n\n　コウタは何も言わない。\n\n　少し歩いたところで、\n　一度だけ振り返る。\n\n　店の灯りは、\n　まだ静かに点いていた。\n\n　その時。\n\n「まだ、迷ってる？」\n\n　耳元で、\n　声が聞こえた気がした。\n\n　背筋が冷える。\n\n　思わず店の方を見る。\n\n　ランプの灯りの奥。\n\n　店主がこちらを見ていた。\n\n　口元だけ、\n　少し笑っている。\n\n「……きっと、また来る」\n\n　聞こえないはずの声が、\n　聞こえた気がした。\n\n　コウタは目をそらす。\n\n　二人の後を追う。\n\n　またひとつ、\n　足音が多く聞こえた気がした。'
     },
     {
-      label: '2-1.  仕事終わり',
+      label: '1-1.  仕事終わり',
       text:
-'仕事終わり。\n\n　いつものバーを出る。\n\n　カクテルの甘い香りが、\n　まだ少しだけ残っていた。\n\n　夜風が気持ちいい。\n\n　街はもう静かになり始めていて、\n　閉まりかけの店のシャッター音や、\n　遠くの車の走る音だけが残っている。\n\n　ハヤテはポケットに手を入れて、\n　なんとなく歩いた。\n\n　街灯の下。\n\n　壁際に並んだ自転車。\n\n　誰かが落としたレシート。\n\n　細い路地。\n\n　ふと、気になるものがあるたび、\n　立ち止まっては少し覗く。\n\n　なんとなく。\n\n　ほんとに、なんとなく。\n\n　足が止まった。\n\n　薄暗い路地の先。\n\n　見覚えのある看板。\n\n　Under tone\n\n　──ひとつ多い音に、気づく場所。\n\n「また来ちゃった」\n\n　小さく笑う。\n\n　ドアを開ける。\n\n　チリン。\n\n　鈴が鳴る。\n\n　店の奥。\n\n　相変わらず店主は座っていた。\n\n「……ども」\n\n　軽く手を上げる。\n\n「……」\n\n　歓迎も拒否もない。\n\n　ただ見ている。\n\n　ハヤテは適当に棚を見始める。\n\n　透明な石。\n\n　小さな鈴。\n\n　古い鍵。\n\n　よく分からないものばかり。\n\n　鈴を軽く鳴らす。\n\n　チリ、と小さい音。\n\n　次に、\n　半透明の石をランプへかざす。\n\n「なあ」\n\n「この店、なんなの」\n\n　振り返らずに聞く。\n\n　少しだけ間。\n\n「……ひとつ多い音を置いている」\n\n「音？」\n\n　ハヤテが笑う。\n\n「ヒナタみたいなこと言うな」\n\n　店主の視線が、\n　ふと止まる。\n\n　ハヤテの手の中。\n\n　小さな石ころ。\n\n「……それ」\n\n「ん？」\n\n「交換してやってもいい」\n\n　ポケットを探る。\n\n　出てきたのは、\n　バーでもらった紙のコースター。\n\n「嫌だよ」\n\n「これ、地味に集めてんだ」\n\n「違う」\n\n「逆」\n\n　視線はコースターじゃない。\n\n　石の方だった。\n\n「……あ、これ？」\n\n　さっき、\n　なんとなく拾ったやつ。\n\n「見せて」\n\n　店主はルーペを出した。\n\n　光に当てる。\n\n　角度を変える。\n\n　小さく表面を削る。\n\n　パキ。\n\n　欠けた断面を見て、\n　少し止まる。\n\n「……悪くない」\n\n　ハヤテが身を乗り出す。\n\n「え、面白」\n\n「なあ」\n\n「名前なんていうの」\n\n　店主は答えない。\n\n「これから通うならさ」\n\n「覚えといた方がいいじゃん？」\n\n　少し沈黙。\n\n「……ナギ」\n\n「ナギ」\n\n　確かめるみたいに繰り返す。\n\n　カウンターへ座る。\n\n　肘をついて身を乗り出した。\n\n「何歳？」\n\n「彼女いる？」\n\n「好きな食べ物は？」\n\n「店、繁盛してる？」\n\n「歌とか好き？」\n\n「……」\n\n　ナギは黙っている。\n\n　ハヤテは気にしない。\n\n　欠けた石の欠片を指先で転がした。\n\n「こういうのってさ」\n\n「カラスとか拾っていくのかな」\n\n「……お前」\n\n　ナギが少し笑う。\n\n「距離詰めるの早すぎだろ」'
+'仕事終わり。\n\n　いつものバーを出る。\n\n　カクテルの甘い香りが、\n　まだ少しだけ残っていた。\n\n　夜風が気持ちいい。\n\n　街はもう静かになり始めていて、\n　閉まりかけの店のシャッター音や、\n　遠くの車の走る音だけが残っている。\n\n　ハヤテはポケットに手を入れて、\n　なんとなく歩いた。\n\n　街灯の下。\n\n　壁際に並んだ自転車。\n\n　誰かが落としたレシート。\n\n　細い路地。\n\n　ふと、気になるものがあるたび、\n　立ち止まっては少し覗く。\n\n　なんとなく。\n\n　ほんとに、なんとなく。\n\n　足が止まった。\n\n　薄暗い路地の先。\n\n　見覚えのある看板。\n\n　Under tone\n\n　──ひとつ多い音に、気づく場所。\n\n「また来ちゃった」\n\n　小さく笑う。\n\n　ドアを開ける。\n\n　チリン。\n\n　鈴が鳴る。\n\n　店の奥。\n\n　相変わらず店主は座っていた。\n\n「……ども」\n\n　軽く手を上げる。\n\n「……」\n\n　歓迎も拒否もない。\n\n　ただ見ている。\n\n　ハヤテは適当に棚を見始める。\n\n　透明な石。\n\n　小さな鈴。\n\n　古い鍵。\n\n　よく分からないものばかり。\n\n　鈴を軽く鳴らす。\n\n　チリ、と小さい音。\n\n　次に、\n　半透明の石をランプへかざす。\n\n「なあ」\n\n「この店、なんなの」\n\n　振り返らずに聞く。\n\n　少しだけ間。\n\n「……ひとつ多い音を置いている」\n\n「音？」\n\n　ハヤテが笑う。\n\n「ヒナタみたいなこと言うな」\n\n　店主の視線が、\n　ふと止まる。\n\n　ハヤテの手の中。\n\n　小さな石ころ。\n\n「……それ」\n\n「ん？」\n\n「交換してやってもいい」\n\n　ポケットを探る。\n\n　出てきたのは、\n　バーでもらった紙のコースター。\n\n「嫌だよ」\n\n「これ、地味に集めてんだ」\n\n「違う」\n\n「逆」\n\n　視線はコースターじゃない。\n\n　石の方。\n\n「……あ、これ？」\n\n　さっき、\n　なんとなく拾ったやつ。\n\n「見せて」\n\n　店主はルーペを出した。\n\n　光に当てる。\n\n　角度を変える。\n\n　小さく表面を削る。\n\n　パキ。\n\n　欠けた断面を見て、\n　少し止まる。\n\n「……悪くない」\n\n　ハヤテが身を乗り出す。\n\n「え、面白」\n\n「なあ」\n\n「名前なんていうの」\n\n　店主は答えない。\n\n「これから通うならさ」\n\n「覚えといた方がいいじゃん？」\n\n　少し沈黙。\n\n「……ナギ」\n\n「ナギ」\n\n　確かめるみたいに繰り返す。\n\n　カウンターへ座る。\n\n　肘をついて身を乗り出した。\n\n「何歳？」\n\n「彼女いる？」\n\n「好きな食べ物は？」\n\n「店、繁盛してる？」\n\n「歌とか好き？」\n\n「……」\n\n　ナギは黙っている。\n\n　ハヤテは気にしない。\n\n　欠けた石の欠片を指先で転がした。\n\n「こういうのってさ」\n\n「カラスとか拾っていくのかな」\n\n「……お前」\n\n　ナギが少し笑う。\n\n「距離詰めるの早すぎだろ」'
     },
     {
-      label: '2-2.  深夜の店',
+      label: '1-2.  深夜の店',
       text:
-'　深夜。\n\n　路地裏は相変わらず湿っていて、\n　夜の闇が少し深く感じられた。\n\n　空気がぬるい。\n\n　どこかで、\n　白い猫が鳴いている。\n\n　チリン。\n\n　ドアの鈴が鳴る。\n\n「よお」\n\n　ハヤテは慣れた様子で店に入り、\n　奥にいるナギへ声をかけた。\n\n「……また、お前か」\n\n「少しは歓迎しろよ」\n\n　ハヤテが笑いながら、\n　棚を適当に見始める。\n\n　ナギは何も言わない。\n\n　最近のハヤテのルーティン。\n\n　練習終わりに、\n　いつものバーで一杯だけ飲む。\n\n　それから帰り道に、\n　この店へ寄る。\n\n　毎回、\n　変なものを一つ買って帰る。\n\n「今日はこれかな」\n\n　適当に手に取ったのは、\n　傷だらけのヨーヨーだった。\n\n　ナギは手を止める。\n\n　何も言わず、\n　手だけを差し出した。\n\n　対価。\n\n　ハヤテは慣れた様子で、\n　札と小銭をいくつか置く。\n\n「あと、これ」\n\n　ポン、と。\n\n　小さなチョコレートを一つ置いた。\n\n　ナギの手が止まる。\n\n「差し入れ余ってさ。\n　めちゃくちゃ美味いよ」\n\n「……子どもじゃない」\n\n　視線が逸れる。\n\n　ハヤテは逸らさない。\n\n「なんでかな」\n\n「俺には、子どもに見えるよ」\n\n　柔らかく笑う。\n\n「ナギ」\n\n　少しだけ間。\n\n「……ずっと呼んでたんだろ。俺たちのこと」\n\n　ハヤテは笑ったまま、\n　棚の方へ視線を向ける。\n\n「なんかさ」\n\n　ヨーヨーを軽く落とす。\n\n　糸が伸びて、\n　また手元へ戻る。\n\n「ほっとけなくて」\n\n　そのまま、ポンと手に収まる。\n\n　ナギは何も言わない。\n\n　ただ、\n\n　さっき置かれたチョコレートだけを見ていた。'
+'　深夜。\n\n　路地裏は相変わらず湿っていて、\n　夜の闇が少し深く感じられた。\n\n　空気がぬるい。\n\n　どこかで、\n　白い猫が鳴いている。\n\n　チリン。\n\n　ドアの鈴が鳴る。\n\n「よお」\n\n　ハヤテは慣れた様子で店に入り、\n　奥にいるナギへ声をかけた。\n\n「……また、お前か」\n\n「少しは歓迎しろよ」\n\n　ハヤテが笑いながら、\n　棚を適当に見始める。\n\n　ナギは何も言わない。\n\n　最近のハヤテのルーティン。\n\n　練習終わりに、\n　いつものバーで一杯だけ飲む。\n\n　それから帰り道に、\n　この店へ寄る。\n\n　毎回、\n　変なものを一つ買って帰る。\n\n「今日はこれかな」\n\n　適当に手に取ったのは、\n　傷だらけのヨーヨーだった。\n\n　ナギは手を止める。\n\n　何も言わず、\n　手だけを差し出した。\n\n　対価。\n\n　ハヤテは慣れた様子で、\n　札と小銭をいくつか置く。\n\n「あと、これ」\n\n　ポン、と。\n\n　小さなチョコレートを一つ置いた。\n\n　ナギの手が止まる。\n\n「差し入れ余ってさ。\n　めちゃくちゃ美味いよ」\n\n「……子どもじゃない」\n\n　視線が逸れる。\n\n　ハヤテは逸らさない。\n\n「なんでかな」\n\n「俺には、子どもに見えるよ」\n\n　柔らかく笑う。\n\n「ナギ」\n\n　少しだけ間。\n\n「……ずっと呼んでただろ。俺たちのこと」\n\n　ハヤテは笑ったまま、\n　棚の方へ視線を向ける。\n\n「なんかさ」\n\n　ヨーヨーを軽く落とす。\n\n　糸が伸びて、\n　また手元へ戻る。\n\n「ほっとけなくて」\n\n　そのまま、ポンと手に収まる。\n\n　ナギは何も言わない。\n\n　ただ、\n\n　さっき置かれたチョコレートだけを見ていた。'
     },
     {
-      label: '2-3.  深夜の店',
+      label: '1-3.  深夜の店',
       text:
 '　夜が深くなっていた。\n\n　街の音が、ひとつずつ減っていく。\n\n　シャッターが下りる音。\n\n　遠くで誰かが笑う声。\n\n　それも、やがて消える。\n\n　Under tone の灯りだけが、\n　変わらず点っていた。\n\n　ハヤテはカウンターに肘をついて、\n　棚の奥を眺めていた。\n\n　並んだ石。\n\n　古い瓶。\n\n　見たことのない形の鍵。\n\n　ナギは何も言わず、\n　小さな布で石を磨いている。\n\n「眠くないの」\n\n　ハヤテが聞く。\n\n「……」\n\n「寝ないの？」\n\n　ナギは手を止めない。\n\n「店がある」\n\n「深夜でも？」\n\n「……来るやつがいる」\n\n　そうか、と思った。\n\n　深夜にしか来られないやつ。\n\n　深夜にしか口を開けないやつ。\n\n　たぶんそういう人が、\n　この店へ来る。\n\n　ハヤテは目を細める。\n\n「俺もそっちか」\n\n　ナギが少しだけ顔を上げた。\n\n　答えない。\n\n　でも、\n\n　目だけが少し笑った気がした。\n\n　チリン。\n\n　鈴が鳴る。\n\n　誰も入ってこない。\n\n　風だったかもしれない。\n\n「なあ」\n\n　ハヤテが言う。\n\n「ここに置いてある音って」\n\n「何の音なの」\n\n　少しだけ間があった。\n\n　ナギは磨いていた石を棚に戻す。\n\n「言えなかったやつ」\n\n「……え」\n\n「その時に、言えなかった音」\n\n　ハヤテは少し黙る。\n\n　指先が、\n　ポケットの中へ触れる。\n\n　今夜もらった、\n　コースターの端。\n\n　さっき誰かが、\n　なんでもない顔で笑っていた。\n\n　笑っているのに、\n\n　声がちょっとだけ細かった。\n\n「……返せるの」\n\n　ハヤテが静かに聞く。\n\n　ナギは少し考えた。\n\n「返すんじゃない」\n\n「置いておく場所を作るだけだ」\n\n　夜風が、\n　少しだけ窓を揺らした。\n\n　灯りが、\n　ふわりと揺れる。\n\n　ハヤテはそれを見ていた。\n\n「……そっか」\n\n　小さく言った。\n\n　悪くない。\n\n　なんとなく、\n　そう思った。'
     },
     {
-      label: '2-4.  深夜の店',
+      label: '1-4.  深夜の店',
       text:
 '　ハヤテはカウンターに肘をついたまま、\n　ぼんやり棚を見ていた。\n\n「俺さ」\n\n　ぽつりと言う。\n\n「三人兄弟なんだよ」\n\n　ナギは何も言わない。\n\n「一番下」\n\n「上の兄貴、一回り上で」\n\n「真ん中の兄貴も七つ上」\n\n　少し笑う。\n\n「二人とも家背負っててさ」\n\n「おかげで俺は、\n　好きにやらせてもらってた」\n\n　棚にあった兜の人形を、\n　なんとなくつつく。\n\n「……今考えると」\n\n「恵まれてたのかな」\n\n　少し間が空く。\n\n　店の奥で、\n　ランプの灯りがふわりと揺れた。\n\n「子どもの頃さ」\n\n「親に音楽続けるの反対されてたやついて」\n\n　少し間。\n\n「同い年だったのに」\n\n「なんか、一人で家背負ってたんだなって」\n\n「今になって思う」\n\n　棚にあった星のオブジェを、\n　なんとなく指先で転がす。\n\n「俺は好き勝手やってたのに」\n\n　視線は棚のまま。\n\n「最初に誘ったの、\n　俺だったんだけど」\n\n「気づいたら、\n　会わなくなってて」\n\n「そのまま疎遠になった」\n\n　少し笑う。\n\n「なんかさ」\n\n「ずっと残ってんだよね」\n\n　ナギは何も言わない。\n\n　石を磨く手だけが動いている。\n\n「でも」\n\n　ハヤテが続ける。\n\n「久々に会ってさ」\n\n「感謝してる、って言われて」\n\n　困ったみたいに笑う。\n\n　少し黙る。\n\n「何もしてやってなんか、\n　ないのにな」\n\n　ナギは少しだけ顔を上げた。\n\n「そいつが納得してるなら」\n\n　石を棚へ戻す。\n\n「それでいい」\n\n　ハヤテは黙る。\n\n　窓が小さく揺れた。\n\n「……うん」\n\n　しばらく、\n　店の音だけが続く。\n\n　ハヤテは足元のカバンへ手を伸ばす。\n\n　中を少し探って、\n　小さな箱を取り出した。\n\n「なあ、チョコ食う？」\n\n　ひとつ差し出す。\n\n「……子どもじゃないって言ってるだろ」\n\n　そう言いながら、\n　ナギはチョコレートへ手を伸ばした。\n\n　ハヤテは柔らかく笑う。\n\n「毎回食うじゃん」'
     },
     {
-      label: '2-5.  帰り道',
+      label: '1-5.  帰り道',
       text:
 '　ライブの帰り道。\n\n　三人で、\n　駅へ向かって歩く。\n\n　夜の空気が少し冷たい。\n\n　ハヤテはカバンを肩へ掛け直した。\n\n「最近さ」\n\n「あの店通ってんだよ」\n\n　コウタが少し眉を寄せる。\n\n「最近、帰りに寄るのルーティンになっててさ」\n\n「気づいたら毎回なんか買ってる」\n\n「また変なの増えてそう」\n\n「失礼だな」\n\n　ハヤテが笑う。\n\n「面白くてさ」\n\n「何あった」\n\n　ヒナタだった。\n\n　一瞬だけ、\n　ハヤテが止まる。\n\n「珍し」\n\n　ヒナタは前を向いたまま。\n\n「古いレコードとか」\n\n「CDとか」\n\n「プレイヤーもあったな」\n\n　少し考える。\n\n「あとカセットとか」\n\n「……ふうん」\n\n　ヒナタは何も言わない。\n\n　前を向いたまま、\n　少しだけ歩幅が変わった。\n\n「俺は行かないけどな」\n\n　コウタが短く言う。\n\n「え、なんで」\n\n「……なんか嫌なんだよ」\n\n「何が」\n\n「分かんないけど」\n\n　ハヤテが軽く笑う。\n\n「まだ気にしてんの？いつだかの夢の話」\n\n「……別に」\n\n「そのリングだって、なんだかんだ気に入ってるじゃん」\n\n　コウタは思わず、手を隠す。\n\n「これは」\n\n　言いかけて、やめる。\n\n　親指で、\n　中指のリングを一度だけ触る。\n\n『これで、よかったの？』\n\n　また、あの声。\n\n「……うるさい」\n\n　誰に言ったのかもわからないまま、\n　コウタは前を向いた。'
     },
     {
-      label: '3-1.  夜の余熱',
+      label: '2-1.  夜の余熱',
       text:
 '　ライブ後。打ち上げ。\n　解散。\n\n　夜の熱が、まだ残っている。\n\n「お疲れ。今日はもうダメ」\n\n　ハヤテが肩を回しながら言う。\n\n「正直、俺もそう思う」\n\n　コウタも軽く笑う。\n\n「お疲れ」\n\n　そのまま路地で別れて、\n　ヒナタはコンビニへ寄る。\n\n　身体は疲れている。\n\n　でも、\n　まっすぐ帰る気にはならなかった。\n\n　酒を二、三缶選んで、\n　雑にカゴへ入れる。\n\n　プリンの棚を少し見て、やめる。\n\n「……どこに帰ろう」\n\n　小さく呟く。\n\n　夜風がぬるい。\n\n　深夜の街中は、音が少ない。\n\n　車の走行音。\n　風の音。\n　自分の足音。\n\n　たまに、数が合わない。\n\n　でも、気にしない。\n\n　ライブの熱。\n　ギターの音。\n　客の歓声。\n\n　まだ、残っている。\n\n　スマホを見る。\n\n　急に現実が戻ってくる。\n\n　仕事の連絡。\n　重なるスケジュール。\n\n　最近は、バンド以外の音の仕事も\n　増えている。\n\n　その中には、\n　個人名義で来る楽曲制作の依頼も混ざるようになっていた。\n\n　小さく息を吐く。\n\n　Snow flakesは、三人のバンド。\n\n　そのはずなのに。\n\n　その時。\n\n　どこからか、音がした。\n\n　曲、と言うほど形はない。\n\n　短いフレーズ。\n\n　遠くで誰かが、\n　適当に楽器を鳴らしているみたいな。\n\n　でも、少し違う。\n\n　あとひとつ音を置けば、\n　何かになりそうなのに。\n\n　途中で止まっている。\n\n　ヒナタは立ち止まる。\n\n「……鳴ってる」\n\n　こんな時間に。\n\n　こんな場所で。\n\n　少しだけ、笑った。\n\n　考える前に、\n　足がそっちへ向いていた。'
     },
     {
-      label: '3-2.  深夜の店',
+      label: '2-2.  深夜の店',
       text:
 '　ヒナタは音の鳴る方へ歩いていく。\n\n　店の奥。\n\n　突き当たり。\n\n　カウンターの中で、\n　店主が楽器を鳴らしていた。\n\n　不思議な形。\n\n　見たことはない。\n\n　でも、綺麗な音だった。\n\n　一歩、近づく。\n\n　ふと、音が止まる。\n\n「なあ、これ」\n\n　店主がヒナタを見る。\n\n「このコード、ちょっと変えるとさ」\n\n　そう言って、一音鳴らす。\n\n「……いいな」\n\n「だろ」\n\n　もう一度、音が鳴る。\n\n　ヒナタは少し考える。\n\n「そこ、下げてもいいかも」\n\n「どこ」\n\n「その前」\n\n「ああ」\n\n　店主が鳴らす。\n\n　少し違う。\n\n「……そっちか」\n\n「違う」\n\n「じゃあ、こっち？」\n\n　また音が鳴る。\n\n　気づけば、笑っていた。\n\n　音の話は、終わらなかった。\n\n　あの音はどうだとか。\n\n　ライブの空気はどうだったとか。\n\n　置く音。\n\n　抜く音。\n\n　余る音。\n\n　そんな話をしていたはずなのに。\n\n　ふと、ヒナタは手元を見る。\n\n　コンビニの袋。\n\n「あ」\n\n　少し考える。\n\n「……飲む？」\n\n　袋を持ち上げる。\n\n　店主は少しだけ笑った。\n\n「飲む」\n\n　それだけだった。\n\n　気づけば、話は続いていた。\n\n　音のこと。\n\n　ライブのこと。\n\n　好きな曲のこと。\n\n　知らないバンドのこと。\n\n　時間の感覚だけが、どこかへ消えていた。\n\n　窓の向こうが、少し白くなっている。\n\n　朝の気配。\n\n　ヒナタはそこで初めて気づく。\n\n「……やば」\n\n　思わず笑う。\n\n　コウタもハヤテもいないのに。\n\n　こんなに喋ったのは、久しぶりな気がした。\n\n　立ち上がる。\n\n「……帰らなきゃ」\n\n「ちゃんと寝ろよ」\n\n「そっちも」\n\n　名前は、聞かなかった。'
     },
     {
-      label: '3-3.  スタジオ',
+      label: '2-3.  スタジオ',
       text:
 '　スタジオ。\n\n　ヒナタのギターが、少し軽い。\n\n　いつもより。\n\n　置く音が少し前へ出る。\n\n　テンポも、少しだけ揺れる。\n\n「なんか、いいことあった？」\n\n　ハヤテが軽く聞く。\n\n「別に」\n\n　そう言いながら、\n　もう一度鳴らす。\n\n　少しだけ、笑っている。\n\n　コウタは少し眉を寄せた。\n\n「ちゃんと寝た？」\n\n「……まあ」\n\n　曖昧に濁す。\n\n　楽器を置く。\n\n　テーブルの上のスケジュールを開いた。\n\n「じゃ、今日の確認な」\n\n　いつものように、\n　ハヤテが仕切り始める。\n\n「ヒナタ、午後から音の仕事」\n\n「俺、打ち合わせ」\n\n「コウタ、取材」\n\n　ページをめくる。\n\n「あ、あとヒナタ」\n\n「夜もある」\n\n　コウタが顔を上げる。\n\n「……多くない？」\n\n「また増えてないか」\n\n「……まあ」\n\n　ヒナタは笑って流した。\n\n　気づけば、夜になっていた。\n\n　仕事を終えて、\n　街の空気が少し冷たい。\n\n　ヒナタは歩く。\n\n　考えるまでもなく。\n\n　足は、あの店へ向かっていた。\n\n　チリン。\n\n　ヒナタの足は、迷わない。\n\n　音の鳴る方へ。\n\n「お疲れ」\n\n「うん」\n\n　ヒナタはコンビニの袋を持ち上げる。\n\n「……飲む？」\n\n「飲む」\n\n　店内を見て回る。\n\n　石。\n　レコード。\n　鍵。\n\n　ふと、手が止まる。\n\n　カセットテープ。\n\n　少し色が抜けたケース。\n\n　指が止まる。\n\n「これ、聞ける？」\n\n　ヒナタが手に取る。\n\n「わかんない」\n\n「その辺にプレーヤーなかった？」\n\n　奥から雑な返事。\n\n　音を鳴らす手は、止まらない。\n\n　プレーヤー。\n\n　探す。\n\n　見当たらない。\n\n　気づけば、店主が隣に立っていた。\n\n　一緒に棚を覗き込んでいる。\n\n「あー、これじゃなかったか」\n\n　小さなプレーヤーを手に取る。\n\n　でも、カセットのものじゃない。\n\n「……聞けないか」\n\n　思ったより、声が落ちた。\n\n「何」\n\n　店主が面白そうにヒナタを見る。\n\n「珍しい顔してる」\n\n「してない」\n\n「してる」\n\n「してない」\n\n「してる」\n\n「……うるさい」'
     },
     {
-      label: '3-4.  深夜の店',
+      label: '2-4.  深夜の店',
       text:
 '　相変わらず、深夜に店へ通っている。\n\n　だいぶ曲の形が見えてきていた。\n\n「いいな」\n\n「うん。あと少し」\n\n　店主が楽器を鳴らす。\n\n　ヒナタは適当にハミングを乗せる。\n\n　音が重なる。\n\n　少し崩れる。\n\n　また戻る。\n\n　合間に酒を飲んで、\n　二人で少し笑う。\n\n「これさ」\n\n　ヒナタが店主を見る。\n\n「そのうちちゃんと歌えよ」\n\n「ドラムとベースも入れて」\n\n　ポロン。\n\n　楽器から音が落ちる。\n\n「いいの」\n\n「いいよ」\n\n　少し間。\n\n「だってさ」\n\n　缶を持ったまま、\n　ヒナタは少しだけ笑った。\n\n「これ、もう俺たちの曲だろ」\n\n\n数日後。\n\n　スタジオ。\n\n　ヒナタはアンプの横へスマートフォンを置いた。\n\n「これ」\n\n　短く言う。\n\n「なに？」\n\n「途中」\n\n　再生。\n\n　静かなギター。\n\n　少し遅れて入る音。\n\n　重なる。\n\n　少し崩れる。\n\n　また戻る。\n\n　いつものヒナタの曲とは、少し違う。\n\n　最後まで誰も話さなかった。\n\n　音が止まる。\n\n　一瞬の間。\n\n「へえ」\n\n　ハヤテが先に笑った。\n\n「面白い」\n\n「なんか、変わったな」\n\n「前より動く」\n\n「動く？」\n\n　ヒナタが眉を上げる。\n\n「うまく言えねえけど」\n\n「勝手にどっか行きそう」\n\n「でも、いい」\n\n　ハヤテは笑ったまま言う。\n\n「こういうの好き」\n\n　ヒナタは小さく笑う。\n\n　視線だけが、\n　コウタへ向いた。\n\n「……どうした」\n\n　コウタは答えない。\n\n　スマホの画面を見たまま。\n\n「……誰と作った？」\n\n　一瞬だけ。\n\n　ヒナタの動きが止まる。\n\n　でも、何も言わない。\n\n　代わりに缶を持って、\n　一口だけ飲んだ。\n\n　ハヤテが笑う。\n\n「なにそれ」\n\n「怪しすぎるだろ」\n\n　コウタが何か言いかけた、その時。\n\n　ハヤテが立ち上がる。\n\n「合わせてみようぜ」\n\n　もうスティックを回している。\n\n「途中なんだろ？」\n\n「だったらちょうどいいじゃん」\n\n　笑ったまま、\n　コウタを見る。\n\n「コウタ」\n\n「……は？」\n\n「ベース」\n\n　コウタは少し眉を寄せる。\n\n「いや、待って」\n\n「まだ何も――」\n\n　最後まで言う前に、\n　ヒナタがギターを持った。\n\n　一度。\n\n　もう一度。\n\n　タン。\n\n　ハヤテが入る。\n\n　少し遅れて、\n　コウタも指を置いた。\n\n　余った場所へ、\n　低い音を置く。\n\n　崩れない。\n\n　初めてのはずなのに。\n\n　何度もやったみたいに。\n\n　知っていたみたいに。\n\n　音が重なる。\n\n　ハヤテが笑う。\n\n「うわ」\n\n「面白」\n\n　ヒナタは少しだけ笑った。\n\n　コウタだけが、動かない。\n\n　弦に置いた指が止まっている。\n\n「……どうした」\n\n　コウタは少し黙る。\n\n「いや」\n\n　一度言葉を探す。\n\n「……気持ち悪い」\n\n「は？」\n\n　ハヤテが吹き出す。\n\n「ひでえな」\n\n「違う」\n\n　コウタは眉を寄せる。\n\n「普通、ちょっとズレるだろ」\n\n「入る場所とか」\n\n「間とか」\n\n「……なのに」\n\n　言葉が止まる。\n\n　ヒナタは何も言わない。\n\n　ただ、弦の上へ指を置いたまま。\n\n　少しだけ目を細める。\n\n「……知ってたみたいに」\n\n　一拍。\n\n「合う」'
     },
     {
-      label: '3-5.  帰り道',
+      label: '2-5.  帰り道',
       text:
 '　相変わらず、夜だった。\n\n　ヒナタは店へ向かう。\n\n　いつも通り。\n\n　でも、少し違う。\n\n　ドアを開けると、ナギはいなかった。\n\n　いつもの場所。\n\n　いつもの灯り。\n\n　音だけが、少し残っている。\n\n　カウンターに、\n　小さなものが置かれていた。\n\n　カセットテープ。\n\n　あの時の、色が抜けたやつ。\n\n　メモが一枚。\n\n『聞ける時に、聞け』\n\n　ヒナタは少し笑う。\n\n「だから、聞けないんだって」\n\n　受け取る。\n\n　かわりに、USBをひとつ置いていく。\n\n\n　帰り道。\n\n　夜の空気が少し冷たい。\n\n\n　コンビニに寄り、プリンを２つ買う。\n\n\n　足音が、自分のだけ響く。\n\n　ライブの日程。\n　仕事の連絡。\n　バンドの話。\n\n　全部、また戻ってくる。\n\n　なにも変わっていない。\n\n　ポケットの中には、\n　なんとなく拾った石と、\n　聞けないカセットテープ。\n\n　中でぶつかって、小さく音が鳴った。\n\n　「……鳴ってる。今も」\n\n　一度だけ、振り向く。\n\n\n　帰る道は\n　変わっていない。\n\n　でも。\n\n　ポケットの重みの分だけ、\n　少しだけ何かが軽くなった気がした。'
     }
