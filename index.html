@@ -1110,7 +1110,10 @@ function sfShare() {
     </div>
 
     <!-- QF -->
-    <div style="grid-column:1/-1;padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(240,171,252,0.25);">
+    <div style="grid-column:1/-1;padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(240,171,252,0.25);position:relative;">
+      <div id="qf-item-hint" style="position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:10px;background:rgba(240,171,252,0.06);border:1px solid rgba(240,171,252,0.15);display:flex;align-items:center;justify-content:center;" title="Instagramを見るとアイテムがもらえる">
+        <img id="qf-item-hint-img" src="item/chocolate.webp" style="width:28px;height:28px;object-fit:contain;opacity:0.7;">
+      </div>
       <p style="font-size:11px;letter-spacing:4px;color:#f0abfc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;text-shadow:0 0 14px rgba(240,171,252,0.55);">INSTAGRAM / 書き下ろしシリーズ</p>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
         <p style="font-size:22px;font-weight:400;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin:0;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
@@ -1237,11 +1240,8 @@ function sfShare() {
           if (item.type === 'candy') SfSnow.addCandy(item.id);
           else SfSnow.addMItemDirect(item.id, 1);
           SfSnow.markNDaysDone('qf_insta_visit');
-          var popup = document.getElementById('qf-reward-popup');
-          if (!popup) return;
-          document.getElementById('qf-reward-img').src = item.img;
-          document.getElementById('qr-name').textContent = item.label;
-          popup.classList.add('show');
+          var bannerItem = SF_BANNER_ITEMS.find(function(b) { return b.key === item.id; });
+          if (bannerItem && typeof showBannerItemPopup === 'function') showBannerItemPopup(bannerItem);
         }, 600);
       });
     })();
@@ -2670,14 +2670,14 @@ document.addEventListener('visibilitychange', function() {
     {
       key:   'shiori_kouta',
       img:   'item/shiori_kouta.webp',
-      name:  'しおり',
+      name:  '本のしおり',
       desc:  '本を買うたびについてくる。\n地味に溜まる。',
       color: '#fca5a5'
     },
     {
       key:   'coaster_hayate',
       img:   'item/coaster_hayate.webp',
-      name:  'コースター',
+      name:  'STARSの紙製コースター',
       desc:  'ハヤテの行きつけのバー"STARS"の紙製コースター。\n地味に集めている。',
       color: '#fde68a'
     },
@@ -2687,6 +2687,34 @@ document.addEventListener('visibilitychange', function() {
       name:  'ドリンクコイン',
       desc:  'ライブハウスのやつ。\n引き換え忘れて、いつの間にか溜まっていく。',
       color: '#93c5fd'
+    },
+    {
+      key:   'chocolate_hayate',
+      img:   'item/chocolate.webp',
+      name:  '一粒のチョコレート',
+      desc:  'ハヤテが持ってきた。\nどこで買ったかは教えてくれない。',
+      color: '#e2e8f0'
+    },
+    {
+      key:   'milk',
+      img:   'item/candy_milk.webp',
+      name:  'ミルクキャンディー',
+      desc:  'ヒナタの好きなやつ。\nひとなつかしい甘さがある。',
+      color: '#93c5fd'
+    },
+    {
+      key:   'honey',
+      img:   'item/candy_honey.webp',
+      name:  'ハニーレモンキャンディー',
+      desc:  'コウタがこっそり食べている。\n甘いけど、嫌いじゃない。',
+      color: '#fca5a5'
+    },
+    {
+      key:   'cassis',
+      img:   'item/candy_cassis.webp',
+      name:  'カシスキャンディー',
+      desc:  'ハヤテがやたら好き。\nまだ足りない、まだ欲しい。',
+      color: '#fde68a'
     },
   ];
 
@@ -2797,61 +2825,6 @@ document.addEventListener('visibilitychange', function() {
   </div>
 </div>
 
-<!-- QF Instagram reward popup -->
-<style>
-  #qf-reward-popup {
-    display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(8,13,24,0.85); backdrop-filter: blur(14px);
-    align-items: center; justify-content: center; padding: 20px;
-  }
-  #qf-reward-popup.show { display: flex; }
-  #qf-reward-card {
-    position: relative;
-    background: rgba(13,21,38,0.99);
-    border: 1px solid rgba(240,171,252,0.15);
-    border-radius: 20px; padding: 36px 90px 28px 28px;
-    max-width: 300px; width: 100%; text-align: left;
-    animation: bannerCardIn 0.5s cubic-bezier(0.22,1,0.36,1);
-  }
-  #qf-reward-icon {
-    position: absolute; top: 20px; right: 20px;
-    width: 56px; height: 56px; border-radius: 12px;
-    background: rgba(240,171,252,0.05);
-    border: 1px solid rgba(240,171,252,0.12);
-    display: flex; align-items: center; justify-content: center;
-  }
-  #qf-reward-icon img { width: 40px; height: 40px; object-fit: contain; }
-  #qf-reward-card .qr-eyebrow {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px; letter-spacing: 6px; color: #c084fc; margin-bottom: 16px;
-  }
-  #qf-reward-card .qr-acquired {
-    font-size: 13px; color: #f0abfc; letter-spacing: 2px; margin-bottom: 8px;
-  }
-  #qr-name {
-    font-size: 16px; color: #e2e8f0; letter-spacing: 2px; margin-bottom: 16px;
-    font-family: 'Noto Serif JP', serif; font-weight: 300;
-  }
-  #qf-reward-card .qr-note {
-    font-size: 11px; color: #475569; letter-spacing: 1px; line-height: 1.9; margin-bottom: 22px;
-  }
-  #qf-reward-card .qr-close {
-    background: none; border: 1px solid rgba(240,171,252,0.25); border-radius: 50px;
-    padding: 10px 0; color: #c084fc; font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 4px; cursor: pointer; transition: all 0.2s; width: 100%;
-  }
-  #qf-reward-card .qr-close:hover { border-color: rgba(240,171,252,0.5); color: #f0abfc; }
-</style>
-<div id="qf-reward-popup" onclick="document.getElementById('qf-reward-popup').classList.remove('show')">
-  <div id="qf-reward-card" onclick="event.stopPropagation()">
-    <div id="qf-reward-icon"><img id="qf-reward-img" src="" alt=""></div>
-    <p class="qr-eyebrow">INSTAGRAM</p>
-    <p class="qr-acquired">アイテムを受け取りました</p>
-    <p id="qr-name"></p>
-    <p class="qr-note">集めたアイテムは、<br>SWEETs 内でコンテンツを使用する<br>鍵となります</p>
-    <button class="qr-close" onclick="document.getElementById('qf-reward-popup').classList.remove('show')">── 受け取る ──</button>
-  </div>
-</div>
 
 </body>
 </html>
