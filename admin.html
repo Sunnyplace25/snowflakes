@@ -370,6 +370,9 @@
       <button onclick="resetUtItems()" style="padding:10px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.12);border-radius:10px;color:#fca5a5;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(252,165,165,0.12)'" onmouseleave="this.style.background='rgba(252,165,165,0.04)'">
         Under tone アイテムをリセット
       </button>
+      <button onclick="resetItvSpring()" style="padding:10px;background:rgba(249,168,212,0.04);border:1px solid rgba(249,168,212,0.12);border-radius:10px;color:#f9a8d4;font-size:13px;cursor:pointer;" onmouseenter="this.style.background='rgba(249,168,212,0.12)'" onmouseleave="this.style.background='rgba(249,168,212,0.04)'">
+        SWEETs 2026 Spring Interview をリセット
+      </button>
     </div>
     <p id="ut-item-status" style="font-size:12px;margin-top:14px;color:var(--muted);min-height:18px;"></p>
   </div>
@@ -984,6 +987,17 @@ function resetUtItems() {
   localStorage.removeItem('sf_ut_appraised');
   localStorage.removeItem('sf_nagi_choco_total');
   setUtItemStatus('✓ チョコ・コースター・石をリセットしました。');
+}
+
+function resetItvSpring() {
+  ['hinata', 'kouta', 'hayate'].forEach(function(char) {
+    localStorage.removeItem('sf_interview_' + char);
+    [1, 2, 3].forEach(function(n) {
+      localStorage.removeItem('sf_itv_' + char + '_q' + n + '_ans');
+      localStorage.removeItem('sf_itv_' + char + '_q' + n + '_note');
+    });
+  });
+  setUtItemStatus('✓ SWEETs 2026 Spring Interview をリセットしました。');
 }
 
 function addInfiniteItems() {
