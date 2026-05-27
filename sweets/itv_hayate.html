@@ -27,10 +27,10 @@
     .itv-bubble-line{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.4;letter-spacing:1px;}
     .itv-note{font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;letter-spacing:1px;padding:10px 4px 4px;font-style:italic;}
     .itv-locked-block{border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;text-align:center;margin-bottom:8px;}
-    .itv-item-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:12px;}
-    .itv-item-req img{width:16px;opacity:0.6;}
-    .itv-open-btn{background:none;border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:7px 22px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
-    .itv-open-btn:hover{border-color:rgba(255,255,255,0.3);color:#cbd5e1;}
+    .itv-item-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#e2e8f0;margin-bottom:12px;}
+    .itv-item-req img{width:16px;opacity:0.8;}
+    .itv-open-btn{background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:7px 22px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-open-btn:hover{border-color:rgba(253,230,138,0.6);color:#fef9c3;}
     .itv-divider{border:none;border-top:1px solid rgba(255,255,255,0.05);margin:40px 0;}
     .itv-footer{text-align:center;margin-top:48px;}
     .itv-back-btn{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 28px;text-decoration:none;transition:all 0.2s;}
@@ -51,7 +51,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. ハヤテにとって、Snow flakesって何？</p>
       <div id="q1-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
         <button class="itv-open-btn" onclick="openAns(1)">解放する</button>
       </div>
       <div id="q1-ans" style="display:none;">
@@ -73,7 +73,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. ヒナタとコウタのこと、どう見ていますか？</p>
       <div id="q2-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
         <button class="itv-open-btn" onclick="openAns(2)">解放する</button>
       </div>
       <div id="q2-ans" style="display:none;">
@@ -95,7 +95,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. 本当は寂しがりですか？</p>
       <div id="q3-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
         <button class="itv-open-btn" onclick="openAns(3)">解放する</button>
       </div>
       <div id="q3-ans" style="display:none;">
@@ -120,7 +120,7 @@
   </main>
 
   <script>
-    var ANS_ITEM  = 'coaster_hayate';
+    var ANS_ITEM  = 'shiori_kouta';
     var NOTE_ITEM = 'chocolate_hayate';
     var CHAR      = 'hayate';
 
@@ -141,7 +141,7 @@
 
     function openAns(n) {
       if (typeof SfSnow === 'undefined') return;
-      if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) { alert('コースターが足りません'); return; }
+      if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) { alert('本のしおりが足りません'); return; }
       localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
       render();
     }
