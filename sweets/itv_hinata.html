@@ -181,7 +181,7 @@
 
     function showConfirm(img, text, onOk) {
       document.getElementById('confirm-img').src = img;
-      document.getElementById('confirm-text').textContent = text;
+      document.getElementById('confirm-text').innerHTML = text;
       var btn = document.getElementById('confirm-ok');
       btn.onclick = function() { closePopup('confirm-popup'); onOk(); };
       document.getElementById('confirm-popup').classList.add('show');
@@ -194,7 +194,7 @@
         showShortage('../item/drinkcoin_hinata.webp', 'ドリンクコインが足りません');
         return;
       }
-      showConfirm('../item/drinkcoin_hinata.webp', 'ドリンクコインを使って回答を解放しますか？', function() {
+      showConfirm('../item/drinkcoin_hinata.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">ドリンクコインを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">回答を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
         render();
@@ -208,7 +208,7 @@
         showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
         return;
       }
-      showConfirm('../item/chocolate.webp', '一粒のチョコレートを使ってことりの一言を解放しますか？', function() {
+      showConfirm('../item/chocolate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">一粒のチョコレートを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
         render();

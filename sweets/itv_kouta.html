@@ -80,7 +80,7 @@
 
     <!-- Q2 -->
     <div class="itv-block">
-      <p class="itv-q">Q. ヒナタのこと、どう思っていますか？</p>
+      <p class="itv-q">Q. 自分は大人だと思いますか？</p>
       <div id="q2-ans-lock" class="itv-locked-block">
         <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
         <button class="itv-open-btn" onclick="openAns(2)">解放する</button>
@@ -88,7 +88,7 @@
       <div id="q2-ans" style="display:none;">
         <div class="itv-bubble">
           <p class="itv-bubble-name">KOUTA</p>
-          <p class="itv-bubble-line">「放っておくと、勝手にどこかへ行く人です」<br>「でも、本当に行きたいわけじゃないのも分かる」<br>「だから、見てます」</p>
+          <p class="itv-bubble-line">「思いません」<br>「大人っぽく見えるようにしてるだけです」<br>「本当に大人なら、もっと簡単に流せると思うので」</p>
         </div>
       </div>
       <div id="q2-note-lock" class="itv-locked-block" style="display:none;">
@@ -96,7 +96,7 @@
         <button class="itv-open-btn" onclick="openNote(2)">解放する</button>
       </div>
       <div id="q2-note" style="display:none;">
-        <p class="itv-note">コウタはヒナタを管理したいのではなく、見失いたくないのだと思います。</p>
+        <p class="itv-note">一番整って見えて、一番内側で揺れているのがコウタです。</p>
       </div>
     </div>
 
@@ -181,7 +181,7 @@
 
     function showConfirm(img, text, onOk) {
       document.getElementById('confirm-img').src = img;
-      document.getElementById('confirm-text').textContent = text;
+      document.getElementById('confirm-text').innerHTML = text;
       var btn = document.getElementById('confirm-ok');
       btn.onclick = function() { closePopup('confirm-popup'); onOk(); };
       document.getElementById('confirm-popup').classList.add('show');
@@ -194,7 +194,7 @@
         showShortage('../item/shiori_kouta.webp', '本のしおりが足りません');
         return;
       }
-      showConfirm('../item/shiori_kouta.webp', '本のしおりを使って回答を解放しますか？', function() {
+      showConfirm('../item/shiori_kouta.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">本のしおりを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">回答を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
         render();
@@ -208,7 +208,7 @@
         showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
         return;
       }
-      showConfirm('../item/chocolate.webp', '一粒のチョコレートを使ってことりの一言を解放しますか？', function() {
+      showConfirm('../item/chocolate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">一粒のチョコレートを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
         render();

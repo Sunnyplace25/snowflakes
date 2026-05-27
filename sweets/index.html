@@ -6590,6 +6590,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function openItvModal(char) {
     var cfg = ITV_CONFIG[char];
     if (!cfg) return;
+    // キャンディ残高チェック
+    var candies = SfSnow.getCandies();
+    if ((candies[cfg.candy] || 0) < cfg.cost) {
+      var shortageModal = document.getElementById('itv-shortage-modal');
+      var shortageImg   = document.getElementById('itv-shortage-img');
+      var shortageText  = document.getElementById('itv-shortage-text');
+      if (shortageImg)  shortageImg.src = cfg.img;
+      if (shortageText) shortageText.textContent = 'キャンディーが足りません';
+      if (shortageModal) shortageModal.classList.add('show');
+      return;
+    }
     _itvCurrentChar = char;
     var modal = document.getElementById('itv-modal');
     var img   = document.getElementById('itv-modal-candy-img');
@@ -6612,10 +6623,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!char) return;
     var cfg = ITV_CONFIG[char];
     var ok = SfSnow.spendCandy(cfg.candy, cfg.cost);
-    if (!ok) {
-      closeItvModal();
-      return;
-    }
+    if (!ok) { closeItvModal(); return; }
     localStorage.setItem(cfg.key, 'true');
     closeItvModal();
     renderInterviews();
@@ -6633,10 +6641,42 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
 </script>
 
+<!-- Spring Interview お知らせポップアップ -->
+<div id="spring-news-modal" style="display:none;position:fixed;inset:0;z-index:820;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(249,168,212,0.15);border-radius:20px;padding:32px 24px;text-align:center;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;margin-bottom:10px;">NEW</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;color:#e2e8f0;margin-bottom:8px;">‐2026 Spring‐</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#e2e8f0;margin-bottom:20px;">Special Interview</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:24px;">を追加しました</p>
+    <button onclick="document.getElementById('spring-news-modal').classList.remove('show')" style="background:none;border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:9px 28px;color:#f9a8d4;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">OK</button>
+  </div>
+</div>
+<style>#spring-news-modal.show{display:flex!important;}</style>
+<script>
+  (function() {
+    if (!localStorage.getItem('sf_news_spring_itv_shown')) {
+      localStorage.setItem('sf_news_spring_itv_shown', 'true');
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('spring-news-modal').classList.add('show');
+      });
+    }
+  })();
+</script>
+
+<!-- Interview candy shortage modal -->
+<div id="itv-shortage-modal" style="display:none;position:fixed;inset:0;z-index:810;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:260px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 20px;text-align:center;">
+    <img id="itv-shortage-img" src="" style="width:48px;margin-bottom:14px;">
+    <p id="itv-shortage-text" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;"></p>
+    <button onclick="document.getElementById('itv-shortage-modal').classList.remove('show')" style="background:none;border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 24px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">閉じる</button>
+  </div>
+</div>
+<style>#itv-shortage-modal.show{display:flex!important;}</style>
+
 <!-- Interview unlock modal -->
 <div id="itv-modal">
   <div class="itv-modal-inner">
-    <div class="itv-modal-candy"><img id="itv-modal-candy-img" src=""> CANDY × 500</div>
+    <div class="itv-modal-candy"><img id="itv-modal-candy-img" src=""> CANDY × 100</div>
     <p class="itv-modal-title" id="itv-modal-title"></p>
     <p class="itv-modal-desc" id="itv-modal-desc"></p>
     <div class="itv-modal-btns">
