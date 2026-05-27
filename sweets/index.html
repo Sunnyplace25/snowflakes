@@ -876,16 +876,6 @@
           <div class="door-label">コウタの部屋</div>
         </div>
       </div>
-      <!-- 推しキャラ設定 -->
-      <div id="oshi-section" style="max-width:480px;margin:16px auto 0;padding-bottom:28px;display:none;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-top:28px;margin-bottom:12px;">心に残るひと <span style="font-size:8px;letter-spacing:2px;color:#475569;border:1px solid rgba(148,163,184,0.2);border-radius:100px;padding:2px 8px;margin-left:6px;">Coming Soon</span></p>
-        <div style="display:flex;gap:8px;justify-content:center;">
-          <button onclick="setOshi('hayate')" id="oshi-btn-hayate" style="flex:1;max-width:120px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HAYATE</button>
-          <button onclick="setOshi('hinata')" id="oshi-btn-hinata" style="flex:1;max-width:120px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HINATA</button>
-          <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
-        </div>
-      </div>
-
       <!-- Interview section -->
       <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
         <p class="itv-section-label">SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
@@ -894,7 +884,7 @@
           <!-- ハヤテ -->
           <div class="itv-card" id="itv-card-hayate">
             <div class="itv-locked" id="itv-locked-hayate">
-              <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 150</div>
+              <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
               <p class="itv-char-name" style="color:#fde68a;">HAYATE</p>
               <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
             </div>
@@ -907,7 +897,7 @@
           <!-- ヒナタ -->
           <div class="itv-card" id="itv-card-hinata">
             <div class="itv-locked" id="itv-locked-hinata">
-              <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 150</div>
+              <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
               <p class="itv-char-name" style="color:#93c5fd;">HINATA</p>
               <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
             </div>
@@ -920,7 +910,7 @@
           <!-- コウタ -->
           <div class="itv-card" id="itv-card-kouta">
             <div class="itv-locked" id="itv-locked-kouta">
-              <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 150</div>
+              <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
               <p class="itv-char-name" style="color:#fca5a5;">KOUTA</p>
               <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
             </div>
@@ -932,6 +922,16 @@
 
         </div>
       </div><!-- /interview-section -->
+
+      <!-- 推しキャラ設定 -->
+      <div id="oshi-section" style="max-width:480px;margin:16px auto 0;padding-bottom:28px;display:none;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-top:28px;margin-bottom:12px;">心に残るひと <span style="font-size:8px;letter-spacing:2px;color:#475569;border:1px solid rgba(148,163,184,0.2);border-radius:100px;padding:2px 8px;margin-left:6px;">Coming Soon</span></p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button onclick="setOshi('hayate')" id="oshi-btn-hayate" style="flex:1;max-width:120px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HAYATE</button>
+          <button onclick="setOshi('hinata')" id="oshi-btn-hinata" style="flex:1;max-width:120px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HINATA</button>
+          <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
+        </div>
+      </div>
     </div>
 
     <!-- Exchange section -->
@@ -6570,9 +6570,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 <!-- Interview unlock JS -->
 <script>
   var ITV_CONFIG = {
-    hinata: { candy: 'milk',   cost: 150, label: 'ヒナタへのインタビュー', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_hinata' },
-    kouta:  { candy: 'honey',  cost: 150, label: 'コウタへのインタビュー', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_kouta'  },
-    hayate: { candy: 'cassis', cost: 150, label: 'ハヤテへのインタビュー', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_hayate' }
+    hinata: { candy: 'milk',   cost: 100, label: 'ヒナタへのインタビュー', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_hinata' },
+    kouta:  { candy: 'honey',  cost: 100, label: 'コウタへのインタビュー', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_kouta'  },
+    hayate: { candy: 'cassis', cost: 100, label: 'ハヤテへのインタビュー', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_hayate' }
   };
 
   var _itvCurrentChar = null;
@@ -6587,7 +6587,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var desc  = document.getElementById('itv-modal-desc');
     if (img)   img.src = cfg.img;
     if (title) { title.textContent = cfg.label; title.style.color = cfg.color; }
-    if (desc)  desc.innerHTML = 'Candy 150を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
+    if (desc)  desc.innerHTML = 'Candy 100を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
     if (modal) modal.classList.add('show');
   }
 
