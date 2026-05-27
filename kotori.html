@@ -252,19 +252,24 @@
     @keyframes chat-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
     .chat-suggestions {
-      display: flex; flex-wrap: wrap; gap: 8px;
-      margin-bottom: 32px; padding: 0 4px;
+      display: flex; flex-wrap: wrap; gap: 6px;
+      max-height: 100px; overflow-y: auto;
+      margin-bottom: 24px; padding: 0 4px 4px;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
     }
+    .chat-suggestions::-webkit-scrollbar { width: 3px; }
+    .chat-suggestions::-webkit-scrollbar-track { background: transparent; }
+    .chat-suggestions::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
     .chat-chip {
-      padding: 7px 16px; border-radius: 100px;
+      padding: 5px 13px; border-radius: 100px;
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      color: #94a3b8; font-size: 12px; cursor: pointer; transition: all 0.2s;
+      color: #94a3b8; font-size: 11px; cursor: pointer; transition: all 0.2s;
       font-family: 'Noto Serif JP', serif; white-space: nowrap; flex-shrink: 0;
     }
     .chat-chip:hover { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
     @media (max-width: 600px) {
       .chat-suggestions {
-        flex-wrap: nowrap; overflow-x: auto;
+        flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; max-height: none;
         padding-bottom: 6px; margin-left: -24px; margin-right: -24px;
         padding-left: 24px; padding-right: 24px;
         -webkit-overflow-scrolling: touch;
