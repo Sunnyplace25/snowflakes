@@ -1111,12 +1111,12 @@ function sfShare() {
 
     <!-- QF -->
     <div style="grid-column:1/-1;padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(240,171,252,0.25);">
-      <p style="font-size:11px;letter-spacing:4px;color:#f0abfc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;">INSTAGRAM / 書き下ろしシリーズ</p>
+      <p style="font-size:11px;letter-spacing:4px;color:#f0abfc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;text-shadow:0 0 14px rgba(240,171,252,0.55);">INSTAGRAM / 書き下ろしシリーズ</p>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
         <p style="font-size:22px;font-weight:400;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin:0;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
         <button id="qf-order-btn" onclick="toggleQFOrder()" style="background:none;border:1px solid rgba(240,171,252,0.25);border-radius:100px;padding:5px 14px;font-size:11px;letter-spacing:2px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;white-space:nowrap;" onmouseenter="this.style.borderColor='rgba(240,171,252,0.55)';this.style.color='#f0abfc'" onmouseleave="this.style.borderColor='rgba(240,171,252,0.25)';this.style.color='#94a3b8'">↕ 古い順</button>
       </div>
-      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:16px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。</p>
+      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:16px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。通称QF。</p>
       <div class="qf-ticker">
         <button class="qf-ticker-btn" onclick="qfMove(-1)">&#8249;</button>
         <a id="qf-ticker-link" class="qf-ticker-link" href="#" target="_blank">
@@ -1240,7 +1240,7 @@ function sfShare() {
           var popup = document.getElementById('qf-reward-popup');
           if (!popup) return;
           document.getElementById('qf-reward-img').src = item.img;
-          document.getElementById('qf-reward-name').textContent = item.label + ' × 1';
+          document.getElementById('qr-name').textContent = item.label;
           popup.classList.add('show');
         }, 600);
       });
@@ -2783,13 +2783,11 @@ document.addEventListener('visibilitychange', function() {
   <div id="daily-info-card" onclick="event.stopPropagation()">
     <p class="di-label">DAILY UPDATE</p>
     <div class="di-body">
-      本日の更新から物語を読むと、<br>
-      ランダムでアイテムがひとつ手に入ります。<br>
+      本日の更新から物語を読むと、ランダムでアイテムがひとつ手に入ります。<br>
       <br>
       どれが届くかは、読んでからのお楽しみ。<br>
       <br>
-      集めたアイテムは、<br>
-      <em>SWEETs 内で特別な扉を開く鍵</em>になります。<br>
+      集めたアイテムは、<em>SWEETs 内で特別な扉を開く鍵</em>になります。<br>
       <br>
       入場には <em>SWEETs Code</em> が必要です。<br>
       <a href="https://www.instagram.com/snowflakes_story" target="_blank" style="color:#93c5fd;font-size:11px;letter-spacing:2px;text-decoration:none;">→ Instagram</a>
@@ -2800,16 +2798,60 @@ document.addEventListener('visibilitychange', function() {
 </div>
 
 <!-- QF Instagram reward popup -->
-<div id="qf-reward-popup" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
-  <div style="max-width:260px;width:100%;background:#0f1729;border:1px solid rgba(240,171,252,0.15);border-radius:20px;padding:32px 20px;text-align:center;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f0abfc;margin-bottom:16px;">INSTAGRAM</p>
-    <img id="qf-reward-img" src="" style="width:52px;margin-bottom:14px;">
-    <p id="qf-reward-name" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:1px;margin-bottom:8px;"></p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:22px;">を受け取りました</p>
-    <button onclick="document.getElementById('qf-reward-popup').classList.remove('show')" style="background:none;border:1px solid rgba(240,171,252,0.3);border-radius:100px;padding:9px 28px;color:#f0abfc;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">OK</button>
+<style>
+  #qf-reward-popup {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(8,13,24,0.85); backdrop-filter: blur(14px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #qf-reward-popup.show { display: flex; }
+  #qf-reward-card {
+    position: relative;
+    background: rgba(13,21,38,0.99);
+    border: 1px solid rgba(240,171,252,0.15);
+    border-radius: 20px; padding: 36px 90px 28px 28px;
+    max-width: 300px; width: 100%; text-align: left;
+    animation: bannerCardIn 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  #qf-reward-icon {
+    position: absolute; top: 20px; right: 20px;
+    width: 56px; height: 56px; border-radius: 12px;
+    background: rgba(240,171,252,0.05);
+    border: 1px solid rgba(240,171,252,0.12);
+    display: flex; align-items: center; justify-content: center;
+  }
+  #qf-reward-icon img { width: 40px; height: 40px; object-fit: contain; }
+  #qf-reward-card .qr-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; letter-spacing: 6px; color: #c084fc; margin-bottom: 16px;
+  }
+  #qf-reward-card .qr-acquired {
+    font-size: 13px; color: #f0abfc; letter-spacing: 2px; margin-bottom: 8px;
+  }
+  #qr-name {
+    font-size: 16px; color: #e2e8f0; letter-spacing: 2px; margin-bottom: 16px;
+    font-family: 'Noto Serif JP', serif; font-weight: 300;
+  }
+  #qf-reward-card .qr-note {
+    font-size: 11px; color: #475569; letter-spacing: 1px; line-height: 1.9; margin-bottom: 22px;
+  }
+  #qf-reward-card .qr-close {
+    background: none; border: 1px solid rgba(240,171,252,0.25); border-radius: 50px;
+    padding: 10px 0; color: #c084fc; font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; letter-spacing: 4px; cursor: pointer; transition: all 0.2s; width: 100%;
+  }
+  #qf-reward-card .qr-close:hover { border-color: rgba(240,171,252,0.5); color: #f0abfc; }
+</style>
+<div id="qf-reward-popup" onclick="document.getElementById('qf-reward-popup').classList.remove('show')">
+  <div id="qf-reward-card" onclick="event.stopPropagation()">
+    <div id="qf-reward-icon"><img id="qf-reward-img" src="" alt=""></div>
+    <p class="qr-eyebrow">INSTAGRAM</p>
+    <p class="qr-acquired">アイテムを受け取りました</p>
+    <p id="qr-name"></p>
+    <p class="qr-note">集めたアイテムは、<br>SWEETs 内でコンテンツを使用する<br>鍵となります</p>
+    <button class="qr-close" onclick="document.getElementById('qf-reward-popup').classList.remove('show')">── 受け取る ──</button>
   </div>
 </div>
-<style>#qf-reward-popup.show{display:flex!important;}</style>
 
 </body>
 </html>
