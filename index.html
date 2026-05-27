@@ -1212,16 +1212,26 @@ function sfShare() {
     /* ── QF Instagram → ランダムアイテム付与 ── */
     (function() {
       var QF_POOL = [
-        { type:'candy', id:'milk',             label:'ミルクキャンディー',       img:'item/candy_milk.webp' },
-        { type:'candy', id:'honey',            label:'ハニーレモンキャンディー',  img:'item/candy_honey.webp' },
-        { type:'candy', id:'cassis',           label:'カシスキャンディー',        img:'item/candy_cassis.webp' },
-        { type:'item',  id:'coaster_hayate',   label:'STARSの紙製コースター',    img:'item/coaster_hayate.webp' },
-        { type:'item',  id:'drinkcoin_hinata', label:'ドリンクコイン',           img:'item/drinkcoin_hinata.webp' },
-        { type:'item',  id:'shiori_kouta',     label:'本のしおり',               img:'item/shiori_kouta.webp' },
-        { type:'item',  id:'chocolate_hayate', label:'一粒のチョコレート',        img:'item/chocolate.webp' },
+        { type:'item', id:'drinkcoin_hinata', label:'ドリンクコイン',         img:'item/drinkcoin_hinata.webp' },
+        { type:'item', id:'shiori_kouta',     label:'本のしおり',             img:'item/shiori_kouta.webp' },
+        { type:'item', id:'coaster_hayate',   label:'STARSの紙製コースター',  img:'item/coaster_hayate.webp' },
       ];
 
+      // ヒントアイコンをローテーション
       document.addEventListener('DOMContentLoaded', function() {
+        var hintImg = document.getElementById('qf-item-hint-img');
+        if (hintImg) {
+          var hintIdx = 0;
+          hintImg.src = QF_POOL[0].img;
+          setInterval(function() {
+            hintIdx = (hintIdx + 1) % QF_POOL.length;
+            hintImg.style.opacity = '0';
+            setTimeout(function() {
+              hintImg.src = QF_POOL[hintIdx].img;
+              hintImg.style.opacity = '0.7';
+            }, 200);
+          }, 2500);
+        }
         var link = document.getElementById('qf-ticker-link');
         if (link) link.addEventListener('click', function() {
           localStorage.setItem('sf_qf_insta_pending', '1');
@@ -1237,8 +1247,7 @@ function sfShare() {
           // 1日1回クールダウン
           if (SfSnow.isNDaysDone('qf_insta_visit', 1)) return;
           var item = QF_POOL[Math.floor(Math.random() * QF_POOL.length)];
-          if (item.type === 'candy') SfSnow.addCandy(item.id);
-          else SfSnow.addMItemDirect(item.id, 1);
+          SfSnow.addMItemDirect(item.id, 1);
           SfSnow.markNDaysDone('qf_insta_visit');
           var bannerItem = SF_BANNER_ITEMS.find(function(b) { return b.key === item.id; });
           if (bannerItem && typeof showBannerItemPopup === 'function') showBannerItemPopup(bannerItem);
