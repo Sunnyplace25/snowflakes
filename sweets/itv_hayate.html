@@ -211,7 +211,7 @@
         showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
         return;
       }
-      showConfirm('../item/chocolate.webp', '一粒のチョコレートを使ってことりの補足を解放しますか？', function() {
+      showConfirm('../item/chocolate.webp', '一粒のチョコレートを使ってことりの一言を解放しますか？', function() {
         if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
         render();
