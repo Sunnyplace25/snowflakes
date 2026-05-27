@@ -35,6 +35,15 @@
     .itv-footer{text-align:center;margin-top:48px;}
     .itv-back-btn{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 28px;text-decoration:none;transition:all 0.2s;}
     .itv-back-btn:hover{border-color:rgba(255,255,255,0.25);color:#cbd5e1;}
+    .itv-popup{display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;}
+    .itv-popup.show{display:flex;}
+    .itv-popup-inner{max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 20px;text-align:center;}
+    .itv-popup-img{width:52px;margin-bottom:14px;}
+    .itv-popup-text{font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;}
+    .itv-popup-btns{display:flex;gap:8px;justify-content:center;}
+    .itv-popup-ok{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:8px 24px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-popup-ok:hover{border-color:rgba(255,255,255,0.4);color:#f1f5f9;}
+    .itv-popup-cancel{background:none;border:1px solid rgba(255,255,255,0.06);border-radius:100px;padding:8px 20px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;}
   </style>
 </head>
 <body>
@@ -119,6 +128,27 @@
     </div>
   </main>
 
+  <div id="confirm-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="confirm-img" src="">
+      <p class="itv-popup-text" id="confirm-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-cancel" onclick="closePopup('confirm-popup')">キャンセル</button>
+        <button class="itv-popup-ok" id="confirm-ok">交換する</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="shortage-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="shortage-img" src="">
+      <p class="itv-popup-text" id="shortage-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-ok" onclick="closePopup('shortage-popup')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     var ANS_ITEM  = 'shiori_kouta';
     var NOTE_ITEM = 'chocolate_hayate';
@@ -139,18 +169,50 @@
       });
     }
 
+    function closePopup(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function showShortage(img, text) {
+      document.getElementById('shortage-img').src = img;
+      document.getElementById('shortage-text').textContent = text;
+      document.getElementById('shortage-popup').classList.add('show');
+    }
+
+    function showConfirm(img, text, onOk) {
+      document.getElementById('confirm-img').src = img;
+      document.getElementById('confirm-text').textContent = text;
+      var btn = document.getElementById('confirm-ok');
+      btn.onclick = function() { closePopup('confirm-popup'); onOk(); };
+      document.getElementById('confirm-popup').classList.add('show');
+    }
+
     function openAns(n) {
       if (typeof SfSnow === 'undefined') return;
-      if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) { alert('本のしおりが足りません'); return; }
-      localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
-      render();
+      var items = SfSnow.getMonthlyItems();
+      if ((items[ANS_ITEM] || 0) < 1) {
+        showShortage('../item/shiori_kouta.webp', '本のしおりが足りません');
+        return;
+      }
+      showConfirm('../item/shiori_kouta.webp', '本のしおりを使って回答を解放しますか？', function() {
+        if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
+        render();
+      });
     }
 
     function openNote(n) {
       if (typeof SfSnow === 'undefined') return;
-      if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) { alert('チョコレートが足りません'); return; }
-      localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
-      render();
+      var items = SfSnow.getMonthlyItems();
+      if ((items[NOTE_ITEM] || 0) < 1) {
+        showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
+        return;
+      }
+      showConfirm('../item/chocolate.webp', '一粒のチョコレートを使ってことりの補足を解放しますか？', function() {
+        if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
+        render();
+      });
     }
 
     document.addEventListener('DOMContentLoaded', render);
