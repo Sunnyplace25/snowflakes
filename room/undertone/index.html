@@ -2861,6 +2861,22 @@ function submitUtPw() {
   var _soundOn = localStorage.getItem('sf_ut_sound') !== 'off';
   var _sounds = {};
 
+  /* ── BGM ── */
+  var _bgmAudio = new Audio('sound/bgm_shop.mp3');
+  _bgmAudio.loop = true;
+  _bgmAudio.volume = 0.12;
+  var _bgmStarted = false;
+
+  function startBgm() {
+    if (!_bgmStarted && _soundOn) {
+      _bgmAudio.play().then(function() { _bgmStarted = true; }).catch(function(){});
+    }
+  }
+  document.addEventListener('click', function onFirstClick() {
+    startBgm();
+    document.removeEventListener('click', onFirstClick);
+  }, { once: true });
+
   function updateSoundBtn() {
     var btn = document.getElementById('sound-toggle');
     if (btn) {
@@ -2872,7 +2888,13 @@ function submitUtPw() {
   window.toggleSound = function() {
     _soundOn = !_soundOn;
     localStorage.setItem('sf_ut_sound', _soundOn ? 'on' : 'off');
-    if (!_soundOn) stopProseSound();
+    if (_soundOn) {
+      startBgm();
+      if (_bgmStarted) _bgmAudio.play().catch(function(){});
+    } else {
+      stopProseSound();
+      _bgmAudio.pause();
+    }
     updateSoundBtn();
   };
 
