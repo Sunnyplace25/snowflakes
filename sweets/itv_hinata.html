@@ -60,7 +60,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. ヒナタにとって、Snow flakesって何？</p>
       <div id="q1-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
         <button class="itv-open-btn" onclick="openAns(1)">解放する</button>
       </div>
       <div id="q1-ans" style="display:none;">
@@ -82,7 +82,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. コウタとハヤテは、どういう存在？</p>
       <div id="q2-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
         <button class="itv-open-btn" onclick="openAns(2)">解放する</button>
       </div>
       <div id="q2-ans" style="display:none;">
@@ -104,7 +104,7 @@
     <div class="itv-block">
       <p class="itv-q">Q. 怖いものはありますか？</p>
       <div id="q3-ans-lock" class="itv-locked-block">
-        <div class="itv-item-req"><img src="../item/shiori_kouta.webp"> 本のしおり × 1</div>
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
         <button class="itv-open-btn" onclick="openAns(3)">解放する</button>
       </div>
       <div id="q3-ans" style="display:none;">
@@ -150,7 +150,7 @@
   </div>
 
   <script>
-    var ANS_ITEM  = 'shiori_kouta';
+    var ANS_ITEM  = 'drinkcoin_hinata';
     var NOTE_ITEM = 'chocolate_hayate';
     var CHAR      = 'hinata';
 
@@ -191,10 +191,10 @@
       if (typeof SfSnow === 'undefined') return;
       var items = SfSnow.getMonthlyItems();
       if ((items[ANS_ITEM] || 0) < 1) {
-        showShortage('../item/shiori_kouta.webp', '本のしおりが足りません');
+        showShortage('../item/drinkcoin_hinata.webp', 'ドリンクコインが足りません');
         return;
       }
-      showConfirm('../item/shiori_kouta.webp', '本のしおりを使って回答を解放しますか？', function() {
+      showConfirm('../item/drinkcoin_hinata.webp', 'ドリンクコインを使って回答を解放しますか？', function() {
         if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
         render();
