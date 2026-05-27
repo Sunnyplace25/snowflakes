@@ -1205,6 +1205,48 @@ function sfShare() {
     })();
     </script>
 
+    <script>
+    /* ── QF Instagram → ランダムアイテム付与 ── */
+    (function() {
+      var QF_POOL = [
+        { type:'candy', id:'milk',             label:'ミルクキャンディー',       img:'item/candy_milk.webp' },
+        { type:'candy', id:'honey',            label:'ハニーレモンキャンディー',  img:'item/candy_honey.webp' },
+        { type:'candy', id:'cassis',           label:'カシスキャンディー',        img:'item/candy_cassis.webp' },
+        { type:'item',  id:'coaster_hayate',   label:'STARSの紙製コースター',    img:'item/coaster_hayate.webp' },
+        { type:'item',  id:'drinkcoin_hinata', label:'ドリンクコイン',           img:'item/drinkcoin_hinata.webp' },
+        { type:'item',  id:'shiori_kouta',     label:'本のしおり',               img:'item/shiori_kouta.webp' },
+        { type:'item',  id:'chocolate_hayate', label:'一粒のチョコレート',        img:'item/chocolate.webp' },
+      ];
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var link = document.getElementById('qf-ticker-link');
+        if (link) link.addEventListener('click', function() {
+          localStorage.setItem('sf_qf_insta_pending', '1');
+        });
+      });
+
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState !== 'visible') return;
+        if (!localStorage.getItem('sf_qf_insta_pending')) return;
+        localStorage.removeItem('sf_qf_insta_pending');
+        setTimeout(function() {
+          if (typeof SfSnow === 'undefined') return;
+          // 1日1回クールダウン
+          if (SfSnow.isNDaysDone('qf_insta_visit', 1)) return;
+          var item = QF_POOL[Math.floor(Math.random() * QF_POOL.length)];
+          if (item.type === 'candy') SfSnow.addCandy(item.id);
+          else SfSnow.addMItemDirect(item.id, 1);
+          SfSnow.markNDaysDone('qf_insta_visit');
+          var popup = document.getElementById('qf-reward-popup');
+          if (!popup) return;
+          document.getElementById('qf-reward-img').src = item.img;
+          document.getElementById('qf-reward-name').textContent = item.label + ' × 1';
+          popup.classList.add('show');
+        }, 600);
+      });
+    })();
+    </script>
+
   </div>
 </section>
 
@@ -2756,6 +2798,18 @@ document.addEventListener('visibilitychange', function() {
     <button id="daily-info-close" onclick="closeDailyInfoPopup()">── 閉じる ──</button>
   </div>
 </div>
+
+<!-- QF Instagram reward popup -->
+<div id="qf-reward-popup" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:260px;width:100%;background:#0f1729;border:1px solid rgba(240,171,252,0.15);border-radius:20px;padding:32px 20px;text-align:center;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f0abfc;margin-bottom:16px;">INSTAGRAM</p>
+    <img id="qf-reward-img" src="" style="width:52px;margin-bottom:14px;">
+    <p id="qf-reward-name" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:1px;margin-bottom:8px;"></p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:22px;">を受け取りました</p>
+    <button onclick="document.getElementById('qf-reward-popup').classList.remove('show')" style="background:none;border:1px solid rgba(240,171,252,0.3);border-radius:100px;padding:9px 28px;color:#f0abfc;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">OK</button>
+  </div>
+</div>
+<style>#qf-reward-popup.show{display:flex!important;}</style>
 
 </body>
 </html>
