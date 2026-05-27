@@ -655,6 +655,36 @@
   .nc-dot.active{background:#93c5fd;transform:scale(1.35);}
   .nc-arrow{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:36px;height:36px;color:#64748b;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:all 0.2s;flex-shrink:0;}
   .nc-arrow:hover{border-color:rgba(147,197,253,0.4);color:#93c5fd;}
+  /* ── Interview ── */
+  .itv-section-label{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#334155;text-align:center;margin:32px 0 20px;}
+  .itv-card{border:1px solid rgba(255,255,255,0.07);border-radius:16px;background:rgba(255,255,255,0.02);margin-bottom:12px;overflow:hidden;}
+  .itv-locked{padding:24px 20px;text-align:center;}
+  .itv-candy-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:14px;}
+  .itv-candy-req img{width:16px;opacity:0.6;}
+  .itv-char-name{font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:6px;margin-bottom:4px;}
+  .itv-char-sub{font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;letter-spacing:2px;margin-bottom:16px;}
+  .itv-unlock-btn{background:none;border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 24px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+  .itv-unlock-btn:hover{border-color:rgba(255,255,255,0.3);color:#cbd5e1;}
+  .itv-content{padding:24px 20px;}
+  .itv-block-header{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .itv-q{font-family:'Noto Serif JP',serif;font-size:12px;color:#64748b;letter-spacing:1px;margin:20px 0 10px;}
+  .itv-q:first-of-type{margin-top:0;}
+  .itv-bubble{background:rgba(255,255,255,0.03);border-radius:12px;padding:14px 16px;margin-bottom:8px;}
+  .itv-bubble-name{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;margin-bottom:8px;}
+  .itv-bubble-line{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.2;letter-spacing:1px;}
+  .itv-note{font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;letter-spacing:1px;padding:10px 4px;font-style:italic;}
+  /* Interview unlock modal */
+  #itv-modal{display:none;position:fixed;inset:0;z-index:800;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;}
+  #itv-modal.show{display:flex;}
+  .itv-modal-inner{max-width:360px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 24px;text-align:center;}
+  .itv-modal-candy{display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;margin-bottom:20px;}
+  .itv-modal-candy img{width:20px;}
+  .itv-modal-title{font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;letter-spacing:2px;margin-bottom:12px;}
+  .itv-modal-desc{font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;line-height:2;letter-spacing:1px;margin-bottom:28px;}
+  .itv-modal-btns{display:flex;gap:10px;justify-content:center;}
+  .itv-modal-ok{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:10px 28px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+  .itv-modal-ok:hover{border-color:rgba(255,255,255,0.4);color:#f1f5f9;}
+  .itv-modal-cancel{background:none;border:1px solid rgba(255,255,255,0.06);border-radius:100px;padding:10px 24px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;}
   </style>
 </head>
 <body>
@@ -860,6 +890,104 @@
           <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
         </div>
       </div>
+
+      <!-- Interview section -->
+      <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
+        <p class="itv-section-label">Interview</p>
+
+        <!-- ヒナタ -->
+        <div class="itv-card" id="itv-card-hinata">
+          <div class="itv-locked" id="itv-locked-hinata">
+            <div class="itv-candy-req"><img src="../item/candy_milk.webp"> ミルクキャンディー × 500</div>
+            <p class="itv-char-name" style="color:#93c5fd;">HINATA</p>
+            <p class="itv-char-sub">ヒナタへのインタビュー</p>
+            <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
+          </div>
+          <div class="itv-content" id="itv-content-hinata" style="display:none;">
+            <p class="itv-block-header" style="color:#93c5fd;">■ ヒナタに聞く</p>
+            <p class="itv-q">Q. ヒナタにとって、Snow flakesって何？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(147,197,253,0.12);">
+              <p class="itv-bubble-name" style="color:#93c5fd;">HINATA</p>
+              <p class="itv-bubble-line">「……場所、かな」<br>「最初から、そう思ってたわけじゃないけど」<br>「気づいたら、戻るところになってた」</p>
+            </div>
+            <p class="itv-note">ヒナタにとってSnow flakesは、作った場所ではなく、残ってしまった場所です。</p>
+            <p class="itv-q">Q. コウタとハヤテは、どういう存在？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(147,197,253,0.12);">
+              <p class="itv-bubble-name" style="color:#93c5fd;">HINATA</p>
+              <p class="itv-bubble-line">「うるさい」<br>「……でも、いないと困る」<br>「たぶん、俺より俺の音を知ってる」</p>
+            </div>
+            <p class="itv-note">言葉は少ないですが、かなり信頼しています。</p>
+            <p class="itv-q">Q. 怖いものはありますか？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(147,197,253,0.12);">
+              <p class="itv-bubble-name" style="color:#93c5fd;">HINATA</p>
+              <p class="itv-bubble-line">「ある」<br>「近づきすぎること」<br>「……あと、置いた音が、誰かに残ること」</p>
+            </div>
+            <p class="itv-note">ヒナタは冷たい人ではなく、残してしまうことを怖がる人です。</p>
+          </div>
+        </div>
+
+        <!-- コウタ -->
+        <div class="itv-card" id="itv-card-kouta">
+          <div class="itv-locked" id="itv-locked-kouta">
+            <div class="itv-candy-req"><img src="../item/candy_honey.webp"> ハニーレモンキャンディー × 500</div>
+            <p class="itv-char-name" style="color:#fca5a5;">KOUTA</p>
+            <p class="itv-char-sub">コウタへのインタビュー</p>
+            <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
+          </div>
+          <div class="itv-content" id="itv-content-kouta" style="display:none;">
+            <p class="itv-block-header" style="color:#fca5a5;">■ コウタに聞く</p>
+            <p class="itv-q">Q. コウタにとって、Snow flakesって何？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(252,165,165,0.12);">
+              <p class="itv-bubble-name" style="color:#fca5a5;">KOUTA</p>
+              <p class="itv-bubble-line">「面倒な場所です」<br>「でも、結局そこに戻るんですよね」<br>「整ってないのに、そこが一番まともに息ができる」</p>
+            </div>
+            <p class="itv-note">コウタにとってSnow flakesは、正しさより先にある居場所です。</p>
+            <p class="itv-q">Q. ヒナタのこと、どう思っていますか？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(252,165,165,0.12);">
+              <p class="itv-bubble-name" style="color:#fca5a5;">KOUTA</p>
+              <p class="itv-bubble-line">「放っておくと、勝手にどこかへ行く人です」<br>「でも、本当に行きたいわけじゃないのも分かる」<br>「だから、見てます」</p>
+            </div>
+            <p class="itv-note">コウタはヒナタを管理したいのではなく、見失いたくないのだと思います。</p>
+            <p class="itv-q">Q. ヒナタとハヤテのこと、どう思っていますか？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(252,165,165,0.12);">
+              <p class="itv-bubble-name" style="color:#fca5a5;">KOUTA</p>
+              <p class="itv-bubble-line">「手がかかります」<br>「ヒナタは言わないし、ハヤテは言いすぎる」<br>「足して二で割ってほしいです」<br>「……でも、どっちかが欠けたら、たぶん違うんですよね」<br>「だからまあ、必要なんだと思います」</p>
+            </div>
+            <p class="itv-note">文句を言いながらも、コウタは三人であることをかなり大事にしています。</p>
+          </div>
+        </div>
+
+        <!-- ハヤテ -->
+        <div class="itv-card" id="itv-card-hayate">
+          <div class="itv-locked" id="itv-locked-hayate">
+            <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> カシスキャンディー × 500</div>
+            <p class="itv-char-name" style="color:#fde68a;">HAYATE</p>
+            <p class="itv-char-sub">ハヤテへのインタビュー</p>
+            <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
+          </div>
+          <div class="itv-content" id="itv-content-hayate" style="display:none;">
+            <p class="itv-block-header" style="color:#fde68a;">■ ハヤテに聞く</p>
+            <p class="itv-q">Q. ハヤテにとって、Snow flakesって何？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(253,230,138,0.12);">
+              <p class="itv-bubble-name" style="color:#fde68a;">HAYATE</p>
+              <p class="itv-bubble-line">「楽しい場所」<br>「……って言うと軽く聞こえるけど」<br>「俺がちゃんと戻りたいと思える場所」</p>
+            </div>
+            <p class="itv-note">ハヤテにとっての楽しさは、逃げではなく、守り方でもあります。</p>
+            <p class="itv-q">Q. ヒナタとコウタのこと、どう見ていますか？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(253,230,138,0.12);">
+              <p class="itv-bubble-name" style="color:#fde68a;">HAYATE</p>
+              <p class="itv-bubble-line">「めんどくさい」<br>「二人とも、言えばいいこと言わないし」<br>「でも、そこがまあ、あいつらっぽい」</p>
+            </div>
+            <p class="itv-note">ハヤテは軽く見せていますが、二人の沈黙をかなり見ています。</p>
+            <p class="itv-q">Q. 本当は寂しがりですか？</p>
+            <div class="itv-bubble" style="border:1px solid rgba(253,230,138,0.12);">
+              <p class="itv-bubble-name" style="color:#fde68a;">HAYATE</p>
+              <p class="itv-bubble-line">「さあ？」<br>「でも、一人で鳴らすより、三人の方がいい」<br>「それは、たぶんずっとそう」</p>
+            </div>
+            <p class="itv-note">ハヤテは寂しいと言わずに、音の中へ人を呼ぶタイプです。</p>
+          </div>
+        </div>
+      </div><!-- /interview-section -->
     </div>
 
     <!-- Exchange section -->
@@ -6491,8 +6619,78 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       origUpdate();
       renderSnowChecklist();
     };
+    renderInterviews();
   });
 </script>
+
+<!-- Interview unlock JS -->
+<script>
+  var ITV_CONFIG = {
+    hinata: { candy: 'milk',   label: 'ヒナタへのインタビュー', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_hinata' },
+    kouta:  { candy: 'honey',  label: 'コウタへのインタビュー', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_kouta'  },
+    hayate: { candy: 'cassis', label: 'ハヤテへのインタビュー', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_hayate' }
+  };
+
+  var _itvCurrentChar = null;
+
+  function openItvModal(char) {
+    var cfg = ITV_CONFIG[char];
+    if (!cfg) return;
+    _itvCurrentChar = char;
+    var modal = document.getElementById('itv-modal');
+    var img   = document.getElementById('itv-modal-candy-img');
+    var title = document.getElementById('itv-modal-title');
+    var desc  = document.getElementById('itv-modal-desc');
+    if (img)   img.src = cfg.img;
+    if (title) { title.textContent = cfg.label; title.style.color = cfg.color; }
+    if (desc)  desc.innerHTML = 'Candy 500を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
+    if (modal) modal.classList.add('show');
+  }
+
+  function closeItvModal() {
+    var modal = document.getElementById('itv-modal');
+    if (modal) modal.classList.remove('show');
+    _itvCurrentChar = null;
+  }
+
+  function unlockInterview() {
+    var char = _itvCurrentChar;
+    if (!char) return;
+    var cfg = ITV_CONFIG[char];
+    var ok = SfSnow.spendCandy(cfg.candy, 500);
+    if (!ok) {
+      closeItvModal();
+      return;
+    }
+    localStorage.setItem(cfg.key, 'true');
+    closeItvModal();
+    renderInterviews();
+  }
+
+  function renderInterviews() {
+    ['hinata', 'kouta', 'hayate'].forEach(function(char) {
+      var cfg     = ITV_CONFIG[char];
+      var unlocked = localStorage.getItem(cfg.key) === 'true';
+      var locked  = document.getElementById('itv-locked-'  + char);
+      var content = document.getElementById('itv-content-' + char);
+      if (locked)  locked.style.display  = unlocked ? 'none'  : '';
+      if (content) content.style.display = unlocked ? ''      : 'none';
+    });
+  }
+</script>
+
+<!-- Interview unlock modal -->
+<div id="itv-modal">
+  <div class="itv-modal-inner">
+    <div class="itv-modal-candy"><img id="itv-modal-candy-img" src=""> CANDY × 500</div>
+    <p class="itv-modal-title" id="itv-modal-title"></p>
+    <p class="itv-modal-desc" id="itv-modal-desc"></p>
+    <div class="itv-modal-btns">
+      <button class="itv-modal-cancel" onclick="closeItvModal()">CANCEL</button>
+      <button class="itv-modal-ok" onclick="unlockInterview()">UNLOCK</button>
+    </div>
+  </div>
+</div>
 
 <!-- 最新話リンク自動更新 -->
 <script>
