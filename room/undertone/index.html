@@ -623,17 +623,13 @@
     }
     .spread-card-face {
       background:transparent;
-      border:1px solid rgba(196,181,253,0.3);
-      box-shadow:0 0 24px rgba(196,181,253,0.28);
-      backdrop-filter:blur(10px);
       transform:rotateY(180deg);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      padding:10px 8px; text-align:center;
+      overflow:hidden;
+      padding:0;
     }
-    .spread-card-face .tf-num      { font-size:11px; margin-bottom:5px; }
-    .spread-card-face .tf-position { font-size:14px; margin-bottom:5px; }
-    .spread-card-face .tf-name     { font-size:11px; letter-spacing:1px; }
+    .spread-card-face img { width:100%; height:100%; object-fit:contain; display:block; }
+    .spread-card-face .tf-num, .spread-card-face .tf-position,
+    .spread-card-face .tarot-sep, .spread-card-face .tf-name { display:none; }
     .spread-pos-label {
       font-family:'Cormorant Garamond',serif;
       font-size:11px; letter-spacing:4px; color:#94a3b8;
@@ -1482,6 +1478,7 @@ function submitUtPw() {
     <div class="spread-col">
       <div class="spread-card" id="spread-card-0" onclick="pickSpreadCard(0)">
         <div class="spread-card-face">
+          <img id="spread-img-0" src="" alt="">
           <p class="tf-num" id="spread-num-0"></p>
           <p class="tf-position" id="spread-pos-0"></p>
           <div class="tarot-sep"></div>
@@ -1499,6 +1496,7 @@ function submitUtPw() {
     <div class="spread-col">
       <div class="spread-card" id="spread-card-1" onclick="pickSpreadCard(1)">
         <div class="spread-card-face">
+          <img id="spread-img-1" src="" alt="">
           <p class="tf-num" id="spread-num-1"></p>
           <p class="tf-position" id="spread-pos-1"></p>
           <div class="tarot-sep"></div>
@@ -1516,6 +1514,7 @@ function submitUtPw() {
     <div class="spread-col">
       <div class="spread-card" id="spread-card-2" onclick="pickSpreadCard(2)">
         <div class="spread-card-face">
+          <img id="spread-img-2" src="" alt="">
           <p class="tf-num" id="spread-num-2"></p>
           <p class="tf-position" id="spread-pos-2"></p>
           <div class="tarot-sep"></div>
@@ -3770,6 +3769,8 @@ function submitUtPw() {
     setTimeout(function() { showSKPopup('', skText); }, 500);
     cardFlipped = false;
     pendingDraw = drawCard();
+    var _fi = document.getElementById('tarot-face-img');
+    if (_fi) { _fi.src = ''; _fi.style.transform = ''; }
 
     // Title
     var eyebrow = tarotMode === 'yesno' ? 'YES  ·  NO' : 'ONE ORACLE';
@@ -4894,6 +4895,11 @@ function submitUtPw() {
       document.getElementById('spread-pos-' + j).textContent    = draw.pos;
       document.getElementById('spread-pos-' + j).style.color    = posColor;
       document.getElementById('spread-name-' + j).textContent   = draw.card.name;
+      var sImg = document.getElementById('spread-img-' + j);
+      if (sImg) {
+        sImg.src = getCardImg(draw.card);
+        sImg.style.transform = draw.up ? '' : 'rotate(180deg)';
+      }
       document.getElementById('spread-card-' + j).classList.remove('flipped');
       document.getElementById('spread-result-' + j).style.display = 'none';
     }
