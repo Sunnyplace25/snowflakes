@@ -2591,20 +2591,25 @@ function submitUtPw() {
     if (exploreCount >= 1 && !ch5Unlocked) {
       ch5Unlocked = true;
       localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
-      var ch5 = ALL_CHAPTERS[4];
-      document.getElementById('prose-label').textContent = ch5.label;
-      document.getElementById('prose-text').textContent  = ch5.text;
-      var si = document.getElementById('prose-scene-img'); if (si) si.style.display = 'none';
-      var t2 = document.getElementById('prose-text-2');   if (t2) t2.style.display = 'none';
-      document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
-      _proseCloseCallback = function() { renderScene(); };
-      closeSKPopup();
-      setTimeout(function() {
-        var sc = document.querySelector('.prose-scroll');
-        if (sc) sc.scrollTop = 0;
-        document.getElementById('prose-popup').classList.add('show');
-      }, 400);
       renderChapterList();
+      // プロローグ中のみ 0-5 テキストを表示（1章以降はスキップ）
+      if (!ch21Unlocked) {
+        var ch5 = ALL_CHAPTERS[4];
+        document.getElementById('prose-label').textContent = ch5.label;
+        document.getElementById('prose-text').textContent  = ch5.text;
+        var si = document.getElementById('prose-scene-img'); if (si) si.style.display = 'none';
+        var t2 = document.getElementById('prose-text-2');   if (t2) t2.style.display = 'none';
+        document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
+        _proseCloseCallback = function() { renderScene(); };
+        closeSKPopup();
+        setTimeout(function() {
+          var sc = document.querySelector('.prose-scroll');
+          if (sc) sc.scrollTop = 0;
+          document.getElementById('prose-popup').classList.add('show');
+        }, 400);
+      } else {
+        renderScene();
+      }
     } else {
       renderScene();
     }
