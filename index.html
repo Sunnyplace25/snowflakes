@@ -460,7 +460,7 @@ function toggleShortAcc(n) {
   if (!body || !btn) return;
   var open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'block';
-  btn.textContent = open ? '続きを読む ↓' : '閉じる ↑';
+  btn.textContent = open ? 'open' : 'close';
 }
 function toggleBookAcc(n) {
   var body = document.getElementById('book-acc-body-' + n);
@@ -468,7 +468,7 @@ function toggleBookAcc(n) {
   if (!body || !btn) return;
   var open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'block';
-  btn.textContent = open ? '続きを読む ↓' : '閉じる ↑';
+  btn.textContent = open ? 'open' : 'close';
 }
 function toggleSweetsAccordion() {
   var body = document.getElementById('sweets-accordion-body');
@@ -1003,7 +1003,7 @@ function sfShare() {
         <div id="book-acc-body-1" style="display:none;">
           <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc-more">気づけば<br>同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
         </div>
-        <button id="book-acc-btn-1" onclick="toggleBookAcc(1)" style="margin-bottom:20px;background:none;border:1px solid rgba(147,197,253,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(147,197,253,0.5)';this.style.color='var(--hinata)'" onmouseleave="this.style.borderColor='rgba(147,197,253,0.2)';this.style.color='#94a3b8'">続きを読む ↓</button>
+        <button id="book-acc-btn-1" onclick="toggleBookAcc(1)" style="margin-bottom:20px;background:none;border:1px solid rgba(147,197,253,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(147,197,253,0.5)';this.style.color='var(--hinata)'" onmouseleave="this.style.borderColor='rgba(147,197,253,0.2)';this.style.color='#94a3b8'">open</button>
         <a href="https://amzn.asia/d/03cNGgk3" target="_blank" style="display:inline-block;font-size:14px;color:var(--hinata);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
@@ -1019,7 +1019,7 @@ function sfShare() {
         <div id="book-acc-body-2" style="display:none;">
           <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc-more">形にならない音。<br>言葉にするには、<wbr>まだ早い感情。<br><br>三人で鳴らすことを選んだあと、<br>音は少しずつ外へ向かいはじめる。<br><br>確かさはない。<br>それでも、<wbr>手放さなかった。<br><br>触れすぎず、<wbr>壊さず、<br>距離を測りながら。<br><br>小さな音は、<wbr>静かに残り続ける。</p>
         </div>
-        <button id="book-acc-btn-2" onclick="toggleBookAcc(2)" style="margin-bottom:20px;background:none;border:1px solid rgba(196,181,253,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(196,181,253,0.5)';this.style.color='#c4b5fd'" onmouseleave="this.style.borderColor='rgba(196,181,253,0.2)';this.style.color='#94a3b8'">続きを読む ↓</button>
+        <button id="book-acc-btn-2" onclick="toggleBookAcc(2)" style="margin-bottom:20px;background:none;border:1px solid rgba(196,181,253,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(196,181,253,0.5)';this.style.color='#c4b5fd'" onmouseleave="this.style.borderColor='rgba(196,181,253,0.2)';this.style.color='#94a3b8'">open</button>
         <a href="https://amzn.asia/d/0brELpId" target="_blank" style="display:inline-block;font-size:14px;color:#c4b5fd;text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(196,181,253,0.4);background:rgba(196,181,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
@@ -1035,7 +1035,7 @@ function sfShare() {
         <div id="book-acc-body-3" style="display:none;">
           <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc-more">声に引き寄せられ、<br>選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、<wbr>優しさと迷い。<br>それぞれの選択は、<wbr>言葉になる前にすれ違っていく。<br><br>音は、<wbr>答えをくれない。<br>ただ残り、<wbr>続いていく。<br><br>――音だけが、<wbr>置かれたまま。</p>
         </div>
-        <button id="book-acc-btn-3" onclick="toggleBookAcc(3)" style="margin-bottom:20px;background:none;border:1px solid rgba(252,165,165,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(252,165,165,0.5)';this.style.color='var(--kouta)'" onmouseleave="this.style.borderColor='rgba(252,165,165,0.2)';this.style.color='#94a3b8'">続きを読む ↓</button>
+        <button id="book-acc-btn-3" onclick="toggleBookAcc(3)" style="margin-bottom:20px;background:none;border:1px solid rgba(252,165,165,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(252,165,165,0.5)';this.style.color='var(--kouta)'" onmouseleave="this.style.borderColor='rgba(252,165,165,0.2)';this.style.color='#94a3b8'">open</button>
         <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="display:inline-block;font-size:14px;color:var(--kouta);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
@@ -1051,7 +1051,7 @@ function sfShare() {
         <div id="book-acc-body-4" style="display:none;">
           <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc-more">前に出る音。<br>支える音。<br>残す音。<br><br>それぞれのポジションで、<br>三人は同じ流れに乗っている。<br><br>音は続く。<br>役割を引き受けたまま。</p>
         </div>
-        <button id="book-acc-btn-4" onclick="toggleBookAcc(4)" style="margin-bottom:20px;background:none;border:1px solid rgba(253,230,138,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.5)';this.style.color='var(--hayate)'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.2)';this.style.color='#94a3b8'">続きを読む ↓</button>
+        <button id="book-acc-btn-4" onclick="toggleBookAcc(4)" style="margin-bottom:20px;background:none;border:1px solid rgba(253,230,138,0.2);border-radius:100px;padding:5px 16px;font-size:11px;letter-spacing:3px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.5)';this.style.color='var(--hayate)'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.2)';this.style.color='#94a3b8'">open</button>
         <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
@@ -1075,7 +1075,7 @@ function sfShare() {
       <div id="short-acc-body-1" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short1-desc">スタジオで、いつも通り音を出す。<br><br>揃っている。<br>ズレていない。<br><br>――揃いすぎている。<br><br>その音は、<br>ひとつ、多い。</p>
       </div>
-      <button id="short-acc-btn-1" onclick="toggleShortAcc(1)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-1" onclick="toggleShortAcc(1)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0964mc/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1089,7 +1089,7 @@ function sfShare() {
       <div id="short-acc-body-2" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short2-desc">整える側としての自分と、歌う側としての自分。昼は仕事で物事を整え、夜はバンドで揺らぎのある音を鳴らすヒナタが、本当に歌いたい音を求めて進んでいく物語。</p>
       </div>
-      <button id="short-acc-btn-2" onclick="toggleShortAcc(2)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-2" onclick="toggleShortAcc(2)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0082lu/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1105,7 +1105,7 @@ function sfShare() {
       <div id="short-acc-body-3" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short3-desc">同じ音楽制作の現場で働くヒナタと小雪。プロとして信頼し合いながら、一歩を踏み出さないまま曖昧なバランスを保ち続ける。雨の夜から始まる、選ばないまま守られる関係の物語。</p>
       </div>
-      <button id="short-acc-btn-3" onclick="toggleShortAcc(3)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-3" onclick="toggleShortAcc(3)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0327lw/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1121,7 +1121,7 @@ function sfShare() {
       <div id="short-acc-body-4" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short4-desc">春のキャンパスで出会った、黒いギターケースの学生。<br>ベンチで音を聴く時間が、少しずつ積み重なっていく。<br>置いていかれたわけじゃない。<br>ただ、彼が前に進むほど、同じ場所にはいられなくなっていった。<br><br>スノーフレークスの外側にいた、誰かの物語。</p>
       </div>
-      <button id="short-acc-btn-4" onclick="toggleShortAcc(4)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-4" onclick="toggleShortAcc(4)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0679lx/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1137,7 +1137,7 @@ function sfShare() {
       <div id="short-acc-body-5" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.6;font-weight:300;margin-bottom:12px;" data-i18n="short5-desc">気づいたら、舞踏会の玉座にいた。<br>金髪の王子と、黒髪の姫。整いすぎた、正しい距離。<br>「ちゃんとしてる。でも、触れてない」<br>近づくほど、その差ははっきりしていく。<br>正しさと、心地よさ。揺れたまま、距離だけが変わっていく物語。<br>これは番外編。正しい距離の、その向こう側の物語。</p>
       </div>
-      <button id="short-acc-btn-5" onclick="toggleShortAcc(5)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-5" onclick="toggleShortAcc(5)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0498ly/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1152,7 +1152,7 @@ function sfShare() {
       <div id="short-acc-body-6" style="display:none;">
         <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short6-desc">名前も立場も知らないまま、それでも場の空気を変えていく人たちがいる。Snow flakesの外側視点から、気づかれないひびと、静かに変わっていく空気を拾う番外編。</p>
       </div>
-      <button id="short-acc-btn-6" onclick="toggleShortAcc(6)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">続きを読む ↓</button>
+      <button id="short-acc-btn-6" onclick="toggleShortAcc(6)" style="margin-bottom:16px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:4px 14px;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseenter="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.25)'" onmouseleave="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.1)'">open</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9797ls/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
