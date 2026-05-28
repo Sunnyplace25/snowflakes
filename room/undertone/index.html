@@ -908,7 +908,7 @@
       <div id="ch-between" style="display:none;padding:24px 0 8px;">
         <button class="ch-next-btn" id="ch-next-btn" onclick="tryUnlockCh2()" disabled>第一章を読む</button>
         <p class="ch-next-cond" id="ch-next-cond"></p>
-        <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:2px;"></p>
+        <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;text-align:center;margin-top:2px;"></p>
         <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;text-align:center;margin-top:6px;line-height:2;"></p>
       </div>
 
@@ -971,7 +971,7 @@
       <div id="ch-between-3" style="display:none;padding:24px 0 8px;">
         <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
           <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第二章</span>
-          <span id="ch2-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#334155;"></span>
+          <span id="ch2-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:2px;color:#e2e8f0;"></span>
         </button>
       </div>
 
@@ -1034,7 +1034,7 @@
       <div id="ch-between-4" style="display:none;padding:24px 0 8px;">
         <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
           <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第三章</span>
-          <span id="ch3-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#334155;"></span>
+          <span id="ch3-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:2px;color:#e2e8f0;"></span>
         </button>
       </div>
 
@@ -1933,7 +1933,7 @@ function submitUtPw() {
     if (!_seenProseScenes.has(prevIdx)) return { state: 'hidden' };
     var readAt = parseInt(localStorage.getItem('sf_ut_ch_read_at_' + prevIdx) || '0');
     if (!readAt) return { state: 'available' }; // 旧データ互換
-    var remaining = 86400000 - (Date.now() - readAt);
+    var remaining = 172800000 - (Date.now() - readAt);
     if (remaining <= 0) return { state: 'available' };
     return { state: 'countdown', remaining: remaining };
   }
@@ -1988,7 +1988,7 @@ function submitUtPw() {
         cdEl.id = 'ch-countdown-' + idx;
         cdEl.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;';
         cdEl.innerHTML = '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#334155;">' + chNum + '</span>'
-          + '<span id="ch-timer-' + idx + '" style="font-family:\'Cormorant Garamond\',serif;font-size:13px;letter-spacing:2px;color:#475569;"></span>';
+          + '<span id="ch-timer-' + idx + '" style="font-family:\'Cormorant Garamond\',serif;font-size:14px;letter-spacing:2px;color:#e2e8f0;"></span>';
         item.appendChild(cdEl);
       }
       cdEl.style.display = 'flex';
@@ -2030,10 +2030,10 @@ function submitUtPw() {
           }
         }
       });
-      // 24h 1章解放タイマー
+      // 48h 1章解放タイマー
       var _ch1At = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
       if (_ch1At && !ch21Unlocked) {
-        var _r1 = 86400000 - (Date.now() - _ch1At);
+        var _r1 = 172800000 - (Date.now() - _ch1At);
         if (_r1 > 0) { updateCh2Btn(); anyActive = true; }
         else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
       }
