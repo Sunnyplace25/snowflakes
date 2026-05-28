@@ -661,8 +661,8 @@ function testPrologueOnly() {
   if (!confirm('プロローグのみの状態にリセットしますか？（1章ロック）')) return;
   _clearUndertone();
   _setUndertoneAuth();
-  // ch1解放タイマーだけ遠い未来に（ロック維持）
-  localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now() + 30 * 86400000));
+  // sf_ut_ch1_unlock_at は設定しない → 0-5読了時に自然にセットされる
+  // sf_undertone_ch21_unlocked も設定しない → 1章はロックのまま
   setTestStatus('✓ プロローグ開始状態（1章ロック）。0-1〜0-5が読める。');
   setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 300);
 }
