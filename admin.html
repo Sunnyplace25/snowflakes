@@ -178,10 +178,16 @@
 
     <div style="display:flex;flex-direction:column;gap:10px;">
       <p style="font-size:11px;letter-spacing:2px;color:#475569;">── 通常テスト（先頭から） ──</p>
-      <button onclick="fullResetUndertone()" style="padding:14px;background:rgba(196,181,253,0.18);border:2px solid rgba(196,181,253,0.5);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.18)'">
+      <button onclick="testPrologueOnly()" style="padding:14px;background:rgba(196,181,253,0.18);border:2px solid rgba(196,181,253,0.5);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.28)'" onmouseleave="this.style.background='rgba(196,181,253,0.18)'">
+        ▶ 完全に頭からプロローグ終わりまで（1章ロック）
+      </button>
+      <button onclick="testCh1Only()" style="padding:14px;background:rgba(196,181,253,0.15);border:2px solid rgba(196,181,253,0.45);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.25)'" onmouseleave="this.style.background='rgba(196,181,253,0.15)'">
+        ▶ 1章開始から1章終わりまで（2章ロック状態）
+      </button>
+      <button onclick="fullResetUndertone()" style="padding:14px;background:rgba(196,181,253,0.12);border:2px solid rgba(196,181,253,0.35);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.22)'" onmouseleave="this.style.background='rgba(196,181,253,0.12)'">
         ▶ 完全に頭から1章終わりまで（2章ロック状態）
       </button>
-      <button onclick="startCh2Undertone()" style="padding:14px;background:rgba(196,181,253,0.12);border:2px solid rgba(196,181,253,0.35);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.22)'" onmouseleave="this.style.background='rgba(196,181,253,0.12)'">
+      <button onclick="startCh2Undertone()" style="padding:14px;background:rgba(196,181,253,0.09);border:2px solid rgba(196,181,253,0.28);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.19)'" onmouseleave="this.style.background='rgba(196,181,253,0.09)'">
         ▶ 2章開始から2章終わりまで（3章ロック状態）
       </button>
       <button onclick="startCh3Undertone()" style="padding:14px;background:rgba(196,181,253,0.08);border:2px solid rgba(196,181,253,0.25);border-radius:10px;color:#e9d5ff;font-size:14px;font-weight:bold;cursor:pointer;transition:background 0.2s;" onmouseenter="this.style.background='rgba(196,181,253,0.18)'" onmouseleave="this.style.background='rgba(196,181,253,0.08)'">
@@ -648,6 +654,38 @@ function _clearUndertone() {
   setAllProfiles();
   localStorage.setItem('sf_undertone_admin', 'true');
   return toRemove.length;
+}
+
+/* プロローグのみ（1章ロック） */
+function testPrologueOnly() {
+  if (!confirm('プロローグのみの状態にリセットしますか？（1章ロック）')) return;
+  _clearUndertone();
+  _setUndertoneAuth();
+  // ch1解放タイマーだけ遠い未来に（ロック維持）
+  localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now() + 30 * 86400000));
+  setTestStatus('✓ プロローグ開始状態（1章ロック）。0-1〜0-5が読める。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 300);
+}
+
+/* 1章開始（2章ロック） */
+function testCh1Only() {
+  if (!confirm('1章開始状態にリセットしますか？（2章ロック）')) return;
+  _clearUndertone();
+  _setUndertoneAuth();
+  localStorage.setItem('sf_undertone_visited', 'true');
+  localStorage.setItem('sf_undertone_ch5_unlocked', 'true');
+  localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+  localStorage.setItem('sf_undertone_max_scene', '3');
+  localStorage.setItem('sf_undertone_explore_count', '2');
+  localStorage.setItem('sf_undertone_visits', JSON.stringify({ days:[], total:2 }));
+  localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([0,1,2,3,4]));
+  // ch1の話間タイマーのみOFF（ch2はロックしたまま）
+  var old = String(Date.now() - 25 * 3600000);
+  [5,6,7,8].forEach(function(i) {
+    localStorage.setItem('sf_ut_ch_read_at_' + i, old);
+  });
+  setTestStatus('✓ 1章開始状態（2章ロック）。1-1〜1-5が読める。');
+  setTimeout(function() { window.open('./room/undertone/', '_blank'); }, 300);
 }
 
 function fullResetUndertone() {
