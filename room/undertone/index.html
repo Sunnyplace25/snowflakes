@@ -2821,7 +2821,7 @@ function submitUtPw() {
 
   function ch2ConditionMet() {
     var unlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
-    return unlockAt > 0 && Date.now() - unlockAt >= 86400000;
+    return unlockAt > 0 && Date.now() - unlockAt >= 172800000;
   }
 
   function updateCh2Btn() {
@@ -2848,7 +2848,7 @@ function submitUtPw() {
       if (cdEl) {
         var unlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
         if (unlockAt > 0) {
-          var diff = 86400000 - (Date.now() - unlockAt);
+          var diff = 172800000 - (Date.now() - unlockAt);
           if (diff > 0) {
             cdEl.textContent = formatCountdown(diff);
             if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
