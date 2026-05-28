@@ -3796,10 +3796,11 @@ function submitUtPw() {
     cardFlipped = true;
     closeSKPopup();
 
-    // カード画像をセット
+    // カード画像をセット（逆位置は180度回転）
     var faceImg = document.getElementById('tarot-face-img');
     if (faceImg && pendingDraw) {
       faceImg.src = getCardImg(pendingDraw.card);
+      faceImg.style.transform = pendingDraw.up ? '' : 'rotate(180deg)';
     }
 
     document.getElementById('tarot-card').classList.add('flipped');
