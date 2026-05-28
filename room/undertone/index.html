@@ -377,13 +377,13 @@
     }
     .tarot-back img {
       width:100%; height:100%; object-fit:contain; display:block;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.75));
+      filter: drop-shadow(0 0 10px rgba(248,113,113,0.7)) drop-shadow(0 0 28px rgba(248,113,113,0.4)) drop-shadow(0 0 50px rgba(248,113,113,0.2));
     }
 
     .tarot-face {
       background:transparent;
       border-radius:16px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
+      box-shadow:0 0 40px rgba(196,181,253,0.35), 0 0 80px rgba(196,181,253,0.12);
       transform:rotateY(180deg);
       overflow:hidden;
       padding:0;
@@ -1589,7 +1589,7 @@ function submitUtPw() {
       <!-- カード枠 -->
       <div id="celtic-b-card" style="width:100%;border:1px solid rgba(255,255,255,0.1);border-radius:20px;background:rgba(255,255,255,0.025);padding:32px 28px;cursor:pointer;transition:border-color 0.3s;" onclick="celticBNext()">
         <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
-          <img id="celtic-b-img" src="" alt="" style="width:140px;height:210px;object-fit:contain;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.75));flex-shrink:0;">
+          <img id="celtic-b-img" src="" alt="" style="width:140px;height:210px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(167,139,250,0.6)) drop-shadow(0 0 40px rgba(124,58,237,0.3));flex-shrink:0;">
           <div style="text-align:center;width:100%;">
             <p id="celtic-b-pos" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:12px;"></p>
             <p id="celtic-b-name" style="font-family:'Noto Serif JP',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></p>
@@ -4428,7 +4428,7 @@ function submitUtPw() {
       front.style.cssText = 'position:absolute;inset:0;backface-visibility:hidden;';
       var bImg = document.createElement('img');
       bImg.src = 'card_back_b.webp';
-      bImg.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.6));transition:filter 0.6s;';
+      bImg.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 8px rgba(167,139,250,0.4));transition:filter 0.6s;';
       front.appendChild(bImg);
       // 裏面（フリップ後に見える面）
       var back = document.createElement('div');
@@ -4478,10 +4478,10 @@ function submitUtPw() {
           inn.style.transform = 'rotateY(180deg)';
           var fImgEl = document.querySelector('.celtic-fimg-' + idx);
           if (fImgEl) {
-            fImgEl.style.filter = 'drop-shadow(0 6px 20px rgba(0,0,0,0.85))';
+            fImgEl.style.filter = 'drop-shadow(0 0 20px rgba(167,139,250,0.95)) drop-shadow(0 0 40px rgba(124,58,237,0.6)) drop-shadow(0 0 70px rgba(124,58,237,0.3))';
             setTimeout(function() {
               var fi = document.querySelector('.celtic-fimg-' + idx);
-              if (fi) fi.style.filter = 'drop-shadow(0 6px 18px rgba(0,0,0,0.75))';
+              if (fi) fi.style.filter = 'drop-shadow(0 0 8px rgba(167,139,250,0.5))';
             }, 900);
           }
           if (idx === 9) {
