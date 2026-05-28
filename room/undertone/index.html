@@ -3323,12 +3323,12 @@ function submitUtPw() {
     var g = totalVisits === 1 ? greetings[0] : greetings[1 + ((totalVisits - 2) % (greetings.length - 1))];
     document.getElementById('shop-greeting').innerHTML = g;
 
-    // ch21解放時はタブ表示
+    // ch3解放時のみタブ表示・oracle表示（1章はinteriorのみ）
     var shopNav = document.getElementById('shop-nav');
-    if (shopNav) shopNav.style.display = ch21Unlocked ? 'flex' : 'none';
+    if (shopNav) shopNav.style.display = ch3Unlocked ? 'flex' : 'none';
     updateEquipBtn();
-    // 常にoracle panel を先に表示
-    switchShopTab('oracle');
+    // ch3解放後のみoracle panel を先に表示、1章以前はinteriorを表示
+    switchShopTab(ch3Unlocked ? 'oracle' : 'interior');
 
     // Fortune unlock popup（初回入店時のみ）
     if (totalVisits === 1 && !localStorage.getItem('sf_ut_fortune_unlock_shown')) {
