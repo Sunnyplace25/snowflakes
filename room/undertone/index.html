@@ -439,6 +439,11 @@
       from { border-color:rgba(196,181,253,0.2); box-shadow:none; }
       to   { border-color:rgba(196,181,253,0.55); box-shadow:0 0 24px rgba(196,181,253,0.12); }
     }
+    @keyframes fortuneGlow {
+      0%,100% { color:#c4b5fd; text-shadow:0 0 8px rgba(196,181,253,0.4); }
+      50%     { color:#e9d5ff; text-shadow:0 0 22px rgba(196,181,253,0.9),0 0 44px rgba(196,181,253,0.3); }
+    }
+    .fortune-unlock-title { animation:fortuneGlow 1.4s ease-in-out infinite; }
     #tarot-stone-img { width:60px; margin:0 auto 10px; display:block; }
     #tarot-stone-name {
       font-family:'Cormorant Garamond',serif;
@@ -1129,7 +1134,7 @@
             <span class="choose-text">Yes / No を聞く</span>
             <span class="choose-sub">YES · NO · 10 Snow</span>
           </button>
-          <button class="choose-item choose-item--gold" onclick="openSpread()">
+          <button class="choose-item" onclick="openSpread()">
             <span class="choose-mark">◯</span>
             <span class="choose-text">深く見る</span>
             <span class="choose-sub">3 CARDS · 15 Snow</span>
@@ -1649,6 +1654,16 @@ function submitUtPw() {
     <p id="tarot-stone-name" style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:2px;"></p>
     <p id="tarot-stone-sub" style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:24px;font-family:'Cormorant Garamond',serif;"></p>
     <button onclick="closeAppraisePopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+
+<!-- Fortune unlock popup -->
+<div id="fortune-unlock-popup" style="display:none;position:fixed;inset:0;z-index:610;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.28);border-radius:20px;padding:36px 28px;max-width:280px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
+    <p class="fortune-unlock-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:8px;margin-bottom:14px;">FORTUNE</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:3px;margin-bottom:8px;">今日の音を選ぶ</p>
+    <p style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:28px;font-family:'Cormorant Garamond',serif;">解放されました</p>
+    <button onclick="closeFortuneUnlockPopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
 </div>
 
@@ -3304,10 +3319,19 @@ function submitUtPw() {
     // 常にoracle panel を先に表示
     switchShopTab('oracle');
 
-    // Chibi popup
-    setTimeout(function() {
-      showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
-    }, 700);
+    // Fortune unlock popup（初回入店時のみ）
+    if (totalVisits === 1 && !localStorage.getItem('sf_ut_fortune_unlock_shown')) {
+      localStorage.setItem('sf_ut_fortune_unlock_shown', 'true');
+      setTimeout(function() {
+        var pop = document.getElementById('fortune-unlock-popup');
+        if (pop) pop.style.display = 'flex';
+      }, 500);
+    } else {
+      // Chibi popup
+      setTimeout(function() {
+        showSKPopup(visitCount + '回目の訪問だな', '迷っているな');
+      }, 700);
+    }
 
     // shopkeeper 画像切り替え
     // 2-2未読：大人固定 / 2-2〜2-5未読：ランダム切り替え / 2-5読了：大人に戻る固定
@@ -4133,6 +4157,10 @@ function submitUtPw() {
 
   window.closeAppraisePopup = function() {
     document.getElementById('tarot-stone-reveal').style.display = 'none';
+  };
+
+  window.closeFortuneUnlockPopup = function() {
+    document.getElementById('fortune-unlock-popup').style.display = 'none';
   };
 
   var _currentRawstoneType = null;
