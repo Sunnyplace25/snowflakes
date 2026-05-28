@@ -545,7 +545,7 @@
         <img id="kouta-owned-img" src="" style="width:110px;margin:0 auto 16px;display:block;">
         <p class="room-hs-desc" id="kouta-owned-name" style="margin-bottom:4px;"></p>
         <p id="kouta-owned-desc" style="font-size:12px;letter-spacing:1px;color:#64748b;line-height:2;margin-bottom:16px;white-space:pre-line;"></p>
-        <p style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">入手済みです</p>
+        <p id="kouta-owned-status" style="font-size:11px;letter-spacing:2px;color:#64748b;margin-bottom:24px;">入手済みです</p>
         <button onclick="document.getElementById('kouta-owned-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
       </div>
     </div>
@@ -867,12 +867,14 @@
       if (owned)  owned.style.display  = '';
       var item = document.getElementById('il-strings-item');
       if (item) item.classList.add('open');
+      SfSnow.unlockItem('item_kouta_first_strings');
     }
 
-    function showOwnedItem(img, name, desc) {
+    function showOwnedItem(img, name, desc, status) {
       document.getElementById('kouta-owned-img').src = img;
       document.getElementById('kouta-owned-name').textContent = name;
       document.getElementById('kouta-owned-desc').textContent = desc || '';
+      document.getElementById('kouta-owned-status').textContent = status || '入手済みです';
       document.getElementById('kouta-owned-popup').classList.add('show');
     }
 
@@ -1086,9 +1088,9 @@
       if (receiveBtn) {
         receiveBtn.addEventListener('click', function() {
           localStorage.setItem(STRINGS_FIND_KEY, '1');
-          if (typeof SfSnow !== 'undefined') SfSnow.unlockItem('item_kouta_first_strings');
           document.getElementById('kouta-item-found-popup').classList.remove('show');
           revealStringsItem();
+          showOwnedItem('../../item/first_strings_kouta.webp', '初めて張り替えたベースの弦', 'コウタが初めて自分で張り替えたベースの弦。\n捨てられずに、今もそこにある。', '入手しました');
         });
       }
       // 弦アイテム：既取得なら即表示
