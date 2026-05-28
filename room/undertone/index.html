@@ -3180,7 +3180,7 @@ function submitUtPw() {
   /* ── Entrance lines ── */
   var _ENTRANCE = {
     hinata: [
-      '……行くか', '今日も、いるかな', 'なんとなく、寄る', '別に理由はない',
+      '……行くか', 'なんとなく、寄る', '別に理由はない',
       '帰り道だし', '……まだ気になる', 'ちょっとだけ', '音、残ってる気がする',
     ],
     kouta: [
@@ -3191,6 +3191,17 @@ function submitUtPw() {
       '今日なんかありそうじゃない？', 'よし、何買おっかな', 'ちょっと楽しみなんだけど',
       '新しいの入ってないかな', 'なんかワクワクする', '今日は当たり引けそう',
       '行こう行こう', '俺ちょっと好きかも、この店',
+    ],
+  };
+  var _ENTRANCE_FIRST = {
+    hinata: [
+      '……なんだろ、ここ', '気になる', '入っていいのかな', '……なんか、引かれる',
+    ],
+    kouta: [
+      '……なんか変な店だな', '入るのか？', '……気になるのは確かだけど', '嫌な感じはしない、かな',
+    ],
+    hayate: [
+      'なんか面白そうじゃない？', '入ってみようよ', 'わ、なんかいい雰囲気', 'ちょっと覗いてみよう',
     ],
   };
   var _ENTRANCE_NAMES = { hinata: 'HINATA', kouta: 'KOUTA', hayate: 'HAYATE' };
@@ -3219,7 +3230,7 @@ function submitUtPw() {
     } else {
       var _chars = ['hinata', 'kouta', 'hayate'];
       char = _chars[Math.floor(Math.random() * 3)];
-      pool = _ENTRANCE[char];
+      pool = _ENTRANCE_FIRST[char];
     }
     var line = pool[Math.floor(Math.random() * pool.length)];
     var nameEl = document.getElementById('entrance-char-name');
