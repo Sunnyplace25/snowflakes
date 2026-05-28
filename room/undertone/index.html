@@ -2767,11 +2767,15 @@ function submitUtPw() {
     // 2-5読了後・3章未公開時のみロックボタンを表示
     var between3 = document.getElementById('ch-between-3');
     if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
-    // 24hタイマーチェック：1章自動解放
+    // 48hタイマーチェック：1章自動解放
     var _ch1UnlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
-    if (_ch1UnlockAt && !ch21Unlocked && Date.now() - _ch1UnlockAt >= 86400000) {
+    if (_ch1UnlockAt && !ch21Unlocked && Date.now() - _ch1UnlockAt >= 172800000) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+      if (!localStorage.getItem('sf_ut_ch1_unlock_shown')) {
+        localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
+        setTimeout(function() { showChapterUnlock(1, 5); }, 500);
+      }
     }
     // 14日タイマーチェック：2章自動解放
     var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
@@ -2872,8 +2876,9 @@ function submitUtPw() {
     if (ch2ConditionMet()) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+      localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
       renderChapterList();
-      openChapterPopup(5);
+      showChapterUnlock(1, 5);
     }
   };
 
