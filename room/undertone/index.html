@@ -4155,7 +4155,25 @@ function submitUtPw() {
     img.style.transform = isRev ? 'rotate(180deg)' : '';
     document.getElementById('card-zoom-name').textContent = name || '';
     document.getElementById('card-zoom-sub').textContent = sub || '';
-    document.getElementById('card-zoom-reading').textContent = reading || '';
+    // カード画像と同じ折り返しロジック（NotoSerifJP 28px, max_w = カード幅/2 ≈ 512px）
+    var readingEl = document.getElementById('card-zoom-reading');
+    if (reading) {
+      var sentences = reading.replace(/。$/, '').split('。').filter(Boolean).map(function(s) { return s + '。'; });
+      var cvs = document.createElement('canvas');
+      var ctx = cvs.getContext('2d');
+      ctx.font = "28px 'Noto Serif JP'";
+      var maxW = 512;
+      var lines = [], line = '';
+      for (var i = 0; i < sentences.length; i++) {
+        var test = line + sentences[i];
+        if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = sentences[i]; }
+        else { line = test; }
+      }
+      if (line) lines.push(line);
+      readingEl.innerHTML = lines.join('<br>');
+    } else {
+      readingEl.textContent = '';
+    }
     ov.style.display = 'flex';
   };
 
