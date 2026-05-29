@@ -2954,18 +2954,18 @@ function submitUtPw() {
     if (!ch) return;
     var _pendingComplete = null; // 閉じるボタン後に発火するチャプターコンプリート
     playProseSound(idx);
+    // 0-5を開いた時点でタイマー開始（既読済みでもセットされていなければ開始）
+    if (idx === 4 && !localStorage.getItem('sf_ut_ch1_unlock_at')) {
+      localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now()));
+      updateCh2Btn();
+      startCountdownTimers();
+    }
     // 既読フラグ
     if (!_seenProseScenes.has(idx)) {
       _seenProseScenes.add(idx);
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
       // 鑑定ボタン解放（1-1読了後）
       if (idx === 5) updateAppraiseBtn();
-      // 0-5読了 → 1章24hタイマー開始
-      if (idx === 4 && !localStorage.getItem('sf_ut_ch1_unlock_at')) {
-        localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now()));
-        updateCh2Btn();
-        startCountdownTimers();
-      }
       // 章内タイムゲート：初回読了時にタイムスタンプ保存
       var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15,16];
       if (_timedPrevIdxs.indexOf(idx) !== -1) {
@@ -4360,7 +4360,7 @@ function submitUtPw() {
     'JUDGEMENT':        'cards/20_judgement.webp',
     'WORLD':            'cards/21_world.webp',
     'THE PLACED SOUND': 'cards/ori_placed_sound.webp',
-    'WHITE TAPE':       'card_back_a.webp',
+    'WHITE TAPE':       'card_back_b.webp',
   };
   function getCardImg(card) { return CARD_IMGS[card.arch] || 'card_back_b.webp'; }
 
