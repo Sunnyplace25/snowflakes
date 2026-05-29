@@ -1293,29 +1293,29 @@ function sfShare() {
     <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;">Snow flakes ‐Quietly Falling‐</h2>
     <p style="text-align:center;font-size:11px;letter-spacing:4px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:32px;">書き下ろしシリーズ</p>
 
-    <!-- サムネ + 説明 -->
-    <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:32px;">
+    <!-- 説明文 -->
+    <p style="font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:28px;text-align:center;">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。通称QF。</p>
 
-      <!-- 最新サムネ -->
-      <a id="qf-thumb-link" href="https://www.instagram.com/reel/DY2LFY2Px0W/" target="_blank" style="flex-shrink:0;text-decoration:none;" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
-        <img src="reel_latest.webp" alt="最新QFエピソード" style="width:100px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;display:block;transition:opacity 0.2s;">
-      </a>
+    <!-- サムネ + エピソードリスト -->
+    <div style="display:flex;gap:20px;align-items:flex-start;">
 
-      <!-- 説明文 -->
+      <!-- 最新サムネ + バッジ -->
+      <div style="flex-shrink:0;position:relative;">
+        <a href="https://www.instagram.com/reel/DY2LFY2Px0W/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:block;text-decoration:none;" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
+          <img src="reel_latest.webp" alt="最新QFエピソード" style="width:100px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;display:block;transition:opacity 0.2s;">
+        </a>
+        <span style="position:absolute;top:7px;left:50%;transform:translateX(-50%);background:rgba(147,197,253,0.18);border:1px solid rgba(147,197,253,0.45);color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;padding:2px 8px;border-radius:100px;white-space:nowrap;backdrop-filter:blur(4px);">最新話</span>
+      </div>
+
+      <!-- エピソードリスト -->
       <div style="flex:1;min-width:0;">
-        <p style="font-size:13px;color:var(--muted);line-height:1.9;">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。通称QF。</p>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+          <button id="qf-sort-btn" onclick="toggleQFSort()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;padding:4px 0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">↕ 古い順</button>
+        </div>
+        <div id="qf-list" style="border-radius:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:4px 16px;max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent;">
+        </div>
       </div>
 
-    </div>
-
-    <!-- ソートボタン + エピソードリスト -->
-    <div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-        <button id="qf-sort-btn" onclick="toggleQFSort()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;padding:4px 0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">↕ 古い順</button>
-      </div>
-
-      <div id="qf-list" style="border-radius:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:4px 20px;">
-      </div>
     </div>
 
   </div>
