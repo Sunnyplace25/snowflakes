@@ -1321,64 +1321,115 @@ function sfShare() {
     <!-- Singles -->
     <div class="disco-group">
       <p class="disco-group-label">SINGLES</p>
-      <div class="singles-grid">
 
-        <div class="single-card">
-          <a href="https://music.youtube.com/watch?v=kzicrM_-ohI&si=EryNBCyu5GzFW1MQ" target="_blank">
-            <img class="single-jacket" src="Discography/Round Bounce.webp" alt="Round Bounce Snow flakes スノーフレークス スノフレ 山吹ことり 楽曲" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div class="single-info">
-            <p class="single-title">Round Bounce</p>
-            <p class="single-status" data-i18n="single-status">配信中</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-              <a href="https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7" target="_blank"
-                 style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">Spotify →</a>
-            </div>
+      <!-- Singles Player -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+
+        <!-- Main: jacket + info -->
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:160px;flex-shrink:0;overflow:hidden;">
+            <img id="sp-jacket" src="Discography/Round Bounce.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+          </div>
+          <div style="padding:24px 24px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0;">
+            <p id="sp-label" style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SINGLE</p>
+            <p id="sp-title" style="font-size:20px;font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">Round Bounce</p>
+            <p id="sp-status" style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;">配信中</p>
+            <div id="sp-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
           </div>
         </div>
 
-        <div class="single-card">
-          <a href="https://music.youtube.com/watch?v=6PPE44vl6ro&si=FmJfh9gCP7ElRJiL" target="_blank">
-            <img class="single-jacket" src="Discography/SWEETs.webp" alt="SWEETs Snow flakes スノーフレークス スノフレ 山吹ことり 楽曲" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div class="single-info">
-            <p class="single-title">SWEETs</p>
-            <p class="single-status" data-i18n="single-status">配信中</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-              <a href="https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931" target="_blank"
-                 style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">Spotify →</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="single-card">
-          <a href="https://music.youtube.com/watch?v=5AGEO3dmaiQ&si=_Uaky6XuAmVY-iX1" target="_blank">
-            <img class="single-jacket" src="Discography/置いた音.webp" alt="置いた音 Snow flakes スノーフレークス スノフレ 山吹ことり 楽曲" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div class="single-info">
-            <p class="single-title">置いた音</p>
-            <p class="single-status" data-i18n="single-status">配信中</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-              <a href="https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c" target="_blank"
-                 style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);">Spotify →</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="single-card" style="box-shadow:0 0 12px rgba(249,168,212,0.28),0 0 28px rgba(249,168,212,0.1);border-color:rgba(249,168,212,0.2);transition:transform 0.2s,box-shadow 0.3s,border-color 0.2s;" onmouseover="this.style.boxShadow='0 0 18px rgba(249,168,212,0.45),0 0 40px rgba(249,168,212,0.18)';this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 0 12px rgba(249,168,212,0.28),0 0 28px rgba(249,168,212,0.1)';this.style.transform=''">
-          <a href="./sweets/" style="display:block;">
-            <img src="music/cover_sweets_brass.webp" alt="SWEETs Brass Band Ver. Snow flakes スノーフレークス 山吹ことり" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;"
-          </a>
-          <div class="single-info">
-            <p class="single-title">SWEETs – Brass Band Ver.</p>
-            <p class="single-status" style="color:#f9a8d4;letter-spacing:2px;font-size:11px;">SWEETs限定</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-              <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);">SWEETs →</a>
-            </div>
-          </div>
+        <!-- Thumbnail strip -->
+        <div id="sp-strip" style="border-top:1px solid var(--border);padding:14px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;">
         </div>
 
       </div>
+
+      <script>
+      (function() {
+        var SF_SINGLES = [
+          {
+            img: 'Discography/Round Bounce.webp',
+            title: 'Round Bounce',
+            status: '配信中',
+            links: [
+              { text: 'YouTube Music →', url: 'https://music.youtube.com/watch?v=kzicrM_-ohI&si=EryNBCyu5GzFW1MQ', color: '#f87171', b: 'rgba(248,113,113,0.4)', bg: 'rgba(248,113,113,0.07)' },
+              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
+            ]
+          },
+          {
+            img: 'Discography/SWEETs.webp',
+            title: 'SWEETs',
+            status: '配信中',
+            links: [
+              { text: 'YouTube Music →', url: 'https://music.youtube.com/watch?v=6PPE44vl6ro&si=FmJfh9gCP7ElRJiL', color: '#f87171', b: 'rgba(248,113,113,0.4)', bg: 'rgba(248,113,113,0.07)' },
+              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
+            ]
+          },
+          {
+            img: 'Discography/置いた音.webp',
+            title: '置いた音',
+            status: '配信中',
+            links: [
+              { text: 'YouTube Music →', url: 'https://music.youtube.com/watch?v=5AGEO3dmaiQ&si=_Uaky6XuAmVY-iX1', color: '#f87171', b: 'rgba(248,113,113,0.4)', bg: 'rgba(248,113,113,0.07)' },
+              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
+            ]
+          },
+          {
+            img: 'music/cover_sweets_brass.webp',
+            title: 'SWEETs – Brass Band Ver.',
+            status: 'SWEETs限定',
+            statusColor: '#f9a8d4',
+            links: [
+              { text: 'SWEETs →', url: './sweets/', color: '#f9a8d4', b: 'rgba(249,168,212,0.4)', bg: 'rgba(249,168,212,0.07)' }
+            ]
+          }
+        ];
+
+        var current = 0;
+        var jacket  = document.getElementById('sp-jacket');
+        var titleEl = document.getElementById('sp-title');
+        var statusEl = document.getElementById('sp-status');
+        var linksEl = document.getElementById('sp-links');
+        var strip   = document.getElementById('sp-strip');
+
+        function selectSingle(idx) {
+          current = idx;
+          var s = SF_SINGLES[idx];
+
+          jacket.style.opacity = '0';
+          setTimeout(function() {
+            jacket.src = s.img;
+            jacket.style.opacity = '1';
+          }, 160);
+
+          titleEl.textContent  = s.title;
+          statusEl.textContent = s.status;
+          statusEl.style.color = s.statusColor || 'var(--muted)';
+
+          linksEl.innerHTML = s.links.map(function(l) {
+            return '<a href="' + l.url + '" target="_blank" style="font-size:12px;color:' + l.color + ';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid ' + l.b + ';background:' + l.bg + ';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">' + l.text + '</a>';
+          }).join('');
+
+          strip.querySelectorAll('.sp-thumb').forEach(function(el, i) {
+            el.style.opacity      = i === idx ? '1'                       : '0.4';
+            el.style.borderColor  = i === idx ? 'rgba(255,255,255,0.55)'  : 'transparent';
+          });
+        }
+
+        // Build strip
+        SF_SINGLES.forEach(function(s, i) {
+          var btn = document.createElement('button');
+          btn.className = 'sp-thumb';
+          btn.style.cssText = 'width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s;opacity:0.4;';
+          btn.innerHTML = '<img src="' + s.img + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
+          btn.addEventListener('click', function() { selectSingle(i); });
+          strip.appendChild(btn);
+        });
+
+        selectSingle(0);
+      })();
+      </script>
+
     </div>
 
     <!-- EP -->
