@@ -1488,5 +1488,38 @@ function sfShare() {
     btn.textContent = (open ? '▲' : '▼') + ' アイテム確率・入手方法';
   }
 </script>
+<script>
+  /* ── GA: ガチャ実行・外部リンク計測 ── */
+  (function() {
+    function sfGa(name, params) {
+      if (typeof gtag === 'function') gtag('event', name, params);
+    }
+    // ガチャ実行をフック
+    var _origPull = window.doPull;
+    window.doPull = function() { sfGa('gacha_pull', { type: 'single' }); _origPull.apply(this, arguments); };
+    var _origTen = window.doTenPull;
+    window.doTenPull = function() { sfGa('gacha_pull', { type: 'ten' }); _origTen.apply(this, arguments); };
+    // 外部リンク計測
+    var DEST_MAP = [
+      { pattern: /syosetu\.com/, label: 'syosetu',   event: 'click_story'    },
+      { pattern: /instagram\.com/, label: 'instagram', event: 'click_instagram' },
+      { pattern: /open\.spotify\.com/, label: 'spotify', event: 'click_music' },
+      { pattern: /x\.com|twitter\.com/, label: 'x',   event: 'click_sns'     },
+    ];
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (a.target === '_blank' || /^https?:\/\//.test(href)) {
+        for (var i = 0; i < DEST_MAP.length; i++) {
+          if (DEST_MAP[i].pattern.test(href)) {
+            sfGa(DEST_MAP[i].event, { destination: DEST_MAP[i].label }); return;
+          }
+        }
+        sfGa('click_external', { url: href.slice(0, 100) });
+      }
+    });
+  })();
+</script>
 </body>
 </html>

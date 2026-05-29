@@ -3079,6 +3079,57 @@ document.addEventListener('visibilitychange', function() {
   document.getElementById('new-release-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeNewRelease();
   });
+
+  /* ── GA: 外部リンク・主要ページ遷移の計測 ── */
+  (function() {
+    function sfGa(name, params) {
+      if (typeof gtag === 'function') gtag('event', name, params);
+    }
+    // 外部リンク分類
+    var DEST_MAP = [
+      { pattern: /syosetu\.com/, label: 'syosetu',   event: 'click_story'    },
+      { pattern: /instagram\.com/, label: 'instagram', event: 'click_instagram' },
+      { pattern: /open\.spotify\.com/, label: 'spotify',   event: 'click_music'    },
+      { pattern: /suno\.com/,      label: 'suno',      event: 'click_music'    },
+      { pattern: /music\.amazon/,  label: 'amazon_music', event: 'click_music' },
+      { pattern: /x\.com|twitter\.com/, label: 'x',  event: 'click_sns'      },
+      { pattern: /youtube\.com/,   label: 'youtube',   event: 'click_sns'      },
+    ];
+    // 内部ページ分類
+    var PAGE_MAP = [
+      { pattern: /\/sweets\//,    event: 'nav_sweets'    },
+      { pattern: /\/gacha\//,     event: 'nav_gacha'     },
+      { pattern: /\/room\/undertone\//,  event: 'nav_undertone' },
+      { pattern: /\/room\/kouta\//, event: 'nav_room'    },
+      { pattern: /\/room\/hinata\//, event: 'nav_room'   },
+      { pattern: /\/room\/hayate\//, event: 'nav_room'   },
+      { pattern: /\/kotori\.html/, event: 'nav_kotori'   },
+    ];
+
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      // 外部リンク
+      if (a.target === '_blank' || /^https?:\/\//.test(href)) {
+        for (var i = 0; i < DEST_MAP.length; i++) {
+          if (DEST_MAP[i].pattern.test(href)) {
+            sfGa(DEST_MAP[i].event, { destination: DEST_MAP[i].label, url: href.slice(0, 100) });
+            return;
+          }
+        }
+        sfGa('click_external', { url: href.slice(0, 100) });
+        return;
+      }
+      // 内部ページ遷移
+      for (var j = 0; j < PAGE_MAP.length; j++) {
+        if (PAGE_MAP[j].pattern.test(href)) {
+          sfGa(PAGE_MAP[j].event, { from: 'top' });
+          return;
+        }
+      }
+    });
+  })();
 </script>
 </body>
 </html>

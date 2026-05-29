@@ -5163,5 +5163,43 @@ function submitUtPw() {
     <p id="nagi-beer-tap" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#2d3748;text-align:right;margin-top:14px;">tap</p>
   </div>
 </div>
+<script>
+  /* ── GA: 占い実行・外部リンク計測 ── */
+  (function() {
+    function sfGa(name, params) {
+      if (typeof gtag === 'function') gtag('event', name, params);
+    }
+    // 占い実行フック
+    var _origOpenTarot = window.openTarot;
+    window.openTarot = function(mode) {
+      sfGa('tarot_open', { mode: mode || 'oracle' });
+      if (_origOpenTarot) _origOpenTarot.apply(this, arguments);
+    };
+    var _origFlip = window.flipCard;
+    window.flipCard = function() {
+      sfGa('tarot_flip'); if (_origFlip) _origFlip.apply(this, arguments);
+    };
+    // 外部リンク計測
+    var DEST_MAP = [
+      { pattern: /syosetu\.com/, label: 'syosetu',   event: 'click_story'    },
+      { pattern: /instagram\.com/, label: 'instagram', event: 'click_instagram' },
+      { pattern: /open\.spotify\.com/, label: 'spotify', event: 'click_music' },
+      { pattern: /x\.com|twitter\.com/, label: 'x',   event: 'click_sns'     },
+    ];
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (a.target === '_blank' || /^https?:\/\//.test(href)) {
+        for (var i = 0; i < DEST_MAP.length; i++) {
+          if (DEST_MAP[i].pattern.test(href)) {
+            sfGa(DEST_MAP[i].event, { destination: DEST_MAP[i].label }); return;
+          }
+        }
+        sfGa('click_external', { url: href.slice(0, 100) });
+      }
+    });
+  })();
+</script>
 </body>
 </html>
