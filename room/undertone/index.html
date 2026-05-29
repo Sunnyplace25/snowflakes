@@ -3333,12 +3333,13 @@ function submitUtPw() {
     var g = totalVisits === 1 ? greetings[0] : greetings[1 + ((totalVisits - 2) % (greetings.length - 1))];
     document.getElementById('shop-greeting').innerHTML = g;
 
-    // ch3解放時のみタブ表示・oracle表示（1章はinteriorのみ）
+    // タブ表示：ch3解放時のみ両タブ表示、占い解放済みならoracleのみ表示
+    var fortuneUnlocked = !!localStorage.getItem('sf_ut_fortune_unlock_shown');
     var shopNav = document.getElementById('shop-nav');
     if (shopNav) shopNav.style.display = ch3Unlocked ? 'flex' : 'none';
     updateEquipBtn();
-    // ch3解放後のみoracle panel を先に表示、1章以前はinteriorを表示
-    switchShopTab(ch3Unlocked ? 'oracle' : 'interior');
+    // ch3解放後→oracle先表示 / 占い解放済み→oracle / それ以外→interior
+    switchShopTab(ch3Unlocked ? 'oracle' : (fortuneUnlocked ? 'oracle' : 'interior'));
 
     // Fortune unlock popup（初回入店時のみ）
     if (totalVisits === 1 && !localStorage.getItem('sf_ut_fortune_unlock_shown')) {
@@ -3766,10 +3767,12 @@ function submitUtPw() {
     setTimeout(function() { closeSnowDialog(); }, 2000);
   };
 
-  window.openTarot = function(mode) {
+  window.openTarot = function(mode, free) {
     var cost = (mode === 'yesno') ? 10 : 5;
-    if (SfSnow.getBalance() < cost) { showSnowInsufficient(); return; }
-    SfSnow.spend(cost);
+    if (!free) {
+      if (SfSnow.getBalance() < cost) { showSnowInsufficient(); return; }
+      SfSnow.spend(cost);
+    }
     tarotMode = mode || 'oracle';
     closeSKPopup();
     var skText = tarotMode === 'yesno' ? '聞いてみるか' : 'そろそろ選ぶか';
@@ -4192,6 +4195,7 @@ function submitUtPw() {
 
   window.closeFortuneUnlockPopup = function() {
     document.getElementById('fortune-unlock-popup').style.display = 'none';
+    setTimeout(function() { openTarot('oracle', true); }, 300);
   };
 
   var _currentRawstoneType = null;
