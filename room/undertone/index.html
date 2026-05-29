@@ -3333,10 +3333,18 @@ function submitUtPw() {
     var g = totalVisits === 1 ? greetings[0] : greetings[1 + ((totalVisits - 2) % (greetings.length - 1))];
     document.getElementById('shop-greeting').innerHTML = g;
 
-    // タブ表示：ch3解放時のみ両タブ表示、占い解放済みならoracleのみ表示
+    // 初回訪問日時を記録（既存ユーザーは24h経過済みとして扱う）
+    var _firstVisitAt = parseInt(localStorage.getItem('sf_ut_first_visit_at') || '0', 10);
+    if (!_firstVisitAt) {
+      _firstVisitAt = totalVisits === 1 ? Date.now() : Date.now() - 86400001;
+      localStorage.setItem('sf_ut_first_visit_at', _firstVisitAt.toString());
+    }
+    var _interiorUnlocked = ch3Unlocked || (Date.now() - _firstVisitAt >= 86400000);
+
+    // タブ表示：初回訪問から24h後 or ch3解放後に店内タブを表示
     var fortuneUnlocked = !!localStorage.getItem('sf_ut_fortune_unlock_shown');
     var shopNav = document.getElementById('shop-nav');
-    if (shopNav) shopNav.style.display = ch3Unlocked ? 'flex' : 'none';
+    if (shopNav) shopNav.style.display = _interiorUnlocked ? 'flex' : 'none';
     updateEquipBtn();
     // ch3解放後→oracle先表示 / 占い解放済み→oracle / それ以外→interior
     switchShopTab('oracle');
@@ -4352,7 +4360,7 @@ function submitUtPw() {
     'JUDGEMENT':        'cards/20_judgement.webp',
     'WORLD':            'cards/21_world.webp',
     'THE PLACED SOUND': 'cards/ori_placed_sound.webp',
-    'WHITE TAPE':       'cards/ori_white_tape.webp',
+    'WHITE TAPE':       'card_back_a.webp',
   };
   function getCardImg(card) { return CARD_IMGS[card.arch] || 'card_back_b.webp'; }
 
