@@ -1223,8 +1223,10 @@ function sfShare() {
           var border = idx < arr.length - 1 ? 'border-bottom:1px solid rgba(240,171,252,0.08);' : '';
           return '<a href="' + ep.url + '" target="_blank" class="qf-list-link" style="display:flex;gap:12px;align-items:center;padding:9px 0;text-decoration:none;transition:opacity 0.2s;' + border + '" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'
             + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#6b4e7d;flex-shrink:0;min-width:38px;">' + ep.ep + '</span>'
-            + '<span style="font-size:13px;color:#cbd5e1;flex:1;line-height:1.6;">' + ep.title + '</span>'
-            + (ep.note ? '<span style="font-size:10px;color:#64748b;flex-shrink:0;white-space:nowrap;">' + ep.note + '</span>' : '')
+            + '<span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">'
+            + '<span style="font-size:13px;color:#cbd5e1;line-height:1.6;">' + ep.title + '</span>'
+            + (ep.note ? '<span style="font-size:10px;color:#64748b;">' + ep.note + '</span>' : '')
+            + '</span>'
             + '</a>';
         }).join('');
       }
