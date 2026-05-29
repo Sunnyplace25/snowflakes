@@ -2737,21 +2737,14 @@ document.addEventListener('visibilitychange', function() {
     });
   }
 
-  // 3秒後にプレイヤーフェードイン＆自動再生を試みる
+  // 3秒後にプレイヤーフェードイン
   setTimeout(function() {
     player.style.opacity = '1';
     player.style.transform = 'translateY(0)';
     player.style.pointerEvents = 'auto';
     var dl = document.getElementById('sf-disco-link');
     if (dl) { dl.style.opacity = '1'; dl.style.pointerEvents = 'auto'; }
-    _tryAutoPlay();
   }, 3000);
-
-  // 自動再生できなかった場合、初回インタラクションで再生
-  document.addEventListener('click', function onFirstClick() {
-    _tryAutoPlay();
-    document.removeEventListener('click', onFirstClick);
-  }, { once: true });
 
   audio.addEventListener('timeupdate', function() {
     if (!audio.duration) return;
