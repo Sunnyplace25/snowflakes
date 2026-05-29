@@ -5871,11 +5871,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<div class="exch-card" style="flex:1;min-width:0;text-align:center;' + (ready ? '' : 'opacity:0.7;') + '">';
         html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
         html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
-        html += '<p class="exch-cost" style="margin-bottom:' + (ready ? '12' : '4') + 'px;">× ' + item.cost.amount + '</p>';
-        if (!ready) html += '<p style="font-size:10px;color:#94a3b8;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
-        html += ready
-          ? '<button class="exch-btn" style="border-color:' + item.color + '55;color:' + item.color + ';" onclick="doUnlock(\'' + item.id + '\')">解放する</button>'
-          : '<button class="exch-btn" disabled>キャンディが足りません</button>';
+        html += '<p class="exch-cost" style="margin-bottom:12px;">× ' + item.cost.amount + '</p>';
+        html += '<button class="exch-btn" onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
         html += '</div>';
       });
       html += '</div>';
@@ -5893,9 +5890,25 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (btn) btn.style.transform = isOpen ? 'rotate(180deg)' : '';
   }
 
+  function showExchToast(msg) {
+    var t = document.getElementById('daily-limit-toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); t.textContent = '今日は入手済みです'; }, 2200);
+  }
+
   function doUnlock(id) {
     var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
     if (!item) return;
+    // キャンディ不足チェック
+    if (item.type === 'room') {
+      var have = (SfSnow.getCandies()[item.cost.candy] || 0);
+      if (have < item.cost.amount) {
+        showExchToast('キャンディが足りません');
+        return;
+      }
+    }
     showConfirm('交換しますか？', function() {
       var ok = false;
       if (item.type === 'note') {
@@ -5903,7 +5916,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       } else {
         ok = SfSnow.spendCandy(item.cost.candy, item.cost.amount);
       }
-      if (!ok) { alert('アイテムが足りません'); return; }
+      if (!ok) { showExchToast('アイテムが足りません'); return; }
       SfSnow.unlockItem(id);
       renderRooms();
       renderExchange();
