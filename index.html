@@ -1338,31 +1338,64 @@ function sfShare() {
       </script>
     </div>
 
-    <!-- SWEETs Limited -->
+    <!-- SWEETs Limited carousel -->
     <div class="disco-group">
       <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <!-- ★ 限定追加はここに追記 -->
-
-        <!-- Brass Band Ver. -->
-        <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;">
-          <a href="./sweets/" style="display:block;">
-            <img src="music/cover_sweets_brass.webp" alt="SWEETs Brass Band Ver." style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div style="padding:14px 16px 18px;">
-            <p style="font-size:10px;letter-spacing:3px;color:#f9a8d4;margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SPECIAL</p>
-            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:4px;">SWEETs</p>
-            <p style="font-size:11px;color:#f9a8d4;margin-bottom:14px;">Brass Band Ver.</p>
-            <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">SWEETs →</a>
+      <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:18px;overflow:hidden;box-shadow:0 0 18px rgba(249,168,212,0.06);">
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:160px;flex-shrink:0;overflow:hidden;">
+            <a id="sl-jacket-link" href="./sweets/" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="sl-jacket" src="music/cover_sweets_brass.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            </a>
+          </div>
+          <div style="padding:24px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+            <p id="sl-label" style="font-size:10px;letter-spacing:4px;color:#f9a8d4;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SPECIAL</p>
+            <p id="sl-title" style="font-size:20px;font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">SWEETs</p>
+            <p id="sl-sub" style="font-size:12px;color:#f9a8d4;margin-bottom:16px;">Brass Band Ver.</p>
+            <div id="sl-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
           </div>
         </div>
-
-        <!-- 2枚目（今後追加） -->
-        <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:180px;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:rgba(249,168,212,0.3);">COMING SOON</p>
-        </div>
-
+        <div id="sl-strip" style="border-top:1px solid rgba(249,168,212,0.12);padding:14px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;"></div>
       </div>
+      <script>
+      (function() {
+        // ★ 限定追加はここに追記
+        var SF_LIMITED = [
+          { img:'music/cover_sweets_brass.webp', title:'SWEETs', sub:'Brass Band Ver.',
+            url:'./sweets/',
+            links:[{ text:'SWEETs →', url:'./sweets/', color:'#f9a8d4', b:'rgba(249,168,212,0.4)', bg:'rgba(249,168,212,0.07)' }] },
+          { img:'Discography/SWEETs.webp', title:'COMING SOON', sub:'',
+            url:'./sweets/',
+            links:[] }
+        ];
+        var jacketLink=document.getElementById('sl-jacket-link'), jacket=document.getElementById('sl-jacket'),
+            titleEl=document.getElementById('sl-title'), subEl=document.getElementById('sl-sub'),
+            linksEl=document.getElementById('sl-links'), strip=document.getElementById('sl-strip');
+        function selectLimited(idx) {
+          var s=SF_LIMITED[idx];
+          jacket.style.opacity='0';
+          setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
+          jacketLink.href=s.url||'#';
+          titleEl.textContent=s.title; subEl.textContent=s.sub||'';
+          linksEl.innerHTML=s.links.map(function(l){
+            return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
+          }).join('');
+          strip.querySelectorAll('.sl-thumb').forEach(function(el,i){
+            el.style.opacity=i===idx?'1':'0.4';
+            el.style.borderColor=i===idx?'rgba(249,168,212,0.6)':'transparent';
+          });
+        }
+        SF_LIMITED.forEach(function(s,i){
+          var btn=document.createElement('button');
+          btn.className='sl-thumb';
+          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s;opacity:0.4;';
+          btn.innerHTML='<img src="'+s.img+'" style="width:100%;height:100%;object-fit:cover;display:block;">';
+          btn.addEventListener('click',function(){selectLimited(i);});
+          strip.appendChild(btn);
+        });
+        selectLimited(0);
+      })();
+      </script>
     </div>
 
     <!-- EP -->
