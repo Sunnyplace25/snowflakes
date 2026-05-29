@@ -601,14 +601,15 @@
     }
     .exch-cost { font-size:11px; color:#cbd5e1; letter-spacing:1px; margin-bottom:14px; }
     .exch-btn {
-      width:100%; padding:6px 8px;
-      background:rgba(253,230,138,0.08);
-      border:1px solid rgba(253,230,138,0.3);
-      border-radius:50px; color:#fde68a;
+      background:none; padding:7px 14px;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:100px; color:#64748b;
       font-family:'Cormorant Garamond',serif;
-      font-size:11px; letter-spacing:2px; cursor:pointer;
-      transition:background 0.25s;
+      font-size:10px; letter-spacing:3px; cursor:pointer;
+      transition:all 0.2s;
     }
+    .exch-btn:not(:disabled) { border-color:rgba(255,255,255,0.12); }
+    .exch-btn:hover:not(:disabled) { border-color:rgba(255,255,255,0.3); color:#cbd5e1; background:none; }
     .exch-btn:hover:not(:disabled) { background:rgba(253,230,138,0.16); }
     .exch-btn:disabled { opacity:0.35; cursor:default; color:#94a3b8; border-color:rgba(255,255,255,0.1); }
     .exch-done { font-size:11px; color:#6ee7b7; letter-spacing:2px; text-align:center; padding:6px 0; }
