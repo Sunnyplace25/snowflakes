@@ -5842,8 +5842,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       .every(function(i) { return SfSnow.isUnlocked(i.id); });
     if (allRoomsUnlocked) {
       wrap.innerHTML = '';
-      var sec = wrap.parentElement;
-      if (sec) sec.style.display = 'none';
+      wrap.style.display = 'none';
+      var req = document.getElementById('exch-req');
+      if (req) req.style.display = 'none';
       return;
     }
 
