@@ -1825,9 +1825,12 @@ function sfShare() {
     document.head.appendChild(tag);
   }
 
+  var SF_HERO_VIDEOS = ['8qiCo9FGmWI', 'HJ08rrwPdKQ'];
+  var sfHeroVideoId = SF_HERO_VIDEOS[Math.floor(Math.random() * SF_HERO_VIDEOS.length)];
+
   function onYouTubeIframeAPIReady() {
     new YT.Player('yt-player', {
-      videoId: '8qiCo9FGmWI',
+      videoId: sfHeroVideoId,
       playerVars: {
         autoplay: 1, mute: 1, controls: 0,
         disablekb: 1, fs: 0, modestbranding: 1,
