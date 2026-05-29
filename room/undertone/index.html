@@ -3844,6 +3844,17 @@ function submitUtPw() {
       showResultPanel('tarot-result-panel', pendingDraw, tarotMode);
       document.getElementById('tarot-close-btn').style.display = 'block';
       document.getElementById('tarot-top-link').style.display = 'block';
+      // カードクリックで拡大
+      var tc = document.getElementById('tarot-card');
+      tc.onclick = function() {
+        openCardZoom(
+          getCardImg(pendingDraw.card),
+          pendingDraw.card.arch,
+          '',
+          CARD_READINGS[pendingDraw.card.arch] || '',
+          !pendingDraw.up
+        );
+      };
     }, 950);
   };
 
@@ -4648,6 +4659,9 @@ function submitUtPw() {
     setTimeout(function() { ov.classList.remove('ready'); }, 500);
     document.getElementById('tarot-close-btn').style.display = 'none';
     document.getElementById('tarot-top-link').style.display = 'none';
+    // クリックをflipCardに戻す
+    var tc = document.getElementById('tarot-card');
+    if (tc) tc.onclick = function() { flipCard(); };
   };
 
   /* ── Equipment ── */
