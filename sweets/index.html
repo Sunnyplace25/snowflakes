@@ -877,6 +877,28 @@
           <div class="door-label">コウタの部屋</div>
         </div>
       </div>
+
+      <!-- 推しキャラ設定 -->
+      <div id="oshi-section" style="max-width:480px;margin:16px auto 0;padding-bottom:28px;display:none;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-top:28px;margin-bottom:12px;">心に残るひと <span style="font-size:8px;letter-spacing:2px;color:#475569;border:1px solid rgba(148,163,184,0.2);border-radius:100px;padding:2px 8px;margin-left:6px;">Coming Soon</span></p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button onclick="setOshi('hayate')" id="oshi-btn-hayate" style="flex:1;max-width:120px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HAYATE</button>
+          <button onclick="setOshi('hinata')" id="oshi-btn-hinata" style="flex:1;max-width:120px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HINATA</button>
+          <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exchange section -->
+    <div class="section">
+      <div class="section-label">exchange</div>
+      <p class="section-req" id="exch-req">
+        <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
+        <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
+        <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
+      </p>
+      <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
+
       <!-- Interview section -->
       <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
         <p class="itv-section-label">SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
@@ -923,27 +945,6 @@
 
         </div>
       </div><!-- /interview-section -->
-
-      <!-- 推しキャラ設定 -->
-      <div id="oshi-section" style="max-width:480px;margin:16px auto 0;padding-bottom:28px;display:none;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;text-align:center;margin-top:28px;margin-bottom:12px;">心に残るひと <span style="font-size:8px;letter-spacing:2px;color:#475569;border:1px solid rgba(148,163,184,0.2);border-radius:100px;padding:2px 8px;margin-left:6px;">Coming Soon</span></p>
-        <div style="display:flex;gap:8px;justify-content:center;">
-          <button onclick="setOshi('hayate')" id="oshi-btn-hayate" style="flex:1;max-width:120px;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HAYATE</button>
-          <button onclick="setOshi('hinata')" id="oshi-btn-hinata" style="flex:1;max-width:120px;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">HINATA</button>
-          <button onclick="setOshi('kouta')" id="oshi-btn-kouta" style="flex:1;max-width:120px;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:50px;padding:10px 8px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;">KOUTA</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Exchange section -->
-    <div class="section">
-      <div class="section-label">exchange</div>
-      <p class="section-req" id="exch-req">
-        <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
-        <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
-        <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
-      </p>
-      <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
     </div>
 
     <!-- Under tone section -->
