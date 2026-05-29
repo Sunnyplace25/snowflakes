@@ -4886,12 +4886,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!el) return;
       if (el.dataset.sfItemTrigger === itemId) return; // 二重登録防止
       el.dataset.sfItemTrigger = itemId;
+      var scrollKey = 'sf_note_scroll_' + itemId;
       el.addEventListener('scroll', function handler() {
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - 28) {
           el.removeEventListener('scroll', handler);
           delete el.dataset.sfItemTrigger;
-          var alreadyHad = SfSnow.isUnlocked(itemId);
-          if (!alreadyHad) {
+          var alreadyScrolled = !!localStorage.getItem(scrollKey);
+          if (!alreadyScrolled) {
+            localStorage.setItem(scrollKey, '1');
             SfSnow.unlockItem(itemId);
             if (typeof renderItemRows === 'function') renderItemRows();
             if (typeof renderUndertoneStones === 'function') renderUndertoneStones();

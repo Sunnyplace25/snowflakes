@@ -248,8 +248,10 @@
     }
     .music-card:hover { transform: translateY(-3px); }
     .music-platform { font-size: 11px; letter-spacing: 4px; color: var(--muted); font-family: 'Cormorant Garamond', serif; }
-    .music-name { font-size: 20px; font-weight: 300; color: white; font-family: 'Noto Serif JP', serif; }
-    .music-desc { font-size: 14px; color: var(--muted); line-height: 1.8; flex: 1; }
+    .music-name { font-size: 20px; font-weight: 300; color: white; font-family: 'Noto Serif JP', serif; word-break: auto-phrase; overflow-wrap: anywhere; }
+    .music-desc { font-size: 14px; color: var(--muted); line-height: 1.8; flex: 1; word-break: auto-phrase; overflow-wrap: anywhere; }
+    .sp-mb-br { display: none; }
+    @media (max-width: 600px) { .sp-mb-br { display: inline; } }
     .btn-green  { background: rgba(80,160,120,0.12); border: 1.5px solid #5aab85; color: #5aab85; }
     .btn-purple { background: rgba(196,181,253,0.12); border: 1.5px solid #c4b5fd; color: #c4b5fd; }
 
@@ -978,6 +980,7 @@ function sfShare() {
 </section>
 
 <!-- Volumes -->
+<style>.vol-desc { word-break: auto-phrase; overflow-wrap: anywhere; }</style>
 <section style="padding:80px 24px 100px;position:relative;z-index:1;">
   <div style="max-width:720px;margin:0 auto;">
     <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">BOOKS</p>
@@ -991,9 +994,9 @@ function sfShare() {
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
         <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol1-title">1: 戻る場所</p>
         <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol1-meta">小説家になろう ep.1–34（高校編・大学編）収録　描き下ろし2編「置いた音」「1枚目の色紙」</p>
-        <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc">成功も、<wbr>約束も、<wbr>確かな未来もない。<br>それでも、<wbr>音を出すと分かってしまう。<br>この三人でなければ、<wbr>鳴らないものがあることを。</p>
+        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc">成功も、約束も、確かな未来もない。それでも、音を出すと分かってしまう。この三人でなければ、鳴らないものがあることを。</p>
         <div id="book-acc-body-1" style="display:none;">
-          <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc-more">気づけば<br>同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
+          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc-more">気づけば同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
         </div>
         <button id="book-acc-btn-1" onclick="toggleBookAcc(1)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/03cNGgk3" target="_blank" style="display:inline-block;font-size:14px;color:var(--hinata);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
@@ -1007,9 +1010,9 @@ function sfShare() {
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
         <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol2-title">2: リトルスノー</p>
         <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol2-meta">小説家になろう ep.35–68収録　描き下ろし童話「リトルスノー」</p>
-        <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc">小さくて、<wbr>溶けそうで、<br>でも消えなかった。</p>
+        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc">小さくて、溶けそうで、でも消えなかった。</p>
         <div id="book-acc-body-2" style="display:none;">
-          <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc-more">形にならない音。<br>言葉にするには、<wbr>まだ早い感情。<br><br>三人で鳴らすことを選んだあと、<br>音は少しずつ外へ向かいはじめる。<br><br>確かさはない。<br>それでも、<wbr>手放さなかった。<br><br>触れすぎず、<wbr>壊さず、<br>距離を測りながら。<br><br>小さな音は、<wbr>静かに残り続ける。</p>
+          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc-more">形にならない音。言葉にするには、まだ早い感情。<br><br>三人で鳴らすことを選んだあと、音は少しずつ外へ向かいはじめる。<br><br>確かさはない。それでも、手放さなかった。<br><br>触れすぎず、壊さず、距離を測りながら。<br><br>小さな音は、静かに残り続ける。</p>
         </div>
         <button id="book-acc-btn-2" onclick="toggleBookAcc(2)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/0brELpId" target="_blank" style="display:inline-block;font-size:14px;color:#c4b5fd;text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(196,181,253,0.4);background:rgba(196,181,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
@@ -1023,9 +1026,9 @@ function sfShare() {
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
         <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol3-title">3: ショーケース/夏の月</p>
         <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol3-meta">小説家になろう ep.69–89収録　描き下ろし「名前のない歌」</p>
-        <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc">同じ時間を重ねていたはずの距離が、<br>ある夜を境に、<wbr>静かにずれていく。</p>
+        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc">同じ時間を重ねていたはずの距離が、ある夜を境に、静かにずれていく。</p>
         <div id="book-acc-body-3" style="display:none;">
-          <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc-more">声に引き寄せられ、<br>選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、<wbr>優しさと迷い。<br>それぞれの選択は、<wbr>言葉になる前にすれ違っていく。<br><br>音は、<wbr>答えをくれない。<br>ただ残り、<wbr>続いていく。<br><br>――音だけが、<wbr>置かれたまま。</p>
+          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc-more">声に引き寄せられ、選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、優しさと迷い。それぞれの選択は、言葉になる前にすれ違っていく。<br><br>音は、答えをくれない。ただ残り、続いていく。<br><br>――音だけが、置かれたまま。</p>
         </div>
         <button id="book-acc-btn-3" onclick="toggleBookAcc(3)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="display:inline-block;font-size:14px;color:var(--kouta);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
@@ -1039,9 +1042,9 @@ function sfShare() {
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
         <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol4-title">4: ポジション</p>
         <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol4-meta">小説家になろう ep.90–125収録　描き下ろし1編</p>
-        <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc">正しさは、<wbr>すでに揃っている。<br>選択肢も、<wbr>説明も、<wbr>十分だ。</p>
+        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc">正しさは、すでに揃っている。選択肢も、説明も、十分だ。</p>
         <div id="book-acc-body-4" style="display:none;">
-          <p style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc-more">前に出る音。<br>支える音。<br>残す音。<br><br>それぞれのポジションで、<br>三人は同じ流れに乗っている。<br><br>音は続く。<br>役割を引き受けたまま。</p>
+          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc-more">前に出る音。支える音。残す音。<br><br>それぞれのポジションで、三人は同じ流れに乗っている。<br><br>音は続く。役割を引き受けたまま。</p>
         </div>
         <button id="book-acc-btn-4" onclick="toggleBookAcc(4)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
@@ -1313,7 +1316,7 @@ function sfShare() {
           { img:'Discography/置いた音.webp', title:'置いた音', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c',
             links:[{ text:'ep.34 →', url:'https://ncode.syosetu.com/n9009lo/34', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
-          { img:'Discography/Rabbit.webp', title:'Rabbit / ハッピーエンドはいらない', status:'配信中', musicUrl:'https://music.amazon.co.jp/albums/B0H38962NT?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_tHAqqVikwsEHJl1c9GQHW6hme&trackAsin=B0H37Y5V42',
+          { img:'Discography/Rabbit.webp', title:'Rabbit /<br class="sp-mb-br">ハッピーエンドはいらない', status:'配信中', musicUrl:'https://music.amazon.co.jp/albums/B0H38962NT?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_tHAqqVikwsEHJl1c9GQHW6hme&trackAsin=B0H37Y5V42',
             links:[
               { text:'ep.75 ショーケース編 →', url:'https://ncode.syosetu.com/n9009lo/75', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },
               { text:'ep.154 うさぎ編 →', url:'https://ncode.syosetu.com/n9009lo/154', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }
@@ -1327,7 +1330,7 @@ function sfShare() {
           jacket.style.opacity='0';
           setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
           jacketLink.href=s.musicUrl||'#';
-          titleEl.textContent=s.title; statusEl.textContent=s.status;
+          titleEl.innerHTML=s.title; statusEl.textContent=s.status;
           statusEl.style.color=s.statusColor||'var(--muted)';
           linksEl.innerHTML=s.links.map(function(l){
             return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
