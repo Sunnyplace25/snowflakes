@@ -1301,7 +1301,9 @@ function sfShare() {
         <!-- Main: jacket + info -->
         <div style="display:flex;align-items:stretch;">
           <div style="width:160px;flex-shrink:0;overflow:hidden;">
-            <img id="sp-jacket" src="Discography/Round Bounce.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            <a id="sp-jacket-link" href="https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="sp-jacket" src="Discography/Round Bounce.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            </a>
           </div>
           <div style="padding:24px 24px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0;">
             <p id="sp-label" style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SINGLE</p>
@@ -1324,41 +1326,33 @@ function sfShare() {
             img: 'Discography/Round Bounce.webp',
             title: 'Round Bounce',
             status: '配信中',
+            musicUrl: 'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7',
             links: [
-
-              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
+              { text: '物語を読む →', url: 'https://ncode.syosetu.com/n9009lo/81', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
             ]
           },
           {
             img: 'Discography/SWEETs.webp',
             title: 'SWEETs',
             status: '配信中',
+            musicUrl: 'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931',
             links: [
-
-              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
+              { text: '物語を読む →', url: 'https://ncode.syosetu.com/n9009lo/79', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
             ]
           },
           {
             img: 'Discography/置いた音.webp',
             title: '置いた音',
             status: '配信中',
+            musicUrl: 'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c',
             links: [
-
-              { text: 'Spotify →', url: 'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
-            ]
-          },
-          {
-            img: 'music/cover_sweets_brass.webp',
-            title: 'SWEETs – Brass Band Ver.',
-            status: 'SWEETs限定',
-            statusColor: '#f9a8d4',
-            links: [
-              { text: 'SWEETs →', url: './sweets/', color: '#f9a8d4', b: 'rgba(249,168,212,0.4)', bg: 'rgba(249,168,212,0.07)' }
+              { text: '物語を読む →', url: 'https://ncode.syosetu.com/n9009lo/34', color: 'var(--hinata)', b: 'rgba(147,197,253,0.4)', bg: 'rgba(147,197,253,0.07)' }
             ]
           }
         ];
 
         var current = 0;
+        var jacketLink = document.getElementById('sp-jacket-link');
         var jacket  = document.getElementById('sp-jacket');
         var titleEl = document.getElementById('sp-title');
         var statusEl = document.getElementById('sp-status');
@@ -1374,6 +1368,8 @@ function sfShare() {
             jacket.src = s.img;
             jacket.style.opacity = '1';
           }, 160);
+
+          if (jacketLink) jacketLink.href = s.musicUrl || '#';
 
           titleEl.textContent  = s.title;
           statusEl.textContent = s.status;
@@ -1403,6 +1399,40 @@ function sfShare() {
       })();
       </script>
 
+    </div>
+
+    <!-- SWEETs Limited -->
+    <div class="disco-group">
+      <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+        <!-- Brass Band Ver. -->
+        <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;">
+          <a href="./sweets/" style="display:block;">
+            <img src="music/cover_sweets_brass.webp" alt="SWEETs Brass Band Ver." style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          </a>
+          <div style="padding:14px 16px 18px;">
+            <p style="font-size:10px;letter-spacing:3px;color:#f9a8d4;margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SPECIAL</p>
+            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:4px;">SWEETs</p>
+            <p style="font-size:11px;color:#f9a8d4;margin-bottom:14px;">Brass Band Ver.</p>
+            <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">SWEETs →</a>
+          </div>
+        </div>
+
+        <!-- SWEETs Room -->
+        <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;">
+          <a href="./sweets/" style="display:block;">
+            <img src="Discography/SWEETs.webp" alt="SWEETs" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          </a>
+          <div style="padding:14px 16px 18px;">
+            <p style="font-size:10px;letter-spacing:3px;color:#f9a8d4;margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SPECIAL</p>
+            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:4px;">SWEETs</p>
+            <p style="font-size:11px;color:#f9a8d4;margin-bottom:14px;">スペシャルルーム</p>
+            <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">入室する →</a>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- EP -->
