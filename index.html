@@ -427,6 +427,20 @@
   .qf-ticker-dots { display:flex; gap:4px; justify-content:center; margin-top:8px; }
   .qf-ticker-dot { width:4px; height:4px; border-radius:50%; background:rgba(240,171,252,0.2); transition:background 0.2s; }
   .qf-ticker-dot.active { background:rgba(240,171,252,0.7); }
+  .act-wrap { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+  .act-thumb { flex-shrink:0; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .act-thumb img { width:120px; aspect-ratio:2/3; object-fit:cover; border-radius:10px; display:block; transition:opacity 0.2s; }
+  .act-list { flex:1; min-width:0; border-radius:20px; padding:20px 28px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); }
+  .act-item { display:flex; gap:16px; padding:10px 0; text-decoration:none; transition:opacity 0.2s; }
+  .act-date { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:2px; color:#475569; flex-shrink:0; padding-top:2px; white-space:nowrap; }
+  .act-text { font-size:13px; color:#94a3b8; letter-spacing:1px; line-height:1.7; }
+  @media (max-width:600px) {
+    .act-wrap { flex-direction:column; align-items:stretch; }
+    .act-thumb { flex-direction:row; align-items:center; gap:14px; }
+    .act-thumb img { width:80px; }
+    .act-list { padding:16px 18px; }
+    .act-item { gap:10px; }
+  }
   </style>
   <script src="snow.js"></script>
   <!-- Google Analytics -->
@@ -586,39 +600,39 @@ function sfShare() {
 
   <!-- 活動報告リスト -->
   <div style="max-width:680px;margin:0 auto 80px;">
-    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+    <div class="act-wrap">
 
       <!-- リール サムネイル -->
-      <a href="https://www.instagram.com/reel/DY2LFY2Px0W/" target="_blank" style="flex-shrink:0;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:10px;" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
-        <img src="reel_latest.webp" alt="最新リール" style="width:120px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;display:block;transition:opacity 0.2s;">
+      <a href="https://www.instagram.com/reel/DY2LFY2Px0W/" target="_blank" class="act-thumb" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
+        <img src="reel_latest.webp" alt="最新リール">
         <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;white-space:nowrap;">Instagram →</span>
       </a>
 
       <!-- 活動報告 -->
-      <div style="flex:1;min-width:0;border-radius:20px;padding:20px 28px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+      <div class="act-list">
         <ul style="list-style:none;padding:0;margin:0;">
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3642123/" target="_blank" style="display:flex;gap:16px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.29</span>
-              <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">楽曲リリース情報　【Rabbit / ハッピーエンドはいらない】</span>
+            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3642123/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.05.29</span>
+              <span class="act-text">楽曲リリース情報　【Rabbit / ハッピーエンドはいらない】</span>
             </a>
           </li>
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3642026/" target="_blank" style="display:flex;gap:16px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.29</span>
-              <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">Instagram 書き下ろしエピソード公開 「夏の雪」</span>
+            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3642026/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.05.29</span>
+              <span class="act-text">Instagram 書き下ろしエピソード公開 「夏の雪」</span>
             </a>
           </li>
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3640762/" target="_blank" style="display:flex;gap:16px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.27</span>
-              <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">Instagram 楽曲リール公開 Snow flakes｜Signal</span>
+            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3640762/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.05.27</span>
+              <span class="act-text">Instagram 楽曲リール公開 Snow flakes｜Signal</span>
             </a>
           </li>
           <li>
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3638430/" target="_blank" style="display:flex;gap:16px;padding:10px 0;text-decoration:none;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;padding-top:2px;">2026.05.22</span>
-              <span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;">Instagram 書き下ろしエピソード追加 「セッション」</span>
+            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3638430/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.05.22</span>
+              <span class="act-text">Instagram 書き下ろしエピソード追加 「セッション」</span>
             </a>
           </li>
         </ul>
