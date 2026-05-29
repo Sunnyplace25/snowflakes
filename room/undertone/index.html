@@ -2768,6 +2768,12 @@ function submitUtPw() {
     // 2-5読了後・3章未公開時のみロックボタンを表示
     var between3 = document.getElementById('ch-between-3');
     if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
+    // マイグレーション：0-5既読済みだがタイマー未設定のユーザー
+    if (ch5Unlocked && !ch21Unlocked && _seenProseScenes.has(4) && !localStorage.getItem('sf_ut_ch1_unlock_at')) {
+      localStorage.setItem('sf_ut_ch1_unlock_at', String(Date.now()));
+      updateCh2Btn();
+      startCountdownTimers();
+    }
     // 48hタイマーチェック：1章自動解放
     var _ch1UnlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
     if (_ch1UnlockAt && !ch21Unlocked && Date.now() - _ch1UnlockAt >= 172800000) {
