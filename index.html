@@ -1158,92 +1158,73 @@ function sfShare() {
         <p style="font-size:22px;font-weight:400;color:white;font-family:'Cormorant Garamond',serif;letter-spacing:2px;margin:0;">Snow flakes ‐<span class="qf-br"> </span><span style="white-space:nowrap;">Quietly Falling ‐</span></p>
         <button id="qf-order-btn" onclick="toggleQFOrder()" style="background:none;border:1px solid rgba(240,171,252,0.25);border-radius:100px;padding:5px 14px;font-size:11px;letter-spacing:2px;color:#94a3b8;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all 0.2s;white-space:nowrap;" onmouseenter="this.style.borderColor='rgba(240,171,252,0.55)';this.style.color='#f0abfc'" onmouseleave="this.style.borderColor='rgba(240,171,252,0.25)';this.style.color='#94a3b8'">↕ 古い順</button>
       </div>
-      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:16px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。通称QF。</p>
-      <div class="qf-ticker">
-        <button class="qf-ticker-btn" onclick="qfMove(-1)">&#8249;</button>
-        <a id="qf-ticker-link" class="qf-ticker-link" href="#" target="_blank">
-          <span id="qf-ticker-ep" class="qf-ticker-ep"></span>
-          <span id="qf-ticker-title" class="qf-ticker-title"></span>
-          <span id="qf-ticker-note" class="qf-ticker-note"></span>
-        </a>
-        <button class="qf-ticker-btn" onclick="qfMove(1)">&#8250;</button>
+      <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:20px;" data-i18n="qf-desc">Instagramで連載中の書き下ろし短編シリーズ。<br>映像と音楽を添えて、日常のひとこまを静かに切り取る、小さな物語たち。<br>通称、QF。</p>
+
+      <!-- サムネ + エピソードリスト -->
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+
+        <!-- 最新サムネ + バッジ -->
+        <div style="flex-shrink:0;position:relative;">
+          <a id="qf-thumb-link" href="https://www.instagram.com/reel/DY2LFY2Px0W/" target="_blank" class="qf-list-link" style="display:block;text-decoration:none;" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
+            <img src="reel_latest.webp" alt="最新QFエピソード" style="width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;display:block;transition:opacity 0.2s;">
+          </a>
+          <span style="position:absolute;top:7px;left:50%;transform:translateX(-50%);background:rgba(240,171,252,0.15);border:1px solid rgba(240,171,252,0.45);color:#f0abfc;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;padding:2px 8px;border-radius:100px;white-space:nowrap;backdrop-filter:blur(4px);">最新話</span>
+        </div>
+
+        <!-- エピソードリスト -->
+        <div style="flex:1;min-width:0;">
+          <div id="qf-list" style="border-radius:12px;background:rgba(240,171,252,0.03);border:1px solid rgba(240,171,252,0.12);padding:4px 14px;max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(240,171,252,0.15) transparent;">
+          </div>
+        </div>
+
       </div>
-      <div id="qf-ticker-dots" class="qf-ticker-dots"></div>
     </div>
     <script>
     (function() {
       var QF_EPISODES = [
-        { ep: 'ep.01', title: '節分', url: 'https://www.instagram.com/p/DUiTkqXiZnX/', note: '' },
-        { ep: 'ep.02', title: 'バレンタイン / ヒナタ', url: 'https://www.instagram.com/p/DUuSVSgCZdL/', note: '' },
-        { ep: 'ep.03', title: 'バレンタイン / コウタ', url: 'https://www.instagram.com/p/DUuS_7CCZAr/', note: '' },
-        { ep: 'ep.04', title: 'バレンタイン / ハヤテ', url: 'https://www.instagram.com/p/DUuTdtFiUm-/', note: '' },
-        { ep: 'ep.05', title: 'SWEETs', url: 'https://www.instagram.com/p/DVNsuIeF2D-/', note: 'ショーケース編 ep.79 前段' },
-        { ep: 'ep.06', title: 'Spring Waltz', url: 'https://www.instagram.com/reel/DWjSdMCEZP-/', note: '' },
-        { ep: 'ep.07', title: 'いつかのホワイトデー', url: 'https://www.instagram.com/p/DV4BOSdkvo4/', note: '' },
-        { ep: 'ep.08', title: '置いた音', url: 'https://www.instagram.com/reel/DWoEzizDheI/', note: '大学編 ep.27.5' },
-        { ep: 'ep.09', title: 'うまかった', url: 'https://www.instagram.com/reel/DW8zbStCd1p/', note: '' },
-        { ep: 'ep.10', title: '帰り道', url: 'https://www.instagram.com/reel/DW_b7avjmf0/', note: 'ポジション編 ep.124.5' },
-        { ep: 'ep.11', title: 'プリン', url: 'https://www.instagram.com/reel/DXHBLwmCBVd/', note: '' },
-        { ep: 'ep.12', title: 'デート', url: 'https://www.instagram.com/reel/DXMhjm3mj5T/', note: 'カクテル編 ep.136.5' },
-        { ep: 'ep.13', title: '予備の傘', url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段' },
-        { ep: 'ep.14', title: '柏餅食ってから', url: 'https://www.instagram.com/reel/DYCuIrXJJoU/', note: '' },
-        { ep: 'ep.15', title: '母の日', url: 'https://www.instagram.com/p/DYKRPW7sfN6/', note: '' },
-        { ep: 'ep.16', title: '懐かしい写真', url: 'https://www.instagram.com/p/DYfVsFWHGmS/', note: '' },
-        { ep: 'ep.17', title: 'セッション', url: 'https://www.instagram.com/p/DYpMK0JvPg8/', note: '' },
-        { ep: 'ep.18', title: '夏の雪', url: 'https://www.instagram.com/reel/DY2LFY2Px0W/', note: '' }
+        { ep: 'ep.01', title: '節分',               url: 'https://www.instagram.com/p/DUiTkqXiZnX/',   note: '' },
+        { ep: 'ep.02', title: 'バレンタイン / ヒナタ', url: 'https://www.instagram.com/p/DUuSVSgCZdL/',   note: '' },
+        { ep: 'ep.03', title: 'バレンタイン / コウタ', url: 'https://www.instagram.com/p/DUuS_7CCZAr/',   note: '' },
+        { ep: 'ep.04', title: 'バレンタイン / ハヤテ', url: 'https://www.instagram.com/p/DUuTdtFiUm-/',   note: '' },
+        { ep: 'ep.05', title: 'SWEETs',              url: 'https://www.instagram.com/p/DVNsuIeF2D-/',    note: 'ショーケース編 ep.79 前段' },
+        { ep: 'ep.06', title: 'Spring Waltz',        url: 'https://www.instagram.com/reel/DWjSdMCEZP-/', note: '' },
+        { ep: 'ep.07', title: 'いつかのホワイトデー',  url: 'https://www.instagram.com/p/DV4BOSdkvo4/',   note: '' },
+        { ep: 'ep.08', title: '置いた音',             url: 'https://www.instagram.com/reel/DWoEzizDheI/', note: '大学編 ep.27.5' },
+        { ep: 'ep.09', title: 'うまかった',           url: 'https://www.instagram.com/reel/DW8zbStCd1p/', note: '' },
+        { ep: 'ep.10', title: '帰り道',               url: 'https://www.instagram.com/reel/DW_b7avjmf0/', note: 'ポジション編 ep.124.5' },
+        { ep: 'ep.11', title: 'プリン',               url: 'https://www.instagram.com/reel/DXHBLwmCBVd/', note: '' },
+        { ep: 'ep.12', title: 'デート',               url: 'https://www.instagram.com/reel/DXMhjm3mj5T/', note: 'カクテル編 ep.136.5' },
+        { ep: 'ep.13', title: '予備の傘',             url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段' },
+        { ep: 'ep.14', title: '柏餅食ってから',        url: 'https://www.instagram.com/reel/DYCuIrXJJoU/', note: '' },
+        { ep: 'ep.15', title: '母の日',               url: 'https://www.instagram.com/p/DYKRPW7sfN6/',   note: '' },
+        { ep: 'ep.16', title: '懐かしい写真',          url: 'https://www.instagram.com/p/DYfVsFWHGmS/',   note: '' },
+        { ep: 'ep.17', title: 'セッション',            url: 'https://www.instagram.com/p/DYpMK0JvPg8/',   note: '' },
+        { ep: 'ep.18', title: '夏の雪',               url: 'https://www.instagram.com/reel/DY2LFY2Px0W/', note: '' }
       ];
-      var qfNewest = true;
-      var qfIdx = 0;
-      var qfAutoTimer = null;
+      var qfNewest = false; // 古い順デフォルト
 
-      function qfList() { return qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice(); }
-
-      function renderQFTicker() {
-        var list = qfList();
-        var item = list[qfIdx];
-        document.getElementById('qf-ticker-ep').textContent    = item.ep;
-        document.getElementById('qf-ticker-title').textContent = item.title;
-        document.getElementById('qf-ticker-note').textContent  = item.note || '';
-        document.getElementById('qf-ticker-link').href = item.url;
-        // dots
-        var dots = document.getElementById('qf-ticker-dots');
-        dots.innerHTML = '';
-        list.forEach(function(_, i) {
-          var d = document.createElement('span');
-          d.className = 'qf-ticker-dot' + (i === qfIdx ? ' active' : '');
-          d.onclick = (function(ii) { return function() { qfIdx = ii; renderQFTicker(); resetQFAuto(); }; })(i);
-          d.style.cursor = 'pointer';
-          dots.appendChild(d);
-        });
+      function renderQFList() {
+        var list = document.getElementById('qf-list');
+        var btn  = document.getElementById('qf-order-btn');
+        if (!list) return;
+        var sorted = qfNewest ? QF_EPISODES.slice().reverse() : QF_EPISODES.slice();
+        if (btn) btn.textContent = qfNewest ? '↕ 新しい順' : '↕ 古い順';
+        list.innerHTML = sorted.map(function(ep, idx, arr) {
+          var border = idx < arr.length - 1 ? 'border-bottom:1px solid rgba(240,171,252,0.08);' : '';
+          return '<a href="' + ep.url + '" target="_blank" class="qf-list-link" style="display:flex;gap:12px;align-items:center;padding:9px 0;text-decoration:none;transition:opacity 0.2s;' + border + '" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'
+            + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#6b4e7d;flex-shrink:0;min-width:38px;">' + ep.ep + '</span>'
+            + '<span style="font-size:13px;color:#cbd5e1;flex:1;line-height:1.6;">' + ep.title + '</span>'
+            + (ep.note ? '<span style="font-size:10px;color:#64748b;flex-shrink:0;white-space:nowrap;">' + ep.note + '</span>' : '')
+            + '</a>';
+        }).join('');
       }
-
-      function resetQFAuto() {
-        if (qfAutoTimer) clearInterval(qfAutoTimer);
-        qfAutoTimer = setInterval(function() {
-          qfIdx = (qfIdx + 1) % qfList().length;
-          renderQFTicker();
-        }, 4000);
-      }
-
-      window.qfMove = function(dir) {
-        var len = qfList().length;
-        qfIdx = (qfIdx + dir + len) % len;
-        renderQFTicker();
-        resetQFAuto();
-      };
 
       window.toggleQFOrder = function() {
         qfNewest = !qfNewest;
-        qfIdx = 0;
-        var btn = document.getElementById('qf-order-btn');
-        if (btn) btn.textContent = qfNewest ? '↕ 古い順' : '↕ 新しい順';
-        renderQFTicker();
-        resetQFAuto();
+        renderQFList();
       };
 
-      function init() { renderQFTicker(); resetQFAuto(); }
-      document.addEventListener('DOMContentLoaded', init);
-      if (document.readyState !== 'loading') init();
+      renderQFList();
     })();
     </script>
 
@@ -1257,9 +1238,10 @@ function sfShare() {
       ];
 
       document.addEventListener('DOMContentLoaded', function() {
-        var link = document.getElementById('qf-ticker-link');
-        if (link) link.addEventListener('click', function() {
-          localStorage.setItem('sf_qf_insta_pending', '1');
+        document.addEventListener('click', function(e) {
+          if (e.target.closest('.qf-list-link')) {
+            localStorage.setItem('sf_qf_insta_pending', '1');
+          }
         });
       });
 
@@ -1269,7 +1251,6 @@ function sfShare() {
         localStorage.removeItem('sf_qf_insta_pending');
         setTimeout(function() {
           if (typeof SfSnow === 'undefined') return;
-          // 1日1回クールダウン
           if (SfSnow.isNDaysDone('qf_insta_visit', 1)) return;
           var item = QF_POOL[Math.floor(Math.random() * QF_POOL.length)];
           SfSnow.addMItemDirect(item.id, 1);
@@ -1282,80 +1263,6 @@ function sfShare() {
     </script>
 
   </div>
-</section>
-
-
-<!-- Quietly Falling -->
-<section id="qf" style="padding:80px 24px 100px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
-  <div style="max-width:680px;margin:0 auto;">
-
-    <span style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:var(--muted);margin-bottom:10px;">INSTAGRAM</span>
-    <h2 style="text-align:center;font-size:clamp(20px,3vw,28px);font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;">Snow flakes ‐Quietly Falling‐</h2>
-    <p style="text-align:center;font-size:11px;letter-spacing:4px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:32px;">書き下ろしシリーズ</p>
-
-    <!-- 説明文 -->
-    <p style="font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:28px;text-align:center;">Instagramで連載中の書き下ろし短編シリーズ。日常のひとこまを切り取った、小さくて静かな物語たち。通称QF。</p>
-
-    <!-- サムネ + エピソードリスト -->
-    <div style="display:flex;gap:20px;align-items:flex-start;">
-
-      <!-- 最新サムネ + バッジ -->
-      <div style="flex-shrink:0;position:relative;">
-        <a href="https://www.instagram.com/reel/DY2LFY2Px0W/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:block;text-decoration:none;" onmouseover="this.querySelector('img').style.opacity='0.75'" onmouseout="this.querySelector('img').style.opacity='1'">
-          <img src="reel_latest.webp" alt="最新QFエピソード" style="width:100px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;display:block;transition:opacity 0.2s;">
-        </a>
-        <span style="position:absolute;top:7px;left:50%;transform:translateX(-50%);background:rgba(147,197,253,0.18);border:1px solid rgba(147,197,253,0.45);color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;padding:2px 8px;border-radius:100px;white-space:nowrap;backdrop-filter:blur(4px);">最新話</span>
-      </div>
-
-      <!-- エピソードリスト -->
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-          <button id="qf-sort-btn" onclick="toggleQFSort()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;padding:4px 0;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">↕ 古い順</button>
-        </div>
-        <div id="qf-list" style="border-radius:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);padding:4px 16px;max-height:200px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent;">
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-  (function() {
-    var QF_EPISODES = [
-      { ep: 18, title: '夏の雪', date: '2026.05.29' },
-      { ep: 17, title: 'セッション', date: '2026.05.22' }
-    ];
-
-    var ascending = true;
-
-    function renderQF() {
-      var list = document.getElementById('qf-list');
-      var btn  = document.getElementById('qf-sort-btn');
-      if (!list) return;
-      var sorted = QF_EPISODES.slice().sort(function(a, b) {
-        return ascending ? a.ep - b.ep : b.ep - a.ep;
-      });
-      btn.textContent = '↕ ' + (ascending ? '古い順' : '新しい順');
-      list.innerHTML = sorted.map(function(ep, idx, arr) {
-        var border = idx < arr.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : '';
-        return '<div style="display:flex;gap:16px;align-items:center;padding:10px 0;' + border + '">'
-          + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;min-width:40px;">ep.' + String(ep.ep).padStart(2,'0') + '</span>'
-          + '<span style="font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:1.7;flex:1;">' + ep.title + '</span>'
-          + (ep.date ? '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#475569;flex-shrink:0;">' + ep.date + '</span>' : '')
-          + '</div>';
-      }).join('');
-    }
-
-    window.toggleQFSort = function() {
-      ascending = !ascending;
-      renderQF();
-    };
-
-    renderQF();
-  })();
-  </script>
-
 </section>
 
 
