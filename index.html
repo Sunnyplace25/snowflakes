@@ -1274,53 +1274,75 @@ function sfShare() {
   <div class="disco-inner">
 
     <!-- Singles -->
+    <!-- Singles carousel -->
     <div class="disco-group">
       <p class="disco-group-label">SINGLES</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-
-        <!-- Round Bounce -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
-          <a href="https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7" target="_blank" style="display:block;">
-            <img src="Discography/Round Bounce.webp" alt="Round Bounce" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div style="padding:14px 16px 18px;">
-            <p style="font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SINGLE</p>
-            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:14px;">Round Bounce</p>
-            <a href="https://ncode.syosetu.com/n9009lo/81" target="_blank" style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">ep.81 →</a>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:160px;flex-shrink:0;overflow:hidden;">
+            <a id="sp-jacket-link" href="#" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="sp-jacket" src="Discography/Round Bounce.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            </a>
+          </div>
+          <div style="padding:24px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+            <p id="sp-label" style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SINGLE</p>
+            <p id="sp-title" style="font-size:20px;font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">Round Bounce</p>
+            <p id="sp-status" style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;">配信中</p>
+            <div id="sp-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
           </div>
         </div>
-
-        <!-- SWEETs -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
-          <a href="https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931" target="_blank" style="display:block;">
-            <img src="Discography/SWEETs.webp" alt="SWEETs" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div style="padding:14px 16px 18px;">
-            <p style="font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SINGLE</p>
-            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:14px;">SWEETs</p>
-            <a href="https://ncode.syosetu.com/n9009lo/79" target="_blank" style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">ep.79 →</a>
-          </div>
-        </div>
-
-        <!-- 置いた音 -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
-          <a href="https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c" target="_blank" style="display:block;">
-            <img src="Discography/置いた音.webp" alt="置いた音" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          </a>
-          <div style="padding:14px 16px 18px;">
-            <p style="font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:6px;font-family:'Cormorant Garamond',serif;">SINGLE</p>
-            <p style="font-size:14px;font-weight:300;color:white;line-height:1.4;margin-bottom:14px;">置いた音</p>
-            <a href="https://ncode.syosetu.com/n9009lo/34" target="_blank" style="font-size:12px;color:var(--hinata);text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">ep.34 →</a>
-          </div>
-        </div>
-
+        <div id="sp-strip" style="border-top:1px solid var(--border);padding:14px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;"></div>
       </div>
+      <script>
+      (function() {
+        // ★ シングル追加はここに追記
+        var SF_SINGLES = [
+          { img:'Discography/Round Bounce.webp', title:'Round Bounce', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7',
+            links:[{ text:'ep.81 →', url:'https://ncode.syosetu.com/n9009lo/81', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'Discography/SWEETs.webp', title:'SWEETs', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931',
+            links:[{ text:'ep.79 →', url:'https://ncode.syosetu.com/n9009lo/79', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'Discography/置いた音.webp', title:'置いた音', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c',
+            links:[{ text:'ep.34 →', url:'https://ncode.syosetu.com/n9009lo/34', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] }
+        ];
+        var jacketLink=document.getElementById('sp-jacket-link'), jacket=document.getElementById('sp-jacket'),
+            titleEl=document.getElementById('sp-title'), statusEl=document.getElementById('sp-status'),
+            linksEl=document.getElementById('sp-links'), strip=document.getElementById('sp-strip');
+        function selectSingle(idx) {
+          var s=SF_SINGLES[idx];
+          jacket.style.opacity='0';
+          setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
+          jacketLink.href=s.musicUrl||'#';
+          titleEl.textContent=s.title; statusEl.textContent=s.status;
+          statusEl.style.color=s.statusColor||'var(--muted)';
+          linksEl.innerHTML=s.links.map(function(l){
+            return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
+          }).join('');
+          strip.querySelectorAll('.sp-thumb').forEach(function(el,i){
+            el.style.opacity=i===idx?'1':'0.4';
+            el.style.borderColor=i===idx?'rgba(255,255,255,0.55)':'transparent';
+          });
+        }
+        SF_SINGLES.forEach(function(s,i){
+          var btn=document.createElement('button');
+          btn.className='sp-thumb';
+          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s;opacity:0.4;';
+          btn.innerHTML='<img src="'+s.img+'" style="width:100%;height:100%;object-fit:cover;display:block;">';
+          btn.addEventListener('click',function(){selectSingle(i);});
+          strip.appendChild(btn);
+        });
+        selectSingle(0);
+      })();
+      </script>
     </div>
 
     <!-- SWEETs Limited -->
     <div class="disco-group">
       <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <!-- ★ 限定追加はここに追記 -->
 
         <!-- Brass Band Ver. -->
         <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;">
@@ -1333,6 +1355,11 @@ function sfShare() {
             <p style="font-size:11px;color:#f9a8d4;margin-bottom:14px;">Brass Band Ver.</p>
             <a href="./sweets/" style="font-size:12px;color:#f9a8d4;text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(249,168,212,0.4);background:rgba(249,168,212,0.07);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">SWEETs →</a>
           </div>
+        </div>
+
+        <!-- 2枚目（今後追加） -->
+        <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:180px;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:rgba(249,168,212,0.3);">COMING SOON</p>
         </div>
 
       </div>
