@@ -5858,32 +5858,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
 
-    // 解放可能な部屋カード
-    if (lockedRoomsReady.length > 0) {
-      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
-      lockedRoomsReady.forEach(function(item) {
-        html += '<div class="exch-card" style="flex:1;min-width:120px;text-align:center;">';
-        html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
-        html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
-        html += '<p class="exch-cost" style="margin-bottom:12px;">× ' + item.cost.amount + '</p>';
-        html += '<button class="exch-btn" style="border-color:' + item.color + '55;color:' + item.color + ';"'
-          + ' onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
-        html += '</div>';
-      });
-      html += '</div>';
-    }
-
-    // キャンディ不足の部屋カード（常に表示）
-    if (lockedRoomsNotReady.length > 0) {
-      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">';
-      lockedRoomsNotReady.forEach(function(item) {
+    // 全未解放の部屋を3列並列で表示
+    var lockedRooms = EXCHANGE_CATALOG.filter(function(item) {
+      return item.type === 'room' && !SfSnow.isUnlocked(item.id);
+    });
+    if (lockedRooms.length > 0) {
+      html += '<div style="display:flex;gap:10px;margin-bottom:10px;">';
+      lockedRooms.forEach(function(item) {
         var have = candies[item.cost.candy] || 0;
-        html += '<div class="exch-card" style="flex:1;min-width:120px;text-align:center;opacity:0.7;">';
+        var ready = have >= item.cost.amount;
+        html += '<div class="exch-card" style="flex:1;min-width:0;text-align:center;' + (ready ? '' : 'opacity:0.7;') + '">';
         html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
         html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
-        html += '<p class="exch-cost" style="margin-bottom:4px;">× ' + item.cost.amount + '</p>';
-        html += '<p style="font-size:10px;color:#94a3b8;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
-        html += '<button class="exch-btn" disabled>キャンディが足りません</button>';
+        html += '<p class="exch-cost" style="margin-bottom:' + (ready ? '12' : '4') + 'px;">× ' + item.cost.amount + '</p>';
+        if (!ready) html += '<p style="font-size:10px;color:#94a3b8;margin-bottom:10px;">' + have + ' / ' + item.cost.amount + '</p>';
+        html += ready
+          ? '<button class="exch-btn" style="border-color:' + item.color + '55;color:' + item.color + ';" onclick="doUnlock(\'' + item.id + '\')">解放する</button>'
+          : '<button class="exch-btn" disabled>キャンディが足りません</button>';
         html += '</div>';
       });
       html += '</div>';
