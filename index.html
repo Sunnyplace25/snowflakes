@@ -2875,6 +2875,7 @@ document.addEventListener('visibilitychange', function() {
     align-items: center; justify-content: center; padding: 20px;
   }
   #daily-info-popup.show { display: flex; }
+  #qf-info-popup { display:none; position:fixed; inset:0; background:rgba(8,13,24,0.85); backdrop-filter:blur(14px); z-index:9000; align-items:center; justify-content:center; padding:20px; }
   #qf-info-popup.show { display: flex; }
   #daily-info-card {
     background: rgba(13,21,38,0.99);
@@ -2912,7 +2913,7 @@ document.addEventListener('visibilitychange', function() {
   #daily-info-close:hover { border-color: rgba(255,255,255,0.2); color: #94a3b8; }
 </style>
 
-<div id="qf-info-popup" onclick="closeQFInfoPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:9000;align-items:center;justify-content:center;">
+<div id="qf-info-popup" onclick="closeQFInfoPopup()">
   <div id="qf-info-card" onclick="event.stopPropagation()" style="background:#0f1828;border:1px solid rgba(240,171,252,0.25);border-radius:20px;padding:36px 32px;max-width:360px;width:90%;box-shadow:0 0 40px rgba(240,171,252,0.12);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#f0abfc;margin-bottom:18px;">INSTAGRAM / QF</p>
     <div style="font-size:14px;color:#cbd5e1;line-height:2;margin-bottom:24px;">
