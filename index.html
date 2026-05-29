@@ -1930,7 +1930,80 @@ function sfShare() {
     display: none; margin-top: 10px;
     font-size: 11px; color: #cbd5e1; letter-spacing: 1px; line-height: 1.8;
   }
+
+  /* ── NEW RELEASE POPUP ── */
+  #new-release-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  #new-release-overlay.show { display: flex; }
+  #new-release-card {
+    position: relative;
+    max-width: 320px; width: 88%;
+    background: #0c1220;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    text-align: center;
+    animation: nrSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes nrSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  #new-release-card .nr-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; letter-spacing: 6px;
+    color: #5a8fa8; margin-bottom: 16px;
+  }
+  #new-release-card img {
+    width: 160px; height: 160px; border-radius: 12px;
+    object-fit: cover; margin-bottom: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #new-release-card .nr-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px; letter-spacing: 5px; color: #94a3b8;
+    margin-bottom: 6px;
+  }
+  #new-release-card .nr-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 300; color: #e2e8f0;
+    letter-spacing: 1px; line-height: 1.5; margin-bottom: 20px;
+  }
+  #new-release-card .nr-btn {
+    display: inline-block;
+    padding: 10px 28px;
+    background: rgba(90,143,168,0.15);
+    border: 1px solid rgba(90,143,168,0.4);
+    border-radius: 100px; color: #5a8fa8;
+    font-size: 12px; letter-spacing: 3px;
+    text-decoration: none;
+    font-family: 'Cormorant Garamond', serif;
+    transition: background 0.2s;
+  }
+  #new-release-card .nr-btn:hover { background: rgba(90,143,168,0.28); }
+  #new-release-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; color: #475569;
+    font-size: 16px; cursor: pointer; padding: 4px;
+  }
+  #new-release-close:hover { color: #94a3b8; }
 </style>
+
+<div id="new-release-overlay">
+  <div id="new-release-card">
+    <button id="new-release-close" onclick="closeNewRelease()">✕</button>
+    <p class="nr-label">NEW RELEASE</p>
+    <img src="Discography/Rabbit.webp" alt="Rabbit">
+    <p class="nr-type">SINGLE</p>
+    <p class="nr-title">Rabbit /<br>ハッピーエンドはいらない</p>
+    <a class="nr-btn" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank">配信中 →</a>
+  </div>
+</div>
 
 <div id="chara-popup">
   <div id="chara-bubble">
@@ -2952,5 +3025,23 @@ document.addEventListener('visibilitychange', function() {
 </div>
 
 
+<script>
+  // ── NEW RELEASE POPUP ──
+  (function() {
+    var KEY = 'sf_nr_rabbit_shown';
+    if (!sessionStorage.getItem(KEY)) {
+      sessionStorage.setItem(KEY, '1');
+      setTimeout(function() {
+        document.getElementById('new-release-overlay').classList.add('show');
+      }, 800);
+    }
+  })();
+  function closeNewRelease() {
+    document.getElementById('new-release-overlay').classList.remove('show');
+  }
+  document.getElementById('new-release-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeNewRelease();
+  });
+</script>
 </body>
 </html>
