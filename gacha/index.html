@@ -1154,6 +1154,7 @@ function sfShare() {
         dailyNote.textContent = '❄ 5 で もう一回まわせます';
         savedViewBtn.style.display = 'inline-block';
         belowMachine.classList.add('show');
+        updateLeverBtnText();
         SfSnow.updateUI();
       });
     }
@@ -1396,6 +1397,15 @@ function sfShare() {
     belowMachine.classList.add('show');
   });
 
+  /* ── ボタンテキスト更新 ── */
+  function updateLeverBtnText() {
+    if (loadSaved()) {
+      leverBtn.innerHTML = 'まわす　<span style="color:#93c5fd;letter-spacing:2px;">❄ <span style="font-family:\'Noto Serif JP\',serif;">5</span></span>';
+    } else {
+      leverBtn.innerHTML = '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;display:block;margin-bottom:2px;">DAILY FREE</span>まわす';
+    }
+  }
+
   /* ── Init ── */
   var saved = loadSaved();
   if (saved) {
@@ -1403,6 +1413,7 @@ function sfShare() {
     savedViewBtn.style.display = 'inline-block';
     belowMachine.classList.add('show');
   }
+  updateLeverBtnText();
 
 })();
 </script>
