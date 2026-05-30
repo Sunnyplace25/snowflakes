@@ -862,9 +862,12 @@
             <div id="spring-rare-body" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease;">
               <div style="padding:22px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:12px;">
                 <img id="spring-rare-bp-img" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:72px;height:108px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
-                  <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                <div style="text-align:center;">
+                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
+                    <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
+                    <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                  </div>
+                  <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">SWEETs 2026 Springの限定ライブ映像を開放するパス。<br>本編では描かれないステージ上の表情や、<br>三人の音の重なりを楽しめます。</p>
                 </div>
               </div>
             </div>
@@ -5566,10 +5569,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var springBpImg   = document.getElementById('spring-rare-bp-img');
     var springBpName  = document.getElementById('spring-rare-bp-name');
     var springBpCheck = document.getElementById('spring-rare-bp-check');
+    var springBpDesc  = document.getElementById('spring-rare-bp-desc');
     if (springBpImg && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('backstage_pass')) {
       springBpImg.style.filter  = '';
       springBpImg.style.opacity = '0.9';
       if (springBpName)  springBpName.style.color = '#e2e8f0';
+      if (springBpDesc)  springBpDesc.style.color  = '#94a3b8';
       if (springBpCheck) springBpCheck.textContent = '✓ 入手済み';
     }
 
