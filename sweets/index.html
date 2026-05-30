@@ -4521,7 +4521,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // ── Password ──
     // シーズン変更時は PASSWORD と SWEETS_VERSION を一緒に更新する
     // → 旧バージョンで保持していたログインが自動無効化される
-    const SWEETS_VERSION   = '2026-spring';
+    // Spring延長：6月10日 00:00 JST 以降は自動的に summer 扱い
+    const _springEndDate = new Date('2026-06-10T00:00:00+09:00');
+    const SWEETS_VERSION = (new Date() >= _springEndDate) ? '2026-summer' : '2026-spring';
     const PASSWORD         = 'applepie';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 

@@ -727,7 +727,31 @@
       buildQAChips(QA_CORE, 'chat-chips-core');
     }
 
-    // バックステージパスはSummer切り替え時にSweets側で配布（ことりページでの付与は廃止）
+    // バックステージパス：Spring期間中（〜6/10）に30日訪問で1枚付与
+    var _bpSpringEnd = new Date('2026-06-10T00:00:00+09:00');
+    var _bpInSpring  = new Date() < _bpSpringEnd;
+    if (_bpInSpring && visits >= 30 && !localStorage.getItem('sf_kotori_bp_count') && !SfSnow.isUnlocked('backstage_pass')) {
+      localStorage.setItem('sf_kotori_bp_count', '1');
+      localStorage.setItem('sf_backstage_pass', 'true');
+      SfSnow.unlockItem('backstage_pass');
+      var _bpFirstShown = 'sf_backstage_pass_shown';
+      if (!localStorage.getItem(_bpFirstShown)) {
+        localStorage.setItem(_bpFirstShown, '1');
+        setTimeout(function() {
+          var popup = document.getElementById('backstage-pass-popup');
+          if (popup) {
+            popup.style.display = 'flex';
+            requestAnimationFrame(function() { requestAnimationFrame(function() {
+              popup.style.opacity = '1'; popup.style.transform = 'translateY(0)';
+            }); });
+            setTimeout(function() {
+              popup.style.opacity = '0'; popup.style.transform = 'translateY(24px)';
+              setTimeout(function() { popup.style.display = 'none'; }, 600);
+            }, 5000);
+          }
+        }, 1800);
+      }
+    }
   });
 </script>
 
