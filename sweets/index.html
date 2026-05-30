@@ -990,7 +990,10 @@
       <!-- YouTube 告知動画 + ピアス入手 -->
       <div id="undertone-yt-wrap" style="max-width:480px;margin:0 auto 20px;">
         <div id="undertone-yt-player" style="width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;"></div>
-        <p id="undertone-yt-msg" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;margin-top:10px;letter-spacing:1px;"></p>
+        <p id="undertone-yt-msg" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;margin-top:10px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <img id="undertone-yt-item-icon" src="../item/earring_hayate.webp" style="width:20px;opacity:0.5;filter:grayscale(1);flex-shrink:0;">
+          <span id="undertone-yt-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">最後まで視聴でアイテム入手</span>
+        </p>
       </div>
 
       <div id="undertone-link" style="display:none;">
@@ -6871,17 +6874,32 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function onWatchComplete() {
       var msg = document.getElementById('undertone-yt-msg');
       if (typeof SfSnow === 'undefined') return;
-      if (SfSnow.isUnlocked(ITEM_KEY)) return;
+      if (SfSnow.isUnlocked(ITEM_KEY)) {
+        var icon = document.getElementById('undertone-yt-item-icon');
+        var label = document.getElementById('undertone-yt-item-label');
+        if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
+        if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
+        return;
+      }
       SfSnow.unlockItem(ITEM_KEY);
       localStorage.setItem(WATCHED_KEY, '1');
       if (typeof renderItemRows === 'function') renderItemRows();
-      if (msg) msg.textContent = '黄色い石のピアスを入手しました';
+      var icon = document.getElementById('undertone-yt-item-icon');
+      var label = document.getElementById('undertone-yt-item-label');
+      if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
+      if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
       setTimeout(function() {
         if (typeof showNoteItemGet === 'function') showNoteItemGet(ITEM_KEY);
       }, 800);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(ITEM_KEY)) {
+        var icon = document.getElementById('undertone-yt-item-icon');
+        var label = document.getElementById('undertone-yt-item-label');
+        if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
+        if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
+      }
       loadYTAPI();
     });
   })();
