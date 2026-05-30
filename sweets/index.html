@@ -987,6 +987,12 @@
         </div>
       </div>
       <!-- Link: fans -->
+      <!-- YouTube 告知動画 + ピアス入手 -->
+      <div id="undertone-yt-wrap" style="max-width:480px;margin:0 auto 20px;">
+        <div id="undertone-yt-player" style="width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;"></div>
+        <p id="undertone-yt-msg" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;margin-top:10px;letter-spacing:1px;"></p>
+      </div>
+
       <div id="undertone-link" style="display:none;">
         <div style="max-width:480px;margin:0 auto;">
           <a href="../room/undertone/" style="display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
@@ -6838,6 +6844,72 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         }
         sfGa('click_external', { url: href.slice(0, 100) });
       }
+    });
+  })();
+</script>
+
+<!-- YouTube IFrame API + ピアス入手 -->
+<script>
+  (function() {
+    var YT_VIDEO_ID  = 'vvFb2JzlhXU';
+    var ITEM_KEY     = 'earring_hayate';
+    var WATCHED_KEY  = 'sf_yt_watched_undertone';
+
+    function loadYTAPI() {
+      if (window.YT && window.YT.Player) { initPlayer(); return; }
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = initPlayer;
+    }
+
+    function initPlayer() {
+      var wrap = document.getElementById('undertone-yt-player');
+      if (!wrap) return;
+      new YT.Player('undertone-yt-player', {
+        videoId: YT_VIDEO_ID,
+        playerVars: { rel: 0, playsinline: 1 },
+        events: {
+          onStateChange: function(e) {
+            if (e.data === YT.PlayerState.ENDED) onWatchComplete();
+          }
+        }
+      });
+    }
+
+    function onWatchComplete() {
+      var msg = document.getElementById('undertone-yt-msg');
+      if (typeof SfSnow === 'undefined') return;
+      if (SfSnow.isUnlocked(ITEM_KEY)) {
+        if (msg) msg.textContent = '── ピアスはもう手元にある ──';
+        return;
+      }
+      SfSnow.unlockItem(ITEM_KEY);
+      localStorage.setItem(WATCHED_KEY, '1');
+      if (typeof renderItemRows === 'function') renderItemRows();
+      if (msg) msg.textContent = 'ハヤテのピアスを入手しました';
+      // アイテム取得ポップアップ
+      setTimeout(function() {
+        var pop = document.getElementById('hito-item-popup');
+        if (pop) {
+          pop.style.display = 'flex';
+          requestAnimationFrame(function() { requestAnimationFrame(function() {
+            pop.style.opacity = '1'; pop.style.transform = 'translateY(0)';
+          }); });
+          setTimeout(function() {
+            pop.style.opacity = '0'; pop.style.transform = 'translateY(24px)';
+            setTimeout(function() { pop.style.display = 'none'; }, 600);
+          }, 5000);
+        }
+      }, 800);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var msg = document.getElementById('undertone-yt-msg');
+      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(ITEM_KEY)) {
+        if (msg) msg.textContent = '── ピアスはもう手元にある ──';
+      }
+      loadYTAPI();
     });
   })();
 </script>
