@@ -427,6 +427,13 @@
   .qf-ticker-dots { display:flex; gap:4px; justify-content:center; margin-top:8px; }
   .qf-ticker-dot { width:4px; height:4px; border-radius:50%; background:rgba(240,171,252,0.2); transition:background 0.2s; }
   .qf-ticker-dot.active { background:rgba(240,171,252,0.7); }
+  .book-card { display:flex; gap:0; background:var(--card); border-radius:20px; overflow:hidden; }
+  .book-cover { width:clamp(90px,26vw,140px); flex-shrink:0; overflow:hidden; }
+  .book-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+  .book-body { padding:clamp(16px,4vw,36px) clamp(16px,4vw,36px) clamp(16px,4vw,36px) clamp(14px,3.5vw,28px); flex:1; min-width:0; }
+  .book-vol { font-size:clamp(16px,4.5vw,20px); font-weight:400; color:white; margin-bottom:8px; font-family:'Noto Serif JP',serif; }
+  .book-meta { font-size:clamp(11px,3vw,12px); color:var(--muted); margin-bottom:clamp(14px,3vw,24px); line-height:1.7; }
+  .vol-desc { font-size:clamp(13px,3.5vw,15px); color:#b8c5d4; line-height:2.2; margin-bottom:8px; }
   .act-wrap { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
   .act-thumb { flex-shrink:0; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:10px; }
   .act-thumb img { width:120px; aspect-ratio:2/3; object-fit:cover; border-radius:10px; display:block; transition:opacity 0.2s; }
@@ -1002,65 +1009,65 @@ function sfShare() {
     <p style="font-size:11px;letter-spacing:2px;color:#64748b;text-align:center;margin-bottom:48px;font-family:'Cormorant Garamond',serif;">Amazon Kindle にて好評配信中</p>
 
     <!-- Vol.1 -->
-    <div style="display:flex;gap:0;background:var(--card);border:1px solid rgba(253,230,138,0.2);border-radius:20px;overflow:hidden;">
-      <div style="width:140px;flex-shrink:0;overflow:hidden;"><img src="Kindle/１.jpg" alt="Snow flakes スノーフレークス 第1巻 戻る場所 小説 山吹ことり Kindle" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div style="padding:36px 36px 36px 28px;flex:1;">
+    <div class="book-card" style="border:1px solid rgba(253,230,138,0.2);">
+      <div class="book-cover"><img src="Kindle/１.jpg" alt="Snow flakes スノーフレークス 第1巻 戻る場所 小説 山吹ことり Kindle"></div>
+      <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
-        <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol1-title">1: 戻る場所</p>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol1-meta">小説家になろう ep.1–34（高校編・大学編）収録　描き下ろし2編「置いた音」「1枚目の色紙」</p>
-        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc">成功も、約束も、確かな未来もない。それでも、音を出すと分かってしまう。この三人でなければ、鳴らないものがあることを。</p>
+        <p class="book-vol" data-i18n="vol1-title">1: 戻る場所</p>
+        <p class="book-meta" data-i18n="vol1-meta">小説家になろう ep.1–34（高校編・大学編）収録　描き下ろし2編「置いた音」「1枚目の色紙」</p>
+        <p class="vol-desc" data-i18n="vol1-desc">成功も、約束も、確かな未来もない。それでも、音を出すと分かってしまう。この三人でなければ、鳴らないものがあることを。</p>
         <div id="book-acc-body-1" style="display:none;">
-          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol1-desc-more">気づけば同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
+          <p class="vol-desc" data-i18n="vol1-desc-more">気づけば同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
         </div>
-        <button id="book-acc-btn-1" onclick="toggleBookAcc(1)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+        <button id="book-acc-btn-1" onclick="toggleBookAcc(1)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/03cNGgk3" target="_blank" style="display:inline-block;font-size:14px;color:var(--hinata);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
 
     <!-- Vol.2 -->
-    <div style="margin-top:16px;display:flex;gap:0;background:var(--card);border:1px solid rgba(147,197,253,0.2);border-radius:20px;overflow:hidden;">
-      <div style="width:140px;flex-shrink:0;overflow:hidden;"><img src="Kindle/２.jpg" alt="Snow flakes スノーフレークス 第2巻 リトルスノー 小説 山吹ことり Kindle" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div style="padding:36px 36px 36px 28px;flex:1;">
+    <div class="book-card" style="margin-top:16px;border:1px solid rgba(147,197,253,0.2);">
+      <div class="book-cover"><img src="Kindle/２.jpg" alt="Snow flakes スノーフレークス 第2巻 リトルスノー 小説 山吹ことり Kindle"></div>
+      <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
-        <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol2-title">2: リトルスノー</p>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol2-meta">小説家になろう ep.35–68収録　描き下ろし童話「リトルスノー」</p>
-        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc">小さくて、溶けそうで、でも消えなかった。</p>
+        <p class="book-vol" data-i18n="vol2-title">2: リトルスノー</p>
+        <p class="book-meta" data-i18n="vol2-meta">小説家になろう ep.35–68収録　描き下ろし童話「リトルスノー」</p>
+        <p class="vol-desc" data-i18n="vol2-desc">小さくて、溶けそうで、でも消えなかった。</p>
         <div id="book-acc-body-2" style="display:none;">
-          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol2-desc-more">形にならない音。言葉にするには、まだ早い感情。<br><br>三人で鳴らすことを選んだあと、音は少しずつ外へ向かいはじめる。<br><br>確かさはない。それでも、手放さなかった。<br><br>触れすぎず、壊さず、距離を測りながら。<br><br>小さな音は、静かに残り続ける。</p>
+          <p class="vol-desc" data-i18n="vol2-desc-more">形にならない音。言葉にするには、まだ早い感情。<br><br>三人で鳴らすことを選んだあと、音は少しずつ外へ向かいはじめる。<br><br>確かさはない。それでも、手放さなかった。<br><br>触れすぎず、壊さず、距離を測りながら。<br><br>小さな音は、静かに残り続ける。</p>
         </div>
-        <button id="book-acc-btn-2" onclick="toggleBookAcc(2)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+        <button id="book-acc-btn-2" onclick="toggleBookAcc(2)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/0brELpId" target="_blank" style="display:inline-block;font-size:14px;color:#c4b5fd;text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(196,181,253,0.4);background:rgba(196,181,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
 
     <!-- Vol.3 -->
-    <div style="margin-top:16px;display:flex;gap:0;background:var(--card);border:1px solid rgba(252,165,165,0.2);border-radius:20px;overflow:hidden;">
-      <div style="width:140px;flex-shrink:0;overflow:hidden;"><img src="Kindle/３.jpg" alt="Snow flakes スノーフレークス 第3巻 ショーケース 夏の月 小説 山吹ことり Kindle" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div style="padding:36px 36px 36px 28px;flex:1;">
+    <div class="book-card" style="margin-top:16px;border:1px solid rgba(252,165,165,0.2);">
+      <div class="book-cover"><img src="Kindle/３.jpg" alt="Snow flakes スノーフレークス 第3巻 ショーケース 夏の月 小説 山吹ことり Kindle"></div>
+      <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
-        <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol3-title">3: ショーケース/夏の月</p>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol3-meta">小説家になろう ep.69–89収録　描き下ろし「名前のない歌」</p>
-        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc">同じ時間を重ねていたはずの距離が、ある夜を境に、静かにずれていく。</p>
+        <p class="book-vol" data-i18n="vol3-title">3: ショーケース/夏の月</p>
+        <p class="book-meta" data-i18n="vol3-meta">小説家になろう ep.69–89収録　描き下ろし「名前のない歌」</p>
+        <p class="vol-desc" data-i18n="vol3-desc">同じ時間を重ねていたはずの距離が、ある夜を境に、静かにずれていく。</p>
         <div id="book-acc-body-3" style="display:none;">
-          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol3-desc-more">声に引き寄せられ、選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、優しさと迷い。それぞれの選択は、言葉になる前にすれ違っていく。<br><br>音は、答えをくれない。ただ残り、続いていく。<br><br>――音だけが、置かれたまま。</p>
+          <p class="vol-desc" data-i18n="vol3-desc-more">声に引き寄せられ、選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、優しさと迷い。それぞれの選択は、言葉になる前にすれ違っていく。<br><br>音は、答えをくれない。ただ残り、続いていく。<br><br>――音だけが、置かれたまま。</p>
         </div>
-        <button id="book-acc-btn-3" onclick="toggleBookAcc(3)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+        <button id="book-acc-btn-3" onclick="toggleBookAcc(3)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="display:inline-block;font-size:14px;color:var(--kouta);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
 
     <!-- Vol.4 -->
-    <div style="margin-top:16px;display:flex;gap:0;background:var(--card);border:1px solid rgba(253,230,138,0.15);border-radius:20px;overflow:hidden;">
-      <div style="width:140px;flex-shrink:0;overflow:hidden;"><img src="Kindle/４.jpg" alt="Snow flakes スノーフレークス 第4巻 ポジション 小説 山吹ことり Kindle" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-      <div style="padding:36px 36px 36px 28px;flex:1;">
+    <div class="book-card" style="margin-top:16px;border:1px solid rgba(253,230,138,0.15);">
+      <div class="book-cover"><img src="Kindle/４.jpg" alt="Snow flakes スノーフレークス 第4巻 ポジション 小説 山吹ことり Kindle"></div>
+      <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
-        <p style="font-size:20px;font-weight:400;color:white;margin-bottom:8px;font-family:'Noto Serif JP',serif;" data-i18n="vol4-title">4: ポジション</p>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:24px;" data-i18n="vol4-meta">小説家になろう ep.90–125収録　描き下ろし1編</p>
-        <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc">正しさは、すでに揃っている。選択肢も、説明も、十分だ。</p>
+        <p class="book-vol" data-i18n="vol4-title">4: ポジション</p>
+        <p class="book-meta" data-i18n="vol4-meta">小説家になろう ep.90–125収録　描き下ろし1編</p>
+        <p class="vol-desc" data-i18n="vol4-desc">正しさは、すでに揃っている。選択肢も、説明も、十分だ。</p>
         <div id="book-acc-body-4" style="display:none;">
-          <p class="vol-desc" style="font-size:15px;color:#b8c5d4;line-height:2.2;margin-bottom:8px;" data-i18n="vol4-desc-more">前に出る音。支える音。残す音。<br><br>それぞれのポジションで、三人は同じ流れに乗っている。<br><br>音は続く。役割を引き受けたまま。</p>
+          <p class="vol-desc" data-i18n="vol4-desc-more">前に出る音。支える音。残す音。<br><br>それぞれのポジションで、三人は同じ流れに乗っている。<br><br>音は続く。役割を引き受けたまま。</p>
         </div>
-        <button id="book-acc-btn-4" onclick="toggleBookAcc(4)" style="display:block;margin-top:16px;margin-bottom:28px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+        <button id="book-acc-btn-4" onclick="toggleBookAcc(4)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
         <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
