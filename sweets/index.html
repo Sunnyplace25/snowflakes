@@ -4670,7 +4670,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var UT_STONE_ITEMS = [
       { key: 'pendant_hinata', name: '青い石のネックレス', img: '../item/pendant_hinata.webp' },
-      { key: 'earring_hayate', name: '黄色い石のピアス',   img: '../item/earring_hayate.webp', alwaysGrey: true },
+      { key: 'earring_hayate', name: '黄色い石のピアス',   img: '../item/earring_hayate.webp' },
       { key: 'ring_kouta',     name: '黒い石のシルバーリング', img: '../item/ring_kouta.webp' },
     ];
 
@@ -6871,10 +6871,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function onWatchComplete() {
       var msg = document.getElementById('undertone-yt-msg');
       if (typeof SfSnow === 'undefined') return;
-      if (SfSnow.isUnlocked(ITEM_KEY)) {
-        if (msg) msg.textContent = '── ピアスはもう手元にある ──';
-        return;
-      }
+      if (SfSnow.isUnlocked(ITEM_KEY)) return;
       SfSnow.unlockItem(ITEM_KEY);
       localStorage.setItem(WATCHED_KEY, '1');
       if (typeof renderItemRows === 'function') renderItemRows();
@@ -6885,10 +6882,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      var msg = document.getElementById('undertone-yt-msg');
-      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(ITEM_KEY)) {
-        if (msg) msg.textContent = '── ピアスはもう手元にある ──';
-      }
       loadYTAPI();
     });
   })();
