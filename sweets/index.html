@@ -4546,8 +4546,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // → 旧バージョンで保持していたログインが自動無効化される
     // Spring延長：6月10日 00:00 JST 以降は自動的に summer 扱い
     const _springEndDate = new Date('2026-06-10T00:00:00+09:00');
-    const SWEETS_VERSION = (new Date() >= _springEndDate) ? '2026-summer' : '2026-spring';
-    const PASSWORD         = 'applepie';
+    const _isSummer      = new Date() >= _springEndDate;
+    const SWEETS_VERSION = _isSummer ? '2026-summer' : '2026-spring';
+    const PASSWORD         = _isSummer ? 'cottoncandy' : 'applepie';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 
     // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
