@@ -1142,11 +1142,11 @@ function sfShare() {
       var fortune = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
       save(fortune);
       var candy = SfSnow.rollCandy();
-      var dailyChoco = Math.random() < 0.15 ? 1 : 0;
+      var dailyChoco = Math.random() < 0.05 ? 1 : 0;
       if (dailyChoco) SfSnow.addMItemDirect('chocolate_hayate', dailyChoco);
-      var dailyBeer = Math.random() < 0.15 ? 1 : 0;
+      var dailyBeer = Math.random() < 0.05 ? 1 : 0;
       if (dailyBeer) SfSnow.addMItemDirect('beer', dailyBeer);
-      var dailyCookie = Math.random() < 0.15 ? 1 : 0;
+      var dailyCookie = Math.random() < 0.05 ? 1 : 0;
       if (dailyCookie) SfSnow.addMItemDirect('cookie', dailyCookie);
       runCapsule(fortune, function() {
         showResult(fortune, candy, undefined, dailyChoco, dailyBeer, dailyCookie);
@@ -1228,11 +1228,11 @@ function sfShare() {
     for (var i = 0; i < count; i++) SfSnow.addCandy(rc.id);
     var replayProtein = Math.random() < 0.08;
     if (replayProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
-    var replayChoco = Math.random() < 0.15 ? 1 : 0;
+    var replayChoco = Math.random() < 0.10 ? 1 : 0;
     if (replayChoco) SfSnow.addMItemDirect('chocolate_hayate', replayChoco);
-    var replayBeer = Math.random() < 0.15 ? 1 : 0;
+    var replayBeer = Math.random() < 0.10 ? 1 : 0;
     if (replayBeer) SfSnow.addMItemDirect('beer', replayBeer);
-    var replayCookie = Math.random() < 0.15 ? 1 : 0;
+    var replayCookie = Math.random() < 0.10 ? 1 : 0;
     if (replayCookie) SfSnow.addMItemDirect('cookie', replayCookie);
     getCandyPopup().classList.remove('show');
     runCapsule(f, function() {
@@ -1288,14 +1288,14 @@ function sfShare() {
     // プロテインコーヒー：12%
     var tenProtein = Math.random() < 0.12;
     if (tenProtein && SfSnow.addMItemDirect) SfSnow.addMItemDirect('proteincoffee', 1);
-    // チョコレート：30%で1個
-    var tenChoco = Math.random() < 0.30 ? 1 : 0;
+    // チョコレート：15%で1個
+    var tenChoco = Math.random() < 0.15 ? 1 : 0;
     if (tenChoco) SfSnow.addMItemDirect('chocolate_hayate', tenChoco);
-    // ビール：30%で1個
-    var tenBeer = Math.random() < 0.30 ? 1 : 0;
+    // ビール：15%で1個
+    var tenBeer = Math.random() < 0.15 ? 1 : 0;
     if (tenBeer) SfSnow.addMItemDirect('beer', tenBeer);
-    // クッキー：30%で1個
-    var tenCookie = Math.random() < 0.30 ? 1 : 0;
+    // クッキー：15%で1個
+    var tenCookie = Math.random() < 0.15 ? 1 : 0;
     if (tenCookie) SfSnow.addMItemDirect('cookie', tenCookie);
     for (var i = 0; i < 10; i++) {
       var f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
