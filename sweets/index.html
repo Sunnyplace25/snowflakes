@@ -4603,20 +4603,26 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function _checkShikishiDistribution() {
-      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布
+      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙＋バックステージパスを配布
       if (SWEETS_VERSION !== '2026-summer') return;
-      if (SfSnow.isUnlocked('shikishi_hinata')) return;
       var mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
       var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
       var hasSpringRecord = Object.keys(mItems).some(function(k){ return (mItems[k]||0) > 0; })
                          || unlocked.length > 0;
       if (!hasSpringRecord) return;
-      SfSnow.unlockItem('shikishi_hinata');
-      if (typeof renderItemRows === 'function') renderItemRows();
-      setTimeout(function() {
-        var pop = document.getElementById('shikishi-get-popup');
-        if (pop) pop.classList.add('show');
-      }, 800);
+      if (!SfSnow.isUnlocked('shikishi_hinata')) {
+        SfSnow.unlockItem('shikishi_hinata');
+        if (typeof renderItemRows === 'function') renderItemRows();
+        setTimeout(function() {
+          var pop = document.getElementById('shikishi-get-popup');
+          if (pop) pop.classList.add('show');
+        }, 800);
+      }
+      if (!SfSnow.isUnlocked('backstage_pass')) {
+        SfSnow.unlockItem('backstage_pass');
+        localStorage.setItem('sf_backstage_pass', 'true');
+        if (typeof renderItemRows === 'function') renderItemRows();
+      }
     }
 
     function _doEnter() {

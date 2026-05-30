@@ -727,43 +727,7 @@
       buildQAChips(QA_CORE, 'chat-chips-core');
     }
 
-    // バックステージパス付与：コアファン（初回のみ）OR ことり30日訪問でシーズン1枚
-    var bpKey = 'sf_backstage_pass';
-    var grantBp = isCoreFan() || (visits >= 30 && !localStorage.getItem('sf_kotori_bp_count'));
-    if (grantBp) {
-      if (visits >= 30 && !localStorage.getItem('sf_kotori_bp_count')) {
-        localStorage.setItem('sf_kotori_bp_count', '1');
-      }
-      localStorage.setItem(bpKey, 'true');
-      if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
-        SfSnow.unlockItem('backstage_pass');
-      }
-      // マイルストーン到達時のみポップアップ（isCoreFan初回 or 30日到達）
-      var bpShownMilestone = 'sf_kotori_bp_shown_' + newKotoriBpCount;
-      var bpFirstShown = 'sf_backstage_pass_shown';
-      var showBpPopup = (visits >= 30 && !localStorage.getItem(bpFirstShown)) ||
-                        (isCoreFan() && !localStorage.getItem(bpFirstShown));
-      if (showBpPopup) {
-        localStorage.setItem(bpFirstShown, '1');
-        setTimeout(function() {
-          var popup = document.getElementById('backstage-pass-popup');
-          if (popup) {
-            popup.style.display = 'flex';
-            requestAnimationFrame(function() {
-              requestAnimationFrame(function() {
-                popup.style.opacity = '1';
-                popup.style.transform = 'translateY(0)';
-              });
-            });
-            setTimeout(function() {
-              popup.style.opacity = '0';
-              popup.style.transform = 'translateY(24px)';
-              setTimeout(function() { popup.style.display = 'none'; }, 600);
-            }, 5000);
-          }
-        }, 1800);
-      }
-    }
+    // バックステージパスはSummer切り替え時にSweets側で配布（ことりページでの付与は廃止）
   });
 </script>
 
