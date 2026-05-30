@@ -1939,11 +1939,11 @@ function sfShare() {
   #chara-close:hover { color: #cbd5e1; }
   #chara-img img { width: 300px; display: block; }
   @media (max-width: 600px) {
-    #chara-popup { bottom: 12px; right: 10px; gap: 8px; }
-    #chara-bubble { max-width: 200px !important; padding: 16px 18px 14px !important; }
-    #chara-line { font-size: 15px !important; line-height: 2 !important; }
-    #chara-name { font-size: 10px !important; }
-    #chara-img img { width: 170px !important; }
+    #chara-popup { bottom: 10px; right: 8px; gap: 6px; max-width: calc(100vw - 16px); }
+    #chara-bubble { max-width: min(175px, 46vw) !important; padding: 14px 14px 12px !important; }
+    #chara-line { font-size: clamp(12px, 3.5vw, 15px) !important; line-height: 1.9 !important; }
+    #chara-name { font-size: 10px !important; letter-spacing: 2px !important; }
+    #chara-img img { width: min(120px, 30vw) !important; }
   }
   #chara-input-wrap {
     margin-top: 9px; display: flex; gap: 5px; align-items: center;
