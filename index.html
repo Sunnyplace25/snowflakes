@@ -2097,12 +2097,9 @@ function sfShare() {
       localStorage.setItem(TOP_DAY, todayStr);
     }
 
-    // バックステージパス：30日訪問毎に1枚付与（カウントリセット → 次の30日へ）
-    var bpCount = parseInt(localStorage.getItem('sf_top_bp_count') || '0', 10);
-    var nextMilestone = (bpCount + 1) * 30;
-    if (topVisits >= nextMilestone) {
-      var newBpCount = Math.floor(topVisits / 30);
-      localStorage.setItem('sf_top_bp_count', String(newBpCount));
+    // バックステージパス：30日訪問で初回のみ1枚付与（シーズン1枚）
+    if (topVisits >= 30 && !localStorage.getItem('sf_top_bp_count')) {
+      localStorage.setItem('sf_top_bp_count', '1');
       localStorage.setItem('sf_backstage_pass', 'true');
       if (typeof SfSnow !== 'undefined' && SfSnow.unlockItem) {
         SfSnow.unlockItem('backstage_pass');
