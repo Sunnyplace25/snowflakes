@@ -4622,17 +4622,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _doEnter();
     }
 
-    // Under tone 0-5読了後 → 黄色い石のピアス 初回入手ポップアップ
-    function _checkEarringUnlock() {
-      if (typeof SfSnow === 'undefined') return;
-      if (SfSnow.isUnlocked('earring_hayate')) return;
-      var seen = JSON.parse(localStorage.getItem('sf_undertone_seen_prose') || '[]');
-      if (seen.indexOf(4) === -1) return;
-      SfSnow.unlockItem('earring_hayate');
-      if (typeof renderItemRows === 'function') renderItemRows();
-      if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
-      setTimeout(function() { showNoteItemGet('earring_hayate'); }, 800);
-    }
+    // ハヤテのピアスはYouTube視聴完了で入手（読了条件は廃止）
+    function _checkEarringUnlock() {}
 
     function _checkShikishiDistribution() {
       // Summer 切り替え後、Spring で遊んだ記録がある人に色紙＋バックステージパスを配布
