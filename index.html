@@ -2015,6 +2015,8 @@ function sfShare() {
     object-fit: cover; margin-bottom: 18px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
+  #nr-reel-wrap { width:100%; margin-bottom:16px; border-radius:12px; overflow:hidden; }
+  #nr-reel-wrap iframe { width:100% !important; min-width:0 !important; }
   #new-release-card .nr-type {
     font-family: 'Cormorant Garamond', serif;
     font-size: 10px; letter-spacing: 5px; color: #94a3b8;
@@ -2049,7 +2051,9 @@ function sfShare() {
   <div id="new-release-card">
     <button id="new-release-close" onclick="closeNewRelease()">✕</button>
     <p class="nr-label">NEW RELEASE</p>
-    <img src="Discography/Rabbit.webp" alt="Rabbit">
+    <div id="nr-reel-wrap">
+      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DY7WFN2BH2m/" data-instgrm-version="14" style="background:#000;border:0;border-radius:12px;margin:0;max-width:100%;min-width:0;width:100%;"></blockquote>
+    </div>
     <p class="nr-type">SINGLE</p>
     <p class="nr-title">Rabbit /<br>ハッピーエンドはいらない</p>
     <a class="nr-btn" href="https://www.instagram.com/reel/DY7WFN2BH2m/" target="_blank">Instagram →</a>
@@ -3077,6 +3081,15 @@ document.addEventListener('visibilitychange', function() {
       sessionStorage.setItem(KEY, '1');
       setTimeout(function() {
         document.getElementById('new-release-overlay').classList.add('show');
+        // Instagram埋め込みスクリプトを遅延読み込み
+        if (!window.instgrm) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.instagram.com/embed.js';
+          document.body.appendChild(s);
+        } else {
+          window.instgrm.Embeds.process();
+        }
       }, 800);
     }
   })();
