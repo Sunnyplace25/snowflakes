@@ -1213,10 +1213,10 @@
                   <img id="spring-rare-shikishi-img" src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="width:100px;height:100px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
                   <div style="text-align:center;">
                     <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-                      <span id="spring-rare-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring 色紙</span>
+                      <span id="spring-rare-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">???</span>
                       <span id="spring-rare-shikishi-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
                     </div>
-                    <p id="spring-rare-shikishi-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">SWEETs 2026 Springの記念に残された、ヒナタの色紙。<br>多くは語らない文字と、少しだけ長く払われたサインが残っている。</p>
+                    <p id="spring-rare-shikishi-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">???</p>
                   </div>
                 </div>
 
@@ -5613,8 +5613,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (shikishiImg && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('shikishi_hinata')) {
       shikishiImg.style.filter  = '';
       shikishiImg.style.opacity = '0.9';
-      if (shikishiName)  shikishiName.style.color  = '#e2e8f0';
-      if (shikishiDesc)  shikishiDesc.style.color   = '#94a3b8';
+      if (shikishiName)  { shikishiName.style.color  = '#e2e8f0'; shikishiName.textContent = 'SWEETs 2026 Spring 色紙'; }
+      if (shikishiDesc)  { shikishiDesc.style.color   = '#94a3b8'; shikishiDesc.innerHTML  = 'SWEETs 2026 Springの記念に残された、ヒナタの色紙。<br>多くは語らない文字と、少しだけ長く払われたサインが残っている。'; }
       if (shikishiCheck) shikishiCheck.textContent  = '✓ 入手済み';
     }
 
