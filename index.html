@@ -3077,7 +3077,8 @@ document.addEventListener('visibilitychange', function() {
   // ── NEW RELEASE POPUP ──
   (function() {
     var KEY = 'sf_nr_rabbit_shown';
-    if (!sessionStorage.getItem(KEY)) {
+    if (Date.now() >= new Date('2026-06-01T00:00:00+09:00').getTime()) { /* 終了 */ }
+    else if (!sessionStorage.getItem(KEY)) {
       sessionStorage.setItem(KEY, '1');
       setTimeout(function() {
         document.getElementById('new-release-overlay').classList.add('show');
