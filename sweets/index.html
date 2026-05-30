@@ -6878,20 +6878,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       SfSnow.unlockItem(ITEM_KEY);
       localStorage.setItem(WATCHED_KEY, '1');
       if (typeof renderItemRows === 'function') renderItemRows();
-      if (msg) msg.textContent = 'ハヤテのピアスを入手しました';
-      // アイテム取得ポップアップ
+      if (msg) msg.textContent = '黄色い石のピアスを入手しました';
       setTimeout(function() {
-        var pop = document.getElementById('hito-item-popup');
-        if (pop) {
-          pop.style.display = 'flex';
-          requestAnimationFrame(function() { requestAnimationFrame(function() {
-            pop.style.opacity = '1'; pop.style.transform = 'translateY(0)';
-          }); });
-          setTimeout(function() {
-            pop.style.opacity = '0'; pop.style.transform = 'translateY(24px)';
-            setTimeout(function() { pop.style.display = 'none'; }, 600);
-          }, 5000);
-        }
+        if (typeof showNoteItemGet === 'function') showNoteItemGet(ITEM_KEY);
       }, 800);
     }
 
