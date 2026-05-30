@@ -853,25 +853,6 @@
           </div>
           <button onclick="goToItems()" style="margin-top:18px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#f9a8d4;cursor:pointer;transition:opacity 0.2s;padding:0;" onmouseenter="this.style.opacity='0.6'" onmouseleave="this.style.opacity='1'">▶ 持ち物を見る</button>
 
-          <!-- RARE ITEM アコーディオン -->
-          <div style="margin-top:22px;text-align:left;">
-            <div onclick="toggleSpringRare()" style="display:flex;align-items:center;justify-content:space-between;background:rgba(249,168,212,0.07);border:1px solid rgba(249,168,212,0.18);border-radius:10px;padding:10px 16px;cursor:pointer;user-select:none;">
-              <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;">RARE ITEMS</span>
-              <span id="spring-rare-arrow" style="font-size:14px;color:#f9a8d4;transition:transform 0.3s;">›</span>
-            </div>
-            <div id="spring-rare-body" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease;">
-              <div style="padding:22px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-                <img id="spring-rare-bp-img" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:72px;height:108px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
-                <div style="text-align:center;">
-                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
-                    <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
-                    <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
-                  </div>
-                  <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">SWEETs 2026 Springの限定ライブ映像を開放するパス。<br>本編では描かれないステージ上の表情や、<br>三人の音の重なりを楽しめます。</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1197,6 +1178,26 @@
                   <td id="ri-coaster-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
+            </div>
+          </div>
+
+          <!-- SPRING -->
+          <div id="rare-spring-section" style="margin-bottom:10px;">
+            <div onclick="toggleRareSection('spring')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(249,168,212,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#f9a8d4;">SPRING</span>
+              <span id="rare-spring-arrow" style="font-size:13px;color:#f9a8d4;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-spring-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <div style="padding:20px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:14px;">
+                <img id="spring-rare-bp-img" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:72px;height:108px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
+                <div style="text-align:center;">
+                  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                    <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
+                    <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                  </div>
+                  <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">SWEETs 2026 Springの限定ライブ映像を開放するパス。<br>本編では描かれないステージ上の表情や、<br>三人の音の重なりを楽しめます。</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -5478,15 +5479,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!body) return;
     var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
     body.style.maxHeight  = isOpen ? '0' : '500px';
-    if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
-  }
-
-  function toggleSpringRare() {
-    var body  = document.getElementById('spring-rare-body');
-    var arrow = document.getElementById('spring-rare-arrow');
-    if (!body) return;
-    var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
-    body.style.maxHeight  = isOpen ? '0' : '300px';
     if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
   }
 
