@@ -1101,9 +1101,9 @@ function sfShare() {
       if (pw) pw.style.display = 'none';
     }, 500);
     belowMachine.classList.add('show');
-    // Kindle誘導：セッション中1回のみ
-    if (!sessionStorage.getItem('sf_kindle_shown')) {
-      sessionStorage.setItem('sf_kindle_shown', '1');
+    // Kindle誘導：1回のみ
+    if (!localStorage.getItem('sf_kindle_shown')) {
+      localStorage.setItem('sf_kindle_shown', '1');
       setTimeout(function() {
         var kp = document.getElementById('kindle-popup');
         kp.style.display = 'flex';
