@@ -964,11 +964,6 @@
         <div id="ut-stone-counter" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;width:100%;"></div>
         <p id="ut-stone-progress" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;text-align:center;margin-bottom:8px;"></p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:rgba(255,255,255,0.55);text-align:center;margin-top:20px;margin-bottom:16px;line-height:2;">3つのアイテムを入手して Under tone へ</p>
-        <div id="ut-countdown-wrap" style="text-align:center;margin-bottom:32px;display:none;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#6d5fc4;margin-bottom:14px;">CHAPTER I</p>
-          <div id="ut-countdown-display" style="font-family:'Cormorant Garamond',serif;font-size:32px;letter-spacing:4px;color:#c4b5fd;line-height:1.3;"></div>
-          <p id="ut-countdown-label" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#4c3f8a;margin-top:10px;"></p>
-        </div>
       </div>
 
       <!-- Teaser: non-fans (clickable → popup) -->
@@ -4757,45 +4752,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.getElementById('undertone-items-popup').style.display = 'flex';
     }
 
-    // ── Under tone 第一章 カウントダウン（プロローグ読了後のみ表示）──
-    (function() {
-      // プロローグ全5話（index 0〜4）を読了、またはadminであれば表示
-      var seenProse = JSON.parse(localStorage.getItem('sf_undertone_seen_prose') || '[]');
-      var prologueComplete = seenProse.indexOf(4) >= 0
-        || localStorage.getItem('sf_undertone_ch5_unlocked') === 'true'
-        || localStorage.getItem('sf_undertone_admin') === 'true';
-      if (!prologueComplete) return; // 未読了なら非表示のまま終了
-
-      var wrap = document.getElementById('ut-countdown-wrap');
-      if (wrap) wrap.style.display = '';
-
-      var TARGET = new Date('2026-06-10T00:00:00+09:00').getTime();
-      var dispEl  = document.getElementById('ut-countdown-display');
-      var labelEl = document.getElementById('ut-countdown-label');
-      function pad(n) { return String(n).padStart(2,'0'); }
-      function tick() {
-        if (!dispEl) return;
-        var diff = TARGET - Date.now();
-        if (diff <= 0) {
-          dispEl.textContent = '公開中';
-          if (labelEl) labelEl.textContent = 'Chapter I';
-          return;
-        }
-        var totalSec = Math.floor(diff / 1000);
-        var days  = Math.floor(totalSec / 86400);
-        var hours = Math.floor((totalSec % 86400) / 3600);
-        var mins  = Math.floor((totalSec % 3600) / 60);
-        var secs  = totalSec % 60;
-        if (days > 0) {
-          dispEl.innerHTML = days + '<span style="font-size:16px;letter-spacing:3px;color:#6d5fc4;">日</span> ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs);
-        } else {
-          dispEl.textContent = pad(hours) + ':' + pad(mins) + ':' + pad(secs);
-        }
-        if (labelEl) labelEl.textContent = '6.10 公開予定';
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
 
     function checkUndertoneSection() {
       var isAdmin = localStorage.getItem('sf_undertone_admin') === 'true';
