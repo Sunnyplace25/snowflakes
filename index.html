@@ -2020,8 +2020,10 @@ function sfShare() {
     object-fit: cover; margin-bottom: 18px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
-  #nr-reel-wrap { width:100%; margin-bottom:16px; border-radius:12px; overflow:hidden; }
-  #nr-reel-wrap iframe { width:100% !important; min-width:0 !important; }
+  #new-release-card .nr-snow {
+    font-size: 48px; letter-spacing: 6px; color: #7aaedb;
+    margin: 4px 0 18px; display: block;
+  }
   #new-release-card .nr-type {
     font-family: 'Cormorant Garamond', serif;
     font-size: 10px; letter-spacing: 5px; color: #94a3b8;
@@ -2055,13 +2057,11 @@ function sfShare() {
 <div id="new-release-overlay">
   <div id="new-release-card">
     <button id="new-release-close" onclick="closeNewRelease()">✕</button>
-    <p class="nr-label">NEW RELEASE</p>
-    <div id="nr-reel-wrap" style="width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;">
-      <iframe id="nr-yt-iframe" src="https://www.youtube.com/embed/KLsQvTgBuc0?rel=0&playsinline=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;"></iframe>
-    </div>
-    <p class="nr-type">SINGLE</p>
-    <p class="nr-title">Rabbit /<br>ハッピーエンドはいらない</p>
-    <a class="nr-btn" href="https://open.spotify.com/intl-ja/album/44dOQWscvSwLartZT8UBsJ?si=bU4e5_FpQoqfzC8t2HKELA" target="_blank">Spotify →</a>
+    <p class="nr-label">GACHA</p>
+    <span class="nr-snow">❄</span>
+    <p class="nr-type">毎日1回引ける</p>
+    <p class="nr-title" style="font-family:'Noto Serif JP',serif;font-size:15px;line-height:1.9;margin-bottom:22px;">コンテンツを回って積もる Snow ❄ で<br>ガチャを引いてアイテムを集めよう。<br>アイテムでコンテンツが解放されます。</p>
+    <a class="nr-btn" href="gacha/" style="display:block;margin-bottom:12px;">ガチャを引きに行く →</a>
   </div>
 </div>
 
@@ -3056,9 +3056,8 @@ document.addEventListener('visibilitychange', function() {
 <script>
   // ── NEW RELEASE POPUP ──
   (function() {
-    var KEY = 'sf_nr_rabbit_shown';
-    if (Date.now() >= new Date('2026-06-01T00:00:00+09:00').getTime()) { /* 終了 */ }
-    else if (!sessionStorage.getItem(KEY)) {
+    var KEY = 'sf_gacha_popup_shown';
+    if (!sessionStorage.getItem(KEY)) {
       sessionStorage.setItem(KEY, '1');
       setTimeout(function() {
         document.getElementById('new-release-overlay').classList.add('show');
