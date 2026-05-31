@@ -2245,6 +2245,7 @@ function submitUtPw() {
       { label:'STREET LAMP',
         desc:'点いたり消えたりしている。\nリズムがある気がした',
         x:'75%', y:'15%',
+        closeAudio:'sound/streetlamp_click.mp3',
         chars:[
           { char:'hinata', speech:'……音が聞こえる', weight:2 },
           { char:'kouta',  speech:'なんか、規則性がある気がする', weight:2 },
@@ -2312,6 +2313,7 @@ function submitUtPw() {
       { label:'WIRE',
         desc:'頭上に電線が張られている。\n鳥が一羽、じっとしている',
         x:'40%', y:'12%',
+        audio:'sound/wire_spark.mp3',
         chars:[
           { char:'hinata', speech:'……音が聞こえる', weight:2 },
           { char:'hayate', speech:'なんか見てるな', weight:2 },
@@ -3126,7 +3128,10 @@ function submitUtPw() {
     { char: 'hinata', speech: '……取れた' },
   ];
 
+  var _currentHotspot = null;
+
   function clickHotspot(spot) {
+    _currentHotspot = spot;
     document.getElementById('hotspot-label').textContent = spot.label;
     document.getElementById('hotspot-desc').textContent  = spot.desc;
     if (spot.audio) {
@@ -3170,6 +3175,12 @@ function submitUtPw() {
   }
 
   window.closeHotspot = function() {
+    if (_currentHotspot && _currentHotspot.closeAudio) {
+      var sfx = new Audio(_currentHotspot.closeAudio);
+      sfx.volume = 0.7;
+      sfx.play().catch(function(){});
+    }
+    _currentHotspot = null;
     document.getElementById('hotspot-popup').classList.remove('show');
     hideInteriorSpeech();
   };
