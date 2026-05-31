@@ -2803,6 +2803,14 @@ document.addEventListener('visibilitychange', function() {
     audio.currentTime = ratio * audio.duration;
   };
 
+  // 最初のユーザー操作で自動再生
+  ['scroll','click','touchstart','keydown'].forEach(function(ev) {
+    document.addEventListener(ev, function _firstInteract() {
+      _tryAutoPlay();
+      document.removeEventListener(ev, _firstInteract);
+    }, { once: true, passive: true });
+  });
+
   window.sfClose = function() {
     player.style.opacity = '0';
     player.style.transform = 'translateY(16px)';
