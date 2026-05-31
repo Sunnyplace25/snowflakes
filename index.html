@@ -3056,9 +3056,10 @@ document.addEventListener('visibilitychange', function() {
 <script>
   // ── NEW RELEASE POPUP ──
   (function() {
-    var KEY = 'sf_gacha_popup_shown';
-    if (!sessionStorage.getItem(KEY)) {
-      sessionStorage.setItem(KEY, '1');
+    var KEY = 'sf_gacha_popup_date';
+    var today = new Date().toLocaleDateString('ja-JP');
+    if (localStorage.getItem(KEY) !== today) {
+      localStorage.setItem(KEY, today);
       setTimeout(function() {
         document.getElementById('new-release-overlay').classList.add('show');
       }, 800);
