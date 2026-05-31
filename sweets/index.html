@@ -4805,6 +4805,30 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (teaserBtn) teaserBtn.setAttribute('onclick', ok ? '' : 'openUndertoneItemsPopup()');
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
+
+      // プロローグ解放トースト（初回のみ）
+      if (ok && !localStorage.getItem('sf_ut_prologue_toast_shown')) {
+        localStorage.setItem('sf_ut_prologue_toast_shown', '1');
+        setTimeout(function() {
+          var t = document.createElement('div');
+          t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);z-index:900;'
+            + 'background:rgba(13,10,30,0.96);border:1px solid rgba(196,181,253,0.35);border-radius:50px;'
+            + 'padding:12px 28px;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:4px;'
+            + 'color:#c4b5fd;white-space:nowrap;opacity:0;transition:opacity 0.5s,transform 0.5s;'
+            + 'box-shadow:0 0 20px rgba(196,181,253,0.2);';
+          t.textContent = 'PROLOGUE — 公開';
+          document.body.appendChild(t);
+          requestAnimationFrame(function() { requestAnimationFrame(function() {
+            t.style.opacity = '1';
+            t.style.transform = 'translateX(-50%) translateY(0)';
+          }); });
+          setTimeout(function() {
+            t.style.opacity = '0';
+            t.style.transform = 'translateX(-50%) translateY(16px)';
+            setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 600);
+          }, 3500);
+        }, 1000);
+      }
     }
 
     // ── Live Archive ──
