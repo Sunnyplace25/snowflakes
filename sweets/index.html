@@ -4733,12 +4733,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var allGot = UT_STONE_ITEMS.every(function(item) {
         return item.alwaysGrey ? false : (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key));
       });
-      if (allGot && !_utItemsReadyShown && !localStorage.getItem('sf_ut_items_ready_shown')) {
-        _utItemsReadyShown = true;
-        localStorage.setItem('sf_ut_items_ready_shown', '1');
-        var popup = document.getElementById('ut-items-ready-popup');
-        if (popup) popup.style.display = 'flex';
-      }
+      // ポップアップ廃止済み
     }
 
     function openUndertoneItemsPopup() {
