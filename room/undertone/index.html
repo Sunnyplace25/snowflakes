@@ -2983,6 +2983,15 @@ function submitUtPw() {
     updateSoundBtn();
   };
 
+  // 画面が隠れたとき（スマホでアプリ切替・画面消灯）全音声停止
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      _bgmAudio.pause();
+      stopProseSound();
+      if (_shopMusicAudio) { _shopMusicAudio.pause(); _shopMusicPlaying = false; _resetAllMusicBtns(); }
+    }
+  });
+
   function getSound(key, src) {
     if (!_sounds[key]) {
       var a = new Audio(src);
