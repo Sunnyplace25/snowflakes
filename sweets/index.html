@@ -6872,11 +6872,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     function onWatchComplete() {
-      var msg = document.getElementById('undertone-yt-msg');
       if (typeof SfSnow === 'undefined') return;
-      if (SfSnow.isUnlocked(ITEM_KEY)) {
-        var icon = document.getElementById('undertone-yt-item-icon');
-        var label = document.getElementById('undertone-yt-item-label');
+      var icon  = document.getElementById('undertone-yt-item-icon');
+      var label = document.getElementById('undertone-yt-item-label');
+      if (SfSnow.isUnlocked(ITEM_KEY) || localStorage.getItem(WATCHED_KEY)) {
         if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
         if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
         return;
@@ -6884,8 +6883,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       SfSnow.unlockItem(ITEM_KEY);
       localStorage.setItem(WATCHED_KEY, '1');
       if (typeof renderItemRows === 'function') renderItemRows();
-      var icon = document.getElementById('undertone-yt-item-icon');
-      var label = document.getElementById('undertone-yt-item-label');
       if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
       if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
       setTimeout(function() {
