@@ -795,9 +795,18 @@
   var gate = document.getElementById('pw-gate');
   var msg  = document.getElementById('pw-gate-msg');
 
+  var _params = new URLSearchParams(location.search);
   // ?admin=1 でadmin設定
-  if (new URLSearchParams(location.search).get('admin') === '1') {
+  if (_params.get('admin') === '1') {
     localStorage.setItem('sf_undertone_admin', 'true');
+  }
+  // ?preview=1 でアイテム演出プレビュー（フラグリセット＋アイテム付与）
+  if (_params.get('preview') === '1') {
+    localStorage.removeItem('sf_ut_prologue_gate_seen');
+    ['pendant_hinata','earring_hayate','ring_kouta'].forEach(function(k) {
+      var items = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+      if (items.indexOf(k) === -1) { items.push(k); localStorage.setItem('sf_unlocked', JSON.stringify(items)); }
+    });
   }
   // admin / file: bypass
   if (localStorage.getItem('sf_undertone_admin') === 'true' || location.protocol === 'file:') {
