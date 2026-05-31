@@ -989,7 +989,17 @@
       <!-- Link: fans -->
       <!-- YouTube 告知動画 + ピアス入手 -->
       <div id="undertone-yt-wrap" style="max-width:480px;margin:0 auto 20px;">
-        <div id="undertone-yt-player" style="width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;"></div>
+        <div style="width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;position:relative;">
+          <div id="undertone-yt-player" style="width:100%;height:100%;position:absolute;inset:0;"></div>
+          <div id="undertone-yt-thumb" onclick="startUndertonePlayer()" style="position:absolute;inset:0;cursor:pointer;z-index:2;">
+            <img src="https://i.ytimg.com/vi/vvFb2JzlhXU/maxresdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);">
+              <div style="width:56px;height:56px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <div style="width:0;height:0;border-top:11px solid transparent;border-bottom:11px solid transparent;border-left:18px solid #fff;margin-left:4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
         <p id="undertone-yt-msg" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;margin-top:10px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
           <img id="undertone-yt-item-icon" src="../item/earring_hayate.webp" style="width:20px;opacity:0.5;filter:grayscale(1);flex-shrink:0;">
           <span id="undertone-yt-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">最後まで視聴でアイテム入手</span>
@@ -6849,6 +6859,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var ITEM_KEY     = 'earring_hayate';
     var WATCHED_KEY  = 'sf_yt_watched_undertone';
 
+    window.startUndertonePlayer = function() {
+      var thumb = document.getElementById('undertone-yt-thumb');
+      if (thumb) thumb.style.display = 'none';
+      loadYTAPI();
+    };
+
     function loadYTAPI() {
       if (window.YT && window.YT.Player) { initPlayer(); return; }
       var tag = document.createElement('script');
@@ -6862,7 +6878,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!wrap) return;
       new YT.Player('undertone-yt-player', {
         videoId: YT_VIDEO_ID,
-        playerVars: { rel: 0, playsinline: 1 },
+        playerVars: { rel: 0, playsinline: 1, autoplay: 1 },
         events: {
           onStateChange: function(e) {
             if (e.data === YT.PlayerState.ENDED) onWatchComplete();
@@ -6897,7 +6913,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (icon)  { icon.style.filter = ''; icon.style.opacity = '0.9'; }
         if (label) { label.textContent = '入手済み'; label.style.color = '#fde68a'; }
       }
-      loadYTAPI();
     });
   })();
 </script>
