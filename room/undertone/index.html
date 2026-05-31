@@ -843,7 +843,7 @@
   });
   html += '</div>';
   html += '<p id="gate-release-text" style="font-family:\'Cormorant Garamond\',serif;font-size:13px;letter-spacing:4px;color:#c4b5fd;opacity:0;transition:opacity 1s;margin-bottom:32px;">PROLOGUE UNLOCKED</p>';
-  html += '<button id="gate-enter-btn" onclick="document.getElementById(\'pw-gate\').style.display=\'none\';localStorage.setItem(\'' + seenKey + '\',\'1\');" '
+  html += '<button id="gate-enter-btn" onclick="document.getElementById(\'pw-gate\').style.display=\'none\';localStorage.setItem(\'' + seenKey + '\',\'1\');setTimeout(function(){if(window.openChapterPopup)openChapterPopup(0);},600);" '
     + 'style="display:none;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:13px 36px;color:#c4b5fd;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:5px;cursor:pointer;">enter</button>';
   msg.innerHTML = html;
 
