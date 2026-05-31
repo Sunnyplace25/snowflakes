@@ -2599,7 +2599,12 @@ function submitUtPw() {
         document.getElementById('prose-label').textContent = ch5.label;
         document.getElementById('prose-text').textContent  = ch5.text;
         var si = document.getElementById('prose-scene-img'); if (si) si.style.display = 'none';
-        var t2 = document.getElementById('prose-text-2');   if (t2) t2.style.display = 'none';
+        var t2 = document.getElementById('prose-text-2');
+        if (t2) {
+          t2.style.display = '';
+          t2.style.cssText = 'margin-top:32px;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:4px;color:#4c3f8a;text-align:center;line-height:2.2;';
+          t2.textContent = '── 路地裏を散策して\nアイテムを集めよう ──';
+        }
         document.getElementById('prose-close-btn').textContent = '── 歩き出す ──';
         _proseCloseCallback = function() { renderScene(); };
         closeSKPopup();

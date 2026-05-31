@@ -4759,9 +4759,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     // ── Under tone 第一章 カウントダウン（プロローグ読了後のみ表示）──
     (function() {
-      // プロローグ全5話（index 0〜4）を読了していることを確認
+      // プロローグ全5話（index 0〜4）を読了、またはadminであれば表示
       var seenProse = JSON.parse(localStorage.getItem('sf_undertone_seen_prose') || '[]');
-      var prologueComplete = seenProse.indexOf(4) >= 0; // 0-5「帰り道」まで読了
+      var prologueComplete = seenProse.indexOf(4) >= 0
+        || localStorage.getItem('sf_undertone_ch5_unlocked') === 'true'
+        || localStorage.getItem('sf_undertone_admin') === 'true';
       if (!prologueComplete) return; // 未読了なら非表示のまま終了
 
       var wrap = document.getElementById('ut-countdown-wrap');
