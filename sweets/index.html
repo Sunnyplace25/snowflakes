@@ -1029,6 +1029,16 @@
         </div>
       </div>
 
+      <!-- Under tone: アイテム不足ポップアップ -->
+      <div id="undertone-items-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);">
+        <div style="background:rgba(13,10,25,0.97);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:28px 24px 24px;max-width:300px;width:100%;text-align:center;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:16px;">UNDER TONE</p>
+          <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#c4b5fd;margin-bottom:20px;line-height:1.8;">アイテムが足りません</p>
+          <div id="ut-items-check-icons" style="display:flex;justify-content:center;gap:20px;margin-bottom:20px;"></div>
+          <button onclick="document.getElementById('undertone-items-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#4c3f8a;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#8b7fd4'" onmouseout="this.style.color='#4c3f8a'">── 閉じる ──</button>
+        </div>
+      </div>
+
       <!-- Under tone teaser popup (Coming Soon) -->
       <div id="undertone-coming-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
         <div style="pointer-events:auto;background:rgba(13,10,25,0.92);border:1px solid rgba(196,181,253,0.2);border-radius:16px;padding:20px 24px;max-width:320px;width:100%;backdrop-filter:blur(16px);animation:undertonePopInSw 0.4s cubic-bezier(0.22,1,0.36,1);display:flex;align-items:flex-end;gap:12px;">
@@ -4725,6 +4735,24 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     }
 
+    function openUndertoneItemsPopup() {
+      var iconWrap = document.getElementById('ut-items-check-icons');
+      if (iconWrap) {
+        iconWrap.innerHTML = '';
+        UT_STONE_ITEMS.forEach(function(item) {
+          var got = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key);
+          var div = document.createElement('div');
+          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;';
+          div.innerHTML = '<img src="' + item.img + '" style="width:36px;height:36px;object-fit:contain;'
+            + (got ? '' : 'filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;') + '">'
+            + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:1px;color:'
+            + (got ? '#c4b5fd' : '#334155') + ';">' + (got ? '✓' : '−') + '</span>';
+          iconWrap.appendChild(div);
+        });
+      }
+      document.getElementById('undertone-items-popup').style.display = 'flex';
+    }
+
     function checkUndertoneSection() {
       var isAdmin = localStorage.getItem('sf_undertone_admin') === 'true';
       var ok = isAdmin;
@@ -4732,6 +4760,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!sec) return;
       sec.style.display = '';
       renderUndertoneStones();
+      // teaser ボタンのクリック先を切り替え
+      var teaserBtn = document.querySelector('#undertone-teaser button');
+      if (teaserBtn) teaserBtn.setAttribute('onclick', ok ? '' : 'openUndertoneItemsPopup()');
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
     }
