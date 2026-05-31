@@ -787,10 +787,11 @@
 <script>
 (function() {
   var ITEMS = ['pendant_hinata', 'earring_hayate', 'ring_kouta'];
+  var _base = location.pathname.replace(/\/room\/undertone\/?$/, '/');
   var ITEM_IMGS = [
-    '../../item/pendant_hinata.webp',
-    '../../item/earring_hayate.webp',
-    '../../item/ring_kouta.webp'
+    _base + 'item/pendant_hinata.webp',
+    _base + 'item/earring_hayate.webp',
+    _base + 'item/ring_kouta.webp'
   ];
   var gate = document.getElementById('pw-gate');
   var msg  = document.getElementById('pw-gate-msg');
