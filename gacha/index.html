@@ -778,6 +778,17 @@ function sfShare() {
   </div>
 </div>
 
+<!-- Kindle誘導ポップアップ -->
+<div id="kindle-popup" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div style="max-width:320px;width:min(88vw,320px);background:#0c1220;border:1px solid rgba(253,230,138,0.25);border-radius:20px;padding:clamp(20px,5vw,32px) clamp(16px,5vw,24px) 24px;text-align:center;animation:nrSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#5a8fa8;margin-bottom:20px;">NOVELS</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:clamp(13px,3.5vw,15px);font-weight:300;color:#e2e8f0;line-height:2;margin-bottom:24px;">ガチャで見つけた小さなアイテムは、<br>Snow flakes の物語へつながっています。<br><br>本編をまとめて読みたい方は、<br>Kindle 版もご覧いただけます。</p>
+    <a href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank" style="display:block;margin-bottom:10px;padding:10px 0;border:1px solid rgba(253,230,138,0.4);border-radius:100px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.08)'" onmouseout="this.style.background='none'">Kindle で読む →</a>
+    <button onclick="document.getElementById('kindle-popup').style.display='none'" style="display:block;width:100%;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;padding:8px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+<style>@keyframes nrSlideUp{from{opacity:0;transform:translateY(30px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}</style>
+
 <!-- 10回結果オーバーレイ -->
 <div class="ten-overlay" id="tenOverlay">
   <p class="ten-header">GACHA × 10</p>
@@ -1090,6 +1101,14 @@ function sfShare() {
       if (pw) pw.style.display = 'none';
     }, 500);
     belowMachine.classList.add('show');
+    // Kindle誘導：セッション中1回のみ
+    if (!sessionStorage.getItem('sf_kindle_shown')) {
+      sessionStorage.setItem('sf_kindle_shown', '1');
+      setTimeout(function() {
+        var kp = document.getElementById('kindle-popup');
+        kp.style.display = 'flex';
+      }, 600);
+    }
   });
 
   document.getElementById('candy-close').addEventListener('click', function() {
