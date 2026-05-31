@@ -1223,7 +1223,7 @@
                       <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
                       <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
                     </div>
-                    <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;margin:0;">SWEETs 2026 Springの限定ライブ映像を開放するパス。<br>本編では描かれないステージ上の表情や、<br>三人の音の重なりを楽しめます。</p>
+                    <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
                   </div>
                 </div>
 
@@ -5612,8 +5612,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       springBpImg.style.filter  = '';
       springBpImg.style.opacity = '0.9';
       if (springBpName)  springBpName.style.color = '#e2e8f0';
-      if (springBpDesc)  springBpDesc.style.color  = '#94a3b8';
       if (springBpCheck) springBpCheck.textContent = '✓ 入手済み';
+      if (springBpDesc) {
+        springBpDesc.style.color = '#94a3b8';
+        springBpDesc.innerHTML = 'SWEETs 2026 Springの限定ライブ映像を開放するパス。<br>本編では描かれないステージ上の表情や、<br>三人の音の重なりを楽しめます。';
+      }
+    } else {
+      if (springBpDesc) {
+        springBpDesc.textContent = '???';
+        springBpDesc.style.color = '#334155';
+        springBpDesc.style.letterSpacing = '4px';
+      }
     }
     // 色紙 入手済みならカラーに
     var shikishiImg   = document.getElementById('spring-rare-shikishi-img');
