@@ -454,6 +454,44 @@
       font-size:10px; color:#94a3b8; letter-spacing:2px;
     }
 
+    .tarot-share-area {
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+      animation:fadeSlide 0.5s ease;
+    }
+    .tarot-share-area.show { display:flex; }
+    .tarot-share-label {
+      font-family:'Cormorant Garamond',serif;
+      font-size:10px;
+      letter-spacing:4px;
+      color:#475569;
+    }
+    .tarot-share-btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .tarot-share-btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.09);
+      border-radius:50px;
+      padding:8px 20px;
+      color:#64748b;
+      font-family:'Cormorant Garamond',serif;
+      font-size:11px;
+      letter-spacing:3px;
+      cursor:pointer;
+      text-decoration:none;
+      transition:all 0.2s;
+    }
+    .tarot-share-btn:hover {
+      border-color:rgba(196,181,253,0.3);
+      color:#c4b5fd;
+      background:rgba(196,181,253,0.06);
+    }
+
     .tarot-close {
       width:100%; max-width:300px;
       background:rgba(255,255,255,0.03);
@@ -1501,6 +1539,15 @@ function submitUtPw() {
   </div>
 
   <p class="tarot-credit" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
+
+  <div class="tarot-share-area" id="tarot-share-area">
+    <p class="tarot-share-label">誰かに届ける</p>
+    <div class="tarot-share-btns">
+      <button class="tarot-share-btn" onclick="shareTarotX()">X</button>
+      <button class="tarot-share-btn" onclick="shareTarotLINE()">LINE</button>
+      <button class="tarot-share-btn" onclick="shareTarotThreads()">Threads</button>
+    </div>
+  </div>
 
   <button class="tarot-close" id="tarot-close-btn" style="display:none;margin-top:32px;" onclick="closeTarot()">閉じる</button>
   <a href="index.html" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;margin-top:20px;" id="tarot-top-link">TOPへ戻る</a>
@@ -3922,6 +3969,7 @@ function submitUtPw() {
       showResultPanel('tarot-result-panel', pendingDraw, tarotMode);
       document.getElementById('tarot-close-btn').style.display = 'block';
       document.getElementById('tarot-top-link').style.display = 'block';
+      document.getElementById('tarot-share-area').classList.add('show');
       // カードクリックで拡大
       var tc = document.getElementById('tarot-card');
       tc.onclick = function() {
@@ -4755,9 +4803,34 @@ function submitUtPw() {
     setTimeout(function() { ov.classList.remove('ready'); }, 500);
     document.getElementById('tarot-close-btn').style.display = 'none';
     document.getElementById('tarot-top-link').style.display = 'none';
+    document.getElementById('tarot-share-area').classList.remove('show');
     // クリックをflipCardに戻す
     var tc = document.getElementById('tarot-card');
     if (tc) tc.onclick = function() { flipCard(); };
+  };
+
+  /* ── Share ── */
+  function buildTarotShareText() {
+    if (!pendingDraw) return '';
+    var name = pendingDraw.card.name || '';
+    var key  = (pendingDraw.data.key || '').replace(/[\r\n]+/g, ' ');
+    var url  = 'https://sunnyplace25.github.io/snowflakes/room/undertone/';
+    return '今日の音\n\n' + name + '\n\n' + key + '\n\nSnow flakes\n' + url;
+  }
+
+  window.shareTarotX = function() {
+    var t = buildTarotShareText();
+    window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(t), '_blank');
+  };
+
+  window.shareTarotLINE = function() {
+    var t = buildTarotShareText();
+    window.open('https://line.me/R/msg/text/?' + encodeURIComponent(t), '_blank');
+  };
+
+  window.shareTarotThreads = function() {
+    var t = buildTarotShareText();
+    window.open('https://www.threads.net/intent/post?text=' + encodeURIComponent(t), '_blank');
   };
 
   /* ── Equipment ── */
