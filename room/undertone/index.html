@@ -1541,6 +1541,10 @@ function submitUtPw() {
   <p class="tarot-credit" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:16px;text-align:center;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>
 
   <div class="tarot-share-area" id="tarot-share-area">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#475569;margin:0;">Under tone</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#94a3b8;margin:2px 0 12px;">今日の音</p>
+    <img id="tarot-share-img" src="" alt="" style="width:120px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin-bottom:12px;">
+    <p id="tarot-share-advice" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;text-align:center;line-height:1.8;max-width:280px;margin-bottom:16px;white-space:pre-line;"></p>
     <p class="tarot-share-label">誰かに届ける</p>
     <div class="tarot-share-btns">
       <button class="tarot-share-btn" onclick="shareTarotX()">X</button>
@@ -3970,6 +3974,17 @@ function submitUtPw() {
       document.getElementById('tarot-close-btn').style.display = 'block';
       document.getElementById('tarot-top-link').style.display = 'block';
       document.getElementById('tarot-share-area').classList.add('show');
+      var shareImg = document.getElementById('tarot-share-img');
+      if (shareImg && pendingDraw) {
+        shareImg.src = getCardImg(pendingDraw.card);
+        shareImg.style.transform = pendingDraw.up ? '' : 'rotate(180deg)';
+      }
+      var shareAdvice = document.getElementById('tarot-share-advice');
+      if (shareAdvice && pendingDraw) {
+        var key = pendingDraw.data.key || '';
+        var adv = pendingDraw.data.advice || '';
+        shareAdvice.textContent = key + (adv ? '\n' + adv : '');
+      }
       // カードクリックで拡大
       var tc = document.getElementById('tarot-card');
       tc.onclick = function() {
@@ -4812,10 +4827,10 @@ function submitUtPw() {
   /* ── Share ── */
   function buildTarotShareText() {
     if (!pendingDraw) return '';
-    var name = pendingDraw.card.name || '';
     var key  = (pendingDraw.data.key || '').replace(/[\r\n]+/g, ' ');
-    var url  = 'https://sunnyplace25.github.io/snowflakes/room/undertone/';
-    return '今日の音\n\n' + name + '\n\n' + key + '\n\nSnow flakes\n' + url;
+    var adv  = (pendingDraw.data.advice || '').replace(/[\r\n]+/g, ' ');
+    var url  = 'https://sunnyplace25.github.io/snowflakes/';
+    return 'Under tone\n今日の音\n\n' + key + '\n' + adv + '\n\nSnow flakes\n' + url;
   }
 
   window.shareTarotX = function() {
