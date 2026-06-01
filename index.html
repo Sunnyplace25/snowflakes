@@ -2812,11 +2812,14 @@ document.addEventListener('visibilitychange', function() {
   });
 
   window.sfClose = function() {
+    audio.pause();
+    playing = false;
+    playBtn.textContent = '▶';
     player.style.opacity = '0';
     player.style.transform = 'translateY(16px)';
     player.style.pointerEvents = 'none';
     openBtn.style.display = 'flex';
-    openBtn.style.color = playing ? '#93c5fd' : '#475569';
+    openBtn.style.color = '#475569';
   };
 
   window.sfOpen = function() {
