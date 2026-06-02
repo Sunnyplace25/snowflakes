@@ -425,10 +425,57 @@
       cursor: zoom-out;
     }
     .room-light.open { display: flex; }
-    .room-light img {
+    .room-light-inner {
+      position: relative;
+      display: inline-flex;
+      cursor: default;
+    }
+    .room-light-inner img {
       max-width: 92vw; max-height: 86vh;
       border-radius: 6px;
       box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      display: block;
+    }
+    .room-hotspot {
+      position: absolute; width: 48px; height: 48px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(147,197,253,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: rgba(147,197,253,0.5);
+      cursor: pointer; transform: translate(-50%,-50%);
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+      backdrop-filter: blur(2px);
+    }
+    .room-hotspot:hover {
+      background: rgba(147,197,253,0.15);
+      border-color: rgba(147,197,253,0.5);
+      color: #93c5fd;
+    }
+    .room-hs-popup {
+      position: fixed; inset: 0; z-index: 600;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(8,13,24,0.8);
+      backdrop-filter: blur(12px);
+    }
+    .room-hs-popup.show { display: flex; }
+    .room-hs-card {
+      background: rgba(13,21,38,0.99);
+      border: 1px solid rgba(147,197,253,0.12);
+      border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 100%; text-align: center;
+      animation: roomCardIn 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes roomCardIn {
+      from { opacity: 0; transform: scale(0.94) translateY(10px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .room-hs-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 6px; color: #475569; margin-bottom: 14px;
+    }
+    .room-hs-desc {
+      font-size: 13px; color: #e2e8f0; line-height: 2.4;
+      font-weight: 400; margin-bottom: 22px; white-space: pre-line;
     }
     h1 { cursor: pointer; transition: opacity 0.2s; }
     h1:hover { opacity: 0.75; }
@@ -725,6 +772,12 @@
       if (el) el.classList.toggle('open');
     }
 
+    function openRoomHotspot(label, desc) {
+      document.getElementById('hinata-hs-label').textContent = label;
+      document.getElementById('hinata-hs-desc').textContent = desc;
+      document.getElementById('hinata-hs-popup').classList.add('show');
+    }
+
     function openRoomLight() {
       document.getElementById('room-light').classList.add('open');
     }
@@ -1001,7 +1054,23 @@
 
   <!-- Room Lightbox -->
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
-    <img src="room_interior.webp" alt="ヒナタの部屋">
+    <div class="room-light-inner" onclick="event.stopPropagation()">
+      <img src="room_interior.webp" alt="ヒナタの部屋">
+      <button class="room-hotspot" style="left:73%;top:50%;" onclick="openRoomHotspot('使い込まれたギター','最初から上手かったわけじゃない。\nただ、やめなかっただけ。')">＋</button>
+      <button class="room-hotspot" style="left:38%;top:22%;" onclick="openRoomHotspot('夜の窓','外の音は、いつも少し遠い。')">＋</button>
+      <button class="room-hotspot" style="left:93%;top:83%;" onclick="openRoomHotspot('冷めたコーヒー','気づいたら、いつも冷めている。')">＋</button>
+      <button class="room-hotspot" style="left:48%;top:65%;" onclick="openRoomHotspot('音を確かめる箱','大きく鳴らすためじゃない。\n自分の中に残っている音を、\nもう一度、確かめるための場所。')">＋</button>
+      <button class="room-hotspot" style="left:18%;top:55%;" onclick="openRoomHotspot('ベッド','寝るだけ。')">＋</button>
+    </div>
+  </div>
+
+  <!-- Room Hotspot Popup -->
+  <div class="room-hs-popup" id="hinata-hs-popup" onclick="this.classList.remove('show')">
+    <div class="room-hs-card" onclick="event.stopPropagation()">
+      <p class="room-hs-label" id="hinata-hs-label"></p>
+      <p class="room-hs-desc" id="hinata-hs-desc"></p>
+      <button onclick="document.getElementById('hinata-hs-popup').classList.remove('show')" style="background:transparent;border:1px solid rgba(147,197,253,0.2);border-radius:100px;padding:6px 20px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;cursor:pointer;">── 閉じる ──</button>
+    </div>
   </div>
 
 </body>
