@@ -767,6 +767,15 @@
     </div>
   </div>
 
+  <!-- Shukusou DEMO notice popup (2026-06-03) -->
+  <div id="shukusou-notice-popup" style="position:fixed;inset:0;z-index:9360;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div id="shukusou-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 20px;">MUSIC</p>
+      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">祝奏（DEMO）<br>追加しました</p>
+      <button onclick="closeShukusouNotice()" style="background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fde68a';this.style.borderColor='rgba(253,230,138,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.3)'">OK</button>
+    </div>
+  </div>
+
   <!-- Hinata room explore notice popup (2026-06-02) -->
   <div id="hinata-room-notice-popup" style="position:fixed;inset:0;z-index:9350;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
     <div id="hinata-room-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(147,197,253,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
@@ -5677,6 +5686,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
+  window.closeShukusouNotice = function() {
+    var pop = document.getElementById('shukusou-notice-popup');
+    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
+  };
+
   window.closeHinataRoomNotice = function() {
     var pop = document.getElementById('hinata-room-notice-popup');
     if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
@@ -5762,6 +5776,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var box = document.getElementById('update-notice-box');
         if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
         if (box) { box.style.transform = 'none'; }
+      }, 800);
+    }
+
+    if (!localStorage.getItem('sf_shukusou_notice_20260603')) {
+      localStorage.setItem('sf_shukusou_notice_20260603', '1');
+      setTimeout(function() {
+        var pop = document.getElementById('shukusou-notice-popup');
+        var box = document.getElementById('shukusou-notice-box');
+        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
+        if (box) box.style.transform = 'none';
       }, 800);
     }
 
