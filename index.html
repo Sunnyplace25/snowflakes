@@ -2812,13 +2812,9 @@ document.addEventListener('visibilitychange', function() {
     audio.currentTime = ratio * audio.duration;
   };
 
-  // 最初のユーザー操作で自動再生
-  ['scroll','click','touchstart','keydown'].forEach(function(ev) {
-    document.addEventListener(ev, function _firstInteract() {
-      _tryAutoPlay();
-      document.removeEventListener(ev, _firstInteract);
-    }, { once: true, passive: true });
-  });
+  // 自動再生なし（手動再生のみ）
+  audio.muted = false;
+  audio.volume = _targetVol;
 
   window.sfClose = function() {
     audio.pause();
