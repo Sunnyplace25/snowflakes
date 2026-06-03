@@ -767,6 +767,16 @@
     </div>
   </div>
 
+  <!-- Shukusou jacket notice popup (2026-06-03) -->
+  <div id="shukusou-jacket-popup" style="position:fixed;inset:0;z-index:9370;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div id="shukusou-jacket-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
+      <img src="../music/cover_shukusou.webp" alt="祝奏" style="width:160px;border-radius:8px;margin:0 auto 20px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.4);">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 12px;">MUSIC</p>
+      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">祝奏 Wedding Session<br>ジャケット画像が追加されました</p>
+      <button onclick="closeShukusouJacketNotice()" style="background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fde68a';this.style.borderColor='rgba(253,230,138,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.3)'">OK</button>
+    </div>
+  </div>
+
   <!-- Shukusou DEMO notice popup (2026-06-03) -->
   <div id="shukusou-notice-popup" style="position:fixed;inset:0;z-index:9360;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
     <div id="shukusou-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
@@ -5692,6 +5702,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
+  window.closeShukusouJacketNotice = function() {
+    var pop = document.getElementById('shukusou-jacket-popup');
+    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
+  };
+
   window.closeShukusouNotice = function() {
     var pop = document.getElementById('shukusou-notice-popup');
     if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
@@ -5825,11 +5840,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }, 800);
     }
 
-    if (!localStorage.getItem('sf_gacha_notice_20260524')) {
-      localStorage.setItem('sf_gacha_notice_20260524', '1');
+    // ガチャポップアップ終了
+
+    if (!localStorage.getItem('sf_shukusou_jacket_20260603')) {
+      localStorage.setItem('sf_shukusou_jacket_20260603', '1');
       setTimeout(function() {
-        var pop = document.getElementById('gacha-notice-popup');
-        var box = document.getElementById('gacha-notice-box');
+        var pop = document.getElementById('shukusou-jacket-popup');
+        var box = document.getElementById('shukusou-jacket-box');
         if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
         if (box) box.style.transform = 'none';
       }, 800);
