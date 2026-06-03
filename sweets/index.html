@@ -6717,7 +6717,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof renderItemRows === 'function') renderItemRows();
       showNoteItemGet(key); // 初回のみアイテム入手表示
     } else {
-      showCharaPopupOnly(key); // 2回目以降はキャラポップアップのみ
+      showNoteItemGetAgain(key); // 2回目以降: アイテム画像 + 入手済みです
     }
   }
 
