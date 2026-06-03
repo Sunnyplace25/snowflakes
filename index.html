@@ -1440,7 +1440,7 @@ function sfShare() {
     </div>
 
     <!-- SWEETs Limited carousel -->
-    <div class="disco-group">
+    <div class="disco-group" id="sweets-limited-section">
       <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
       <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:18px;overflow:hidden;box-shadow:0 0 18px rgba(249,168,212,0.06);">
         <div style="display:flex;align-items:stretch;">
@@ -3142,7 +3142,7 @@ document.addEventListener('visibilitychange', function() {
     <img src="./music/cover_shukusou.webp" alt="祝奏" style="width:160px;border-radius:8px;margin:0 auto 20px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.4);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 12px;">MUSIC</p>
     <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 20px;">祝奏 Wedding Session<br>楽曲が追加されました</p>
-    <a href="./sweets/" style="display:block;margin:0 auto 20px;padding:10px 28px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.4);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.18)'" onmouseout="this.style.background='rgba(253,230,138,0.1)'">SWEETs で聴く →</a>
+    <button onclick="document.getElementById('shukusou-jacket-popup').style.opacity='0';document.getElementById('shukusou-jacket-popup').style.pointerEvents='none';setTimeout(function(){var el=document.getElementById('sweets-limited-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},300);" style="display:block;width:100%;margin:0 auto 20px;padding:10px 28px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.4);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.18)'" onmouseout="this.style.background='rgba(253,230,138,0.1)'">SWEETs LIMITED へ →</button>
     <button onclick="document.getElementById('shukusou-jacket-popup').style.opacity='0';document.getElementById('shukusou-jacket-popup').style.pointerEvents='none';" style="background:none;border:1px solid rgba(253,230,138,0.2);border-radius:100px;padding:8px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.4)'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(253,230,138,0.2)'">閉じる</button>
   </div>
 </div>
