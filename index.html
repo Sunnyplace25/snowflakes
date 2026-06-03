@@ -2682,7 +2682,7 @@ document.addEventListener('visibilitychange', function() {
     </div>
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
       <span style="font-size:9px;color:#334155;">🔈</span>
-      <input id="sf-volume" type="range" min="0" max="1" step="0.05" value="0.20"
+      <input id="sf-volume" type="range" min="0" max="1" step="0.05" value="0.10"
         oninput="sfSetVolume(this.value)"
         style="width:80px;height:2px;accent-color:rgba(255,255,255,0.3);cursor:pointer;background:transparent;">
     </div>
@@ -2722,7 +2722,7 @@ document.addEventListener('visibilitychange', function() {
     if (typeof gtag === 'function') gtag('event', name, params);
   }
 
-  var _targetVol = 0.20;
+  var _targetVol = 0.10;
   audio.volume = 0;
   audio.muted = true;
   var _autoPlayed = false;
