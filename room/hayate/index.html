@@ -438,7 +438,6 @@
       font-size: 13px; color: rgba(253,230,138,0.5);
       cursor: pointer; transform: translate(-50%,-50%);
       transition: background 0.25s, border-color 0.25s, color 0.25s;
-      backdrop-filter: blur(2px);
     }
     .room-hotspot:hover {
       background: rgba(253,230,138,0.15);
@@ -773,7 +772,7 @@
   <!-- Room Lightbox -->
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
     <div class="room-light-inner">
-      <img src="room_interior.webp" alt="ハヤテの部屋" onclick="event.stopPropagation()">
+      <img src="room_interior.webp" alt="ハヤテの部屋" loading="lazy" onclick="event.stopPropagation()">
       <button class="room-hotspot" style="left:42%;top:65%;" onclick="event.stopPropagation();openRoomHotspot('酒の空き缶','友だちがよく来る。\n空き缶だけ増えていく。')">+</button>
       <button class="room-hotspot" style="left:55%;top:72%;" onclick="event.stopPropagation();openRoomHotspot('ゲーム','やりっぱなし。\n充電は切れている。')">+</button>
       <button class="room-hotspot" style="left:40%;top:30%;" onclick="event.stopPropagation();openRoomHotspot('カーテン','だいたい開けっ放し。')">+</button>

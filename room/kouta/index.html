@@ -445,7 +445,6 @@
       font-size: 13px; color: rgba(252,165,165,0.5);
       cursor: pointer; transform: translate(-50%,-50%);
       transition: background 0.25s, border-color 0.25s, color 0.25s;
-      backdrop-filter: blur(2px);
     }
     .room-hotspot:hover {
       background: rgba(252,165,165,0.15);
@@ -1210,7 +1209,7 @@
   <!-- Room Lightbox with hotspots -->
   <div class="room-light" id="room-light" onclick="closeRoomLight()">
     <div class="room-light-inner">
-      <img src="room_interior.webp" alt="コウタの部屋" onclick="event.stopPropagation()">
+      <img src="room_interior.webp" alt="コウタの部屋" loading="lazy" onclick="event.stopPropagation()">
       <button class="room-hotspot" style="left:22%;top:58%;" onclick="event.stopPropagation();openRoomHotspot('PC','楽曲データが入っている。\n軽い編集もする。')">+</button>
       <button class="room-hotspot" style="left:22%;top:74%;" onclick="event.stopPropagation();openRoomHotspot('NOTE','歌詞を書き溜めたり、日記を書いたりしている。\n正直、誰にも見せたくない。')">+</button>
       <button class="room-hotspot" style="left:68%;top:18%;" onclick="event.stopPropagation();openRoomHotspot('POSTER','なんとなく、ずっと貼ってある３ピースバンドのポスター。\n古いのか色褪せている。')">+</button>
