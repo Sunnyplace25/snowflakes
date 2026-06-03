@@ -724,6 +724,25 @@
         </div>
       </div>
 
+      <!-- ハヤテのブートニア -->
+      <div class="il-item" id="il-boutonniere-item">
+        <div class="il-header" onclick="toggleIlItem('il-boutonniere-item')">
+          <span class="item-log-tag" id="il-boutonniere-tag"><img src="../../item/boutonniere_hayate.webp" alt="item">ハヤテのブートニア</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-boutonniere-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-boutonniere-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/boutonniere_hayate.webp" alt="ハヤテのブートニア" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;">ハヤテのブートニア</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">晴れの日の思い出。</p>
+            <p style="margin-top:14px;"><a href="https://ncode.syosetu.com/n9009lo/185" target="_blank" style="font-size:10px;letter-spacing:2px;color:#fde68a;opacity:0.7;text-decoration:none;">ep185 公開記念</a></p>
+          </div>
+        </div>
+      </div>
+
       <!-- 黄色い石のピアス -->
       <div class="il-item" id="il-earring-item">
         <div class="il-header" onclick="toggleIlItem('il-earring-item')">
@@ -1034,6 +1053,17 @@
         }
       }
       renderDrumstickLog();
+
+      // ハヤテのブートニア（祝奏DEMOクリアで入手）
+      if (SfSnow.isUnlocked('boutonniere_hayate')) {
+        revealItemTag('il-boutonniere-tag', '../../item/boutonniere_hayate.webp', 'ハヤテのブートニア');
+        var bLocked = document.getElementById('il-boutonniere-locked');
+        var bOwned  = document.getElementById('il-boutonniere-owned');
+        if (bLocked) bLocked.style.display = 'none';
+        if (bOwned)  bOwned.style.display  = '';
+        var boutonniereItem = document.getElementById('il-boutonniere-item');
+        if (boutonniereItem) boutonniereItem.classList.add('open');
+      }
 
       // 黄色い石のピアス（解放条件：後日設定、キー：earring_hayate）
       if (SfSnow.isUnlocked('earring_hayate')) {
