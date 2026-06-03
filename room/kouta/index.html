@@ -833,6 +833,10 @@
       if (el) el.classList.toggle('open');
     }
 
+    function _gaEvent(name, params) {
+      if (typeof gtag === 'function') gtag('event', name, params);
+    }
+
     var _pcAudio = null;
     function playKoutaPC() {
       if (!_pcAudio) {
@@ -841,6 +845,7 @@
       }
       _pcAudio.currentTime = 0;
       _pcAudio.play().catch(function(){});
+      _gaEvent('hotspot_click', { room: 'kouta', item: 'pc' });
     }
 
     function openRoomLight() {
@@ -938,11 +943,13 @@
       document.getElementById('kouta-diary-state1').style.display = '';
       document.getElementById('kouta-diary-state2').style.display = 'none';
       document.getElementById('kouta-diary-popup').classList.add('show');
+      _gaEvent('hotspot_click', { room: 'kouta', item: 'diary' });
     }
     function openDiaryPeek() {
       document.getElementById('kouta-diary-peek-content').textContent = DIARY_PEEK_LINES.join('\n');
       document.getElementById('kouta-diary-state1').style.display = 'none';
       document.getElementById('kouta-diary-state2').style.display = '';
+      _gaEvent('diary_peek', { room: 'kouta' });
     }
     function closeDiaryPeek() {
       document.getElementById('kouta-diary-popup').classList.remove('show');
