@@ -1076,9 +1076,9 @@
         if (earringItem) earringItem.classList.add('open');
       }
 
-      // STARSの紙製コースター
+      // STARSの紙製コースター（monthlyItemとして保存されているためgetMonthlyItemsで確認）
       var COASTER_KEY = 'coaster_hayate';
-      if (SfSnow.isUnlocked(COASTER_KEY)) {
+      if ((SfSnow.getMonthlyItems()[COASTER_KEY] || 0) > 0) {
         revealItemTag('il-2-tag', '../../item/coaster_hayate.webp', 'STARSの紙製コースター');
         var cLocked = document.getElementById('il-coaster-locked');
         var cOwned  = document.getElementById('il-coaster-owned');
