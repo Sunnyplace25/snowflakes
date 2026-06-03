@@ -1465,7 +1465,9 @@ function sfShare() {
           { img:'music/cover_sweets_brass.webp', title:'SWEETs', sub:'Brass Band Ver.',
             url:'./sweets/',
             links:[{ text:'SWEETs →', url:'./sweets/', color:'#f9a8d4', b:'rgba(249,168,212,0.4)', bg:'rgba(249,168,212,0.07)' }] },
-          // ★ 2枚目追加時はここに記述
+          { img:'music/cover_shukusou.webp', title:'祝奏（DEMO）', sub:'Wedding Session',
+            url:'./sweets/',
+            links:[{ text:'SWEETs で聴く →', url:'./sweets/', color:'#fde68a', b:'rgba(253,230,138,0.4)', bg:'rgba(253,230,138,0.07)' }] },
         ];
         var jacketLink=document.getElementById('sl-jacket-link'), jacket=document.getElementById('sl-jacket'),
             titleEl=document.getElementById('sl-title'), subEl=document.getElementById('sl-sub'),
@@ -3131,6 +3133,30 @@ document.addEventListener('visibilitychange', function() {
         }
       }
     });
+  })();
+</script>
+
+<!-- Shukusou jacket notice popup (2026-06-03) -->
+<div id="shukusou-jacket-popup" style="position:fixed;inset:0;z-index:9370;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+  <div id="shukusou-jacket-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
+    <img src="./music/cover_shukusou.webp" alt="祝奏" style="width:160px;border-radius:8px;margin:0 auto 20px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.4);">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 12px;">MUSIC</p>
+    <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 20px;">祝奏 Wedding Session<br>楽曲が追加されました</p>
+    <a href="./sweets/" style="display:block;margin:0 auto 20px;padding:10px 28px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.4);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.18)'" onmouseout="this.style.background='rgba(253,230,138,0.1)'">SWEETs で聴く →</a>
+    <button onclick="document.getElementById('shukusou-jacket-popup').style.opacity='0';document.getElementById('shukusou-jacket-popup').style.pointerEvents='none';" style="background:none;border:1px solid rgba(253,230,138,0.2);border-radius:100px;padding:8px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.4)'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(253,230,138,0.2)'">閉じる</button>
+  </div>
+</div>
+<script>
+  (function() {
+    if (!localStorage.getItem('sf_shukusou_jacket_top_20260603')) {
+      localStorage.setItem('sf_shukusou_jacket_top_20260603', '1');
+      setTimeout(function() {
+        var pop = document.getElementById('shukusou-jacket-popup');
+        var box = document.getElementById('shukusou-jacket-box');
+        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
+        if (box) box.style.transform = 'none';
+      }, 800);
+    }
   })();
 </script>
 </body>
