@@ -771,9 +771,12 @@
       if (el) el.classList.toggle('open');
     }
 
-    function openRoomHotspot(label, desc) {
+    function openRoomHotspot(label, desc, img) {
       document.getElementById('hinata-hs-label').textContent = label;
       document.getElementById('hinata-hs-desc').textContent = desc;
+      var imgEl = document.getElementById('hinata-hs-img');
+      if (img) { imgEl.src = img; imgEl.style.display = 'block'; }
+      else { imgEl.style.display = 'none'; }
       document.getElementById('hinata-hs-popup').classList.add('show');
     }
 
@@ -1060,7 +1063,7 @@
       <button class="room-hotspot" style="left:93%;top:88%;" onclick="openRoomHotspot('冷めたコーヒー','気づいたら、いつも冷めている。')">＋</button>
       <button class="room-hotspot" style="left:43%;top:71%;" onclick="openRoomHotspot('白い箱','捨てていないものが雑に詰め込まれている。')">＋</button>
       <button class="room-hotspot" style="left:90%;top:55%;" onclick="openRoomHotspot('ベッド','寝るだけ。')">＋</button>
-      <button class="room-hotspot" style="left:20%;top:54%;" onclick="openRoomHotspot('歌詞ノート','コードや歌詞を書き溜めているノート。\n未完成なものが多い。')">＋</button>
+      <button class="room-hotspot" style="left:20%;top:54%;" onclick="openRoomHotspot('歌詞ノート','コードや歌詞を書き溜めているノート。\n未完成なものが多い。','../../item/notebook_hinata.webp')">＋</button>
     </div>
   </div>
 
@@ -1068,6 +1071,7 @@
   <div class="room-hs-popup" id="hinata-hs-popup" onclick="this.classList.remove('show')">
     <div class="room-hs-card" onclick="event.stopPropagation()">
       <p class="room-hs-label" id="hinata-hs-label"></p>
+      <img id="hinata-hs-img" src="" alt="" style="display:none;width:90px;margin:0 auto 16px;display:none;object-fit:contain;">
       <p class="room-hs-desc" id="hinata-hs-desc"></p>
       <button onclick="document.getElementById('hinata-hs-popup').classList.remove('show')" style="background:transparent;border:1px solid rgba(147,197,253,0.2);border-radius:100px;padding:6px 20px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;cursor:pointer;">── 閉じる ──</button>
     </div>
