@@ -1470,17 +1470,20 @@ function sfShare() {
         // ★ 限定追加はここに追記
         var SF_LIMITED = [
           { img:'music/cover_sweets_brass.webp', title:'SWEETs', sub:'Brass Band Ver.',
-            url:'./sweets/',
+            url:'./sweets/', glow:'#f9a8d4',
             links:[{ text:'SWEETs →', url:'./sweets/', color:'#f9a8d4', b:'rgba(249,168,212,0.4)', bg:'rgba(249,168,212,0.07)' }] },
           { img:'music/cover_shukusou.webp', title:'祝奏', sub:'Wedding Session',
-            url:'./sweets/',
+            url:'./sweets/', glow:'#fde68a',
             links:[{ text:'SWEETs で聴く →', url:'./sweets/', color:'#fde68a', b:'rgba(253,230,138,0.4)', bg:'rgba(253,230,138,0.07)' }] },
         ];
         var jacketLink=document.getElementById('sl-jacket-link'), jacket=document.getElementById('sl-jacket'),
             titleEl=document.getElementById('sl-title'), subEl=document.getElementById('sl-sub'),
             linksEl=document.getElementById('sl-links'), strip=document.getElementById('sl-strip');
+        var _slCard=strip.closest('div[style*="border-radius:18px"]');
         function selectLimited(idx) {
           var s=SF_LIMITED[idx];
+          var gc=s.glow||'#f9a8d4';
+          var gcA=gc==='#fde68a'?'rgba(253,230,138,':'rgba(249,168,212,';
           jacket.style.opacity='0';
           setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
           jacketLink.href=s.url||'#';
@@ -1488,15 +1491,22 @@ function sfShare() {
           linksEl.innerHTML=s.links.map(function(l){
             return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
           }).join('');
+          if(_slCard){
+            _slCard.style.borderColor=gcA+'0.35)';
+            _slCard.style.boxShadow='0 0 18px '+gcA+'0.12)';
+          }
           strip.querySelectorAll('.sl-thumb').forEach(function(el,i){
+            var ig=SF_LIMITED[i].glow||'#f9a8d4';
+            var igA=ig==='#fde68a'?'rgba(253,230,138,':'rgba(249,168,212,';
             el.style.opacity=i===idx?'1':'0.4';
-            el.style.borderColor=i===idx?'rgba(249,168,212,0.6)':'transparent';
+            el.style.borderColor=i===idx?igA+'0.7)':'transparent';
+            el.style.boxShadow=i===idx?'0 0 8px '+igA+'0.5)':'none';
           });
         }
         SF_LIMITED.forEach(function(s,i){
           var btn=document.createElement('button');
           btn.className='sl-thumb';
-          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s;opacity:0.4;';
+          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s,box-shadow 0.2s;opacity:0.4;';
           btn.innerHTML='<img src="'+s.img+'" style="width:100%;height:100%;object-fit:cover;display:block;">';
           btn.addEventListener('click',function(){selectLimited(i);});
           strip.appendChild(btn);
