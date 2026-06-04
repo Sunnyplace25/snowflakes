@@ -4636,25 +4636,24 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     const PASSWORD_SUMMER  = 'cottoncandy';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 
-    // 移行期間・Summer中は夏色に切り替え
-    if (_isTransition || _isSummer) {
+    // Summer テーマ適用
+    function applySummerTheme() {
       document.documentElement.style.setProperty('--sweets', '#7dd3fc');
-      var _summerStyle = document.createElement('style');
-      _summerStyle.textContent = '.gate-btn{background:rgba(125,211,252,0.08)!important;}.gate-btn:hover{background:rgba(125,211,252,0.18)!important;}';
-      document.head.appendChild(_summerStyle);
-    }
-
-    // 移行期間中は「2026 Spring」→「Early Summer」に置換
-    if (_isTransition) {
+      var s = document.createElement('style');
+      s.textContent = '.gate-btn{background:rgba(125,211,252,0.08)!important;}.gate-btn:hover{background:rgba(125,211,252,0.18)!important;}';
+      document.head.appendChild(s);
       document.addEventListener('DOMContentLoaded', function() {
         (function replaceText(node) {
           if (node.nodeType === 3) {
             node.textContent = node.textContent.replace(/2026 Spring/g, 'Early Summer');
-          } else {
-            node.childNodes.forEach(replaceText);
-          }
+          } else { node.childNodes.forEach(replaceText); }
         })(document.body);
       });
+    }
+
+    // 6/10以降は全員夏色 / 移行期間中はcottoncandy入力者のみ
+    if (_isSummer || (_isTransition && localStorage.getItem('sf_summer_entered'))) {
+      applySummerTheme();
     }
 
     // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
@@ -4680,6 +4679,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       const lower = val.toLowerCase();
       document.getElementById('pw-input').value = '';
       if (lower === PASSWORD || (_isTransition && lower === PASSWORD_SUMMER)) {
+        if (_isTransition && lower === PASSWORD_SUMMER) {
+          localStorage.setItem('sf_summer_entered', '1');
+          applySummerTheme();
+        }
         unlock();
       } else if (lower === PASSWORD_SHIROIHANA) {
         localStorage.setItem('sf_shiroihana_unlocked', 'true');
