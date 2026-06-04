@@ -4626,10 +4626,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // シーズン変更時は PASSWORD と SWEETS_VERSION を一緒に更新する
     // → 旧バージョンで保持していたログインが自動無効化される
     // Spring延長：6月10日 00:00 JST 以降は自動的に summer 扱い
+    const _now           = new Date();
     const _springEndDate = new Date('2026-06-10T00:00:00+09:00');
-    const _isSummer      = new Date() >= _springEndDate;
+    const _transitionDate = new Date('2026-06-05T00:00:00+09:00');
+    const _isSummer      = _now >= _springEndDate;
+    const _isTransition  = !_isSummer && _now >= _transitionDate;
     const SWEETS_VERSION = _isSummer ? '2026-summer' : '2026-spring';
     const PASSWORD         = _isSummer ? 'cottoncandy' : 'applepie';
+    const PASSWORD_SUMMER  = 'cottoncandy';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
 
     // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
@@ -4654,7 +4658,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       const val = document.getElementById('pw-input').value.trim();
       const lower = val.toLowerCase();
       document.getElementById('pw-input').value = '';
-      if (lower === PASSWORD) {
+      if (lower === PASSWORD || (_isTransition && lower === PASSWORD_SUMMER)) {
         unlock();
       } else if (lower === PASSWORD_SHIROIHANA) {
         localStorage.setItem('sf_shiroihana_unlocked', 'true');
