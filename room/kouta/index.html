@@ -576,7 +576,7 @@
           <p class="room-hs-label" style="margin-bottom:6px;">DIARY — PEEK</p>
           <p id="kouta-diary-pagenum" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin:0 0 16px;">1 / 1</p>
           <div id="kouta-diary-peek-content" style="font-size:12px;letter-spacing:0;color:#94a3b8;line-height:2.4;text-align:left;margin-bottom:20px;white-space:pre-line;font-style:italic;border-left:1px solid rgba(252,165,165,0.15);padding-left:14px;overflow-wrap:break-word;word-break:break-all;"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div id="kouta-diary-nav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <button id="kouta-diary-prev" onclick="changeDiaryPage(-1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fca5a5'" onmouseleave="this.style.color='#475569'">← prev</button>
             <button id="kouta-diary-next" onclick="changeDiaryPage(1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fca5a5'" onmouseleave="this.style.color='#475569'">next →</button>
           </div>
@@ -1444,13 +1444,22 @@
     function _renderDiaryPage(pages) {
       var p = pages[_diaryPage];
       document.getElementById('kouta-diary-peek-content').textContent = p.lines.join('\n');
-      document.getElementById('kouta-diary-pagenum').textContent = (_diaryPage + 1) + ' / ' + pages.length;
-      var prev = document.getElementById('kouta-diary-prev');
-      var next = document.getElementById('kouta-diary-next');
-      prev.style.opacity = _diaryPage === 0 ? '0.2' : '1';
-      prev.style.pointerEvents = _diaryPage === 0 ? 'none' : 'auto';
-      next.style.opacity = _diaryPage === pages.length - 1 ? '0.2' : '1';
-      next.style.pointerEvents = _diaryPage === pages.length - 1 ? 'none' : 'auto';
+      var nav = document.getElementById('kouta-diary-nav');
+      var pagenum = document.getElementById('kouta-diary-pagenum');
+      if (pages.length <= 1) {
+        nav.style.display = 'none';
+        pagenum.style.display = 'none';
+      } else {
+        nav.style.display = 'flex';
+        pagenum.style.display = '';
+        pagenum.textContent = (_diaryPage + 1) + ' / ' + pages.length;
+        var prev = document.getElementById('kouta-diary-prev');
+        var next = document.getElementById('kouta-diary-next');
+        prev.style.opacity = _diaryPage === 0 ? '0.2' : '1';
+        prev.style.pointerEvents = _diaryPage === 0 ? 'none' : 'auto';
+        next.style.opacity = _diaryPage === pages.length - 1 ? '0.2' : '1';
+        next.style.pointerEvents = _diaryPage === pages.length - 1 ? 'none' : 'auto';
+      }
     }
 
     function openDiaryHotspot() {

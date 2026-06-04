@@ -462,10 +462,8 @@
       border: 1px solid rgba(147,197,253,0.12);
       border-radius: 20px; padding: 28px 24px;
       max-width: 300px; width: 100%; text-align: center;
-      max-height: 80vh; overflow-y: auto; scrollbar-width: none;
       animation: roomCardIn 0.35s cubic-bezier(0.22,1,0.36,1);
     }
-    .room-hs-card::-webkit-scrollbar { display: none; }
     @keyframes roomCardIn {
       from { opacity: 0; transform: scale(0.94) translateY(10px); }
       to   { opacity: 1; transform: none; }
@@ -771,6 +769,105 @@
     function toggleIlItem(id) {
       var el = document.getElementById(id);
       if (el) el.classList.toggle('open');
+    }
+
+    var NOTEBOOK_PAGES = [
+      { date: '2026-06-04', lines: [
+        '　Cmaj7　G/B　Am7　G',
+        '　ここ、歌わないかも',
+        '',
+        '　Fmaj7　C/E　Dm7　Gsus4',
+        '　息の場所',
+        '',
+        '　Cmaj7　G/B',
+        '　近いのに',
+        '　Am7　G',
+        '　遠くに聞こえる',
+        '',
+        '　Fmaj7　C/E',
+        '　触れない',
+        '　Dm7　Gsus4',
+        '　でも消えない',
+        '',
+        '　Cadd9',
+        '　終わりすぎない',
+      ]},
+      { date: '2026-06-04', lines: [
+        '　key E',
+        '　コウタ入ったら動く',
+        '　ハヤテはまだ抑えめ',
+        '',
+        '　Intro',
+        '　Eadd9　B　C#m7　Aadd9',
+        '',
+        '　A',
+        '　Eadd9　B',
+        '　今日はまだ',
+        '　C#m7　Aadd9',
+        '　答えにしない',
+        '',
+        '　Eadd9　B',
+        '　音だけ置いて',
+        '　C#m7　Aadd9',
+        '　帰る',
+        '',
+        '　B',
+        '　F#m7　G#m7　Aadd9',
+        '　ここ、ベース待つ',
+        '　F#m7　G#m7　B',
+        '　ドラム入るなら小さく',
+        '',
+        '　Sabi',
+        '　E　B　C#m7　Aadd9',
+        '　未完成のまま',
+        '　E　B　Aadd9',
+        '　続いていく　ここは２回目にしよう',
+      ]},
+    ];
+
+    var _notebookPage = 0;
+
+    function _getUnlockedNotebookPages() {
+      var now = new Date();
+      var today = now.getFullYear() + '-'
+        + String(now.getMonth() + 1).padStart(2, '0') + '-'
+        + String(now.getDate()).padStart(2, '0');
+      return NOTEBOOK_PAGES.filter(function(p) { return p.date <= today; });
+    }
+
+    function _renderNotebookPage(pages) {
+      document.getElementById('hinata-notebook-content').textContent = pages[_notebookPage].lines.join('\n');
+      var nav = document.getElementById('hinata-notebook-nav');
+      var pagenum = document.getElementById('hinata-notebook-pagenum');
+      if (pages.length <= 1) {
+        nav.style.display = 'none';
+        pagenum.style.display = 'none';
+      } else {
+        nav.style.display = 'flex';
+        pagenum.style.display = '';
+        pagenum.textContent = (_notebookPage + 1) + ' / ' + pages.length;
+        var prev = document.getElementById('hinata-notebook-prev');
+        var next = document.getElementById('hinata-notebook-next');
+        prev.style.opacity = _notebookPage === 0 ? '0.2' : '1';
+        prev.style.pointerEvents = _notebookPage === 0 ? 'none' : 'auto';
+        next.style.opacity = _notebookPage === pages.length - 1 ? '0.2' : '1';
+        next.style.pointerEvents = _notebookPage === pages.length - 1 ? 'none' : 'auto';
+      }
+    }
+
+    function openNotebookPeek() {
+      var pages = _getUnlockedNotebookPages();
+      if (!pages.length) return;
+      _notebookPage = 0;
+      _renderNotebookPage(pages);
+      document.getElementById('hinata-notebook-state1').style.display = 'none';
+      document.getElementById('hinata-notebook-state2').style.display = 'block';
+    }
+
+    function changeNotebookPage(dir) {
+      var pages = _getUnlockedNotebookPages();
+      _notebookPage = Math.max(0, Math.min(pages.length - 1, _notebookPage + dir));
+      _renderNotebookPage(pages);
     }
 
     function openRoomHotspot(label, desc, img) {
@@ -1088,63 +1185,19 @@
         <img src="../../item/notebook_hinata.webp" alt="歌詞ノート" style="width:90px;margin:0 auto 16px;display:block;object-fit:contain;">
         <p class="room-hs-desc" style="margin-bottom:28px;">コードや歌詞を書き溜めているノート。<br>未完成なものが多い。</p>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <button onclick="document.getElementById('hinata-notebook-state1').style.display='none';document.getElementById('hinata-notebook-state2').style.display='block';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#93c5fd;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:8px;padding:10px 0;cursor:pointer;transition:all 0.2s;" onmouseenter="this.style.background='rgba(147,197,253,0.12)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">▶ ちょっとだけ覗く</button>
+          <button onclick="openNotebookPeek()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#93c5fd;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:8px;padding:10px 0;cursor:pointer;transition:all 0.2s;" onmouseenter="this.style.background='rgba(147,197,253,0.12)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">▶ ちょっとだけ覗く</button>
           <button onclick="document.getElementById('hinata-notebook-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:8px 0;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
         </div>
       </div>
       <!-- State 2: 覗き見 -->
       <div id="hinata-notebook-state2" style="display:none;">
-        <p class="room-hs-label" style="margin-bottom:18px;">NOTE — PEEK</p>
-        <div style="font-size:12px;letter-spacing:0;color:#cbd5e1;line-height:2.4;text-align:left;margin-bottom:24px;white-space:pre-line;font-style:italic;border-left:1px solid rgba(147,197,253,0.15);padding-left:14px;overflow-wrap:break-word;word-break:break-all;">　Cmaj7　G/B　Am7　G
-　ここ、歌わないかも
-
-　Fmaj7　C/E　Dm7　Gsus4
-　息の場所
-
-　Cmaj7　G/B
-　近いのに
-　Am7　G
-　遠くに聞こえる
-
-　Fmaj7　C/E
-　触れない
-　Dm7　Gsus4
-　でも消えない
-
-　Cadd9
-　終わりすぎない
-
-─────────────
-
-　key E
-　コウタ入ったら動く
-　ハヤテはまだ抑えめ
-
-　Intro
-　Eadd9　B　C#m7　Aadd9
-
-　A
-　Eadd9　B
-　今日はまだ
-　C#m7　Aadd9
-　答えにしない
-
-　Eadd9　B
-　音だけ置いて
-　C#m7　Aadd9
-　帰る
-
-　B
-　F#m7　G#m7　Aadd9
-　ここ、ベース待つ
-　F#m7　G#m7　B
-　ドラム入るなら小さく
-
-　Sabi
-　E　B　C#m7　Aadd9
-　未完成のまま
-　E　B　Aadd9
-　続いていく</div>
+        <p class="room-hs-label" style="margin-bottom:6px;">NOTE — PEEK</p>
+        <p id="hinata-notebook-pagenum" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin:0 0 16px;">1 / 1</p>
+        <div id="hinata-notebook-content" style="font-size:12px;letter-spacing:0;color:#cbd5e1;line-height:2.4;text-align:left;margin-bottom:20px;white-space:pre-line;font-style:italic;border-left:1px solid rgba(147,197,253,0.15);padding-left:14px;overflow-wrap:break-word;word-break:break-all;"></div>
+        <div id="hinata-notebook-nav" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <button id="hinata-notebook-prev" onclick="changeNotebookPage(-1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">← prev</button>
+          <button id="hinata-notebook-next" onclick="changeNotebookPage(1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">next →</button>
+        </div>
         <button onclick="document.getElementById('hinata-notebook-state2').style.display='none';document.getElementById('hinata-notebook-state1').style.display='block';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
       </div>
     </div>
