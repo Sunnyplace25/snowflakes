@@ -858,7 +858,7 @@
     <div style="margin-top:36px;width:100%;max-width:300px;">
 
       <!-- Spring ending notice -->
-      <div style="margin-bottom:28px;text-align:center;">
+      <div style="margin-bottom:28px;text-align:center;" data-no-replace>
         <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#f9a8d4;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs 2026 Spring<br>まもなく終了です。</p>
         <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">6月10日 00:00より、<br>季節はSummerシーズンへ切り替わります。<br>入室にはInstagram投稿にて配布されるSWEETsCodeが必要です。<br><br>Spring期間中に訪れてくださった方には、<br>シーズン終了後、記念アイテムをお届けします。<br><br>物語がひとつの節目へ向かうこの時期に、<br>春の余韻も、どうぞお楽しみください。</p>
       </div>
@@ -888,7 +888,7 @@
       <div style="background:rgba(10,16,30,0.6);border:1px solid rgba(147,197,253,0.18);border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 0 60px rgba(147,197,253,0.07),0 0 120px rgba(147,197,253,0.03);backdrop-filter:blur(8px);">
         <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;line-height:2.4;margin-bottom:24px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
         <!-- SWEETs 2026 Spring badge -->
-        <div>
+        <div data-no-replace>
           <p id="sweets-season-label" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:6px;color:#f9a8d4;margin-bottom:14px;">SWEETs 2026 Spring</p>
           <div style="display:flex;gap:10px;align-items:center;justify-content:center;">
             <div>
@@ -950,7 +950,7 @@
 
       <!-- Interview section -->
       <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
-        <p class="itv-section-label">SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
+        <p class="itv-section-label" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
         <div class="itv-row">
 
           <!-- ハヤテ -->
@@ -1268,7 +1268,7 @@
           </div>
 
           <!-- SPRING -->
-          <div id="rare-spring-section" style="margin-bottom:10px;">
+          <div id="rare-spring-section" style="margin-bottom:10px;" data-no-replace>
             <div onclick="toggleRareSection('spring')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(249,168,212,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
               <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#f9a8d4;">EVENT / SPECIAL</span>
               <span id="rare-spring-arrow" style="font-size:13px;color:#f9a8d4;transition:transform 0.3s;">›</span>
@@ -4644,6 +4644,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.head.appendChild(s);
       document.addEventListener('DOMContentLoaded', function() {
         (function replaceText(node) {
+          if (node.nodeType === 1 && node.hasAttribute('data-no-replace')) return;
           if (node.nodeType === 3) {
             node.textContent = node.textContent.replace(/2026 Spring/g, 'Early Summer');
           } else { node.childNodes.forEach(replaceText); }
