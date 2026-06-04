@@ -4640,7 +4640,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function applySummerTheme() {
       document.documentElement.style.setProperty('--sweets', '#7dd3fc');
       var s = document.createElement('style');
-      s.textContent = '.gate-btn{background:rgba(125,211,252,0.08)!important;}.gate-btn:hover{background:rgba(125,211,252,0.18)!important;}';
+      s.textContent = '.gate-btn{background:rgba(125,211,252,0.08)!important;}.gate-btn:hover{background:rgba(125,211,252,0.18)!important;}.gate-input:focus{border-color:rgba(125,211,252,0.5)!important;}';
       document.head.appendChild(s);
       document.addEventListener('DOMContentLoaded', function() {
         (function replaceText(node) {
