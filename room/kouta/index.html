@@ -550,11 +550,11 @@
     </div>
 
     <!-- Room hotspot popup -->
-    <div class="room-hs-popup" id="kouta-hs-popup" onclick="this.classList.remove('show')">
+    <div class="room-hs-popup" id="kouta-hs-popup" onclick="stopKoutaPC();this.classList.remove('show')">
       <div class="room-hs-card" onclick="event.stopPropagation()">
         <p class="room-hs-label" id="kouta-hs-label">FOUND</p>
         <p class="room-hs-desc" id="kouta-hs-desc"></p>
-        <button onclick="document.getElementById('kouta-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
+        <button onclick="stopKoutaPC();document.getElementById('kouta-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
       </div>
     </div>
 
@@ -847,6 +847,9 @@
       _pcAudio.play().catch(function(){});
       _gaEvent('hotspot_click', { room: 'kouta', item: 'pc' });
     }
+    function stopKoutaPC() {
+      if (_pcAudio) { _pcAudio.pause(); _pcAudio.currentTime = 0; }
+    }
 
     function openRoomLight() {
       document.getElementById('room-light').classList.add('open');
@@ -854,6 +857,7 @@
     function closeRoomLight() {
       document.getElementById('room-light').classList.remove('open');
       document.getElementById('kouta-hs-popup').classList.remove('show');
+      stopKoutaPC();
     }
 
     function openRoomHotspot(label, desc) {
