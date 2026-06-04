@@ -1063,7 +1063,7 @@
       <button class="room-hotspot" style="left:93%;top:88%;" onclick="openRoomHotspot('冷めたコーヒー','気づいたら、いつも冷めている。')">＋</button>
       <button class="room-hotspot" style="left:43%;top:71%;" onclick="openRoomHotspot('白い箱','捨てていないものが雑に詰め込まれている。')">＋</button>
       <button class="room-hotspot" style="left:90%;top:55%;" onclick="openRoomHotspot('ベッド','寝るだけ。')">＋</button>
-      <button class="room-hotspot" style="left:20%;top:54%;" onclick="openRoomHotspot('歌詞ノート','コードや歌詞を書き溜めているノート。\n未完成なものが多い。','../../item/notebook_hinata.webp')">＋</button>
+      <button class="room-hotspot" style="left:20%;top:54%;" onclick="document.getElementById('hinata-notebook-popup').classList.add('show')">＋</button>
     </div>
   </div>
 
@@ -1071,9 +1071,48 @@
   <div class="room-hs-popup" id="hinata-hs-popup" onclick="this.classList.remove('show')">
     <div class="room-hs-card" onclick="event.stopPropagation()">
       <p class="room-hs-label" id="hinata-hs-label"></p>
-      <img id="hinata-hs-img" src="" alt="" style="display:none;width:90px;margin:0 auto 16px;display:none;object-fit:contain;">
+      <img id="hinata-hs-img" src="" alt="" style="display:none;width:90px;margin:0 auto 16px;object-fit:contain;">
       <p class="room-hs-desc" id="hinata-hs-desc"></p>
       <button onclick="document.getElementById('hinata-hs-popup').classList.remove('show')" style="background:transparent;border:1px solid rgba(147,197,253,0.2);border-radius:100px;padding:6px 20px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;cursor:pointer;">── 閉じる ──</button>
+    </div>
+  </div>
+
+  <!-- 歌詞ノート popup （2段階） -->
+  <div class="room-hs-popup" id="hinata-notebook-popup" onclick="this.classList.remove('show');document.getElementById('hinata-notebook-state2').style.display='none';document.getElementById('hinata-notebook-state1').style.display='block';">
+    <div class="room-hs-card" onclick="event.stopPropagation()">
+      <!-- State 1: 表紙 -->
+      <div id="hinata-notebook-state1">
+        <p class="room-hs-label" style="margin-bottom:14px;">NOTE</p>
+        <img src="../../item/notebook_hinata.webp" alt="歌詞ノート" style="width:90px;margin:0 auto 16px;display:block;object-fit:contain;">
+        <p class="room-hs-desc" style="margin-bottom:28px;">コードや歌詞を書き溜めているノート。<br>未完成なものが多い。</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="document.getElementById('hinata-notebook-state1').style.display='none';document.getElementById('hinata-notebook-state2').style.display='block';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#93c5fd;background:rgba(147,197,253,0.06);border:1px solid rgba(147,197,253,0.2);border-radius:8px;padding:10px 0;cursor:pointer;transition:all 0.2s;" onmouseenter="this.style.background='rgba(147,197,253,0.12)'" onmouseleave="this.style.background='rgba(147,197,253,0.06)'">▶ ちょっとだけ覗く</button>
+          <button onclick="document.getElementById('hinata-notebook-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:8px 0;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
+        </div>
+      </div>
+      <!-- State 2: 覗き見 -->
+      <div id="hinata-notebook-state2" style="display:none;">
+        <p class="room-hs-label" style="margin-bottom:18px;">NOTE — PEEK</p>
+        <div style="font-size:12px;letter-spacing:0;color:#94a3b8;line-height:2.4;text-align:left;margin-bottom:24px;white-space:pre-line;font-style:italic;border-left:1px solid rgba(147,197,253,0.15);padding-left:14px;overflow-wrap:break-word;word-break:break-all;">　Cmaj7　G/B　Am7　G
+　ここ、歌わないかも
+
+　Fmaj7　C/E　Dm7　Gsus4
+　息の場所
+
+　Cmaj7　G/B
+　近いのに
+　Am7　G
+　遠くに聞こえる
+
+　Fmaj7　C/E
+　触れない
+　Dm7　Gsus4
+　でも消えない
+
+　Cadd9
+　終わりすぎない</div>
+        <button onclick="document.getElementById('hinata-notebook-state2').style.display='none';document.getElementById('hinata-notebook-state1').style.display='block';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
+      </div>
     </div>
   </div>
 
