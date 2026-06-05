@@ -829,6 +829,18 @@
       if (el) el.classList.toggle('open');
     }
 
+    // ダイアログ・アラート（グローバルスコープ）
+    var pendingAction = null;
+    function showDialog(costText, onConfirm) {
+      document.getElementById('dialog-cost-text').textContent = costText;
+      document.getElementById('unlock-dialog').classList.add('open');
+      pendingAction = onConfirm;
+    }
+    function showAlert(msg) {
+      document.getElementById('alert-msg').textContent = msg;
+      document.getElementById('alert-dialog').classList.add('open');
+    }
+
     // ── ハヤテの手帳 ──────────────────────────────────────────
     var HAYATE_NOTEBOOK_PAGES = [
       { date: '2026-06-02', lines: [
@@ -1622,32 +1634,16 @@
         });
       }
 
-      // アラート
-      var alertDialog = document.getElementById('alert-dialog');
-      function showAlert(msg) {
-        document.getElementById('alert-msg').textContent = msg;
-        alertDialog.classList.add('open');
-      }
+      // ダイアログ・アラートのボタン制御
       document.getElementById('alert-ok').addEventListener('click', function() {
-        alertDialog.classList.remove('open');
+        document.getElementById('alert-dialog').classList.remove('open');
       });
-
-      // ダイアログ制御
-      var pendingAction = null;
-      var dialog = document.getElementById('unlock-dialog');
-
-      function showDialog(costText, onConfirm) {
-        document.getElementById('dialog-cost-text').textContent = costText;
-        dialog.classList.add('open');
-        pendingAction = onConfirm;
-      }
-
       document.getElementById('dialog-cancel').addEventListener('click', function() {
-        dialog.classList.remove('open');
+        document.getElementById('unlock-dialog').classList.remove('open');
         pendingAction = null;
       });
       document.getElementById('dialog-confirm').addEventListener('click', function() {
-        dialog.classList.remove('open');
+        document.getElementById('unlock-dialog').classList.remove('open');
         if (pendingAction) pendingAction();
         pendingAction = null;
       });
