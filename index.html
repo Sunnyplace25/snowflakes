@@ -237,9 +237,10 @@
     .music { padding: 100px 24px; }
     .music-inner { max-width: 900px; margin: 0 auto; }
     .music-top {
-      display: grid; grid-template-columns: 1fr 1fr;
+      display: flex; justify-content: center;
       gap: 20px; margin-bottom: 32px;
     }
+    .music-top .music-card { max-width: 520px; width: 100%; }
     .music-card {
       padding: 36px; border-radius: 20px;
       background: var(--card); border: 1px solid var(--border);
@@ -409,7 +410,7 @@
     @media (max-width: 680px) {
       nav { padding: 14px 20px; } .nav-label { display: none; }
       .about-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-      .music-top  { grid-template-columns: 1fr; }
+      .music-top .music-card { max-width: 100%; }
       .char-grid  { grid-template-columns: 1fr; max-width: 300px; margin: 0 auto; }
     }
   .sp-br { display: none; }
@@ -1554,12 +1555,6 @@ function sfShare() {
               <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
             </a>
           </div>
-        </div>
-        <div class="music-card">
-          <p class="music-platform">SUNO</p>
-          <p class="music-name">snowflakes_music</p>
-          <p class="music-desc" data-i18n="music-suno-desc">Sunoでも楽曲を公開中。<br>「グラスの縁」「呼吸の距離」など、ストリーミング配信前のデモ音源や、ここだけで聴ける楽曲も。</p>
-          <a class="link-btn btn-purple" href="https://suno.com/@snowflakes_music" target="_blank" data-i18n="music-suno-btn">Sunoで聴く →</a>
         </div>
       </div>
     </div>
