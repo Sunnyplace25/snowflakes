@@ -1500,8 +1500,8 @@
       var unlockNext = document.getElementById('hayate-notebook-unlock-next');
       var unlockBtn  = document.getElementById('hayate-notebook-unlock-btn');
       if (available.length > pages.length) {
-        var nextIdx = pages.length; // 次のlocked pageのlocal idx
-        unlockBtn.setAttribute('onclick', '_unlockHayatePage(' + nextIdx + ')');
+        var nextIdx = pages.length;
+        unlockBtn.onclick = function() { _unlockHayatePage(nextIdx); };
         unlockNext.style.display = 'block';
       } else {
         unlockNext.style.display = 'none';

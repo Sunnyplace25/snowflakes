@@ -1488,7 +1488,8 @@
       var unlockNext = document.getElementById('kouta-diary-unlock-next');
       var unlockBtn  = document.getElementById('kouta-diary-unlock-btn');
       if (available.length > pages.length) {
-        unlockBtn.setAttribute('onclick', '_unlockDiaryPage(' + pages.length + ')');
+        var nextIdx = pages.length;
+        unlockBtn.onclick = function() { _unlockDiaryPage(nextIdx); };
         unlockNext.style.display = 'block';
       } else {
         unlockNext.style.display = 'none';

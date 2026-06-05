@@ -1073,7 +1073,8 @@
       var unlockNext = document.getElementById('hinata-notebook-unlock-next');
       var unlockBtn  = document.getElementById('hinata-notebook-unlock-btn');
       if (available.length > pages.length) {
-        unlockBtn.setAttribute('onclick', '_unlockNotebookPage(' + pages.length + ')');
+        var nextIdx = pages.length;
+        unlockBtn.onclick = function() { _unlockNotebookPage(nextIdx); };
         unlockNext.style.display = 'block';
       } else {
         unlockNext.style.display = 'none';
