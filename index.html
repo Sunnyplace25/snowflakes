@@ -1760,10 +1760,16 @@ function sfShare() {
   }
   #sf-tutorial-btn:hover { background: rgba(147,197,253,0.18); }
   @media (max-width: 480px) {
-    #sf-tutorial-img { width: 110px; }
-    #sf-tutorial-line { font-size: 12px; line-height: 2; }
-    #sf-tutorial { padding: 0 12px 20px; }
-    #sf-tutorial-bubble { padding: 18px 16px 16px; }
+    #sf-tutorial { padding: 0 0 0; align-items: center; justify-content: flex-end; }
+    #sf-tutorial-inner { flex-direction: column; align-items: center; gap: 0; max-height: 100vh; width: 100%; }
+    #sf-tutorial-img { width: 90px; flex-shrink: 0; margin-bottom: -8px; z-index: 1; }
+    #sf-tutorial-bubble {
+      border-radius: 20px 20px 0 0; margin-bottom: 0;
+      padding: 18px 18px 24px;
+      overflow-y: auto; max-height: calc(100vh - 110px);
+      width: 100%; box-sizing: border-box;
+    }
+    #sf-tutorial-line { font-size: 12px; line-height: 1.9; }
   }
 </style>
 
@@ -2692,15 +2698,23 @@ document.addEventListener('visibilitychange', function() {
 " onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">DISCOGRAPHY</a>
 
 <!-- ── フローティングSpotifyプレイヤー ── -->
+<style>
+  #sf-player { width:300px; }
+  #sf-player iframe { height:232px; }
+  @media (max-width:600px) {
+    #sf-player { width:calc(100vw - 32px); bottom:16px; right:16px; }
+    #sf-player iframe { height:152px; }
+  }
+</style>
 <div id="sf-player" style="
   position:fixed; bottom:24px; right:24px; z-index:200;
-  width:300px; border-radius:12px; overflow:hidden;
+  border-radius:12px; overflow:hidden;
   box-shadow:0 4px 24px rgba(0,0,0,0.5);
   transition:opacity 0.4s, transform 0.4s;
   opacity:0; transform:translateY(16px); pointer-events:none;
 ">
   <iframe src="https://open.spotify.com/embed/artist/0nOz1pWptKtNtav9yDoQwN?utm_source=generator&theme=0"
-    width="100%" height="352" frameborder="0"
+    width="100%" frameborder="0"
     allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
     loading="lazy" style="display:block;">
   </iframe>
@@ -3114,7 +3128,7 @@ document.addEventListener('visibilitychange', function() {
       hintEl.style.right  = '';
       arrowEl.style.cssText = 'position:absolute;top:-10px;left:24px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid rgba(13,20,38,0.97);';
     } else if (step.target === 'player') {
-      hintEl.style.bottom = '390px';
+      hintEl.style.bottom = '268px';
       hintEl.style.right  = '24px';
       hintEl.style.top    = '';
       hintEl.style.left   = '';
