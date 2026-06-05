@@ -722,99 +722,19 @@
   }
   </script>
 
-  <!-- Update notice popup (2026-05-24) -->
-  <div id="update-notice-popup" style="position:fixed;inset:0;z-index:9050;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="update-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(249,168,212,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f0abfc;margin:0 0 20px;">UPDATE</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">MUSIC<br>帰らないほどでもない<br>追加しました</p>
-      <button onclick="closeUpdateNotice()" style="background:none;border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#f9a8d4';this.style.borderColor='rgba(249,168,212,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(249,168,212,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Kouta room update notice popup (2026-05-25) -->
-  <div id="kouta-room-notice-popup" style="position:fixed;inset:0;z-index:9250;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="kouta-room-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(252,165,165,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fca5a5;margin:0 0 20px;">KOUTA ROOM</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">部屋の探索に<br>新しいアイテムが追加されました</p>
-      <button onclick="closeKoutaRoomNotice()" style="background:none;border:1px solid rgba(252,165,165,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fca5a5';this.style.borderColor='rgba(252,165,165,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(252,165,165,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Hayate room update notice popup (2026-05-24) -->
-  <div id="hayate-room-notice-popup" style="position:fixed;inset:0;z-index:9200;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="hayate-room-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 20px;">HAYATE ROOM</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">部屋の探索に<br>新しいアイテムが追加されました</p>
-      <button onclick="closeHayateRoomNotice()" style="background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fde68a';this.style.borderColor='rgba(253,230,138,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Gacha update notice popup (2026-05-24) -->
-  <div id="gacha-notice-popup" style="position:fixed;inset:0;z-index:9150;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="gacha-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#c4b5fd;margin:0 0 20px;">GACHA UPDATE</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">ガチャ出現率を調整しました<br>排出アイテムに<br>クッキーが追加されました</p>
-      <button onclick="closeGachaNotice()" style="background:none;border:1px solid rgba(196,181,253,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#c4b5fd';this.style.borderColor='rgba(196,181,253,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(196,181,253,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Music Spring Waltz notice popup (2026-05-26) -->
-  <div id="music-waltz-notice-popup" style="position:fixed;inset:0;z-index:9300;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="music-waltz-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(249,168,212,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f9a8d4;margin:0 0 20px;">MUSIC UPDATE</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">MUSIC<br>Spring Waltz<br>追加しました</p>
-      <button onclick="closeMusicWaltzNotice()" style="background:none;border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#f9a8d4';this.style.borderColor='rgba(249,168,212,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(249,168,212,0.3)'">OK</button>
-    </div>
-  </div>
-
-
-  <!-- Kouta room explore update notice popup (2026-06-04) -->
-  <div id="kouta-explore-notice-popup" style="position:fixed;inset:0;z-index:9370;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="kouta-explore-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(252,165,165,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fca5a5;margin:0 0 20px;">KOUTA ROOM</p>
-      <p style="font-size:13px;line-height:2;color:#e2e8f0;letter-spacing:0.5px;margin:0 0 28px;">探索箇所が<br>追加されました</p>
-      <button onclick="closeKoutaExploreNotice()" style="background:none;border:1px solid rgba(252,165,165,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fca5a5';this.style.borderColor='rgba(252,165,165,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(252,165,165,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Hinata room explore notice popup (2026-06-04) -->
-  <div id="hinata-explore-notice-popup" style="position:fixed;inset:0;z-index:9375;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="hinata-explore-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(147,197,253,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#93c5fd;margin:0 0 20px;">HINATA ROOM</p>
-      <p style="font-size:13px;line-height:2;color:#e2e8f0;letter-spacing:0.5px;margin:0 0 28px;">探索箇所が<br>追加されました</p>
-      <button onclick="closeHinataExploreNotice()" style="background:none;border:1px solid rgba(147,197,253,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(147,197,253,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Shukusou DEMO notice popup (2026-06-03) -->
-  <div id="shukusou-notice-popup" style="position:fixed;inset:0;z-index:9360;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="shukusou-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 20px;">MUSIC</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">祝奏<br>追加しました</p>
-      <button onclick="closeShukusouNotice()" style="background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#fde68a';this.style.borderColor='rgba(253,230,138,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Hinata room explore notice popup (2026-06-02) -->
-  <div id="hinata-room-notice-popup" style="position:fixed;inset:0;z-index:9350;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="hinata-room-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(147,197,253,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#93c5fd;margin:0 0 20px;">HINATA ROOM</p>
-      <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 28px;">ヒナタの部屋に<br>探索機能が追加されました</p>
-      <button onclick="closeHinataRoomNotice()" style="background:none;border:1px solid rgba(147,197,253,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.6)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(147,197,253,0.3)'">OK</button>
-    </div>
-  </div>
-
-  <!-- Fix notice popup -->
-  <div id="fix-notice-popup" style="position:fixed;inset:0;z-index:9100;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="fix-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(148,163,184,0.2);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 18px;">NOTICE</p>
-      <p style="font-size:13px;line-height:1.9;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 6px;">楽曲の再生中にカルーセルが<br>動いてしまう不具合を修正しました。</p>
-      <p style="font-size:12px;line-height:1.8;color:#94a3b8;letter-spacing:0.5px;margin:0 0 24px;">ご不便をおかけしたお詫びとして<br>ギターピックをプレゼントします。</p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;">
-        <img src="../item/pick.webp" alt="pick" style="width:36px;opacity:0.9;">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#93c5fd;letter-spacing:2px;">× 4</span>
+  <!-- Room explore notice popup (2026-06-05) -->
+  <div id="room-explore-notice-popup" style="position:fixed;inset:0;z-index:9400;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div id="room-explore-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 14px;">ROOM UPDATE</p>
+      <div style="display:flex;justify-content:center;gap:8px;margin:0 0 16px;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#93c5fd;">HINATA</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#334155;">·</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;">KOUTA</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#334155;">·</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fde68a;">HAYATE</span>
       </div>
-      <button onclick="closeFixNotice()" style="background:none;border:1px solid rgba(148,163,184,0.3);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.4)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(148,163,184,0.3)'">受け取る</button>
+      <p style="font-size:13px;line-height:2;color:#e2e8f0;letter-spacing:0.5px;margin:0 0 28px;">部屋探索が追加されました</p>
+      <button onclick="closeRoomExploreNotice()" style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.35)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.15)'">OK</button>
     </div>
   </div>
 
@@ -5748,53 +5668,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
   };
 
-  window.closeShukusouNotice = function() {
-    var pop = document.getElementById('shukusou-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeHinataRoomNotice = function() {
-    var pop = document.getElementById('hinata-room-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeKoutaRoomNotice = function() {
-    var pop = document.getElementById('kouta-room-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeKoutaExploreNotice = function() {
-    var pop = document.getElementById('kouta-explore-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeHinataExploreNotice = function() {
-    var pop = document.getElementById('hinata-explore-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeHayateRoomNotice = function() {
-    var pop = document.getElementById('hayate-room-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeGachaNotice = function() {
-    var pop = document.getElementById('gacha-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeUpdateNotice = function() {
-    var pop = document.getElementById('update-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeMusicWaltzNotice = function() {
-    var pop = document.getElementById('music-waltz-notice-popup');
-    if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
-  };
-
-  window.closeFixNotice = function() {
-    var pop = document.getElementById('fix-notice-popup');
+  window.closeRoomExploreNotice = function() {
+    var pop = document.getElementById('room-explore-notice-popup');
     if (pop) { pop.style.opacity = '0'; pop.style.pointerEvents = 'none'; }
   };
 
@@ -5841,95 +5716,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (shikishiCheck) shikishiCheck.textContent = '✓ 入手済み';
     }
 
-    if (!localStorage.getItem('sf_update_240524')) {
-      localStorage.setItem('sf_update_240524', '1');
+    if (!localStorage.getItem('sf_room_explore_notice_20260605')) {
+      localStorage.setItem('sf_room_explore_notice_20260605', '1');
       setTimeout(function() {
-        var pop = document.getElementById('update-notice-popup');
-        var box = document.getElementById('update-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) { box.style.transform = 'none'; }
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_kouta_explore_notice_20260604')) {
-      localStorage.setItem('sf_kouta_explore_notice_20260604', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('kouta-explore-notice-popup');
-        var box = document.getElementById('kouta-explore-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_hinata_explore_notice_20260604')) {
-      localStorage.setItem('sf_hinata_explore_notice_20260604', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('hinata-explore-notice-popup');
-        var box = document.getElementById('hinata-explore-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_shukusou_notice_20260603')) {
-      localStorage.setItem('sf_shukusou_notice_20260603', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('shukusou-notice-popup');
-        var box = document.getElementById('shukusou-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_hinata_room_notice_20260602')) {
-      localStorage.setItem('sf_hinata_room_notice_20260602', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('hinata-room-notice-popup');
-        var box = document.getElementById('hinata-room-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_kouta_room_notice_20260525')) {
-      localStorage.setItem('sf_kouta_room_notice_20260525', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('kouta-room-notice-popup');
-        var box = document.getElementById('kouta-room-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_hayate_room_notice_20260524')) {
-      localStorage.setItem('sf_hayate_room_notice_20260524', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('hayate-room-notice-popup');
-        var box = document.getElementById('hayate-room-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    // ガチャポップアップ終了
-
-
-    if (!localStorage.getItem('sf_music_waltz_notice_20260526')) {
-      localStorage.setItem('sf_music_waltz_notice_20260526', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('music-waltz-notice-popup');
-        var box = document.getElementById('music-waltz-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-
-    if (!localStorage.getItem('sf_fix_notice_230526')) {
-      localStorage.setItem('sf_fix_notice_230526', '1');
-      SfSnow.addPick(4);
-      setTimeout(function() {
-        var pop = document.getElementById('fix-notice-popup');
-        var box = document.getElementById('fix-notice-box');
+        var pop = document.getElementById('room-explore-notice-popup');
+        var box = document.getElementById('room-explore-notice-box');
         if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
         if (box) box.style.transform = 'none';
       }, 800);
