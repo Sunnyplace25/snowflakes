@@ -581,6 +581,10 @@
             <button id="kouta-diary-prev" onclick="changeDiaryPage(-1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fca5a5'" onmouseleave="this.style.color='#475569'">← prev</button>
             <button id="kouta-diary-next" onclick="changeDiaryPage(1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fca5a5'" onmouseleave="this.style.color='#475569'">next →</button>
           </div>
+          <div id="kouta-diary-unlock-next" style="display:none;text-align:center;margin-bottom:14px;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin:0 0 8px;">HONEY LEMON × 20</p>
+            <button id="kouta-diary-unlock-btn" onclick="" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;background:none;border:1px solid rgba(252,165,165,0.25);border-radius:100px;padding:6px 18px;cursor:pointer;transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(252,165,165,0.6)'" onmouseleave="this.style.borderColor='rgba(252,165,165,0.25)'">次のページを解放する</button>
+          </div>
           <button onclick="closeDiaryPeek()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
         </div>
       </div>
@@ -1435,7 +1439,16 @@
 
     var _diaryPage = 0;
 
-    function _getUnlockedEntries() {
+    var _DR_CANDY_COST  = 20;
+    var _DR_CANDY_TYPE  = 'honey';
+    var _DR_CANDY_LABEL = 'ハニーレモンキャンディー';
+    var _DR_SAVE_PREFIX = 'sf_diary_kouta_p';
+
+    function _isDiaryPageUnlocked(idx) {
+      return idx === 0 || localStorage.getItem(_DR_SAVE_PREFIX + idx) === '1';
+    }
+
+    function _getDateAvailableDiaryEntries() {
       var now = new Date();
       var today = now.getFullYear() + '-'
         + String(now.getMonth() + 1).padStart(2, '0') + '-'
@@ -1443,9 +1456,41 @@
       return DIARY_ENTRIES.filter(function(e) { return e.date <= today; });
     }
 
+    function _getUnlockedEntries() {
+      return _getDateAvailableDiaryEntries().filter(function(e, idx) {
+        return _isDiaryPageUnlocked(idx);
+      });
+    }
+
+    function _unlockDiaryPage(idx) {
+      var candies = SfSnow.getCandies();
+      if ((candies[_DR_CANDY_TYPE] || 0) < _DR_CANDY_COST) {
+        showAlert(_DR_CANDY_LABEL + 'が足りません');
+        return;
+      }
+      showDialog(_DR_CANDY_LABEL + ' × ' + _DR_CANDY_COST, function() {
+        if (!SfSnow.spendCandy(_DR_CANDY_TYPE, _DR_CANDY_COST)) return;
+        localStorage.setItem(_DR_SAVE_PREFIX + idx, '1');
+        var newPages = _getUnlockedEntries();
+        _diaryPage = newPages.length - 1;
+        _renderDiaryPage(newPages);
+      });
+    }
+
     function _renderDiaryPage(pages) {
       var p = pages[_diaryPage];
       document.getElementById('kouta-diary-peek-content').textContent = p.lines.join('\n');
+
+      var available  = _getDateAvailableDiaryEntries();
+      var unlockNext = document.getElementById('kouta-diary-unlock-next');
+      var unlockBtn  = document.getElementById('kouta-diary-unlock-btn');
+      if (available.length > pages.length) {
+        unlockBtn.setAttribute('onclick', '_unlockDiaryPage(' + pages.length + ')');
+        unlockNext.style.display = 'block';
+      } else {
+        unlockNext.style.display = 'none';
+      }
+
       var nav = document.getElementById('kouta-diary-nav');
       var pagenum = document.getElementById('kouta-diary-pagenum');
       if (pages.length <= 1) {
