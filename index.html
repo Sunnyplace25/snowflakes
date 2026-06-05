@@ -3056,11 +3056,12 @@ document.addEventListener('visibilitychange', function() {
 <!-- ── チュートリアルヒント ── -->
 <script>
 (function() {
-  var HINT_KEY = 'sf_hint_v2_seen';
+  var HINT_KEY = 'sf_hint_v3_seen';
   var STEPS = [
     { text: '物語に触れてみよう<br><span style="font-size:11px;color:#64748b;letter-spacing:1px;">デイリーアップデート</span>', target: 'banner' },
     { text: 'Snow flakesの音楽を<br>聴いてみよう', target: 'player' },
-    { text: 'ガチャをひいて<br>アイテムを集めよう！', target: 'gacha' }
+    { text: 'ガチャをひいて<br>アイテムを集めよう！', target: 'gacha' },
+    { text: '特別なコンテンツが<br>集まる場所へ', target: 'sweets' }
   ];
   var currentStep = 0;
   var hintEl = null;
@@ -3126,6 +3127,20 @@ document.addEventListener('visibilitychange', function() {
       hintEl.style.bottom = '';
       hintEl.style.left   = '';
       arrowEl.style.cssText = 'position:absolute;top:-10px;right:20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid rgba(13,20,38,0.97);';
+    } else if (step.target === 'sweets') {
+      var s = document.querySelector('.nav-sweets');
+      var top2 = 60, right2 = 40;
+      if (s) {
+        var sr = s.getBoundingClientRect();
+        top2   = sr.bottom + 10;
+        right2 = window.innerWidth - sr.right + (sr.width / 2) - 20;
+        right2 = Math.max(8, right2);
+      }
+      hintEl.style.top    = top2 + 'px';
+      hintEl.style.right  = right2 + 'px';
+      hintEl.style.bottom = '';
+      hintEl.style.left   = '';
+      arrowEl.style.cssText = 'position:absolute;top:-10px;right:20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid rgba(249,168,212,0.8);';
     }
   }
 
