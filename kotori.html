@@ -487,7 +487,7 @@
       <div id="qa-core-locked" class="qa-core-locked">
         <span class="qa-lock-icon">❄</span>
         <p>コアファン認定で解放されます</p>
-        <p class="qa-lock-hint">Snow flakes 三人のプロフィールを全て解放しよう</p>
+        <p class="qa-lock-hint">ヒナタ・コウタ・ハヤテ、三人全員を応援しよう（♡）</p>
       </div>
       <div id="qa-core-unlocked" style="display:none;">
         <p class="qa-core-badge">CORE FAN UNLOCKED</p>
@@ -726,12 +726,8 @@
   ];
 
   function isCoreFan() {
-    var CORE_BLOCKS = ['pf-sign','pf-blood','pf-height','pf-likes','pf-dislikes','pf-hobby','pf-food','pf-room','pf-habit','pf-smoke','mini'];
     return ['hinata','kouta','hayate'].every(function(ch) {
-      try {
-        var arr = JSON.parse(localStorage.getItem('sf_pf_' + ch + '_v2') || '[]');
-        return CORE_BLOCKS.every(function(b) { return arr.indexOf(b) !== -1; });
-      } catch(e) { return false; }
+      return !!localStorage.getItem('liked_' + ch);
     });
   }
 
