@@ -481,6 +481,55 @@
       </div>
     </div>
 
+    <!-- Works -->
+    <section class="links" style="padding: 60px 0 0; background: none;">
+      <span class="sec-label">WORKS</span>
+      <h2 class="sec-title">制作実績</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:760px;margin:0 auto;">
+
+        <a href="https://ncode.syosetu.com/n9009lo/" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">NOVEL</p>
+            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">Snow flakes</p>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;">小説家になろうで連載中の長編小説。三人組バンドの物語。</p>
+          </div>
+        </a>
+
+        <a href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">MUSIC</p>
+            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">楽曲制作・配信</p>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;">Spotify・Apple Musicほか各ストリーミングで配信中。</p>
+          </div>
+        </a>
+
+        <a href="https://sunnyplace25.github.io/rhythm/" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">GAME</p>
+            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">リズムゲーム</p>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;">Snow flakesの楽曲で遊べるブラウザリズムゲーム。</p>
+          </div>
+        </a>
+
+        <a href="https://sunnyplace25.github.io/snowflakes/" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">WEBSITE</p>
+            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">Snow flakes 公式サイト</p>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;">小説・音楽・キャラクターを繋ぐ公式サイト。ガチャ・SWEETs機能つき。</p>
+          </div>
+        </a>
+
+        <a href="https://sunnyplace25.github.io/taskpwa/" target="_blank" style="text-decoration:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">WEB APP</p>
+            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">タスク管理アプリ</p>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;">PWA対応のシンプルなタスク管理アプリ。</p>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
     <!-- Links -->
     <section class="links" style="padding: 60px 0 0; background: none;">
       <span class="sec-label">LINKS</span>
@@ -813,6 +862,71 @@
       applyLang('en');
     }
   }
+})();
+</script>
+
+<!-- ── フローティングSpotifyプレイヤー ── -->
+<style>
+  #sf-player { width:300px; height:152px; line-height:0; font-size:0; }
+  #sf-player iframe { height:152px; display:block; }
+  @media (max-width:600px) {
+    #sf-player { width:calc(100vw - 32px); height:152px; bottom:16px; right:16px; }
+    #sf-player iframe { height:152px; }
+  }
+</style>
+<div id="sf-player" style="
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  border-radius:12px; overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.5);
+  transition:opacity 0.4s, transform 0.4s;
+  opacity:0; transform:translateY(16px); pointer-events:none;
+">
+  <iframe src="https://open.spotify.com/embed/artist/0nOz1pWptKtNtav9yDoQwN?utm_source=generator&theme=0"
+    width="100%" frameborder="0"
+    allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy" style="display:block;">
+  </iframe>
+  <button onclick="sfClose()" style="
+    position:absolute; top:6px; right:8px;
+    background:none; border:none; color:#94a3b8;
+    font-size:16px; cursor:pointer; line-height:1; padding:2px 4px;
+    transition:color 0.2s;
+  " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">✕</button>
+</div>
+<button id="sf-open-btn" onclick="sfOpen()" style="
+  position:fixed; bottom:24px; right:24px; z-index:199;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(30,215,96,0.15); border:1.5px solid rgba(30,215,96,0.4);
+  color:#1ed760; font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 12px rgba(0,0,0,0.4);
+  transition:color 0.2s;
+" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">♪</button>
+
+<script>
+(function() {
+  var player  = document.getElementById('sf-player');
+  var openBtn = document.getElementById('sf-open-btn');
+
+  setTimeout(function() {
+    player.style.opacity = '1';
+    player.style.transform = 'translateY(0)';
+    player.style.pointerEvents = 'auto';
+    openBtn.style.display = 'none';
+  }, 3000);
+
+  window.sfClose = function() {
+    player.style.opacity = '0';
+    player.style.transform = 'translateY(16px)';
+    player.style.pointerEvents = 'none';
+    openBtn.style.display = 'flex';
+  };
+  window.sfOpen = function() {
+    player.style.opacity = '1';
+    player.style.transform = 'translateY(0)';
+    player.style.pointerEvents = 'auto';
+    openBtn.style.display = 'none';
+  };
 })();
 </script>
 
