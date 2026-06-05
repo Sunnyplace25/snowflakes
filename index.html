@@ -1351,7 +1351,7 @@ function sfShare() {
         var SF_SINGLES = [
           { img:'Discography/Signal.webp', title:'Signal /<br class="sp-mb-br">グラスの縁', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/album/4fpqDOsUjdcS1lpHbacdKr',
-            links:[] },
+            links:[{ text:'ep.177 →', url:'https://ncode.syosetu.com/n9009lo/177', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
           { img:'Discography/Rabbit.webp', title:'Rabbit /<br class="sp-mb-br">ハッピーエンドはいらない', status:'配信中', musicUrl:'https://open.spotify.com/intl-ja/album/44dOQWscvSwLartZT8UBsJ?si=bU4e5_FpQoqfzC8t2HKELA',
             links:[
               { text:'ep.75 →', url:'https://ncode.syosetu.com/n9009lo/75', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },
@@ -2684,42 +2684,27 @@ document.addEventListener('visibilitychange', function() {
   opacity:0; pointer-events:none;
 " onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">DISCOGRAPHY</a>
 
-<!-- ── フローティングミュージックプレイヤー ── -->
+<!-- ── フローティングSpotifyプレイヤー ── -->
 <div id="sf-player" style="
   position:fixed; bottom:24px; right:24px; z-index:200;
-  display:flex; align-items:center; gap:12px;
-  background:rgba(12,18,32,0.88); backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:40px; padding:10px 18px 10px 12px;
-  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+  width:300px; border-radius:12px; overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.5);
   transition:opacity 0.4s, transform 0.4s;
   opacity:0; transform:translateY(16px); pointer-events:none;
 ">
-  <button id="sf-play-btn" onclick="sfTogglePlay()" style="
-    width:36px; height:36px; border-radius:50%;
-    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-    color:#e2e8f0; font-size:13px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:background 0.2s; flex-shrink:0;
-  ">▶</button>
-  <div style="min-width:0;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:2px;">NOW PLAYING</p>
-    <p style="font-size:12px;color:#cbd5e1;letter-spacing:1px;white-space:nowrap;">置いた音 <span style="color:#475569;font-size:10px;">— Snow flakes</span></p>
-    <div style="margin-top:6px;position:relative;height:2px;background:rgba(255,255,255,0.08);border-radius:1px;width:140px;cursor:pointer;" onclick="sfSeek(event, this)">
-      <div id="sf-progress" style="height:100%;width:0%;background:rgba(255,255,255,0.3);border-radius:1px;transition:width 0.5s linear;pointer-events:none;"></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
-      <span style="font-size:9px;color:#334155;">🔈</span>
-      <input id="sf-volume" type="range" min="0" max="1" step="0.05" value="0.10"
-        oninput="sfSetVolume(this.value)"
-        style="width:80px;">
-    </div>
-  </div>
+  <iframe src="https://open.spotify.com/embed/album/4fpqDOsUjdcS1lpHbacdKr?theme=0"
+    width="100%" height="80" frameborder="0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy" style="display:block;">
+  </iframe>
   <button onclick="sfClose()" style="
-    background:none; border:none; color:#334155; font-size:16px;
-    cursor:pointer; padding:0 0 0 4px; line-height:1;
-    transition:color 0.2s; flex-shrink:0;
-  " onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">×</button>
+    position:absolute; top:6px; right:6px;
+    background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+    border:none; color:#64748b; font-size:14px; cursor:pointer;
+    width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    line-height:1; transition:color 0.2s;
+  " onmouseover="this.style.color='#cbd5e1'" onmouseout="this.style.color='#64748b'">×</button>
 </div>
 
 <!-- 起動ボタン（閉じたあとに再表示） -->
@@ -2734,46 +2719,10 @@ document.addEventListener('visibilitychange', function() {
   transition:color 0.2s;
 " onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">♪</button>
 
-<audio id="sf-audio" src="music/oita_oto.mp3" preload="auto"></audio>
-
 <script>
 (function() {
-  var audio    = document.getElementById('sf-audio');
-  var player   = document.getElementById('sf-player');
-  var playBtn  = document.getElementById('sf-play-btn');
-  var progress = document.getElementById('sf-progress');
-  var openBtn  = document.getElementById('sf-open-btn');
-  var playing  = false;
-  var milestones = { 25: false, 50: false, 75: false };
-
-  function gaEvent(name, params) {
-    if (typeof gtag === 'function') gtag('event', name, params);
-  }
-
-  var _targetVol = 0.10;
-  audio.volume = 0;
-  audio.muted = true;
-  var _autoPlayed = false;
-  function _tryAutoPlay() {
-    if (_autoPlayed) return;
-    _autoPlayed = true;
-    audio.play().then(function() {
-      playing = true;
-      playBtn.textContent = '❚❚';
-      // muted 解除 → 音量フェードイン
-      audio.muted = false;
-      var step = 0, steps = 20;
-      var t = setInterval(function() {
-        step++;
-        audio.volume = Math.min(_targetVol * step / steps, _targetVol);
-        if (step >= steps) clearInterval(t);
-      }, 60);
-    }).catch(function() {
-      _autoPlayed = false;
-      audio.muted = false;
-      audio.volume = _targetVol;
-    });
-  }
+  var player  = document.getElementById('sf-player');
+  var openBtn = document.getElementById('sf-open-btn');
 
   // 3秒後にプレイヤーフェードイン
   setTimeout(function() {
@@ -2784,68 +2733,11 @@ document.addEventListener('visibilitychange', function() {
     if (dl) { dl.style.opacity = '1'; dl.style.pointerEvents = 'auto'; }
   }, 3000);
 
-  audio.addEventListener('timeupdate', function() {
-    if (!audio.duration) return;
-    var pct = audio.currentTime / audio.duration * 100;
-    progress.style.width = pct + '%';
-    // 25 / 50 / 75% マイルストーン
-    [25, 50, 75].forEach(function(m) {
-      if (!milestones[m] && pct >= m) {
-        milestones[m] = true;
-        gaEvent('music_progress', { track: '置いた音', percent: m });
-      }
-    });
-  });
-
-  audio.addEventListener('ended', function() {
-    playing = false;
-    playBtn.textContent = '▶';
-    gaEvent('music_complete', { track: '置いた音' });
-    // 初回フル再生: 50 Snow
-    var first = SfSnow.addOnce('oita_oto_first', 50, '置いた音 初回フル再生');
-    // 2回目以降: 1日1回 5 Snow
-    if (first === 0) SfSnow.addWithToast('oita_oto_daily', '置いた音をフル再生');
-  });
-
-  window.sfTogglePlay = function() {
-    if (playing) {
-      audio.pause();
-      playBtn.textContent = '▶';
-    } else {
-      audio.play();
-      playBtn.textContent = '❚❚';
-      if (audio.currentTime < 1) {
-        gaEvent('music_play', { track: '置いた音' });
-      }
-    }
-    playing = !playing;
-  };
-
-  window.sfSetVolume = function(val) {
-    _targetVol = parseFloat(val);
-    audio.volume = _targetVol;
-  };
-
-  window.sfSeek = function(e, bar) {
-    if (!audio.duration) return;
-    var rect = bar.getBoundingClientRect();
-    var ratio = (e.clientX - rect.left) / rect.width;
-    audio.currentTime = ratio * audio.duration;
-  };
-
-  // 自動再生なし（手動再生のみ）
-  audio.muted = false;
-  audio.volume = _targetVol;
-
   window.sfClose = function() {
-    audio.pause();
-    playing = false;
-    playBtn.textContent = '▶';
     player.style.opacity = '0';
     player.style.transform = 'translateY(16px)';
     player.style.pointerEvents = 'none';
     openBtn.style.display = 'flex';
-    openBtn.style.color = '#475569';
   };
 
   window.sfOpen = function() {
