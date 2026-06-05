@@ -2,9 +2,215 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=./">
-  <title>Snow flakes — Music</title>
-  <script>window.location.replace('./');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <meta property="og:title" content="Snow flakes — Music">
+  <meta property="og:description" content="各ストリーミングサービスで配信中">
+  <title>Snow flakes｜Music 楽曲・ストリーミング配信</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-music.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0c1220; --text: #e2e8f0; --muted: #cbd5e1;
+      --border: rgba(255,255,255,0.08); --card: rgba(255,255,255,0.04);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh; overflow-x: hidden;
+    }
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35; }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 480px; margin: 0 auto;
+      padding: 80px 24px 60px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    .back {
+      position: fixed; top: 20px; left: 24px; z-index: 100;
+      font-size: 13px; color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back:hover { color: var(--text); }
+
+    .hero-icon { font-size: 48px; margin-bottom: 20px; opacity: 0.9; }
+    .hero-label {
+      font-size: 11px; letter-spacing: 7px; color: var(--muted);
+      font-family: 'Cormorant Garamond', serif; margin-bottom: 14px;
+    }
+    .hero-title {
+      font-size: 38px; font-weight: 300; color: white; letter-spacing: 3px;
+      font-family: 'Cormorant Garamond', serif; margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-size: 13px; color: var(--muted); letter-spacing: 2px;
+      margin-bottom: 48px;
+    }
+
+    .links { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+
+    .service-btn {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 24px; border-radius: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .service-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.07);
+    }
+    .service-btn.spotify  { border-color: rgba(90,171,133,0.4);  color: #5aab85; }
+    .service-btn.apple    { border-color: rgba(176,112,112,0.4); color: #b07070; }
+    .service-btn.amazon   { border-color: rgba(90,143,168,0.4);  color: #5a8fa8; }
+    .service-btn.youtube  { border-color: rgba(192,96,96,0.4);   color: #c06060; }
+    .service-btn.suno     { border-color: rgba(196,181,253,0.4); color: #c4b5fd; }
+
+    .service-btn:hover.spotify  { border-color: rgba(90,171,133,0.7); }
+    .service-btn:hover.apple    { border-color: rgba(176,112,112,0.7); }
+    .service-btn:hover.amazon   { border-color: rgba(90,143,168,0.7); }
+    .service-btn:hover.youtube  { border-color: rgba(192,96,96,0.7); }
+    .service-btn:hover.suno     { border-color: rgba(196,181,253,0.7); }
+
+    .service-icon { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; }
+    .service-info { flex: 1; }
+    .service-name { font-size: 16px; font-weight: 400; color: inherit; margin-bottom: 3px; }
+    .service-note { font-size: 12px; color: var(--muted); }
+    .service-arrow { font-size: 16px; color: var(--muted); }
+
+    .divider {
+      width: 100%; height: 1px; background: var(--border);
+      margin: 8px 0;
+    }
+
+    .pick-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: #cbd5e1;
+      margin-bottom: 40px;
+    }
+    .pick-note svg { opacity: 0.7; flex-shrink: 0; }
+
+    .footer-note {
+      margin-top: 48px; font-size: 12px; color: #334155;
+      letter-spacing: 4px; font-family: 'Cormorant Garamond', serif;
+      text-align: center;
+    }
+  </style>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GT-MRQ2NK5K');
+    gtag('config', 'G-DZDSHRWLQF');
+  </script>
 </head>
-<body></body>
+<body>
+<canvas id="snow"></canvas>
+
+<a class="back" href="index.html">← もどる</a>
+
+<div class="wrap">
+  <div class="hero-icon">🎵</div>
+  <p class="hero-label">Snow flakes</p>
+  <h1 class="hero-title">Music</h1>
+  <p class="hero-sub">各サービスで配信中</p>
+
+  <div class="links">
+
+    <a class="service-btn spotify" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank">
+      <span class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span>
+      <span class="service-info">
+        <p class="service-name">Spotify</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn apple" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank">
+      <span class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026C4.786.07 4.043.15 3.34.428 2.004.958 1.04 1.88.475 3.208A9.053 9.053 0 00.08 5.004 19.69 19.69 0 000 6.124v11.754c.008.48.048.959.14 1.432.333 1.65 1.158 2.945 2.55 3.818.803.499 1.701.738 2.645.836.38.04.761.055 1.143.057h11.726c.202 0 .404-.012.605-.02.65-.03 1.29-.127 1.9-.38 1.424-.59 2.375-1.596 2.86-3.06.175-.522.25-1.064.283-1.608.01-.174.016-.35.016-.524V6.125h-.004zm-9.56 2.78l-3.205 3.205c-.013.014-.027.027-.04.038l-1.67 1.67c-.19.19-.45.26-.69.22a.785.785 0 01-.548-.32L7.1 12.09a.685.685 0 01-.1-.63.688.688 0 01.45-.443.685.685 0 01.626.12l1.007 1.007.79-.79L11.28 9.94 12.22 9l.83.83a.664.664 0 01-.616 1.074z"/></svg></span>
+      <span class="service-info">
+        <p class="service-name">Apple Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn amazon" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank">
+      <span class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705a.661.661 0 01-.77.074c-1.081-.895-1.275-1.312-1.87-2.165-1.789 1.824-3.054 2.369-5.373 2.369-2.744 0-4.876-1.694-4.876-5.085 0-2.648 1.435-4.453 3.479-5.335 1.768-.78 4.236-.918 6.121-1.133v-.423c0-.779.06-1.699-.396-2.372-.396-.602-1.157-.851-1.826-.851-1.241 0-2.35.637-2.62 1.958-.056.294-.274.583-.566.599l-3.167-.343c-.267-.061-.562-.274-.484-.682C5.699 1.983 8.628 1 11.26 1c1.35 0 3.116.359 4.181 1.381 1.35 1.261 1.22 2.942 1.22 4.773v4.327c0 1.3.539 1.872 1.046 2.572.178.251.217.552-.009.738-.566.468-1.572 1.337-2.124 1.826l-.431-.813zM22.806 19.232c-2.574 1.902-6.307 2.913-9.521 2.913-4.507 0-8.562-1.666-11.626-4.438-.241-.218-.026-.515.265-.346 3.308 1.927 7.396 3.086 11.621 3.086 2.849 0 5.983-.591 8.864-1.812.434-.185.799.285.397.597z"/></svg></span>
+      <span class="service-info">
+        <p class="service-name">Amazon Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <a class="service-btn youtube" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank">
+      <span class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></span>
+      <span class="service-info">
+        <p class="service-name">YouTube Music</p>
+        <p class="service-note">配信中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+    <div class="divider"></div>
+
+    <a class="service-btn suno" href="https://suno.com/@snowflakes_music" target="_blank">
+      <span class="service-icon">❄</span>
+      <span class="service-info">
+        <p class="service-name">Suno</p>
+        <p class="service-note">未配信曲も公開中</p>
+      </span>
+      <span class="service-arrow">→</span>
+    </a>
+
+  </div>
+
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</div>
+
+<script>
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 50}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.6+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
 </html>
