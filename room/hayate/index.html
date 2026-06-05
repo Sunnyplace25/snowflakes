@@ -517,6 +517,33 @@
       </div>
     </div>
 
+  <!-- ハヤテの手帳 popup -->
+  <div class="room-hs-popup" id="hayate-notebook-popup" onclick="this.classList.remove('show');document.getElementById('hayate-notebook-state2').style.display='none';document.getElementById('hayate-notebook-state1').style.display='block';">
+    <div class="room-hs-card" onclick="event.stopPropagation()">
+      <!-- State 1: 表紙 -->
+      <div id="hayate-notebook-state1">
+        <p class="room-hs-label" style="margin-bottom:14px;">NOTEBOOK</p>
+        <img src="../../item/notebook_hayate.webp" alt="ハヤテの手帳" style="width:90px;margin:0 auto 16px;display:block;object-fit:contain;">
+        <p class="room-hs-desc" style="margin-bottom:28px;">ライブ、仕事、プライベート。<br>全部まとめて管理されている。</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="openHayateNotebookPeek()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#fde68a;background:rgba(253,230,138,0.06);border:1px solid rgba(253,230,138,0.2);border-radius:8px;padding:10px 0;cursor:pointer;transition:all 0.2s;" onmouseenter="this.style.background='rgba(253,230,138,0.12)'" onmouseleave="this.style.background='rgba(253,230,138,0.06)'">▶ ちょっとだけ覗く</button>
+          <button onclick="document.getElementById('hayate-notebook-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
+        </div>
+      </div>
+      <!-- State 2: 覗き見（後で実装） -->
+      <div id="hayate-notebook-state2" style="display:none;">
+        <p class="room-hs-label" style="margin-bottom:6px;">NOTEBOOK — PEEK</p>
+        <p id="hayate-notebook-pagenum" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin:0 0 16px;">1 / 1</p>
+        <div id="hayate-notebook-content" style="font-size:12px;letter-spacing:0;color:#cbd5e1;line-height:2.4;text-align:left;margin-bottom:20px;white-space:pre-line;font-style:italic;border-left:1px solid rgba(253,230,138,0.15);padding-left:14px;overflow-wrap:break-word;word-break:break-all;max-height:52vh;overflow-y:auto;scrollbar-width:none;"></div>
+        <div id="hayate-notebook-nav" style="display:none;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <button id="hayate-notebook-prev" onclick="changeHayateNotebookPage(-1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fde68a'" onmouseleave="this.style.color='#475569'">← prev</button>
+          <button id="hayate-notebook-next" onclick="changeHayateNotebookPage(1)" style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;padding:4px 8px;" onmouseenter="this.style.color='#fde68a'" onmouseleave="this.style.color='#475569'">next →</button>
+        </div>
+        <button onclick="document.getElementById('hayate-notebook-state2').style.display='none';document.getElementById('hayate-notebook-state1').style.display='block';" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">── 閉じる ──</button>
+      </div>
+    </div>
+  </div>
+
     <p class="eyebrow" style="margin-top:32px;">Snow flakes — ROOM</p>
 
     <p class="name-en">HAYATE</p>
@@ -777,7 +804,7 @@
       <button class="room-hotspot" style="left:55%;top:72%;" onclick="event.stopPropagation();openRoomHotspot('ゲーム','やりっぱなし。\n充電は切れている。')">+</button>
       <button class="room-hotspot" style="left:40%;top:30%;" onclick="event.stopPropagation();openRoomHotspot('カーテン','だいたい開けっ放し。')">+</button>
       <button class="room-hotspot" style="left:68%;top:26%;" onclick="event.stopPropagation();openRoomHotspot('バックステージパス','初めて演ったでかいハコのパス。\nまだ残してある。')">+</button>
-      <button class="room-hotspot" style="left:88%;top:52%;" onclick="event.stopPropagation();openRoomHotspot('ハヤテの手帳','ライブ、仕事、プライベート。\n全部まとめて管理されている。')">+</button>
+      <button class="room-hotspot" style="left:88%;top:40%;" onclick="event.stopPropagation();document.getElementById('hayate-notebook-popup').classList.add('show')">+</button>
       <button class="room-hotspot" style="left:63%;top:60%;" onclick="event.stopPropagation();openRoomHotspot('ダンボール箱','なんとなく捨てられないものが\n雑に入っている。')">+</button>
       <button class="room-hotspot" style="left:90%;top:78%;" onclick="event.stopPropagation();openRoomHotspot('ソファ','寝落ち率が高い。')">+</button>
       <button class="room-hotspot" style="left:76%;top:47%;" onclick="event.stopPropagation();openRoomHotspot('バッグ','帰ってきたまま置かれている。\n古いドラムスティックが雑に入っている。','drumstick_hayate','../../item/drumstick.webp','古いドラムスティック')">+</button>
@@ -789,6 +816,56 @@
       var el = document.getElementById(id);
       if (el) el.classList.toggle('open');
     }
+
+    // ── ハヤテの手帳 ──────────────────────────────────────────
+    var HAYATE_NOTEBOOK_PAGES = [
+      // コンテンツ準備中
+    ];
+    var _hayateNotebookPage = 0;
+
+    function _getUnlockedHayatePages() {
+      var now = new Date();
+      var today = now.getFullYear() + '-'
+        + String(now.getMonth() + 1).padStart(2, '0') + '-'
+        + String(now.getDate()).padStart(2, '0');
+      return HAYATE_NOTEBOOK_PAGES.filter(function(p) { return p.date <= today; });
+    }
+
+    function openHayateNotebookPeek() {
+      var pages = _getUnlockedHayatePages();
+      if (!pages.length) return;
+      _hayateNotebookPage = 0;
+      _renderHayateNotebookPage(pages);
+      document.getElementById('hayate-notebook-state1').style.display = 'none';
+      document.getElementById('hayate-notebook-state2').style.display = 'block';
+    }
+
+    function _renderHayateNotebookPage(pages) {
+      var content = document.getElementById('hayate-notebook-content');
+      content.innerHTML = '';
+      content.textContent = pages[_hayateNotebookPage].lines.join('\n');
+      var nav = document.getElementById('hayate-notebook-nav');
+      var pagenum = document.getElementById('hayate-notebook-pagenum');
+      if (pages.length <= 1) {
+        nav.style.display = 'none';
+        pagenum.style.display = 'none';
+      } else {
+        nav.style.display = 'flex';
+        pagenum.style.display = '';
+        pagenum.textContent = (_hayateNotebookPage + 1) + ' / ' + pages.length;
+        document.getElementById('hayate-notebook-prev').style.opacity = _hayateNotebookPage === 0 ? '0.2' : '1';
+        document.getElementById('hayate-notebook-prev').style.pointerEvents = _hayateNotebookPage === 0 ? 'none' : 'auto';
+        document.getElementById('hayate-notebook-next').style.opacity = _hayateNotebookPage === pages.length - 1 ? '0.2' : '1';
+        document.getElementById('hayate-notebook-next').style.pointerEvents = _hayateNotebookPage === pages.length - 1 ? 'none' : 'auto';
+      }
+    }
+
+    function changeHayateNotebookPage(dir) {
+      var pages = _getUnlockedHayatePages();
+      _hayateNotebookPage = Math.max(0, Math.min(pages.length - 1, _hayateNotebookPage + dir));
+      _renderHayateNotebookPage(pages);
+    }
+    // ────────────────────────────────────────────────────────────
 
     function openRoomLight() {
       document.getElementById('room-light').classList.add('open');
@@ -807,6 +884,11 @@
       if (hsItemName) { hsItemName.style.display = 'none'; }
       var note = document.getElementById('hayate-hs-note');
       if (note) note.style.display = 'none';
+      // イラストのみ表示（アイテム解放なし）
+      if (!itemKey && imgSrc && hsImg) {
+        hsImg.src = imgSrc; hsImg.style.display = 'block';
+        return;
+      }
       if (itemKey && SfSnow.unlockItem) {
         var isNew = !SfSnow.isUnlocked(itemKey);
         SfSnow.unlockItem(itemKey);
