@@ -1817,6 +1817,7 @@ function sfShare() {
     t.classList.remove('visible');
     setTimeout(function() { t.classList.remove('ready'); _stopTutSnow(); }, 500);
     localStorage.setItem('sf_tutorial_seen', '1');
+    if (typeof sfStartHints === 'function') setTimeout(sfStartHints, 800);
   }
   document.addEventListener('DOMContentLoaded', function() {
     if (!localStorage.getItem('sf_tutorial_seen')) {
@@ -3050,6 +3051,114 @@ document.addEventListener('visibilitychange', function() {
       }
     });
   })();
+</script>
+
+<!-- ── チュートリアルヒント ── -->
+<script>
+(function() {
+  var HINT_KEY = 'sf_hint_v1_seen';
+  var STEPS = [
+    { text: 'Snow flakesの音楽を<br>聴いてみよう', target: 'player' },
+    { text: 'ガチャをひいて<br>アイテムを集めよう！', target: 'gacha' }
+  ];
+  var currentStep = 0;
+  var hintEl = null;
+
+  function createHint() {
+    var el = document.createElement('div');
+    el.id = 'sf-hint';
+    el.style.cssText = 'position:fixed;z-index:7500;opacity:0;transition:opacity 0.35s,transform 0.35s;pointer-events:auto;';
+    el.innerHTML =
+      '<div style="background:rgba(13,20,38,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:16px 18px 14px;min-width:180px;max-width:210px;position:relative;box-shadow:0 4px 24px rgba(0,0,0,0.5);">' +
+        '<p id="sf-hint-text" style="font-size:13px;color:#e2e8f0;line-height:1.9;letter-spacing:0.5px;margin:0 0 14px;font-family:\'Noto Serif JP\',serif;font-weight:300;"></p>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<button id="sf-hint-next" style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:3px;color:#93c5fd;background:none;border:1px solid rgba(147,197,253,0.3);border-radius:100px;padding:5px 14px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'rgba(147,197,253,0.7)\'" onmouseout="this.style.borderColor=\'rgba(147,197,253,0.3)\'">次へ →</button>' +
+          '<button onclick="sfCloseHint()" style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color=\'#94a3b8\'" onmouseout="this.style.color=\'#475569\'">閉じる</button>' +
+        '</div>' +
+        '<div id="sf-hint-arrow" style="position:absolute;"></div>' +
+      '</div>';
+    document.body.appendChild(el);
+    document.getElementById('sf-hint-next').addEventListener('click', function() {
+      if (currentStep < STEPS.length - 1) { sfNextHint(); } else { sfCloseHint(); }
+    });
+    return el;
+  }
+
+  function positionHint(step) {
+    var textEl = document.getElementById('sf-hint-text');
+    var nextBtn = document.getElementById('sf-hint-next');
+    var arrowEl = document.getElementById('sf-hint-arrow');
+    textEl.innerHTML = step.text;
+    nextBtn.textContent = currentStep === STEPS.length - 1 ? 'OK ✓' : '次へ →';
+
+    if (step.target === 'player') {
+      hintEl.style.bottom = '118px';
+      hintEl.style.right  = '24px';
+      hintEl.style.top    = '';
+      hintEl.style.left   = '';
+      arrowEl.style.cssText = 'position:absolute;bottom:-10px;right:28px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid rgba(13,20,38,0.97);';
+    } else if (step.target === 'gacha') {
+      var g = document.querySelector('.nav-gacha');
+      var top = 60, right = 80;
+      if (g) {
+        var r = g.getBoundingClientRect();
+        top   = r.bottom + 10;
+        right = window.innerWidth - r.right + (r.width / 2) - 20;
+        right = Math.max(8, right);
+      }
+      hintEl.style.top    = top + 'px';
+      hintEl.style.right  = right + 'px';
+      hintEl.style.bottom = '';
+      hintEl.style.left   = '';
+      arrowEl.style.cssText = 'position:absolute;top:-10px;right:20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid rgba(13,20,38,0.97);';
+    }
+  }
+
+  function showStep(idx) {
+    currentStep = idx;
+    if (idx >= STEPS.length) { sfCloseHint(); return; }
+    if (!hintEl) hintEl = createHint();
+    hintEl.style.opacity   = '0';
+    hintEl.style.transform = 'translateY(8px)';
+    positionHint(STEPS[idx]);
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        hintEl.style.opacity   = '1';
+        hintEl.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  window.sfNextHint = function() {
+    hintEl.style.opacity   = '0';
+    hintEl.style.transform = 'translateY(-4px)';
+    setTimeout(function() { showStep(currentStep + 1); }, 300);
+  };
+
+  window.sfCloseHint = function() {
+    if (hintEl) {
+      hintEl.style.opacity   = '0';
+      hintEl.style.transform = 'translateY(8px)';
+      setTimeout(function() {
+        if (hintEl && hintEl.parentNode) hintEl.parentNode.removeChild(hintEl);
+        hintEl = null;
+      }, 400);
+    }
+    localStorage.setItem(HINT_KEY, '1');
+  };
+
+  window.sfStartHints = function() {
+    if (localStorage.getItem(HINT_KEY)) return;
+    showStep(0);
+  };
+
+  // 既にチュートリアル済みだがヒント未表示のユーザー向け
+  document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('sf_tutorial_seen') && !localStorage.getItem(HINT_KEY)) {
+      setTimeout(sfStartHints, 3800);
+    }
+  });
+})();
 </script>
 
 <!-- Signal release notice popup (2026-06-06) -->
