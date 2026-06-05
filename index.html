@@ -2699,10 +2699,10 @@ document.addEventListener('visibilitychange', function() {
 
 <!-- ── フローティングSpotifyプレイヤー ── -->
 <style>
-  #sf-player { width:300px; }
-  #sf-player iframe { height:232px; }
+  #sf-player { width:300px; height:232px; line-height:0; font-size:0; }
+  #sf-player iframe { height:232px; display:block; }
   @media (max-width:600px) {
-    #sf-player { width:calc(100vw - 32px); bottom:16px; right:16px; }
+    #sf-player { width:calc(100vw - 32px); height:152px; bottom:16px; right:16px; }
     #sf-player iframe { height:152px; }
   }
 </style>
