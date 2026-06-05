@@ -5880,7 +5880,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_m5k9vt.mp3', cost:{ pick:2 }, chara:'kouta', reward:'bass_strings_kouta' },
     { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_x2b6nf.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
     { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true },
-    { id:'song_shukusou', type:'song', title:'祝奏', sub:'Snow flakes SWEETs限定', src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'hayate', isNew:true, reward:'boutonniere_hayate' },
+    { id:'song_shukusou', type:'song', title:'祝奏', sub:'Snow flakes SWEETs限定', src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'hayate', isNew:true, reward:'boutonniere_hayate', alwaysGlow:true },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -6488,7 +6488,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var _mc_hasItem = item.reward && (!rewOk || item.rewardRepeatable);
     var _mc_chara = item.chara || (item.reward ? (Array.isArray(item.reward) ? 'hayate' : (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate')) : '');
     var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : _mc_chara === 'pink' ? ['#f9a8d4','rgba(249,168,212,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
-    var glowStyle = _mc_hasItem ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
+    var glowStyle = (_mc_hasItem || item.alwaysGlow) ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     var newRight = '12px';
     if (Array.isArray(item.reward) && item.reward.length) {
