@@ -5537,7 +5537,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (section) section.style.display = anyVisible ? '' : 'none';
 
     // レアアイテム: 入手済みは正式名・アイコン表示、未入手は ???
-    function updateRareItem(imgId, nameId, checkId, itemKey, itemName, normalOpacity, contentUrl) {
+    function updateRareItem(imgId, nameId, checkId, itemKey, itemName, normalOpacity, contentUrl, contentLabel) {
       var img   = document.getElementById(imgId);
       var name  = document.getElementById(nameId);
       var check = document.getElementById(checkId);
@@ -5552,7 +5552,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         name.style.color  = '#cbd5e1';
         if (check) {
           if (contentUrl) {
-            check.innerHTML = '<a href="' + contentUrl + '" target="_blank" style="font-size:9px;color:#93c5fd;text-decoration:none;padding:3px 9px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);letter-spacing:2px;font-family:\'Cormorant Garamond\',serif;white-space:nowrap;">CONTENT</a>';
+            check.innerHTML = '<a href="' + contentUrl + '" target="_blank" style="font-size:9px;color:#93c5fd;text-decoration:none;padding:3px 9px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);letter-spacing:2px;font-family:\'Cormorant Garamond\',serif;white-space:nowrap;">' + (contentLabel || 'CONTENT') + '</a>';
           } else {
             check.textContent = '✓';
           }
@@ -5569,7 +5569,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-book-kouta-img',   'ri-book-kouta-name',   'ri-book-kouta-check',   'book_kouta',               '返しそびれた本',              null, 'https://ncode.syosetu.com/n9009lo/69');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',       'Snow flakes ライブチケット',  null, 'https://www.instagram.com/reel/DXcFCOZlpRK/');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',               '黒い石のシルバーリング');
-    updateRareItem('ri-boutonniere-img', 'ri-boutonniere-name', 'ri-boutonniere-check', 'boutonniere_hayate', 'ハヤテのブートニア', null, 'https://ncode.syosetu.com/n9009lo/185');
+    updateRareItem('ri-boutonniere-img', 'ri-boutonniere-name', 'ri-boutonniere-check', 'boutonniere_hayate', 'ハヤテのブートニア', null, 'https://ncode.syosetu.com/n9009lo/185', 'ep.185');
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
