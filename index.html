@@ -3056,8 +3056,9 @@ document.addEventListener('visibilitychange', function() {
 <!-- ── チュートリアルヒント ── -->
 <script>
 (function() {
-  var HINT_KEY = 'sf_hint_v1_seen';
+  var HINT_KEY = 'sf_hint_v2_seen';
   var STEPS = [
+    { text: '物語に触れてみよう<br><span style="font-size:11px;color:#64748b;letter-spacing:1px;">デイリーアップデート</span>', target: 'banner' },
     { text: 'Snow flakesの音楽を<br>聴いてみよう', target: 'player' },
     { text: 'ガチャをひいて<br>アイテムを集めよう！', target: 'gacha' }
   ];
@@ -3091,7 +3092,21 @@ document.addEventListener('visibilitychange', function() {
     textEl.innerHTML = step.text;
     nextBtn.textContent = currentStep === STEPS.length - 1 ? 'OK ✓' : '次へ →';
 
-    if (step.target === 'player') {
+    if (step.target === 'banner') {
+      var b = document.getElementById('update-banner');
+      var top = 120, left = 24;
+      if (b) {
+        var br = b.getBoundingClientRect();
+        top  = br.bottom + 12;
+        left = br.left + 24;
+        left = Math.min(left, window.innerWidth - 240);
+      }
+      hintEl.style.top    = top + 'px';
+      hintEl.style.left   = left + 'px';
+      hintEl.style.bottom = '';
+      hintEl.style.right  = '';
+      arrowEl.style.cssText = 'position:absolute;top:-10px;left:24px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:10px solid rgba(13,20,38,0.97);';
+    } else if (step.target === 'player') {
       hintEl.style.bottom = '118px';
       hintEl.style.right  = '24px';
       hintEl.style.top    = '';
