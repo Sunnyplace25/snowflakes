@@ -199,6 +199,23 @@
       transition: color 0.3s; padding: 4px 2px;
     }
     #lang-toggle:hover { color: rgba(255,255,255,0.65); }
+    /* ── ことりファクトリー ── */
+    .factory-line { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+    .factory-line-label { font-size:9px; letter-spacing:4px; font-family:'Cormorant Garamond',serif; white-space:nowrap; padding:4px 14px; border-radius:100px; }
+    .line-shipped { color:#6ee7b7; border:1px solid rgba(110,231,183,0.35); background:rgba(110,231,183,0.06); }
+    .line-planned { color:#93c5fd; border:1px solid rgba(147,197,253,0.3); background:rgba(147,197,253,0.05); }
+    .line-archive { color:#94a3b8; border:1px solid rgba(148,163,184,0.25); background:rgba(148,163,184,0.04); }
+    .factory-line hr { flex:1; border:none; border-top:1px solid rgba(255,255,255,0.07); }
+    .factory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; max-width:760px; margin:0 auto 48px; }
+    .f-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:22px 20px; text-decoration:none; display:block; transition:transform 0.2s, border-color 0.2s; position:relative; color:inherit; }
+    .f-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.15); }
+    .f-card.archive { opacity:0.6; filter:grayscale(0.3); }
+    .f-card.archive:hover { opacity:0.85; }
+    .f-type { font-size:9px; letter-spacing:4px; color:#475569; font-family:'Cormorant Garamond',serif; margin-bottom:10px; }
+    .f-name { font-size:15px; color:white; font-weight:300; margin-bottom:8px; line-height:1.5; }
+    .f-desc { font-size:11px; color:#64748b; line-height:1.8; }
+    .f-badge { position:absolute; top:14px; right:14px; font-size:8px; letter-spacing:2px; font-family:'Cormorant Garamond',serif; padding:2px 8px; border-radius:100px; color:#94a3b8; border:1px solid rgba(148,163,184,0.3); background:rgba(148,163,184,0.06); }
+
     @media (max-width: 680px) {
       nav { padding: 14px 20px; } .nav-label { display: none; }
       .profile-key { width: 60px; }
@@ -481,52 +498,102 @@
       </div>
     </div>
 
-    <!-- Works -->
+    <!-- Works / ことりファクトリー -->
     <section class="links" style="padding: 60px 0 0; background: none;">
-      <span class="sec-label">WORKS</span>
-      <h2 class="sec-title">制作実績</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:760px;margin:0 auto;">
+      <span class="sec-label">KOTORI FACTORY</span>
+      <h2 class="sec-title">ことりファクトリー</h2>
+      <p style="text-align:center;font-size:12px;color:#475569;letter-spacing:2px;font-family:'Cormorant Garamond',serif;margin-bottom:40px;">山吹ことりがつくったもの、全部。</p>
 
-        <a href="https://ncode.syosetu.com/n9009lo/" target="_blank" style="text-decoration:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">NOVEL</p>
-            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">Snow flakes</p>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">小説家になろうで連載中の長編小説。三人組バンドの物語。</p>
+      <div style="max-width:760px;margin:0 auto;">
+        <!-- SHIPPED -->
+        <div class="factory-line">
+          <span class="factory-line-label line-shipped">SHIPPED</span>
+          <hr>
+        </div>
+        <div class="factory-grid">
+          <a class="f-card" href="https://ncode.syosetu.com/n9009lo/" target="_blank">
+            <p class="f-type">NOVEL</p>
+            <p class="f-name">Snow flakes</p>
+            <p class="f-desc">長編小説。連載中。三人組バンドの物語。山吹ことりの核。</p>
+          </a>
+          <a class="f-card" href="https://sunnyplace25.github.io/snowflakes/music.html" target="_blank">
+            <p class="f-type">MUSIC</p>
+            <p class="f-name">楽曲制作・配信</p>
+            <p class="f-desc">Spotify・Apple Musicほか配信中。公開していない整えていない曲もたくさんある。MIXして公開する前にまた曲が増える。沼。</p>
+          </a>
+          <a class="f-card" href="https://sunnyplace25.github.io/rhythm/" target="_blank">
+            <p class="f-type">GAME</p>
+            <p class="f-name">リズムゲーム</p>
+            <p class="f-desc">Snow flakesの楽曲で遊べるブラウザゲーム。途中で飽きてデモのまま。ヒナタがRabbitのデモを適当に歌っているので声がひっくり返ったままになっている。</p>
+          </a>
+          <a class="f-card" href="https://sunnyplace25.github.io/snowflakes/" target="_blank">
+            <p class="f-type">WEBSITE</p>
+            <p class="f-name">Snow flakes 公式サイト</p>
+            <p class="f-desc">小説・音楽・キャラ・ガチャ・ゲーム・SWEETsが全部ここに。毎日アプデ。</p>
+          </a>
+          <a class="f-card" href="https://sunnyplace25.github.io/snowflakes/intro_video.html" target="_blank">
+            <p class="f-type">VIDEO</p>
+            <p class="f-name">サイト紹介デモ映像</p>
+            <p class="f-desc">Snow flakesってなに？を映像で伝えるページ。作ったけどほぼ使っていない。</p>
+          </a>
+          <a class="f-card" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">
+            <p class="f-type">WEB APP</p>
+            <p class="f-name">タスク管理アプリ</p>
+            <p class="f-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
+          </a>
+        </div>
+
+        <!-- PLANNED -->
+        <div class="factory-line">
+          <span class="factory-line-label line-planned">PLANNED</span>
+          <hr>
+        </div>
+        <div class="factory-grid">
+          <div class="f-card" style="border-color:rgba(147,197,253,0.15);cursor:default;">
+            <span class="f-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.3);">実装予定</span>
+            <p class="f-type">GAME</p>
+            <p class="f-name">音診断</p>
+            <p class="f-desc">Under tone 占いコンテンツ実装予定。SWEETs 2026Autumn お楽しみに。</p>
           </div>
-        </a>
+        </div>
 
-        <a href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" style="text-decoration:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">MUSIC</p>
-            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">楽曲制作・配信</p>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">Spotify・Apple Musicほか各ストリーミングで配信中。</p>
+        <!-- ARCHIVE -->
+        <div class="factory-line">
+          <span class="factory-line-label line-archive">ARCHIVE</span>
+          <hr>
+        </div>
+        <div class="factory-grid">
+          <div class="f-card archive" style="cursor:default;">
+            <span class="f-badge">没</span>
+            <p class="f-type">GAME</p>
+            <p class="f-name">Weaving Words</p>
+            <p class="f-desc">残した言葉は、やがて音になる。キーワードを使ってスノフレ的な文章をつくれるアプリのデモ。つくったけど、なんか全然ちがったので没。</p>
           </div>
-        </a>
+        </div>
 
-        <a href="https://sunnyplace25.github.io/rhythm/" target="_blank" style="text-decoration:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">GAME</p>
-            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">リズムゲーム</p>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">Snow flakesの楽曲で遊べるブラウザリズムゲーム。</p>
+        <!-- CREDIT -->
+        <div style="padding-top:48px;border-top:1px solid rgba(255,255,255,0.07);margin-top:12px;">
+          <span style="font-size:10px;letter-spacing:6px;color:#475569;font-family:'Cormorant Garamond',serif;display:block;margin-bottom:4px;text-align:center;">CREDIT</span>
+          <p style="font-size:13px;color:#94a3b8;letter-spacing:3px;font-family:'Cormorant Garamond',serif;text-align:center;margin-bottom:28px;">Snow flakes Story &amp; Music Project</p>
+          <div style="display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">世界観設計　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">キャラクターデザイン　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">原作・小説　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">編集・校正　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">作詞　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">楽曲制作　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">デモ制作　<span style="color:#94a3b8;">山吹ことり</span>（with SUNO）</p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">楽器　Morris アコギ　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">映像編集　<span style="color:#94a3b8;">山吹ことり</span>（with EDIUS 8）</p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">ゲームデザイン　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">占い　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">イラスト生成　<span style="color:#94a3b8;">山吹ことり</span>（with ChatGPT）</p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">コーディング　<span style="color:#94a3b8;">山吹ことり</span>（with Claude）</p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">サイト運営　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:12px;color:#64748b;letter-spacing:1px;">SNS運用　<span style="color:#94a3b8;">山吹ことり</span></p>
+            <p style="font-size:14px;color:#cbd5e1;letter-spacing:2px;margin-top:16px;font-family:'Noto Serif JP',serif;font-weight:300;">全部　山吹ことり</p>
           </div>
-        </a>
-
-        <a href="https://sunnyplace25.github.io/snowflakes/" target="_blank" style="text-decoration:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">WEBSITE</p>
-            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">Snow flakes 公式サイト</p>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">小説・音楽・キャラクターを繋ぐ公式サイト。ガチャ・SWEETs機能つき。</p>
-          </div>
-        </a>
-
-        <a href="https://sunnyplace25.github.io/taskpwa/" target="_blank" style="text-decoration:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:10px;">WEB APP</p>
-            <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:8px;">タスク管理アプリ</p>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">PWA対応のシンプルなタスク管理アプリ。</p>
-          </div>
-        </a>
-
+        </div>
       </div>
     </section>
 
