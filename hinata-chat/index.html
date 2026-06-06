@@ -900,8 +900,9 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     localStorage.setItem('hinata_email', email);
     localStorage.setItem('hinata_user_name', name);
     document.getElementById('api-setup').style.display = 'none';
-    addHinataMessage('……');
-    setTimeout(() => addHinataMessage(getGreeting()), 800);
+    addHinataMessage('（音楽室のドアを開けた。ヒナタと目が合った）');
+    setTimeout(() => addHinataMessage('……'), 1000);
+    setTimeout(() => addHinataMessage(getGreeting()), 2000);
   }
 
   function getApiKey() {
@@ -1138,8 +1139,9 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     if (!confirm('会話をリセットしますか？')) return;
     messages = [];
     document.getElementById('chat-area').innerHTML = '';
-    addHinataMessage('……');
-    setTimeout(() => addHinataMessage(getGreeting()), 800);
+    addHinataMessage('（音楽室のドアを開けた。ヒナタと目が合った）');
+    setTimeout(() => addHinataMessage('……'), 1000);
+    setTimeout(() => addHinataMessage(getGreeting()), 2000);
   }
 
   // テキストエリア自動リサイズ
