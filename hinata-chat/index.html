@@ -286,11 +286,24 @@
       font-family: 'Cormorant Garamond', serif;
       margin-bottom: 12px;
     }
-    .title-heading {
-      font-size: 11px; letter-spacing: 4px;
-      color: #64748b;
+    .title-main {
+      font-size: 24px; font-weight: 300;
+      color: #e2e8f0;
+      letter-spacing: 6px;
+      font-family: 'Noto Serif JP', serif;
+      margin-bottom: 8px;
+    }
+    .title-chapter {
+      font-size: 10px; letter-spacing: 4px;
+      color: #475569;
       font-family: 'Cormorant Garamond', serif;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
+    }
+    .title-heading {
+      font-size: 10px; letter-spacing: 4px;
+      color: #334155;
+      font-family: 'Cormorant Garamond', serif;
+      margin-bottom: 36px;
     }
     .char-list {
       display: flex; gap: 14px;
@@ -455,6 +468,8 @@
 <!-- タイトル画面 -->
 <div id="title-screen">
   <p class="title-label">Snow flakes</p>
+  <p class="title-main">放課後のヒナタ</p>
+  <p class="title-chapter">Chapter 1 — 高校生 / 音楽室</p>
   <p class="title-heading">誰と話す？</p>
   <div class="char-list">
     <div class="char-card active" id="card-hinata" onclick="selectChar('hinata')">
