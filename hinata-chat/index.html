@@ -445,15 +445,17 @@
   <button class="title-start-btn" onclick="startChat()">はじめる</button>
 </div>
 
-<!-- APIキー設定画面 -->
+<!-- ログイン画面 -->
 <div id="api-setup">
   <div class="setup-box">
-    <p class="setup-title">SETUP</p>
+    <p class="setup-title">ENTER</p>
     <p class="setup-name">放課後のヒナタ</p>
-    <p class="setup-desc">あなたの名前と、Claude APIキーを入力してください。<br>情報はこのブラウザにのみ保存されます。</p>
+    <p class="setup-desc">応援プランに登録したメールアドレスと、<br>あなたの名前を入力してください。</p>
+    <input class="setup-input" id="api-key-input" type="email" placeholder="メールアドレス" autocomplete="email">
     <input class="setup-input" id="user-name-input" type="text" placeholder="あなたの名前" autocomplete="off" maxlength="20">
-    <input class="setup-input" id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off">
-    <button class="setup-btn" onclick="saveApiKey()">はじめる</button>
+    <button class="setup-btn" id="login-btn" onclick="saveApiKey()">はじめる</button>
+    <p id="login-error" style="font-size:11px;color:#f87171;margin-top:12px;display:none;"></p>
+    <a href="lp.html" style="display:block;margin-top:20px;font-size:11px;color:#475569;letter-spacing:1px;text-decoration:none;">応援プランについて →</a>
   </div>
 </div>
 
@@ -780,40 +782,64 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     return localStorage.getItem('hinata_user_name') || '';
   }
 
-  function saveApiKey() {
+  async function saveApiKey() {
+    const email = document.getElementById('api-key-input').value.trim();
     const name = document.getElementById('user-name-input').value.trim();
-    const key = document.getElementById('api-key-input').value.trim();
+    const errEl = document.getElementById('login-error');
+    const btn = document.getElementById('login-btn');
+
+    if (!email || !email.includes('@')) {
+      errEl.textContent = 'メールアドレスを入力してください';
+      errEl.style.display = 'block';
+      return;
+    }
     if (!name) {
-      alert('名前を入力してください');
+      errEl.textContent = '名前を入力してください';
+      errEl.style.display = 'block';
       return;
     }
-    if (!key.startsWith('sk-ant-')) {
-      alert('正しいAPIキーを入力してください（sk-ant-...）');
+
+    btn.textContent = '確認中…';
+    btn.disabled = true;
+    errEl.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/check-sub', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!data.active) {
+        errEl.textContent = '応援プランへの登録が確認できませんでした。';
+        errEl.style.display = 'block';
+        btn.textContent = 'はじめる';
+        btn.disabled = false;
+        return;
+      }
+    } catch (e) {
+      errEl.textContent = '通信エラーが発生しました。';
+      errEl.style.display = 'block';
+      btn.textContent = 'はじめる';
+      btn.disabled = false;
       return;
     }
+
+    localStorage.setItem('hinata_email', email);
     localStorage.setItem('hinata_user_name', name);
-    localStorage.setItem('hinata_api_key', key);
     document.getElementById('api-setup').style.display = 'none';
     addHinataMessage('……');
     setTimeout(() => addHinataMessage(getGreeting()), 800);
   }
 
   function getApiKey() {
-    return localStorage.getItem('hinata_api_key');
+    return localStorage.getItem('hinata_email');
   }
 
   // 初期化
   window.addEventListener('load', function() {
-    // タイトル画面は常に表示（startChat()で進む）
     if (getApiKey()) {
       document.getElementById('api-setup').style.display = 'none';
-      // 名前が未設定なら簡易プロンプト
-      if (!getUserName()) {
-        const name = prompt('あなたの名前を教えてください');
-        if (name && name.trim()) {
-          localStorage.setItem('hinata_user_name', name.trim());
-        }
-      }
       addHinataMessage('……');
       setTimeout(() => addHinataMessage(getGreeting()), 800);
     }
@@ -916,8 +942,8 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     const text = input.value.trim();
     if (!text) return;
 
-    const apiKey = getApiKey();
-    if (!apiKey) {
+    const email = getApiKey();
+    if (!email) {
       document.getElementById('api-setup').style.display = 'flex';
       return;
     }
@@ -938,9 +964,20 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           system: buildSystemPrompt(),
-          messages: messages
+          messages: messages,
+          email: email
         })
       });
+
+      if (res.status === 403) {
+        hideTyping();
+        localStorage.removeItem('hinata_email');
+        addHinataMessage('……（応援プランの確認ができませんでした）');
+        setTimeout(() => { document.getElementById('api-setup').style.display = 'flex'; }, 1500);
+        busy = false;
+        document.getElementById('send-btn').disabled = false;
+        return;
+      }
 
       const data = await res.json();
       hideTyping();
@@ -990,7 +1027,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     addUserMessage('今日は帰るね');
     messages.push({ role: 'user', content: '今日は帰るね' });
     showTyping();
-    const apiKey = getApiKey();
+    const email = getApiKey();
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -998,7 +1035,8 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
         body: JSON.stringify({
           system: buildSystemPrompt(),
           messages: messages,
-          max_tokens: 150
+          max_tokens: 150,
+          email: email
         })
       });
       const data = await res.json();
