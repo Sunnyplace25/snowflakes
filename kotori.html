@@ -211,6 +211,7 @@
     .f-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.15); }
     .f-card.archive { opacity:0.6; filter:grayscale(0.3); }
     .f-card.archive:hover { opacity:0.85; }
+    @keyframes hinata-glow { 0%,100% { box-shadow:0 0 18px rgba(147,197,253,0.18),0 0 40px rgba(147,197,253,0.08); border-color:rgba(147,197,253,0.45); } 50% { box-shadow:0 0 28px rgba(147,197,253,0.32),0 0 60px rgba(147,197,253,0.14); border-color:rgba(147,197,253,0.7); } }
     .f-type { font-size:9px; letter-spacing:4px; color:#475569; font-family:'Cormorant Garamond',serif; margin-bottom:10px; }
     .f-name { font-size:15px; color:white; font-weight:300; margin-bottom:8px; line-height:1.5; }
     .f-desc { font-size:11px; color:#64748b; line-height:1.8; }
@@ -573,7 +574,7 @@
             <p class="f-name">タスク管理アプリ</p>
             <p class="f-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
           </a>
-          <div class="f-card" style="border-color:rgba(147,197,253,0.15);cursor:default;">
+          <div class="f-card" style="border-color:rgba(147,197,253,0.45);cursor:default;box-shadow:0 0 18px rgba(147,197,253,0.18),0 0 40px rgba(147,197,253,0.08);animation:hinata-glow 3s ease-in-out infinite;">
             <span class="f-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.3);">ベータ版</span>
             <p class="f-type">WEB APP</p>
             <p class="f-name">放課後のヒナタ</p>
