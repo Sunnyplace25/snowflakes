@@ -290,6 +290,22 @@
       white-space: normal; text-align: left; line-height: 1.7;
     }
     .chat-chip:hover { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
+    .carousel-wrap { position:relative; }
+    .carousel-wrap::before, .carousel-wrap::after {
+      content:''; position:absolute; top:0; bottom:12px; width:40px; z-index:1; pointer-events:none;
+    }
+    .carousel-wrap::before { left:0; background:linear-gradient(to right, #0c1220, transparent); }
+    .carousel-wrap::after  { right:0; background:linear-gradient(to left, #0c1220, transparent); }
+    .carousel-arrow {
+      display:none; position:absolute; top:50%; transform:translateY(-60%); z-index:2;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+      color:#94a3b8; font-size:22px; width:32px; height:32px; border-radius:50%;
+      cursor:pointer; transition:all 0.2s; line-height:1; padding:0;
+    }
+    .carousel-arrow:hover { background:rgba(255,255,255,0.12); color:white; }
+    .carousel-prev { left:0; }
+    .carousel-next { right:0; }
+    @media (min-width:600px) { .carousel-arrow { display:flex; align-items:center; justify-content:center; } }
 
     .qa-core-section { margin-top: 52px; padding-top: 48px; border-top: 1px solid rgba(255,255,255,0.07); }
     .qa-core-header { font-size: 11px; letter-spacing: 5px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; margin-bottom: 20px; text-align: center; }
@@ -497,12 +513,20 @@
       </div>
       <div id="qa-core-unlocked" style="display:none;">
         <p class="qa-core-badge">CORE FAN UNLOCKED</p>
-        <div class="chat-suggestions" id="chat-chips-core"></div>
+        <div class="carousel-wrap">
+          <button class="carousel-arrow carousel-prev" onclick="scrollCarousel('chat-chips-core',-1)">‹</button>
+          <div class="chat-suggestions" id="chat-chips-core"></div>
+          <button class="carousel-arrow carousel-next" onclick="scrollCarousel('chat-chips-core',1)">›</button>
+        </div>
       </div>
     </div>
 
     <!-- 質問チップ -->
-    <div class="chat-suggestions" id="chat-chips-base"></div>
+    <div class="carousel-wrap">
+      <button class="carousel-arrow carousel-prev" onclick="scrollCarousel('chat-chips-base',-1)">‹</button>
+      <div class="chat-suggestions" id="chat-chips-base"></div>
+      <button class="carousel-arrow carousel-next" onclick="scrollCarousel('chat-chips-base',1)">›</button>
+    </div>
 
     <hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin:60px 0 0;">
 
@@ -766,6 +790,11 @@
   }
 
   var chatBusy = false;
+
+  function scrollCarousel(id, dir) {
+    var el = document.getElementById(id);
+    if (el) el.scrollBy({ left: dir * 180, behavior: 'smooth' });
+  }
 
   function buildQAChips(list, containerId) {
     var container = document.getElementById(containerId);
