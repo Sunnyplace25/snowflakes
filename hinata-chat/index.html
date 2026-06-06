@@ -915,8 +915,9 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
   window.addEventListener('load', function() {
     if (getApiKey()) {
       document.getElementById('api-setup').style.display = 'none';
-      addHinataMessage('……');
-      setTimeout(() => addHinataMessage(getGreeting()), 800);
+      addHinataMessage('（音楽室のドアを開けた。ヒナタと目が合った）');
+      setTimeout(() => addHinataMessage('……'), 1000);
+      setTimeout(() => addHinataMessage(getGreeting()), 2000);
     }
   });
 
