@@ -268,6 +268,97 @@
     }
     .leave-btn:hover { color: #64748b; border-color: rgba(255,255,255,0.15); }
 
+    /* ── タイトル画面 ── */
+    #title-screen {
+      position: fixed; inset: 0;
+      background: #0c1220;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 200;
+      padding: 40px 24px;
+    }
+    .title-label {
+      font-size: 9px; letter-spacing: 6px;
+      color: #334155;
+      font-family: 'Cormorant Garamond', serif;
+      margin-bottom: 12px;
+    }
+    .title-heading {
+      font-size: 11px; letter-spacing: 4px;
+      color: #64748b;
+      font-family: 'Cormorant Garamond', serif;
+      margin-bottom: 48px;
+    }
+    .char-list {
+      display: flex; gap: 16px;
+      margin-bottom: 48px;
+    }
+    .char-card {
+      width: 90px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .char-card.active {
+      border-color: rgba(147,197,253,0.4);
+      background: rgba(147,197,253,0.06);
+    }
+    .char-card.active:hover {
+      background: rgba(147,197,253,0.12);
+    }
+    .char-card.locked {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .char-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .char-name {
+      font-size: 13px;
+      color: #e2e8f0;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+    .char-role {
+      font-size: 9px;
+      color: #475569;
+      letter-spacing: 2px;
+      margin-top: 4px;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .char-badge {
+      position: absolute;
+      top: -8px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #475569;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 2px 8px;
+      background: #0c1220;
+      white-space: nowrap;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .title-start-btn {
+      padding: 12px 40px;
+      background: rgba(147,197,253,0.08);
+      border: 1px solid rgba(147,197,253,0.3);
+      border-radius: 24px;
+      color: #93c5fd;
+      font-size: 12px;
+      letter-spacing: 4px;
+      font-family: 'Cormorant Garamond', serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .title-start-btn:hover { background: rgba(147,197,253,0.15); }
+
     /* ── APIキー設定 ── */
     #api-setup {
       position: fixed; inset: 0;
@@ -327,6 +418,32 @@
   </style>
 </head>
 <body>
+
+<!-- タイトル画面 -->
+<div id="title-screen">
+  <p class="title-label">SNOW FLAKES</p>
+  <p class="title-heading">誰と話す？</p>
+  <div class="char-list">
+    <div class="char-card active" id="card-hinata" onclick="selectChar('hinata')">
+      <p class="char-icon">♩</p>
+      <p class="char-name">ヒナタ</p>
+      <p class="char-role">Gt. / Vo.</p>
+    </div>
+    <div class="char-card locked">
+      <span class="char-badge">準備中</span>
+      <p class="char-icon">♪</p>
+      <p class="char-name">コウタ</p>
+      <p class="char-role">Ba.</p>
+    </div>
+    <div class="char-card locked">
+      <span class="char-badge">準備中</span>
+      <p class="char-icon">♫</p>
+      <p class="char-name">ハヤテ</p>
+      <p class="char-role">Dr.</p>
+    </div>
+  </div>
+  <button class="title-start-btn" onclick="startChat()">はじめる</button>
+</div>
 
 <!-- APIキー設定画面 -->
 <div id="api-setup">
@@ -583,6 +700,19 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     return SYSTEM_PROMPT_BASE + nameNote;
   }
 
+  // タイトル画面
+  function selectChar(name) {
+    document.querySelectorAll('.char-card.active').forEach(c => c.style.borderColor = '');
+    document.getElementById('card-' + name).style.borderColor = 'rgba(147,197,253,0.6)';
+  }
+
+  function startChat() {
+    document.getElementById('title-screen').style.display = 'none';
+    if (!getApiKey() && !getUserName()) {
+      document.getElementById('api-setup').style.display = 'flex';
+    }
+  }
+
   let messages = [];
   let busy = false;
 
@@ -659,6 +789,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
 
   // 初期化
   window.addEventListener('load', function() {
+    // タイトル画面は常に表示（startChat()で進む）
     if (getApiKey()) {
       document.getElementById('api-setup').style.display = 'none';
       // 名前が未設定なら簡易プロンプト
