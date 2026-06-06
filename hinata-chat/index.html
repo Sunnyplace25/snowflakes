@@ -715,6 +715,21 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
 
   let messages = [];
   let busy = false;
+  const DAILY_LIMIT = 20;
+
+  function getTodayCount() {
+    const today = new Date().toDateString();
+    const saved = JSON.parse(localStorage.getItem('hinata_daily') || '{}');
+    if (saved.date !== today) return 0;
+    return saved.count || 0;
+  }
+
+  function incrementTodayCount() {
+    const today = new Date().toDateString();
+    const count = getTodayCount() + 1;
+    localStorage.setItem('hinata_daily', JSON.stringify({ date: today, count }));
+    return count;
+  }
 
   // APIキー管理
   function getGreeting() {
@@ -891,6 +906,12 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
   // メッセージ送信
   async function sendMessage() {
     if (busy) return;
+    if (getTodayCount() >= DAILY_LIMIT) {
+      addHinataMessage('……今日はもう時間だ。また明日。');
+      document.getElementById('send-btn').disabled = true;
+      document.getElementById('user-input').disabled = true;
+      return;
+    }
     const input = document.getElementById('user-input');
     const text = input.value.trim();
     if (!text) return;
@@ -939,6 +960,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
         // 仲良し度加算（感情によって変化）
         const pts = { '照れ': 3, '嬉しい': 2, '通常': 1, '集中': 1, '真顔': 0, '悲しい': 0 };
         addFriendship(pts[currentEmotion] ?? 1);
+        incrementTodayCount();
 
         // タグ行を除いてセリフだけ表示
         const lines = reply.split('\n')
