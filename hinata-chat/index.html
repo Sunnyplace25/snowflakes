@@ -277,6 +277,18 @@
     }
     .leave-btn:hover { color: #94a3b8; border-color: rgba(255,255,255,0.15); }
 
+    .reset-countdown {
+      text-align: center;
+      font-size: 10px;
+      color: #64748b;
+      letter-spacing: 2px;
+      font-family: 'Cormorant Garamond', serif;
+      margin-bottom: 4px;
+      min-height: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
     /* ── タイトル画面 ── */
     #title-screen {
       position: fixed; inset: 0;
@@ -542,6 +554,7 @@
 <div class="chat-area" id="chat-area"></div>
 
 <button class="leave-btn" id="leave-btn" onclick="leaveRoom()">今日は帰るね <span id="remaining-count"></span></button>
+<p class="reset-countdown" id="reset-countdown"></p>
 <div class="input-area">
   <textarea id="user-input" placeholder="メッセージを送る" rows="1"
     onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
@@ -854,9 +867,30 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     }
   }
 
+  // リセットまでのカウントダウン
+  function updateCountdown() {
+    const el = document.getElementById('reset-countdown');
+    if (!el) return;
+    const remaining = Math.max(0, DAILY_LIMIT - getTodayCount());
+    if (remaining > 0) { el.textContent = ''; return; }
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const diff = midnight - now;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const hh = String(h).padStart(2, '0');
+    const mm = String(m).padStart(2, '0');
+    const ss = String(s).padStart(2, '0');
+    el.textContent = `次のリセットまで  ${hh}:${mm}:${ss}`;
+  }
+
   // 初期表示
   updateMeter(getFriendship());
   updateRemainingCount();
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
   function getUserName() {
     return localStorage.getItem('hinata_user_name') || '';
