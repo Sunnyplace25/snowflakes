@@ -759,36 +759,6 @@
       </label>
 
       <!-- セーブコード -->
-      <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:12px;">SAVE DATA</p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2;margin-bottom:6px;">Snow・アイテムはこのブラウザにのみ保存されています。<br>別の端末・ブラウザへ引き継ぐにはセーブコードを使ってください。</p>
-        <details style="margin-bottom:14px;">
-          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;cursor:pointer;list-style:none;outline:none;">引き継ぎ方法 ▾</summary>
-          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
-            <p style="margin-bottom:8px;">① このページで「セーブコードを発行」を押してコードをコピー</p>
-            <p style="margin-bottom:8px;">② 新しい端末・ブラウザでこのページを開く</p>
-            <p>③ コードを貼り付けて「復元する」を押す</p>
-          </div>
-        </details>
-        <details style="margin-bottom:16px;">
-          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;cursor:pointer;list-style:none;outline:none;">ホーム画面に追加する方法 ▾</summary>
-          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
-            <p style="margin-bottom:10px; color:#64748b;">ホーム画面から開くと毎回同じブラウザが使われるので、データが引き継がれます。</p>
-            <p style="margin-bottom:4px; color:#64748b;">iPhone（Safari）</p>
-            <p style="margin-bottom:10px;">画面下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」</p>
-            <p style="margin-bottom:4px; color:#64748b;">Android（Chrome）</p>
-            <p>右上のメニュー（⋮）→「ホーム画面に追加」→「追加」</p>
-          </div>
-        </details>
-        <button onclick="sfGenerateSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;margin-bottom:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">セーブコードを発行</button>
-        <div id="save-code-output" style="display:none;margin-bottom:10px;">
-          <textarea id="save-code-text" readonly style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-size:10px;font-family:monospace;padding:10px;resize:none;height:64px;outline:none;letter-spacing:0.5px;line-height:1.5;"></textarea>
-          <button onclick="sfCopySaveCode()" style="width:100%;padding:7px;background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.2);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;cursor:pointer;margin-top:4px;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.12)'" onmouseout="this.style.background='rgba(249,168,212,0.06)'" id="save-code-copy-btn">コピー</button>
-        </div>
-        <input id="restore-code-input" type="text" placeholder="コードを貼り付けて復元" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#94a3b8;font-size:11px;font-family:monospace;padding:9px 12px;outline:none;margin-bottom:6px;letter-spacing:0.5px;" onfocus="this.style.borderColor='rgba(255,255,255,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-        <button onclick="sfRestoreSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">復元する</button>
-        <p id="restore-msg" style="font-size:10px;letter-spacing:1px;color:#6ee7b7;text-align:center;margin-top:8px;display:none;"></p>
-      </div>
     </div>
 
     <!-- Snow & Items panel -->
@@ -798,8 +768,7 @@
       <div style="margin-bottom:28px;text-align:center;" data-no-replace>
         <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#f9a8d4;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs 2026 Spring<br>まもなく終了です。</p>
         <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">6月10日 00:00より、<br>季節はSummerシーズンへ切り替わります。<br>入室にはInstagram投稿にて配布されるSWEETsCodeが必要です。<br>コードはリールの最後をご確認ください。</p>
-        <a href="https://www.instagram.com/reel/DZLv72BuGPq/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:inline-block;margin:14px 0 16px;padding:8px 24px;border:1px solid rgba(249,168,212,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(249,168,212,0.7)';this.style.color='#fce7f3'" onmouseout="this.style.borderColor='rgba(249,168,212,0.35)';this.style.color='#f9a8d4'">Instagram へ →</a>
-        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">Spring期間中に訪れてくださった方には、<br>シーズン終了後、記念アイテムをお届けします。<br><br>物語がひとつの節目へ向かうこの時期に、<br>春の余韻も、どうぞお楽しみください。</p>
+        <a href="https://www.instagram.com/reel/DZLv72BuGPq/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:inline-block;margin:14px 0 0;padding:8px 24px;border:1px solid rgba(249,168,212,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(249,168,212,0.7)';this.style.color='#fce7f3'" onmouseout="this.style.borderColor='rgba(249,168,212,0.35)';this.style.color='#f9a8d4'">Instagram へ →</a>
       </div>
 
       <!-- Snow card -->
@@ -813,6 +782,38 @@
           <div id="snow-checklist-items" style="display:none;"></div>
         </div>
         <a href="../gacha/" style="display:inline-block;margin-top:16px;padding:8px 24px;border:1px solid rgba(253,230,138,0.5);border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#fde68a;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.9)';this.style.color='#fef9c3'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.5)';this.style.color='#fde68a'">ガチャを引く</a>
+      </div>
+
+      <!-- SAVE DATA -->
+      <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#64748b;margin-bottom:12px;">SAVE DATA</p>
+        <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;line-height:2;margin-bottom:6px;">Snow・アイテムはこのブラウザにのみ保存されています。<br>別の端末・ブラウザへ引き継ぐにはセーブコードを使ってください。</p>
+        <details style="margin-bottom:14px;">
+          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;cursor:pointer;list-style:none;outline:none;">引き継ぎ方法 ▾</summary>
+          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin-bottom:8px;">① このページで「セーブコードを発行」を押してコードをコピー</p>
+            <p style="margin-bottom:8px;">② 新しい端末・ブラウザでこのページを開く</p>
+            <p>③ コードを貼り付けて「復元する」を押す</p>
+          </div>
+        </details>
+        <details style="margin-bottom:16px;">
+          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;cursor:pointer;list-style:none;outline:none;">ホーム画面に追加する方法 ▾</summary>
+          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin-bottom:10px;">ホーム画面から開くと毎回同じブラウザが使われるので、データが引き継がれます。</p>
+            <p style="margin-bottom:4px;color:#cbd5e1;">iPhone（Safari）</p>
+            <p style="margin-bottom:10px;">画面下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」</p>
+            <p style="margin-bottom:4px;color:#cbd5e1;">Android（Chrome）</p>
+            <p>右上のメニュー（⋮）→「ホーム画面に追加」→「追加」</p>
+          </div>
+        </details>
+        <button onclick="sfGenerateSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;margin-bottom:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">セーブコードを発行</button>
+        <div id="save-code-output" style="display:none;margin-bottom:10px;">
+          <textarea id="save-code-text" readonly style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-size:10px;font-family:monospace;padding:10px;resize:none;height:64px;outline:none;letter-spacing:0.5px;line-height:1.5;overflow-y:hidden;"></textarea>
+          <button onclick="sfCopySaveCode()" style="width:100%;padding:7px;background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.2);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;cursor:pointer;margin-top:4px;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.12)'" onmouseout="this.style.background='rgba(249,168,212,0.06)'" id="save-code-copy-btn">コピー</button>
+        </div>
+        <input id="restore-code-input" type="text" placeholder="コードを貼り付けて復元" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#94a3b8;font-size:11px;font-family:monospace;padding:9px 12px;outline:none;margin-bottom:6px;letter-spacing:0.5px;" onfocus="this.style.borderColor='rgba(255,255,255,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        <button onclick="sfRestoreSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">復元する</button>
+        <p id="restore-msg" style="font-size:10px;letter-spacing:1px;color:#6ee7b7;text-align:center;margin-top:8px;display:none;"></p>
       </div>
 
     </div>
