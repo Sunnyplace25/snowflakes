@@ -3224,8 +3224,10 @@ document.addEventListener('visibilitychange', function() {
     var start = new Date('2026-06-07T00:00:00');
     var end   = new Date('2026-06-10T23:59:59');
     if (now < start || now > end) return;
-    if (!localStorage.getItem('sf_signal_release_20260607')) {
-      localStorage.setItem('sf_signal_release_20260607', '1');
+    var today = now.toDateString();
+    var key = 'sf_signal_release_' + today;
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, '1');
       setTimeout(function() {
         var pop = document.getElementById('signal-release-popup');
         var box = document.getElementById('signal-release-box');
