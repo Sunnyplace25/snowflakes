@@ -3220,6 +3220,10 @@ document.addEventListener('visibilitychange', function() {
 </div>
 <script>
   (function() {
+    var now = new Date();
+    var start = new Date('2026-06-07T00:00:00');
+    var end   = new Date('2026-06-10T23:59:59');
+    if (now < start || now > end) return;
     if (!localStorage.getItem('sf_signal_release_20260607')) {
       localStorage.setItem('sf_signal_release_20260607', '1');
       setTimeout(function() {
