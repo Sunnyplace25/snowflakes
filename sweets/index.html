@@ -723,22 +723,6 @@
   }
   </script>
 
-  <!-- Room explore notice popup (2026-06-05) -->
-  <div id="room-explore-notice-popup" style="position:fixed;inset:0;z-index:9400;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-    <div id="room-explore-notice-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:36px 40px;max-width:320px;width:90%;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 14px;">ROOM UPDATE</p>
-      <div style="display:flex;justify-content:center;gap:8px;margin:0 0 16px;">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#93c5fd;">HINATA</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#334155;">·</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;">KOUTA</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#334155;">·</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fde68a;">HAYATE</span>
-      </div>
-      <p style="font-size:13px;line-height:2;color:#e2e8f0;letter-spacing:0.5px;margin:0 0 28px;">部屋探索が追加されました</p>
-      <button onclick="closeRoomExploreNotice()" style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#94a3b8;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.35)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.15)'">OK</button>
-    </div>
-  </div>
-
   <!-- Snow GET popup -->
   <!-- 色紙配布ポップアップ (Summer切り替え時) -->
   <div id="shikishi-get-popup" onclick="document.getElementById('shikishi-get-popup').classList.remove('show')">
@@ -5755,15 +5739,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (shikishiCheck) shikishiCheck.textContent = '✓ 入手済み';
     }
 
-    if (!localStorage.getItem('sf_room_explore_notice_20260605')) {
-      localStorage.setItem('sf_room_explore_notice_20260605', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('room-explore-notice-popup');
-        var box = document.getElementById('room-explore-notice-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
     SfSnow.addWithToast('visit_sweets', 'SWEETsを訪問');
     renderRooms();
     renderExchange();
@@ -6827,27 +6802,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
 </script>
 
-<!-- Spring Interview お知らせポップアップ -->
-<div id="spring-news-modal" style="display:none;position:fixed;inset:0;z-index:820;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
-  <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(249,168,212,0.15);border-radius:20px;padding:32px 24px;text-align:center;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;margin-bottom:10px;">NEW</p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;color:#e2e8f0;margin-bottom:8px;">‐2026 Spring‐</p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#e2e8f0;margin-bottom:20px;">Special Interview</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:24px;">を追加しました</p>
-    <button onclick="document.getElementById('spring-news-modal').classList.remove('show')" style="background:none;border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:9px 28px;color:#f9a8d4;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;">OK</button>
-  </div>
-</div>
-<style>#spring-news-modal.show{display:flex!important;}</style>
-<script>
-  (function() {
-    if (!localStorage.getItem('sf_news_spring_itv_shown')) {
-      localStorage.setItem('sf_news_spring_itv_shown', 'true');
-      document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('spring-news-modal').classList.add('show');
-      });
-    }
-  })();
-</script>
 
 <!-- Interview candy shortage modal -->
 <div id="itv-shortage-modal" style="display:none;position:fixed;inset:0;z-index:810;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;">
