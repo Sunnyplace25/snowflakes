@@ -773,6 +773,19 @@
         <input type="checkbox" id="keep-login-cb" style="accent-color:#f9a8d4;width:14px;height:14px;cursor:pointer;">
         次回から自動入力する
       </label>
+
+      <!-- セーブコード -->
+      <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:12px;">SAVE DATA</p>
+        <button onclick="sfGenerateSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;margin-bottom:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">セーブコードを発行</button>
+        <div id="save-code-output" style="display:none;margin-bottom:10px;">
+          <textarea id="save-code-text" readonly style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-size:10px;font-family:monospace;padding:10px;resize:none;height:64px;outline:none;letter-spacing:0.5px;line-height:1.5;"></textarea>
+          <button onclick="sfCopySaveCode()" style="width:100%;padding:7px;background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.2);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;cursor:pointer;margin-top:4px;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.12)'" onmouseout="this.style.background='rgba(249,168,212,0.06)'" id="save-code-copy-btn">コピー</button>
+        </div>
+        <input id="restore-code-input" type="text" placeholder="コードを貼り付けて復元" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#94a3b8;font-size:11px;font-family:monospace;padding:9px 12px;outline:none;margin-bottom:6px;letter-spacing:0.5px;" onfocus="this.style.borderColor='rgba(255,255,255,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        <button onclick="sfRestoreSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">復元する</button>
+        <p id="restore-msg" style="font-size:10px;letter-spacing:1px;color:#6ee7b7;text-align:center;margin-top:8px;display:none;"></p>
+      </div>
     </div>
 
     <!-- Snow & Items panel -->
@@ -7024,6 +7037,67 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     player.style.opacity = '1';
     player.style.transform = 'translateY(0)';
     player.style.pointerEvents = 'auto';
+  };
+})();
+</script>
+
+<script>
+// ── セーブコード ──
+(function() {
+  var SAVE_KEYS = [
+    'sf_snow', 'sf_unlocked', 'sf_monthly_items', 'sf_pick', 'sf_oshi',
+    'sf_backstage_pass', 'sf_used_codes', 'sf_summer_entered',
+    'sf_shiroihana_unlocked', 'sf_sweets_unlocked', 'sf_sweets_ver',
+    'sf_sweets_notes_unlocked'
+  ];
+
+  window.sfGenerateSaveCode = function() {
+    var data = {};
+    SAVE_KEYS.forEach(function(k) {
+      var v = localStorage.getItem(k);
+      if (v !== null) data[k] = v;
+    });
+    var code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    var out = document.getElementById('save-code-output');
+    var txt = document.getElementById('save-code-text');
+    txt.value = code;
+    out.style.display = 'block';
+    var btn = document.getElementById('save-code-copy-btn');
+    if (btn) btn.textContent = 'コピー';
+  };
+
+  window.sfCopySaveCode = function() {
+    var txt = document.getElementById('save-code-text');
+    if (!txt) return;
+    navigator.clipboard.writeText(txt.value).then(function() {
+      var btn = document.getElementById('save-code-copy-btn');
+      if (btn) { btn.textContent = 'コピーしました'; setTimeout(function(){ btn.textContent = 'コピー'; }, 2000); }
+    }).catch(function() {
+      txt.select();
+      document.execCommand('copy');
+    });
+  };
+
+  window.sfRestoreSaveCode = function() {
+    var input = document.getElementById('restore-code-input');
+    var msg   = document.getElementById('restore-msg');
+    if (!input || !msg) return;
+    var code = input.value.trim();
+    if (!code) return;
+    try {
+      var data = JSON.parse(decodeURIComponent(escape(atob(code))));
+      SAVE_KEYS.forEach(function(k) {
+        if (data[k] !== undefined) localStorage.setItem(k, data[k]);
+      });
+      msg.textContent = '復元しました。ページを再読み込みします…';
+      msg.style.display = 'block';
+      setTimeout(function() { location.reload(); }, 1500);
+    } catch(e) {
+      msg.style.color = '#fca5a5';
+      msg.textContent = 'コードが正しくありません';
+      msg.style.display = 'block';
+      setTimeout(function() { msg.style.display = 'none'; msg.style.color = '#6ee7b7'; }, 2500);
+    }
   };
 })();
 </script>
