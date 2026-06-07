@@ -777,6 +777,25 @@
       <!-- セーブコード -->
       <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:12px;">SAVE DATA</p>
+        <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2;margin-bottom:6px;">Snow・アイテムはこのブラウザにのみ保存されています。<br>別の端末・ブラウザへ引き継ぐにはセーブコードを使ってください。</p>
+        <details style="margin-bottom:14px;">
+          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;cursor:pointer;list-style:none;outline:none;">引き継ぎ方法 ▾</summary>
+          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin-bottom:8px;">① このページで「セーブコードを発行」を押してコードをコピー</p>
+            <p style="margin-bottom:8px;">② 新しい端末・ブラウザでこのページを開く</p>
+            <p>③ コードを貼り付けて「復元する」を押す</p>
+          </div>
+        </details>
+        <details style="margin-bottom:16px;">
+          <summary style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;cursor:pointer;list-style:none;outline:none;">ホーム画面に追加する方法 ▾</summary>
+          <div style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;line-height:2.2;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin-bottom:10px; color:#64748b;">ホーム画面から開くと毎回同じブラウザが使われるので、データが引き継がれます。</p>
+            <p style="margin-bottom:4px; color:#64748b;">iPhone（Safari）</p>
+            <p style="margin-bottom:10px;">画面下の共有ボタン（□↑）→「ホーム画面に追加」→「追加」</p>
+            <p style="margin-bottom:4px; color:#64748b;">Android（Chrome）</p>
+            <p>右上のメニュー（⋮）→「ホーム画面に追加」→「追加」</p>
+          </div>
+        </details>
         <button onclick="sfGenerateSaveCode()" style="width:100%;padding:9px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;margin-bottom:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#64748b'">セーブコードを発行</button>
         <div id="save-code-output" style="display:none;margin-bottom:10px;">
           <textarea id="save-code-text" readonly style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-size:10px;font-family:monospace;padding:10px;resize:none;height:64px;outline:none;letter-spacing:0.5px;line-height:1.5;"></textarea>
