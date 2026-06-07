@@ -160,9 +160,226 @@
 
     .back:hover { opacity: 0.75; }
 
+    /* ── モックアップ ── */
+    .mockup-wrap {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 48px 0 0;
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .phone {
+      width: 148px;
+      flex-shrink: 0;
+      background: #0a0f1c;
+      border: 1.5px solid rgba(147,197,253,0.25);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 3px rgba(12,18,32,0.9);
+      position: relative;
+    }
+
+    .phone-notch {
+      width: 48px; height: 6px;
+      background: rgba(147,197,253,0.12);
+      border-radius: 3px;
+      margin: 8px auto 0;
+    }
+
+    /* ── ゲート画面モック ── */
+    .mock-gate {
+      padding: 10px 10px 14px;
+    }
+
+    .mock-gate-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(147,197,253,0.5);
+      text-align: center;
+      margin: 10px 0 2px;
+    }
+
+    .mock-gate-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: rgba(147,197,253,0.3);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .mock-chars {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .mock-char {
+      width: 36px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .mock-char.active {
+      border-color: rgba(147,197,253,0.45);
+      box-shadow: 0 0 8px rgba(147,197,253,0.12);
+    }
+
+    .mock-char-img {
+      width: 100%;
+      height: 46px;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .mock-char-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 6px;
+      letter-spacing: 1px;
+      color: #f1f5f9;
+      text-align: center;
+      padding: 4px 2px 5px;
+    }
+
+    .mock-start-btn {
+      display: block;
+      margin: 0 auto;
+      padding: 5px 0;
+      width: 80%;
+      border: 1px solid rgba(147,197,253,0.3);
+      border-radius: 20px;
+      background: rgba(147,197,253,0.07);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 7px;
+      letter-spacing: 3px;
+      color: #93c5fd;
+      text-align: center;
+    }
+
+    /* ── チャット画面モック ── */
+    .mock-chat-header {
+      padding: 8px 10px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mock-avatar {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: rgba(147,197,253,0.1);
+      border: 1px solid rgba(147,197,253,0.3);
+      flex-shrink: 0;
+    }
+
+    .mock-header-name {
+      font-size: 8px;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .mock-header-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 6px;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+
+    .mock-chat-body {
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 120px;
+      position: relative;
+    }
+
+    .mock-standing {
+      position: absolute;
+      right: 4px;
+      bottom: 0;
+      width: 44px;
+      border-radius: 6px;
+      border: 1px solid rgba(147,197,253,0.3);
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .mock-bubble {
+      max-width: 75%;
+      padding: 5px 8px;
+      border-radius: 10px;
+      font-size: 6px;
+      line-height: 1.8;
+      color: #e2e8f0;
+    }
+
+    .mock-bubble.hinata {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom-left-radius: 2px;
+      align-self: flex-start;
+    }
+
+    .mock-bubble.user {
+      background: rgba(147,197,253,0.1);
+      border: 1px solid rgba(147,197,253,0.2);
+      border-bottom-right-radius: 2px;
+      align-self: flex-end;
+      color: #bfdbfe;
+    }
+
+    .mock-input-area {
+      padding: 6px 8px 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .mock-input {
+      flex: 1;
+      height: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .mock-send {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(147,197,253,0.1);
+      border: 1px solid rgba(147,197,253,0.3);
+      font-size: 8px;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mock-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(147,197,253,0.35);
+      text-align: center;
+      margin-top: 10px;
+    }
+
     @media (max-width: 480px) {
       .card { padding: 40px 28px 36px; }
       h1 { font-size: 24px; }
+      .mockup-wrap { gap: 14px; }
+      .phone { width: 132px; }
     }
   </style>
 </head>
@@ -183,6 +400,63 @@
         応援する <span class="price">¥300/月</span>
       </a>
     </div>
+  </div>
+
+  <!-- モックアップ -->
+  <div class="mockup-wrap">
+
+    <!-- ゲート画面 -->
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="mock-gate">
+          <p class="mock-gate-title">放課後のヒナタ</p>
+          <p class="mock-gate-sub">誰と話す？</p>
+          <div class="mock-chars">
+            <div class="mock-char active">
+              <img class="mock-char-img" src="img/title_hinata.webp" alt="ヒナタ">
+              <p class="mock-char-name">ヒナタ</p>
+            </div>
+            <div class="mock-char" style="opacity:0.35;filter:grayscale(0.5);">
+              <img class="mock-char-img" src="img/title_kouta.webp" alt="コウタ">
+              <p class="mock-char-name">コウタ</p>
+            </div>
+            <div class="mock-char" style="opacity:0.35;filter:grayscale(0.5);">
+              <img class="mock-char-img" src="img/title_hayate.webp" alt="ハヤテ">
+              <p class="mock-char-name">ハヤテ</p>
+            </div>
+          </div>
+          <div class="mock-start-btn">はじめる</div>
+        </div>
+      </div>
+      <p class="mock-caption">Title</p>
+    </div>
+
+    <!-- チャット画面 -->
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="mock-chat-header">
+          <div class="mock-avatar"></div>
+          <div>
+            <p class="mock-header-name">ヒナタ</p>
+            <p class="mock-header-sub">高校1年 · 音楽室</p>
+          </div>
+        </div>
+        <div class="mock-chat-body">
+          <div class="mock-bubble hinata">……座れば？</div>
+          <div class="mock-bubble user">また来たよ</div>
+          <div class="mock-bubble hinata">……そう。</div>
+          <img class="mock-standing" src="img/neutral.webp" alt="ヒナタ">
+        </div>
+        <div class="mock-input-area">
+          <div class="mock-input"></div>
+          <div class="mock-send">→</div>
+        </div>
+      </div>
+      <p class="mock-caption">Chat</p>
+    </div>
+
   </div>
 
   <a class="back" href="../kotori.html">← ことりの部屋へ戻る</a>
