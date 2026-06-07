@@ -52,34 +52,29 @@
     /* 背景キャラクター */
     .bg-chars {
       position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 560px;
+      inset: 0;
       display: flex;
       align-items: flex-end;
       justify-content: center;
       gap: 0;
       pointer-events: none;
       z-index: 0;
+      overflow: hidden;
     }
 
     .bg-chars img {
       width: 33.3%;
-      max-width: 180px;
+      height: 100%;
       object-fit: cover;
       object-position: top center;
-      opacity: 0.12;
+      opacity: 0.2;
       filter: grayscale(0.2);
-      mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 90%);
-      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 90%);
+      mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
     }
 
     .bg-chars img.center {
-      opacity: 0.18;
-      transform: scale(1.05);
-      transform-origin: bottom center;
+      opacity: 0.28;
     }
 
     .card {
