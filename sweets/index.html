@@ -4679,7 +4679,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         localStorage.setItem(SWEETS_VER_KEY, SWEETS_VERSION);
       }
       if (typeof gtag === 'function') {
-        gtag('event', 'sweets_unlock', { season: SWEETS_VERSION });
+        const isNew = !localStorage.getItem(SWEETS_KEY);
+        gtag('event', 'sweets_unlock', { season: SWEETS_VERSION, is_new_user: isNew });
       }
       _doEnter();
     }
