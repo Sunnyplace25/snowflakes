@@ -1755,13 +1755,18 @@ function sfShare() {
   }
   #sf-tutorial-btn:hover { background: rgba(147,197,253,0.18); }
   @media (max-width: 480px) {
-    #sf-tutorial { padding: 0 0 0; align-items: center; justify-content: flex-end; }
-    #sf-tutorial-inner { flex-direction: column; align-items: center; gap: 0; max-height: 100vh; width: 100%; }
-    #sf-tutorial-img { width: 90px; flex-shrink: 0; margin-bottom: -8px; z-index: 1; }
+    #sf-tutorial { padding: 0; align-items: flex-end; justify-content: center; }
+    #sf-tutorial-inner {
+      flex-direction: column; align-items: center; gap: 0;
+      height: 100dvh; width: 100%;
+      justify-content: flex-end;
+    }
+    #sf-tutorial-img { width: 80px; flex-shrink: 0; margin-bottom: -8px; z-index: 1; }
     #sf-tutorial-bubble {
       border-radius: 20px 20px 0 0; margin-bottom: 0;
-      padding: 18px 18px 24px;
-      overflow-y: auto; max-height: calc(100vh - 110px);
+      padding: 16px 18px 32px;
+      overflow-y: auto;
+      flex: 1; min-height: 0;
       width: 100%; box-sizing: border-box;
     }
     #sf-tutorial-line { font-size: 12px; line-height: 1.9; }
