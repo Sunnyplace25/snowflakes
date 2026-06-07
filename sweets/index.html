@@ -753,7 +753,7 @@
       <input class="gate-input" type="password" id="pw-input" placeholder="SWEETs code" autocomplete="off">
       <div class="gate-error" id="gate-error">SWEETs CODE が違います</div>
       <button class="gate-btn" onclick="checkPassword()">enter</button>
-      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer;font-size:11px;color:#64748b;letter-spacing:1px;">
+      <label id="keep-login-label" style="display:flex;align-items:center;gap:8px;margin-top:14px;cursor:pointer;font-size:11px;color:#64748b;letter-spacing:1px;">
         <input type="checkbox" id="keep-login-cb" style="accent-color:#f9a8d4;width:14px;height:14px;cursor:pointer;">
         次回から自動入力する
       </label>
@@ -4586,6 +4586,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var s = document.createElement('style');
       s.textContent = '.gate-btn{background:rgba(125,211,252,0.08)!important;}.gate-btn:hover{background:rgba(125,211,252,0.18)!important;}.gate-input:focus{border-color:rgba(125,211,252,0.5)!important;}';
       document.head.appendChild(s);
+      var cb = document.getElementById('keep-login-cb');
+      if (cb) cb.style.accentColor = '#7dd3fc';
+      var lbl = document.getElementById('keep-login-label');
+      if (lbl) lbl.style.color = '#64748b';
       document.addEventListener('DOMContentLoaded', function() {
         (function replaceText(node) {
           if (node.nodeType === 1 && node.hasAttribute('data-no-replace')) return;
