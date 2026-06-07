@@ -4605,6 +4605,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // 6/10以降は全員夏色 / 移行期間中はcottoncandy入力者のみ
     if (_isSummer || (_isTransition && localStorage.getItem('sf_summer_entered'))) {
       applySummerTheme();
+      if (_isSummer && !localStorage.getItem('sf_summer_auto_event')) {
+        localStorage.setItem('sf_summer_auto_event', '1');
+        if (typeof gtag !== 'undefined') gtag('event', 'enter_summer', { event_category: 'sweets', method: 'auto' });
+      }
     }
 
     // Snow配布コード: { snow: 付与数, expires: '2026-12-31' }
@@ -4633,6 +4637,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (_isTransition && lower === PASSWORD_SUMMER) {
           localStorage.setItem('sf_summer_entered', '1');
           applySummerTheme();
+          if (typeof gtag !== 'undefined') gtag('event', 'enter_summer', { event_category: 'sweets' });
         }
         unlock();
       } else if (lower === PASSWORD_SHIROIHANA) {
