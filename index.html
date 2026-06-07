@@ -3206,10 +3206,10 @@ document.addEventListener('visibilitychange', function() {
 })();
 </script>
 
-<!-- Signal release notice popup (2026-06-06) -->
+<!-- Signal release notice popup (2026-06-07) -->
 <div id="signal-release-popup" style="position:fixed;inset:0;z-index:9380;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.85);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
   <div id="signal-release-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(15,22,40,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 16px;">NEW RELEASE</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin:0 0 16px;">NEW SINGLE</p>
     <img src="./Discography/Signal.webp" alt="Signal" style="width:160px;border-radius:8px;margin:0 auto 20px;display:block;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;letter-spacing:4px;color:#e2e8f0;margin:0 0 4px;">Signal</p>
     <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#64748b;margin:0 0 24px;">c/w グラスの縁</p>
@@ -3219,8 +3219,8 @@ document.addEventListener('visibilitychange', function() {
 </div>
 <script>
   (function() {
-    if (!localStorage.getItem('sf_signal_release_20260606')) {
-      localStorage.setItem('sf_signal_release_20260606', '1');
+    if (!localStorage.getItem('sf_signal_release_20260607')) {
+      localStorage.setItem('sf_signal_release_20260607', '1');
       setTimeout(function() {
         var pop = document.getElementById('signal-release-popup');
         var box = document.getElementById('signal-release-box');
