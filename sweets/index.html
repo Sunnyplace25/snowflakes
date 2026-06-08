@@ -559,7 +559,7 @@
     }
     .door-hotspot:hover .door-label { opacity:1; }
 
-    /* ── 更新バッジ ── */
+    /* ── 更新バッジ・扉グロー ── */
     .door-update-badge {
       position:absolute; top:8px; right:8px;
       width:10px; height:10px;
@@ -573,6 +573,16 @@
     @keyframes badge-pulse-hayate { 0%,100%{opacity:1;transform:scale(1);}   50%{opacity:0.45;transform:scale(1.5);box-shadow:0 0 14px rgba(253,230,138,0.9);} }
     @keyframes badge-pulse-hinata { 0%,100%{opacity:1;transform:scale(1);}   50%{opacity:0.45;transform:scale(1.5);box-shadow:0 0 14px rgba(147,197,253,0.9);} }
     @keyframes badge-pulse-kouta  { 0%,100%{opacity:1;transform:scale(1);}   50%{opacity:0.45;transform:scale(1.5);box-shadow:0 0 14px rgba(252,165,165,0.9);} }
+    /* 扉グロー */
+    .door-hotspot.has-update::after {
+      content:''; position:absolute; inset:0; pointer-events:none; z-index:3;
+    }
+    .door-hotspot.has-update.hayate::after { animation:door-glow-hayate 2s ease-in-out infinite; }
+    .door-hotspot.has-update.hinata::after { animation:door-glow-hinata 2s ease-in-out infinite; }
+    .door-hotspot.has-update.kouta::after  { animation:door-glow-kouta  2s ease-in-out infinite; }
+    @keyframes door-glow-hayate { 0%,100%{box-shadow:inset 0 0 18px rgba(253,230,138,0.08);} 50%{box-shadow:inset 0 0 36px rgba(253,230,138,0.22);} }
+    @keyframes door-glow-hinata { 0%,100%{box-shadow:inset 0 0 18px rgba(147,197,253,0.08);} 50%{box-shadow:inset 0 0 36px rgba(147,197,253,0.22);} }
+    @keyframes door-glow-kouta  { 0%,100%{box-shadow:inset 0 0 18px rgba(252,165,165,0.08);} 50%{box-shadow:inset 0 0 36px rgba(252,165,165,0.22);} }
 
     /* ── Section req hint ── */
     .section-req {
@@ -5951,35 +5961,38 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var CANDY_LABEL = { milk: 'ミルクキャンディー', honey: 'ハニーレモンキャンディー', cassis: 'カシスキャンディー' };
   var CANDY_IMG   = { milk: '../item/candy_milk.webp', honey: '../item/candy_honey.webp', cassis: '../item/candy_cassis.webp' };
 
-  // 各キャラ部屋の最終更新日（更新したら日付を変える）
-  var ROOM_UPDATE_DATES = {
-    'door-hayate': '2026-06-08',
-    'door-hinata': '',
-    'door-kouta':  '',
-  };
-
   var DOOR_CONFIG = [
     { doorId:'door-hayate', roomId:'room_hayate', candy:'cassis', color:'rgba(253,230,138,0.35)', url:'../room/hayate/', char:'hayate' },
     { doorId:'door-hinata', roomId:'room_hinata', candy:'milk',   color:'rgba(147,197,253,0.35)', url:'../room/hinata/', char:'hinata' },
     { doorId:'door-kouta',  roomId:'room_kouta',  candy:'honey',  color:'rgba(252,165,165,0.35)', url:'../room/kouta/',  char:'kouta'  },
   ];
 
+  // 部屋HTMLから最新日付を自動抽出
+  var ROOM_LATEST_DATE_CACHE = {};
+  async function fetchRoomLatestDate(url) {
+    if (ROOM_LATEST_DATE_CACHE[url] !== undefined) return ROOM_LATEST_DATE_CACHE[url];
+    try {
+      var res = await fetch(url);
+      var text = await res.text();
+      var today = new Date().toISOString().slice(0, 10);
+      var matches = text.match(/date:\s*'(\d{4}-\d{2}-\d{2})'/g) || [];
+      var dates = matches.map(function(m){ return m.match(/(\d{4}-\d{2}-\d{2})/)[1]; })
+                         .filter(function(d){ return d <= today; });
+      var latest = dates.length ? dates.sort().pop() : '';
+      ROOM_LATEST_DATE_CACHE[url] = latest;
+      return latest;
+    } catch(e) { return ''; }
+  }
+
   // 部屋の更新バッジ表示
   var ROOM_LAST_SEEN_KEY = 'sf_room_last_seen';
   function getRoomLastSeen() {
     try { return JSON.parse(localStorage.getItem(ROOM_LAST_SEEN_KEY) || '{}'); } catch(e) { return {}; }
   }
-  function markRoomSeen(doorId) {
+  function markRoomSeen(doorId, date) {
     var seen = getRoomLastSeen();
-    seen[doorId] = new Date().toISOString().slice(0, 10);
+    seen[doorId] = date || new Date().toISOString().slice(0, 10);
     localStorage.setItem(ROOM_LAST_SEEN_KEY, JSON.stringify(seen));
-  }
-  function hasRoomUpdate(doorId) {
-    var updateDate = ROOM_UPDATE_DATES[doorId];
-    if (!updateDate) return false;
-    var seen = getRoomLastSeen();
-    var lastSeen = seen[doorId] || '';
-    return updateDate > lastSeen;
   }
 
   function renderRooms() {
@@ -5990,13 +6003,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = SfSnow.isUnlocked(d.roomId);
       el.style.cursor = 'pointer';
 
-      // 更新バッジ（解放済みのみ）
+      // 更新バッジ（解放済みのみ・非同期）
       var existingBadge = el.querySelector('.door-update-badge');
       if (existingBadge) existingBadge.remove();
-      if (unlocked && hasRoomUpdate(d.doorId)) {
-        var badge = document.createElement('div');
-        badge.className = 'door-update-badge ' + d.char;
-        el.appendChild(badge);
+      el.classList.remove('has-update', 'hayate', 'hinata', 'kouta');
+      if (unlocked) {
+        (function(el, d) {
+          fetchRoomLatestDate(d.url).then(function(latest) {
+            var seen = getRoomLastSeen();
+            var lastSeen = seen[d.doorId] || '';
+            if (latest && latest > lastSeen) {
+              el.classList.add('has-update', d.char);
+              var badge = document.createElement('div');
+              badge.className = 'door-update-badge ' + d.char;
+              el.appendChild(badge);
+            }
+          });
+        })(el, d);
       }
 
       if (unlocked) {
@@ -6004,11 +6027,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         el.classList.add('unlocked');
         var url = d.url;
         var doorId = d.doorId;
-        el.onclick = function(e) { e.stopPropagation(); markRoomSeen(doorId); location.href = url; };
+        var goRoom = function(e) {
+          e.stopPropagation();
+          fetchRoomLatestDate(url).then(function(latest) { markRoomSeen(doorId, latest); });
+          location.href = url;
+        };
+        el.onclick = goRoom;
         var chibi = el.querySelector('.door-chibi');
         var label = el.querySelector('.door-label');
-        if (chibi) { chibi.style.pointerEvents = 'auto'; chibi.onclick = function(e) { e.stopPropagation(); markRoomSeen(doorId); location.href = url; }; }
-        if (label) { label.style.pointerEvents = 'auto'; label.onclick = function(e) { e.stopPropagation(); markRoomSeen(doorId); location.href = url; }; }
+        if (chibi) { chibi.style.pointerEvents = 'auto'; chibi.onclick = goRoom; }
+        if (label) { label.style.pointerEvents = 'auto'; label.onclick = goRoom; }
       } else {
         el.classList.add('locked');
         el.classList.remove('unlocked');

@@ -2426,23 +2426,27 @@ function sfShare() {
   });
 
   // 部屋更新バッジ（sweetsと同じキーを共有）
-  const ROOM_UPDATE_DATES_MAIN = {
-    'door-hayate': '2026-06-08',
-    'door-hinata': '',
-    'door-kouta':  '',
-  };
   const CHAR_CARD_MAP = [
-    { cardClass: 'h', doorId: 'door-hinata', roomId: 'room_hinata' },
-    { cardClass: 'k', doorId: 'door-kouta',  roomId: 'room_kouta'  },
-    { cardClass: 'y', doorId: 'door-hayate', roomId: 'room_hayate' },
+    { cardClass: 'h', doorId: 'door-hinata', roomId: 'room_hinata', url: 'room/hinata/' },
+    { cardClass: 'k', doorId: 'door-kouta',  roomId: 'room_kouta',  url: 'room/kouta/'  },
+    { cardClass: 'y', doorId: 'door-hayate', roomId: 'room_hayate', url: 'room/hayate/' },
   ];
   function getRoomLastSeenMain() {
     try { return JSON.parse(localStorage.getItem('sf_room_last_seen') || '{}'); } catch(e) { return {}; }
   }
-  function hasRoomUpdateMain(doorId) {
-    const d = ROOM_UPDATE_DATES_MAIN[doorId];
-    if (!d) return false;
-    return d > (getRoomLastSeenMain()[doorId] || '');
+  const _roomDateCacheMain = {};
+  async function fetchRoomLatestDateMain(url) {
+    if (_roomDateCacheMain[url] !== undefined) return _roomDateCacheMain[url];
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      const today = new Date().toISOString().slice(0, 10);
+      const matches = text.match(/date:\s*'(\d{4}-\d{2}-\d{2})'/g) || [];
+      const dates = matches.map(m => m.match(/(\d{4}-\d{2}-\d{2})/)[1]).filter(d => d <= today);
+      const latest = dates.length ? dates.sort().pop() : '';
+      _roomDateCacheMain[url] = latest;
+      return latest;
+    } catch(e) { return ''; }
   }
   function renderRoomBadges() {
     CHAR_CARD_MAP.forEach(function(c) {
@@ -2451,10 +2455,15 @@ function sfShare() {
       if (!card) return;
       const existing = card.querySelector('.room-update-badge');
       if (existing) existing.remove();
-      if (unlocked && hasRoomUpdateMain(c.doorId)) {
-        const badge = document.createElement('div');
-        badge.className = 'room-update-badge ' + c.cardClass;
-        card.appendChild(badge);
+      if (unlocked) {
+        fetchRoomLatestDateMain(c.url).then(function(latest) {
+          const lastSeen = getRoomLastSeenMain()[c.doorId] || '';
+          if (latest && latest > lastSeen) {
+            const badge = document.createElement('div');
+            badge.className = 'room-update-badge ' + c.cardClass;
+            card.appendChild(badge);
+          }
+        });
       }
     });
   }
@@ -2463,13 +2472,14 @@ function sfShare() {
   // キャラクターカードクリック
   window.goRoom = function(itemId, roomUrl) {
     if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(itemId)) {
-      // 訪問記録
       const doorMap = { room_hinata:'door-hinata', room_kouta:'door-kouta', room_hayate:'door-hayate' };
       const doorId = doorMap[itemId];
       if (doorId) {
-        const seen = getRoomLastSeenMain();
-        seen[doorId] = new Date().toISOString().slice(0, 10);
-        localStorage.setItem('sf_room_last_seen', JSON.stringify(seen));
+        fetchRoomLatestDateMain(roomUrl).then(function(latest) {
+          const seen = getRoomLastSeenMain();
+          seen[doorId] = latest || new Date().toISOString().slice(0, 10);
+          localStorage.setItem('sf_room_last_seen', JSON.stringify(seen));
+        });
       }
       location.href = roomUrl;
     } else {
