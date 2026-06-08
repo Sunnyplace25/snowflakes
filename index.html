@@ -344,6 +344,20 @@
     .like-heart { font-size: 15px; transition: transform 0.15s; display: inline-block; }
     .like-btn:active .like-heart { transform: scale(1.5); }
 
+    /* 部屋更新バッジ */
+    .char-card { position: relative; }
+    .room-update-badge {
+      position: absolute; top: 10px; right: 10px;
+      width: 10px; height: 10px; border-radius: 50%;
+      z-index: 5; pointer-events: none;
+    }
+    .room-update-badge.h { background: #93c5fd; box-shadow: 0 0 8px rgba(147,197,253,0.9); animation: rbadge-h 1.4s ease-in-out infinite; }
+    .room-update-badge.k { background: #fca5a5; box-shadow: 0 0 8px rgba(252,165,165,0.9); animation: rbadge-k 1.4s ease-in-out infinite; }
+    .room-update-badge.y { background: #fde68a; box-shadow: 0 0 8px rgba(253,230,138,0.9); animation: rbadge-y 1.4s ease-in-out infinite; }
+    @keyframes rbadge-h { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(147,197,253,1);} }
+    @keyframes rbadge-k { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(252,165,165,1);} }
+    @keyframes rbadge-y { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(253,230,138,1);} }
+
     /* Links */
     .links { padding: 100px 24px; }
     .links-grid {
@@ -2411,9 +2425,52 @@ function sfShare() {
     }
   });
 
+  // 部屋更新バッジ（sweetsと同じキーを共有）
+  const ROOM_UPDATE_DATES_MAIN = {
+    'door-hayate': '2026-06-08',
+    'door-hinata': '',
+    'door-kouta':  '',
+  };
+  const CHAR_CARD_MAP = [
+    { cardClass: 'h', doorId: 'door-hinata', roomId: 'room_hinata' },
+    { cardClass: 'k', doorId: 'door-kouta',  roomId: 'room_kouta'  },
+    { cardClass: 'y', doorId: 'door-hayate', roomId: 'room_hayate' },
+  ];
+  function getRoomLastSeenMain() {
+    try { return JSON.parse(localStorage.getItem('sf_room_last_seen') || '{}'); } catch(e) { return {}; }
+  }
+  function hasRoomUpdateMain(doorId) {
+    const d = ROOM_UPDATE_DATES_MAIN[doorId];
+    if (!d) return false;
+    return d > (getRoomLastSeenMain()[doorId] || '');
+  }
+  function renderRoomBadges() {
+    CHAR_CARD_MAP.forEach(function(c) {
+      const unlocked = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(c.roomId);
+      const card = document.querySelector('.char-card.' + c.cardClass);
+      if (!card) return;
+      const existing = card.querySelector('.room-update-badge');
+      if (existing) existing.remove();
+      if (unlocked && hasRoomUpdateMain(c.doorId)) {
+        const badge = document.createElement('div');
+        badge.className = 'room-update-badge ' + c.cardClass;
+        card.appendChild(badge);
+      }
+    });
+  }
+  renderRoomBadges();
+
   // キャラクターカードクリック
   window.goRoom = function(itemId, roomUrl) {
     if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(itemId)) {
+      // 訪問記録
+      const doorMap = { room_hinata:'door-hinata', room_kouta:'door-kouta', room_hayate:'door-hayate' };
+      const doorId = doorMap[itemId];
+      if (doorId) {
+        const seen = getRoomLastSeenMain();
+        seen[doorId] = new Date().toISOString().slice(0, 10);
+        localStorage.setItem('sf_room_last_seen', JSON.stringify(seen));
+      }
       location.href = roomUrl;
     } else {
       location.href = 'sweets/';
