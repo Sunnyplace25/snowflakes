@@ -4820,7 +4820,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var prologueReleased = Date.now() >= PROLOGUE_RELEASE;
       var allItems = typeof SfSnow !== 'undefined'
         && UT_STONE_ITEMS.every(function(item) { return SfSnow.isUnlocked(item.key); });
-      var ok = isAdmin || (prologueReleased && allItems);
+      var ok = isAdmin || prologueReleased;
 
       var sec = document.getElementById('undertone-section');
       if (!sec) return;
