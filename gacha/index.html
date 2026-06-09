@@ -731,15 +731,6 @@ function sfShare() {
 
 </div>
 
-<!-- 排出率変更 告知ポップアップ（初回のみ） -->
-<div id="rate-notice-popup" style="position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);">
-  <div style="background:rgba(10,16,30,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:28px 24px;max-width:320px;width:100%;text-align:center;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:16px;">NOTICE</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;line-height:2;margin-bottom:8px;">排出率を調整しました。</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2;margin-bottom:24px;">ビール・クッキー・チョコレート・<br>ギターピックの出現率が<br>変更されています。<br>排出率一覧よりご確認ください。</p>
-    <button onclick="(function(){localStorage.setItem('sf_rate_notice_v1','1');var p=document.getElementById('rate-notice-popup');p.style.opacity='0';setTimeout(function(){p.style.display='none'},300);})()" style="background:none;border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:10px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#cbd5e1;cursor:pointer;transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(255,255,255,0.5)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.2)'">── 確認しました ──</button>
-  </div>
-</div>
 
 <!-- Undertone visited popup -->
 <div id="undertone-popup" style="position:fixed;inset:0;z-index:700;display:none;align-items:flex-end;justify-content:center;padding:0 24px 48px;pointer-events:none;">
@@ -1479,11 +1470,6 @@ function sfShare() {
 
   document.addEventListener('DOMContentLoaded', function() {
     renderGachaItems();
-    // 排出率変更告知（初回のみ）
-    if (!localStorage.getItem('sf_rate_notice_v1')) {
-      var p = document.getElementById('rate-notice-popup');
-      if (p) { p.style.display = 'flex'; p.style.opacity = '1'; p.style.transition = 'opacity 0.3s'; }
-    }
   });
 
   // ガチャ後にも更新されるよう updateUI をパッチ
