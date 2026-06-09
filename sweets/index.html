@@ -1257,7 +1257,7 @@
 
                 <!-- 色紙（入手済みのみ表示） -->
                 <div id="spring-rare-shikishi-wrap" style="display:none;flex-direction:column;align-items:center;gap:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;width:100%;">
-                  <img id="spring-rare-shikishi-img" src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="width:100px;height:100px;object-fit:contain;opacity:0.9;transition:all 0.3s;">
+                  <img id="spring-rare-shikishi-img" src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="width:100px;height:100px;object-fit:contain;opacity:0.9;transition:all 0.3s;cursor:pointer;" onclick="openShikishiLightbox()">
                   <div style="text-align:center;">
                     <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
                       <span id="spring-rare-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#e2e8f0;">SWEETs 2026 Spring 色紙</span>
@@ -4559,6 +4559,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     </div>
 
 
+    <!-- 色紙 拡大表示 -->
+    <div id="shikishi-lightbox" onclick="closeShikishiLightbox()" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:24px;">
+      <img src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:12px;box-shadow:0 0 60px rgba(249,168,212,0.15);">
+    </div>
+
     <!-- 短篇読了アイテム解放ポップアップ -->
     <div id="hito-item-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
       <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:36px 28px;max-width:300px;width:100%;text-align:center;">
@@ -5846,6 +5851,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var popup = document.getElementById('hito-item-popup');
     if (popup) popup.style.display = 'flex';
   });
+
+  window.openShikishiLightbox = function() {
+    var lb = document.getElementById('shikishi-lightbox');
+    if (lb) { lb.style.display = 'flex'; }
+  };
+  window.closeShikishiLightbox = function() {
+    var lb = document.getElementById('shikishi-lightbox');
+    if (lb) { lb.style.display = 'none'; }
+  };
 
   window.closeHitoItemPopup = function() {
     var popup = document.getElementById('hito-item-popup');
