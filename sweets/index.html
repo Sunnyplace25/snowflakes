@@ -4733,6 +4733,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         SfSnow.unlockItem('backstage_pass');
         localStorage.setItem('sf_backstage_pass', 'true');
         if (typeof renderItemRows === 'function') renderItemRows();
+        if (typeof gtag === 'function') gtag('event', 'get_backstage_pass', { season: SWEETS_VERSION });
       }
     }
 
