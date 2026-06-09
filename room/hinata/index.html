@@ -1031,6 +1031,8 @@
         '',
         '　もう少しだけ',
         '',
+        '　＝＝隣に＝＝',
+        '',
         '　壊さないように',
         '',
         '　あと少しだけ',
@@ -1080,7 +1082,19 @@
     function _renderNotebookPage(pages) {
       var content = document.getElementById('hinata-notebook-content');
       content.innerHTML = '';
-      content.textContent = pages[_notebookPage].lines.join('\n');
+      pages[_notebookPage].lines.forEach(function(line, i) {
+        if (i > 0) content.appendChild(document.createTextNode('\n'));
+        var parts = line.split('＝＝');
+        parts.forEach(function(part, j) {
+          if (j % 2 === 1) {
+            var s = document.createElement('s');
+            s.textContent = part;
+            content.appendChild(s);
+          } else {
+            content.appendChild(document.createTextNode(part));
+          }
+        });
+      });
 
       var available  = _getDateAvailableNotebookPages();
       var unlockNext = document.getElementById('hinata-notebook-unlock-next');
