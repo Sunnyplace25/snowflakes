@@ -5192,11 +5192,19 @@ function submitUtPw() {
   #nagi-beer-popup.show { display: flex; }
 </style>
 <!-- Chapter Unlock Overlay -->
-<div id="chapter-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
-  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#64748b;margin-bottom:20px;text-align:center;">CHAPTER UNLOCKED</p>
-  <p id="cu-num" style="font-family:'Cormorant Garamond',serif;font-size:36px;letter-spacing:6px;color:#c4b5fd;margin-bottom:16px;text-align:center;"></p>
-  <p style="font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:4px;color:#94a3b8;margin-bottom:56px;text-align:center;">が解放されました</p>
-  <button onclick="closeChapterUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#64748b;cursor:pointer;">続ける</button>
+<div id="chapter-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:rgba(12,18,32,0.95);border:1px solid rgba(196,181,253,0.18);border-radius:20px;max-width:320px;width:100%;overflow:hidden;box-shadow:0 0 60px rgba(196,181,253,0.08);">
+    <div style="position:relative;width:100%;height:220px;overflow:hidden;">
+      <img src="nagi_unlock.webp" alt="ナギ" style="width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(0.75);">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(12,18,32,0.95) 100%);"></div>
+    </div>
+    <div style="padding:20px 28px 32px;text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#6d5fc4;margin-bottom:16px;">CHAPTER UNLOCKED</p>
+      <p id="cu-num" style="font-family:'Cormorant Garamond',serif;font-size:32px;letter-spacing:6px;color:#c4b5fd;margin-bottom:8px;"></p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:4px;color:#94a3b8;margin-bottom:32px;">が解放されました</p>
+      <button onclick="closeChapterUnlock()" style="background:rgba(196,181,253,0.06);border:1px solid rgba(196,181,253,0.25);border-radius:50px;padding:10px 36px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#c4b5fd;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.5)'" onmouseout="this.style.borderColor='rgba(196,181,253,0.25)'">続ける</button>
+    </div>
+  </div>
 </div>
 <!-- Item Unlock Overlay -->
 <div id="item-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
