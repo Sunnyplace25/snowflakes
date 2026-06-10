@@ -2672,6 +2672,23 @@ function submitUtPw() {
       if (ex) ex.style.display = 'block';
       try { renderScene(); } catch(e2) {}
     }
+    // 解放済み・未読のタイムゲート章があれば自動で開く
+    setTimeout(function() {
+      var pp = document.getElementById('prose-popup');
+      if (pp && pp.classList.contains('show')) return;
+      autoOpenNewEpisode();
+    }, 1000);
+  }
+
+  function autoOpenNewEpisode() {
+    var keys = Object.keys(TIMED_CHAPTERS).map(Number).sort(function(a,b){return a-b;});
+    for (var i = 0; i < keys.length; i++) {
+      var idx = keys[i];
+      if (!_seenProseScenes.has(idx) && getTimedState(idx).state === 'available') {
+        openChapterPopup(idx);
+        return;
+      }
+    }
   }
 
   /* ── Explore ── */
