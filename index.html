@@ -585,9 +585,9 @@ function sfShare() {
   <!-- 封印解放カード（公開から7日間表示） -->
   <div style="max-width:680px;margin:0 auto 12px;">
     <a id="sealed-banner" href="https://ncode.syosetu.com/n9009lo/35" target="_blank"
-       style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:all 0.4s;position:relative;overflow:hidden;box-shadow:0 0 0 rgba(196,181,253,0);"
-       onmouseenter="this.style.borderColor='rgba(196,181,253,0.5)';this.style.background='rgba(196,181,253,0.07)';this.style.boxShadow='0 0 24px rgba(196,181,253,0.15)';this.querySelector('.sealed-shine').style.opacity='1'"
-       onmouseleave="this.style.borderColor='rgba(196,181,253,0.2)';this.style.background='rgba(196,181,253,0.03)';this.style.boxShadow='0 0 0 rgba(196,181,253,0)';this.querySelector('.sealed-shine').style.opacity='0'">
+       style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:background 0.4s;position:relative;overflow:hidden;"
+       onmouseenter="this.style.background='rgba(196,181,253,0.07)';this.querySelector('.sealed-shine').style.opacity='1'"
+       onmouseleave="this.style.background='rgba(196,181,253,0.03)';this.querySelector('.sealed-shine').style.opacity='0'">
       <div class="sealed-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(196,181,253,0.1) 0%, transparent 70%);"></div>
       <div style="pointer-events:none;position:absolute;top:16px;right:20px;display:flex;gap:5px;align-items:center;">
         <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#7c6aa5;margin-right:2px;">item</span>
@@ -742,6 +742,12 @@ function sfShare() {
     #update-banner.active #update-status  { color: #93c5fd !important; }
     #update-banner.active #update-arrow   { color: #93c5fd !important; animation: arrowSlide 1.6s ease-in-out infinite; }
     #update-banner:hover                  { background: rgba(147,197,253,0.07) !important; transform: translateY(-1px); }
+
+    @keyframes sealedGlow {
+      0%,100% { box-shadow: 0 0 8px rgba(196,181,253,0.15); border-color: rgba(196,181,253,0.25); }
+      50%      { box-shadow: 0 0 28px rgba(196,181,253,0.50), 0 0 60px rgba(196,181,253,0.15); border-color: rgba(196,181,253,0.70); }
+    }
+    #sealed-banner { animation: sealedGlow 2.8s ease-in-out infinite; }
 
     /* 新作カード赤グロー */
     @keyframes redCardGlow {
