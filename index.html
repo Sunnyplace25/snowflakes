@@ -582,6 +582,23 @@ function sfShare() {
   <div style="text-align:center;margin-bottom:36px;">
     <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
+  <!-- 封印解放カード（公開から7日間表示） -->
+  <div style="max-width:680px;margin:0 auto 12px;">
+    <a id="sealed-banner" href="https://ncode.syosetu.com/n9009lo/35" target="_blank"
+       style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:all 0.4s;position:relative;overflow:hidden;box-shadow:0 0 0 rgba(196,181,253,0);"
+       onmouseenter="this.style.borderColor='rgba(196,181,253,0.5)';this.style.background='rgba(196,181,253,0.07)';this.style.boxShadow='0 0 24px rgba(196,181,253,0.15)';this.querySelector('.sealed-shine').style.opacity='1'"
+       onmouseleave="this.style.borderColor='rgba(196,181,253,0.2)';this.style.background='rgba(196,181,253,0.03)';this.style.boxShadow='0 0 0 rgba(196,181,253,0)';this.querySelector('.sealed-shine').style.opacity='0'">
+      <div class="sealed-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(196,181,253,0.1) 0%, transparent 70%);"></div>
+      <div style="position:relative;display:flex;align-items:center;gap:16px;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">SEALED CHAPTER UNLOCKED</p>
+          <p id="sealed-title" style="font-size:clamp(14px,2.2vw,17px);font-weight:300;color:#e2e8f0;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;"></p>
+        </div>
+        <p style="font-size:18px;color:#c4b5fd;flex-shrink:0;">→</p>
+      </div>
+    </a>
+  </div>
+
   <!-- 本編更新バナー -->
   <div style="max-width:680px;margin:0 auto 6px;text-align:right;padding-right:4px;">
     <button onclick="openDailyInfoPopup()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#3b5f8a;padding:4px 8px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#3b5f8a'">? アイテムについて</button>
@@ -670,20 +687,6 @@ function sfShare() {
       </div>
 
     </div>
-  </div>
-
-  <!-- 封印解放カード（公開から7日間表示） -->
-  <div style="max-width:680px;margin:-24px auto 16px;">
-    <a id="sealed-banner" href="https://ncode.syosetu.com/n9009lo/35" target="_blank"
-       style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:all 0.4s;position:relative;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:16px;">
-        <div style="flex:1;min-width:0;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">SEALED CHAPTER UNLOCKED</p>
-          <p id="sealed-title" style="font-size:clamp(14px,2.2vw,17px);font-weight:300;color:#e2e8f0;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;"></p>
-        </div>
-        <p style="font-size:18px;color:#c4b5fd;flex-shrink:0;">→</p>
-      </div>
-    </a>
   </div>
 
   <!-- 短篇カード（公開から3日間だけ表示） -->
