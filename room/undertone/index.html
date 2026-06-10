@@ -2207,6 +2207,15 @@ function submitUtPw() {
     if (trackTitle) trackTitle.textContent = title;
     if (trackSub) trackSub.textContent = sub;
     if (unlockEl) unlockEl.style.opacity = '0';
+    // BGM をフェードアウト
+    if (_bgmAudio && !_bgmAudio.paused) {
+      var _bgmVol = _bgmAudio.volume;
+      var _fadeOut = setInterval(function() {
+        _bgmVol = Math.max(0, _bgmVol - 0.02);
+        _bgmAudio.volume = _bgmVol;
+        if (_bgmVol <= 0) { _bgmAudio.pause(); clearInterval(_fadeOut); }
+      }, 40);
+    }
     ov.style.display = 'flex';
     // シーケンシャル表示
     setTimeout(function() {
@@ -2241,6 +2250,17 @@ function submitUtPw() {
   window.closeChapterComplete = function() {
     var ov = document.getElementById('chapter-complete-overlay');
     if (ov) ov.style.display = 'none';
+    // BGM を再開（フェードイン）
+    if (_soundOn && _bgmStarted) {
+      _bgmAudio.volume = 0;
+      _bgmAudio.play().catch(function(){});
+      var _vol = 0;
+      var _fadeIn = setInterval(function() {
+        _vol = Math.min(0.12, _vol + 0.005);
+        _bgmAudio.volume = _vol;
+        if (_vol >= 0.12) clearInterval(_fadeIn);
+      }, 40);
+    }
   };
 
   /* ── Chapter Unlock Popup ── */
