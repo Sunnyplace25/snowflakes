@@ -1989,13 +1989,16 @@ function submitUtPw() {
   /* ── Timed chapter unlock (1日1エピソード) ── */
   // key: idx that needs timer, value: idx of previous chapter (must be read first)
   var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16 };
+  // 章ごとのロック時間（ms）。未定義は 48h デフォルト
+  var TIMED_THRESHOLDS = { 7: 86400000 }; // 1-3 は 1-2 読了後 24h
 
   function getTimedState(idx) {
     var prevIdx = TIMED_CHAPTERS[idx];
     if (!_seenProseScenes.has(prevIdx)) return { state: 'hidden' };
     var readAt = parseInt(localStorage.getItem('sf_ut_ch_read_at_' + prevIdx) || '0');
     if (!readAt) return { state: 'available' }; // 旧データ互換
-    var remaining = 172800000 - (Date.now() - readAt);
+    var threshold = TIMED_THRESHOLDS[idx] || 172800000;
+    var remaining = threshold - (Date.now() - readAt);
     if (remaining <= 0) return { state: 'available' };
     return { state: 'countdown', remaining: remaining };
   }
