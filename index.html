@@ -672,8 +672,22 @@ function sfShare() {
     </div>
   </div>
 
+  <!-- 封印解放カード（公開から7日間表示） -->
+  <div style="max-width:680px;margin:-24px auto 16px;">
+    <a id="sealed-banner" href="https://ncode.syosetu.com/n9009lo/35" target="_blank"
+       style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">SEALED CHAPTER UNLOCKED</p>
+          <p id="sealed-title" style="font-size:clamp(14px,2.2vw,17px);font-weight:300;color:#e2e8f0;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;"></p>
+        </div>
+        <p style="font-size:18px;color:#c4b5fd;flex-shrink:0;">→</p>
+      </div>
+    </a>
+  </div>
+
   <!-- 短篇カード（公開から3日間だけ表示） -->
-  <div style="max-width:680px;margin:-24px auto 40px;">
+  <div style="max-width:680px;margin:0 auto 40px;">
     <a id="short-banner" href="#" target="_blank"
        style="display:none;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(252,165,165,0.03);border:1px solid rgba(252,165,165,0.25);transition:all 0.4s;position:relative;overflow:hidden;">
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -771,14 +785,13 @@ function sfShare() {
 
   <script>
     (function() {
-      var BASE_EP   = 160;
-      var BASE_TIME = new Date('2026-05-11T21:00:00'); // #160 が公開される時刻
+      var BASE_EP   = 161; // 2026-06-11 ep.35 アーカイブ挿入により +1
+      var BASE_TIME = new Date('2026-05-11T21:00:00'); // #161 が公開される時刻
 
       // 21時以外に公開される追加話（幕間など）— 時刻順に並べる
       var EXTRA_EPISODES = [
         new Date('2026-05-23T12:00:00'), // ep.172 幕間｜白い花の影
         new Date('2026-05-25T18:00:00'), // ep.175 幕間｜二つ
-        new Date('2026-06-11T02:58:00'), // ep.35（narou掲載順）幕間｜そう見えるだけ
       ];
 
       function getEpisode(now) {
@@ -796,7 +809,6 @@ function sfShare() {
       var UPDATE_SCHEDULE = {
         '2026-05-23': [12, 21],
         '2026-05-25': [18, 21],
-        '2026-06-11': [2, 21],
       };
 
       function getTodayKey(d) {
@@ -852,6 +864,36 @@ function sfShare() {
 
       update();
       setInterval(update, 30000); // 30秒ごとに確認
+    })();
+  </script>
+
+  <script>
+    (function() {
+      // ── 封印解放カード設定 ──────────────────────────────────
+      // 封印解放話を投稿したら以下2つを更新する
+      var SEALED_PUB   = new Date('2026-06-11T02:58:00');
+      var SEALED_TITLE = '幕間｜そう見えるだけ';
+      // ──────────────────────────────────────────────────────
+
+      var SEALED_SHOW_DAYS = 7;
+
+      function updateSealed() {
+        var card = document.getElementById('sealed-banner');
+        if (!card) return;
+        if (!SEALED_PUB || !SEALED_TITLE) return;
+        var now = new Date();
+        var ms  = now - SEALED_PUB;
+        if (ms < 0 || ms >= SEALED_SHOW_DAYS * 86400000) {
+          card.style.display = 'none';
+          return;
+        }
+        card.style.display = 'block';
+        var titleEl = document.getElementById('sealed-title');
+        if (titleEl) titleEl.textContent = SEALED_TITLE;
+      }
+
+      updateSealed();
+      setInterval(updateSealed, 60000);
     })();
   </script>
 
