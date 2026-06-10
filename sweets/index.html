@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SWEETs ROOM | Snow flakes</title>
   <!-- /index.html → / へ正規化（データ分散防止） -->
   <script>(function(){var p=location.pathname;if(p.endsWith("/index.html"))location.replace(location.origin+p.slice(0,p.length-10)+location.search+location.hash);})();</script>
@@ -38,12 +38,14 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    html { overflow-x: hidden; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Noto Serif JP', serif;
       font-weight: 300;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     canvas {
