@@ -2274,6 +2274,37 @@ function submitUtPw() {
     if (ov) ov.style.display = 'none';
   };
 
+  /* ── Chocolate Unlock Popup ── */
+  window.showChocoUnlock = function() {
+    var ov = document.getElementById('choco-unlock-overlay');
+    if (ov) ov.style.display = 'flex';
+  };
+  window.chocoEat = function() {
+    var ov = document.getElementById('choco-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+    setTimeout(function() { showItemMsgPopup('../../item/chocolate.webp', '甘い'); }, 200);
+  };
+  window.chocoGive = function() {
+    var ov = document.getElementById('choco-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+    setTimeout(function() { showItemMsgPopup('../../item/chocolate.webp', '「……子どもじゃない」'); }, 200);
+  };
+
+  /* ── Stone Appraisal Unlock Popup ── */
+  window.showStoneAppraiseUnlock = function() {
+    var ov = document.getElementById('stone-appraise-unlock-overlay');
+    if (ov) ov.style.display = 'flex';
+  };
+  window.closeStoneAppraiseUnlock = function() {
+    var ov = document.getElementById('stone-appraise-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+  };
+  window.stoneAppraiseGo = function() {
+    var ov = document.getElementById('stone-appraise-unlock-overlay');
+    if (ov) ov.style.display = 'none';
+    setTimeout(function() { goShop(); }, 300);
+  };
+
   /* ── Character data ── */
   var CHARS = {
     kouta:  { img:'../../plofile/chibi_kouta.webp',  name:'KOUTA',  color:'#fca5a5' },
@@ -3024,6 +3055,7 @@ function submitUtPw() {
     var ch = ALL_CHAPTERS[idx];
     if (!ch) return;
     var _pendingComplete = null; // 閉じるボタン後に発火するチャプターコンプリート
+    var _itemUnlockCb = null;   // アイテム解放コールバック（_pendingComplete と排他）
     playProseSound(idx);
     // 0-5を開いた時点でタイマー開始（既読済みでもセットされていなければ開始）
     if (idx === 4 && !localStorage.getItem('sf_ut_ch1_unlock_at')) {
@@ -3035,8 +3067,14 @@ function submitUtPw() {
     if (!_seenProseScenes.has(idx)) {
       _seenProseScenes.add(idx);
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
-      // 鑑定ボタン解放（1-1読了後）
-      if (idx === 5) updateAppraiseBtn();
+      // 鑑定ボタン解放（1-1読了後）＋石の鑑定解放ポップアップ
+      if (idx === 5) {
+        updateAppraiseBtn();
+        if (!localStorage.getItem('sf_ut_stone_appraise_unlock_shown')) {
+          localStorage.setItem('sf_ut_stone_appraise_unlock_shown', 'true');
+          _itemUnlockCb = function() { setTimeout(function() { showStoneAppraiseUnlock(); }, 300); };
+        }
+      }
       // 章内タイムゲート：初回読了時にタイムスタンプ保存
       var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15,16];
       if (_timedPrevIdxs.indexOf(idx) !== -1) {
@@ -3076,19 +3114,17 @@ function submitUtPw() {
       // アイテム解放：テキストを閉じた後にポップアップ
       if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
         localStorage.setItem('sf_ut_choco_unlock_shown', 'true');
-        _proseCloseCallback = function() {
-          setTimeout(function() { showItemUnlock('チョコレート', '../../item/chocolate.webp'); }, 300);
-        };
+        _itemUnlockCb = function() { setTimeout(function() { showChocoUnlock(); }, 300); };
       }
       if (idx === 11 && !localStorage.getItem('sf_ut_beer_unlock_shown')) {
         localStorage.setItem('sf_ut_beer_unlock_shown', 'true');
-        _proseCloseCallback = function() {
+        _itemUnlockCb = function() {
           setTimeout(function() { showItemUnlock('コンビニの缶ビール', '../../item/beer.webp'); }, 300);
         };
       }
       if (idx === 16 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
         localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
-        _proseCloseCallback = function() {
+        _itemUnlockCb = function() {
           setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
         };
       }
@@ -3118,11 +3154,13 @@ function submitUtPw() {
     document.getElementById('prose-close-btn').textContent = '── 閉じる ──';
     var shopBtn = document.getElementById('prose-shop-btn');
     if (shopBtn) shopBtn.style.display = idx === 5 ? 'block' : 'none';
+    // 閉じるボタン後のコールバック：_pendingComplete → _itemUnlockCb の優先順位
     _proseCloseCallback = null;
-    // 閉じるボタン後にチャプターコンプリートを発火（_pendingComplete が設定されている場合）
     if (_pendingComplete) {
       var _pc = _pendingComplete;
       _proseCloseCallback = function() { setTimeout(_pc, 200); };
+    } else if (_itemUnlockCb) {
+      _proseCloseCallback = _itemUnlockCb;
     }
     var sc = document.querySelector('.prose-scroll');
     if (sc) sc.scrollTop = 0;
@@ -5213,6 +5251,26 @@ function submitUtPw() {
   <p id="iu-name" style="font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;"></p>
   <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:56px;text-align:center;">を渡すが解放されました</p>
   <button onclick="closeItemUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+</div>
+<!-- Chocolate Unlock Overlay -->
+<div id="choco-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:28px;text-align:center;">NEW ITEM</p>
+  <img src="../../item/chocolate.webp" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin-bottom:24px;box-shadow:0 0 24px rgba(196,181,253,0.15);">
+  <p style="font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;">チョコレート</p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:40px;text-align:center;">が解放されました</p>
+  <div style="display:flex;gap:16px;">
+    <button onclick="chocoEat()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:13px 28px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;">食べる</button>
+    <button onclick="chocoGive()" style="background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:13px 28px;color:#c4b5fd;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;">渡す</button>
+  </div>
+</div>
+<!-- Stone Appraisal Unlock Overlay -->
+<div id="stone-appraise-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:28px;text-align:center;">UNLOCKED</p>
+  <img src="../../item/rawstone.webp" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin-bottom:24px;box-shadow:0 0 24px rgba(196,181,253,0.15);">
+  <p style="font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;">石の鑑定</p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:40px;text-align:center;">が解放されました</p>
+  <button onclick="stoneAppraiseGo()" style="background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:13px 36px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;cursor:pointer;margin-bottom:16px;">鑑定する</button>
+  <button onclick="closeStoneAppraiseUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;margin-top:4px;">続ける</button>
 </div>
 <div id="chapter-complete-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
   <p id="cc-num" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;margin-bottom:40px;text-align:center;"></p>
