@@ -229,10 +229,10 @@
     .chat-window {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px; padding: 24px 20px;
+      border-radius: 20px; padding: 16px 16px;
       min-height: 200px; max-height: 480px;
-      overflow-y: auto; margin-bottom: 16px;
-      display: flex; flex-direction: column; gap: 20px;
+      overflow-y: auto; margin-bottom: 12px;
+      display: flex; flex-direction: column; gap: 12px;
       scroll-behavior: smooth;
     }
     .chat-row { display: flex; align-items: flex-end; gap: 10px; }
@@ -246,8 +246,8 @@
     }
     .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .chat-bubble {
-      max-width: 78%; padding: 14px 18px; border-radius: 18px;
-      font-size: 14px; line-height: 1.9; font-weight: 300;
+      max-width: 78%; padding: 10px 14px; border-radius: 18px;
+      font-size: 13px; line-height: 1.7; font-weight: 300;
       animation: chat-in 0.3s ease;
     }
     .chat-bubble.bot {
@@ -283,12 +283,12 @@
     .chat-chip {
       scroll-snap-align: start;
       flex-shrink: 0;
-      width: 160px;
-      padding: 14px 16px; border-radius: 14px;
+      width: 148px;
+      padding: 10px 12px; border-radius: 12px;
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
       color: #94a3b8; font-size: 11px; cursor: pointer; transition: all 0.2s;
       font-family: 'Noto Serif JP', serif;
-      white-space: normal; text-align: left; line-height: 1.7;
+      white-space: normal; text-align: left; line-height: 1.6;
     }
     .chat-chip:hover { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
     .carousel-wrap { position:relative; }
