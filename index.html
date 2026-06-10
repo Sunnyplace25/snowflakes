@@ -1947,6 +1947,16 @@ function sfShare() {
       });
     }
 
+    // 封印解放バナー クリック → 戻ってきたらドリンクコイン付与（1回限り）
+    var sealedBanner = document.getElementById('sealed-banner');
+    if (sealedBanner) {
+      sealedBanner.addEventListener('click', function() {
+        if (!localStorage.getItem('sf_sealed_ep35_item')) {
+          sessionStorage.setItem('sf_pending_sealed_item', '1');
+        }
+      });
+    }
+
     // リンクカード +5 — 別タブから戻ってきたときにトーストを表示
     var cards = document.querySelectorAll('[data-sf-action]');
     for (var i = 0; i < cards.length; i++) {
@@ -1976,6 +1986,16 @@ function sfShare() {
           var item = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
           SfSnow.addMItemDirect(item.key, 1);
           showBannerItemPopup(item);
+        }
+        // 封印解放バナー ドリンクコイン付与
+        if (sessionStorage.getItem('sf_pending_sealed_item') && !localStorage.getItem('sf_sealed_ep35_item')) {
+          sessionStorage.removeItem('sf_pending_sealed_item');
+          localStorage.setItem('sf_sealed_ep35_item', '1');
+          var sealedItem = SF_BANNER_ITEMS.find(function(b) { return b.key === 'drinkcoin_hinata'; });
+          if (sealedItem) {
+            SfSnow.addMItemDirect(sealedItem.key, 1);
+            showBannerItemPopup(sealedItem);
+          }
         }
       }
     });
