@@ -1950,6 +1950,10 @@ function sfShare() {
         if (ep && !localStorage.getItem('sf_banner_item_ep_' + ep)) {
           sessionStorage.setItem('sf_pending_banner_item', ep);
           sessionStorage.setItem('sf_pending_banner_item_time', Date.now().toString());
+          // 累積時間をリセット（新しいエピソード）
+          if (sessionStorage.getItem('sf_pending_banner_item') !== ep) {
+            sessionStorage.setItem('sf_banner_item_elapsed', '0');
+          }
         }
       });
     }
@@ -1985,18 +1989,24 @@ function sfShare() {
           sessionStorage.removeItem('sf_pending_action');
           SfSnow.addWithToast(pending);
         }
-        // バナーアイテム取得（120秒以上外にいた場合のみ）
+        // バナーアイテム取得（累積120秒以上外にいた場合のみ）
         var pendingEp = sessionStorage.getItem('sf_pending_banner_item');
         if (pendingEp && !localStorage.getItem('sf_banner_item_ep_' + pendingEp)) {
           var leaveTime = parseInt(sessionStorage.getItem('sf_pending_banner_item_time') || '0', 10);
-          var elapsed = Date.now() - leaveTime;
-          if (elapsed >= 120000) {
+          var prevElapsed = parseInt(sessionStorage.getItem('sf_banner_item_elapsed') || '0', 10);
+          var thisElapsed = leaveTime > 0 ? Date.now() - leaveTime : 0;
+          var totalElapsed = prevElapsed + thisElapsed;
+          sessionStorage.setItem('sf_pending_banner_item_time', '0');
+          if (totalElapsed >= 120000) {
             sessionStorage.removeItem('sf_pending_banner_item');
             sessionStorage.removeItem('sf_pending_banner_item_time');
+            sessionStorage.removeItem('sf_banner_item_elapsed');
             localStorage.setItem('sf_banner_item_ep_' + pendingEp, '1');
             var item = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
             SfSnow.addMItemDirect(item.key, 1);
             showBannerItemPopup(item);
+          } else {
+            sessionStorage.setItem('sf_banner_item_elapsed', totalElapsed.toString());
           }
         }
         // 封印解放バナー ドリンクコイン付与
