@@ -1231,6 +1231,29 @@
             </div>
           </div>
 
+          <!-- SUMMER -->
+          <div id="rare-summer-section" style="margin-bottom:10px;" data-no-replace>
+            <div onclick="toggleRareSection('summer')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(125,211,252,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#7dd3fc;">EVENT / SPECIAL</span>
+              <span id="rare-summer-arrow" style="font-size:13px;color:#7dd3fc;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-summer-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <div style="padding:20px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:24px;">
+                <!-- バックステージパス -->
+                <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                  <img id="summer-rare-bp-img" src="../item/backstage_pass_summer.webp" alt="バックステージパス" style="width:120px;height:180px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
+                  <div style="text-align:center;">
+                    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                      <span id="summer-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Summer バックステージパス</span>
+                      <span id="summer-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#7dd3fc;letter-spacing:3px;"></span>
+                    </div>
+                    <p id="summer-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- SPRING -->
           <div id="rare-spring-section" style="margin-bottom:10px;" data-no-replace>
             <div onclick="toggleRareSection('spring')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(249,168,212,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
@@ -5777,6 +5800,27 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         springBpDesc.textContent = '???';
         springBpDesc.style.color = '#334155';
         springBpDesc.style.letterSpacing = '4px';
+      }
+    }
+    // Summer RARE ITEM アコーディオン内の表示
+    var summerBpImg   = document.getElementById('summer-rare-bp-img');
+    var summerBpName  = document.getElementById('summer-rare-bp-name');
+    var summerBpCheck = document.getElementById('summer-rare-bp-check');
+    var summerBpDesc  = document.getElementById('summer-rare-bp-desc');
+    if (summerBpImg && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('backstage_pass_summer')) {
+      summerBpImg.style.filter  = '';
+      summerBpImg.style.opacity = '0.9';
+      if (summerBpName)  summerBpName.style.color = '#e2e8f0';
+      if (summerBpCheck) summerBpCheck.textContent = '✓ 入手済み';
+      if (summerBpDesc) {
+        summerBpDesc.style.color = '#94a3b8';
+        summerBpDesc.innerHTML = 'SWEETs 2026 Summerの限定ライブ映像を開放するパス。<br>夏の熱量と、三人の音の重なりを楽しめます。';
+      }
+    } else {
+      if (summerBpDesc) {
+        summerBpDesc.textContent = '???';
+        summerBpDesc.style.color = '#334155';
+        summerBpDesc.style.letterSpacing = '4px';
       }
     }
     // 色紙 入手済みならカラーに
