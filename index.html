@@ -1949,6 +1949,7 @@ function sfShare() {
         var ep = epEl ? epEl.textContent.trim().replace(/^#/, '') : null;
         if (ep && !localStorage.getItem('sf_banner_item_ep_' + ep)) {
           sessionStorage.setItem('sf_pending_banner_item', ep);
+          sessionStorage.setItem('sf_pending_banner_item_time', Date.now().toString());
         }
       });
     }
@@ -1984,14 +1985,19 @@ function sfShare() {
           sessionStorage.removeItem('sf_pending_action');
           SfSnow.addWithToast(pending);
         }
-        // バナーアイテム取得
+        // バナーアイテム取得（120秒以上外にいた場合のみ）
         var pendingEp = sessionStorage.getItem('sf_pending_banner_item');
         if (pendingEp && !localStorage.getItem('sf_banner_item_ep_' + pendingEp)) {
-          sessionStorage.removeItem('sf_pending_banner_item');
-          localStorage.setItem('sf_banner_item_ep_' + pendingEp, '1');
-          var item = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
-          SfSnow.addMItemDirect(item.key, 1);
-          showBannerItemPopup(item);
+          var leaveTime = parseInt(sessionStorage.getItem('sf_pending_banner_item_time') || '0', 10);
+          var elapsed = Date.now() - leaveTime;
+          if (elapsed >= 120000) {
+            sessionStorage.removeItem('sf_pending_banner_item');
+            sessionStorage.removeItem('sf_pending_banner_item_time');
+            localStorage.setItem('sf_banner_item_ep_' + pendingEp, '1');
+            var item = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
+            SfSnow.addMItemDirect(item.key, 1);
+            showBannerItemPopup(item);
+          }
         }
         // 封印解放バナー ドリンクコイン付与
         if (sessionStorage.getItem('sf_pending_sealed_item') && !localStorage.getItem('sf_sealed_ep35_item')) {
