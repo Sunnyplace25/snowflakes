@@ -1367,6 +1367,7 @@ function sfShare() {
         document.addEventListener('click', function(e) {
           if (e.target.closest('.qf-list-link')) {
             localStorage.setItem('sf_qf_insta_pending', '1');
+            localStorage.setItem('sf_qf_insta_left', Date.now().toString());
           }
         });
       });
@@ -1375,6 +1376,9 @@ function sfShare() {
         if (document.visibilityState !== 'visible') return;
         if (!localStorage.getItem('sf_qf_insta_pending')) return;
         localStorage.removeItem('sf_qf_insta_pending');
+        var leftAt = parseInt(localStorage.getItem('sf_qf_insta_left') || '0', 10);
+        localStorage.removeItem('sf_qf_insta_left');
+        if (Date.now() - leftAt < 30000) return;
         setTimeout(function() {
           if (typeof SfSnow === 'undefined') return;
           if (SfSnow.isNDaysDone('qf_insta_visit', 1)) return;
@@ -3134,6 +3138,7 @@ document.addEventListener('visibilitychange', function() {
       QF のエピソードを Instagram で読むと、ランダムでアイテムがひとつ手に入ります。<br>
       <br>
       どれが届くかは、読んでからのお楽しみ。<br>
+      ゆっくり読んで戻ってくると、アイテムが届きます。<br>
       <br>
       集めたアイテムは、<em style="color:#f0abfc;font-style:normal;">SWEETs 内で特別な扉を開く鍵</em>になります。<br>
       <br>
