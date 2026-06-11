@@ -5775,11 +5775,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var seasonLabel = document.getElementById('sweets-season-label');
     if (seasonLabel && _isSummer) seasonLabel.textContent = 'SWEETs 2026 Summer';
 
-    // バックステージパス入手済みならバッジをカラーに
+    // バックステージパス バッジ（シーズンで画像・アイテムキーを切り替え）
     var bpImg = document.getElementById('badge-backstage-pass');
-    if (bpImg && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('backstage_pass')) {
-      bpImg.style.filter = '';
-      bpImg.style.opacity = '1';
+    if (bpImg) {
+      var bpKey = _isSummer ? 'backstage_pass_summer' : 'backstage_pass';
+      if (_isSummer) bpImg.src = '../item/backstage_pass_summer.webp';
+      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(bpKey)) {
+        bpImg.style.filter = '';
+        bpImg.style.opacity = '1';
+      }
     }
     // Spring RARE ITEM アコーディオン内の表示
     var springBpImg   = document.getElementById('spring-rare-bp-img');
