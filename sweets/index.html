@@ -4366,7 +4366,7 @@
     <div id="live-pending-popup" onclick="closeLiveArchivePendingPopup()" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(12,18,32,0.7);backdrop-filter:blur(10px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.35s;">
       <div onclick="event.stopPropagation()" style="text-align:center;max-width:300px;padding:0 24px;transform:translateY(16px) scale(0.95);transition:transform 0.35s cubic-bezier(.18,1.2,.45,1);" id="live-pending-box">
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:24px;">LIVE ARCHIVE</p>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#e2e8f0;letter-spacing:3px;line-height:2;margin-bottom:28px;">Can't wait for the next show.</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#e2e8f0;letter-spacing:3px;line-height:2;margin-bottom:28px;">コンテンツ準備中<br>楽しみにお待ちください</p>
         <button onclick="closeLiveArchivePendingPopup()" style="background:none;border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:11px 32px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;">── 閉じる ──</button>
       </div>
     </div>
@@ -4705,6 +4705,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         localStorage.setItem(SWEETS_KEY, '1');
         localStorage.setItem(SWEETS_VER_KEY, SWEETS_VERSION);
       }
+      // セッション中はゲートスキップできるようにフラグを立てる
+      sessionStorage.setItem('sf_sweets_session', '1');
       if (typeof gtag === 'function') {
         const isNew = !localStorage.getItem(SWEETS_KEY);
         gtag('event', 'sweets_unlock', { season: SWEETS_VERSION, is_new_user: isNew });
@@ -4963,10 +4965,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     };
 
-    // ページロード時：保存済みかつ同シーズンならコードを自動入力
+    // ページロード時：セッション中ならゲートスキップ、保存済みならパスワード自動入力
     document.addEventListener('DOMContentLoaded', function() {
-      if (localStorage.getItem(SWEETS_KEY) === '1' &&
+      if (sessionStorage.getItem('sf_sweets_session') === '1') {
+        // セッション中（部屋から戻ってきた等）→ ゲートスキップ
+        const input = document.getElementById('pw-input');
+        input.value = PASSWORD;
+        const cb = document.getElementById('keep-login-cb');
+        if (cb) cb.checked = true;
+        checkPassword();
+      } else if (localStorage.getItem(SWEETS_KEY) === '1' &&
           localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
+        // 保存済み → パスワード自動入力のみ（エンターは必要）
         const input = document.getElementById('pw-input');
         input.value = PASSWORD;
         const cb = document.getElementById('keep-login-cb');
@@ -6449,6 +6459,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     _listenTracker[songId] = { played: 0, lastTime: -1 };
   }
   window._onTimeUpdate = function(songId, audio) {
+    if (audio.seeking) return;           // シーク中はカウントしない
     var t = _listenTracker[songId];
     if (!t) { _initListen(songId); t = _listenTracker[songId]; }
     var ct = audio.currentTime;
@@ -6460,7 +6471,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           t.played = 0;                   // リセット（次の30秒でまた付与）
           _awardListen(songId);
         }
-      } else if (diff < 0 || diff > 2) { // シーク検知 → リセット
+      } else if (diff < 0 || diff > 2) { // 不自然なジャンプ → リセット
         t.played = 0;
       }
     }
@@ -6478,22 +6489,32 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   window._awardListen = function _awardListen(songId) {
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
-    if (!song || !song.reward || !song.rewardRepeatable) return;
-    // 1日1回チェック
-    var today = new Date().toISOString().slice(0, 10);
-    var dailyKey = 'sf_reward_daily_' + songId;
-    if (localStorage.getItem(dailyKey) === today) { showDailyLimitToast(); return; }
-    localStorage.setItem(dailyKey, today);
-    var key = Array.isArray(song.reward)
-      ? song.reward[Math.floor(Math.random() * song.reward.length)]
-      : song.reward;
-    SfSnow.addMItemDirect(key, 1);
-    if (typeof renderItemRows === 'function') renderItemRows();
-    // 初回unlock（解放フラグ立て）と毎日のポップアップを分離
-    // dailyKeyをセットした直後 = 今日初めての取得 → "ゲットしました"
-    var isFirstEver = !SfSnow.isUnlocked(key);
-    if (isFirstEver) SfSnow.unlockItem(key);
-    showNoteItemGet(key); // 毎日初回は常に "を入手しました"
+    if (!song || !song.reward) return;
+    if (song.rewardRepeatable) {
+      // 繰り返し付与：1日1回チェック
+      var today = new Date().toISOString().slice(0, 10);
+      var dailyKey = 'sf_reward_daily_' + songId;
+      if (localStorage.getItem(dailyKey) === today) { showDailyLimitToast(); return; }
+      localStorage.setItem(dailyKey, today);
+      var key = Array.isArray(song.reward)
+        ? song.reward[Math.floor(Math.random() * song.reward.length)]
+        : song.reward;
+      SfSnow.addMItemDirect(key, 1);
+      if (typeof renderItemRows === 'function') renderItemRows();
+      var isFirstEver = !SfSnow.isUnlocked(key);
+      if (isFirstEver) SfSnow.unlockItem(key);
+      showNoteItemGet(key);
+    } else {
+      // 初回のみ付与：onMusicEndと同じ処理
+      var key = Array.isArray(song.reward) ? song.reward[0] : song.reward;
+      if (!SfSnow.isUnlocked(key)) {
+        SfSnow.unlockItem(key);
+        if (typeof renderItemRows === 'function') renderItemRows();
+        showNoteItemGet(key);
+      } else {
+        showNoteItemGetAgain(key);
+      }
+    }
   }
 
   /* ── Music carousel ── */
@@ -6648,11 +6669,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     html += '</div>';
     if (unlocked) {
-      var audioEvents = item.rewardRepeatable
-        ? ' onended="_awardListen(\'' + item.id + '\');if(!_mcAutoTimer)_mcResetAuto();"'
-        : (item.reward
-          ? ' onended="onMusicEnd(\'' + item.id + '\');if(!_mcAutoTimer)_mcResetAuto();"'
-          : ' onended="if(!_mcAutoTimer)_mcResetAuto();"');
+      var audioEvents = ' onended="if(!_mcAutoTimer)_mcResetAuto();"';
       html += '<div class="post-content" id="player-' + item.id + '">';
       html += '<div class="divider"></div>';
       html += '<div style="padding:16px 0 4px;">'
@@ -6665,6 +6682,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     html += '</div>';
     area.innerHTML = html;
+
+    // timeupdate / seeked をaudioに登録
+    if (unlocked) {
+      var audioEl = document.getElementById('audio-' + item.id);
+      if (audioEl) {
+        audioEl.addEventListener('timeupdate', function() {
+          window._onTimeUpdate(item.id, audioEl);
+        });
+        audioEl.addEventListener('seeked', function() {
+          window._onAudioSeeked(item.id);
+        });
+      }
+    }
   }
 
   function togglePlay(id, src) {

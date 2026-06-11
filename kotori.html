@@ -891,10 +891,14 @@
       buildQAChips(QA_CORE, 'chat-chips-core');
     }
 
-    // バックステージパス：Spring期間中（〜6/10）に30日訪問で1枚付与
-    var _bpSpringEnd = new Date('2026-06-10T00:00:00+09:00');
-    var _bpInSpring  = new Date() < _bpSpringEnd;
-    if (_bpInSpring && visits >= 30 && !localStorage.getItem('sf_kotori_bp_count') && !SfSnow.isUnlocked('backstage_pass')) {
+    // バックステージパス：Spring期間中（〜6/10）に30日訪問、またはSummer期間中（6/10〜9/10）に54日訪問で1枚付与
+    var _bpSpringEnd  = new Date('2026-06-10T00:00:00+09:00');
+    var _bpSummerEnd  = new Date('2026-09-10T00:00:00+09:00');
+    var _now          = new Date();
+    var _bpInSpring   = _now < _bpSpringEnd;
+    var _bpInSummer   = _now >= _bpSpringEnd && _now < _bpSummerEnd;
+    var _bpThreshold  = _bpInSummer ? 54 : 30;
+    if ((_bpInSpring || _bpInSummer) && visits >= _bpThreshold && !localStorage.getItem('sf_kotori_bp_count') && !SfSnow.isUnlocked('backstage_pass')) {
       localStorage.setItem('sf_kotori_bp_count', '1');
       localStorage.setItem('sf_backstage_pass', 'true');
       SfSnow.unlockItem('backstage_pass');
