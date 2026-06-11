@@ -5849,6 +5849,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // ── ひとつ多い音 読了アイテム ────────────────────────
   window.onReadHito = function() {
     sessionStorage.setItem('sf_hito_reading', '1');
+    sessionStorage.setItem('sf_hito_left', Date.now().toString());
   };
 
   document.addEventListener('visibilitychange', function() {
@@ -5856,6 +5857,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!sessionStorage.getItem('sf_hito_reading')) return;
     if (SfSnow.isUnlocked('pendant_hinata')) return;
     sessionStorage.removeItem('sf_hito_reading');
+    var leftAt = parseInt(sessionStorage.getItem('sf_hito_left') || '0', 10);
+    sessionStorage.removeItem('sf_hito_left');
+    if (Date.now() - leftAt < 120000) return;
     var popup = document.getElementById('hito-item-popup');
     if (popup) popup.style.display = 'flex';
   });
