@@ -5149,27 +5149,33 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (el.dataset.sfItemTrigger === itemId) return; // 二重登録防止
       el.dataset.sfItemTrigger = itemId;
       var scrollKey = 'sf_note_scroll_' + itemId;
+      var _itemTimer = null;
       el.addEventListener('scroll', function handler() {
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 28) {
-          el.removeEventListener('scroll', handler);
-          delete el.dataset.sfItemTrigger;
-          var alreadyScrolled = !!localStorage.getItem(scrollKey);
-          if (!alreadyScrolled) {
-            localStorage.setItem(scrollKey, '1');
-            SfSnow.unlockItem(itemId);
-            if (typeof renderItemRows === 'function') renderItemRows();
-            if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
-            showNoteItemGet(itemId); // 初回: "を入手しました" + キャラポップアップ
-          } else {
-            // 2回目以降: 1日1回だけ入手済みポップアップ
-            var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
-            if (!localStorage.getItem(againKey)) {
-              localStorage.setItem(againKey, '1');
-              showNoteItemGetAgain(itemId);
+        var atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 28;
+        if (atBottom && !_itemTimer) {
+          _itemTimer = setTimeout(function() {
+            el.removeEventListener('scroll', handler);
+            delete el.dataset.sfItemTrigger;
+            var alreadyScrolled = !!localStorage.getItem(scrollKey);
+            if (!alreadyScrolled) {
+              localStorage.setItem(scrollKey, '1');
+              SfSnow.unlockItem(itemId);
+              if (typeof renderItemRows === 'function') renderItemRows();
+              if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
+              showNoteItemGet(itemId);
+            } else {
+              var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
+              if (!localStorage.getItem(againKey)) {
+                localStorage.setItem(againKey, '1');
+                showNoteItemGetAgain(itemId);
+              }
             }
-          }
-          // 次回読了でも再表示できるように再登録
-          setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
+            setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
+          }, 10000); // 最下部到達から10秒後
+        } else if (!atBottom && _itemTimer) {
+          // スクロールが戻ったらタイマーリセット
+          clearTimeout(_itemTimer);
+          _itemTimer = null;
         }
       });
     }
