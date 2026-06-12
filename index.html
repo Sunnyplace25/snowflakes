@@ -354,9 +354,9 @@
     .room-update-badge.h { background: #93c5fd; box-shadow: 0 0 8px rgba(147,197,253,0.9); animation: rbadge-h 1.4s ease-in-out infinite; }
     .room-update-badge.k { background: #fca5a5; box-shadow: 0 0 8px rgba(252,165,165,0.9); animation: rbadge-k 1.4s ease-in-out infinite; }
     .room-update-badge.y { background: #fde68a; box-shadow: 0 0 8px rgba(253,230,138,0.9); animation: rbadge-y 1.4s ease-in-out infinite; }
-    @keyframes rbadge-h { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(147,197,253,1);} }
-    @keyframes rbadge-k { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(252,165,165,1);} }
-    @keyframes rbadge-y { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(1.6);box-shadow:0 0 14px rgba(253,230,138,1);} }
+    @keyframes rbadge-h { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 10px rgba(147,197,253,1);} 50%{opacity:0;transform:scale(0.8);box-shadow:none;} }
+    @keyframes rbadge-k { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 10px rgba(252,165,165,1);} 50%{opacity:0;transform:scale(0.8);box-shadow:none;} }
+    @keyframes rbadge-y { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 10px rgba(253,230,138,1);} 50%{opacity:0;transform:scale(0.8);box-shadow:none;} }
 
     /* Links */
     .links { padding: 100px 24px; }
@@ -1199,13 +1199,17 @@ function sfShare() {
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.14 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;border-top:1px solid var(--border);">
+      <div id="short-acc-body-0" style="display:none;">
+        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;">楽器店で働くコウタは、<br>ベースを選ぶ中学生の姿を見て、昔の自分を思い出す。<br><br>中学生の頃、この店で一本のベースを買ったこと。<br>高校で、ヒナタとハヤテに出会い、<br>放課後の音楽室で、三人で音を鳴らし始めたこと。<br><br>それが、後にSnow flakesと呼ばれるバンドの始まりだった。<br><br>音は変わっていない。<br><br>変わったのは、<br>鳴らし方だけだ。<br><br>スノーフレークスのベーシスト<br>コウタの視点で描く、もう一つの物語。</p>
+      </div>
+      <button id="short-acc-btn-0" onclick="toggleShortAcc(0)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n5432lz/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
       </div>
     </div>
 
-    <div class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:6px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short1-title">ひとつ多い音</p>
       <p style="font-size:10px;letter-spacing:2px;color:#f87171;font-family:'Noto Serif JP',serif;margin-bottom:12px;opacity:0.85;">文芸 ホラー日間ランキング最高２位</p>
