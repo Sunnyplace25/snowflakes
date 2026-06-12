@@ -497,6 +497,21 @@
     </div>
   </div>
 
+  <!-- ZIPPO 使用ダイアログ -->
+  <div class="dialog-overlay" id="zippo-dialog">
+    <div class="dialog-box">
+      <p class="dialog-title">使いますか？</p>
+      <div class="dialog-cost">
+        <img src="../../item/zippo_kouta.webp" style="width:56px;object-fit:contain;">
+        <span>使い古されたZIPPOライター</span>
+      </div>
+      <div class="dialog-btns">
+        <button class="dialog-btn cancel" id="zippo-dialog-cancel">▶ いいえ</button>
+        <button class="dialog-btn confirm" id="zippo-dialog-confirm">▶ はい</button>
+      </div>
+    </div>
+  </div>
+
   <div class="dialog-overlay" id="unlock-dialog">
     <div class="dialog-box">
       <p class="dialog-title">交換しますか？</p>
@@ -753,12 +768,18 @@
       <!-- 使い古されたZIPPOライター -->
       <div class="il-item" id="il-1-item">
         <div class="il-header" onclick="toggleIlItem('il-1-item')">
-          <span class="item-log-tag" id="il-1-tag"><img src="../../item/zippo_kouta.webp" alt="item">使い古されたZIPPOライター</span>
+          <span class="item-log-tag" id="il-1-tag">使い古されたZIPPOライター</span>
           <span class="il-arrow">›</span>
         </div>
         <div class="il-body">
-          <div style="padding:8px 0 16px;">
-            <span class="item-log-desc locked" id="il-1-desc">まだもっていません</span>
+          <div id="il-1-locked" style="padding:8px 0 16px;">
+            <span class="item-log-desc locked">まだもっていません</span>
+          </div>
+          <div id="il-1-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/zippo_kouta.webp" alt="使い古されたZIPPOライター" style="width:160px;margin-bottom:18px;display:block;margin-left:auto;margin-right:auto;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">使い古されたZIPPOライター</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">赤いメッシュの店員が残していったZippo。<br>キン、と乾いた音が、あの日の低い音を連れてくる。</p>
+            <a href="https://ncode.syosetu.com/n5432lz/" target="_blank" style="display:inline-block;margin-top:14px;font-size:12px;color:#fca5a5;text-decoration:none;padding:6px 16px;border-radius:100px;border:1px solid rgba(252,165,165,0.35);background:rgba(252,165,165,0.07);letter-spacing:1px;">▶ 小説を読む 始まりのベース</a>
           </div>
         </div>
       </div>
@@ -1624,15 +1645,21 @@
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
             if (!nameBtn.classList.contains('ready')) { showAlert('まだもっていません'); return; }
-            showDialog('使い古されたZIPPOライター', function() {
-              saved.push('pf-name');
-              localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
-              document.getElementById('name-nick').style.display = 'none';
-              document.getElementById('name-full').style.display = 'inline';
-              nameBtn.style.display = 'none';
-            });
+            document.getElementById('zippo-dialog').classList.add('open');
           });
         }
+        document.getElementById('zippo-dialog-cancel').addEventListener('click', function() {
+          document.getElementById('zippo-dialog').classList.remove('open');
+        });
+        document.getElementById('zippo-dialog-confirm').addEventListener('click', function() {
+          document.getElementById('zippo-dialog').classList.remove('open');
+          saved.push('pf-name');
+          localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+          document.getElementById('name-nick').style.display = 'none';
+          document.getElementById('name-full').style.display = 'inline';
+          if (nameBtn) nameBtn.style.display = 'none';
+          showAlert('コウタの名前が解放されました');
+        });
       }
 
       // 解放済みを即表示
@@ -1773,10 +1800,14 @@
       }
 
       // 使い古されたZIPPOライター
-      var desc1 = document.getElementById('il-1-desc');
       if (SfSnow.isUnlocked('item_kouta_zippo')) {
         revealItemTag('il-1-tag', '../../item/zippo_kouta.webp', '使い古されたZIPPOライター');
-        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+        var il1Locked = document.getElementById('il-1-locked');
+        var il1Owned  = document.getElementById('il-1-owned');
+        if (il1Locked) il1Locked.style.display = 'none';
+        if (il1Owned)  il1Owned.style.display  = '';
+        var il1Item = document.getElementById('il-1-item');
+        if (il1Item) il1Item.classList.add('open');
       }
 
       // 黒い石のシルバーリング

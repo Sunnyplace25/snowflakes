@@ -5066,6 +5066,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_koyuki.webp',
         charaLine: '……ほどけたよ'
       },
+      item_kouta_zippo: {
+        noteCardId: 'note_kouta_1',
+        img: '../item/zippo_kouta.webp',
+        name: '使い古されたZIPPOライター',
+        desc: '赤いメッシュの店員が残していったZippo。\nキン、と乾いた音が、あの日の低い音を連れてくる。',
+        color: '#fca5a5',
+        chara: 'KOUTA', charaColor: '#fca5a5',
+        charaImg: '../plofile/chibi_kouta.webp',
+        charaLine: 'まだ、持ってる'
+      },
       bass_strings_kouta: {
         noteCardId: null,
         img: '../item/bass_strings_kouta.webp',
@@ -5151,7 +5161,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
             if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
             showNoteItemGet(itemId); // 初回: "を入手しました" + キャラポップアップ
           } else {
-            showNoteItemGetAgain(itemId); // 2回目以降: アイテム画像 + "このアイテムは入手済みです"
+            // 2回目以降: 1日1回だけ入手済みポップアップ
+            var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
+            if (!localStorage.getItem(againKey)) {
+              localStorage.setItem(againKey, '1');
+              showNoteItemGetAgain(itemId);
+            }
           }
           // 次回読了でも再表示できるように再登録
           setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
@@ -5653,7 +5668,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-umbrella-img', 'ri-umbrella-name', 'ri-umbrella-check', 'umbrella_hinata',           'ヒナタの折りたたみ傘',    null, 'https://www.instagram.com/reel/DXhJx4QDybN/');
     updateRareItem('ri-usb-img',      'ri-usb-name',      'ri-usb-check',      'usb_hinata',                'Little snow (Raw) USBメモリ', null, 'https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa');
     updateRareItem('ri-whitepick-img', 'ri-whitepick-name', 'ri-whitepick-check', 'white_pick_hinata', '白いピック',               null, 'https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F');
-    updateRareItem('ri-zippo-img',        'ri-zippo-name',        'ri-zippo-check',        'zippo_kouta',              'コウタのジッポライター');
+    updateRareItem('ri-zippo-img',        'ri-zippo-name',        'ri-zippo-check',        'item_kouta_zippo',         '使い古されたZIPPOライター',  null, 'https://ncode.syosetu.com/n5432lz/');
     updateRareItem('ri-firststrings-img', 'ri-firststrings-name', 'ri-firststrings-check', 'item_kouta_first_strings', '初めて張りかえたベースの弦');
     updateRareItem('ri-book-kouta-img',   'ri-book-kouta-name',   'ri-book-kouta-check',   'book_kouta',               '返しそびれた本',              null, 'https://ncode.syosetu.com/n9009lo/70');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',       'Snow flakes ライブチケット',  null, 'https://www.instagram.com/reel/DXcFCOZlpRK/');
@@ -6002,6 +6017,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
+    {
+      id: 'note_kouta_1', type: 'note',
+      title: '「始まりのベース」解説',
+      sub: '― コウタの音が、最初に鳴り始めた場所 ―',
+      origin: '',
+      cost: { item: 'proteincoffee', amount: 1 },
+      related: { url: 'https://ncode.syosetu.com/n5432lz/', title: '始まりのベース', date: '2026.06.14', type: '短篇' },
+      sections: [
+        { heading: null, body: '楽器店で働くコウタは、\nベースを選ぶ中学生の姿を見て、昔の自分を思い出す。\n\n中学生の頃、この店で一本のベースを買ったこと。\n高校で、ヒナタとハヤテに出会い、\n放課後の音楽室で、三人で音を鳴らし始めたこと。\n\nそれが、後にSnow flakesと呼ばれるバンドの始まりだった。\n\n音は変わっていない。\n\n変わったのは、\n鳴らし方だけだ。\n\nスノーフレークスのベーシスト\nコウタの視点で描く、もう一つの物語。' },
+        { heading: '小さな楽器店', body: '物語の舞台は、書店の隣にある小さな楽器店です。\n\n本を探しに来たはずのコウタは、隣の店から聞こえてくる低い音に足を止めます。\n\nこの時点で、コウタはまだベースを弾く人ではありません。\nただ、音のする方へ自然と足が向いてしまう。\n\nこの「何気なく隣を見る」「低い音が鳴る方へ足が向く」という動きが、\nコウタにとっての最初の分岐になっています。' },
+        { heading: '赤いメッシュの店員', body: 'コウタが出会うのは、髪に赤いメッシュの入った店員です。\n\n彼は、派手な演奏をしているわけではありません。\n指が速いわけでも、目立つことをしているわけでもない。\n\nそれでも、コウタはその音に惹かれます。\n\n本文では、その音について「派手だけど、音は主張しない。\nでも、その音が入ると、少しだけ世界が締まる」と語られます。\n\nこれは、そのままコウタがのちに担っていくベースの役割にも重なります。\n\n前に出る音ではなく、全体を支える音。\n目立たないけれど、いないと世界の輪郭が変わってしまう音。\n\nコウタはこの時、まだ言葉にはできなくても、自分が惹かれる音のあり方に出会っています。' },
+        { heading: '最初の一本', body: 'コウタが選ぶのは、ツヤのある黒いベースです。\n\n値段は高い。\n貯金もほとんどなくなる。\nそれでも、その重さを「ちょうどいい」と感じる。\n\nここで立ち上がるのは、夢を選ぶ高揚感というより、何かを自分で持つことの重みです。\n\n背中のケース。\n右手のアンプ。\nシールド、チューナー、予備の弦。\n\nひとつずつ具体的な道具が並ぶことで、\n「音を始める」ということが、現実の重さを持って見えてきます。\n\n始まりは、きれいな決意だけではありません。\n重くて、少し不安で、でも手放したくないものとして、コウタの背中に乗っていきます。' },
+        { heading: 'Zippoと赤茶の髪', body: '赤いメッシュの店員が残したZippoは、直接的な約束ではありません。\n連絡先でも、言葉の手紙でもない。\n\nただ、「あの子、たぶんまた来るから」と預けられたものです。\n\nコウタはそのZippoを受け取り、蓋を開けます。\nキン、という乾いた音が、かつての喫煙スペースの記憶を呼び戻す。\n\n低い音。\n煙草の赤い火。\n夕方の光。\n「ベースって、いいよ」という言葉。\n\nそれらが、Zippoの音と一緒にコウタの中に残ります。\n\nその後、コウタは髪を少しだけ赤茶に染めます。\n\n赤いメッシュそのものではなく、赤茶。\n派手すぎず、でも光が当たると赤く透ける色。\n\n憧れをそのまま真似るのではなく、自分の中に入れて、自分の色に変える。\nその静かな変化が、赤茶の髪に表れています。' },
+        { heading: '誰かの最初に立ち会う', body: '現在のコウタは、迷っていた少年に黒いベースを渡します。\n\nアンプ。\nシールド。\nチューナー。\nそして、おまけのピック。\n\nかつて自分がひとつずつ教わったように、\n今度はコウタが必要なものを並べていきます。\n\nでも、コウタは多くを語りません。\n「最初はそれだけあれば弾ける」とだけ言う。\n\n未来を保証するわけではない。\n才能を決めつけるわけでもない。\nただ、始めるために必要なものを渡す。\n\nそれだけで十分だと、コウタは知っているのだと思います。' },
+        { heading: '「始まりのベース」とは', body: 'この作品のタイトルが示している「始まり」は、\nベースを買った日だけを指しているわけではありません。\n\n低い音に足を止めたこと。\n初めて弦を弾いたこと。\n黒いベースを選んだこと。\n進路を少しだけ変えたこと。\n髪を赤茶に染めたこと。\nハヤテとヒナタに出会ったこと。\nそして、誰かの最初の一本に立ち会ったこと。\n\nそのすべてが、コウタにとっての「始まり」です。\n\nベースは、コウタを大きく変えたというより、\nコウタの中にあったものを静かに鳴らし始めた楽器なのだと思います。\n\n低い音は、すぐに消える。\nけれど、耳の奥には残る。\n\n「始まりのベース」は、コウタが自分の音に出会い、\nその音を誰かへ渡していくまでをたどる、静かな継承の物語です。' },
+      ]
+    },
     /* ── ここに追加 ──
     {
       id:       'note_kouta_1',
