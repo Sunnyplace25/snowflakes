@@ -657,6 +657,12 @@ function sfShare() {
       <div class="act-list">
         <ul style="list-style:none;padding:0;margin:0;">
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <a href="https://ncode.syosetu.com/n5432lz/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.06.14</span>
+              <span class="act-text">コウタ 短篇「始まりのベース」公開</span>
+            </a>
+          </li>
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3649843/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
               <span class="act-date">2026.06.11</span>
               <span class="act-text">ep.35 幕間｜そう見えるだけ 追加</span>
@@ -680,12 +686,6 @@ function sfShare() {
               <span class="act-text">SWEETs Summer Code公開のお知らせ</span>
             </a>
           </li>
-          <li>
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3645445/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span class="act-date">2026.06.03</span>
-              <span class="act-text">オフィシャルサイト MUSIC『祝奏』追加</span>
-            </a>
-          </li>
         </ul>
         <div style="padding:14px 0 0;text-align:right;">
           <a href="https://mypage.syosetu.com/mypageblog/list/userid/2212173/" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">活動報告をすべて見る →</a>
@@ -699,9 +699,14 @@ function sfShare() {
   <div style="max-width:680px;margin:0 auto 40px;">
     <a id="short-banner" href="#" target="_blank"
        style="display:none;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(252,165,165,0.03);border:1px solid rgba(252,165,165,0.25);transition:all 0.4s;position:relative;overflow:hidden;">
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="pointer-events:none;position:absolute;top:14px;right:18px;display:flex;gap:5px;align-items:center;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#9b4d4d;margin-right:2px;">item</span>
+        <img src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
         <div style="flex:1;min-width:0;">
-<p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#fca5a5;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
+          <p id="short-label" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#9b4d4d;margin-bottom:6px;">短篇</p>
+          <p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#fca5a5;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
         </div>
         <div style="text-align:right;flex-shrink:0;">
           <p id="short-date" style="font-size:11px;color:#fca5a5;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">—</p>
@@ -916,9 +921,9 @@ function sfShare() {
     (function() {
       // ── 短篇カード設定 ──────────────────────────────────────
       // 短篇を投稿したら以下3つを更新する
-      var SHORT_PUB   = new Date('2026-05-15T00:00:00');
-      var SHORT_TITLE = 'ひとつ多い音';
-      var SHORT_URL   = 'https://ncode.syosetu.com/n0964mc/';
+      var SHORT_PUB   = new Date('2026-06-14T12:00:00');
+      var SHORT_TITLE = '始まりのベース';
+      var SHORT_URL   = 'https://ncode.syosetu.com/n5432lz/';
       // ────────────────────────────────────────────────────────
 
       var SHOW_DAYS = 3;
@@ -939,6 +944,21 @@ function sfShare() {
         card.style.display = 'block';
         card.classList.add('glow');
         card.href = SHORT_URL;
+
+        // Zippoアイテム：1回限り
+        var SHIORI_KEY = 'sf_shiori_kouta_short_got';
+        if (!localStorage.getItem(SHIORI_KEY)) {
+          localStorage.setItem(SHIORI_KEY, '1');
+          setTimeout(function() {
+            showBannerItemPopup({
+              key:   'shiori_kouta',
+              img:   'item/shiori_kouta.webp',
+              name:  '本のしおり',
+              desc:  '本を買うたびについてくる。\n地味に溜まる。',
+              color: '#fca5a5'
+            });
+          }, 1000);
+        }
 
         var titleEl = document.getElementById('short-title');
         var dateEl  = document.getElementById('short-date');
@@ -1174,6 +1194,16 @@ function sfShare() {
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">SHORT STORIES</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2">短編作品</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
+
+    <div class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.14 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n5432lz/" target="_blank"
+           style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+      </div>
+    </div>
 
     <div class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
