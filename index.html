@@ -657,12 +657,6 @@ function sfShare() {
       <div class="act-list">
         <ul style="list-style:none;padding:0;margin:0;">
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="https://ncode.syosetu.com/n5432lz/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span class="act-date">2026.06.14</span>
-              <span class="act-text">コウタ 短篇「始まりのベース」公開</span>
-            </a>
-          </li>
-          <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3649843/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
               <span class="act-date">2026.06.11</span>
               <span class="act-text">ep.35 幕間｜そう見えるだけ 追加</span>
@@ -945,6 +939,10 @@ function sfShare() {
         card.classList.add('glow');
         card.href = SHORT_URL;
 
+        // 公開時刻になったらカードを表示
+        var shortCard = document.getElementById('short-kouta-card');
+        if (shortCard) shortCard.style.display = 'flex';
+
         // Zippoアイテム：1回限り
         var SHIORI_KEY = 'sf_shiori_kouta_short_got';
         if (!localStorage.getItem(SHIORI_KEY)) {
@@ -1195,7 +1193,7 @@ function sfShare() {
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2">短編作品</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
-    <div class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;">
+    <div id="short-kouta-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);flex-direction:column;gap:0;display:none;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.14 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
