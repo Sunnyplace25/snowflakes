@@ -6271,9 +6271,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // ── Notes 3D カルーセル ──────────────────────────────────────
   var _nc = { idx: 0, items: [], N: 0, step: 90, r: 180 };
 
+  var NOTE_PUB_DATES = {
+    'note_kouta_1': new Date('2026-06-14T12:00:00')
+  };
+
   function _ncBuildItems() {
     var arr = [{ id:'note_hitotsu_1', title:'「ひとつ多い音」解説', sub:'― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―', isStatic:true, isNew:true, cost:{ item:'proteincoffee', amount:1 }, related:{ url:'https://ncode.syosetu.com/n0964mc/', title:'ひとつ多い音', date:'2026.05.15', type:'短編', onclick:'onReadHito()', itemKey:'pendant_hinata', itemImg:'../item/pendant_hinata.webp', itemColor:'#93c5fd' } }];
-    EXCHANGE_CATALOG.forEach(function(it) { if (it.type === 'note' && it.sections && it.sections.length) arr.push(it); });
+    EXCHANGE_CATALOG.forEach(function(it) {
+      if (it.type === 'note' && it.sections && it.sections.length) {
+        var pub = NOTE_PUB_DATES[it.id];
+        if (pub && Date.now() < pub.getTime()) return; // 公開前は非表示
+        arr.push(it);
+      }
+    });
     return arr;
   }
 
