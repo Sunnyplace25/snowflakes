@@ -3283,23 +3283,20 @@ function submitUtPw() {
   function renderHotspots() {
     var wrap = document.getElementById('scene-wrap');
     wrap.querySelectorAll('.hotspot').forEach(function(h) { h.parentNode.removeChild(h); });
-    var spots = (HOTSPOTS[currentScene] || []).slice();
-    // 2周目以降：ランダムで1つ追加
+    // 全プールを集める
+    var pool = (HOTSPOTS[currentScene] || []).slice();
     if (exploreCount >= 1) {
-      var extras = HOTSPOTS_2ND[currentScene] || [];
-      if (extras.length) {
-        spots = spots.concat([extras[Math.floor(Math.random() * extras.length)]]);
-      }
+      pool = pool.concat(HOTSPOTS_2ND[currentScene] || []);
     }
-    // 3周目以降：さらにランダムで2つ追加
     if (exploreCount >= 2) {
-      var pool3 = (HOTSPOTS_3RD[currentScene] || []).slice();
-      for (var r = 0; r < 2 && pool3.length; r++) {
-        var ri = Math.floor(Math.random() * pool3.length);
-        spots = spots.concat([pool3.splice(ri, 1)[0]]);
-      }
+      pool = pool.concat(HOTSPOTS_3RD[currentScene] || []);
     }
-    spots.forEach(function(spot) {
+    // シャッフルして先頭2つを表示
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
+    pool.slice(0, 4).forEach(function(spot) {
       var btn = document.createElement('button');
       btn.className = 'hotspot';
       btn.style.left = spot.x;
