@@ -4134,6 +4134,7 @@ function submitUtPw() {
     localStorage.setItem('sf_ut_appraised', JSON.stringify(appraised));
     markStoneNameRevealed(key);
     renderStones();
+    renderEquip();
     showStoneDesc(key);
   };
 
@@ -5087,7 +5088,10 @@ function submitUtPw() {
       var meta  = CHARS[ch];
       var stone = STONE_ITEMS.filter(function(s) { return s.char === ch; })[0];
       var appraised = stone && SfSnow.isUnlocked(stone.key);
-      var stoneName = stone ? stone.name + (appraised ? '' : '（未鑑定）') : '──';
+      var nameRevealed = appraised && stone && isStoneNameRevealed(stone.key);
+      var stoneName = stone
+        ? (nameRevealed ? (stone.nameAppraised || stone.name) : stone.name) + (appraised ? '' : '（未鑑定）')
+        : '──';
       var rares = (CHAR_RARE_ITEMS[ch] || []).filter(function(r) { return SfSnow.isUnlocked(r.key); });
 
       var col = document.createElement('div');
