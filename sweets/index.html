@@ -6537,8 +6537,74 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function _initListen(songId) {
     _listenTracker[songId] = { played: 0, lastTime: -1 };
   }
+
+  /* ── Brass Band Ver. チェックポイント付与 ── */
+  var BRASS_ID = 'song_sweets_brass';
+  var BRASS_CHECKPOINTS = [30, 90, 180]; // 累積秒数
+  var BRASS_REWARDS = ['chocolate_hayate', 'beer', 'cookie'];
+
+  function _getBrassSession() {
+    var today = new Date().toISOString().slice(0, 10);
+    try {
+      var s = JSON.parse(localStorage.getItem('sf_brass_session') || 'null');
+      if (!s || s.date !== today) {
+        var rw = BRASS_REWARDS.slice();
+        for (var i = rw.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = rw[i]; rw[i] = rw[j]; rw[j] = tmp;
+        }
+        s = { date: today, shuffled: rw, nextCp: 0, ended: false };
+        localStorage.setItem('sf_brass_session', JSON.stringify(s));
+      }
+      return s;
+    } catch(e) {
+      return { date: today, shuffled: BRASS_REWARDS.slice(), nextCp: 0, ended: false };
+    }
+  }
+  function _saveBrassSession(s) {
+    try { localStorage.setItem('sf_brass_session', JSON.stringify(s)); } catch(e) {}
+  }
+  function _brassCheckpoint() {
+    var s = _getBrassSession();
+    if (s.ended || s.nextCp >= BRASS_CHECKPOINTS.length) return;
+    var key = s.shuffled[s.nextCp];
+    s.nextCp++;
+    _saveBrassSession(s);
+    var isFirst = !SfSnow.isUnlocked(key);
+    if (isFirst) SfSnow.unlockItem(key);
+    if (typeof SfSnow.addMItemDirect === 'function') SfSnow.addMItemDirect(key, 1);
+    if (typeof renderItemRows === 'function') renderItemRows();
+    if (typeof showNoteItemGet === 'function') showNoteItemGet(key);
+  }
+  function _brassEndSession() {
+    var s = _getBrassSession();
+    if (!s.ended) { s.ended = true; _saveBrassSession(s); }
+    _listenTracker[BRASS_ID] = { cumulative: 0, lastTime: -1 };
+  }
+
   window._onTimeUpdate = function(songId, audio) {
-    if (audio.seeking) return;           // シーク中はカウントしない
+    if (audio.seeking) return;
+    // Brass Band 専用チェックポイントロジック
+    if (songId === BRASS_ID) {
+      var t = _listenTracker[songId];
+      if (!t) { t = _listenTracker[songId] = { cumulative: 0, lastTime: -1 }; }
+      var ct = audio.currentTime;
+      if (t.lastTime >= 0) {
+        var diff = ct - t.lastTime;
+        if (diff > 0 && diff < 2) {
+          t.cumulative += diff;
+          var s = _getBrassSession();
+          if (!s.ended && s.nextCp < BRASS_CHECKPOINTS.length && t.cumulative >= BRASS_CHECKPOINTS[s.nextCp]) {
+            _brassCheckpoint();
+          }
+        } else if (diff < 0 || diff > 2) {
+          t.cumulative = 0;
+        }
+      }
+      t.lastTime = ct;
+      return;
+    }
+    // 通常ロジック
     var t = _listenTracker[songId];
     if (!t) { _initListen(songId); t = _listenTracker[songId]; }
     var ct = audio.currentTime;
@@ -6557,6 +6623,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     t.lastTime = ct;
   };
   window._onAudioSeeked = function(songId) {
+    if (songId === BRASS_ID) {
+      _listenTracker[BRASS_ID] = { cumulative: 0, lastTime: -1 };
+      return;
+    }
     _initListen(songId);
   };
   function showDailyLimitToast() {
@@ -6762,7 +6832,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     html += '</div>';
     area.innerHTML = html;
 
-    // timeupdate / seeked をaudioに登録
+    // timeupdate / seeked / pause をaudioに登録
     if (unlocked) {
       var audioEl = document.getElementById('audio-' + item.id);
       if (audioEl) {
@@ -6772,6 +6842,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         audioEl.addEventListener('seeked', function() {
           window._onAudioSeeked(item.id);
         });
+        if (item.id === BRASS_ID) {
+          audioEl.addEventListener('pause', function() {
+            _brassEndSession();
+          });
+        }
       }
     }
   }
