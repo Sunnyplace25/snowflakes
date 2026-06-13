@@ -4207,14 +4207,7 @@ function submitUtPw() {
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
           num.textContent = isTsumetai && cnt === 0 ? '× 1' : '× ' + cnt;
-          if (isTsumetai) {
-            var mark = document.createElement('p');
-            mark.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:11px;color:#4c4468;';
-            mark.textContent = '◎';
-            div.appendChild(img); div.appendChild(lbl); div.appendChild(num); div.appendChild(mark);
-          } else {
-            div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
-          }
+          div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
           typesWrap.appendChild(div);
         });
       }
