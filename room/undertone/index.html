@@ -3133,6 +3133,7 @@ function submitUtPw() {
     if (document.hidden) {
       _bgmAudio.pause();
       stopProseSound();
+      stopHotspotSfx();
       if (_shopMusicAudio) { _shopMusicAudio.pause(); _shopMusicPlaying = false; _resetAllMusicBtns(); }
     }
   });
@@ -3337,14 +3338,29 @@ function submitUtPw() {
 
   var _currentHotspot = null;
 
+  var _hotspotSfx = null;
+
+  function stopHotspotSfx() {
+    if (_hotspotSfx) {
+      _hotspotSfx.pause();
+      _hotspotSfx.currentTime = 0;
+      _hotspotSfx = null;
+    }
+  }
+
   function clickHotspot(spot) {
     _currentHotspot = spot;
     document.getElementById('hotspot-label').textContent = spot.label;
     document.getElementById('hotspot-desc').textContent  = spot.desc;
     if (spot.audio) {
+      stopHotspotSfx();
       var sfx = new Audio(spot.audio);
       sfx.volume = 0.7;
       sfx.play().catch(function(){});
+      // 水たまりは閉じても鳴り続ける
+      if (spot.audio.indexOf('puddle') === -1) {
+        _hotspotSfx = sfx;
+      }
     }
     // 石発見チャンス（2巡目以降 10%）
     var stoneFoundEl = document.getElementById('hotspot-stone-found');
@@ -3382,6 +3398,7 @@ function submitUtPw() {
   }
 
   window.closeHotspot = function() {
+    stopHotspotSfx();
     if (_currentHotspot && _currentHotspot.closeAudio) {
       var sfx = new Audio(_currentHotspot.closeAudio);
       sfx.volume = 0.7;
