@@ -171,6 +171,12 @@
       from { opacity:0; transform:translateY(20px); }
       to   { opacity:1; transform:none; }
     }
+    @keyframes sectionGlow {
+      0%   { box-shadow:none; border-color:inherit; }
+      30%  { box-shadow:0 0 0 2px rgba(196,181,253,0.5), 0 0 24px rgba(196,181,253,0.25); border-color:rgba(196,181,253,0.6); }
+      100% { box-shadow:none; border-color:inherit; }
+    }
+    .section-glow { animation:sectionGlow 1.2s ease-out; }
     .hotspot-label {
       font-family:'Cormorant Garamond',serif;
       font-size:11px; letter-spacing:6px; color:#94a3b8;
@@ -1179,9 +1185,9 @@
 
     <!-- セクションナビ -->
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">
-      <button onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
-      <button onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
-      <button onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
+      <button onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
+      <button onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'});flashSection('shop-rawstone-count')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
+      <button onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'});flashSection('item-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
     </div>
 
     <!-- MUSIC UNLOCKED セクション -->
@@ -1192,7 +1198,7 @@
 
     <!-- ORACLE セクション（占いメイン・強調） -->
     <div id="anchor-fortune" style="scroll-margin-top:60px;"></div>
-    <div style="border:1px solid rgba(196,181,253,0.22);border-radius:18px;padding:20px 16px 16px;background:rgba(196,181,253,0.025);box-shadow:0 0 40px rgba(196,181,253,0.06) inset;margin-bottom:24px;">
+    <div id="oracle-section-box" style="border:1px solid rgba(196,181,253,0.22);border-radius:18px;padding:20px 16px 16px;background:rgba(196,181,253,0.025);box-shadow:0 0 40px rgba(196,181,253,0.06) inset;margin-bottom:24px;">
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#4c4468;text-align:center;margin-bottom:16px;">FORTUNE</p>
       <!-- ch21解放後のみタブ表示 -->
       <div id="shop-nav" style="display:none;gap:10px;margin-bottom:20px;">
@@ -1276,6 +1282,7 @@
 
     <!-- ITEM セクション -->
     <div id="anchor-sweets" style="scroll-margin-top:80px;"></div>
+    <div id="item-section-box" style="border:1px solid rgba(255,255,255,0.05);border-radius:18px;padding:16px 0 4px;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#4c4468;text-align:center;margin-bottom:16px;">ITEM</p>
 
     <!-- チョコレートセクション（第2章） -->
@@ -1328,7 +1335,7 @@
         <button id="shop-beer-give-btn" onclick="giveBeerToNagi()" style="display:none;flex:1;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.18);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.12)'" onmouseout="this.style.background='rgba(196,181,253,0.03)'">渡す</button>
       </div>
     </div>
-
+    </div><!-- /item-section-box -->
 
     <button class="explore-btn" id="explore-btn" onclick="goExplore()">路地裏をもう一度歩く</button>
     <p class="top-credit">Snow flakes Tarot · Words &amp; Interpretation · Kotori Yamabuki</p>
@@ -4249,6 +4256,15 @@ function submitUtPw() {
       btn.style.opacity = arr.length === 0 ? '0.45' : '1';
     }
   }
+
+  window.flashSection = function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('section-glow');
+    void el.offsetWidth;
+    el.classList.add('section-glow');
+    setTimeout(function(){ el.classList.remove('section-glow'); }, 1300);
+  };
 
   window.nagiveStone = function() {
     showSKPopup('NAGI', 'まだ、持ってろ');
