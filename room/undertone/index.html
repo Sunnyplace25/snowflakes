@@ -1728,6 +1728,16 @@ function submitUtPw() {
 </div>
 
 <!-- Rare item reveal popup (fixed, always on top) -->
+<!-- Stone item description popup -->
+<div id="stone-desc-popup" style="display:none;position:fixed;inset:0;z-index:695;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;overflow-y:auto;" onclick="document.getElementById('stone-desc-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);margin:auto;" onclick="event.stopPropagation()">
+    <img id="stone-desc-img" src="" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin:0 auto 14px;display:block;box-shadow:0 0 28px rgba(196,181,253,0.18);">
+    <p id="stone-desc-name" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:20px;"></p>
+    <p id="stone-desc-text" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#64748b;letter-spacing:1px;line-height:2.4;white-space:pre-line;text-align:left;margin-bottom:24px;"></p>
+    <button onclick="document.getElementById('stone-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+
 <div id="tarot-stone-reveal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.25);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">APPRAISE</p>
@@ -3724,7 +3734,11 @@ function submitUtPw() {
       div.className = 'stone-slot' + (got ? ' obtained' : '');
       div.innerHTML =
         '<img src="' + item.img + '" alt="' + item.name + '" class="' + (got ? '' : 'grey') + '">' +
-        '<span class="stone-label">' + (got ? item.name : '？？？') + '</span>';
+        '<span class="stone-label">' + (got ? (item.nameAppraised || item.name) : '？？？') + '</span>';
+      if (got && STONE_DESCRIPTIONS[item.key]) {
+        div.style.cursor = 'pointer';
+        div.onclick = (function(i) { return function() { showStoneDesc(i.key); }; })(item);
+      }
       wrap.appendChild(div);
     });
     document.getElementById('stone-progress').textContent =
@@ -4041,6 +4055,19 @@ function submitUtPw() {
     pendant_hinata: '持っていくといい',
     earring_hayate: 'なくしても、たぶん戻る',
     ring_kouta:     '選んだな',
+  };
+
+  var STONE_DESCRIPTIONS = {
+    pendant_hinata: 'カイヤナイトと呼ばれる、\n深い青を宿した石のネックレス。\n\n光を受けると、\n結晶の内側に白い線が走る。\n\n見る方向によって硬さが変わる 。\n\n\n\n\n　傷つきやすい面と、\n\n　簡単には折れない面を、\n\n　同じひとつの中に持っている。\n\nまっすぐで、静かで、\nそれでも複雑な青。\n\nヒナタの音に、\n少しだけ似ている。',
+  };
+
+  window.showStoneDesc = function(key) {
+    var item = STONE_ITEMS.filter(function(s) { return s.key === key; })[0];
+    if (!item) return;
+    document.getElementById('stone-desc-img').src = item.img;
+    document.getElementById('stone-desc-name').textContent = item.nameAppraised || item.name;
+    document.getElementById('stone-desc-text').textContent = STONE_DESCRIPTIONS[key] || '';
+    document.getElementById('stone-desc-popup').style.display = 'flex';
   };
 
   /* ── Raw stone system ── */
