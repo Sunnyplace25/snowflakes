@@ -920,19 +920,23 @@ function sfShare() {
         var shortCard = document.getElementById('short-kouta-card');
         if (shortCard) shortCard.style.display = 'flex';
 
-        // Zippoアイテム：1回限り
+        // しおりアイテム：1回限り
         var SHIORI_KEY = 'sf_shiori_kouta_short_got';
+        var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
         if (!localStorage.getItem(SHIORI_KEY)) {
           localStorage.setItem(SHIORI_KEY, '1');
-          setTimeout(function() {
-            showBannerItemPopup({
-              key:   'shiori_kouta',
-              img:   'item/shiori_kouta.webp',
-              name:  '本のしおり',
-              desc:  '本を買うたびについてくる。\n地味に溜まる。',
-              color: '#fca5a5'
-            });
-          }, 1000);
+          if (typeof SfSnow !== 'undefined') {
+            SfSnow.unlockItem('shiori_kouta');
+            SfSnow.addMItemDirect('shiori_kouta', 1);
+          }
+          setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
+        } else if (typeof SfSnow !== 'undefined') {
+          // 移行：既取得だがSfSnow未登録のユーザーに1回だけ追加
+          var _mItems = SfSnow.getMonthlyItems ? SfSnow.getMonthlyItems() : {};
+          if (!(_mItems['shiori_kouta'] > 0) && !SfSnow.isUnlocked('shiori_kouta')) {
+            SfSnow.unlockItem('shiori_kouta');
+            SfSnow.addMItemDirect('shiori_kouta', 1);
+          }
         }
 
         var titleEl = document.getElementById('short-title');
@@ -1392,6 +1396,7 @@ function sfShare() {
           if (typeof SfSnow === 'undefined') return;
           if (SfSnow.isNDaysDone('qf_insta_visit', 1)) return;
           var item = QF_POOL[Math.floor(Math.random() * QF_POOL.length)];
+          SfSnow.unlockItem(item.id);
           SfSnow.addMItemDirect(item.id, 1);
           SfSnow.markNDaysDone('qf_insta_visit');
           var bannerItem = SF_BANNER_ITEMS.find(function(b) { return b.key === item.id; });
@@ -2008,6 +2013,7 @@ function sfShare() {
           sessionStorage.removeItem('sf_pending_banner_item');
           localStorage.setItem('sf_banner_item_ep_' + pendingEp, '1');
           var item = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
+          SfSnow.unlockItem(item.key);
           SfSnow.addMItemDirect(item.key, 1);
           showBannerItemPopup(item);
         }
@@ -2017,6 +2023,7 @@ function sfShare() {
           localStorage.setItem('sf_sealed_ep35_item', '1');
           var sealedItem = SF_BANNER_ITEMS.find(function(b) { return b.key === 'drinkcoin_hinata'; });
           if (sealedItem) {
+            SfSnow.unlockItem(sealedItem.key);
             SfSnow.addMItemDirect(sealedItem.key, 1);
             showBannerItemPopup(sealedItem);
           }
