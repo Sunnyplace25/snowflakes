@@ -1242,22 +1242,13 @@
         <!-- 鑑定ボタン -->
         <button class="choose-item choose-item--stone" id="appraise-btn" onclick="appraiseStone()" style="display:none;width:100%;margin:0;">
           <span class="choose-mark">◎</span>
-          <span class="choose-text">石を見てもらう</span>
+          <span class="choose-text">アイテムを鑑定する</span>
           <span class="choose-sub" id="rawstone-sub">所持 0個 · 5 Snow</span>
         </button>
         <!-- 鑑定済み3種 -->
         <div id="shop-rawstone-types" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
-        <!-- 石の鑑定 -->
-        <div style="border-top:1px solid rgba(255,255,255,0.05);margin:4px 0 0;padding-top:12px;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:10px;">石の鑑定</p>
-          <button class="choose-item choose-item--stone" id="appraise-oracle-btn" onclick="appraiseStone()" style="width:100%;margin:0;">
-            <span class="choose-mark">◎</span>
-            <span class="choose-text">アイテムを鑑定する</span>
-            <span class="choose-sub" id="appraise-oracle-sub"></span>
-          </button>
-          <div class="stone-counter" id="stone-counter" style="margin-top:16px;"></div>
-          <p class="stone-progress" id="stone-progress" style="margin-top:8px;"></p>
-        </div>
+        <div class="stone-counter" id="stone-counter" style="margin-top:16px;"></div>
+        <p class="stone-progress" id="stone-progress" style="margin-top:8px;"></p>
       </div>
     </div>
 
@@ -4220,12 +4211,6 @@ function submitUtPw() {
       // 所持0でもボタンは表示、半透明で押せる（押したら「もっていません」）
       btn.disabled = false;
       btn.style.opacity = arr.length === 0 ? '0.45' : '1';
-    }
-    // RAW STONE内 鑑定ボタン
-    var oracleBtn = document.getElementById('appraise-oracle-btn');
-    if (oracleBtn) {
-      oracleBtn.disabled = false;
-      oracleBtn.style.opacity = '1';
     }
   }
 
