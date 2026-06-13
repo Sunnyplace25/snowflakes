@@ -1165,7 +1165,7 @@
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">
       <button onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
       <button onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
-      <a href="../../sweets/" style="flex:1;display:flex;align-items:center;justify-content:center;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;text-decoration:none;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</a>
+      <button onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
     </div>
 
     <!-- MUSIC UNLOCKED セクション -->
@@ -1259,17 +1259,10 @@
             <span class="choose-sub" id="appraise-oracle-sub">青い石 · 黄色い石 · 黒い石</span>
           </button>
         </div>
-        <!-- 少し光る石 × 10 交換 -->
-        <button class="choose-item choose-item--stone" id="hikaru-exchange-btn" onclick="exchangeHikaruStones()" style="display:none;width:100%;margin:0;">
-          <span class="choose-mark">✦</span>
-          <span class="choose-text">渡す</span>
-          <span class="choose-sub" id="hikaru-exchange-sub">所持 0 個</span>
-        </button>
-        <!-- 渡す（ロック中） -->
-        <button onclick="nagiveStone()" style="width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:50px;padding:12px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">渡す</button>
       </div>
     </div>
 
+    <div id="anchor-sweets" style="scroll-margin-top:60px;"></div>
     <!-- チョコレートセクション（第2章） -->
     <div id="shop-chocolate-row" style="display:none;flex-direction:column;gap:0;margin-bottom:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;">
       <div onclick="toggleChocolateDetail()" style="display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;">
@@ -1709,6 +1702,17 @@ function submitUtPw() {
     <img id="item-msg-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;filter:grayscale(0.3);opacity:0.6;">
     <p id="item-msg-text" style="font-family:'Noto Serif JP',serif;font-size:14px;color:#94a3b8;letter-spacing:2px;line-height:2.2;white-space:pre-line;margin-bottom:24px;"></p>
     <button onclick="document.getElementById('item-msg-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+
+<!-- Stone exchange popup -->
+<div id="stone-exchange-popup" style="display:none;position:fixed;inset:0;z-index:690;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('stone-exchange-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
+    <img id="stone-ex-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;">
+    <p id="stone-ex-name" style="font-family:'Noto Serif JP',serif;font-size:14px;color:#e2e8f0;letter-spacing:2px;margin-bottom:6px;"></p>
+    <p id="stone-ex-count" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#7c6aa5;margin-bottom:20px;"></p>
+    <button id="stone-ex-confirm" onclick="confirmStoneExchange()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.35);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">交換する</button>
+    <button onclick="document.getElementById('stone-exchange-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
 </div>
 
@@ -4101,8 +4105,12 @@ function submitUtPw() {
         var appraised = getAppraisedStones();
         RAW_STONE_TYPES.forEach(function(t) {
           var cnt = appraised[t.id] || 0;
+          var isRare = t.id === 'hikaru' || t.id === 'tsumetai';
           var div = document.createElement('div');
-          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';';
+          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';' + (isRare && cnt > 0 ? 'cursor:pointer;' : '');
+          if (isRare && cnt > 0) {
+            div.onclick = (function(tid, c) { return function() { showStoneExchangePopup(tid, c); }; })(t.id, cnt);
+          }
           var img = document.createElement('img');
           img.src = RAW_STONE_IMG[t.id] || '../../item/rawstone.webp';
           img.style.cssText = 'width:48px;height:48px;object-fit:cover;border-radius:9px;display:block;' + (cnt === 0 ? 'filter:grayscale(1);opacity:0.25;' : '');
@@ -4112,20 +4120,17 @@ function submitUtPw() {
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
           num.textContent = '× ' + cnt;
-          div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
+          if (isRare && cnt > 0) {
+            var exlbl = document.createElement('p');
+            exlbl.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:2px;color:#4c4468;';
+            exlbl.textContent = '交換する';
+            div.appendChild(img); div.appendChild(lbl); div.appendChild(num); div.appendChild(exlbl);
+          } else {
+            div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
+          }
           typesWrap.appendChild(div);
         });
       }
-    }
-    // 少し光る石 交換ボタン更新
-    var hikaruBtn = document.getElementById('hikaru-exchange-btn');
-    var hikaruSub = document.getElementById('hikaru-exchange-sub');
-    if (hikaruBtn) {
-      var hikaruCount = arr.filter(function(s) { return s === 'hikaru'; }).length;
-      hikaruBtn.style.display = '';
-      if (hikaruSub) hikaruSub.textContent = '所持 ' + hikaruCount + ' 個';
-      hikaruBtn.disabled = false;
-      hikaruBtn.style.opacity = hikaruCount >= 10 ? '1' : '0.45';
     }
     if (!btn) return;
     var ch21Read = _seenProseScenes.has(5);
@@ -4152,6 +4157,47 @@ function submitUtPw() {
 
   window.nagiveStone = function() {
     showSKPopup('NAGI', 'まだ、持ってろ');
+  };
+
+  var _stoneExchangeTarget = null;
+
+  window.showStoneExchangePopup = function(stoneId, cnt) {
+    _stoneExchangeTarget = stoneId;
+    var t = RAW_STONE_TYPES.filter(function(x){ return x.id === stoneId; })[0] || {};
+    var img = RAW_STONE_IMG[stoneId] || '../../item/rawstone.webp';
+    document.getElementById('stone-ex-img').src = img;
+    document.getElementById('stone-ex-name').textContent = t.label || stoneId;
+    document.getElementById('stone-ex-count').textContent = '所持 ' + cnt + ' 個';
+    var pop = document.getElementById('stone-exchange-popup');
+    pop.style.display = 'flex';
+  };
+
+  window.confirmStoneExchange = function() {
+    document.getElementById('stone-exchange-popup').style.display = 'none';
+    if (_stoneExchangeTarget === 'hikaru') {
+      exchangeHikaruStones();
+    } else if (_stoneExchangeTarget === 'tsumetai') {
+      exchangeTsumetaiStones();
+    }
+    _stoneExchangeTarget = null;
+  };
+
+  window.exchangeTsumetaiStones = function() {
+    var arr = getRawStones();
+    var tsumetaiArr = arr.filter(function(s) { return s === 'tsumetai'; });
+    if (tsumetaiArr.length < 1) {
+      showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……持っていないな」');
+      return;
+    }
+    var newArr = arr;
+    var removed = 0;
+    newArr = arr.filter(function(s) {
+      if (s === 'tsumetai' && removed < 1) { removed++; return false; }
+      return true;
+    });
+    localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
+    updateAppraiseBtn();
+    showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……これは、珍しい」');
   };
 
   window.exchangeHikaruStones = function() {
