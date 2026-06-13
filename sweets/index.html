@@ -6314,8 +6314,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var prevId = _nc.items[_nc.idx] ? _nc.items[_nc.idx].id : null;
     _nc.items = items;
     _nc.N = items.length;
-    _nc.step = 360 / _nc.N;
-    _nc.r = Math.max(160, Math.round(130 / Math.tan(Math.PI / _nc.N) + 30));
+    var _ncDisplayN = Math.max(_nc.N, 6);
+    _nc.step = 360 / _ncDisplayN;
+    _nc.r = Math.max(160, Math.round(130 / Math.tan(Math.PI / _ncDisplayN) + 30));
     // 現在表示中のカードを維持
     if (prevId) {
       for (var pi = 0; pi < items.length; pi++) { if (items[pi].id === prevId) { _nc.idx = pi; break; } }
