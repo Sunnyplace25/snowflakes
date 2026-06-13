@@ -5741,7 +5741,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var arrow = document.getElementById('rare-' + chara + '-arrow');
     if (!body) return;
     var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
-    body.style.maxHeight  = isOpen ? '0' : '600px';
+    if (isOpen) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(function() { body.style.maxHeight = '0'; });
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.addEventListener('transitionend', function onEnd() {
+        body.removeEventListener('transitionend', onEnd);
+        if (body.style.maxHeight !== '0px') body.style.maxHeight = 'none';
+      });
+    }
     if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
   }
 
