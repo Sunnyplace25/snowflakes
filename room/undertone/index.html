@@ -1728,6 +1728,16 @@ function submitUtPw() {
 </div>
 
 <!-- Rare item reveal popup (fixed, always on top) -->
+<!-- Stone appraise confirmation popup -->
+<div id="stone-appraise-confirm-popup" style="display:none;position:fixed;inset:0;z-index:696;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('stone-appraise-confirm-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
+    <img src="../../item/rawstone_tsumetai.webp" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:10px;margin:0 auto 16px;display:block;box-shadow:0 0 20px rgba(196,181,253,0.12);">
+    <p id="stone-appraise-confirm-msg" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;"></p>
+    <button id="stone-appraise-confirm-btn" onclick="confirmStoneAppraise()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">鑑定する</button>
+    <button onclick="document.getElementById('stone-appraise-confirm-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+
 <!-- Stone item description popup -->
 <div id="stone-desc-popup" style="display:none;position:fixed;inset:0;z-index:695;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;overflow-y:auto;" onclick="document.getElementById('stone-desc-popup').style.display='none'">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);margin:auto;" onclick="event.stopPropagation()">
@@ -3732,12 +3742,14 @@ function submitUtPw() {
       if (got) obtained++;
       var div = document.createElement('div');
       div.className = 'stone-slot' + (got ? ' obtained' : '');
+      var revealed = got && isStoneNameRevealed(item.key);
+      var displayName = revealed ? (item.nameAppraised || item.name) : (got ? item.name : '？？？');
       div.innerHTML =
         '<img src="' + item.img + '" alt="' + item.name + '" class="' + (got ? '' : 'grey') + '">' +
-        '<span class="stone-label">' + (got ? (item.nameAppraised || item.name) : '？？？') + '</span>';
-      if (got && STONE_DESCRIPTIONS[item.key]) {
+        '<span class="stone-label">' + displayName + '</span>';
+      if (got) {
         div.style.cursor = 'pointer';
-        div.onclick = (function(i) { return function() { showStoneDesc(i.key); }; })(item);
+        div.onclick = (function(i, rev) { return function() { onStoneCardClick(i.key, rev); }; })(item, revealed);
       }
       wrap.appendChild(div);
     });
@@ -4059,6 +4071,50 @@ function submitUtPw() {
 
   var STONE_DESCRIPTIONS = {
     pendant_hinata: 'カイヤナイトと呼ばれる、\n深い青を宿した石のネックレス。\n\n光を受けると、\n結晶の内側に白い線が走る。\n\n見る方向によって硬さが変わる。\n\n傷つきやすい面と、\n簡単には折れない面を、\n同じひとつの中に持っている。\n\nまっすぐで、静かで、\nそれでも複雑な青。\n\nヒナタの音に、\n少しだけ似ている。',
+  };
+
+  function getNameRevealed() {
+    try { return JSON.parse(localStorage.getItem('sf_ut_name_revealed') || '{}'); } catch(e) { return {}; }
+  }
+  function isStoneNameRevealed(key) { return !!getNameRevealed()[key]; }
+  function markStoneNameRevealed(key) {
+    var r = getNameRevealed(); r[key] = true;
+    localStorage.setItem('sf_ut_name_revealed', JSON.stringify(r));
+  }
+
+  var _stoneDescPending = null;
+
+  window.onStoneCardClick = function(key, alreadyRevealed) {
+    if (alreadyRevealed) {
+      showStoneDesc(key);
+      return;
+    }
+    // 確認ポップアップ
+    _stoneDescPending = key;
+    var appraised = getAppraisedStones();
+    var hasTsumetai = (appraised.tsumetai || 0) >= 1;
+    document.getElementById('stone-appraise-confirm-msg').textContent =
+      hasTsumetai ? '冷たい石を使って鑑定をお願いしますか？' : '妙に冷たい石がありません';
+    document.getElementById('stone-appraise-confirm-btn').style.display = hasTsumetai ? 'block' : 'none';
+    document.getElementById('stone-appraise-confirm-popup').style.display = 'flex';
+  };
+
+  window.confirmStoneAppraise = function() {
+    document.getElementById('stone-appraise-confirm-popup').style.display = 'none';
+    var key = _stoneDescPending;
+    _stoneDescPending = null;
+    if (!key) return;
+    var appraised = getAppraisedStones();
+    if (!appraised.tsumetai || appraised.tsumetai < 1) {
+      showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……持っていないな」');
+      return;
+    }
+    appraised.tsumetai -= 1;
+    if (appraised.tsumetai <= 0) delete appraised.tsumetai;
+    localStorage.setItem('sf_ut_appraised', JSON.stringify(appraised));
+    markStoneNameRevealed(key);
+    renderStones();
+    showStoneDesc(key);
   };
 
   window.showStoneDesc = function(key) {
