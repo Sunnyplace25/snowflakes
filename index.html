@@ -584,21 +584,21 @@ function sfShare() {
   </div>
   <!-- 封印解放カード（公開から7日間表示） -->
   <div style="max-width:680px;margin:0 auto 12px;">
-    <a id="sealed-banner" href="https://ncode.syosetu.com/n9009lo/35" target="_blank"
+    <a id="sealed-banner" href="https://ncode.syosetu.com/n5432lz/" target="_blank"
        style="display:none;text-decoration:none;border-radius:16px;padding:20px 28px;background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.2);transition:background 0.4s;position:relative;overflow:hidden;"
        onmouseenter="this.style.background='rgba(196,181,253,0.07)';this.querySelector('.sealed-shine').style.opacity='1'"
        onmouseleave="this.style.background='rgba(196,181,253,0.03)';this.querySelector('.sealed-shine').style.opacity='0'">
       <div class="sealed-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(196,181,253,0.1) 0%, transparent 70%);"></div>
       <div style="pointer-events:none;position:absolute;top:16px;right:20px;display:flex;gap:5px;align-items:center;">
         <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#7c6aa5;margin-right:2px;">item</span>
-        <img src="./item/drinkcoin_hinata.webp" title="ドリンクコイン" alt="ドリンクコイン" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
+        <img src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
       </div>
       <div style="position:relative;display:flex;align-items:center;gap:16px;">
         <div style="flex:1;min-width:0;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">SEALED CHAPTER UNLOCKED</p>
-          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#7c6aa5;margin-bottom:6px;">ep.35</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">SHORT STORY</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#7c6aa5;margin-bottom:6px;">2026.06.13 / 短篇</p>
           <p id="sealed-title" style="font-size:clamp(14px,2.2vw,17px);font-weight:300;color:#e2e8f0;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;"></p>
-          <p style="font-size:11px;color:#7c6aa5;letter-spacing:1px;margin-top:8px;line-height:1.8;">大学編とリトルスノー編の間。封印されていた話を解放しました。</p>
+          <p style="font-size:11px;color:#7c6aa5;letter-spacing:1px;margin-top:8px;line-height:1.8;">低い音が、まだ耳の奥に残っていた。</p>
         </div>
         <p style="font-size:18px;color:#c4b5fd;flex-shrink:0;">→</p>
       </div>
@@ -657,9 +657,9 @@ function sfShare() {
       <div class="act-list">
         <ul style="list-style:none;padding:0;margin:0;">
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3649843/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-              <span class="act-date">2026.06.11</span>
-              <span class="act-text">ep.35 幕間｜そう見えるだけ 追加</span>
+            <a href="https://ncode.syosetu.com/n5432lz/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.06.13</span>
+              <span class="act-text">短篇｜始まりのベース 公開</span>
             </a>
           </li>
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
@@ -885,8 +885,8 @@ function sfShare() {
     (function() {
       // ── 封印解放カード設定 ──────────────────────────────────
       // 封印解放話を投稿したら以下2つを更新する
-      var SEALED_PUB   = new Date('2026-06-11T02:58:00');
-      var SEALED_TITLE = '幕間｜そう見えるだけ';
+      var SEALED_PUB   = new Date('2026-06-13T12:00:00+09:00');
+      var SEALED_TITLE = '始まりのベース';
       // ──────────────────────────────────────────────────────
 
       var SEALED_SHOW_DAYS = 7;
@@ -915,7 +915,7 @@ function sfShare() {
     (function() {
       // ── 短篇カード設定 ──────────────────────────────────────
       // 短篇を投稿したら以下3つを更新する
-      var SHORT_PUB   = new Date('2026-06-14T12:00:00');
+      var SHORT_PUB   = new Date('2026-06-13T12:00:00+09:00');
       var SHORT_TITLE = '始まりのベース';
       var SHORT_URL   = 'https://ncode.syosetu.com/n5432lz/';
       // ────────────────────────────────────────────────────────
@@ -1194,7 +1194,7 @@ function sfShare() {
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
     <div id="short-kouta-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);flex-direction:column;gap:0;display:none;">
-      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.14 / 短篇</p>
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.13 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
       <div id="short-acc-body-0" style="display:none;">
