@@ -1253,7 +1253,7 @@
           <button class="choose-item choose-item--stone" id="appraise-oracle-btn" onclick="appraiseStone()" style="width:100%;margin:0;">
             <span class="choose-mark">◎</span>
             <span class="choose-text">アイテムを鑑定する</span>
-            <span class="choose-sub" id="appraise-oracle-sub">青い石 · 黄色い石 · 黒い石</span>
+            <span class="choose-sub" id="appraise-oracle-sub"></span>
           </button>
           <div class="stone-counter" id="stone-counter" style="margin-top:16px;"></div>
           <p class="stone-progress" id="stone-progress" style="margin-top:8px;"></p>
@@ -4104,12 +4104,16 @@ function submitUtPw() {
         var appraised = getAppraisedStones();
         RAW_STONE_TYPES.forEach(function(t) {
           var cnt = appraised[t.id] || 0;
-          var _stoneMsg = t.id === 'tsumetai' ? '「…‥これはいいな　もっと集めるといい」' : '「……鳴ってないな」';
-          var isClickable = cnt > 0;
+          var isTsumetai = t.id === 'tsumetai';
+          var isClickable = cnt > 0 || isTsumetai;
           var div = document.createElement('div');
           div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';' + (isClickable ? 'cursor:pointer;' : '');
           if (isClickable) {
-            div.onclick = (function(imgSrc, msg) { return function() { showItemMsgPopup(imgSrc, msg); }; })(RAW_STONE_IMG[t.id] || '../../item/rawstone.webp', _stoneMsg);
+            if (isTsumetai) {
+              div.onclick = function() { useTsumetaiForAppraisal(); };
+            } else {
+              div.onclick = (function(imgSrc) { return function() { showItemMsgPopup(imgSrc, '「……鳴ってないな」'); }; })(RAW_STONE_IMG[t.id] || '../../item/rawstone.webp');
+            }
           }
           var img = document.createElement('img');
           img.src = RAW_STONE_IMG[t.id] || '../../item/rawstone.webp';
@@ -4119,8 +4123,15 @@ function submitUtPw() {
           lbl.textContent = cnt > 0 ? t.label : '???';
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
-          num.textContent = '× ' + cnt;
-          div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
+          num.textContent = isTsumetai && cnt === 0 ? '× 1' : '× ' + cnt;
+          if (isTsumetai) {
+            var mark = document.createElement('p');
+            mark.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:11px;color:#4c4468;';
+            mark.textContent = '◎';
+            div.appendChild(img); div.appendChild(lbl); div.appendChild(num); div.appendChild(mark);
+          } else {
+            div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
+          }
           typesWrap.appendChild(div);
         });
       }
@@ -4134,15 +4145,9 @@ function submitUtPw() {
       btn.disabled = false;
       btn.style.opacity = arr.length === 0 ? '0.45' : '1';
     }
-    // RAW STONE内 鑑定ボタンの所持数更新
+    // RAW STONE内 鑑定ボタン
     var oracleBtn = document.getElementById('appraise-oracle-btn');
-    var oracleSub = document.getElementById('appraise-oracle-sub');
-    if (oracleBtn && oracleSub) {
-      var appraised = getAppraisedStones();
-      var blueN  = appraised['pendant_hinata'] || 0;
-      var yellowN = appraised['earring_hayate'] || 0;
-      var blackN  = appraised['ring_kouta']    || 0;
-      oracleSub.textContent = '青×' + blueN + ' · 黄×' + yellowN + ' · 黒×' + blackN;
+    if (oracleBtn) {
       oracleBtn.disabled = false;
       oracleBtn.style.opacity = '1';
     }
@@ -4191,6 +4196,35 @@ function submitUtPw() {
     localStorage.setItem('sf_ut_rawstones', JSON.stringify(newArr));
     updateAppraiseBtn();
     showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……これは、珍しい」');
+  };
+
+  window.useTsumetaiForAppraisal = function() {
+    var appraised = getAppraisedStones();
+    if (!appraised.tsumetai || appraised.tsumetai < 1) {
+      showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……持っていないな」');
+      return;
+    }
+    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
+    if (!available.length) {
+      showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……全部、揃ってる」');
+      return;
+    }
+    // 妙に冷たい石を1個消費
+    appraised.tsumetai -= 1;
+    if (appraised.tsumetai <= 0) delete appraised.tsumetai;
+    localStorage.setItem('sf_ut_appraised', JSON.stringify(appraised));
+    // ランダムに未取得アイテムを1個解放
+    var item = available[Math.floor(Math.random() * available.length)];
+    SfSnow.unlockItem(item.key);
+    renderStones();
+    localStorage.setItem('sf_undertone_equip_unlocked', 'true');
+    updateEquipBtn();
+    unlockRandomTarotImg();
+    showAppraisePopup('tsumetai', '妙に冷たい石', item);
+    var speech = STONE_SPEECHES[item.key];
+    if (speech) {
+      setTimeout(function() { showSKPopup('NAGI', speech); }, 1200);
+    }
   };
 
   window.exchangeHikaruStones = function() {
