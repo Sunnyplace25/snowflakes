@@ -1196,6 +1196,14 @@
             <span class="choose-sub">3 CARDS · 15 Snow</span>
           </button>
         </div>
+        <p class="shop-choose-label" style="margin-top:24px;">石の鑑定</p>
+        <div class="choose-list">
+          <button class="choose-item choose-item--stone" id="appraise-oracle-btn" onclick="appraiseStone()">
+            <span class="choose-mark">◎</span>
+            <span class="choose-text">アイテムを鑑定する</span>
+            <span class="choose-sub" id="appraise-oracle-sub">未鑑定の石 0個 · 5 Snow</span>
+          </button>
+        </div>
         <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;text-align:center;margin-top:20px;line-height:2;">Snow flakes Tarot  ·  Words &amp; Interpretation  ·<br>Kotori Yamabuki</p>
       </div><!-- /shop-panel-oracle -->
 
@@ -4117,6 +4125,14 @@ function submitUtPw() {
       // 所持0でもボタンは表示、半透明で押せる（押したら「もっていません」）
       btn.disabled = false;
       btn.style.opacity = arr.length === 0 ? '0.45' : '1';
+    }
+    // oracle パネルの鑑定ボタン更新
+    var oracleBtn = document.getElementById('appraise-oracle-btn');
+    var oracleSub = document.getElementById('appraise-oracle-sub');
+    if (oracleBtn) {
+      if (oracleSub) oracleSub.textContent = '未鑑定の石 ' + arr.length + '個 · 5 Snow';
+      oracleBtn.disabled = false;
+      oracleBtn.style.opacity = arr.length === 0 ? '0.45' : '1';
     }
   }
 
