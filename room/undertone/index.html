@@ -4105,11 +4105,12 @@ function submitUtPw() {
         var appraised = getAppraisedStones();
         RAW_STONE_TYPES.forEach(function(t) {
           var cnt = appraised[t.id] || 0;
-          var isRare = t.id === 'hikaru' || t.id === 'tsumetai';
+          var _stoneMsg = t.id === 'tsumetai' ? '「…‥これはいいな　もっと集めるといい」' : '「……鳴ってないな」';
+          var isClickable = cnt > 0;
           var div = document.createElement('div');
-          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';' + (isRare && cnt > 0 ? 'cursor:pointer;' : '');
-          if (isRare && cnt > 0) {
-            div.onclick = (function(tid, c) { return function() { showStoneExchangePopup(tid, c); }; })(t.id, cnt);
+          div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid ' + (cnt > 0 ? 'rgba(196,181,253,0.18)' : 'rgba(255,255,255,0.04)') + ';' + (isClickable ? 'cursor:pointer;' : '');
+          if (isClickable) {
+            div.onclick = (function(imgSrc, msg) { return function() { showItemMsgPopup(imgSrc, msg); }; })(RAW_STONE_IMG[t.id] || '../../item/rawstone.webp', _stoneMsg);
           }
           var img = document.createElement('img');
           img.src = RAW_STONE_IMG[t.id] || '../../item/rawstone.webp';
@@ -4120,14 +4121,7 @@ function submitUtPw() {
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
           num.textContent = '× ' + cnt;
-          if (isRare && cnt > 0) {
-            var exlbl = document.createElement('p');
-            exlbl.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:2px;color:#4c4468;';
-            exlbl.textContent = '交換する';
-            div.appendChild(img); div.appendChild(lbl); div.appendChild(num); div.appendChild(exlbl);
-          } else {
-            div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
-          }
+          div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
           typesWrap.appendChild(div);
         });
       }
