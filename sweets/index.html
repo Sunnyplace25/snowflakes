@@ -6741,7 +6741,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (isFirstEver) SfSnow.unlockItem(key);
       showNoteItemGet(key);
     } else {
-      // 初回のみ付与：onMusicEndと同じ処理
+      // 初回のみ付与（reward30sがある曲は30秒ブロックで処理済みのためここには来ない想定）
+      if (song.reward30s) return;
       var key = Array.isArray(song.reward) ? song.reward[0] : song.reward;
       if (!SfSnow.isUnlocked(key)) {
         SfSnow.unlockItem(key);
