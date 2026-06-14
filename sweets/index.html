@@ -6822,6 +6822,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
     if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
     if (item.sub2) html += '<div class="post-date">' + item.sub2 + '</div>';
+    if (unlocked) {
+      var _pc = getPlayCount(item.id);
+      html += '<div style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#475569;margin-top:4px;">再生 <span id="play-count-' + item.id + '">' + (_pc > 0 ? _pc + '回' : '-') + '</span></div>';
+    }
     if (!unlocked) {
       html += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">'
         + '<img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.75;">'
@@ -6864,6 +6868,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         audioEl.addEventListener('seeked', function() {
           window._onAudioSeeked(item.id);
         });
+        audioEl.addEventListener('play', function() {
+          if (audioEl._playCounted) return;
+          audioEl._playCounted = true;
+          incPlayCount(item.id);
+          var el = document.getElementById('play-count-' + item.id);
+          if (el) el.textContent = getPlayCount(item.id) + '回';
+        });
         if (item.id === BRASS_ID) {
           audioEl.addEventListener('pause', function() {
             _brassEndSession();
@@ -6872,6 +6883,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     }
   }
+
+  var PLAY_COUNT_KEY = 'sf_play_counts';
+  function _getPlayCounts() { try { return JSON.parse(localStorage.getItem(PLAY_COUNT_KEY) || '{}'); } catch(e) { return {}; } }
+  function getPlayCount(id) { return _getPlayCounts()[id] || 0; }
+  function incPlayCount(id) { var d = _getPlayCounts(); d[id] = (d[id] || 0) + 1; localStorage.setItem(PLAY_COUNT_KEY, JSON.stringify(d)); }
 
   function togglePlay(id, src) {
     var player = document.getElementById('player-' + id);
