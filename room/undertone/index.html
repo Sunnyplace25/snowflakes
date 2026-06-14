@@ -4183,9 +4183,9 @@ function submitUtPw() {
 
   /* ── Raw stone system ── */
   var RAW_STONE_TYPES = [
-    { id: 'kirei',    label: '綺麗な石',      prob: 0.70 },
-    { id: 'hikaru',   label: '少し光る石',     prob: 0.25 },
-    { id: 'tsumetai', label: '妙に冷たい石',   prob: 0.05 },
+    { id: 'kirei',    label: '綺麗な石',      prob: 0.60 },
+    { id: 'hikaru',   label: '少し光る石',     prob: 0.30 },
+    { id: 'tsumetai', label: '妙に冷たい石',   prob: 0.10 },
   ];
 
   function getRawStones() {
@@ -4213,8 +4213,8 @@ function submitUtPw() {
     var seen = getSeenRawTypes();
     if (seen.indexOf('tsumetai') === -1) return RAW_STONE_TYPES[2];
     var r = Math.random();
-    if (r < 0.05) return RAW_STONE_TYPES[2];
-    if (r < 0.30) return RAW_STONE_TYPES[1];
+    if (r < 0.10) return RAW_STONE_TYPES[2];
+    if (r < 0.40) return RAW_STONE_TYPES[1];
     return RAW_STONE_TYPES[0];
   }
   /* ── Appraised stone counts ── */
