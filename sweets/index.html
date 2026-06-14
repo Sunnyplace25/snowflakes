@@ -150,6 +150,9 @@
     .gate-error.success { color: #6ee7b7; }
 
     /* 色紙配布ポップアップ */
+    #news-nigaipurin-popup.show { opacity: 1; pointer-events: auto; }
+    #news-nigaipurin-popup.show div { transform: none; }
+
     #shikishi-get-popup {
       position: fixed; inset: 0; z-index: 9100;
       display: flex; align-items: center; justify-content: center;
@@ -753,6 +756,16 @@
 
   <!-- Snow GET popup -->
   <!-- 色紙配布ポップアップ (Summer切り替え時) -->
+  <!-- 苦いプリン追加お知らせポップアップ -->
+  <div id="news-nigaipurin-popup" onclick="this.classList.remove('show')" style="position:fixed;inset:0;z-index:9100;background:rgba(8,13,24,0.85);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div onclick="event.stopPropagation()" style="background:rgba(13,17,30,0.98);border:1px solid rgba(147,197,253,0.2);border-radius:20px;padding:36px 28px;max-width:300px;width:90%;text-align:center;transform:translateY(16px);transition:transform 0.4s;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#64748b;margin-bottom:20px;">Music DEMO</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:3px;color:#93c5fd;margin-bottom:8px;">苦いプリン</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;letter-spacing:1px;line-height:1.8;margin-bottom:28px;">Vo. Hinata<br>追加されました</p>
+      <button onclick="document.getElementById('news-nigaipurin-popup').classList.remove('show')" style="background:rgba(147,197,253,0.07);border:1px solid rgba(147,197,253,0.25);border-radius:50px;padding:12px 36px;color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(147,197,253,0.14)'" onmouseout="this.style.background='rgba(147,197,253,0.07)'">── 閉じる ──</button>
+    </div>
+  </div>
+
   <div id="shikishi-get-popup" onclick="document.getElementById('shikishi-get-popup').classList.remove('show')">
     <div id="shikishi-get-box" onclick="event.stopPropagation()">
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;margin-bottom:20px;">SWEETs 2026 Spring</p>
@@ -4775,6 +4788,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
+      // 新着お知らせ（1回のみ）
+      _showNewsPopupIfNeeded();
+    }
+
+    function _showNewsPopupIfNeeded() {
+      var KEY = 'sf_news_nigaipurin_v1';
+      if (localStorage.getItem(KEY)) return;
+      localStorage.setItem(KEY, '1');
+      setTimeout(function() {
+        var p = document.getElementById('news-nigaipurin-popup');
+        if (p) p.classList.add('show');
+      }, 1200);
     }
 
     var UT_STONE_ITEMS = [
