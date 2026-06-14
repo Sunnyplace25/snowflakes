@@ -6658,8 +6658,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     _listenTracker[BRASS_ID] = { cumulative: 0, lastTime: -1 };
   }
 
+  var _seekedFlag = {};  // シーク検出フラグ（onMusicEnd で参照）
   window._onTimeUpdate = function(songId, audio) {
-    if (audio.seeking) return;
+    if (audio.seeking) {
+      // シーク中は lastTime をリセット（シーク終了直後の誤差カウント防止）
+      if (_listenTracker[songId]) _listenTracker[songId].lastTime = -1;
+      return;
+    }
     // Brass Band 専用チェックポイントロジック
     if (songId === BRASS_ID) {
       var t = _listenTracker[songId];
@@ -6704,6 +6709,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       return;
     }
     _initListen(songId);
+    _seekedFlag[songId] = true;  // このセッションでシークが発生したことを記録
   };
   function showDailyLimitToast() {
     var t = document.getElementById('daily-limit-toast');
@@ -6958,6 +6964,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           window._onAudioSeeked(item.id);
         });
         audioEl.addEventListener('play', function() {
+          _seekedFlag[item.id] = false;  // 再生開始でseekフラグリセット
           if (audioEl._playCounted) return;
           audioEl._playCounted = true;
           incPlayCount(item.id);
@@ -6993,6 +7000,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function onMusicEnd(songId) {
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
     if (!song || !song.reward) return;
+    // reward30s がある曲: シークしたセッションでは全部視聴報酬を付与しない
+    if (song.reward30s && _seekedFlag[songId]) return;
     var key = song.reward;
     if (!SfSnow.isUnlocked(key)) {
       SfSnow.unlockItem(key);
