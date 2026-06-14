@@ -4788,18 +4788,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
-      // 新着お知らせ（1回のみ）
-      _showNewsPopupIfNeeded();
-    }
-
-    function _showNewsPopupIfNeeded() {
-      var KEY = 'sf_news_nigaipurin_v1';
-      if (localStorage.getItem(KEY)) return;
-      localStorage.setItem(KEY, '1');
-      setTimeout(function() {
-        var p = document.getElementById('news-nigaipurin-popup');
-        if (p) p.classList.add('show');
-      }, 1200);
     }
 
     var UT_STONE_ITEMS = [
@@ -5027,6 +5015,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         // バージョン不一致 → 旧ログイン情報をクリア
         localStorage.removeItem(SWEETS_KEY);
         localStorage.removeItem(SWEETS_VER_KEY);
+      }
+      // 新着お知らせ（ゲート前・1回のみ）
+      var _newsKey = 'sf_news_nigaipurin_v1';
+      if (!localStorage.getItem(_newsKey)) {
+        localStorage.setItem(_newsKey, '1');
+        setTimeout(function() {
+          var p = document.getElementById('news-nigaipurin-popup');
+          if (p) p.classList.add('show');
+        }, 800);
       }
     });
 
