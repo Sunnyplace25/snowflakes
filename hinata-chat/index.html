@@ -779,10 +779,73 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
 （少し目を逸らした）
 ……見たのかよ。`;
 
+  // ── 今日の状態（日付ベースで変わる）──
+  const HINATA_DAILY_STATES = [
+    'さっきまでずっと同じフレーズを繰り返していた。まだ納得できていない。',
+    '今日コウタと音がかみ合わなくて、少しだけ引きずっている。',
+    '昨日新しいコード進行を見つけて、今日それを試している。悪くない。',
+    '今日は珍しく早く音楽室に来た。誰もいない時間が好きだから。',
+    'ハヤテが今日やたら饒舌で、少し疲れた。',
+    '今日は何も詰まっていない。ただ弾いていた。それだけで十分な日もある。',
+    '昨日聴いた曲の音が頭から離れない。何の曲かは言わない。',
+    'チューニングがずっと微妙にずれている気がして、気になっている。',
+    '今日ギターを弾いていたら、少しだけ好きな音が出た。珍しい。',
+    'コウタが今日妙に優しくて、少し気味悪かった。',
+    '今日は三人で音を合わせた。悪くなかった。それだけ。',
+    '今日は音を出す気分じゃなくて、窓の外をずっと見ていた。',
+  ];
+
+  function _getDailyState() {
+    const today = new Date();
+    const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+    return HINATA_DAILY_STATES[seed % HINATA_DAILY_STATES.length];
+  }
+
+  // ── ユーザー記憶（localStorage）──
+  const USER_MEMORY_KEY = 'sf_hinata_user_memory';
+  function getUserMemory() {
+    try { return JSON.parse(localStorage.getItem(USER_MEMORY_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function saveUserMemory(facts) {
+    localStorage.setItem(USER_MEMORY_KEY, JSON.stringify(facts.slice(-8)));
+  }
+  function addUserMemory(fact) {
+    const mem = getUserMemory();
+    if (!mem.includes(fact)) { mem.push(fact); saveUserMemory(mem); }
+  }
+  window._addUserMemory = addUserMemory;
+
+  async function _extractAndSaveMemory(userText) {
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: 'ユーザーの発言から、キャラクターが次回以降の会話で自然に使えそうな個人情報・好み・エピソードを1〜2個、短い日本語の箇条書きで抽出してください。なければ空配列を返してください。必ずJSON配列で返答すること。例：["音楽が好き","猫を飼っている"]',
+          messages: [{ role: 'user', content: userText }],
+          max_tokens: 100,
+          email: getApiKey()
+        })
+      });
+      const data = await res.json();
+      if (data.content && data.content[0]) {
+        const text = data.content[0].text.trim();
+        const match = text.match(/\[.*\]/s);
+        if (match) {
+          const facts = JSON.parse(match[0]);
+          facts.forEach(f => { if (typeof f === 'string' && f.length > 0) addUserMemory(f); });
+        }
+      }
+    } catch(e) {}
+  }
+
   function buildSystemPrompt() {
     const name = getUserName();
     const nameNote = name ? `\n【ユーザーの名前】${name}。ヒナタはこの名前を知っている。自然なタイミングで呼んでもよい。` : '';
-    return SYSTEM_PROMPT_BASE + nameNote;
+    const dailyState = `\n【今日のヒナタの状態】${_getDailyState()}会話の最初や自然なタイミングでこの状態を滲ませること。説明しすぎない。`;
+    const mem = getUserMemory();
+    const memNote = mem.length > 0 ? `\n【このユーザーについて覚えていること】\n${mem.map(f=>'・'+f).join('\n')}\n自然なタイミングで触れてよい。押しつけがましくならないこと。` : '';
+    return SYSTEM_PROMPT_BASE + nameNote + dailyState + memNote;
   }
 
   // タイトル画面
@@ -1120,6 +1183,12 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
         addFriendship(pts[currentEmotion] ?? 1);
         incrementTodayCount();
         updateRemainingCount();
+
+        // ユーザー発言からキーワード記憶（5往復に1回）
+        if (messages.filter(m => m.role === 'user').length % 5 === 0) {
+          const lastUserMsg = messages.filter(m => m.role === 'user').slice(-1)[0];
+          if (lastUserMsg) _extractAndSaveMemory(lastUserMsg.content);
+        }
 
         // タグ行を除いてセリフだけ表示
         const lines = reply.split('\n')
