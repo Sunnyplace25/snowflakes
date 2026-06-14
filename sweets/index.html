@@ -396,6 +396,10 @@
       0%, 100% { box-shadow:0 0 8px 1px rgba(249,168,212,0.15);border-color:rgba(249,168,212,0.3); }
       50%       { box-shadow:0 0 22px 5px rgba(249,168,212,0.38);border-color:rgba(249,168,212,0.55); }
     }
+    @keyframes item-glow-orange {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(251,146,60,0.15);border-color:rgba(251,146,60,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(251,146,60,0.42);border-color:rgba(251,146,60,0.6); }
+    }
     @keyframes hinata-link-glow { 0%,100% { box-shadow:0 0 10px rgba(147,197,253,0.2),0 0 24px rgba(147,197,253,0.08); border-color:rgba(147,197,253,0.35); } 50% { box-shadow:0 0 18px rgba(147,197,253,0.4),0 0 40px rgba(147,197,253,0.16); border-color:rgba(147,197,253,0.65); } }
     @keyframes count-blink {
       0%, 100% { opacity:1; }
@@ -6106,7 +6110,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_x2b6nf.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
     { id:'song_nigaipurin', type:'song', title:'苦いプリン（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/nigaipurin_h2m8xk.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true },
-    { id:'song_shukusou', type:'song', title:'祝奏', sub:'Snow flakes SWEETs限定', src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'hayate', isNew:true, reward:'boutonniere_hayate', alwaysGlow:true },
+    { id:'song_shukusou', type:'song', title:'祝奏', sub:'Snow flakes SWEETs限定', src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'orange', isNew:true, reward30s:'boutonniere_hayate', reward:'boutonniere_kouta', alwaysGlow:true },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -6710,7 +6714,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   window._awardListen = function _awardListen(songId) {
     var song = EXCHANGE_CATALOG.find(function(c) { return c.id === songId; });
-    if (!song || !song.reward) return;
+    if (!song) return;
+    // reward30s がある曲: 30秒マイルストーンは reward30s を初回のみ付与
+    if (song.reward30s) {
+      var key30 = song.reward30s;
+      if (!SfSnow.isUnlocked(key30)) {
+        SfSnow.unlockItem(key30);
+        if (typeof renderItemRows === 'function') renderItemRows();
+        showNoteItemGet(key30);
+      }
+      return;
+    }
+    if (!song.reward) return;
     if (song.rewardRepeatable) {
       // 繰り返し付与：1日1回チェック
       var today = new Date().toISOString().slice(0, 10);
@@ -6897,7 +6912,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     html += '</div>';
     if (unlocked) {
-      var audioEvents = ' onended="if(!_mcAutoTimer)_mcResetAuto();"';
+      var audioEvents = ' onended="if(!_mcAutoTimer)_mcResetAuto();' + (item.reward30s ? 'onMusicEnd(\'' + item.id + '\');' : '') + '"';
       html += '<div class="post-content" id="player-' + item.id + '">';
       html += '<div class="divider"></div>';
       html += '<div style="padding:16px 0 4px;">'
