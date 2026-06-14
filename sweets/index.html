@@ -6601,9 +6601,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!SfSnow.isUnlocked(item.reward)) {
         SfSnow.unlockItem(item.reward);
         if (typeof renderItemRows === 'function') renderItemRows();
-        setTimeout(function() { showNoteItemGet(item.reward); }, 10000);
+        setTimeout(function() { showNoteItemGet(item.reward); }, 5000);
       } else {
-        setTimeout(function() { showNoteItemGetAgain(item.reward); }, 10000);
+        setTimeout(function() { showNoteItemGetAgain(item.reward); }, 5000);
       }
     }
     renderNotes(); // → initNotesCarousel()
