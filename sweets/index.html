@@ -6724,7 +6724,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">music' + (_mHasItem ? '<span class="nc-new" style="color:' + _mColor + ';">アイテムあり</span>' : '') + '</div>' +
+      c.innerHTML = '<div class="nc-tag">music</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '▶ 聴く ›' : 'ギターピック × ' + item.cost.pick) + '</div>';
       drum.appendChild(c);
