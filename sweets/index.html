@@ -6716,7 +6716,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     _mc.items = songs;
     _mc.N = songs.length;
     _mc.step = 360 / _mc.N;
-    _mc.r = Math.max(130, Math.round(105 / Math.tan(Math.PI / _mc.N) + 24));
+    var _mcIsMobile = window.innerWidth <= 600;
+    var _mcBase = _mcIsMobile ? 82 : 105;
+    var _mcMin  = _mcIsMobile ? 100 : 130;
+    _mc.r = Math.max(_mcMin, Math.round(_mcBase / Math.tan(Math.PI / _mc.N) + 20));
     if (prevId) { for (var pi = 0; pi < songs.length; pi++) { if (songs[pi].id === prevId) { _mc.idx = pi; break; } } }
     if (_mc.idx >= _mc.N) _mc.idx = 0;
 
