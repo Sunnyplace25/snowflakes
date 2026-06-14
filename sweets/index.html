@@ -6722,6 +6722,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         SfSnow.unlockItem(key30);
         if (typeof renderItemRows === 'function') renderItemRows();
         showNoteItemGet(key30);
+      } else if (!window['_r30s_notified_' + songId]) {
+        // 入手済みの場合: このページセッションで1回だけ「入手済み」表示
+        window['_r30s_notified_' + songId] = true;
+        showNoteItemGetAgain(key30);
       }
       return;
     }
@@ -6861,16 +6865,32 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var ok = unlocked || picks >= item.cost.pick;
     var showNew = item.isNew && !SfSnow.isUnlocked(item.id) && (item.isNew === true || new Date() <= new Date(item.isNew));
 
-    var _rewKeys = Array.isArray(item.reward) ? item.reward : (item.reward ? [item.reward] : []);
-    var rewD = (!Array.isArray(item.reward) && item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
+    // reward30s + reward を合わせたアイコン表示用リスト
+    var _allRewKeys = [];
+    if (item.reward30s) _allRewKeys.push(item.reward30s);
+    if (item.reward) { if (Array.isArray(item.reward)) _allRewKeys = _allRewKeys.concat(item.reward); else _allRewKeys.push(item.reward); }
+    var rewD = (!item.reward30s && !Array.isArray(item.reward) && item.reward && typeof NOTE_ITEM_DATA !== 'undefined' && NOTE_ITEM_DATA[item.reward]) ? NOTE_ITEM_DATA[item.reward] : null;
     var rewOk = rewD ? SfSnow.isUnlocked(item.reward) : false;
-    var _mc_hasItem = item.reward && (!rewOk || item.rewardRepeatable);
+    var _mc_hasItem = _allRewKeys.length ? _allRewKeys.some(function(k){return !SfSnow.isUnlocked(k);}) : (item.reward && item.rewardRepeatable);
     var _mc_chara = item.chara || (item.reward ? (Array.isArray(item.reward) ? 'hayate' : (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate')) : '');
-    var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : _mc_chara === 'pink' ? ['#f9a8d4','rgba(249,168,212,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
+    var _mc_col   = _mc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _mc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : _mc_chara === 'pink' ? ['#f9a8d4','rgba(249,168,212,0.4)'] : _mc_chara === 'orange' ? ['#fb923c','rgba(251,146,60,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
     var glowStyle = (_mc_hasItem || item.alwaysGlow) ? 'animation:item-glow-' + _mc_chara + ' 2.5s ease-in-out infinite;' : '';
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     var newRight = '12px';
-    if (Array.isArray(item.reward) && item.reward.length) {
+    if (item.reward30s || (Array.isArray(item.reward) && item.reward.length > 0 && item.rewardRepeatable === undefined)) {
+      // reward30s or 複数固定報酬: unlock状態で色分けして表示
+      var iconsHtml = '';
+      var iconOffset = 10;
+      _allRewKeys.slice().reverse().forEach(function(k) {
+        var d = NOTE_ITEM_DATA[k];
+        if (!d) return;
+        var owned = SfSnow.isUnlocked(k);
+        iconsHtml += '<img src="' + d.img + '" title="' + (owned ? d.name : '???') + '" style="position:absolute;top:10px;right:' + iconOffset + 'px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (owned ? '0.85' : '0.22') + ';filter:' + (owned ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;">';
+        iconOffset += 24;
+      });
+      html += iconsHtml;
+      newRight = (iconOffset + 2) + 'px';
+    } else if (Array.isArray(item.reward) && item.reward.length) {
       var iconsHtml = '';
       var iconOffset = 10;
       item.reward.slice().reverse().forEach(function(k) {

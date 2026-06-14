@@ -850,12 +850,11 @@
         </div>
         <div class="il-body">
           <div id="il-boutonniere-locked" style="padding:8px 0 16px;">
-            <span class="item-log-desc locked">まだもっていません</span>
+            <a href="/room/undertone/" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-decoration:none;">Under tone で鑑定</a>
           </div>
-          <div id="il-boutonniere-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
-            <img src="../../item/boutonniere_kouta.webp" alt="コウタのブートニア" style="width:180px;margin:0 auto 18px;display:block;">
-            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;">コウタのブートニア</p>
-            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">赤い石をあしらった、白い花のブートニア。<br>派手な誓いではなく、長い時間をかけて残った想いを、胸元にそっと留めている。<br>その赤は、言葉にしなかった絆の色。</p>
+          <div id="il-boutonniere-owned" style="display:none;text-align:center;padding:16px 0 12px;">
+            <img src="../../item/boutonniere_kouta.webp" alt="コウタのブートニア" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin:0 auto 10px;display:block;cursor:pointer;box-shadow:0 0 16px rgba(252,165,165,0.15);" onclick="document.getElementById('boutonniere-desc-popup').style.display='flex'">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;opacity:0.8;">― 鑑定済み ―</p>
           </div>
         </div>
       </div>
@@ -878,6 +877,23 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- ブートニア鑑定ポップアップ -->
+  <div id="boutonniere-desc-popup" style="display:none;position:fixed;inset:0;z-index:695;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('boutonniere-desc-popup').style.display='none'">
+    <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(252,165,165,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;margin:auto;" onclick="event.stopPropagation()">
+      <img src="../../item/boutonniere_kouta.webp" alt="コウタのブートニア" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin:0 auto 14px;display:block;box-shadow:0 0 28px rgba(252,165,165,0.18);">
+      <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:20px;">コウタのブートニア</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;white-space:pre-line;text-align:left;margin-bottom:24px;">ガーネットをあしらった、白い花のブートニア。
+
+派手な誓いではなく、
+長い時間をかけて残った想いを、
+胸元にそっと留めている。
+
+その赤は、
+言葉にしなかった絆の色。</p>
+      <button onclick="document.getElementById('boutonniere-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+    </div>
   </div>
 
   <!-- 石鑑定ポップアップ -->

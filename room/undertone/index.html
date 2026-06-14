@@ -4345,7 +4345,16 @@ function submitUtPw() {
       showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……持っていないな」');
       return;
     }
-    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
+    var _main3 = ['pendant_hinata','earring_hayate','ring_kouta'];
+    var _main3Done = _main3.every(function(k){ return SfSnow.isUnlocked(k); });
+    var available = STONE_ITEMS.filter(function(s) {
+      if (!SfSnow.isUnlocked(s.key)) {
+        // boutonniere_kouta はメイン3つ鑑定済み後にのみ解放
+        if (s.key === 'boutonniere_kouta' && !_main3Done) return false;
+        return true;
+      }
+      return false;
+    });
     if (!available.length) {
       showItemMsgPopup('../../item/rawstone_tsumetai.webp', '「……全部、揃ってる」');
       return;
