@@ -6130,6 +6130,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       sub: '― コウタの音が、最初に鳴り始めた場所 ―',
       origin: '',
       cost: { item: 'proteincoffee', amount: 1 },
+      reward: 'item_kouta_zippo',
       related: { url: 'https://ncode.syosetu.com/n5432lz/', title: '始まりのベース', date: '2026.06.14', type: '短篇' },
       sections: [
         { heading: null, body: '楽器店で働くコウタは、ベースを選ぶ中学生の姿に、昔の自分を重ねる。\n\n一本のベースとの出会いが、ヒナタとハヤテとの音につながり、Snow flakesの始まりになっていく。\n\n音は変わらないまま、鳴らし方だけを変えてきたコウタの、静かな始まりの物語。' },
@@ -6600,6 +6601,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
     var alreadyHad = SfSnow.isUnlocked(id);
     SfSnow.unlockItem(id);
+    if (item.reward && !SfSnow.isUnlocked(item.reward)) {
+      SfSnow.unlockItem(item.reward);
+      if (typeof renderItemRows === 'function') renderItemRows();
+      setTimeout(function() { showNoteItemGet(item.reward); }, 600);
+    }
     renderNotes(); // → initNotesCarousel()
     setTimeout(function() { scrollToNotes(id); }, 100);
     showItemExchangePopup('☕', 'プロテインコーヒー', alreadyHad, 'を飲みました');
