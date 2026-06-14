@@ -3369,13 +3369,15 @@ function submitUtPw() {
     stoneFoundEl.style.display = 'none';
     stoneFoundEl.textContent = '';
     var stoneFound = false;
-    var dropRate = (_firstHotspotOfLoop) ? 1.0 : 0.20;
+    var _neverFoundStone = !localStorage.getItem('sf_ut_ever_found_stone');
+    var dropRate = (_firstHotspotOfLoop || _neverFoundStone) ? 1.0 : 0.20;
     if (exploreCount >= 1 && Math.random() < dropRate) {
       var seenBefore = getSeenRawTypes();
       var raw = rollRawStone();
       var isFirstFind = seenBefore.indexOf(raw.id) === -1;
       var isLoopFirst = _firstHotspotOfLoop;
       _firstHotspotOfLoop = false;
+      localStorage.setItem('sf_ut_ever_found_stone', 'true');
       addRawStone(raw.id);
       updateAppraiseBtn();
       stoneFound = true;
