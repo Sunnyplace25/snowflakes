@@ -3370,7 +3370,8 @@ function submitUtPw() {
     stoneFoundEl.textContent = '';
     var stoneFound = false;
     var _neverFoundStone = !localStorage.getItem('sf_ut_ever_found_stone');
-    var dropRate = (_firstHotspotOfLoop || _neverFoundStone) ? 0.90 : 0.20;
+    var _isPuddle = spot.audio && spot.audio.indexOf('puddle') !== -1;
+    var dropRate = _isPuddle ? 1.0 : (_firstHotspotOfLoop || _neverFoundStone) ? 0.90 : 0.20;
     if (exploreCount >= 1 && Math.random() < dropRate) {
       var seenBefore = getSeenRawTypes();
       var raw = rollRawStone();
