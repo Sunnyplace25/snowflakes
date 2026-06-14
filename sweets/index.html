@@ -1206,6 +1206,10 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-ring-img" src="../item/ring_kouta.webp" alt="ring" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-ring-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-ring-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
+                <tr id="item-row-boutonniere-kouta" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-boutonniere-kouta-img" src="../item/boutonniere_kouta.webp" alt="boutonniere_kouta" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-boutonniere-kouta-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-boutonniere-kouta-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
+                </tr>
                 <tr id="item-row-shiori" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-shiori-img" src="../item/shiori_kouta.webp" alt="shiori" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-shiori-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-shiori-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
@@ -1253,44 +1257,64 @@
               <span id="rare-event-arrow" style="font-size:13px;color:#f9a8d4;transition:transform 0.3s;">›</span>
             </div>
             <div id="rare-event-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
-              <div style="padding:20px 8px 12px;display:flex;flex-direction:column;gap:24px;">
+              <div style="padding:12px 0 4px;display:flex;flex-direction:column;gap:4px;">
 
-                <!-- ▶ 2026 Spring -->
-                <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f9a8d4;margin:0;">▶ 2026 Spring</p>
+                <!-- ▶ 2026 Spring サブアコーディオン -->
+                <div>
+                  <div onclick="toggleEventSeason('spring')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;border-radius:6px;background:rgba(249,168,212,0.05);">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#f9a8d4;">▶ 2026 Spring</span>
+                    <span id="rare-event-spring-arrow" style="font-size:13px;color:#f9a8d4;transition:transform 0.3s;">›</span>
+                  </div>
+                  <div id="rare-event-spring-body" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease;">
+                    <div style="padding:20px 8px 12px;display:flex;flex-direction:column;gap:24px;">
 
-                <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-                  <img id="spring-rare-bp-img" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:120px;height:180px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
-                  <div style="text-align:center;">
-                    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-                      <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
-                      <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                        <img id="spring-rare-bp-img" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:120px;height:180px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
+                        <div style="text-align:center;">
+                          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                            <span id="spring-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Spring バックステージパス</span>
+                            <span id="spring-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                          </div>
+                          <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
+                        </div>
+                      </div>
+
+                      <div id="spring-rare-shikishi-wrap" style="display:none;flex-direction:column;align-items:center;gap:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;width:100%;">
+                        <img id="spring-rare-shikishi-img" src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="width:100px;height:100px;object-fit:contain;opacity:0.9;transition:all 0.3s;cursor:pointer;" onclick="openShikishiLightbox()">
+                        <div style="text-align:center;">
+                          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                            <span id="spring-rare-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#e2e8f0;">SWEETs 2026 Spring 色紙</span>
+                            <span id="spring-rare-shikishi-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
+                          </div>
+                          <p id="spring-rare-shikishi-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2;margin:0;">SWEETs 2026 Springの記念に残された、ヒナタの色紙。<br>多くは語らない文字と、少しだけ長く払われたサインが残っている。</p>
+                        </div>
+                      </div>
+
                     </div>
-                    <p id="spring-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
                   </div>
                 </div>
 
-                <div id="spring-rare-shikishi-wrap" style="display:none;flex-direction:column;align-items:center;gap:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;width:100%;">
-                  <img id="spring-rare-shikishi-img" src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="width:100px;height:100px;object-fit:contain;opacity:0.9;transition:all 0.3s;cursor:pointer;" onclick="openShikishiLightbox()">
-                  <div style="text-align:center;">
-                    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-                      <span id="spring-rare-shikishi-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#e2e8f0;">SWEETs 2026 Spring 色紙</span>
-                      <span id="spring-rare-shikishi-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#f9a8d4;letter-spacing:3px;"></span>
-                    </div>
-                    <p id="spring-rare-shikishi-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2;margin:0;">SWEETs 2026 Springの記念に残された、ヒナタの色紙。<br>多くは語らない文字と、少しだけ長く払われたサインが残っている。</p>
+                <!-- ▶ 2026 Summer サブアコーディオン -->
+                <div>
+                  <div onclick="toggleEventSeason('summer')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;border-radius:6px;background:rgba(125,211,252,0.05);">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#7dd3fc;">▶ 2026 Summer</span>
+                    <span id="rare-event-summer-arrow" style="font-size:13px;color:#7dd3fc;transition:transform 0.3s;">›</span>
                   </div>
-                </div>
+                  <div id="rare-event-summer-body" style="overflow:hidden;max-height:0;transition:max-height 0.4s ease;">
+                    <div style="padding:20px 8px 12px;display:flex;flex-direction:column;gap:24px;">
 
-                <!-- ▶ 2026 Summer -->
-                <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#7dd3fc;margin:8px 0 0;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;">▶ 2026 Summer</p>
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                        <img id="summer-rare-bp-img" src="../item/backstage_pass_summer.webp" alt="バックステージパス" style="width:120px;height:180px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
+                        <div style="text-align:center;">
+                          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                            <span id="summer-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Summer バックステージパス</span>
+                            <span id="summer-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#7dd3fc;letter-spacing:3px;"></span>
+                          </div>
+                          <p id="summer-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
+                        </div>
+                      </div>
 
-                <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-                  <img id="summer-rare-bp-img" src="../item/backstage_pass_summer.webp" alt="バックステージパス" style="width:120px;height:180px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
-                  <div style="text-align:center;">
-                    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-                      <span id="summer-rare-bp-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">SWEETs 2026 Summer バックステージパス</span>
-                      <span id="summer-rare-bp-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#7dd3fc;letter-spacing:3px;"></span>
                     </div>
-                    <p id="summer-rare-bp-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
                   </div>
                 </div>
 
@@ -5109,6 +5133,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_akari.webp',
         charaLine: '好きになりました！'
       },
+      boutonniere_kouta: {
+        noteCardId: null,
+        img: '../item/boutonniere_kouta.webp',
+        name: 'コウタのブートニア',
+        desc: '晴れの日の思い出。',
+        color: '#fca5a5',
+        chara: 'KOUTA', charaColor: '#fca5a5',
+        charaImg: '../plofile/chibi_kouta.webp',
+        charaLine: '……きれいだったな'
+      },
       boutonniere_hayate: {
         noteCardId: null,
         img: '../item/boutonniere_hayate.webp',
@@ -5703,6 +5737,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-book-kouta-img',   'ri-book-kouta-name',   'ri-book-kouta-check',   'book_kouta',               '返しそびれた本',              null, 'https://ncode.syosetu.com/n9009lo/70');
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',       'Snow flakes ライブチケット',  null, 'https://www.instagram.com/reel/DXcFCOZlpRK/');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',               '黒い石のシルバーリング');
+    updateRareItem('ri-boutonniere-kouta-img', 'ri-boutonniere-kouta-name', 'ri-boutonniere-kouta-check', 'boutonniere_kouta', 'コウタのブートニア');
     updateRareItem('ri-boutonniere-img', 'ri-boutonniere-name', 'ri-boutonniere-check', 'boutonniere_hayate', 'ハヤテのブートニア', null, 'https://ncode.syosetu.com/n9009lo/186');
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
@@ -5762,6 +5797,24 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function toggleRareSection(chara) {
     var body  = document.getElementById('rare-' + chara + '-body');
     var arrow = document.getElementById('rare-' + chara + '-arrow');
+    if (!body) return;
+    var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+    if (isOpen) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(function() { body.style.maxHeight = '0'; });
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.addEventListener('transitionend', function onEnd() {
+        body.removeEventListener('transitionend', onEnd);
+        if (body.style.maxHeight !== '0px') body.style.maxHeight = 'none';
+      });
+    }
+    if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+  }
+
+  function toggleEventSeason(season) {
+    var body  = document.getElementById('rare-event-' + season + '-body');
+    var arrow = document.getElementById('rare-event-' + season + '-arrow');
     if (!body) return;
     var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
     if (isOpen) {
