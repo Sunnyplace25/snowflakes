@@ -679,10 +679,11 @@
     }
     .exch-close-btn:hover { color:#cbd5e1; }
   /* ── Notes 3D Carousel ── */
-  .nc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
-  .nc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
-  .nc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
-  .nc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
+  .nc-card{position:absolute;width:260px;height:140px;top:0;left:0;border-radius:14px;padding:18px 20px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
+  .mc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
+  .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
+  .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
+  .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
@@ -6734,7 +6735,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var _mChara = item.chara || (item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '');
       var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : _mChara === 'pink' ? '#f9a8d4' : '#fde68a';
       var c = document.createElement('div');
-      c.className = 'nc-card';
+      c.className = 'mc-card';
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
@@ -6793,7 +6794,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var drum = document.getElementById('music-drum');
     if (!drum) return;
     drum.style.transform = 'rotateY(' + (-_mc.idx * _mc.step) + 'deg)';
-    drum.querySelectorAll('.nc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _mc.idx); });
+    drum.querySelectorAll('.mc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _mc.idx); });
     document.querySelectorAll('#music-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _mc.idx); });
   }
 
@@ -7282,7 +7283,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     #sf-player { width:calc(100vw - 32px); height:152px; bottom:16px; right:16px; }
     #sf-player iframe { height:152px; }
     #ut-nagi-float { bottom:196px !important; }
-    .nc-card { width:172px !important; height:96px !important; padding:10px 12px !important; }
+    .mc-card { width:172px !important; height:96px !important; padding:10px 12px !important; }
     #music-drum { width:172px !important; height:96px !important; }
     #music-scene { height:116px !important; }
   }
