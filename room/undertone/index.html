@@ -4209,6 +4209,9 @@ function submitUtPw() {
     return top;
   }
   function rollRawStone() {
+    // 初回は冷たい石を保証
+    var seen = getSeenRawTypes();
+    if (seen.indexOf('tsumetai') === -1) return RAW_STONE_TYPES[2];
     var r = Math.random();
     if (r < 0.05) return RAW_STONE_TYPES[2];
     if (r < 0.30) return RAW_STONE_TYPES[1];
