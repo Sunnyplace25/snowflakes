@@ -4605,7 +4605,15 @@ function submitUtPw() {
     var rawLabel = (RAW_STONE_TYPES.filter(function(t){ return t.id === rawId; })[0] || {}).label || rawId;
     addAppraisedStone(rawId);
     updateAppraiseBtn();
-    var available = STONE_ITEMS.filter(function(s) { return !SfSnow.isUnlocked(s.key); });
+    var _main3b = ['pendant_hinata','earring_hayate','ring_kouta'];
+    var _main3bDone = _main3b.every(function(k){ return SfSnow.isUnlocked(k); });
+    var available = STONE_ITEMS.filter(function(s) {
+      if (!SfSnow.isUnlocked(s.key)) {
+        if (s.key === 'boutonniere_kouta' && !_main3bDone) return false;
+        return true;
+      }
+      return false;
+    });
     if (!available.length) {
       showAppraisePopup(rawId, rawLabel, null);
       setTimeout(function() { showSKPopup('NAGI', '……全部、揃ってる'); }, 800);
