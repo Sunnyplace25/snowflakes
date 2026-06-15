@@ -3862,7 +3862,7 @@ function submitUtPw() {
       if (beerDrinkBtn) beerDrinkBtn.style.opacity = bCnt > 0 ? '1' : '0.4';
       if (beerGiveBtn) beerGiveBtn.style.display = bCnt > 0 ? 'block' : 'none';
     }
-    // クッキー表示（3-1読了後）
+    // クッキー表示（3-2読了後）
     var ch41Read = _seenProseScenes.has(15);
     var ch42Read = _seenProseScenes.has(16);
     var cakeRow      = document.getElementById('shop-cake-row');
@@ -3872,7 +3872,7 @@ function submitUtPw() {
     if (cakeRow && cakeCount) {
       var ckCnt = _mItems['cookie'] || 0;
       cakeCount.textContent = '× ' + ckCnt;
-      cakeRow.style.display = ch41Read ? 'flex' : 'none';
+      cakeRow.style.display = _seenProseScenes.has(16) ? 'flex' : 'none';
       if (cakeEatBtn) cakeEatBtn.style.opacity = ckCnt > 0 ? '1' : '0.4';
       // 渡す：3-2読了後かつ所持あり
       if (cakeGiveBtn) cakeGiveBtn.style.display = (ch42Read && ckCnt > 0) ? 'block' : 'none';
