@@ -4350,7 +4350,7 @@ function submitUtPw() {
       return;
     }
     var _main3 = ['pendant_hinata','earring_hayate','ring_kouta'];
-    var _main3Done = _main3.every(function(k){ return SfSnow.isUnlocked(k); });
+    var _main3Done = _main3.every(function(k){ return localStorage.getItem('sf_ut_stone_revealed_' + k) === 'true'; });
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
         // boutonniere_kouta はメイン3つ鑑定済み後にのみ解放
@@ -4610,7 +4610,7 @@ function submitUtPw() {
     addAppraisedStone(rawId);
     updateAppraiseBtn();
     var _main3b = ['pendant_hinata','earring_hayate','ring_kouta'];
-    var _main3bDone = _main3b.every(function(k){ return SfSnow.isUnlocked(k); });
+    var _main3bDone = _main3b.every(function(k){ return localStorage.getItem('sf_ut_stone_revealed_' + k) === 'true'; });
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
         if (s.key === 'boutonniere_kouta' && !_main3bDone) return false;
