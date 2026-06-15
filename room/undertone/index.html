@@ -4272,7 +4272,7 @@ function submitUtPw() {
           lbl.textContent = cnt > 0 ? t.label : '???';
           var num = document.createElement('p');
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:14px;color:' + (cnt > 0 ? '#c4b5fd' : '#334155') + ';';
-          num.textContent = isTsumetai && cnt === 0 ? '× 1' : '× ' + cnt;
+          num.textContent = '× ' + cnt;
           div.appendChild(img); div.appendChild(lbl); div.appendChild(num);
           typesWrap.appendChild(div);
         });
