@@ -2179,10 +2179,10 @@ function submitUtPw() {
         if (_r1 > 0) { updateCh2Btn(); anyActive = true; }
         else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
       }
-      // 14日 章間タイマー
+      // 2日 章間タイマー
       var _ch2At = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
       if (_ch2At) {
-        var _r2 = Math.max(0, 14*86400000 - (Date.now() - _ch2At));
+        var _r2 = Math.max(0, 2*86400000 - (Date.now() - _ch2At));
         var el2 = document.getElementById('ch2-lock-timer');
         if (el2 && el2.parentElement && el2.parentElement.parentElement &&
             el2.parentElement.parentElement.style.display !== 'none') {
@@ -2192,7 +2192,7 @@ function submitUtPw() {
       }
       var _ch3At = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
       if (_ch3At) {
-        var _r3 = Math.max(0, 14*86400000 - (Date.now() - _ch3At));
+        var _r3 = Math.max(0, 2*86400000 - (Date.now() - _ch3At));
         var el3 = document.getElementById('ch3-lock-timer');
         if (el3 && el3.parentElement && el3.parentElement.parentElement &&
             el3.parentElement.parentElement.style.display !== 'none') {
@@ -2995,9 +2995,9 @@ function submitUtPw() {
         setTimeout(function() { showChapterUnlock(1, 5); }, 500);
       }
     }
-    // 14日タイマーチェック：2章自動解放
+    // 2日タイマーチェック：2章自動解放
     var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
-    if (_ch2UnlockAt && !ch3Unlocked && Date.now() - _ch2UnlockAt >= 14 * 86400000) {
+    if (_ch2UnlockAt && !ch3Unlocked && Date.now() - _ch2UnlockAt >= 2 * 86400000) {
       ch3Unlocked = true;
       localStorage.setItem('sf_undertone_ch3_unlocked', 'true');
       if (!localStorage.getItem('sf_ut_ch2_unlock_shown')) {
@@ -3005,9 +3005,9 @@ function submitUtPw() {
         setTimeout(function() { showChapterUnlock(2, 10); }, 500);
       }
     }
-    // 14日タイマーチェック：3章自動解放
+    // 2日タイマーチェック：3章自動解放
     var _ch3UnlockAt = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
-    if (_ch3UnlockAt && !ch4Unlocked && Date.now() - _ch3UnlockAt >= 14 * 86400000) {
+    if (_ch3UnlockAt && !ch4Unlocked && Date.now() - _ch3UnlockAt >= 2 * 86400000) {
       ch4Unlocked = true;
       localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
       if (!localStorage.getItem('sf_ut_ch3_unlock_shown')) {
@@ -3021,7 +3021,7 @@ function submitUtPw() {
     if (between3) {
       between3.style.display = (ch1Done && !ch3Unlocked) ? '' : 'none';
       if (ch1Done && !ch3Unlocked) {
-        var _rem2 = _ch2UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch2UnlockAt)) : 0;
+        var _rem2 = _ch2UnlockAt ? Math.max(0, 2*86400000 - (Date.now() - _ch2UnlockAt)) : 0;
         var el2 = document.getElementById('ch2-lock-timer');
         if (el2) el2.textContent = _rem2 > 0 ? formatLockDays(_rem2) : '';
       }
@@ -3032,7 +3032,7 @@ function submitUtPw() {
     if (between4) {
       between4.style.display = (ch2Done && !ch4Unlocked) ? '' : 'none';
       if (ch2Done && !ch4Unlocked) {
-        var _rem3 = _ch3UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch3UnlockAt)) : 0;
+        var _rem3 = _ch3UnlockAt ? Math.max(0, 2*86400000 - (Date.now() - _ch3UnlockAt)) : 0;
         var el3 = document.getElementById('ch3-lock-timer');
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
       }
