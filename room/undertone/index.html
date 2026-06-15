@@ -1830,6 +1830,7 @@ function submitUtPw() {
   var STONE_ITEMS = [
     { key:'pendant_hinata',    name:'青い石のネックレス',         nameAppraised:'カイヤナイトのネックレス',          img:'../../item/pendant_hinata.webp',    char:'hinata' },
     { key:'earring_hayate',    name:'黄色い石のピアス',           nameAppraised:'シトリンのピアス',                  img:'../../item/earring_hayate.webp',    char:'hayate' },
+    { key:'cravat_hayate',    name:'水色の石のクラバットピン',   nameAppraised:'アクアマリンのクラバットピン',       img:'../../item/cravat_hayate.webp',     char:'hayate' },
     { key:'ring_kouta',        name:'黒い石のシルバーリング',     nameAppraised:'スモーキークォーツのシルバーリング', img:'../../item/ring_kouta.webp',        char:'kouta'  },
     { key:'boutonniere_kouta', name:'赤い石のブートニア',         nameAppraised:'コウタのブートニア',                img:'../../item/boutonniere_kouta.webp', char:'kouta'  },
   ];
@@ -2339,6 +2340,14 @@ function submitUtPw() {
         if (_vol >= 0.12) clearInterval(_fadeIn);
       }, 40);
     }
+    // クラバットピン入手演出
+    if (localStorage.getItem('sf_ut_cravat_get_pending') === '1') {
+      localStorage.removeItem('sf_ut_cravat_get_pending');
+      setTimeout(function() {
+        var cov = document.getElementById('cravat-get-overlay');
+        if (cov) cov.style.display = 'flex';
+      }, 600);
+    }
   };
 
   /* ── Chapter Unlock Popup ── */
@@ -2369,6 +2378,10 @@ function submitUtPw() {
     if (nameEl) nameEl.textContent = name;
     if (imgEl)  imgEl.src = imgSrc;
     ov.style.display = 'flex';
+  };
+  window.closeCravatGet = function() {
+    var ov = document.getElementById('cravat-get-overlay');
+    if (ov) ov.style.display = 'none';
   };
   window.closeItemUnlock = function() {
     var ov = document.getElementById('item-unlock-overlay');
@@ -3203,12 +3216,16 @@ function submitUtPw() {
           startCountdownTimers();
         }
       }
-      // 1-5読了 → CHAPTER 1 COMPLETE + Hayate楽曲解放 + 2章14日ロック
+      // 1-5読了 → CHAPTER 1 COMPLETE + Hayate楽曲解放 + 2章2日ロック + クラバットピン入手
       if (idx === 9 && !localStorage.getItem('sf_ut_ch1_complete')) {
         localStorage.setItem('sf_ut_ch1_complete', 'true');
         localStorage.setItem('sf_ut_hayate_unlocked', 'true');
         if (!localStorage.getItem('sf_ut_ch2_unlock_at')) {
           localStorage.setItem('sf_ut_ch2_unlock_at', String(Date.now()));
+        }
+        if (!localStorage.getItem('sf_ut_cravat_found')) {
+          localStorage.setItem('sf_ut_cravat_found', '1');
+          localStorage.setItem('sf_ut_cravat_get_pending', '1');
         }
         renderChapterList();
         _pendingComplete = function() { showChapterComplete(1, 'Under tone', 'Vo.Hayate', 'sound/undertone_hayate.mp3'); };
@@ -4355,6 +4372,8 @@ function submitUtPw() {
       if (!SfSnow.isUnlocked(s.key)) {
         // boutonniere_kouta はメイン3つ鑑定済み後にのみ解放
         if (s.key === 'boutonniere_kouta' && !_main3Done) return false;
+        // cravat_hayate は1-5読了後にのみ解放
+        if (s.key === 'cravat_hayate' && !localStorage.getItem('sf_ut_cravat_found')) return false;
         return true;
       }
       return false;
@@ -4614,6 +4633,7 @@ function submitUtPw() {
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
         if (s.key === 'boutonniere_kouta' && !_main3bDone) return false;
+        if (s.key === 'cravat_hayate' && !localStorage.getItem('sf_ut_cravat_found')) return false;
         return true;
       }
       return false;
@@ -5559,6 +5579,14 @@ function submitUtPw() {
   <p id="iu-name" style="font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;"></p>
   <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:56px;text-align:center;">を渡すが解放されました</p>
   <button onclick="closeItemUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+</div>
+<!-- Cravat Item Get Overlay -->
+<div id="cravat-get-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#475569;margin-bottom:28px;text-align:center;">NEW ITEM</p>
+  <img src="../../item/cravat_hayate.webp" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:18px;margin-bottom:24px;box-shadow:0 0 32px rgba(253,230,138,0.18);">
+  <p style="font-family:'Noto Serif JP',serif;font-size:15px;letter-spacing:3px;color:#e2e8f0;margin-bottom:10px;text-align:center;">水色の石のクラバットピン</p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:56px;text-align:center;">を入手しました</p>
+  <button onclick="closeCravatGet()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#334155'">── 続ける ──</button>
 </div>
 <!-- Chocolate Unlock Overlay -->
 <div id="choco-unlock-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">

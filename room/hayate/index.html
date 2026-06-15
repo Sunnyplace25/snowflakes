@@ -780,6 +780,30 @@
         </div>
       </div>
 
+      <!-- 水色の石のクラバットピン -->
+      <div class="il-item" id="il-cravat-item">
+        <div class="il-header" onclick="toggleIlItem('il-cravat-item')">
+          <span class="item-log-tag" id="il-cravat-tag"><img src="../../item/cravat_hayate.webp" alt="item" style="filter:grayscale(1);opacity:0.3;">???</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-cravat-locked" style="padding:8px 0 16px;">
+            <a href="../undertone/" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-decoration:none;">Under tone で解放</a>
+          </div>
+          <div id="il-cravat-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:12px;margin-bottom:12px;">
+            <img id="il-cravat-img" src="../../item/cravat_hayate.webp" alt="水色の石のクラバットピン" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;">水色の石のクラバットピン</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;margin-bottom:10px;">水色の石をあしらった、小さなクラバットピン。</p>
+            <div id="il-cravat-not-appraised">
+              <a href="../undertone/" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-decoration:none;">Under tone で鑑定</a>
+            </div>
+            <div id="il-cravat-appraise-content" style="display:none;">
+              <p onclick="document.getElementById('cravat-desc-popup').style.display='flex'" style="margin-top:14px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fde68a;cursor:pointer;opacity:0.7;">── 鑑定する ──</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 黄色い石のピアス -->
       <div class="il-item" id="il-earring-item">
         <div class="il-header" onclick="toggleIlItem('il-earring-item')">
@@ -824,6 +848,20 @@
 場の空気を少しだけ軽くする、
 ハヤテによく似た石。</p>
       <button onclick="document.getElementById('stone-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+    </div>
+  </div>
+
+  <!-- クラバットピン鑑定ポップアップ -->
+  <div id="cravat-desc-popup" style="display:none;position:fixed;inset:0;z-index:695;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('cravat-desc-popup').style.display='none'">
+    <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(253,230,138,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;margin:auto;" onclick="event.stopPropagation()">
+      <img src="../../item/cravat_hayate.webp" alt="アクアマリンのクラバットピン" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin:0 auto 14px;display:block;box-shadow:0 0 28px rgba(253,230,138,0.18);">
+      <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:20px;">アクアマリンのクラバットピン</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;white-space:pre-line;text-align:left;margin-bottom:24px;">人との繋がりや調和を象徴する
+アクアマリンをあしらったクラバットピン。
+
+結婚式の日、
+ハヤテの胸元を飾っていた。</p>
+      <button onclick="document.getElementById('cravat-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
     </div>
   </div>
 
@@ -1828,6 +1866,25 @@
         if (bOwned)  bOwned.style.display  = '';
         var boutonniereItem = document.getElementById('il-boutonniere-item');
         if (boutonniereItem) boutonniereItem.classList.add('open');
+      }
+
+      // 水色の石のクラバットピン（Under tone 1-5読了で入手）
+      if (localStorage.getItem('sf_ut_cravat_found') === '1') {
+        revealItemTag('il-cravat-tag', '../../item/cravat_hayate.webp', '水色の石のクラバットピン');
+        var crLocked = document.getElementById('il-cravat-locked');
+        var crOwned  = document.getElementById('il-cravat-owned');
+        if (crLocked) crLocked.style.display = 'none';
+        if (crOwned)  crOwned.style.display  = '';
+        var cravatItem = document.getElementById('il-cravat-item');
+        if (cravatItem) cravatItem.classList.add('open');
+        if (SfSnow.isUnlocked('cravat_hayate') && localStorage.getItem('sf_ut_stone_revealed_cravat_hayate') === 'true') {
+          var crNotApp = document.getElementById('il-cravat-not-appraised');
+          var crAppContent = document.getElementById('il-cravat-appraise-content');
+          var crImg = document.getElementById('il-cravat-img');
+          if (crNotApp) crNotApp.style.display = 'none';
+          if (crAppContent) crAppContent.style.display = '';
+          if (crImg) { crImg.style.cursor = 'pointer'; crImg.onclick = function() { document.getElementById('cravat-desc-popup').style.display = 'flex'; }; }
+        }
       }
 
       // 黄色い石のピアス（Under tone MV最後まで視聴で入手）
