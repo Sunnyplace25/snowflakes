@@ -1688,7 +1688,8 @@ function submitUtPw() {
         <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
           <img id="celtic-b-img" src="" alt="" style="width:140px;height:210px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(167,139,250,0.6)) drop-shadow(0 0 40px rgba(124,58,237,0.3));flex-shrink:0;">
           <div style="text-align:center;width:100%;">
-            <p id="celtic-b-pos" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#475569;margin-bottom:12px;"></p>
+            <p id="celtic-b-pos" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;margin-bottom:4px;"></p>
+            <p id="celtic-b-pos-desc" style="font-family:'Noto Serif JP',serif;font-size:10px;color:#475569;letter-spacing:1px;margin-bottom:14px;"></p>
             <p id="celtic-b-name" style="font-family:'Noto Serif JP',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></p>
             <p id="celtic-b-arch" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;margin-bottom:20px;"></p>
             <p id="celtic-b-reading" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:2.4;"></p>
@@ -4837,8 +4838,20 @@ function submitUtPw() {
   function getCardImg(card) { return CARD_IMGS[card.arch] || 'card_back_b.webp'; }
 
   var CELTIC_POSITIONS = [
-    '今置いている音', '邪魔している音', '隠れている音', '過去に残った音', '近づいている音',
-    '手の中の音', '自分でも知らない音', '外から来る音', '怖れている音', '続く音'
+    '今置いている音', 'ぶつかっている音', '根にある音', '残っている音', '近づく音',
+    '手の中の音', '内側で鳴る音', '外から響く音', '揺れている音', '続いていく音'
+  ];
+  var CELTIC_MEANINGS = [
+    '今のあなたの状態',
+    '今、引っかかっていること',
+    'ずっと前から影響していること',
+    '最近まで影響していたこと',
+    'これから起こりそうな流れ',
+    'あなた自身がどう向き合っているか',
+    '自分では気づきにくい本音',
+    '周囲や環境から受けている影響',
+    '望んでいることと、怖れていること',
+    'この先に残っていく結果'
   ];
   var CELTIC_NAGI_LINES = ['……十枚か', '普段は見ない', '見えすぎるからな'];
   var CELTIC_END_LINES  = ['忘れるなら今のうち', '残る時は、勝手に残る'];
@@ -5009,7 +5022,8 @@ function submitUtPw() {
     var prog   = document.getElementById('celtic-b-progress');
     var card   = document.getElementById('celtic-b-card');
     var imgEl  = document.getElementById('celtic-b-img');
-    var posEl  = document.getElementById('celtic-b-pos');
+    var posEl     = document.getElementById('celtic-b-pos');
+    var posDescEl = document.getElementById('celtic-b-pos-desc');
     var nameEl = document.getElementById('celtic-b-name');
     var archEl = document.getElementById('celtic-b-arch');
     var readEl = document.getElementById('celtic-b-reading');
@@ -5040,7 +5054,8 @@ function submitUtPw() {
       imgEl.style.display = '';
       imgEl.style.transform = isRev ? 'rotate(180deg)' : '';
     }
-    if (posEl) posEl.textContent  = _celticBNums[idx] + '   ' + CELTIC_POSITIONS[idx];
+    if (posEl)     posEl.textContent     = _celticBNums[idx] + '   ' + CELTIC_POSITIONS[idx];
+    if (posDescEl) posDescEl.textContent = CELTIC_MEANINGS[idx] || '';
     if (nameEl) nameEl.textContent = c.card.name + (isRev ? '　逆位置' : '');
     if (archEl) archEl.textContent = c.card.num + '  ' + c.card.arch;
     if (readEl) { readEl.textContent = reading; readEl.style.color = '#94a3b8'; readEl.style.fontSize = '13px'; }
