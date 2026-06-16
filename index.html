@@ -912,9 +912,9 @@ function sfShare() {
     (function() {
       // ── 短篇カード設定 ──────────────────────────────────────
       // 短篇を投稿したら以下3つを更新する
-      var SHORT_PUB   = new Date('2026-06-13T12:00:00+09:00');
-      var SHORT_TITLE = '始まりのベース';
-      var SHORT_URL   = 'https://ncode.syosetu.com/n5432lz/';
+      var SHORT_PUB   = new Date('2026-06-18T12:00:00+09:00');
+      var SHORT_TITLE = 'Moon Veil';
+      var SHORT_URL   = 'https://ncode.syosetu.com/n9832lr/';
       // ────────────────────────────────────────────────────────
 
       var SHOW_DAYS = 3;
@@ -972,6 +972,18 @@ function sfShare() {
 
       updateShort();
       setInterval(updateShort, 60000); // 1分ごとに確認
+
+      // Moon Veil カード：6/18 12:00以降に表示
+      var MOONVEIL_PUB = new Date('2026-06-18T12:00:00+09:00');
+      function updateMoonVeil() {
+        var card = document.getElementById('short-moonveil-card');
+        if (!card) return;
+        if (Date.now() >= MOONVEIL_PUB.getTime()) {
+          card.style.display = 'flex';
+        }
+      }
+      updateMoonVeil();
+      setInterval(updateMoonVeil, 60000);
     })();
   </script>
 
@@ -1193,6 +1205,20 @@ function sfShare() {
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">SHORT STORIES</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2">短編作品</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
+
+    <div id="short-moonveil-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(186,230,253,0.4);flex-direction:column;gap:0;display:none;">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.18 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">Moon Veil</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">終わりが決まっているから、触れられなかった。</p>
+      <div id="short-acc-body-7" style="display:none;">
+        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;">夜勤の途中、病院の中庭で聞こえた歌声。<br><br>宵子はその声に、子どもの頃の記憶を重ねる。<br><br>声の主は、検査技師の朔。<br><br>終わりが決まった一年の中で、<br>二人はMoon Veilとして、静かに音を重ねていく。</p>
+      </div>
+      <button id="short-acc-btn-7" onclick="toggleShortAcc(7)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n9832lr/" target="_blank"
+           style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+      </div>
+    </div>
 
     <div id="short-kouta-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);flex-direction:column;gap:0;display:flex;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.13 / 短篇</p>
