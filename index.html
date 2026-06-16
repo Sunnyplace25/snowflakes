@@ -782,13 +782,17 @@ function sfShare() {
 
   <script>
     (function() {
-      var BASE_EP   = 161; // 2026-06-11 ep.35 アーカイブ挿入により +1
-      var BASE_TIME = new Date('2026-05-11T21:00:00'); // #161 が公開される時刻
+      var BASE_EP   = 199; // ep.199 が公開される時刻を基準に設定
+      var BASE_TIME = new Date('2026-06-15T21:00:00'); // #199 が公開される時刻
 
       // 21時以外に公開される追加話（幕間など）— 時刻順に並べる
       var EXTRA_EPISODES = [
-        new Date('2026-05-23T12:00:00'), // ep.172 幕間｜白い花の影
-        new Date('2026-05-25T18:00:00'), // ep.175 幕間｜二つ
+      ];
+
+      // 更新なしの日（21時になっても話数を増やさない）
+      var SKIP_DAYS = [
+        new Date('2026-06-17T21:00:00'), // 6/17 更新なし
+        new Date('2026-06-18T21:00:00'), // 6/18 更新なし
       ];
 
       function getEpisode(now) {
@@ -799,7 +803,11 @@ function sfShare() {
         for (var i = 0; i < EXTRA_EPISODES.length; i++) {
           if (now >= EXTRA_EPISODES[i]) extras++;
         }
-        return BASE_EP + days + extras;
+        var skips = 0;
+        for (var i = 0; i < SKIP_DAYS.length; i++) {
+          if (now >= SKIP_DAYS[i]) skips++;
+        }
+        return BASE_EP + days + extras - skips;
       }
 
       // 更新時間の指定（複数可）例: '2026-05-23': [12, 21]
