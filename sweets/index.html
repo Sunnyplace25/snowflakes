@@ -567,6 +567,15 @@
       pointer-events:none;
     }
     .door-hotspot:hover .door-label { opacity:1; }
+    .door-tooltip {
+      position:absolute; top:-44px; left:50%; transform:translateX(-50%);
+      background:rgba(10,18,34,0.92); border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px; padding:6px 12px; white-space:nowrap;
+      font-family:'Noto Serif JP',serif; font-size:11px; letter-spacing:1px; color:#94a3b8;
+      opacity:0; pointer-events:none; transition:opacity 0.2s;
+      z-index:10;
+    }
+    .door-hotspot.unlocked:hover .door-tooltip { opacity:1; }
 
     /* ── 更新バッジ・扉グロー ── */
     .door-update-badge {
@@ -897,16 +906,19 @@
           <div class="door-overlay"></div>
           <img class="door-chibi" src="chibi_hayate_s.webp" alt="ハヤテ 楠木颯 Snow flakes スノーフレークス スノフレ キャラクター 山吹ことり">
           <div class="door-label">ハヤテの部屋</div>
+          <div class="door-tooltip">部屋を探索してみよう　なにか見つかるかも？</div>
         </div>
         <div id="door-hinata" class="door-hotspot locked" style="left:33.3%;width:33.4%;">
           <div class="door-overlay"></div>
           <img class="door-chibi" src="chibi_hinata_s.webp" alt="ヒナタ 環陽向 Snow flakes スノーフレークス スノフレ キャラクター 山吹ことり">
           <div class="door-label">ヒナタの部屋</div>
+          <div class="door-tooltip">部屋を探索してみよう　なにか見つかるかも？</div>
         </div>
         <div id="door-kouta" class="door-hotspot locked" style="left:66.7%;width:33.3%;">
           <div class="door-overlay"></div>
           <img class="door-chibi" src="chibi_kouta_s.webp" alt="コウタ 橘航太 Snow flakes スノーフレークス スノフレ キャラクター 山吹ことり">
           <div class="door-label">コウタの部屋</div>
+          <div class="door-tooltip">部屋を探索してみよう　なにか見つかるかも？</div>
         </div>
       </div>
 
