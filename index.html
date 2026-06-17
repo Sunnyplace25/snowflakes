@@ -2117,15 +2117,17 @@ function sfShare() {
 </script>
 <style>
   #ls-popup {
-    position: fixed; bottom: 24px; left: 20px; z-index: 9998;
+    position: fixed; top: 50%; left: 50%; z-index: 9998;
+    transform: translate(-50%, -50%) scale(0.95);
     display: none; flex-direction: row; align-items: center; gap: 14px;
-    background: rgba(10,18,34,0.95); border: 1px solid rgba(186,230,253,0.25);
-    border-radius: 14px; padding: 14px 18px 14px 14px;
-    max-width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    opacity: 0; transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    background: rgba(10,18,34,0.97); border: 1px solid rgba(186,230,253,0.25);
+    border-radius: 14px; padding: 20px 24px 20px 20px;
+    max-width: 340px; width: calc(100vw - 48px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  #ls-popup.show { opacity: 1; transform: translateY(0); }
+  #ls-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   #ls-jacket { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
   #ls-info { display: flex; flex-direction: column; gap: 4px; }
   #ls-label { font-size: 10px; letter-spacing: 2px; color: #7dd3fc; font-family: 'Cormorant Garamond', serif; }
@@ -2142,7 +2144,8 @@ function sfShare() {
     background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer; padding: 0;
   }
   @media (max-width: 600px) {
-    #ls-popup { left: 10px; right: 10px; max-width: calc(100vw - 20px); bottom: 10px; }
+    #ls-popup { max-width: calc(100vw - 48px); }
+    #ls-jacket { width: 60px; height: 60px; }
   }
 </style>
 <style>
@@ -2335,9 +2338,8 @@ function sfShare() {
     if (localStorage.getItem(LS_DAY_KEY) === todayStr) return;
     var popup = document.getElementById('ls-popup');
     document.getElementById('ls-close').addEventListener('click', function() {
-      popup.style.opacity = '0';
-      popup.style.transform = 'translateY(20px)';
-      setTimeout(function() { popup.style.display = 'none'; }, 600);
+      popup.classList.remove('show');
+      setTimeout(function() { popup.style.display = 'none'; }, 500);
     });
     setTimeout(function() {
       popup.style.display = 'flex';
