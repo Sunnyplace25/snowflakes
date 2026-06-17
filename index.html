@@ -2116,6 +2116,36 @@ function sfShare() {
   }
 </script>
 <style>
+  #ls-popup {
+    position: fixed; bottom: 24px; left: 20px; z-index: 9998;
+    display: none; flex-direction: row; align-items: center; gap: 14px;
+    background: rgba(10,18,34,0.95); border: 1px solid rgba(186,230,253,0.25);
+    border-radius: 14px; padding: 14px 18px 14px 14px;
+    max-width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #ls-popup.show { opacity: 1; transform: translateY(0); }
+  #ls-jacket { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  #ls-info { display: flex; flex-direction: column; gap: 4px; }
+  #ls-label { font-size: 10px; letter-spacing: 2px; color: #7dd3fc; font-family: 'Cormorant Garamond', serif; }
+  #ls-title { font-size: 16px; color: #f0f8ff; font-family: 'Cormorant Garamond', serif; letter-spacing: 1px; line-height: 1.2; }
+  #ls-artist { font-size: 11px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; letter-spacing: 1px; }
+  #ls-spotify {
+    display: inline-block; margin-top: 6px; padding: 5px 12px;
+    background: #1db954; color: #fff; border-radius: 20px;
+    font-size: 11px; letter-spacing: 1px; text-decoration: none;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  #ls-close {
+    position: absolute; top: 8px; right: 10px;
+    background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer; padding: 0;
+  }
+  @media (max-width: 600px) {
+    #ls-popup { left: 10px; right: 10px; max-width: calc(100vw - 20px); bottom: 10px; }
+  }
+</style>
+<style>
   #chara-popup {
     position: fixed; bottom: 24px; right: 20px; z-index: 9999;
     display: flex; align-items: flex-end; gap: 10px;
@@ -2271,6 +2301,17 @@ function sfShare() {
   </div>
 </div>
 
+<div id="ls-popup" style="position:relative;">
+  <button id="ls-close">✕</button>
+  <img id="ls-jacket" src="item/jacket_littlesnow.webp" alt="Little Snow">
+  <div id="ls-info">
+    <span id="ls-label">NEW SINGLE</span>
+    <span id="ls-title">Little Snow</span>
+    <span id="ls-artist">Snow flakes</span>
+    <a id="ls-spotify" href="https://open.spotify.com/intl-ja/album/5I4Ge2faqF3Yfk0YhnSxO7" target="_blank" rel="noopener">Spotifyで聴く →</a>
+  </div>
+</div>
+
 <div id="chara-popup">
   <div id="chara-bubble">
     <p id="chara-name"></p>
@@ -2285,6 +2326,27 @@ function sfShare() {
   </div>
   <div id="chara-img"><img id="chara-face" src="" alt=""></div>
 </div>
+
+<script>
+  (function() {
+    var LS_DAY_KEY = 'sf_ls_popup_day';
+    var todayStr = new Date().toLocaleDateString('ja-JP');
+    if (localStorage.getItem(LS_DAY_KEY) === todayStr) return;
+    var popup = document.getElementById('ls-popup');
+    document.getElementById('ls-close').addEventListener('click', function() {
+      popup.style.opacity = '0';
+      popup.style.transform = 'translateY(20px)';
+      setTimeout(function() { popup.style.display = 'none'; }, 600);
+    });
+    setTimeout(function() {
+      popup.style.display = 'flex';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() { popup.classList.add('show'); });
+      });
+      localStorage.setItem(LS_DAY_KEY, todayStr);
+    }, 1200);
+  })();
+</script>
 
 <script>
   // ── PWA install prompt ──
