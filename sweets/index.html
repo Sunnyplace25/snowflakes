@@ -6310,7 +6310,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<div style="padding:20px 10px;">';
         html += '<img src="' + CANDY_IMG[item.cost.candy] + '" alt="" style="width:36px;margin-bottom:8px;">';
         html += '<p style="font-size:12px;color:' + item.color + ';letter-spacing:2px;margin-bottom:6px;">' + item.title + '</p>';
-        html += '<p class="exch-cost" style="margin-bottom:12px;">× ' + item.cost.amount + '</p>';
+        html += '<p class="exch-cost" style="margin-bottom:4px;">× ' + item.cost.amount + '</p>';
+        if (!ready) html += '<p style="font-size:10px;letter-spacing:1px;color:#ef4444;margin-bottom:8px;font-family:\'Noto Serif JP\',serif;">足りません</p>';
+        else html += '<p style="margin-bottom:8px;height:18px;"></p>';
         html += '<button class="exch-btn" style="' + (ready ? 'border-color:' + item.color + '55;color:' + item.color + ';' : '') + '" onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
         html += '</div>';
         html += '</div>';
