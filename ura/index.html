@@ -76,29 +76,60 @@
       margin: 32px 0;
     }
     .post {
-      padding: 32px 0;
       border-bottom: 1px solid var(--border);
     }
     .post:last-child { border-bottom: none; }
+
+    .post-header {
+      padding: 28px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      user-select: none;
+    }
+    .post-header:hover .post-title { opacity: 0.75; }
+
+    .post-header-left { flex: 1; }
+
     .post-date {
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px;
       letter-spacing: 3px;
       color: var(--muted);
-      margin-bottom: 12px;
-      opacity: 0.6;
+      margin-bottom: 8px;
     }
     .post-title {
       font-size: 16px;
       font-weight: 300;
       letter-spacing: 0.08em;
-      margin-bottom: 20px;
+      transition: opacity 0.2s;
     }
+
+    .post-arrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      color: var(--muted);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .post.open .post-arrow { transform: rotate(90deg); }
+
     .post-body {
       font-size: 14px;
       font-weight: 300;
       line-height: 2.2;
       color: #cbd5e1;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.5s ease, padding 0.3s ease;
+      padding-bottom: 0;
+    }
+    .post.open .post-body {
+      max-height: 9999px;
+      padding-bottom: 32px;
     }
     .post-body p + p { margin-top: 20px; }
   </style>
@@ -117,8 +148,13 @@
 
     <!-- ▼ 投稿はここに追加 -->
     <div class="post">
-      <p class="post-date">2026.06 — 第1回</p>
-      <h2 class="post-title">名前、まだ慣れない</h2>
+      <div class="post-header" onclick="togglePost(this)">
+        <div class="post-header-left">
+          <p class="post-date">2026.06 — 第1回</p>
+          <h2 class="post-title">名前、まだ慣れない</h2>
+        </div>
+        <span class="post-arrow">›</span>
+      </div>
       <div class="post-body">
         <p>ライブのあと。</p>
         <p>楽屋には、まだ少しだけ音の熱が残っていた。</p>
@@ -232,6 +268,11 @@
   </div>
 
   <script>
+    function togglePost(header) {
+      const post = header.parentElement;
+      post.classList.toggle('open');
+    }
+
     const canvas = document.getElementById('snow-canvas');
     const ctx = canvas.getContext('2d');
     let flakes = [];
