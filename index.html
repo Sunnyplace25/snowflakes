@@ -3502,7 +3502,7 @@ document.addEventListener('visibilitychange', function() {
   (function() {
     var btn = document.getElementById('undertone-link-from-hitotsu');
     if (!btn) return;
-    if (localStorage.getItem('sf_sweets_unlocked') === 'true') {
+    if (localStorage.getItem('sf_sweets_unlocked') === '1' || sessionStorage.getItem('sf_sweets_session') === '1') {
       btn.style.display = 'block';
     }
   })();
