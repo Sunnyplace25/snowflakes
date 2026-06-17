@@ -24,92 +24,7 @@
       font-family: 'Noto Serif JP', serif;
     }
 
-    /* ── ゲート画面 ── */
-    #gate {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 40px 24px;
-    }
-    .gate-card {
-      width: 100%;
-      max-width: 360px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.02);
-      padding: 48px 36px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-      text-align: center;
-    }
-    .gate-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 10px;
-      letter-spacing: 5px;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-    .gate-title {
-      font-size: 20px;
-      font-weight: 300;
-      letter-spacing: 0.12em;
-      margin-bottom: 32px;
-      line-height: 1.6;
-    }
-    .gate-input {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: var(--text);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15px;
-      letter-spacing: 2px;
-      text-align: center;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 14px;
-    }
-    .gate-input:focus { border-color: rgba(255,255,255,0.2); }
-    .gate-btn {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px;
-      letter-spacing: 4px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .gate-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); }
-    .gate-error {
-      font-size: 11px;
-      color: #f87171;
-      letter-spacing: 1px;
-      margin-top: 12px;
-      height: 16px;
-      font-family: 'Cormorant Garamond', serif;
-    }
-    .gate-note {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 28px;
-      letter-spacing: 1px;
-      line-height: 2;
-      opacity: 0.5;
-      font-family: 'Cormorant Garamond', serif;
-    }
-
-    /* ── コンテンツ画面 ── */
     #content {
-      display: none;
       max-width: 640px;
       margin: 0 auto;
       padding: 60px 24px 80px;
@@ -169,37 +84,10 @@
       color: #cbd5e1;
     }
     .post-body p + p { margin-top: 20px; }
-    .logout {
-      display: inline-block;
-      margin-top: 48px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: var(--muted);
-      opacity: 0.35;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      background: none;
-      border: none;
-    }
-    .logout:hover { opacity: 0.65; }
   </style>
 </head>
 <body>
 
-  <!-- ゲート -->
-  <div id="gate">
-    <div class="gate-card">
-      <p class="gate-label">SNOW FLAKES</p>
-      <h1 class="gate-title">裏話</h1>
-      <input id="pw-input" class="gate-input" type="password" placeholder="password" autocomplete="off">
-      <button class="gate-btn" onclick="checkPw()">入る</button>
-      <p class="gate-error" id="gate-error"></p>
-      <p class="gate-note">Snow flakes サポートプラン加入者限定のページです。</p>
-    </div>
-  </div>
-
-  <!-- コンテンツ -->
   <div id="content">
     <div class="content-header">
       <p class="content-label">SNOW FLAKES / 裏話</p>
@@ -218,43 +106,7 @@
     </div>
     <!-- ▲ 投稿ここまで -->
 
-    <button class="logout" onclick="logout()">── ログアウト ──</button>
   </div>
-
-  <script>
-    var PW = 'tuning440';
-    var SESSION_KEY = 'sf_ura_session';
-
-    function checkPw() {
-      var val = document.getElementById('pw-input').value.trim();
-      if (val === PW) {
-        sessionStorage.setItem(SESSION_KEY, '1');
-        showContent();
-      } else {
-        document.getElementById('gate-error').textContent = 'パスワードが違います';
-        document.getElementById('pw-input').value = '';
-      }
-    }
-
-    function showContent() {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('content').style.display = 'block';
-    }
-
-    function logout() {
-      sessionStorage.removeItem(SESSION_KEY);
-      document.getElementById('gate').style.display = 'flex';
-      document.getElementById('content').style.display = 'none';
-      document.getElementById('pw-input').value = '';
-    }
-
-    document.getElementById('pw-input').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') checkPw();
-    });
-
-    // セッション維持
-    if (sessionStorage.getItem(SESSION_KEY) === '1') showContent();
-  </script>
 
 </body>
 </html>
