@@ -6153,7 +6153,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   async function fetchRoomLatestDate(url) {
     if (ROOM_LATEST_DATE_CACHE[url] !== undefined) return ROOM_LATEST_DATE_CACHE[url];
     try {
-      var res = await fetch(url);
+      var res = await fetch(url, { cache: 'no-store' });
       var text = await res.text();
       var today = new Date().toISOString().slice(0, 10);
       var matches = text.match(/date:\s*'(\d{4}-\d{2}-\d{2})'/g) || [];
