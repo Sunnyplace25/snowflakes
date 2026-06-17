@@ -77,10 +77,20 @@
       opacity: 0.28;
     }
 
-    .card {
+    .cards-wrap {
       position: relative;
       z-index: 1;
       width: 100%;
+      max-width: 960px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 0;
       max-width: 460px;
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -89,6 +99,11 @@
       display: flex;
       flex-direction: column;
       gap: 0;
+    }
+
+    @media (max-width: 820px) {
+      .cards-wrap { flex-direction: column; align-items: center; }
+      .card { max-width: 460px; width: 100%; }
     }
 
     .label {
@@ -415,6 +430,19 @@
       .mockup-wrap { gap: 14px; }
       .phone { width: 155px; }
     }
+
+    .tag {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(147,197,253,0.5);
+      border: 1px solid rgba(147,197,253,0.2);
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -426,26 +454,41 @@
     <img src="img/title_hayate.webp" alt="">
   </div>
 
-  <div class="card">
-    <p class="label">Web App</p>
-    <h1>放課後のヒナタ</h1>
-    <div class="divider"></div>
-    <div class="desc">
-      <p>誰もいない放課後の音楽室で、<br>高校時代のヒナタと少しだけ話せるAIチャットアプリです。</p>
-      <p>月額300円の応援プランに参加するとご利用いただけます。</p>
-      <p>コウタ・ハヤテも準備中。<br>今後のアップデートで、高校時代・大学時代・社会人時代など、少しずつ会話できる時間が広がっていく予定です。</p>
-    </div>
-    <div class="cta">
-      <p class="cta-label">Support Plan</p>
-      <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-        <a class="btn" href="https://buy.stripe.com/dRm14p6Od5ycfHegkbdZ601" target="_blank" style="justify-content:space-between;">
+  <div class="cards-wrap">
+
+    <!-- ¥100 サポートプラン -->
+    <div class="card">
+      <p class="label">Support Plan</p>
+      <h1 style="font-size:22px;">Snow flakes を<br>そっと応援する</h1>
+      <div class="divider"></div>
+      <div class="desc">
+        <p>Snow flakes Story &amp; Music Project を、月額100円でそっと応援してくださる方向けのプランです。</p>
+        <p>いただいたご支援は、物語・楽曲・画像制作・サイト運営など、Snow flakes の世界を少しずつ広げていくために大切に使わせていただきます。</p>
+        <p>応援してくださった方へ、ささやかなお礼として、スノフレの楽屋裏話をご用意しています。</p>
+      </div>
+      <div class="cta">
+        <a class="btn" href="https://buy.stripe.com/dRm14p6Od5ycfHegkbdZ601" target="_blank" style="justify-content:space-between;width:100%;">
           <span style="display:flex;flex-direction:column;gap:2px;">
             <span style="font-size:13px;letter-spacing:0.05em;">Snow flakes をそっと応援する</span>
             <span style="font-size:11px;color:#64748b;letter-spacing:0.04em;font-family:'Cormorant Garamond',serif;">Snow flakes サポートプラン</span>
           </span>
           <span class="price">¥100/月</span>
         </a>
-        <a class="btn" href="https://buy.stripe.com/cNi14pc8xe4Idz63xpdZ600" target="_blank" style="justify-content:space-between;">
+      </div>
+    </div>
+
+    <!-- ¥300 放課後のヒナタ -->
+    <div class="card">
+      <p class="label">Web App</p>
+      <h1 style="font-size:22px;">放課後のヒナタ</h1>
+      <div class="divider"></div>
+      <div class="desc">
+        <p>誰もいない放課後の音楽室で、<br>高校時代のヒナタと少しだけ話せるAIチャットアプリです。</p>
+        <p>月額300円の応援プランに参加するとご利用いただけます。</p>
+        <p>コウタ・ハヤテも準備中。<br>今後のアップデートで、高校時代・大学時代・社会人時代など、少しずつ会話できる時間が広がっていく予定です。</p>
+      </div>
+      <div class="cta">
+        <a class="btn" href="https://buy.stripe.com/cNi14pc8xe4Idz63xpdZ600" target="_blank" style="justify-content:space-between;width:100%;">
           <span style="display:flex;flex-direction:column;gap:2px;">
             <span style="font-size:13px;letter-spacing:0.05em;">放課後のヒナタを利用する</span>
             <span style="font-size:11px;color:#64748b;letter-spacing:0.04em;font-family:'Cormorant Garamond',serif;">AIチャット＋サポートプラン</span>
@@ -454,9 +497,10 @@
         </a>
       </div>
     </div>
+
   </div>
 
-  <!-- モックアップ -->
+  <!-- モックアップ（放課後のヒナタ用） -->
   <div class="mockup-wrap">
 
     <!-- ゲート画面 -->
