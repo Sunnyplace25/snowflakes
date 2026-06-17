@@ -1246,6 +1246,8 @@ function sfShare() {
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0964mc/" target="_blank"
            style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+        <a id="undertone-link-from-hitotsu" href="./room/undertone/"
+           style="font-size:13px;color:#7dd3fc;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(125,211,252,0.3);background:rgba(125,211,252,0.06);display:none;">Under tone へ →</a>
       </div>
     </div>
 
@@ -3494,6 +3496,16 @@ document.addEventListener('visibilitychange', function() {
     }
   });
 })();
+</script>
+
+<script>
+  (function() {
+    var btn = document.getElementById('undertone-link-from-hitotsu');
+    if (!btn) return;
+    if (localStorage.getItem('sf_sweets_unlocked') === 'true') {
+      btn.style.display = 'block';
+    }
+  })();
 </script>
 
 <!-- Signal release notice popup (2026-06-07) -->
