@@ -2298,6 +2298,32 @@ function submitUtPw() {
       }, 40);
     }
     ov.style.display = 'flex';
+    // 雪アニメーション
+    (function() {
+      var cv = document.getElementById('cc-snow');
+      if (!cv) return;
+      var ctx2 = cv.getContext('2d');
+      cv.width = window.innerWidth; cv.height = window.innerHeight;
+      var flakes = [];
+      for (var i = 0; i < 55; i++) {
+        flakes.push({ x: Math.random()*cv.width, y: Math.random()*cv.height,
+          r: Math.random()*2+0.5, speed: Math.random()*0.5+0.15,
+          drift: Math.random()*0.3-0.15, op: Math.random()*0.35+0.1 });
+      }
+      var _raf;
+      function drawSnow() {
+        ctx2.clearRect(0,0,cv.width,cv.height);
+        flakes.forEach(function(f) {
+          ctx2.beginPath(); ctx2.arc(f.x,f.y,f.r,0,Math.PI*2);
+          ctx2.fillStyle='rgba(255,255,255,'+f.op+')'; ctx2.fill();
+          f.y+=f.speed; f.x+=f.drift;
+          if(f.y>cv.height+4){f.y=-4;f.x=Math.random()*cv.width;}
+        });
+        _raf = requestAnimationFrame(drawSnow);
+      }
+      drawSnow();
+      cv._stopSnow = function(){ cancelAnimationFrame(_raf); ctx2.clearRect(0,0,cv.width,cv.height); };
+    })();
     // シーケンシャル表示
     setTimeout(function() {
       if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
@@ -2331,6 +2357,8 @@ function submitUtPw() {
   window.closeChapterComplete = function() {
     var ov = document.getElementById('chapter-complete-overlay');
     if (ov) ov.style.display = 'none';
+    var cv = document.getElementById('cc-snow');
+    if (cv && cv._stopSnow) cv._stopSnow();
     // BGM を再開（フェードイン）
     if (_soundOn && _bgmStarted) {
       _bgmAudio.volume = 0;
@@ -5627,14 +5655,15 @@ function submitUtPw() {
   <button onclick="closeStoneAppraiseUnlock()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;margin-top:4px;">続ける</button>
 </div>
 <div id="chapter-complete-overlay" style="display:none;position:fixed;inset:0;z-index:950;background:#080d18;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
-  <p id="cc-num" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;margin-bottom:40px;text-align:center;"></p>
-  <div id="cc-unlock-block" style="text-align:center;opacity:0;">
+  <canvas id="cc-snow" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <p id="cc-num" style="position:relative;z-index:1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;margin-bottom:40px;text-align:center;"></p>
+  <div id="cc-unlock-block" style="text-align:center;opacity:0;position:relative;z-index:1;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:20px;">🔓 MUSIC UNLOCKED</p>
     <p id="cc-track-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;"></p>
     <p id="cc-track-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;margin-bottom:32px;"></p>
     <button id="cc-play-btn" style="background:none;border:1px solid rgba(196,181,253,0.4);border-radius:50%;width:52px;height:52px;color:#c4b5fd;font-size:16px;cursor:pointer;margin-bottom:48px;">▶</button>
   </div>
-  <button onclick="closeChapterComplete()" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
+  <button onclick="closeChapterComplete()" style="position:relative;z-index:1;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
 </div>
 <div id="nagi-cookie-popup" onclick="closeCookiePopup()">
   <img id="nagi-cookie-img" src="" alt="NAGI" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:82vh;max-width:92%;width:auto;object-fit:contain;object-position:bottom center;pointer-events:none;">
