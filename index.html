@@ -742,7 +742,12 @@ function sfShare() {
       0%,100% { box-shadow: 0 0 8px rgba(248,113,113,0.25), 0 0 24px rgba(248,113,113,0.10); border-color: rgba(248,113,113,0.4); }
       50%      { box-shadow: 0 0 18px rgba(248,113,113,0.55), 0 0 50px rgba(248,113,113,0.22), inset 0 0 20px rgba(248,113,113,0.05); border-color: rgba(248,113,113,0.75); }
     }
+    @keyframes purpleCardGlow {
+      0%,100% { box-shadow: 0 0 8px rgba(167,139,250,0.25), 0 0 24px rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.4); }
+      50%      { box-shadow: 0 0 18px rgba(167,139,250,0.55), 0 0 50px rgba(167,139,250,0.22), inset 0 0 20px rgba(167,139,250,0.05); border-color: rgba(167,139,250,0.75); }
+    }
     .short-new-card { animation: redCardGlow 2.4s ease-in-out infinite; }
+    #short-moonveil-card { animation: purpleCardGlow 2.4s ease-in-out infinite; }
 
     /* 短篇カード */
     #short-banner { display:none; }
@@ -1206,7 +1211,7 @@ function sfShare() {
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2">短編作品</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
-    <div id="short-moonveil-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(186,230,253,0.4);flex-direction:column;gap:0;display:none;">
+    <div id="short-moonveil-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.4);flex-direction:column;gap:0;display:none;">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.18 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">Moon Veil</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">終わりが決まっているから、触れられなかった。</p>
