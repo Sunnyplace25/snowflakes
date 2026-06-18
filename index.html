@@ -978,17 +978,9 @@ function sfShare() {
       updateShort();
       setInterval(updateShort, 60000); // 1分ごとに確認
 
-      // Moon Veil カード：6/18 12:00以降に表示
-      var MOONVEIL_PUB = new Date('2026-06-18T12:00:00+09:00');
-      function updateMoonVeil() {
-        var card = document.getElementById('short-moonveil-card');
-        if (!card) return;
-        if (Date.now() >= MOONVEIL_PUB.getTime()) {
-          card.style.display = 'flex';
-        }
-      }
-      updateMoonVeil();
-      setInterval(updateMoonVeil, 60000);
+      // Moon Veil カード：常に表示
+      var card = document.getElementById('short-moonveil-card');
+      if (card) card.style.display = 'flex';
     })();
   </script>
 
