@@ -230,6 +230,9 @@
     var items = getMonthlyItems();
     var el = document.getElementById('sf-mitem-proteincoffee');
     if (el) el.textContent = items['proteincoffee'] || 0;
+    var elL = document.getElementById('sf-mitem-loupe');
+    if (elL) elL.textContent = items['loupe'] || 0;
+    if (typeof renderItemRows === 'function') renderItemRows();
   }
 
   /* ── Candy system ── */
