@@ -1116,6 +1116,10 @@
                   <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/cookie.webp" alt="" style="width:32px;opacity:0.85;"> クッキー</td>
                   <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-cookie">0</span></td>
                 </tr>
+                <tr id="item-row-loupe" style="display:none;border-bottom:1px solid rgba(255,255,255,0.06);cursor:default;transition:background 0.2s;">
+                  <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/loupe.webp" alt="" style="width:32px;opacity:0.85;"> ルーペ</td>
+                  <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-mitem-loupe">0</span></td>
+                </tr>
                 <tr id="item-row-pick" style="display:none;cursor:default;transition:background 0.2s;">
                   <td style="padding:10px 0;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img src="../item/pick.webp" alt="pick" style="width:32px;opacity:0.85;"> ギターピック</td>
                   <td style="padding:10px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:rgba(255,255,255,0.7);text-align:right;letter-spacing:2px;"><span id="sf-pick-count-items">0</span></td>
@@ -1234,6 +1238,22 @@
                 <tr id="item-row-boutonniere" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-boutonniere-img" src="../item/boutonniere_hayate.webp" alt="boutonniere" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-boutonniere-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-boutonniere-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fde68a;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- UNDER TONE -->
+          <div id="rare-undertone-section" style="margin-bottom:10px;">
+            <div onclick="toggleRareSection('undertone')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(196,181,253,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#c4b5fd;">UNDER TONE</span>
+              <span id="rare-undertone-arrow" style="font-size:13px;color:#c4b5fd;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-undertone-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-obsidian" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-obsidian-img" src="../item/snowflake_obsidian.webp" alt="obsidian" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-obsidian-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-obsidian-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#c4b5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -5103,6 +5123,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_kouta.webp',
         charaLine: 'まだ、持ってる'
       },
+      loupe: {
+        noteCardId: 'note_prism_1',
+        img: '../item/loupe.webp',
+        name: 'ルーペ',
+        desc: 'Under toneでナギに渡すと、手に入れた石を詳しく鑑定してもらえる。\n石に込められた意味や、持ち主とのつながりを知るためのアイテム。',
+        color: '#c4b5fd',
+        chara: null, charaColor: '#c4b5fd',
+        charaImg: null,
+        charaLine: null
+      },
       bass_strings_kouta: {
         noteCardId: null,
         img: '../item/bass_strings_kouta.webp',
@@ -5667,6 +5697,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       { rowId: 'item-row-chocolate',     count: items['chocolate_hayate'] || 0, spanId: 'sf-mitem-chocolate' },
       { rowId: 'item-row-beer',          count: items['beer']             || 0, spanId: 'sf-mitem-beer' },
       { rowId: 'item-row-cookie',        count: items['cookie']           || 0, spanId: 'sf-mitem-cookie' },
+      { rowId: 'item-row-loupe',         count: items['loupe']            || 0, spanId: 'sf-mitem-loupe' },
       { rowId: 'item-row-pick',          count: picks,                            spanId: 'sf-pick-count-items' },
     ];
     var anyVisible = false;
@@ -5718,6 +5749,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',               '黒い石のシルバーリング');
     updateRareItem('ri-boutonniere-kouta-img', 'ri-boutonniere-kouta-name', 'ri-boutonniere-kouta-check', 'boutonniere_kouta', 'コウタのブートニア', null, 'https://ncode.syosetu.com/n9009lo/196');
     updateRareItem('ri-boutonniere-img', 'ri-boutonniere-name', 'ri-boutonniere-check', 'boutonniere_hayate', 'ハヤテのブートニア', null, 'https://ncode.syosetu.com/n9009lo/186');
+    updateRareItem('ri-obsidian-img', 'ri-obsidian-name', 'ri-obsidian-check', 'snowflake_obsidian', 'スノーフレークオブシディアン');
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
@@ -5744,7 +5776,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var moreWrap = document.getElementById('items-more-wrap');
     if (moreWrap) {
       var mItems = SfSnow.getMonthlyItems();
-      var moreKeys = ['proteincoffee','chocolate_hayate','beer','cookie'];
+      var moreKeys = ['proteincoffee','chocolate_hayate','beer','cookie','loupe'];
       var pickCount = SfSnow.getPick ? SfSnow.getPick() : (parseInt(localStorage.getItem('sf_pick')||'0',10));
       var hasMore = pickCount > 0 || moreKeys.some(function(k){ return (mItems[k]||0) > 0; });
       if (hasMore) moreWrap.style.display = '';
@@ -6095,6 +6127,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       sub: '― 三人の時間を、少し立体的に ―',
       origin: '',
       cost: { item: 'proteincoffee', amount: 1 },
+      rewardMItem: 'loupe', rewardDelay: 8000,
       sections: [
         { heading: null, body: 'Snow flakesは、余白の多い物語です。\n\n散文に近い形で進み、\n地の文は多くありません。\n\nすべてを説明するのではなく、\n言葉にならなかった感情や、\n誰かの視線の端に残ったものを、\n読み手の中でそっと受け取ってもらえるように書いています。\n\n高校時代に出会った、\nヒナタ、コウタ、ハヤテの三人。\n\n偶然集まった音楽室で、\n音を合わせるところから、物語は始まります。\n\n本編は、主にヒナタの目線で進んでいきます。\n\nだから、光が当たるのは、\n自然とヒナタになる。\n\n迷いながらも前へ進むヒナタのそばで、\nコウタは多くを語らないまま、必要なものを選び続け、\nハヤテは明るさの奥に、自分の役割を静かに抱えています。\n\n同じ場所にいて、\n同じ音を鳴らしていても、\n三人が見ていた景色は、きっと少しずつ違っていました。\n\n光の当たり方が変われば、\n浮かび上がる色も変わる。\n\nヒナタから見えていたSnow flakes。\nコウタから見えていたSnow flakes。\nハヤテから見えていたSnow flakes。\n\nそのどれもが、\n同じ時間の中にありました。\n\nSnow flakesは、\n三人で音を鳴らす話です。\n\nでも同時に、\n三人それぞれが、自分の人生を選んでいく話でもあります。\n\n背中合わせに立つ三人は、\n同じ場所にいながら、\nそれぞれ違う方向を見ていました。\n\n誰かと一緒にいることで、\n自分の輪郭が見えてくること。\n\n言葉にできなかった想いが、\n時間をかけて、音や記憶に変わっていくこと。\n\nそして、\n離れなかったものだけが、\n最後に静かに残ること。\n\nこれから少しずつ置いていく短篇や、\n続いていく物語の断片を集めながら、\n三人が歩いてきた時間を、\n別の角度からも見ていただけたら嬉しいです。\n\n第一章を読んでくださった皆さま、\n本当にありがとうございます。\n\n今後とも、Snow flakesをよろしくお願いいたします。' }
       ]
@@ -6583,6 +6616,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       } else {
         var _rd2 = item.rewardDelay || 10000;
         setTimeout(function() { showNoteItemGetAgain(item.reward); }, _rd2);
+      }
+    }
+    if (item.rewardMItem) {
+      var _mKey = item.rewardMItem;
+      var _rdm = item.rewardDelay || 10000;
+      var _curCnt = (SfSnow.getMonthlyItems()[_mKey] || 0);
+      SfSnow.addMItemDirect(_mKey, 1);
+      if (typeof renderItemRows === 'function') renderItemRows();
+      if (_curCnt === 0) {
+        // 初回のみアイテム入手演出
+        setTimeout(function() { showNoteItemGet(_mKey); }, _rdm);
+      } else {
+        setTimeout(function() { showNoteItemGetAgain(_mKey); }, _rdm);
       }
     }
     renderNotes(); // → initNotesCarousel()
@@ -7558,6 +7604,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     'sf_banner_item_ep_moonveil', 'sf_shiori_moonveil_short_got',
     'sf_sealed_ep35_item', 'sf_backstage_pass', 'sf_friendship',
     'sf_sweets_ut_appraise_unlock_v1',
+    'sf_ut_rawstones', 'sf_ut_appraised',
   ];
 
   var _email = null;
