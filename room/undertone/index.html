@@ -1750,12 +1750,12 @@ function submitUtPw() {
 <div id="hikaru-refine-popup" style="display:none;position:fixed;inset:0;z-index:691;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('hikaru-refine-popup').style.display='none'">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
     <img src="../../item/loupe.webp" alt="ルーペ" style="width:64px;height:64px;object-fit:contain;border-radius:12px;margin:0 auto 16px;display:block;">
-    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:4px;">少し光る石の再鑑定</p>
+    <p id="hikaru-refine-title" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:4px;">少し光る石の再鑑定</p>
     <p style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:20px;">ルーペを使って詳しく鑑定する</p>
     <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
       <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
-        <img src="../../item/rawstone_hikaru.webp" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;">少し光る石</p>
+        <img id="hikaru-refine-stone-img" src="../../item/rawstone_hikaru.webp" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
+        <p id="hikaru-refine-stone-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;">少し光る石</p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#c4b5fd;"><span id="hikaru-refine-hikaru-cnt">0</span> <span style="color:#475569;font-size:11px;">/ 100</span></p>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
@@ -4528,21 +4528,81 @@ function submitUtPw() {
   window.showHikaruRefinementPopup = function() {
     var appraised = getAppraisedStones();
     var hikaruCnt = appraised['hikaru'] || 0;
+    var kireiCnt  = appraised['kirei']  || 0;
     var mItems = SfSnow.getMonthlyItems();
     var loupeCnt = mItems['loupe'] || 0;
     var pop = document.getElementById('hikaru-refine-popup');
     if (!pop) return;
-    document.getElementById('hikaru-refine-hikaru-cnt').textContent = hikaruCnt;
+    var hasObsidian = SfSnow.isUnlocked('snowflake_obsidian');
+    var hasPendant  = SfSnow.isUnlocked('obsidian_pendant');
+    var titleEl     = document.getElementById('hikaru-refine-title');
+    var stoneImg    = document.getElementById('hikaru-refine-stone-img');
+    var stoneLabel  = document.getElementById('hikaru-refine-stone-label');
+    var stoneCnt    = document.getElementById('hikaru-refine-hikaru-cnt');
+    var btn         = document.getElementById('hikaru-refine-btn');
+    var alreadyMsg  = document.getElementById('hikaru-refine-already');
     document.getElementById('hikaru-refine-loupe-cnt').textContent = loupeCnt;
-    var btn = document.getElementById('hikaru-refine-btn');
-    var canRefine = hikaruCnt >= 100 && loupeCnt >= 1 && !SfSnow.isUnlocked('snowflake_obsidian');
-    if (btn) {
-      btn.disabled = !canRefine;
-      btn.style.opacity = canRefine ? '1' : '0.4';
+    if (hasObsidian) {
+      // 再鑑定モード（綺麗な石 × 100 + ルーペ → 雪片のペンダントトップ）
+      if (titleEl)    titleEl.textContent   = '綺麗な石の再鑑定';
+      if (stoneImg)   stoneImg.src          = '../../item/rawstone_kirei.webp';
+      if (stoneLabel) stoneLabel.textContent = '綺麗な石';
+      if (stoneCnt)   stoneCnt.textContent   = kireiCnt;
+      var canKirei = kireiCnt >= 100 && loupeCnt >= 1 && !hasPendant;
+      if (btn) {
+        btn.onclick = function() { exchangeKireiStones(); };
+        btn.disabled = !canKirei;
+        btn.style.opacity = canKirei ? '1' : '0.4';
+      }
+      if (alreadyMsg) {
+        alreadyMsg.innerHTML = hasPendant ? '雪片のペンダントトップ<br>入手済み' : '';
+        alreadyMsg.style.display = hasPendant ? 'block' : 'none';
+      }
+    } else {
+      // 通常モード（少し光る石 × 100 + ルーペ → スノーフレークオブシディアン）
+      if (titleEl)    titleEl.textContent   = '少し光る石の再鑑定';
+      if (stoneImg)   stoneImg.src          = '../../item/rawstone_hikaru.webp';
+      if (stoneLabel) stoneLabel.textContent = '少し光る石';
+      if (stoneCnt)   stoneCnt.textContent   = hikaruCnt;
+      var canHikaru = hikaruCnt >= 100 && loupeCnt >= 1;
+      if (btn) {
+        btn.onclick = function() { exchangeHikaruStones(); };
+        btn.disabled = !canHikaru;
+        btn.style.opacity = canHikaru ? '1' : '0.4';
+      }
+      if (alreadyMsg) alreadyMsg.style.display = 'none';
     }
-    var alreadyMsg = document.getElementById('hikaru-refine-already');
-    if (alreadyMsg) alreadyMsg.style.display = SfSnow.isUnlocked('snowflake_obsidian') ? 'block' : 'none';
     pop.style.display = 'flex';
+  };
+
+  window.exchangeKireiStones = function() {
+    document.getElementById('hikaru-refine-popup').style.display = 'none';
+    var appraised = getAppraisedStones();
+    var kireiCnt  = appraised['kirei'] || 0;
+    var mItems = SfSnow.getMonthlyItems();
+    var loupeCnt = mItems['loupe'] || 0;
+    if (kireiCnt < 100) {
+      showItemMsgPopup('../../item/rawstone_kirei.webp', '「……まだ足りない」\n\n綺麗な石が 100 個必要');
+      return;
+    }
+    if (loupeCnt < 1) {
+      showItemMsgPopup('../../item/loupe.webp', '「……ルーペが必要だ」\n\nNOTEs で入手できる');
+      return;
+    }
+    appraised['kirei'] = kireiCnt - 100;
+    if (appraised['kirei'] <= 0) delete appraised['kirei'];
+    localStorage.setItem('sf_ut_appraised', JSON.stringify(appraised));
+    mItems['loupe'] = loupeCnt - 1;
+    if (mItems['loupe'] <= 0) delete mItems['loupe'];
+    localStorage.setItem('sf_monthly_items', JSON.stringify(mItems));
+    updateAppraiseBtn();
+    SfSnow.unlockItem('obsidian_pendant');
+    localStorage.removeItem('sf_ut_obsidian_pendant_unlock_at');
+    if (typeof renderItemRows === 'function') renderItemRows();
+    setTimeout(function() {
+      showItemMsgPopup('../../item/obsidian_pendant.webp',
+        '雪片のペンダントトップ\n\n消えなかった音を、自分の中に\n留めておくためのもの。');
+    }, 400);
   };
 
   window.exchangeHikaruStones = function() {
