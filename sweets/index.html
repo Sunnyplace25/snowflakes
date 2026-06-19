@@ -7667,6 +7667,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (existingEmail && existingEmail !== key) {
       setBackupMsg('このIDはすでに使用されています', '#fca5a5'); return;
     }
+    // 既存データがある場合は上書き確認
+    var existingPayload = await dbSelect(key);
+    if (existingPayload) {
+      if (!confirm('このIDにはすでにバックアップがあります。\n現在のデータで上書きしますか？')) {
+        setBackupMsg('キャンセルしました');
+        return;
+      }
+    }
     localStorage.setItem('sf_sweets_email', key);
     var ok = await sfSyncSave(key, false);
     if (ok) {
