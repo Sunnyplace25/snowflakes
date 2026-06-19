@@ -5121,6 +5121,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       },
       loupe: {
         noteCardId: 'note_prism_1',
+        monthly: true,
         img: '../item/loupe.webp',
         name: 'ルーペ',
         desc: 'Under toneでナギに渡すと、手に入れた石を詳しく鑑定してもらえる。',
@@ -6430,7 +6431,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlocked = _ncIsUnlocked(item);
       var _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
       if (!_nck && item.isStatic) _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
-      var _nkHasItem = _nck && !SfSnow.isUnlocked(_nck);
+      var _nckD = _nck ? NOTE_ITEM_DATA[_nck] : null;
+      var _nkHasItem = _nck && !(_nckD && _nckD.monthly) && !SfSnow.isUnlocked(_nck);
       var _nkChara = _nck ? (_nck.indexOf('kouta') !== -1 ? 'kouta' : _nck.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
       var _nkColor = _nkChara === 'kouta' ? '#fca5a5' : _nkChara === 'hinata' ? '#93c5fd' : '#fde68a';
       var c = document.createElement('div');
@@ -6502,11 +6504,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
     if (!noteItemKey && item.isStatic) noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
     var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
-    var noteItemOk = noteItemD ? SfSnow.isUnlocked(noteItemKey) : false;
+    var noteItemOk = noteItemD
+      ? (noteItemD.monthly
+          ? (SfSnow.getMonthlyItems()[noteItemKey] || 0) > 0
+          : SfSnow.isUnlocked(noteItemKey))
+      : false;
     var iconRight = '10px';
 
     var isHitotsu = item.id === 'note_hitotsu_1';
-    var hasNoteItem = noteItemD && !noteItemOk;
+    var hasNoteItem = noteItemD && !noteItemD.monthly && !noteItemOk;
     var _nc_chara = noteItemD ? (noteItemKey.indexOf('kouta') !== -1 ? 'kouta' : noteItemKey.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
     var _nc_col   = _nc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _nc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
     var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : '');
