@@ -2077,6 +2077,18 @@ function sfShare() {
             showBannerItemPopup(sealedItem);
           }
         }
+        // お詫びしおり配布（1回限り）
+        var OWABI_KEY = 'sf_owabi_shiori_0619';
+        if (!localStorage.getItem(OWABI_KEY)) {
+          localStorage.setItem(OWABI_KEY, '1');
+          setTimeout(function() {
+            if (typeof SfSnow !== 'undefined' && typeof showBannerItemPopup === 'function') {
+              SfSnow.unlockItem('shiori_kouta');
+              SfSnow.addMItemDirect('shiori_kouta', 1);
+              showBannerItemPopup({ key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'アイテム配布の不具合のお詫びです。\nご不便をおかけしました。\nアイテムは SWEETsコンテンツで使用することができます。', color:'#fca5a5' });
+            }
+          }, 1500);
+        }
       }
     });
   });
