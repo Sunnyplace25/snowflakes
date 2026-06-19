@@ -839,31 +839,31 @@
 
         <!-- 左：小説導線カード -->
         <div style="flex:1;min-width:240px;background:rgba(10,16,30,0.6);border:1px solid rgba(147,197,253,0.18);border-radius:18px;padding:24px 16px;text-align:center;box-shadow:0 0 60px rgba(147,197,253,0.07),0 0 120px rgba(147,197,253,0.03);backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:center;">
-          <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2.4;margin-bottom:20px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
+          <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#94a3b8;line-height:2.4;margin-bottom:20px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
           <div data-no-replace>
-            <p id="sweets-season-label" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;color:#7dd3fc;margin-bottom:12px;">SWEETs 2026 Spring</p>
+            <p id="sweets-season-label" style="font-family:'Cormorant Garamond',serif;font-size:clamp(11px,3vw,13px);letter-spacing:5px;color:#7dd3fc;margin-bottom:12px;">SWEETs 2026 Spring</p>
             <div style="display:flex;align-items:center;justify-content:center;">
               <img id="badge-backstage-pass" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:40px;height:60px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.5;display:block;margin:0 auto;">
             </div>
-            <button onclick="goToItems()" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#7dd3fc;cursor:pointer;transition:opacity 0.2s;padding:0;" onmouseenter="this.style.opacity='0.6'" onmouseleave="this.style.opacity='1'">▶ 持ち物を見る</button>
+            <button onclick="goToItems()" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:clamp(11px,3vw,13px);letter-spacing:4px;color:#7dd3fc;cursor:pointer;transition:opacity 0.2s;padding:0;" onmouseenter="this.style.opacity='0.6'" onmouseleave="this.style.opacity='1'">▶ 持ち物を見る</button>
           </div>
         </div>
 
         <!-- 右：DATA BACKUP -->
         <div style="flex:1;min-width:240px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
-          <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(9px,2.5vw,11px);letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
+          <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
           <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
-            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:1px;outline:none;text-align:center;margin-bottom:6px;"
+            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:1px;outline:none;text-align:center;margin-bottom:6px;"
             onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
           <input type="password" id="backup-pin-input" placeholder="PIN（数字4桁）" autocomplete="off" maxlength="4" inputmode="numeric"
-            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:4px;outline:none;text-align:center;margin-bottom:12px;"
+            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:4px;outline:none;text-align:center;margin-bottom:12px;"
             onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
           <div style="display:flex;gap:6px;">
-            <button onclick="sfBackupSave()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
-            <button onclick="sfBackupRestore()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
+            <button onclick="sfBackupSave()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
+            <button onclick="sfBackupRestore()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
           </div>
-          <p id="backup-msg" style="font-size:10px;color:#94a3b8;letter-spacing:1px;margin-top:10px;min-height:16px;"></p>
+          <p id="backup-msg" style="font-size:clamp(10px,2.8vw,12px);color:#94a3b8;letter-spacing:1px;margin-top:10px;min-height:16px;"></p>
         </div>
 
       </div>
