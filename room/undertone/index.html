@@ -1845,7 +1845,7 @@ function submitUtPw() {
     <div id="stone-appraise-yes" style="display:none;">
       <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;">妙に冷たい石を渡して<br>鑑定しますか？</p>
       <button onclick="confirmStoneAppraise()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.3);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">はい</button>
-      <button onclick="document.getElementById('stone-appraise-confirm-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">いいえ</button>
+      <button onclick="event.stopPropagation();document.getElementById('stone-appraise-confirm-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;padding:12px 32px;display:block;width:100%;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">いいえ</button>
     </div>
   </div>
 </div>
@@ -2266,9 +2266,10 @@ function submitUtPw() {
           }
         }
       });
-      // 6.10公開カウントダウン（ch5読了済み・1章未解放）
+      // 0-5読了から48hカウントダウン（ch5読了済み・1章未解放）
       if (!ch21Unlocked && ch5Unlocked) {
-        var _r1 = new Date('2026-06-10T00:00:00+09:00').getTime() - Date.now();
+        var _ch1AtTick = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+        var _r1 = _ch1AtTick ? Math.max(0, _ch1AtTick + 48 * 3600000 - Date.now()) : 0;
         if (_r1 > 0) { updateCh2Btn(); anyActive = true; }
         else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
       }
@@ -3164,8 +3165,9 @@ function submitUtPw() {
       updateCh2Btn();
       startCountdownTimers();
     }
-    // 6.10日付チェック：1章自動解放
-    if (!ch21Unlocked && ch5Unlocked && Date.now() >= new Date('2026-06-10T00:00:00+09:00').getTime()) {
+    // 0-5読了から48時間後：1章自動解放
+    var _ch1UnlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+    if (!ch21Unlocked && ch5Unlocked && _ch1UnlockAt && Date.now() - _ch1UnlockAt >= 48 * 3600000) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
       if (!localStorage.getItem('sf_ut_ch1_unlock_shown')) {
@@ -3220,7 +3222,8 @@ function submitUtPw() {
   }
 
   function ch2ConditionMet() {
-    return Date.now() >= new Date('2026-06-10T00:00:00+09:00').getTime();
+    var _ch1At = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+    return _ch1At > 0 && Date.now() - _ch1At >= 48 * 3600000;
   }
 
   function updateCh2Btn() {
@@ -3242,10 +3245,11 @@ function submitUtPw() {
       if (cdEl) cdEl.textContent = '';
     } else {
       if (cond) cond.textContent = '';
-      // 6.10公開カウントダウン
+      // 0-5読了から48hカウントダウン
       var hintEl = document.getElementById('ch2-hint');
       if (cdEl) {
-        var diff = new Date('2026-06-10T00:00:00+09:00').getTime() - Date.now();
+        var _ch1At2 = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
+        var diff = _ch1At2 ? Math.max(0, _ch1At2 + 48 * 3600000 - Date.now()) : 0;
         if (diff > 0) {
           cdEl.textContent = formatLockDays(diff);
           if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
@@ -6041,28 +6045,6 @@ function submitUtPw() {
       }
     });
   })();
-</script>
-<!-- レアアイテム鑑定解放ポップアップ -->
-<div id="ut-appraise-unlock-popup" style="display:none;position:fixed;inset:0;z-index:9200;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('ut-appraise-unlock-popup').style.display='none'">
-  <div style="background:rgba(13,10,25,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
-    <img src="shopkeeper.webp" alt="ナギ" style="width:120px;object-fit:contain;margin:0 auto 16px;display:block;filter:drop-shadow(0 0 18px rgba(196,181,253,0.22));">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#6d5fc4;margin-bottom:14px;">UNDER TONE</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#c4b5fd;letter-spacing:1px;line-height:2;margin-bottom:6px;">珍しい石は持ってきたか？</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#7c6aa5;letter-spacing:1px;line-height:2;margin-bottom:24px;">レアアイテムの鑑定が<br>解放されました</p>
-    <button onclick="document.getElementById('ut-appraise-unlock-popup').style.display='none'" style="width:100%;background:rgba(196,181,253,0.07);border:1px solid rgba(196,181,253,0.25);border-radius:50px;padding:12px;color:#8b7fd4;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.14)'" onmouseout="this.style.background='rgba(196,181,253,0.07)'">── 閉じる ──</button>
-  </div>
-</div>
-<script>
-(function(){
-  var KEY = 'sf_ut_appraise_unlock_v1';
-  if (!localStorage.getItem(KEY)) {
-    localStorage.setItem(KEY, '1');
-    setTimeout(function(){
-      var p = document.getElementById('ut-appraise-unlock-popup');
-      if (p) p.style.display = 'flex';
-    }, 1200);
-  }
-})();
 </script>
 
 </body>
