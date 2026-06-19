@@ -2525,6 +2525,8 @@ function submitUtPw() {
     // クラバットピン入手演出
     if (localStorage.getItem('sf_ut_cravat_get_pending') === '1') {
       localStorage.removeItem('sf_ut_cravat_get_pending');
+      SfSnow.unlockItem('cravat_hayate');
+      renderStones();
       setTimeout(function() {
         var cov = document.getElementById('cravat-get-overlay');
         if (cov) cov.style.display = 'flex';
