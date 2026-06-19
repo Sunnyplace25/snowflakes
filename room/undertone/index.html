@@ -1770,6 +1770,25 @@ function submitUtPw() {
   </div>
 </div>
 
+<!-- Kirei refinement popup -->
+<div id="kirei-refine-popup" style="display:none;position:fixed;inset:0;z-index:691;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('kirei-refine-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.22);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
+    <img src="../../item/rawstone_kirei.webp" alt="綺麗な石" style="width:64px;height:64px;object-fit:contain;border-radius:12px;margin:0 auto 16px;display:block;">
+    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:4px;">綺麗な石の再鑑定</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:20px;">綺麗な石を集めて鑑定する</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+        <img src="../../item/rawstone_kirei.webp" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;">綺麗な石</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:13px;color:#c4b5fd;"><span id="kirei-refine-cnt">0</span> <span style="color:#475569;font-size:11px;">/ 100</span></p>
+      </div>
+    </div>
+    <p id="kirei-refine-already" style="display:none;font-family:'Noto Serif JP',serif;font-size:11px;color:#c4b5fd;letter-spacing:1px;margin-bottom:12px;">レインボームーンストーン<br>入手済み</p>
+    <button id="kirei-refine-btn" onclick="exchangeKireiForMoonstone()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.35);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">再鑑定する</button>
+    <button onclick="document.getElementById('kirei-refine-popup').style.display='none'" style="background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+  </div>
+</div>
+
 <!-- Stone exchange popup -->
 <div id="stone-exchange-popup" style="display:none;position:fixed;inset:0;z-index:690;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('stone-exchange-popup').style.display='none'">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
@@ -1873,6 +1892,7 @@ function submitUtPw() {
     { key:'boutonniere_kouta',   name:'赤い石のブートニア',         nameAppraised:'ガーネットのブートニア',             img:'../../item/boutonniere_kouta.webp',    char:'kouta'  },
     { key:'cravat_hayate',       name:'水色の石のクラバットピン',   nameAppraised:'アクアマリンのクラバットピン',       img:'../../item/cravat_hayate.webp',        char:'hayate' },
     { key:'snowflake_obsidian',  name:'黒い石（未鑑定）',           nameAppraised:'スノーフレークオブシディアン',       img:'../../item/snowflake_obsidian.webp',   loupeOnly: true },
+    { key:'rainbow_moonstone',   name:'白い石（未鑑定）',            nameAppraised:'レインボームーンストーン',            img:'../../item/rainbow_moonstone.webp',    kireiOnly: true },
   ];
 
   // キャラクター別に選べる他のレアアイテム
@@ -3933,7 +3953,7 @@ function submitUtPw() {
         ? '<a href="' + item.episode.url + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;margin-top:6px;font-family:\'Cormorant Garamond\',serif;font-size:10px;color:#fca5a5;text-decoration:none;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid rgba(252,165,165,0.3);background:rgba(252,165,165,0.07);">' + item.episode.label + '</a>'
         : '';
       div.innerHTML =
-        '<img src="' + item.img + '" alt="' + item.name + '" class="' + (got ? '' : (item.loupeOnly ? 'grey-solid' : 'grey')) + '">' +
+        '<img src="' + item.img + '" alt="' + item.name + '" class="' + (got ? '' : (item.loupeOnly || item.kireiOnly ? 'grey-solid' : 'grey')) + '">' +
         '<span class="stone-label">' + displayName + '</span>' +
         epLink;
       if (got) {
@@ -4400,6 +4420,8 @@ function submitUtPw() {
               div.onclick = function() { useTsumetaiForAppraisal(); };
             } else if (t.id === 'hikaru') {
               div.onclick = function() { showHikaruRefinementPopup(); };
+            } else if (t.id === 'kirei') {
+              div.onclick = function() { showKireiRefinementPopup(); };
             } else {
               div.onclick = (function(imgSrc) { return function() { showItemMsgPopup(imgSrc, '「……鳴ってないな」'); }; })(RAW_STONE_IMG[t.id] || '../../item/rawstone.webp');
             }
@@ -4494,7 +4516,7 @@ function submitUtPw() {
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
         // loupeOnly アイテムは妙に冷たい石では解放しない
-        if (s.loupeOnly) return false;
+        if (s.loupeOnly || s.kireiOnly) return false;
         // boutonniere_kouta はメイン3つ鑑定済み後にのみ解放
         if (s.key === 'boutonniere_kouta' && !_main3Done) return false;
         // cravat_hayate は1-5読了後にのみ解放
@@ -4602,6 +4624,45 @@ function submitUtPw() {
     setTimeout(function() {
       showItemMsgPopup('../../item/obsidian_pendant.webp',
         '雪片のペンダントトップ\n\n消えなかった音を、自分の中に\n留めておくためのもの。');
+    }, 400);
+  };
+
+  window.showKireiRefinementPopup = function() {
+    var appraised = getAppraisedStones();
+    var kireiCnt  = appraised['kirei'] || 0;
+    var pop = document.getElementById('kirei-refine-popup');
+    if (!pop) return;
+    var hasMoonstone = SfSnow.isUnlocked('rainbow_moonstone');
+    document.getElementById('kirei-refine-cnt').textContent = kireiCnt;
+    var btn = document.getElementById('kirei-refine-btn');
+    var canRefine = kireiCnt >= 100 && !hasMoonstone;
+    if (btn) {
+      btn.disabled = !canRefine;
+      btn.style.opacity = canRefine ? '1' : '0.4';
+    }
+    var alreadyMsg = document.getElementById('kirei-refine-already');
+    if (alreadyMsg) alreadyMsg.style.display = hasMoonstone ? 'block' : 'none';
+    pop.style.display = 'flex';
+  };
+
+  window.exchangeKireiForMoonstone = function() {
+    document.getElementById('kirei-refine-popup').style.display = 'none';
+    var appraised = getAppraisedStones();
+    var kireiCnt  = appraised['kirei'] || 0;
+    if (kireiCnt < 100) {
+      showItemMsgPopup('../../item/rawstone_kirei.webp', '「……まだ足りない」\n\n綺麗な石が 100 個必要');
+      return;
+    }
+    appraised['kirei'] = kireiCnt - 100;
+    if (appraised['kirei'] <= 0) delete appraised['kirei'];
+    localStorage.setItem('sf_ut_appraised', JSON.stringify(appraised));
+    updateAppraiseBtn();
+    renderStones();
+    SfSnow.unlockItem('rainbow_moonstone');
+    if (typeof renderItemRows === 'function') renderItemRows();
+    setTimeout(function() {
+      showItemMsgPopup('../../item/rainbow_moonstone.webp',
+        '「……これは」\n\nレインボームーンストーン\n\n白い光の奥に、青や虹の揺らめきを隠した石。');
     }, 400);
   };
 
@@ -4855,7 +4916,7 @@ function submitUtPw() {
     var _main3bDone = _main3b.every(function(k){ return localStorage.getItem('sf_ut_stone_revealed_' + k) === 'true'; });
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
-        if (s.loupeOnly) return false;
+        if (s.loupeOnly || s.kireiOnly) return false;
         if (s.key === 'boutonniere_kouta' && !_main3bDone) return false;
         if (s.key === 'cravat_hayate' && !localStorage.getItem('sf_ut_cravat_found')) return false;
         return true;
