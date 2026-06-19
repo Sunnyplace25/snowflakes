@@ -2314,18 +2314,32 @@ function submitUtPw() {
     toggleShopTrack(src, btn);
   };
 
-  window.showChapterComplete = function(chNum, title, sub, src) {
+  window.showChapterComplete = function(chNum, title, sub, src, itemKey) {
     var ov = document.getElementById('chapter-complete-overlay');
     var numEl = document.getElementById('cc-num');
     var unlockEl = document.getElementById('cc-unlock-block');
     var trackTitle = document.getElementById('cc-track-title');
     var trackSub = document.getElementById('cc-track-sub');
     var ccPlayBtn = document.getElementById('cc-play-btn');
+    var itemBlock = document.getElementById('cc-item-block');
+    var itemImg = document.getElementById('cc-item-img');
+    var itemName = document.getElementById('cc-item-name');
     if (!ov) return;
     if (numEl) numEl.textContent = 'CHAPTER ' + chNum + ' COMPLETE';
     if (trackTitle) trackTitle.textContent = title;
     if (trackSub) trackSub.textContent = sub;
     if (unlockEl) unlockEl.style.opacity = '0';
+    if (itemBlock) {
+      if (itemKey) {
+        if (itemImg) itemImg.src = '../../item/' + itemKey + '.webp';
+        if (itemName) itemName.textContent = itemKey === 'obsidian_pendant' ? '雪片のペンダントトップ' : itemKey;
+        itemBlock.style.display = 'block';
+        itemBlock.style.opacity = '0';
+        itemBlock.style.transition = '';
+      } else {
+        itemBlock.style.display = 'none';
+      }
+    }
     // BGM をフェードアウト
     if (_bgmAudio && !_bgmAudio.paused) {
       var _bgmVol = _bgmAudio.volume;
@@ -2365,6 +2379,11 @@ function submitUtPw() {
     // シーケンシャル表示
     setTimeout(function() {
       if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
+      if (itemKey && itemBlock) {
+        setTimeout(function() {
+          itemBlock.style.transition = 'opacity 0.8s'; itemBlock.style.opacity = '1';
+        }, 1000);
+      }
     }, 1200);
     // 自動再生（初回のみ・muted→フェードイン）
     var _ccAudio = new Audio(src);
@@ -3313,7 +3332,11 @@ function submitUtPw() {
         localStorage.setItem('sf_ut_ch3_complete', 'true');
         localStorage.setItem('sf_ut_kouta_unlocked', 'true');
         renderChapterList();
-        _pendingComplete = function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3'); };
+        var _givesPendant = SfSnow.isUnlocked('snowflake_obsidian') && !SfSnow.isUnlocked('obsidian_pendant');
+        if (_givesPendant) SfSnow.unlockItem('obsidian_pendant');
+        _pendingComplete = (function(withPendant) {
+          return function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3', withPendant); };
+        })(_givesPendant);
       }
       // アイテム解放：テキストを閉じた後にポップアップ
       if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
@@ -5741,6 +5764,11 @@ function submitUtPw() {
     <p id="cc-track-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;"></p>
     <p id="cc-track-sub" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;margin-bottom:32px;"></p>
     <button id="cc-play-btn" style="background:none;border:1px solid rgba(196,181,253,0.4);border-radius:50%;width:52px;height:52px;color:#c4b5fd;font-size:16px;cursor:pointer;margin-bottom:48px;">▶</button>
+  </div>
+  <div id="cc-item-block" style="display:none;text-align:center;opacity:0;position:relative;z-index:1;margin-bottom:32px;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#475569;margin-bottom:16px;">✦ ITEM UNLOCKED</p>
+    <img id="cc-item-img" src="" alt="" style="width:72px;height:72px;object-fit:contain;border-radius:8px;margin-bottom:12px;opacity:0.9;">
+    <p id="cc-item-name" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;"></p>
   </div>
   <button onclick="closeChapterComplete()" style="position:relative;z-index:1;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#334155;cursor:pointer;">続ける</button>
 </div>
