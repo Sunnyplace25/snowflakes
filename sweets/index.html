@@ -14,7 +14,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
   <script src="../snow.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -7527,10 +7526,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 </script>
 
 <script>
-// ── Supabase データ同期 ──────────────────────────────────────
+// ── Supabase データ同期（fetch直接呼び出し版）────────────────
 (function() {
   var SUPABASE_URL = 'https://pjmqunhjyafzqjxwyunb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_kMNnLJ9VR6fW02U9CANbkQ_FGVjUpY7';
+  var API = SUPABASE_URL + '/rest/v1/sf_user_data';
 
   // 同期対象のlocalStorageキー
   var SYNC_KEYS = [
@@ -7549,15 +7549,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     'sf_sweets_ut_appraise_unlock_v1',
   ];
 
-  var _sb = null;
   var _email = null;
   var _syncTimer = null;
 
-  function getClient() {
-    if (_sb) return _sb;
-    if (typeof supabase === 'undefined') return null;
-    _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    return _sb;
+  function sbHeaders(extra) {
+    var h = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json'
+    };
+    if (extra) Object.assign(h, extra);
+    return h;
   }
 
   function getPayload() {
@@ -7585,38 +7587,65 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
-  // Supabaseからデータを復元
-  // 戻り値: 'restored'=復元成功 / 'new'=新規 / 'pin_error'=PIN不一致
-  window.sfSyncRestore = async function(key) {
-    var sb = getClient();
-    if (!sb || !key) return 'new';
-    var parts = key.split(':');
-    var id = parts[0], pin = parts[1];
+  // DB SELECT: email完全一致で1件取得 → payloadを返す（なければnull）
+  async function dbSelect(key) {
     try {
-      // 同じIDで別PINのレコードが存在するか確認
-      var idCheck = await sb.from('sf_user_data').select('email').like('email', id + ':%').maybeSingle();
-      if (idCheck.data && idCheck.data.email !== key) {
-        return 'pin_error'; // IDは存在するがPINが違う
-      }
-      var res = await sb.from('sf_user_data').select('payload').eq('email', key).maybeSingle();
-      if (res.data && res.data.payload) {
-        applyPayload(res.data.payload);
-        if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
-        return 'restored';
-      }
-    } catch(e) { console.warn('[Supabase] 復元エラー', e); }
+      var url = API + '?email=eq.' + encodeURIComponent(key) + '&select=payload&limit=1';
+      var res = await fetch(url, { headers: sbHeaders() });
+      if (!res.ok) { console.warn('[Supabase] SELECT', res.status, await res.text()); return null; }
+      var data = await res.json();
+      return (data && data[0] && data[0].payload) ? data[0].payload : null;
+    } catch(e) { console.warn('[Supabase] SELECT fetch error', e); return null; }
+  }
+
+  // DB SELECT: IDプレフィックスで存在確認 → 既存のemail文字列を返す（なければnull）
+  async function dbCheckId(id) {
+    try {
+      var url = API + '?email=ilike.' + encodeURIComponent(id + ':*') + '&select=email&limit=1';
+      var res = await fetch(url, { headers: sbHeaders() });
+      if (!res.ok) return null;
+      var data = await res.json();
+      return (data && data[0]) ? data[0].email : null;
+    } catch(e) { return null; }
+  }
+
+  // DB UPSERT: email + payload を保存 → 成否(bool)を返す
+  async function dbUpsert(key, payload) {
+    try {
+      var res = await fetch(API, {
+        method: 'POST',
+        headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+        body: JSON.stringify({ email: key, payload: payload, updated_at: new Date().toISOString() })
+      });
+      if (!res.ok) { console.warn('[Supabase] UPSERT', res.status, await res.text()); return false; }
+      return true;
+    } catch(e) { console.warn('[Supabase] UPSERT fetch error', e); return false; }
+  }
+
+  // Supabaseからデータを復元
+  // 戻り値: 'restored'=復元成功 / 'new'=データなし / 'pin_error'=PIN不一致
+  window.sfSyncRestore = async function(key) {
+    if (!key) return 'new';
+    var id = key.split(':')[0];
+    var payload = await dbSelect(key);
+    if (payload) {
+      applyPayload(payload);
+      if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
+      return 'restored';
+    }
+    // 同じIDで別PINが存在するか確認
+    var existing = await dbCheckId(id);
+    if (existing && existing !== key) return 'pin_error';
     return 'new';
   };
 
   // Supabaseにデータを保存
   window.sfSyncSave = async function(email, showToast) {
-    var sb = getClient();
-    if (!sb || !email) return;
-    try {
-      var payload = getPayload();
-      await sb.from('sf_user_data').upsert({ email: email, payload: payload, updated_at: new Date().toISOString() });
-      if (showToast) sfSyncToast('データを保存しました');
-    } catch(e) { console.warn('[Supabase] 保存エラー', e); }
+    if (!email) return false;
+    var payload = getPayload();
+    var ok = await dbUpsert(email, payload);
+    if (ok && showToast) sfSyncToast('データを保存しました');
+    return ok;
   };
 
   function setBackupMsg(msg, color) {
@@ -7632,17 +7661,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!id) { setBackupMsg('IDを入力してください', '#fca5a5'); return; }
     if (!/^\d{4}$/.test(pin)) { setBackupMsg('PINは数字4桁で入力してください', '#fca5a5'); return; }
     var key = id + ':' + pin;
-    var sb = getClient();
-    if (!sb) { setBackupMsg('接続エラー', '#fca5a5'); return; }
     setBackupMsg('保存中…');
     // IDが別のPINで存在するか確認
-    var idCheck = await sb.from('sf_user_data').select('email').like('email', id + ':%').maybeSingle();
-    if (idCheck.data && idCheck.data.email !== key) {
+    var existingEmail = await dbCheckId(id);
+    if (existingEmail && existingEmail !== key) {
       setBackupMsg('このIDはすでに使用されています', '#fca5a5'); return;
     }
     localStorage.setItem('sf_sweets_email', key);
-    await sfSyncSave(key, false);
-    setBackupMsg('保存しました ✓', '#6ee7b7');
+    var ok = await sfSyncSave(key, false);
+    if (ok) {
+      setBackupMsg('保存しました ✓', '#6ee7b7');
+    } else {
+      setBackupMsg('保存に失敗しました。時間をおいて再試行してください', '#fca5a5');
+    }
   };
 
   window.sfBackupRestore = async function() {
@@ -7680,7 +7711,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var restored = await sfSyncRestore(email);
     await sfSyncSave(email, false);
     if (showToast) {
-      sfSyncToast(restored ? 'データを復元しました' : 'バックアップIDを登録しました');
+      sfSyncToast(restored === 'restored' ? 'データを復元しました' : 'バックアップIDを登録しました');
     }
     // 5分ごとに自動保存
     if (_syncTimer) clearInterval(_syncTimer);
