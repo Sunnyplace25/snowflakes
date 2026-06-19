@@ -951,8 +951,8 @@ function sfShare() {
         var shortCard = document.getElementById('short-kouta-card');
         if (shortCard) shortCard.style.display = 'flex';
 
-        // しおりアイテム：1回限り
-        var SHIORI_KEY = 'sf_shiori_kouta_short_got';
+        // しおりアイテム：1回限り（Moon Veil用）
+        var SHIORI_KEY = 'sf_shiori_moonveil_short_got';
         var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
         if (!localStorage.getItem(SHIORI_KEY)) {
           localStorage.setItem(SHIORI_KEY, '1');
@@ -961,13 +961,6 @@ function sfShare() {
             SfSnow.addMItemDirect('shiori_kouta', 1);
           }
           setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
-        } else if (typeof SfSnow !== 'undefined') {
-          // 移行：既取得だがSfSnow未登録のユーザーに1回だけ追加
-          var _mItems = SfSnow.getMonthlyItems ? SfSnow.getMonthlyItems() : {};
-          if (!(_mItems['shiori_kouta'] > 0) && !SfSnow.isUnlocked('shiori_kouta')) {
-            SfSnow.unlockItem('shiori_kouta');
-            SfSnow.addMItemDirect('shiori_kouta', 1);
-          }
         }
 
         var titleEl = document.getElementById('short-title');
