@@ -7566,49 +7566,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   var SUPABASE_KEY = 'sb_publishable_kMNnLJ9VR6fW02U9CANbkQ_FGVjUpY7';
   var API = SUPABASE_URL + '/rest/v1/sf_user_data';
 
-  // 同期対象のlocalStorageキー
-  var SYNC_KEYS = [
-    // Snow / アイテム基本
-    'sf_snow', 'sf_candy', 'sf_picks', 'sf_monthly_items', 'sf_unlocked', 'sf_used_codes',
-    // SWEETs
-    'sf_sweets_unlocked', 'sf_sweets_ver', 'sf_sweets_notes_unlocked',
-    'sf_oshi', 'sf_play_counts', 'sf_room_last_seen',
-    'sf_summer_entered', 'sf_summer_auto_event',
-    // インタビュー解放状態
-    'sf_interview_hinata', 'sf_interview_hayate', 'sf_interview_kouta',
-    // Under tone
-    'sf_undertone_admin', 'sf_ut_prologue_gate_seen', 'sf_ut_prologue_toast_shown',
-    'sf_yt_watched_undertone', 'sf_undertone_seen_prose',
-    'sf_ut_fortune_unlock_shown', 'sf_ut_beer_unlock_shown',
-    'sf_ut_choco_unlock_shown', 'sf_ut_cookie_unlock_shown',
-    'sf_undertone_ch21_unlocked', 'sf_undertone_ch22_unlocked',
-    'sf_undertone_ch23_unlocked', 'sf_undertone_ch24_unlocked',
-    'sf_undertone_ch25_unlocked', 'sf_undertone_ch3_unlocked',
-    'sf_undertone_ch32_unlocked', 'sf_undertone_ch33_unlocked',
-    'sf_undertone_ch34_unlocked', 'sf_undertone_ch35_unlocked',
-    'sf_undertone_ch4_unlocked', 'sf_undertone_ch42_unlocked',
-    'sf_undertone_ch43_unlocked',
-    // アイテム
-    'sf_banner_item_ep_moonveil', 'sf_shiori_moonveil_short_got',
-    'sf_sealed_ep35_item', 'sf_backstage_pass', 'sf_friendship',
-    'sf_sweets_ut_appraise_unlock_v1',
-    // Under tone 石・鑑定
-    'sf_ut_rawstones', 'sf_ut_appraised', 'sf_ut_rawstone_seen',
-    'sf_undertone_equip_unlocked', 'sf_ut_ever_found_stone',
-    'sf_ut_stone_appraise_unlock_shown', 'sf_ut_cravat_found', 'sf_ut_cravat_get_pending',
-    'sf_ut_name_revealed',
-    'sf_nagi_cookie_total', 'sf_nagi_beer_total', 'sf_nagi_choco_total',
-    // Under tone 章進行
-    'sf_ut_ch1_complete', 'sf_ut_ch2_complete', 'sf_ut_ch3_complete',
-    'sf_ut_ch1_unlock_shown', 'sf_ut_ch2_unlock_shown', 'sf_ut_ch3_unlock_shown',
-    'sf_ut_ch1_unlock_at', 'sf_ut_ch2_unlock_at', 'sf_ut_ch3_unlock_at',
-    'sf_undertone_ch5_unlocked',
-    // Under tone キャラ解放
-    'sf_ut_hayate_unlocked', 'sf_ut_hinata_unlocked', 'sf_ut_kouta_unlocked',
-    // Under tone 設定・進行メトリクス
-    'sf_ut_sound', 'sf_undertone_max_scene',
-    'sf_undertone_visited', 'sf_undertone_explore_count', 'sf_undertone_count_total',
-  ];
 
   var _email = null;
   var _syncTimer = null;
@@ -7623,26 +7580,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     return h;
   }
 
+  // 除外キー（認証情報など同期不要なもの）
+  var SYNC_EXCLUDE = { 'sf_sweets_email': true };
+
   function getPayload() {
     var payload = {};
-    SYNC_KEYS.forEach(function(k) {
-      var v = localStorage.getItem(k);
-      if (v !== null) payload[k] = v;
-    });
-    // 動的プレフィックスキーも同期
-    var DYNAMIC_PREFIXES = [
-      'sf_ut_ch_read_at_', 'sf_note_again_', 'sf_stone_seen_',
-      'sf_ut_stone_revealed_'
-    ];
     for (var i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i);
       if (!key) continue;
-      for (var j = 0; j < DYNAMIC_PREFIXES.length; j++) {
-        if (key.startsWith(DYNAMIC_PREFIXES[j])) {
-          payload[key] = localStorage.getItem(key);
-          break;
-        }
-      }
+      if (!key.startsWith('sf_')) continue;
+      if (SYNC_EXCLUDE[key]) continue;
+      payload[key] = localStorage.getItem(key);
     }
     return payload;
   }
