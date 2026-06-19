@@ -3215,9 +3215,10 @@ function submitUtPw() {
         setTimeout(function() { showChapterUnlock(2, 10); }, 500);
       }
     }
-    // 2日タイマーチェック：3章自動解放
+    // 14日タイマーチェック：4章自動解放
     var _ch3UnlockAt = parseInt(localStorage.getItem('sf_ut_ch3_unlock_at') || '0');
-    if (_ch3UnlockAt && !ch4Unlocked && Date.now() - _ch3UnlockAt >= 2 * 86400000) {
+    var _ch4UnlockAt = parseInt(localStorage.getItem('sf_ut_ch4_unlock_at') || '0');
+    if (_ch4UnlockAt && !ch4Unlocked && Date.now() - _ch4UnlockAt >= 14 * 86400000) {
       ch4Unlocked = true;
       localStorage.setItem('sf_undertone_ch4_unlocked', 'true');
       if (!localStorage.getItem('sf_ut_ch3_unlock_shown')) {
@@ -3242,7 +3243,7 @@ function submitUtPw() {
     if (between4) {
       between4.style.display = (ch2Done && !ch4Unlocked) ? '' : 'none';
       if (ch2Done && !ch4Unlocked) {
-        var _rem3 = _ch3UnlockAt ? Math.max(0, 2*86400000 - (Date.now() - _ch3UnlockAt)) : 0;
+        var _rem3 = _ch4UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch4UnlockAt)) : 0;
         var el3 = document.getElementById('ch3-lock-timer');
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
       }
@@ -3443,6 +3444,9 @@ function submitUtPw() {
       if (idx === 19 && !localStorage.getItem('sf_ut_ch3_complete')) {
         localStorage.setItem('sf_ut_ch3_complete', 'true');
         localStorage.setItem('sf_ut_kouta_unlocked', 'true');
+        if (!localStorage.getItem('sf_ut_ch4_unlock_at')) {
+          localStorage.setItem('sf_ut_ch4_unlock_at', String(Date.now()));
+        }
         renderChapterList();
         var _givesPendant = SfSnow.isUnlocked('snowflake_obsidian') && !SfSnow.isUnlocked('obsidian_pendant');
         if (_givesPendant) SfSnow.unlockItem('obsidian_pendant');
