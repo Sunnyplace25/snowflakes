@@ -1738,11 +1738,11 @@ function submitUtPw() {
 </div>
 
 <!-- Item message popup (もっていません等) -->
-<div id="item-msg-popup" style="display:none;position:fixed;inset:0;z-index:680;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('item-msg-popup').style.display='none'">
+<div id="item-msg-popup" style="display:none;position:fixed;inset:0;z-index:680;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="closeItemMsgPopup()">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
     <img id="item-msg-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;filter:grayscale(0.3);opacity:0.6;">
     <p id="item-msg-text" style="font-family:'Noto Serif JP',serif;font-size:14px;color:#94a3b8;letter-spacing:2px;line-height:2.2;white-space:pre-line;margin-bottom:24px;"></p>
-    <button onclick="document.getElementById('item-msg-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+    <button onclick="closeItemMsgPopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
 </div>
 
@@ -2876,6 +2876,28 @@ function submitUtPw() {
       if (pp && pp.classList.contains('show')) return;
       autoOpenNewEpisode();
     }, 1000);
+    // 24h後ペンダント解放チェック（クリア後に鑑定した人向け）
+    setTimeout(function() {
+      checkObsidianPendantUnlock();
+    }, 1500);
+  }
+
+  function checkObsidianPendantUnlock() {
+    var unlockAt = localStorage.getItem('sf_ut_obsidian_pendant_unlock_at');
+    if (!unlockAt) return;
+    if (SfSnow.isUnlocked('obsidian_pendant')) {
+      localStorage.removeItem('sf_ut_obsidian_pendant_unlock_at');
+      return;
+    }
+    var elapsed = Date.now() - parseInt(unlockAt, 10);
+    if (elapsed >= 24 * 3600 * 1000) {
+      localStorage.removeItem('sf_ut_obsidian_pendant_unlock_at');
+      SfSnow.unlockItem('obsidian_pendant');
+      setTimeout(function() {
+        showItemMsgPopup('../../item/obsidian_pendant.webp',
+          '雪片のペンダントトップ\n\n消えなかった音を、自分の中に\n留めておくためのもの。');
+      }, 800);
+    }
   }
 
   function autoOpenNewEpisode() {
@@ -4549,9 +4571,19 @@ function submitUtPw() {
     // スノーフレークオブシディアンを解放
     SfSnow.unlockItem('snowflake_obsidian');
     if (typeof renderItemRows === 'function') renderItemRows();
+    // クリア済みでペンダント未所持 → 24h後解放タイマーをセット
+    if (localStorage.getItem('sf_ut_ch3_complete') && !SfSnow.isUnlocked('obsidian_pendant')) {
+      localStorage.setItem('sf_ut_obsidian_pendant_unlock_at', String(Date.now()));
+    }
     setTimeout(function() {
       showItemMsgPopup('../../item/snowflake_obsidian.webp',
-        '「……これは」\n\nスノーフレークオブシディアン\n\n暗い記憶の中に残る光を\n象徴する石。');
+        '「……これは」\n\nスノーフレークオブシディアン\n\n暗い記憶の中に残る光を\n象徴する石。',
+        function() {
+          setTimeout(function() {
+            showItemMsgPopup('nagi_ch3.webp', '「預かっとく」');
+          }, 200);
+        }
+      );
     }, 400);
   };
 
@@ -5643,11 +5675,21 @@ function submitUtPw() {
   }
 
   /* ── アイテム画像付きメッセージポップアップ ── */
-  function showItemMsgPopup(imgSrc, msg) {
+  var _itemMsgCloseCallback = null;
+  function showItemMsgPopup(imgSrc, msg, onClose) {
     document.getElementById('item-msg-img').src = imgSrc;
     document.getElementById('item-msg-text').textContent = msg;
     document.getElementById('item-msg-popup').style.display = 'flex';
+    _itemMsgCloseCallback = onClose || null;
   }
+  window.closeItemMsgPopup = function() {
+    document.getElementById('item-msg-popup').style.display = 'none';
+    if (_itemMsgCloseCallback) {
+      var cb = _itemMsgCloseCallback;
+      _itemMsgCloseCallback = null;
+      cb();
+    }
+  };
 
   var _skTimer = null;
   function showSKPopup(line1, line2) { /* popup removed */ }
