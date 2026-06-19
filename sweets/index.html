@@ -806,34 +806,11 @@
         次回から自動入力する
       </label>
 
-      <!-- クラウドバックアップ -->
-      <div style="margin-top:28px;width:100%;max-width:260px;text-align:center;">
-        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;line-height:2;margin-bottom:12px;">お好きなIDを設定すると、データをサーバーに保存できます。<br>次回以降、同じIDを入力するだけで、いつでもデータを復元できます。<br>忘れないように、IDは必ずメモしておいてください。</p>
-        <input type="text" id="backup-email-input" placeholder="バックアップID（任意）" autocomplete="off"
-          style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;outline:none;text-align:center;"
-          onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-      </div>
-
-      <!-- セーブコード -->
-    </div>
-
-    <!-- Snow & Items panel -->
-    <div style="margin-top:36px;width:100%;max-width:300px;">
-
-      <!-- Summer start notice -->
-      <div style="margin-bottom:28px;text-align:center;" data-no-replace>
-        <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#7dd3fc;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs 2026 Summer<br>はじまりました。</p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">ノベルゲーム＆フォーチュン<br>『Under tone』を公開中です。<br><br>物語を読み進めながら、<br>カードに込められた「音」を受け取っていく<br>Snow flakesのもうひとつの入口です。<br><br>夏のあいだ、少しずつ開いていくコンテンツを<br>楽しんでいただけましたら嬉しいです。</p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:20px 0 0;">入室にはInstagram投稿にて配布される<br>SWEETsCodeが必要です。<br>コードはリールの最後をご確認ください。</p>
-        <a href="https://www.instagram.com/reel/DZXpxWRsxlt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:inline-block;margin:14px 0 0;padding:8px 24px;border:1px solid rgba(125,211,252,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7dd3fc;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(125,211,252,0.7)';this.style.color='#e0f2fe'" onmouseout="this.style.borderColor='rgba(125,211,252,0.35)';this.style.color='#7dd3fc'">Instagram へ →</a>
-      </div>
-
       <!-- Snow card -->
-      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;margin-bottom:12px;text-align:center;">
+      <div style="margin-top:28px;width:100%;max-width:260px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px;text-align:center;">
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#cbd5e1;margin-bottom:12px;">SNOW</p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;letter-spacing:4px;color:rgba(255,255,255,0.85);line-height:1;">❄ <span id="sf-snow-balance">0</span></p>
         <p style="font-size:11px;color:#94a3b8;margin-top:10px;letter-spacing:1px;">今日あと <span id="sf-daily-remaining" style="color:#cbd5e1;">0</span> 積もります</p>
-        <!-- ❄ チェックリスト -->
         <div style="margin-top:14px;text-align:left;">
           <button id="snow-checklist-toggle" onclick="toggleSnowChecklist()" style="background:none;border:none;color:#64748b;font-size:10px;letter-spacing:2px;cursor:pointer;font-family:'Cormorant Garamond',serif;padding:0;margin-bottom:8px;width:100%;text-align:left;">▼ 今日のSnow</button>
           <div id="snow-checklist-items" style="display:none;"></div>
@@ -841,8 +818,16 @@
         <a href="../gacha/" style="display:inline-block;margin-top:16px;padding:8px 24px;border:1px solid rgba(253,230,138,0.5);border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#fde68a;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.9)';this.style.color='#fef9c3'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.5)';this.style.color='#fde68a'">ガチャを引く</a>
       </div>
 
-
     </div>
+
+    <!-- Summer start notice -->
+    <div style="margin-top:36px;width:100%;max-width:300px;text-align:center;" data-no-replace>
+      <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#7dd3fc;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs 2026 Summer<br>はじまりました。</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">ノベルゲーム＆フォーチュン<br>『Under tone』を公開中です。<br><br>物語を読み進めながら、<br>カードに込められた「音」を受け取っていく<br>Snow flakesのもうひとつの入口です。<br><br>夏のあいだ、少しずつ開いていくコンテンツを<br>楽しんでいただけましたら嬉しいです。</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:20px 0 0;">入室にはInstagram投稿にて配布される<br>SWEETsCodeが必要です。<br>コードはリールの最後をご確認ください。</p>
+      <a href="https://www.instagram.com/reel/DZXpxWRsxlt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:inline-block;margin:14px 0 0;padding:8px 24px;border:1px solid rgba(125,211,252,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7dd3fc;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(125,211,252,0.7)';this.style.color='#e0f2fe'" onmouseout="this.style.borderColor='rgba(125,211,252,0.35)';this.style.color='#7dd3fc'">Instagram へ →</a>
+    </div>
+
   </div>
 
 
@@ -862,6 +847,25 @@
           <button onclick="goToItems()" style="margin-top:18px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#7dd3fc;cursor:pointer;transition:opacity 0.2s;padding:0;" onmouseenter="this.style.opacity='0.6'" onmouseleave="this.style.opacity='1'">▶ 持ち物を見る</button>
 
         </div>
+      </div>
+    </div>
+
+    <!-- DATA BACKUP -->
+    <div class="section">
+      <div class="section-label">data backup</div>
+      <div style="text-align:center;padding:8px 0;">
+        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;line-height:2.2;margin-bottom:20px;">お好きなIDとPINを設定すると、データをサーバーに保存できます。<br>次回以降、同じID・PINを入力するだけでいつでも復元できます。<br>忘れないように、必ずメモしておいてください。</p>
+        <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
+          style="width:100%;max-width:280px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;outline:none;text-align:center;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto;"
+          onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        <input type="password" id="backup-pin-input" placeholder="PIN（数字4桁）" autocomplete="off" maxlength="4" inputmode="numeric"
+          style="width:100%;max-width:280px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:4px;outline:none;text-align:center;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"
+          onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        <div style="display:flex;gap:8px;justify-content:center;max-width:280px;margin:0 auto;">
+          <button onclick="sfBackupSave()" style="flex:1;padding:10px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
+          <button onclick="sfBackupRestore()" style="flex:1;padding:10px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
+        </div>
+        <p id="backup-msg" style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-top:12px;min-height:20px;"></p>
       </div>
     </div>
 
@@ -4745,11 +4749,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         localStorage.setItem(SWEETS_KEY, '1');
         localStorage.setItem(SWEETS_VER_KEY, SWEETS_VERSION);
       }
-      // バックアップ用メールアドレスを保存
-      const backupEmail = document.getElementById('backup-email-input');
-      if (backupEmail && backupEmail.value.trim()) {
-        localStorage.setItem('sf_sweets_email', backupEmail.value.trim().toLowerCase());
-      }
       // セッション中はゲートスキップできるようにフラグを立てる
       sessionStorage.setItem('sf_sweets_session', '1');
       if (typeof gtag === 'function') {
@@ -4797,9 +4796,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
-      // Supabase 同期開始
-      var _syncEmail = localStorage.getItem('sf_sweets_email');
-      if (_syncEmail && typeof sfSyncInit === 'function') sfSyncInit(_syncEmail, true);
     }
 
     var UT_STONE_ITEMS = [
@@ -7588,19 +7584,27 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
-  // Supabaseからデータを復元（localStorageにないキーのみ）
-  window.sfSyncRestore = async function(email) {
+  // Supabaseからデータを復元
+  // 戻り値: 'restored'=復元成功 / 'new'=新規 / 'pin_error'=PIN不一致
+  window.sfSyncRestore = async function(key) {
     var sb = getClient();
-    if (!sb || !email) return false;
+    if (!sb || !key) return 'new';
+    var parts = key.split(':');
+    var id = parts[0], pin = parts[1];
     try {
-      var res = await sb.from('sf_user_data').select('payload').eq('email', email).maybeSingle();
+      // 同じIDで別PINのレコードが存在するか確認
+      var idCheck = await sb.from('sf_user_data').select('email').like('email', id + ':%').maybeSingle();
+      if (idCheck.data && idCheck.data.email !== key) {
+        return 'pin_error'; // IDは存在するがPINが違う
+      }
+      var res = await sb.from('sf_user_data').select('payload').eq('email', key).maybeSingle();
       if (res.data && res.data.payload) {
         applyPayload(res.data.payload);
         if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
-        return true; // 復元あり
+        return 'restored';
       }
     } catch(e) { console.warn('[Supabase] 復元エラー', e); }
-    return false; // 新規
+    return 'new';
   };
 
   // Supabaseにデータを保存
@@ -7612,6 +7616,52 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       await sb.from('sf_user_data').upsert({ email: email, payload: payload, updated_at: new Date().toISOString() });
       if (showToast) sfSyncToast('データを保存しました');
     } catch(e) { console.warn('[Supabase] 保存エラー', e); }
+  };
+
+  function setBackupMsg(msg, color) {
+    var el = document.getElementById('backup-msg');
+    if (el) { el.textContent = msg; el.style.color = color || '#94a3b8'; }
+  }
+
+  window.sfBackupSave = async function() {
+    var id  = (document.getElementById('backup-id-input')  || {}).value || '';
+    var pin = (document.getElementById('backup-pin-input') || {}).value || '';
+    id = id.trim().toLowerCase();
+    pin = pin.trim();
+    if (!id) { setBackupMsg('IDを入力してください', '#fca5a5'); return; }
+    if (!/^\d{4}$/.test(pin)) { setBackupMsg('PINは数字4桁で入力してください', '#fca5a5'); return; }
+    var key = id + ':' + pin;
+    var sb = getClient();
+    if (!sb) { setBackupMsg('接続エラー', '#fca5a5'); return; }
+    setBackupMsg('保存中…');
+    // IDが別のPINで存在するか確認
+    var idCheck = await sb.from('sf_user_data').select('email').like('email', id + ':%').maybeSingle();
+    if (idCheck.data && idCheck.data.email !== key) {
+      setBackupMsg('このIDはすでに使用されています', '#fca5a5'); return;
+    }
+    localStorage.setItem('sf_sweets_email', key);
+    await sfSyncSave(key, false);
+    setBackupMsg('保存しました ✓', '#6ee7b7');
+  };
+
+  window.sfBackupRestore = async function() {
+    var id  = (document.getElementById('backup-id-input')  || {}).value || '';
+    var pin = (document.getElementById('backup-pin-input') || {}).value || '';
+    id = id.trim().toLowerCase();
+    pin = pin.trim();
+    if (!id || !pin) { setBackupMsg('IDとPINを入力してください', '#fca5a5'); return; }
+    var key = id + ':' + pin;
+    setBackupMsg('復元中…');
+    var result = await sfSyncRestore(key);
+    if (result === 'restored') {
+      localStorage.setItem('sf_sweets_email', key);
+      setBackupMsg('データを復元しました ✓', '#6ee7b7');
+      setTimeout(function() { location.reload(); }, 1500);
+    } else if (result === 'pin_error') {
+      setBackupMsg('IDまたはPINが違います', '#fca5a5');
+    } else {
+      setBackupMsg('このIDのデータは見つかりませんでした', '#fca5a5');
+    }
   };
 
   function sfSyncToast(msg) {
