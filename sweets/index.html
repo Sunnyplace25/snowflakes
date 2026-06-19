@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
   <script src="../snow.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=GT-MRQ2NK5K"></script>
   <script>
@@ -804,6 +805,14 @@
         <input type="checkbox" id="keep-login-cb" style="accent-color:#f9a8d4;width:14px;height:14px;cursor:pointer;">
         次回から自動入力する
       </label>
+
+      <!-- クラウドバックアップ -->
+      <div style="margin-top:20px;width:100%;max-width:260px;">
+        <input type="email" id="backup-email-input" placeholder="メールアドレス（任意・バックアップ用）" autocomplete="email"
+          style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+        <p style="font-size:10px;color:#334155;letter-spacing:1px;margin-top:6px;text-align:center;">入力するとデータが自動でバックアップされます</p>
+      </div>
 
       <!-- セーブコード -->
     </div>
@@ -4769,6 +4778,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         localStorage.setItem(SWEETS_KEY, '1');
         localStorage.setItem(SWEETS_VER_KEY, SWEETS_VERSION);
       }
+      // バックアップ用メールアドレスを保存
+      const backupEmail = document.getElementById('backup-email-input');
+      if (backupEmail && backupEmail.value.trim() && backupEmail.value.includes('@')) {
+        localStorage.setItem('sf_sweets_email', backupEmail.value.trim().toLowerCase());
+      }
       // セッション中はゲートスキップできるようにフラグを立てる
       sessionStorage.setItem('sf_sweets_session', '1');
       if (typeof gtag === 'function') {
@@ -4816,6 +4830,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
+      // Supabase 同期開始
+      var _syncEmail = localStorage.getItem('sf_sweets_email');
+      if (_syncEmail && typeof sfSyncInit === 'function') sfSyncInit(_syncEmail);
     }
 
     var UT_STONE_ITEMS = [
@@ -5023,8 +5040,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     };
 
     // ページロード時：保存済みならパスワード自動入力（セッションスキップは停止中）
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       sessionStorage.removeItem('sf_sweets_session'); // セッション中スキップを停止（2026-06-19）
+
+      // Supabase から復元（localStorageが空でメールが保存されている場合）
+      var _savedEmail = localStorage.getItem('sf_sweets_email');
+      if (_savedEmail && typeof sfSyncRestore === 'function') {
+        await sfSyncRestore(_savedEmail);
+      }
+
       if (localStorage.getItem(SWEETS_KEY) === '1' &&
           localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
         // 保存済み → パスワード自動入力のみ（エンターは必要）
@@ -5032,6 +5056,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         input.value = PASSWORD;
         const cb = document.getElementById('keep-login-cb');
         if (cb) cb.checked = true;
+        // バックアップメールを入力欄に表示
+        const bei = document.getElementById('backup-email-input');
+        if (bei && _savedEmail) bei.value = _savedEmail;
         input.focus();
       } else {
         // バージョン不一致 → 旧ログイン情報をクリア
@@ -7593,6 +7620,106 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (p) p.style.display = 'flex';
     }, 1200);
   }
+})();
+</script>
+
+<script>
+// ── Supabase データ同期 ──────────────────────────────────────
+(function() {
+  var SUPABASE_URL = 'https://pjmqunhjyafzqjxwyunb.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_kMNnLJ9VR6fW02U9CANbkQ_FGVjUpY7';
+
+  // 同期対象のlocalStorageキー
+  var SYNC_KEYS = [
+    'sf_snow', 'sf_monthly_items', 'sf_unlocked', 'sf_used_codes',
+    'sf_sweets_unlocked', 'sf_sweets_ver', 'sf_sweets_notes_unlocked',
+    'sf_undertone_admin', 'sf_ut_prologue_gate_seen',
+    'sf_undertone_ch21_unlocked', 'sf_undertone_ch22_unlocked',
+    'sf_undertone_ch23_unlocked', 'sf_undertone_ch24_unlocked',
+    'sf_undertone_ch25_unlocked', 'sf_undertone_ch3_unlocked',
+    'sf_undertone_ch32_unlocked', 'sf_undertone_ch33_unlocked',
+    'sf_undertone_ch34_unlocked', 'sf_undertone_ch35_unlocked',
+    'sf_undertone_ch4_unlocked', 'sf_undertone_ch42_unlocked',
+    'sf_undertone_ch43_unlocked',
+    'sf_banner_item_ep_moonveil', 'sf_shiori_moonveil_short_got',
+    'sf_sealed_ep35_item', 'sf_backstage_pass', 'sf_friendship',
+    'sf_sweets_ut_appraise_unlock_v1',
+  ];
+
+  var _sb = null;
+  var _email = null;
+  var _syncTimer = null;
+
+  function getClient() {
+    if (_sb) return _sb;
+    if (typeof supabase === 'undefined') return null;
+    _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    return _sb;
+  }
+
+  function getPayload() {
+    var payload = {};
+    SYNC_KEYS.forEach(function(k) {
+      var v = localStorage.getItem(k);
+      if (v !== null) payload[k] = v;
+    });
+    // sf_ut_ch_read_at_* も同期
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (key && key.startsWith('sf_ut_ch_read_at_')) {
+        payload[key] = localStorage.getItem(key);
+      }
+    }
+    return payload;
+  }
+
+  function applyPayload(payload) {
+    if (!payload) return;
+    Object.keys(payload).forEach(function(k) {
+      if (localStorage.getItem(k) === null) {
+        localStorage.setItem(k, payload[k]);
+      }
+    });
+  }
+
+  // Supabaseからデータを復元（localStorageにないキーのみ）
+  window.sfSyncRestore = async function(email) {
+    var sb = getClient();
+    if (!sb || !email) return;
+    try {
+      var res = await sb.from('sf_user_data').select('payload').eq('email', email).maybeSingle();
+      if (res.data && res.data.payload) {
+        applyPayload(res.data.payload);
+        if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
+        console.log('[Supabase] データを復元しました');
+      }
+    } catch(e) { console.warn('[Supabase] 復元エラー', e); }
+  };
+
+  // Supabaseにデータを保存
+  window.sfSyncSave = async function(email) {
+    var sb = getClient();
+    if (!sb || !email) return;
+    try {
+      var payload = getPayload();
+      await sb.from('sf_user_data').upsert({ email: email, payload: payload, updated_at: new Date().toISOString() });
+    } catch(e) { console.warn('[Supabase] 保存エラー', e); }
+  };
+
+  // ログイン後に呼ぶ
+  window.sfSyncInit = async function(email) {
+    _email = email;
+    await sfSyncRestore(email);
+    await sfSyncSave(email);
+    // 5分ごとに自動保存
+    if (_syncTimer) clearInterval(_syncTimer);
+    _syncTimer = setInterval(function() { sfSyncSave(_email); }, 300000);
+    // ページを閉じるときに保存
+    window.addEventListener('beforeunload', function() { sfSyncSave(_email); });
+    window.addEventListener('visibilitychange', function() {
+      if (document.hidden) sfSyncSave(_email);
+    });
+  };
 })();
 </script>
 
