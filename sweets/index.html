@@ -6506,7 +6506,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
     var noteItemOk = noteItemD
       ? (noteItemD.monthly
-          ? (SfSnow.getMonthlyItems()[noteItemKey] || 0) > 0
+          ? SfSnow.isUnlocked(item.id)
           : SfSnow.isUnlocked(noteItemKey))
       : false;
     var iconRight = '10px';
