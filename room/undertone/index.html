@@ -1828,7 +1828,7 @@ function submitUtPw() {
     <!-- raw stone -->
     <img id="tarot-stone-img" src="" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 10px;display:block;box-shadow:0 0 24px rgba(196,181,253,0.15);">
     <p id="tarot-stone-name" style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:2px;"></p>
-    <p id="tarot-stone-sub" style="font-size:11px;color:#64748b;letter-spacing:2px;margin-bottom:12px;font-family:'Cormorant Garamond',serif;"></p>
+    <p id="tarot-stone-sub" style="font-size:11px;color:#94a3b8;letter-spacing:2px;margin-bottom:12px;font-family:'Cormorant Garamond',serif;"></p>
     <p id="tarot-stone-hint" style="display:none;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;font-family:'Noto Serif JP',serif;">ナギに渡すと<br>アイテムを鑑定してくれる</p>
     <button onclick="closeAppraisePopup()" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
@@ -4314,8 +4314,8 @@ function submitUtPw() {
     var seen = getSeenRawTypes();
     if (seen.indexOf('tsumetai') === -1) return RAW_STONE_TYPES[2];
     var r = Math.random();
-    if (r < 0.10) return RAW_STONE_TYPES[2];
-    if (r < 0.40) return RAW_STONE_TYPES[1];
+    if (r < 0.20) return RAW_STONE_TYPES[2];
+    if (r < 0.50) return RAW_STONE_TYPES[1];
     return RAW_STONE_TYPES[0];
   }
   /* ── Appraised stone counts ── */
