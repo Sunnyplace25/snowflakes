@@ -4472,7 +4472,7 @@ function submitUtPw() {
       }
     }
     if (!btn) return;
-    var ch21Read = _seenProseScenes.has(5);
+    var ch21Read = _seenProseScenes.has(5) || ch21Unlocked;
     if (ch21Read) {
       btn.style.display = '';
       if (sub) sub.textContent = '5 Snow';
