@@ -937,6 +937,16 @@ function sfShare() {
 
         var now  = new Date();
         var ms   = now - SHORT_PUB;
+        // しおりアイテム：期間制限なし（Moon Veil用）
+        var SHIORI_KEY = 'sf_shiori_moonveil_short_got';
+        var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
+        if (!localStorage.getItem(SHIORI_KEY) && typeof SfSnow !== 'undefined' && typeof showBannerItemPopup === 'function') {
+          localStorage.setItem(SHIORI_KEY, '1');
+          SfSnow.unlockItem('shiori_kouta');
+          SfSnow.addMItemDirect('shiori_kouta', 1);
+          setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
+        }
+
         if (ms < 0 || ms >= SHOW_DAYS * 86400000) {
           card.style.display = 'none';
           return;
@@ -950,16 +960,6 @@ function sfShare() {
         // 公開時刻になったらカードを表示
         var shortCard = document.getElementById('short-kouta-card');
         if (shortCard) shortCard.style.display = 'flex';
-
-        // しおりアイテム：1回限り（Moon Veil用）
-        var SHIORI_KEY = 'sf_shiori_moonveil_short_got';
-        var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
-        if (!localStorage.getItem(SHIORI_KEY) && typeof SfSnow !== 'undefined' && typeof showBannerItemPopup === 'function') {
-          localStorage.setItem(SHIORI_KEY, '1');
-          SfSnow.unlockItem('shiori_kouta');
-          SfSnow.addMItemDirect('shiori_kouta', 1);
-          setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
-        }
 
         var titleEl = document.getElementById('short-title');
         var dateEl  = document.getElementById('short-date');
