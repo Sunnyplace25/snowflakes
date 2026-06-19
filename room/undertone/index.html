@@ -3373,13 +3373,9 @@ function submitUtPw() {
     if (!_seenProseScenes.has(idx)) {
       _seenProseScenes.add(idx);
       localStorage.setItem('sf_undertone_seen_prose', JSON.stringify([..._seenProseScenes]));
-      // 鑑定ボタン解放（1-1読了後）＋石の鑑定解放ポップアップ
+      // 鑑定ボタン解放（1-1読了後）
       if (idx === 5) {
         updateAppraiseBtn();
-        if (!localStorage.getItem('sf_ut_stone_appraise_unlock_shown')) {
-          localStorage.setItem('sf_ut_stone_appraise_unlock_shown', 'true');
-          _itemUnlockCb = function() { setTimeout(function() { showStoneAppraiseUnlock(); }, 300); };
-        }
       }
       // 章内タイムゲート：初回読了時にタイムスタンプ保存
       var _timedPrevIdxs = [5,6,7,8,10,11,12,13,15,16];
@@ -3804,6 +3800,10 @@ function submitUtPw() {
         var pop = document.getElementById('fortune-unlock-popup');
         if (pop) pop.style.display = 'flex';
       }, 500);
+    } else if (ch21Unlocked && !localStorage.getItem('sf_ut_stone_appraise_unlock_shown')) {
+      // 石の鑑定解放ポップアップ（1章解放後・初回入店時のみ）
+      localStorage.setItem('sf_ut_stone_appraise_unlock_shown', 'true');
+      setTimeout(function() { showStoneAppraiseUnlock(); }, 600);
     } else {
       // Chibi popup
       setTimeout(function() {
