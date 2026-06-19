@@ -3888,9 +3888,9 @@ function submitUtPw() {
     if (beerRow && beerCount) {
       var bCnt = _mItems['beer'] || 0;
       beerCount.textContent = '× ' + bCnt;
-      beerRow.style.display = _seenProseScenes.has(11) ? 'flex' : 'none';
+      beerRow.style.display = ch3Unlocked ? 'flex' : 'none';
       if (beerDrinkBtn) beerDrinkBtn.style.opacity = bCnt > 0 ? '1' : '0.4';
-      if (beerGiveBtn) beerGiveBtn.style.display = bCnt > 0 ? 'block' : 'none';
+      if (beerGiveBtn) beerGiveBtn.style.display = 'none'; // 3章以降は飲むのみ
     }
     // クッキー表示（3-2読了後）
     var ch41Read = _seenProseScenes.has(15);
