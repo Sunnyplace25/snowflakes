@@ -4027,6 +4027,10 @@ function submitUtPw() {
   };
 
   function renderStones() {
+    // クラバットピン取得済み（sf_ut_cravat_found）なのにSfSnowに反映されていない場合の自動修復
+    if (localStorage.getItem('sf_ut_cravat_found') === '1' && !SfSnow.isUnlocked('cravat_hayate')) {
+      SfSnow.unlockItem('cravat_hayate');
+    }
     var wrap = document.getElementById('stone-counter');
     wrap.innerHTML = '';
     var obtained = 0;
