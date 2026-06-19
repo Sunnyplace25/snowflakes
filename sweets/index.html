@@ -807,11 +807,11 @@
       </label>
 
       <!-- クラウドバックアップ -->
-      <div style="margin-top:20px;width:100%;max-width:260px;">
-        <input type="email" id="backup-email-input" placeholder="メールアドレス（任意・バックアップ用）" autocomplete="email"
+      <div style="margin-top:28px;width:100%;max-width:260px;text-align:center;">
+        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;line-height:2;margin-bottom:12px;">お好きなIDを設定すると、データをサーバーに保存できます。<br>次回以降、同じIDを入力するだけで、いつでもデータを復元できます。<br>忘れないように、IDは必ずメモしておいてください。</p>
+        <input type="text" id="backup-email-input" placeholder="バックアップID（任意）" autocomplete="off"
           style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;outline:none;text-align:center;"
           onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-        <p style="font-size:10px;color:#334155;letter-spacing:1px;margin-top:6px;text-align:center;">入力するとデータが自動でバックアップされます</p>
       </div>
 
       <!-- セーブコード -->
@@ -4780,7 +4780,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
       // バックアップ用メールアドレスを保存
       const backupEmail = document.getElementById('backup-email-input');
-      if (backupEmail && backupEmail.value.trim() && backupEmail.value.includes('@')) {
+      if (backupEmail && backupEmail.value.trim()) {
         localStorage.setItem('sf_sweets_email', backupEmail.value.trim().toLowerCase());
       }
       // セッション中はゲートスキップできるようにフラグを立てる
