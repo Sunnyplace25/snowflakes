@@ -5018,9 +5018,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     };
 
-    // ページロード時：保存済みならパスワード自動入力（セッションスキップは停止中）
+    // ページロード時：セッション中ならスキップ、保存済みなら自動入力
     document.addEventListener('DOMContentLoaded', async function() {
-      sessionStorage.removeItem('sf_sweets_session'); // セッション中スキップを停止（2026-06-19）
+      // セッション中スキップ（部屋から戻った場合など）
+      if (sessionStorage.getItem('sf_sweets_session') === '1') {
+        _doEnter(); return;
+      }
 
       // Supabase から復元（localStorageが空でメールが保存されている場合）
       var _savedEmail = localStorage.getItem('sf_sweets_email');
