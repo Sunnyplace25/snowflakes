@@ -4799,7 +4799,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkShikishiDistribution();
       // Supabase 同期開始
       var _syncEmail = localStorage.getItem('sf_sweets_email');
-      if (_syncEmail && typeof sfSyncInit === 'function') sfSyncInit(_syncEmail);
+      if (_syncEmail && typeof sfSyncInit === 'function') sfSyncInit(_syncEmail, true);
     }
 
     var UT_STONE_ITEMS = [
@@ -7603,20 +7603,30 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   };
 
   // Supabaseにデータを保存
-  window.sfSyncSave = async function(email) {
+  window.sfSyncSave = async function(email, showToast) {
     var sb = getClient();
     if (!sb || !email) return;
     try {
       var payload = getPayload();
       await sb.from('sf_user_data').upsert({ email: email, payload: payload, updated_at: new Date().toISOString() });
+      if (showToast) sfSyncToast('データを保存しました');
     } catch(e) { console.warn('[Supabase] 保存エラー', e); }
   };
 
+  function sfSyncToast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(13,17,30,0.95);border:1px solid rgba(249,168,212,0.3);border-radius:100px;padding:8px 20px;font-family:\'Noto Serif JP\',serif;font-size:11px;color:#f9a8d4;letter-spacing:1px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.style.opacity = '1'; });
+    setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 300); }, 2500);
+  }
+
   // ログイン後に呼ぶ
-  window.sfSyncInit = async function(email) {
+  window.sfSyncInit = async function(email, showToast) {
     _email = email;
     await sfSyncRestore(email);
-    await sfSyncSave(email);
+    await sfSyncSave(email, showToast);
     // 5分ごとに自動保存
     if (_syncTimer) clearInterval(_syncTimer);
     _syncTimer = setInterval(function() { sfSyncSave(_email); }, 300000);
