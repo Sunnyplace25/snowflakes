@@ -7591,15 +7591,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // Supabaseからデータを復元（localStorageにないキーのみ）
   window.sfSyncRestore = async function(email) {
     var sb = getClient();
-    if (!sb || !email) return;
+    if (!sb || !email) return false;
     try {
       var res = await sb.from('sf_user_data').select('payload').eq('email', email).maybeSingle();
       if (res.data && res.data.payload) {
         applyPayload(res.data.payload);
         if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
-        console.log('[Supabase] データを復元しました');
+        return true; // 復元あり
       }
     } catch(e) { console.warn('[Supabase] 復元エラー', e); }
+    return false; // 新規
   };
 
   // Supabaseにデータを保存
@@ -7625,8 +7626,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // ログイン後に呼ぶ
   window.sfSyncInit = async function(email, showToast) {
     _email = email;
-    await sfSyncRestore(email);
-    await sfSyncSave(email, showToast);
+    var restored = await sfSyncRestore(email);
+    await sfSyncSave(email, false);
+    if (showToast) {
+      sfSyncToast(restored ? 'データを復元しました' : 'バックアップIDを登録しました');
+    }
     // 5分ごとに自動保存
     if (_syncTimer) clearInterval(_syncTimer);
     _syncTimer = setInterval(function() { sfSyncSave(_email); }, 300000);
