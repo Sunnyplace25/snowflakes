@@ -954,12 +954,10 @@ function sfShare() {
         // しおりアイテム：1回限り（Moon Veil用）
         var SHIORI_KEY = 'sf_shiori_moonveil_short_got';
         var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
-        if (!localStorage.getItem(SHIORI_KEY)) {
+        if (!localStorage.getItem(SHIORI_KEY) && typeof SfSnow !== 'undefined' && typeof showBannerItemPopup === 'function') {
           localStorage.setItem(SHIORI_KEY, '1');
-          if (typeof SfSnow !== 'undefined') {
-            SfSnow.unlockItem('shiori_kouta');
-            SfSnow.addMItemDirect('shiori_kouta', 1);
-          }
+          SfSnow.unlockItem('shiori_kouta');
+          SfSnow.addMItemDirect('shiori_kouta', 1);
           setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
         }
 
