@@ -7578,10 +7578,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     return payload;
   }
 
-  function applyPayload(payload) {
+  function applyPayload(payload, overwrite) {
     if (!payload) return;
     Object.keys(payload).forEach(function(k) {
-      if (localStorage.getItem(k) === null) {
+      if (overwrite || localStorage.getItem(k) === null) {
         localStorage.setItem(k, payload[k]);
       }
     });
@@ -7590,7 +7590,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // DB SELECT: email完全一致で1件取得 → payloadを返す（なければnull）
   async function dbSelect(key) {
     try {
-      var url = API + '?email=eq.' + encodeURIComponent(key) + '&select=payload&limit=1';
+      var url = API + '?email=eq.' + key + '&select=payload&limit=1';
       var res = await fetch(url, { headers: sbHeaders() });
       if (!res.ok) { console.warn('[Supabase] SELECT', res.status, await res.text()); return null; }
       var data = await res.json();
@@ -7601,7 +7601,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   // DB SELECT: IDプレフィックスで存在確認 → 既存のemail文字列を返す（なければnull）
   async function dbCheckId(id) {
     try {
-      var url = API + '?email=ilike.' + encodeURIComponent(id + ':*') + '&select=email&limit=1';
+      var url = API + '?email=ilike.' + id + ':*&select=email&limit=1';
       var res = await fetch(url, { headers: sbHeaders() });
       if (!res.ok) return null;
       var data = await res.json();
@@ -7629,7 +7629,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var id = key.split(':')[0];
     var payload = await dbSelect(key);
     if (payload) {
-      applyPayload(payload);
+      applyPayload(payload, true); // 手動復元は上書き
       if (typeof SfSnow !== 'undefined' && SfSnow.updateUI) SfSnow.updateUI();
       return 'restored';
     }
