@@ -5029,28 +5029,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     };
 
-    // ページロード時：セッション中ならゲートスキップ、保存済みならパスワード自動入力
+    // ページロード時：ログインスキップ・自動入力は一時停止中
     document.addEventListener('DOMContentLoaded', function() {
-      if (sessionStorage.getItem('sf_sweets_session') === '1') {
-        // セッション中（部屋から戻ってきた等）→ ゲートスキップ
-        const input = document.getElementById('pw-input');
-        input.value = PASSWORD;
-        const cb = document.getElementById('keep-login-cb');
-        if (cb) cb.checked = true;
-        checkPassword();
-      } else if (localStorage.getItem(SWEETS_KEY) === '1' &&
-          localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
-        // 保存済み → パスワード自動入力のみ（エンターは必要）
-        const input = document.getElementById('pw-input');
-        input.value = PASSWORD;
-        const cb = document.getElementById('keep-login-cb');
-        if (cb) cb.checked = true;
-        input.focus();
-      } else {
-        // バージョン不一致 → 旧ログイン情報をクリア
-        localStorage.removeItem(SWEETS_KEY);
-        localStorage.removeItem(SWEETS_VER_KEY);
-      }
+      // ログインスキップ・自動入力を一時停止（2026-06-19）
+      // セッション・保存済みによる自動突破を停止し、常にパスワード入力を求める
+      localStorage.removeItem(SWEETS_KEY);
+      localStorage.removeItem(SWEETS_VER_KEY);
+      sessionStorage.removeItem('sf_sweets_session');
+      {
       // 新着お知らせ（ゲート前・1回のみ）
       var _newsKey = 'sf_news_nigaipurin_v1';
       if (!localStorage.getItem(_newsKey)) {
