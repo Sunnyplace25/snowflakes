@@ -283,44 +283,32 @@
       box-shadow:0 0 22px 4px rgba(248,113,113,0.35), 0 0 8px 1px rgba(248,113,113,0.2);
       border-color:rgba(248,113,113,0.45);
     }
-    @keyframes stone-glow-hinata {
-      0%,100% { box-shadow:0 0 10px 2px rgba(96,165,250,0.25), 0 0 4px 1px rgba(96,165,250,0.12); border-color:rgba(96,165,250,0.35); }
-      50%      { box-shadow:0 0 20px 5px rgba(96,165,250,0.40), 0 0 8px 2px rgba(96,165,250,0.22); border-color:rgba(96,165,250,0.55); }
-    }
-    @keyframes stone-glow-hayate {
-      0%,100% { box-shadow:0 0 10px 2px rgba(251,191,36,0.25), 0 0 4px 1px rgba(251,191,36,0.12); border-color:rgba(251,191,36,0.35); }
-      50%      { box-shadow:0 0 20px 5px rgba(251,191,36,0.40), 0 0 8px 2px rgba(251,191,36,0.22); border-color:rgba(251,191,36,0.55); }
-    }
-    @keyframes stone-glow-kouta {
-      0%,100% { box-shadow:0 0 10px 2px rgba(248,113,113,0.25), 0 0 4px 1px rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.35); }
-      50%      { box-shadow:0 0 20px 5px rgba(248,113,113,0.40), 0 0 8px 2px rgba(248,113,113,0.22); border-color:rgba(248,113,113,0.55); }
-    }
     .stone-slot.obtained.revealed[data-stone="hinata"] {
-      animation:stone-glow-hinata 2.8s ease-in-out infinite;
+      box-shadow:0 0 14px 3px rgba(96,165,250,0.30), 0 0 5px 1px rgba(96,165,250,0.15);
+      border-color:rgba(96,165,250,0.45);
     }
     .stone-slot.obtained.revealed[data-stone="hayate"] {
-      animation:stone-glow-hayate 2.8s ease-in-out infinite;
+      box-shadow:0 0 14px 3px rgba(251,191,36,0.30), 0 0 5px 1px rgba(251,191,36,0.15);
+      border-color:rgba(251,191,36,0.45);
     }
     .stone-slot.obtained.revealed[data-stone="kouta"] {
-      animation:stone-glow-kouta 2.8s ease-in-out infinite;
+      box-shadow:0 0 14px 3px rgba(248,113,113,0.30), 0 0 5px 1px rgba(248,113,113,0.15);
+      border-color:rgba(248,113,113,0.45);
     }
     .stone-slot.obtained.revealed[data-stone="hinata"]:hover,
     .stone-slot.obtained.revealed[data-stone="hinata"]:active {
-      animation:none;
       transform:translateY(-5px) scale(1.03);
       box-shadow:0 0 28px 6px rgba(96,165,250,0.45), 0 0 10px 2px rgba(96,165,250,0.25);
       border-color:rgba(96,165,250,0.6);
     }
     .stone-slot.obtained.revealed[data-stone="hayate"]:hover,
     .stone-slot.obtained.revealed[data-stone="hayate"]:active {
-      animation:none;
       transform:translateY(-5px) scale(1.03);
       box-shadow:0 0 28px 6px rgba(251,191,36,0.45), 0 0 10px 2px rgba(251,191,36,0.25);
       border-color:rgba(251,191,36,0.6);
     }
     .stone-slot.obtained.revealed[data-stone="kouta"]:hover,
     .stone-slot.obtained.revealed[data-stone="kouta"]:active {
-      animation:none;
       transform:translateY(-5px) scale(1.03);
       box-shadow:0 0 28px 6px rgba(248,113,113,0.45), 0 0 10px 2px rgba(248,113,113,0.25);
       border-color:rgba(248,113,113,0.6);
