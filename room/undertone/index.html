@@ -1205,9 +1205,9 @@
 
     <!-- セクションナビ -->
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">
-      <button onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
-      <button onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'});flashSection('shop-rawstone-count')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
-      <button onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'});flashSection('item-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
+      <button id="pill-fortune" onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
+      <button id="pill-appraise" onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'});flashSection('shop-rawstone-count')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
+      <button id="pill-sweets" onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'});flashSection('item-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
     </div>
 
     <!-- MUSIC UNLOCKED セクション -->
@@ -3217,6 +3217,11 @@ function submitUtPw() {
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
       }
     }
+    // チュートリアル中（1章解放前）は「占う」のみ表示
+    var _pillAppraise = document.getElementById('pill-appraise');
+    var _pillSweets   = document.getElementById('pill-sweets');
+    if (_pillAppraise) _pillAppraise.style.display = ch21Unlocked ? '' : 'none';
+    if (_pillSweets)   _pillSweets.style.display   = ch21Unlocked ? '' : 'none';
     renderCharCover();
     startCountdownTimers();
   }
