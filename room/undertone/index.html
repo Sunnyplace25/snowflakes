@@ -3796,8 +3796,12 @@ function submitUtPw() {
         var pop = document.getElementById('fortune-unlock-popup');
         if (pop) pop.style.display = 'flex';
       }, 500);
+    } else if (ch21Unlocked && !localStorage.getItem('sf_ut_ch1_unlock_shown')) {
+      // Chapter 1 解放ポップアップ（1章解放後・初回入店時のみ）
+      localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
+      setTimeout(function() { showChapterUnlock(1, 5); }, 600);
     } else if (ch21Unlocked && !localStorage.getItem('sf_ut_stone_appraise_unlock_shown')) {
-      // 石の鑑定解放ポップアップ（1章解放後・初回入店時のみ）
+      // 石の鑑定解放ポップアップ（Ch1解放後・2回目以降の入店で初回のみ）
       localStorage.setItem('sf_ut_stone_appraise_unlock_shown', 'true');
       setTimeout(function() { showStoneAppraiseUnlock(); }, 600);
     } else {
