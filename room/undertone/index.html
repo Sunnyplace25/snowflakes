@@ -283,6 +283,48 @@
       box-shadow:0 0 22px 4px rgba(248,113,113,0.35), 0 0 8px 1px rgba(248,113,113,0.2);
       border-color:rgba(248,113,113,0.45);
     }
+    @keyframes stone-glow-hinata {
+      0%,100% { box-shadow:0 0 10px 2px rgba(96,165,250,0.25), 0 0 4px 1px rgba(96,165,250,0.12); border-color:rgba(96,165,250,0.35); }
+      50%      { box-shadow:0 0 20px 5px rgba(96,165,250,0.40), 0 0 8px 2px rgba(96,165,250,0.22); border-color:rgba(96,165,250,0.55); }
+    }
+    @keyframes stone-glow-hayate {
+      0%,100% { box-shadow:0 0 10px 2px rgba(251,191,36,0.25), 0 0 4px 1px rgba(251,191,36,0.12); border-color:rgba(251,191,36,0.35); }
+      50%      { box-shadow:0 0 20px 5px rgba(251,191,36,0.40), 0 0 8px 2px rgba(251,191,36,0.22); border-color:rgba(251,191,36,0.55); }
+    }
+    @keyframes stone-glow-kouta {
+      0%,100% { box-shadow:0 0 10px 2px rgba(248,113,113,0.25), 0 0 4px 1px rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.35); }
+      50%      { box-shadow:0 0 20px 5px rgba(248,113,113,0.40), 0 0 8px 2px rgba(248,113,113,0.22); border-color:rgba(248,113,113,0.55); }
+    }
+    .stone-slot.obtained.revealed[data-stone="hinata"] {
+      animation:stone-glow-hinata 2.8s ease-in-out infinite;
+    }
+    .stone-slot.obtained.revealed[data-stone="hayate"] {
+      animation:stone-glow-hayate 2.8s ease-in-out infinite;
+    }
+    .stone-slot.obtained.revealed[data-stone="kouta"] {
+      animation:stone-glow-kouta 2.8s ease-in-out infinite;
+    }
+    .stone-slot.obtained.revealed[data-stone="hinata"]:hover,
+    .stone-slot.obtained.revealed[data-stone="hinata"]:active {
+      animation:none;
+      transform:translateY(-5px) scale(1.03);
+      box-shadow:0 0 28px 6px rgba(96,165,250,0.45), 0 0 10px 2px rgba(96,165,250,0.25);
+      border-color:rgba(96,165,250,0.6);
+    }
+    .stone-slot.obtained.revealed[data-stone="hayate"]:hover,
+    .stone-slot.obtained.revealed[data-stone="hayate"]:active {
+      animation:none;
+      transform:translateY(-5px) scale(1.03);
+      box-shadow:0 0 28px 6px rgba(251,191,36,0.45), 0 0 10px 2px rgba(251,191,36,0.25);
+      border-color:rgba(251,191,36,0.6);
+    }
+    .stone-slot.obtained.revealed[data-stone="kouta"]:hover,
+    .stone-slot.obtained.revealed[data-stone="kouta"]:active {
+      animation:none;
+      transform:translateY(-5px) scale(1.03);
+      box-shadow:0 0 28px 6px rgba(248,113,113,0.45), 0 0 10px 2px rgba(248,113,113,0.25);
+      border-color:rgba(248,113,113,0.6);
+    }
     .stone-slot img {
       width:56px; height:56px; object-fit:contain;
       border-radius:10px; transition:filter 0.5s;
@@ -3993,6 +4035,7 @@ function submitUtPw() {
       div.className = 'stone-slot' + (got ? ' obtained' : '');
       if (got) div.dataset.stone = item.char;
       var revealed = got && isStoneNameRevealed(item.key);
+      if (revealed) div.classList.add('revealed');
       var displayName = revealed ? (item.nameAppraised || item.name) : (got ? item.name : '？？？');
       var epLink = (got && item.episode)
         ? '<a href="' + item.episode.url + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;margin-top:6px;font-family:\'Cormorant Garamond\',serif;font-size:10px;color:#fca5a5;text-decoration:none;letter-spacing:1px;padding:3px 10px;border-radius:100px;border:1px solid rgba(252,165,165,0.3);background:rgba(252,165,165,0.07);">' + item.episode.label + '</a>'
