@@ -835,10 +835,10 @@
 
     <!-- 小説導線カード + DATA BACKUP（横並び） -->
     <div class="section" style="padding-top:0;">
-      <div style="display:flex;gap:16px;align-items:stretch;">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;">
 
         <!-- 左：小説導線カード -->
-        <div style="flex:1;background:rgba(10,16,30,0.6);border:1px solid rgba(147,197,253,0.18);border-radius:18px;padding:24px 16px;text-align:center;box-shadow:0 0 60px rgba(147,197,253,0.07),0 0 120px rgba(147,197,253,0.03);backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:1;min-width:240px;background:rgba(10,16,30,0.6);border:1px solid rgba(147,197,253,0.18);border-radius:18px;padding:24px 16px;text-align:center;box-shadow:0 0 60px rgba(147,197,253,0.07),0 0 120px rgba(147,197,253,0.03);backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:center;">
           <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2.4;margin-bottom:20px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
           <div data-no-replace>
             <p id="sweets-season-label" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;color:#7dd3fc;margin-bottom:12px;">SWEETs 2026 Spring</p>
@@ -850,7 +850,7 @@
         </div>
 
         <!-- 右：DATA BACKUP -->
-        <div style="flex:1;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:1;min-width:240px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
           <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
