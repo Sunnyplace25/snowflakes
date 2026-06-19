@@ -3170,10 +3170,7 @@ function submitUtPw() {
     if (!ch21Unlocked && ch5Unlocked && _ch1UnlockAt && Date.now() - _ch1UnlockAt >= 48 * 3600000) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
-      if (!localStorage.getItem('sf_ut_ch1_unlock_shown')) {
-        localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
-        setTimeout(function() { showChapterUnlock(1, 5); }, 500);
-      }
+      localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
     }
     // 2日タイマーチェック：2章自動解放
     var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
@@ -3276,7 +3273,6 @@ function submitUtPw() {
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
       localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
       renderChapterList();
-      showChapterUnlock(1, 5);
     }
   };
 
