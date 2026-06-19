@@ -7534,9 +7534,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   // 同期対象のlocalStorageキー
   var SYNC_KEYS = [
+    // Snow / アイテム基本
     'sf_snow', 'sf_candy', 'sf_picks', 'sf_monthly_items', 'sf_unlocked', 'sf_used_codes',
+    // SWEETs
     'sf_sweets_unlocked', 'sf_sweets_ver', 'sf_sweets_notes_unlocked',
-    'sf_undertone_admin', 'sf_ut_prologue_gate_seen',
+    'sf_oshi', 'sf_play_counts', 'sf_room_last_seen',
+    'sf_summer_entered', 'sf_summer_auto_event',
+    'sf_shiroihana_unlocked',
+    // インタビュー解放状態
+    'sf_interview_hinata', 'sf_interview_hayate', 'sf_interview_kouta',
+    // Under tone
+    'sf_undertone_admin', 'sf_ut_prologue_gate_seen', 'sf_ut_prologue_toast_shown',
+    'sf_yt_watched_undertone',
     'sf_undertone_ch21_unlocked', 'sf_undertone_ch22_unlocked',
     'sf_undertone_ch23_unlocked', 'sf_undertone_ch24_unlocked',
     'sf_undertone_ch25_unlocked', 'sf_undertone_ch3_unlocked',
@@ -7544,6 +7553,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     'sf_undertone_ch34_unlocked', 'sf_undertone_ch35_unlocked',
     'sf_undertone_ch4_unlocked', 'sf_undertone_ch42_unlocked',
     'sf_undertone_ch43_unlocked',
+    // アイテム
     'sf_banner_item_ep_moonveil', 'sf_shiori_moonveil_short_got',
     'sf_sealed_ep35_item', 'sf_backstage_pass', 'sf_friendship',
     'sf_sweets_ut_appraise_unlock_v1',
@@ -7568,11 +7578,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var v = localStorage.getItem(k);
       if (v !== null) payload[k] = v;
     });
-    // sf_ut_ch_read_at_* も同期
+    // 動的プレフィックスキーも同期
+    var DYNAMIC_PREFIXES = [
+      'sf_ut_ch_read_at_', 'sf_note_again_', 'sf_stone_seen_'
+    ];
     for (var i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i);
-      if (key && key.startsWith('sf_ut_ch_read_at_')) {
-        payload[key] = localStorage.getItem(key);
+      if (!key) continue;
+      for (var j = 0; j < DYNAMIC_PREFIXES.length; j++) {
+        if (key.startsWith(DYNAMIC_PREFIXES[j])) {
+          payload[key] = localStorage.getItem(key);
+          break;
+        }
       }
     }
     return payload;
