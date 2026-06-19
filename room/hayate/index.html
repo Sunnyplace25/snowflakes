@@ -513,7 +513,14 @@
         <p id="hayate-hs-itemname" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:12px;"></p>
         <p class="room-hs-desc" id="hayate-hs-desc"></p>
         <p id="hayate-hs-note" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;margin-bottom:16px;">入手済みです</p>
-        <button onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
+        <div id="hayate-hs-game" style="display:none;margin-bottom:4px;">
+          <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:16px;">ゲームをしますか？</p>
+          <div style="display:flex;gap:12px;justify-content:center;">
+            <a href="https://sunnyplace25.github.io/rhythm/" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;text-decoration:none;padding:8px 20px;border:1px solid rgba(253,230,138,0.3);border-radius:100px;transition:border-color 0.2s;" onmouseenter="this.style.borderColor='rgba(253,230,138,0.7)'" onmouseleave="this.style.borderColor='rgba(253,230,138,0.3)'">はい</a>
+            <button onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:8px 20px;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">いいえ</button>
+          </div>
+        </div>
+        <button id="hayate-hs-close" onclick="document.getElementById('hayate-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
       </div>
     </div>
 
@@ -1622,6 +1629,11 @@
       if (hsItemName) { hsItemName.style.display = 'none'; }
       var note = document.getElementById('hayate-hs-note');
       if (note) note.style.display = 'none';
+      var gameEl  = document.getElementById('hayate-hs-game');
+      var closeEl = document.getElementById('hayate-hs-close');
+      var isGame = (label === 'ゲーム');
+      if (gameEl)  gameEl.style.display  = isGame ? 'block' : 'none';
+      if (closeEl) closeEl.style.display = isGame ? 'none'  : '';
       // イラストのみ表示（アイテム解放なし）
       if (!itemKey && imgSrc && hsImg) {
         hsImg.src = imgSrc; hsImg.style.display = 'block';
