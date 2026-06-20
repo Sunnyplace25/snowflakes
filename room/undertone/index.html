@@ -2315,7 +2315,7 @@ function submitUtPw() {
 
   /* ── Timed chapter unlock (1日1エピソード) ── */
   // key: idx that needs timer, value: idx of previous chapter (must be read first)
-  var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16, 21:20, 22:21, 23:22, 24:23 };
+  var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16, 20:19, 21:20, 22:21, 23:22, 24:23 };
   // 章ごとのロック時間（ms）。全章 48h デフォルト
   var TIMED_THRESHOLDS = {};
 
@@ -3282,7 +3282,7 @@ function submitUtPw() {
       } else if (i === 21) {
         applyTimedChapter(21, stCh42Unlocked);
       } else if (i === 20) {
-        item.style.display = stCh4Unlocked ? '' : 'none'; // 第四章1話目：即時
+        if (stCh4Unlocked) { applyTimedChapter(20, false); } else { item.style.display = 'none'; } // 第四章1話目：3-5読了後48h
       } else if (i === 19) {
         applyTimedChapter(19, ch45Unlocked);
       } else if (i === 18) {
