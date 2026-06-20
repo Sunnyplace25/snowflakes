@@ -4284,8 +4284,9 @@ function submitUtPw() {
       if (chocoEatBtn) chocoEatBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       if (chocoGiveBtn) {
         var ch22Read = _seenProseScenes.has(6);
-        chocoGiveBtn.style.display = ch22Read ? 'block' : 'none';
-        if (ch22Read) chocoGiveBtn.style.opacity = cnt > 0 ? '1' : '0.4';
+        var chocoGiveShow = (ch22Read && !ch3Unlocked) || stCh4Unlocked;
+        chocoGiveBtn.style.display = chocoGiveShow ? 'block' : 'none';
+        if (chocoGiveShow) chocoGiveBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       }
     }
     // ビール表示（ch3Unlocked後）
@@ -4299,8 +4300,9 @@ function submitUtPw() {
       beerRow.style.display = ch3Unlocked ? 'flex' : 'none';
       if (beerDrinkBtn) beerDrinkBtn.style.opacity = bCnt > 0 ? '1' : '0.4';
       if (beerGiveBtn) {
-        beerGiveBtn.style.display = bCnt > 0 ? 'block' : 'none';
-        beerGiveBtn.style.opacity = '1';
+        var beerGiveShow = (ch3Unlocked && !ch4Unlocked) || stCh4Unlocked;
+        beerGiveBtn.style.display = (beerGiveShow && bCnt > 0) ? 'block' : 'none';
+        if (beerGiveShow) beerGiveBtn.style.opacity = '1';
       }
     }
     // ルーペ表示（所持している場合のみ）
