@@ -707,16 +707,25 @@
   .nc-arrow:hover{border-color:rgba(147,197,253,0.4);color:#93c5fd;}
   /* ── Interview ── */
   .itv-section-label{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#f9a8d4;text-align:center;margin:32px 0 20px;}
-  .itv-row{display:flex;gap:8px;}
-  .itv-card{flex:1;min-width:0;border:1px solid rgba(255,255,255,0.07);border-radius:16px;background:rgba(255,255,255,0.02);overflow:hidden;}
-  .itv-locked{padding:20px 10px;text-align:center;}
-  .itv-candy-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:1px;color:#94a3b8;margin-bottom:10px;}
-  .itv-candy-req img{width:36px;}
-  .itv-char-name{font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;margin-bottom:12px;}
-  .itv-unlock-btn{background:none;border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:7px 14px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;}
+  /* アコーディオン */
+  .itv-accordion{display:flex;flex-direction:column;gap:8px;}
+  .itv-acc-item{border:1px solid rgba(255,255,255,0.07);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;}
+  .itv-acc-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:none;border:none;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;}
+  .itv-acc-header-left{display:flex;align-items:center;gap:10px;}
+  .itv-acc-status{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;}
+  .itv-acc-arrow{font-size:16px;color:#334155;transition:transform 0.25s;line-height:1;}
+  .itv-acc-item.open .itv-acc-arrow{transform:rotate(90deg);}
+  .itv-acc-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+  .itv-acc-item.open .itv-acc-body{max-height:200px;}
+  .itv-acc-inner{padding:0 18px 18px;text-align:center;}
+  .itv-locked{padding:0;text-align:center;}
+  .itv-candy-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:1px;color:#94a3b8;margin-bottom:12px;}
+  .itv-candy-req img{width:28px;}
+  .itv-char-name{font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:4px;}
+  .itv-unlock-btn{background:none;border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:7px 20px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;}
   .itv-unlock-btn:hover{border-color:rgba(255,255,255,0.3);color:#cbd5e1;}
-  .itv-unlocked-link{display:flex;flex-direction:column;align-items:center;padding:20px 10px;text-align:center;text-decoration:none;cursor:pointer;}
-  .itv-read-btn{margin-top:12px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 16px;transition:all 0.2s;}
+  .itv-unlocked-link{display:flex;flex-direction:column;align-items:center;text-align:center;text-decoration:none;cursor:pointer;}
+  .itv-read-btn{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 20px;transition:all 0.2s;display:inline-block;}
   .itv-unlocked-link:hover .itv-read-btn{border-color:rgba(255,255,255,0.28);color:#cbd5e1;}
   /* Interview unlock modal */
   #itv-modal{display:none;position:fixed;inset:0;z-index:800;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;}
@@ -913,51 +922,79 @@
         <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
         <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
         <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
+        <span><img src="../item/earring_hayate.webp"> 黄色い石のピアス + カシス × 100</span>
       </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
       <!-- Interview section -->
       <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
         <p class="itv-section-label" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
-        <div class="itv-row">
+        <div class="itv-accordion">
 
           <!-- ハヤテ -->
-          <div class="itv-card" id="itv-card-hayate">
-            <div class="itv-locked" id="itv-locked-hayate">
-              <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
-              <p class="itv-char-name" style="color:#fde68a;">HAYATE</p>
-              <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
+          <div class="itv-acc-item" id="itv-card-hayate">
+            <button class="itv-acc-header" onclick="toggleItv('hayate')">
+              <div class="itv-acc-header-left">
+                <span class="itv-char-name" style="color:#fde68a;">HAYATE</span>
+                <span class="itv-acc-status" id="itv-status-hayate">LOCKED</span>
+              </div>
+              <span class="itv-acc-arrow">›</span>
+            </button>
+            <div class="itv-acc-body" id="itv-acc-body-hayate">
+              <div class="itv-acc-inner">
+                <div id="itv-locked-hayate">
+                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
             </div>
-            <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
-              <p class="itv-char-name" style="color:#fde68a;">HAYATE</p>
-              <span class="itv-read-btn">読む →</span>
-            </a>
           </div>
 
           <!-- ヒナタ -->
-          <div class="itv-card" id="itv-card-hinata">
-            <div class="itv-locked" id="itv-locked-hinata">
-              <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
-              <p class="itv-char-name" style="color:#93c5fd;">HINATA</p>
-              <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
+          <div class="itv-acc-item" id="itv-card-hinata">
+            <button class="itv-acc-header" onclick="toggleItv('hinata')">
+              <div class="itv-acc-header-left">
+                <span class="itv-char-name" style="color:#93c5fd;">HINATA</span>
+                <span class="itv-acc-status" id="itv-status-hinata">LOCKED</span>
+              </div>
+              <span class="itv-acc-arrow">›</span>
+            </button>
+            <div class="itv-acc-body" id="itv-acc-body-hinata">
+              <div class="itv-acc-inner">
+                <div id="itv-locked-hinata">
+                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
             </div>
-            <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
-              <p class="itv-char-name" style="color:#93c5fd;">HINATA</p>
-              <span class="itv-read-btn">読む →</span>
-            </a>
           </div>
 
           <!-- コウタ -->
-          <div class="itv-card" id="itv-card-kouta">
-            <div class="itv-locked" id="itv-locked-kouta">
-              <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
-              <p class="itv-char-name" style="color:#fca5a5;">KOUTA</p>
-              <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
+          <div class="itv-acc-item" id="itv-card-kouta">
+            <button class="itv-acc-header" onclick="toggleItv('kouta')">
+              <div class="itv-acc-header-left">
+                <span class="itv-char-name" style="color:#fca5a5;">KOUTA</span>
+                <span class="itv-acc-status" id="itv-status-kouta">LOCKED</span>
+              </div>
+              <span class="itv-acc-arrow">›</span>
+            </button>
+            <div class="itv-acc-body" id="itv-acc-body-kouta">
+              <div class="itv-acc-inner">
+                <div id="itv-locked-kouta">
+                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
             </div>
-            <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
-              <p class="itv-char-name" style="color:#fca5a5;">KOUTA</p>
-              <span class="itv-read-btn">読む →</span>
-            </a>
           </div>
 
         </div>
@@ -6149,6 +6186,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
+    { id:'webapp_hayatecchi', type:'webapp', title:'ハヤテっち', color:'#fde68a', cost:{ candy:'cassis', amount:100 } },
     {
       id: 'note_prism_1', type: 'note',
       title: '第1章完結に寄せて｜プリズム',
@@ -6297,30 +6335,28 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var wrap = document.getElementById('exch-wrap');
     if (!wrap || EXCHANGE_CATALOG.length === 0) return;
 
-    // 全部屋が解放済みならエクスチェンジ欄ごと非表示にする
+    var candies = SfSnow.getCandies();
+
+    // 全部屋が解放済みか
     var allRoomsUnlocked = EXCHANGE_CATALOG.filter(function(i) { return i.type === 'room'; })
       .every(function(i) { return SfSnow.isUnlocked(i.id); });
-    if (allRoomsUnlocked) {
+    // 全webappが解放済みか
+    var allWebappsUnlocked = EXCHANGE_CATALOG.filter(function(i) { return i.type === 'webapp'; })
+      .every(function(i) { return SfSnow.isUnlocked(i.id); });
+
+    // 全部屋とwebappが解放済みならエクスチェンジ欄ごと非表示にする
+    if (allRoomsUnlocked && allWebappsUnlocked) {
       wrap.innerHTML = '';
       wrap.style.display = 'none';
       var req = document.getElementById('exch-req');
       if (req) req.style.display = 'none';
       return;
     }
-
-    var candies = SfSnow.getCandies();
-    // 解放可能な部屋（キャンディが揃っている）
-    var lockedRoomsReady = EXCHANGE_CATALOG.filter(function(item) {
-      return item.type === 'room' && !SfSnow.isUnlocked(item.id) && (candies[item.cost.candy] || 0) >= item.cost.amount;
-    });
-    // 未解放の部屋（キャンディ不足）
-    var lockedRoomsNotReady = EXCHANGE_CATALOG.filter(function(item) {
-      return item.type === 'room' && !SfSnow.isUnlocked(item.id) && (candies[item.cost.candy] || 0) < item.cost.amount;
-    });
+    wrap.style.display = '';
 
     var html = '<p class="exch-section-label">EXCHANGE</p>';
 
-    // 全未解放の部屋を3列並列で表示
+    // 未解放の部屋を3列並列で表示
     var lockedRooms = EXCHANGE_CATALOG.filter(function(item) {
       return item.type === 'room' && !SfSnow.isUnlocked(item.id);
     });
@@ -6342,6 +6378,36 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       });
       html += '</div>';
     }
+
+    // webapp cards（ハヤテっち）
+    EXCHANGE_CATALOG.filter(function(i) { return i.type === 'webapp'; }).forEach(function(item) {
+      var isUnlocked = SfSnow.isUnlocked(item.id);
+      html += '<div class="exch-card" style="margin-top:' + (lockedRooms.length > 0 ? '4' : '0') + 'px;">';
+      html += '<div style="padding:18px 16px;">';
+      html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">';
+      html += '<img src="../item/earring_hayate.webp" alt="黄色い石のピアス" style="width:46px;flex-shrink:0;' + (isUnlocked ? '' : 'opacity:0.45;filter:grayscale(0.6);') + '">';
+      html += '<div style="text-align:left;">';
+      html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin-bottom:4px;">黄色い石のピアス</p>';
+      html += '<p style="font-size:11px;color:#94a3b8;letter-spacing:0.5px;line-height:1.9;">路地裏の店でハヤテが選んだ黄色い石のピアス。<br>選んだ理由は、なんとなく。</p>';
+      html += '</div></div>';
+      if (isUnlocked) {
+        html += '<div style="display:flex;gap:8px;">';
+        html += '<a href="../room/hayate/" style="flex:1;text-align:center;padding:9px 8px;border:1px solid rgba(253,230,138,0.22);border-radius:100px;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#fde68a;text-decoration:none;">Under tone で鑑定</a>';
+        html += '<a href="../hayatecchi/" style="flex:1;text-align:center;padding:9px 8px;border:1px solid rgba(253,230,138,0.22);border-radius:100px;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#fde68a;text-decoration:none;">ハヤテっちであそぶ</a>';
+        html += '</div>';
+      } else {
+        var hasEarring = SfSnow.isUnlocked('earring_hayate');
+        var haveCassis = candies['cassis'] || 0;
+        var ready = hasEarring && haveCassis >= item.cost.amount;
+        html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;margin-bottom:10px;text-align:center;">ハヤテっち</p>';
+        html += '<div style="font-size:10px;letter-spacing:1px;margin-bottom:12px;display:flex;flex-direction:column;gap:5px;">';
+        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (hasEarring ? '#94a3b8' : '#ef4444') + ';"><img src="../item/earring_hayate.webp" style="width:14px;opacity:0.8;"> 黄色い石のピアス' + (hasEarring ? '' : '&nbsp;―&nbsp;<a href="../room/hayate/" style="color:#fde68a66;text-decoration:none;font-size:9px;letter-spacing:1px;">Under tone で入手</a>') + '</div>';
+        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;"> カシスキャンディー × 100</div>';
+        html += '</div>';
+        html += '<button class="exch-btn" style="' + (ready ? 'border-color:#fde68a55;color:#fde68a;' : '') + '" onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
+      }
+      html += '</div></div>';
+    });
 
     wrap.innerHTML = html;
   }
@@ -6373,11 +6439,23 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         showExchToast('キャンディが足りません');
         return;
       }
+    } else if (item.type === 'webapp') {
+      if (!SfSnow.isUnlocked('earring_hayate')) {
+        showExchToast('まずUnder toneで黄色い石のピアスを入手してね');
+        return;
+      }
+      var haveCassis = (SfSnow.getCandies()['cassis'] || 0);
+      if (haveCassis < item.cost.amount) {
+        showExchToast('カシスキャンディーが足りません');
+        return;
+      }
     }
     showConfirm('交換しますか？', function() {
       var ok = false;
       if (item.type === 'note') {
         ok = SfSnow.spendMonthlyItem(item.cost.item, item.cost.amount);
+      } else if (item.type === 'webapp') {
+        ok = SfSnow.spendCandy('cassis', item.cost.amount);
       } else {
         ok = SfSnow.spendCandy(item.cost.candy, item.cost.amount);
       }
@@ -7275,6 +7353,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderInterviews();
   }
 
+  function toggleItv(char) {
+    var item = document.getElementById('itv-card-' + char);
+    if (item) item.classList.toggle('open');
+  }
+
   function renderInterviews() {
     ['hinata', 'kouta', 'hayate'].forEach(function(char) {
       var cfg        = ITV_CONFIG[char];
@@ -7283,6 +7366,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var unlockedEl = document.getElementById('itv-unlocked-' + char);
       if (locked)     locked.style.display     = unlocked ? 'none' : '';
       if (unlockedEl) unlockedEl.style.display = unlocked ? ''     : 'none';
+      var statusEl = document.getElementById('itv-status-' + char);
+      if (statusEl) statusEl.textContent = unlocked ? 'UNLOCKED' : 'LOCKED';
     });
   }
 </script>
