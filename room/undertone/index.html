@@ -4083,14 +4083,17 @@ function submitUtPw() {
     }
 
     // shopkeeper 画像切り替え
-    // 2-2未読：大人固定 / 2-2〜2-5未読：ランダム切り替え / 2-5読了：大人に戻る固定
+    // 4章以降：いつもの＋ピアスクロップランダム / 3章：青年ナギランダム / 2-2〜2-4：子どもナギランダム
     var shopImg = document.querySelector('.shopkeeper-img');
     if (shopImg) {
       var ch22Read = _seenProseScenes.has(6);
       var ch25Read = _seenProseScenes.has(9);
       var youngKey = 'sf_ut_young_nagi_revealed';
       var targetSrc;
-      if (ch3Unlocked) {
+      if (stCh4Unlocked) {
+        // 4章解放後：shopkeeper.webp と nagi_ch4.webp をランダム
+        targetSrc = Math.random() < 0.5 ? 'nagi_ch4.webp' : 'shopkeeper.webp';
+      } else if (ch3Unlocked) {
         // 3-2〜3-4：青年ナギ（初回必ず、以降50%ランダム）
         var ch32Read = _seenProseScenes.has(11);
         var ch35Read = _seenProseScenes.has(14);
