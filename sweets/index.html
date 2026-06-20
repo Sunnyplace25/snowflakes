@@ -6246,7 +6246,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var doorId = d.doorId;
         var goRoom = function(e) {
           e.stopPropagation();
-          fetchRoomLatestDate(url).then(function(latest) { markRoomSeen(doorId, latest); });
           location.href = url;
         };
         el.onclick = goRoom;

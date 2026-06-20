@@ -1658,6 +1658,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
+      // SWEETs スタジオ：この部屋を訪問済みとしてマーク（扉の更新バッジを消す）
+      try { var _rs=JSON.parse(localStorage.getItem('sf_room_last_seen')||'{}'); _rs['door-hayate']=new Date().toISOString().slice(0,10); localStorage.setItem('sf_room_last_seen',JSON.stringify(_rs)); } catch(e){}
 
       var SAVE_KEY   = 'sf_pf_hayate_v2';
       var CANDY_TYPE = 'cassis';
