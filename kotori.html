@@ -575,11 +575,11 @@
             <p class="f-name">タスク管理アプリ</p>
             <p class="f-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
           </a>
-          <a class="f-card" href="hayatecchi/" target="_blank" style="border-color:rgba(253,230,138,0.45);box-shadow:0 0 18px rgba(253,230,138,0.18),0 0 40px rgba(253,230,138,0.08);animation:hayate-glow 3s ease-in-out infinite;">
+          <div class="f-card" onclick="openHayateGate()" style="border-color:rgba(253,230,138,0.45);box-shadow:0 0 18px rgba(253,230,138,0.18),0 0 40px rgba(253,230,138,0.08);animation:hayate-glow 3s ease-in-out infinite;cursor:pointer;">
             <p class="f-type">GAME</p>
             <p class="f-name">ハヤテっち</p>
             <p class="f-desc">ハヤテを育てるたまごっちライク。ドラム練習、SWEETs補給、声かけでコンディションを整えて、ライブ成功を目指せ。ホーム画面に追加して、いつでもハヤテに会いにきてね。</p>
-          </a>
+          </div>
           <div class="f-card" style="border-color:rgba(147,197,253,0.45);cursor:default;box-shadow:0 0 18px rgba(147,197,253,0.18),0 0 40px rgba(147,197,253,0.08);animation:hinata-glow 3s ease-in-out infinite;">
             <span class="f-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.3);">ベータ版</span>
             <p class="f-type">WEB APP</p>
@@ -1074,5 +1074,39 @@
 })();
 </script>
 
+<!-- ハヤテっち パスワードゲート -->
+<div id="hayate-gate" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(8,13,24,0.9);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 24px;text-align:center;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#fde68a;margin-bottom:20px;">PASSWORD</p>
+    <input id="hayate-gate-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+      style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:8px;"
+      placeholder="············"
+      onkeydown="if(event.key==='Enter')checkHayateGate()">
+    <p id="hayate-gate-err" style="font-size:11px;color:#ef4444;letter-spacing:1px;min-height:18px;margin-bottom:16px;font-family:'Noto Serif JP',serif;"></p>
+    <button onclick="checkHayateGate()" style="width:100%;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;">ENTER</button>
+    <button onclick="closeHayateGate()" style="background:none;border:none;color:#334155;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;cursor:pointer;">閉じる</button>
+  </div>
+</div>
+<style>#hayate-gate.show{display:flex!important;}</style>
+<script>
+  function openHayateGate() {
+    document.getElementById('hayate-gate-input').value = '';
+    document.getElementById('hayate-gate-err').textContent = '';
+    document.getElementById('hayate-gate').classList.add('show');
+    setTimeout(function(){ document.getElementById('hayate-gate-input').focus(); }, 100);
+  }
+  function closeHayateGate() {
+    document.getElementById('hayate-gate').classList.remove('show');
+  }
+  function checkHayateGate() {
+    var val = document.getElementById('hayate-gate-input').value.trim().toUpperCase();
+    if (val === 'HARDGUMI') {
+      window.open('hayatecchi/', '_blank');
+      closeHayateGate();
+    } else {
+      document.getElementById('hayate-gate-err').textContent = 'ちがうみたい';
+    }
+  }
+</script>
 </body>
 </html>
