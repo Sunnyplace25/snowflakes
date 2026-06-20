@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ハヤテっち</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #080f1e;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      bottom: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 480px; height: 300px;
+      background: radial-gradient(ellipse, rgba(253,230,138,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #snow-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 400px;
+      padding: 32px 20px 100px;
+    }
+
+    .app-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      letter-spacing: 8px;
+      color: #fde68a;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .app-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #334155;
+      text-align: center;
+    }
+
+    /* キャラエリア */
+    .chara-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .chara-img-wrap {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+    }
+    .chara-img {
+      max-height: 195px;
+      object-fit: contain;
+      transition: opacity 0.3s;
+    }
+    .chara-img.single { max-width: 160px; }
+    .chara-img.bounce { animation: chara-bounce 0.4s ease; }
+    @keyframes chara-bounce {
+      0%   { transform: translateY(0); }
+      40%  { transform: translateY(-12px); }
+      100% { transform: translateY(0); }
+    }
+    .chara-glow { animation: glow-h 3s ease-in-out infinite; }
+    @keyframes glow-h {
+      0%,100% { filter: drop-shadow(0 0 8px rgba(253,230,138,0.25)); }
+      50%      { filter: drop-shadow(0 0 22px rgba(253,230,138,0.55)); }
+    }
+
+    /* 3人並び */
+    .live-band {
+      display: none;
+      width: 100%;
+      height: 200px;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+    }
+    .live-band img {
+      max-height: 190px;
+      max-width: 110px;
+      object-fit: contain;
+    }
+    .live-band img.center { max-height: 200px; max-width: 130px; }
+
+    /* 吹き出し */
+    .speech-bubble {
+      background: rgba(253,230,138,0.04);
+      border: 1px solid rgba(253,230,138,0.18);
+      border-radius: 16px;
+      padding: 14px 20px;
+      margin-top: 14px;
+      width: 100%;
+      min-height: 54px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      top: -8px; left: 50%;
+      transform: translateX(-50%);
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 8px solid rgba(253,230,138,0.18);
+    }
+    .speech-text {
+      font-size: 13px;
+      line-height: 1.75;
+      color: #cbd5e1;
+      letter-spacing: 0.5px;
+      transition: opacity 0.2s;
+    }
+
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 5px;
+      color: #334155;
+      margin-bottom: 14px;
+    }
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.04);
+      margin: 22px 0;
+    }
+
+    /* ステータス */
+    .status-section { margin-bottom: 24px; }
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .skill-badge {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #fde68a;
+      border: 1px solid rgba(253,230,138,0.28);
+      border-radius: 100px;
+      padding: 3px 12px;
+    }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+    .stat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #64748b;
+      width: 60px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .stat-bar-bg {
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: #fde68a;
+      transition: width 0.6s ease, background 0.4s;
+    }
+    .stat-bar-fill.mid { background: #fcd34d; }
+    .stat-bar-fill.low { background: #fca5a5; }
+    .stat-bar-fill.renshu-ge { background: #6ee7b7; }
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      color: #334155;
+      width: 26px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* アクション */
+    .action-section { margin-bottom: 20px; }
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .action-btn {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px 10px 12px;
+      color: #94a3b8;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .action-btn:hover {
+      background: rgba(253,230,138,0.06);
+      border-color: rgba(253,230,138,0.25);
+      color: #fde68a;
+    }
+    .action-btn:active { transform: scale(0.96); }
+    .action-icon { font-size: 22px; line-height: 1; }
+    .action-cd {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #334155;
+      min-height: 14px;
+    }
+    .action-btn.on-cd { opacity: 0.4; cursor: default; }
+    .action-btn.on-cd:hover {
+      background: rgba(255,255,255,0.02);
+      border-color: rgba(255,255,255,0.08);
+      color: #94a3b8;
+    }
+    /* ライブボタン */
+    .live-btn {
+      width: 100%;
+      margin-top: 10px;
+      background: rgba(196,181,253,0.06);
+      border: 1px solid rgba(196,181,253,0.25);
+      border-radius: 14px;
+      padding: 18px 10px 14px;
+      color: #c4b5fd;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+      animation: live-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes live-pulse {
+      0%,100% { box-shadow: 0 0 0 rgba(196,181,253,0); }
+      50%      { box-shadow: 0 0 18px rgba(196,181,253,0.25); }
+    }
+    .live-btn:hover {
+      background: rgba(196,181,253,0.12);
+      border-color: rgba(196,181,253,0.5);
+    }
+    .live-btn:active { transform: scale(0.97); }
+    .live-btn.on-cd { opacity: 0.4; cursor: default; animation: none; }
+    .live-btn.on-cd:hover {
+      background: rgba(196,181,253,0.06);
+      border-color: rgba(196,181,253,0.25);
+    }
+    .live-btn.locked {
+      opacity: 0.25;
+      cursor: default;
+      animation: none;
+      border-color: rgba(255,255,255,0.08);
+      color: #475569;
+    }
+    .live-btn.locked:hover {
+      background: rgba(196,181,253,0.06);
+      border-color: rgba(255,255,255,0.08);
+      color: #475569;
+    }
+
+    /* トースト */
+    .toast {
+      position: fixed;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(8,15,30,0.96);
+      border: 1px solid rgba(253,230,138,0.28);
+      border-radius: 100px;
+      padding: 10px 26px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: #fde68a;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ライブ演出オーバーレイ */
+    .live-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4,8,20,0.96);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    .live-overlay.show { opacity: 1; pointer-events: auto; }
+    .live-overlay-band {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .live-overlay-band img {
+      height: 170px;
+      width: auto;
+      max-width: 130px;
+      object-fit: contain;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .live-overlay-band img.center { height: 170px; max-width: 160px; }
+    .live-overlay-band img.in { opacity: 1; transform: translateY(0); }
+    .live-overlay-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 8px;
+      color: #c4b5fd;
+      margin-bottom: 16px;
+      opacity: 0;
+      transition: opacity 0.5s 0.6s;
+    }
+    .live-overlay-title.in { opacity: 1; }
+    .live-overlay-result {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 14px;
+      color: #e2e8f0;
+      text-align: center;
+      line-height: 2;
+      opacity: 0;
+      transition: opacity 0.5s 1s;
+      margin-bottom: 32px;
+    }
+    .live-overlay-result.in { opacity: 1; }
+    .live-overlay-close {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #475569;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 10px 28px;
+      background: none;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.4s 1.5s, color 0.2s, border-color 0.2s;
+    }
+    .live-overlay-close.in { opacity: 1; }
+    .live-overlay-close:hover { color: #c4b5fd; border-color: rgba(196,181,253,0.4); }
+
+    /* SWEETsゲット */
+    .sweets-get-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .sweets-get-overlay.show { opacity: 1; pointer-events: auto; }
+    .sweets-get-box {
+      text-align: center; padding: 44px 40px;
+      background: rgba(20,10,50,0.97); border-radius: 20px;
+      border: 1px solid rgba(253,230,138,0.35);
+      animation: none;
+    }
+    .sweets-get-img { width: 100px; height: 100px; object-fit: contain; margin-bottom: 16px; image-rendering: pixelated; }
+    .sweets-get-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; color: #fde68a;
+      letter-spacing: 4px; margin-bottom: 6px;
+    }
+    .sweets-get-sub { font-size: 11px; color: #94a3b8; letter-spacing: 1px; }
+
+    /* タップ参加 */
+    .live-tap-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #6d5fc4;
+      margin-bottom: 16px;
+      animation: tap-blink 1.2s ease-in-out infinite;
+    }
+    @keyframes tap-blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .live-tap-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: #c4b5fd;
+      margin-bottom: 8px;
+      min-height: 40px;
+    }
+    .spark {
+      position: fixed;
+      pointer-events: none;
+      font-size: 18px;
+      color: #c4b5fd;
+      z-index: 300;
+      animation: spark-fly 0.9s ease-out forwards;
+    }
+    @keyframes spark-fly {
+      0%   { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.4); }
+    }
+    .live-success {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: #fde68a;
+      opacity: 0;
+      transition: opacity 0.4s;
+      text-shadow: 0 0 30px rgba(253,230,138,0.8);
+      margin-bottom: 12px;
+    }
+    .live-success.in { opacity: 1; }
+  </style>
+</head>
+<body>
+  <canvas id="snow-canvas"></canvas>
+  <audio id="live-bgm" src="live1.mp3" preload="auto"></audio>
+  <audio id="live-bgm2" src="live2.mp3" preload="auto"></audio></audio>
+  <div class="wrapper">
+    <div class="app-title">ハヤテっち</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;">
+      <div class="app-sub">Snow flakes</div>
+      <div style="font-size:9px;color:#334155;letter-spacing:2px;">v1.0</div>
+    </div>
+
+    <!-- キャラ -->
+    <div class="chara-area">
+      <div class="chara-img-wrap">
+        <img id="chara-img" class="chara-img single chara-glow" src="hayate_normal.webp" alt="ハヤテ">
+      </div>
+      <div class="speech-bubble">
+        <span class="speech-text" id="speech-text">どした？</span>
+      </div>
+    </div>
+
+    <!-- ステータス -->
+    <div class="status-section">
+      <div class="status-header">
+        <div class="section-label">status</div>
+        <div style="display:flex;gap:8px;">
+          <div class="skill-badge" id="live-count-badge" style="border-color:rgba(196,181,253,0.28);color:#c4b5fd;">LIVE × 0</div>
+          <div class="skill-badge" id="skill-badge">Drum Lv.1</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-name">おなか</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-onaka" style="width:80%"></div></div>
+        <div class="stat-val" id="val-onaka">80</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-name">すいみん</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-suimin" style="width:80%"></div></div>
+        <div class="stat-val" id="val-suimin">80</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-name">やるき</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-yaruki" style="width:70%"></div></div>
+        <div class="stat-val" id="val-yaruki">70</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-name">きぶん</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-kibun" style="width:77%"></div></div>
+        <div class="stat-val" id="val-kibun">77</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-name">れんしゅう</div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill renshu-ge" id="bar-renshu-ge" style="width:0%"></div></div>
+        <div class="stat-val" id="val-renshu-ge">0</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- アクション -->
+    <div class="action-section">
+      <div class="section-label">action</div>
+      <div class="action-grid">
+        <button class="action-btn" id="btn-meshi" onclick="doAction('meshi')">
+          <span class="action-icon">🍙</span>
+          <span>ごはん</span>
+          <span class="action-cd" id="cd-meshi"></span>
+        </button>
+        <button class="action-btn" id="btn-neru" onclick="doAction('neru')">
+          <span class="action-icon">💤</span>
+          <span>寝かせる</span>
+          <span class="action-cd" id="cd-neru"></span>
+        </button>
+        <button class="action-btn" id="btn-renshu" onclick="doAction('renshu')">
+          <span class="action-icon">🥁</span>
+          <span>ドラム練習</span>
+          <span class="action-cd" id="cd-renshu"></span>
+        </button>
+        <button class="action-btn" id="btn-hanasu" onclick="doAction('hanasu')">
+          <span class="action-icon">💬</span>
+          <span>話しかける</span>
+          <span class="action-cd" id="cd-hanasu"></span>
+        </button>
+        <button class="action-btn" id="btn-flyer" onclick="doAction('flyer')">
+          <span class="action-icon">📄</span>
+          <span>フライヤーを配る</span>
+          <span class="action-cd" id="cd-flyer"></span>
+        </button>
+        <button class="action-btn" id="btn-sweets" onclick="doAction('sweets')">
+          <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
+          <span>SWEETs</span>
+          <span class="action-cd" id="sweets-count">×0</span>
+        </button>
+      </div>
+
+      <!-- ライブボタン -->
+      <button class="live-btn locked" id="btn-live" onclick="doLive()">
+        <span style="font-size:20px;">🎸</span>
+        <span>LIVE</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#8b5cf6;">音楽が流れます</span>
+        <span class="action-cd" id="cd-live" style="color:#475569;"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- SWEETsゲット -->
+  <div class="sweets-get-overlay" id="sweets-get-overlay" onclick="closeSweetsGet()">
+    <div class="sweets-get-box">
+      <img src="sweets.webp" alt="SWEETs" class="sweets-get-img">
+      <div class="sweets-get-text">SWEETs ゲット！</div>
+      <div class="sweets-get-sub">タップして閉じる</div>
+    </div>
+  </div>
+
+  <!-- ライブ演出 -->
+  <div class="live-overlay" id="live-overlay">
+    <div class="live-overlay-title" id="live-title">LIVE</div>
+    <div class="live-overlay-band" id="live-band">
+      <img src="hinata_live.webp" alt="ヒナタ" id="live-hinata">
+      <img src="hayate_practice.webp" alt="ハヤテ" id="live-hayate" class="center">
+      <img src="kouta_live.webp" alt="コウタ" id="live-kouta">
+    </div>
+    <div class="live-tap-count" id="live-tap-count"></div>
+    <div class="live-tap-hint" id="live-tap-hint">— TAP —</div>
+    <div class="live-success" id="live-success">成功！</div>
+    <div class="live-overlay-result" id="live-result"></div>
+    <button class="live-overlay-close" id="live-close" onclick="closeLive()">— 閉じる —</button>
+  </div>
+
+  <script>
+    /* ── 定数 ── */
+    var SAVE_KEY = 'hayatecchi_v1';
+    var LIVE_UNLOCK_RENSHU = 100;
+
+    var DECAY = {
+      onaka:  14 / 3600,   // 約7時間で空
+      suimin: 11 / 3600,   // 約9時間で空
+      yaruki:  8 / 3600    // 約12時間で空
+    };
+    var CD_SEC = {
+      meshi:  15 * 60,
+      neru:   30 * 60,
+      renshu: 30 * 60,
+      flyer:  20 * 60,
+      live:   3600
+    };
+
+    /* ── 状態 ── */
+    var st = {
+      onaka: 80, suimin: 80, yaruki: 70, kibun: 75,
+      renshuGe: 0, skill: 0, liveCount: 0, sweets: 0,
+      lastSaved: new Date().toISOString(),
+      cd: {}
+    };
+
+    /* ── セーブ / ロード ── */
+    function save() {
+      st.lastSaved = new Date().toISOString();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(st));
+    }
+    function load() {
+      try {
+        var d = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (!d) return;
+        st = d;
+        if (!st.cd) st.cd = {};
+        if (st.renshuGe === undefined) st.renshuGe = 0;
+        if (st.sweets   === undefined) st.sweets   = 0;
+        if (st.kibun     === undefined) st.kibun     = 75;
+        if (st.liveCount === undefined) st.liveCount = 0;
+        var elapsed = Math.max(0, (Date.now() - new Date(st.lastSaved).getTime()) / 1000);
+        st.onaka  = clamp(st.onaka  - DECAY.onaka  * elapsed);
+        st.suimin = clamp(st.suimin - DECAY.suimin * elapsed);
+        st.yaruki = clamp(st.yaruki - DECAY.yaruki * elapsed);
+      } catch(e) {}
+    }
+    function clamp(v, lo, hi) {
+      return Math.min(hi||100, Math.max(lo||0, v));
+    }
+
+    /* ── 計算 ── */
+    function calcKibun() {
+      return Math.round(st.kibun || 75);
+    }
+    function fluctuateKibun() {
+      // ランダムで±8変動、他のステータスが低いと下がりやすい
+      var rand = (Math.random() * 16) - 8;
+      var penalty = (st.onaka < 30 || st.suimin < 30) ? -5 : 0;
+      st.kibun = clamp((st.kibun || 75) + rand + penalty);
+    }
+    function getLevel() { return Math.floor((st.skill||0) / 10) + 1; }
+    function getCharaState() {
+      var k = calcKibun();
+      if (st.onaka  < 20) return 'hungry';
+      if (st.suimin < 20) return 'sleepy';
+      if (k < 25)         return 'mood_bad';
+      if (k > 82)         return 'happy';
+      return 'normal';
+    }
+
+    /* ── セリフ ── */
+    var SPEECHES = {
+      hungry: [
+        '腹減った。今かなり大事なこと言った',
+        'ねぇ、なんか食べたい',
+        '俺を動かすには、ごはんが必要',
+        '今ならおにぎりで簡単に機嫌なおる',
+        'おにぎりって、結局いちばん強い'
+      ],
+      sleepy: [
+        '眠い。けど寝たら負けな気がする',
+        'ちょっと仮眠していい？',
+        '低燃費モードに入った',
+        'あくびしたの見た？ 忘れて',
+        '今日はちょっと反応遅いかも'
+      ],
+      mood_bad: [
+        '……別に怒ってない',
+        'ちょっとだけ機嫌悪い。理由は聞くな',
+        'さみしいとは言ってない。言ってないけど',
+        '今の間、俺待ってたんだけど',
+        '放置されたら俺も拗ねるぞ。たぶん'
+      ],
+      happy: [
+        '最高じゃん今日！！',
+        'テンション上がってきた',
+        'ライブやりたくなってきた！',
+        'よし、まず深呼吸な',
+        '今日の音、悪くないと思う'
+      ],
+      normal: [
+        'お、来た来た。待ってた',
+        'なに？ 呼んだ？',
+        '元気？ 俺はまあまあ元気',
+        '今日も一日、ほどほどにいこ',
+        '大丈夫大丈夫、俺いるから',
+        'ちょっとだけ眠い。でも起きてる',
+        '今ちょうど暇してた。話そ',
+        '練習しよかな',
+        'スティック持つと、ちょっと目が覚める',
+        '今日も顔出してくれてありがとな'
+      ]
+    };
+    var TIRED_LINES = [
+      'ちょっとだけ、充電切れかけ',
+      '今日はドラムより、まぶたが先に落ちそう',
+      '元気あるよ。……たぶん、あと三分くらい',
+      '休んでないわけじゃないんだけどな。休み方が下手なんだよな',
+      '寝たら治る。たぶん。だいたい。きっと',
+      '今なら、シンバルの音でも寝れる',
+      '笑ってるけど、わりと省エネモード',
+      'ちょっと休憩。俺にもセーブポイントほしい',
+      '大丈夫。まだ叩ける。……ちょっとテンポは落ちるけど',
+      '腹減ってるのか、疲れてるのか、もう分かんない',
+      '今日は明るさ控えめで営業中',
+      'ごめん、今の俺、返事のキレ悪いかも',
+      'ちょっとだけ静かにしてたら復活する',
+      '疲れてるときほど、変なこと言いそうで怖いんだよな',
+      '大丈夫って言ったら大丈夫。……ってことにしとこ',
+      '今日は早めに寝る。たぶん。いや、努力はする',
+      '今の俺に必要なのは、拍手より布団',
+      'まだいけるけど、ちょっとだけ寄りかかりたい日もある',
+      '疲れたって言うほどじゃないけど、元気って言うにはちょっと足りない',
+      '今日は、音を鳴らす前に自分を整える日かな'
+    ];
+
+    var _talkLog = []; // 話しかけた時刻を記録
+    var TALK_TIRED_COUNT = 7;
+    var TALK_TIRED_WINDOW = 5 * 60 * 1000; // 5分
+
+    var TALK_LINES = [
+      // 通常・あいさつ
+      'お、来た来た。待ってた',
+      '今日も顔出してくれてありがとな',
+      'なに？ 呼んだ？',
+      '無理してない？ してる顔してるけど',
+      'よし、まず深呼吸な',
+      // バンド日常
+      'ヒナタ、黙ってるときほど考えてるんだよな',
+      'コウタはさ、何も言わないけど、だいたい見てる',
+      '三人でいると、なんか音が揃うんだよ',
+      'コウタが甘いもの選ぶの、毎回長いんだよ',
+      'ヒナタは急に核心つくから油断できない',
+      '俺、間を持たせるの得意なんだよ。たぶん',
+      'Snow flakesって名前、今はけっこう気に入ってる',
+      'ドラムってさ、後ろにいるけど、ちゃんと全部見えるんだよ',
+      // 練習・ライブ
+      '音出す前の静けさ、あれけっこう好き',
+      '本番前は笑ってたほうが勝ち',
+      '大丈夫。最初の一音が鳴ったら、もういける',
+      '拍手ってさ、思ったより身体に残るんだよ',
+      // 生活
+      'おにぎりって、結局いちばん強い',
+      'ラーメン食べたい。今すぐじゃなくても、かなり食べたい',
+      '夜中のコンビニって、なんか勝てないよな',
+      '水飲んだ？ 俺も飲む',
+      '洗濯物、たたむのだけ急に面倒になる',
+      // 励まし
+      '大丈夫。今日できなかった分は、明日でいい',
+      'ちゃんと進んでると思うよ',
+      'ちゃんと食べて、ちゃんと寝る。それだけで偉い',
+      '全部完璧じゃなくていいって',
+      '今日ここに来た時点で、けっこう勝ち',
+      '俺は味方しとく。理由はあとで考える',
+      // レア
+      'ちゃんと怖いよ。でも叩く',
+      '俺が笑ってるうちは、大丈夫ってことにしとこ',
+      '帰る場所がある音って、強いんだよ',
+      '俺たちの音、まだ終わってないから'
+    ];
+    var FLYER_LINES = [
+      'フライヤー配ってきた！　反応よかったわ',
+      '駅前で配ったら結構受け取ってくれた',
+      '知ってる人に声かけられた、やった',
+      '手が疲れた……でもやった感ある',
+      'ライブハウスの前に置いてもらった'
+    ];
+    var LIVE_SUCCESS_LINES = [
+      'よっしゃ、今日の音、ちゃんと届いたな！',
+      'やったな。今のライブ、かなり良かった',
+      'うん、今日は勝ち。完全に勝ち',
+      '最後まで崩れなかったの、えらいだろ？',
+      '今の拍手、まだ耳に残ってる',
+      'な？ やればできるって言ったじゃん',
+      '今日のステージ、気持ちよかったな',
+      'ヒナタもコウタも、今日は顔がよかった',
+      '俺、今ちょっとだけ泣きそう。嘘、ちょっと本当',
+      '終わった瞬間の静けさ、けっこう好きなんだよな',
+      '今日のリズム、ちゃんと生きてた',
+      '大丈夫。俺たちの音、届いてた',
+      'ライブ後のこの感じ、何回やっても慣れないな',
+      'いやー、腹減った。でも最高だった',
+      '今日の俺、けっこう良かったと思わない？',
+      '今なら何でもできそう。たぶん寝たら戻るけど',
+      'ステージ降りたのに、まだ心臓が鳴ってる',
+      'ミス？ あったかもしれないけど、音は止まらなかった',
+      '今日の拍手、持って帰りたいくらいだな',
+      'うん、これは打ち上げ案件',
+      'いい夜だった。ちゃんと、いい夜だった',
+      '最後の一音、まだ残ってる気がする',
+      '楽しかったな。ほんと、それで十分',
+      '俺たち、今日ちょっと強かったな',
+      '終わったばっかなのに、もう次やりたい',
+      '今の顔、ちゃんと覚えとこ',
+      '今日来てくれた人、全員にありがとうって言いたい',
+      'よし、成功。異論は認めない',
+      'またひとつ、帰る場所が増えたな',
+      '今日の音、俺の中では満点'
+    ];
+
+    var SWEETS_LINES = [
+      'うま。これはもう一個いける',
+      '待って、今の一口かなり幸せだった',
+      '甘いのって、ちゃんと正義だよな',
+      'これ、練習後に食べたら優勝じゃない？',
+      '俺、今ちょっと機嫌いい。かなり',
+      'うん、これは黙る。黙って食べるやつ',
+      'ヒナタにも残しとく？ ……少しだけな',
+      'コウタ、こういうの選ぶの上手そう',
+      'もう一口だけ。いや、ちゃんと一口だけ',
+      'これ食べたら、今日もうちょい頑張れる',
+      '甘いものって、リズム戻る感じする',
+      'やばい。今、顔ゆるんだかも',
+      'うまいって言う前に、もううまい',
+      'これ、差し入れで来たら本番前でも食べる',
+      '幸せって、意外と小さいサイズで来るんだな',
+      '俺、これ嫌いな人とは戦えない',
+      'ちょっと待って。味、もう一回確認する',
+      'はい、これは当たり。完全に当たり',
+      '疲れてるときの甘いもの、効きすぎる',
+      'うわ、これずるい。もう好きじゃん',
+      '今の俺、かなり扱いやすいぞ',
+      'お腹空いてたから、余計にしみる',
+      'これ食べたら、不機嫌とか無理だろ',
+      '俺の分、ちゃんとある？ あるよな？',
+      '一個で終わると思った？ 甘いな',
+      'これ、ライブ成功後に食べたい味',
+      '口の中だけ打ち上げ始まった',
+      'うん、好き。説明はいらない',
+      '甘いのに、ちゃんと元気出るやつだ',
+      'ごちそうさま。……で、次どれ？'
+    ];
+
+    var LIVE_LINES = [
+      '最高だった……またやりたい',
+      'コウタのベースえぐかった　ヒナタのボーカルもやばかった',
+      '客のノリがよくて最高だったわ',
+      '次はもっとでかい場所でやろう'
+    ];
+
+    var _lastLine = '';
+    function randLine(arr) {
+      var line = arr[Math.floor(Math.random() * arr.length)];
+      if (arr.length > 1 && line === _lastLine) line = arr[Math.floor(Math.random() * arr.length)];
+      _lastLine = line;
+      return line;
+    }
+
+    /* ── CD ── */
+    function cdRemain(action) {
+      var t = st.cd[action];
+      if (!t) return 0;
+      return Math.max(0, Math.ceil((new Date(t).getTime() - Date.now()) / 1000));
+    }
+    function fmtCD(sec) {
+      if (sec <= 0) return '';
+      if (sec < 60) return sec + '秒';
+      var m = Math.ceil(sec / 60);
+      if (m < 60) return m + '分';
+      return Math.floor(m / 60) + '時間' + (m % 60 ? (m % 60) + '分' : '');
+    }
+
+    /* ── 画像 ── */
+    var CHARA_IMGS = {
+      normal:   'hayate_normal.webp',
+      happy:    'hayate_happy.webp',
+      hungry:   'hayate_hungry.webp',
+      sleepy:   'hayate_sleepy.webp',
+      mood_bad: 'hayate_mood_bad.webp',
+      practice: 'hayate_practice.webp',
+      flyer:    'hayate_flyer.webp'
+    };
+
+    /* ── アクション ── */
+    var _speechLock = false;
+    var _speechTimer = null;
+    var _imgTimer = null;
+
+    function doAction(action) {
+      var remain = cdRemain(action);
+      if (remain > 0 && action !== 'hanasu') {
+        flash('あと ' + fmtCD(remain) + ' 待って');
+        return;
+      }
+
+      var speech = '', toast = '', imgOverride = null;
+
+      if (action === 'meshi') {
+        if (st.onaka >= 95) {
+          speech = 'もう腹いっぱいだって……';
+        } else {
+          st.onaka = clamp(st.onaka + 30);
+          st.cd.meshi = cdTime(CD_SEC.meshi);
+          speech = 'うまい！！';
+          toast  = 'おなか +30';
+        }
+      }
+      else if (action === 'neru') {
+        if (st.suimin >= 95) {
+          speech = '全然眠くないんだけど';
+        } else {
+          st.suimin = clamp(st.suimin + 40);
+          st.cd.neru = cdTime(CD_SEC.neru);
+          // LIVEクールダウンを20分短縮
+          if (st.cd.live) {
+            var liveCdMs = new Date(st.cd.live).getTime() - 20 * 60 * 1000;
+            st.cd.live = liveCdMs > Date.now() ? new Date(liveCdMs).toISOString() : null;
+          }
+          speech = 'zzz…　すっきりした！';
+          toast  = 'すいみん +40';
+          imgOverride = 'sleepy';
+        }
+      }
+      else if (action === 'renshu') {
+        st.yaruki   = clamp(st.yaruki + 20);
+        st.skill    = (st.skill || 0) + 5;
+        st.onaka    = clamp(st.onaka - 15);
+        st.renshuGe = clamp(st.renshuGe + 25, 0, 100);
+        st.cd.renshu = cdTime(CD_SEC.renshu);
+        speech = 'よっしゃ練習するか！！';
+        toast  = 'ドラムスキル +5　練習ゲージ +25　おなか -15';
+        imgOverride = 'practice';
+      }
+      else if (action === 'hanasu') {
+        var now = Date.now();
+        _talkLog = _talkLog.filter(function(t) { return now - t < TALK_TIRED_WINDOW; });
+        _talkLog.push(now);
+        if (_talkLog.length >= TALK_TIRED_COUNT) {
+          speech = randLine(TIRED_LINES);
+          st.yaruki = clamp(st.yaruki - 5);
+          st.kibun  = clamp(st.kibun  - 8);
+          st.suimin = clamp(st.suimin - 8);
+        } else {
+          speech = randLine(TALK_LINES);
+          st.yaruki = clamp(st.yaruki + 2);
+        }
+      }
+      else if (action === 'flyer') {
+        st.yaruki = clamp(st.yaruki + 8);
+        st.kibun  = clamp(st.kibun  + 5);
+        st.onaka  = clamp(st.onaka  - 10);
+        st.cd.flyer = cdTime(CD_SEC.flyer);
+        speech = randLine(FLYER_LINES);
+        toast  = 'やる気 +8　きぶん +5　おなか -10';
+        imgOverride = 'flyer';
+      }
+      else if (action === 'sweets') {
+        if ((st.sweets || 0) <= 0) { flash('SWEETsないな……またもらってこよう'); return; }
+        st.sweets = (st.sweets || 0) - 1;
+        st.kibun  = 100;
+        speech = randLine(SWEETS_LINES);
+        toast  = 'きぶん 満タン！';
+      }
+
+      if (speech) setSpeech(speech, imgOverride);
+      if (toast)  flash(toast);
+      bounce();
+      save();
+      render(true);
+    }
+
+    function cdTime(sec) {
+      return new Date(Date.now() + sec * 1000).toISOString();
+    }
+
+    /* ── ライブ ── */
+    function doLive() {
+      if ((st.renshuGe || 0) < LIVE_UNLOCK_RENSHU) {
+        flash('もうちょっとだけ練習してからにしよう');
+        return;
+      }
+      if (cdRemain('live') > 0) {
+        flash('ちょっとだけ休ませて　あと ' + fmtCD(cdRemain('live')));
+        return;
+      }
+
+      // ライブ結果
+      var kibun = calcKibun();
+      var success = kibun > 40 && st.skill >= 5;
+      var skillGain = success ? 8 : 3;
+
+      st.skill     = (st.skill || 0) + skillGain;
+      st.yaruki    = clamp(st.yaruki + (success ? 30 : 10));
+      st.liveCount = (st.liveCount || 0) + 1;
+      st.renshuGe  = 0;
+      st.cd.live   = cdTime(CD_SEC.live);
+
+      var resultText = success
+        ? 'ライブ成功！！\nドラムスキル +' + skillGain
+        : 'ライブ終了\n次はもっとうまくやる';
+
+      showLiveOverlay(success, resultText);
+      save();
+    }
+
+    function pauseAllAudio() {
+      document.querySelectorAll('audio').forEach(function(el) {
+        el.pause();
+      });
+    }
+    function startLiveBGM() {
+      pauseAllAudio();
+      var src = Math.random() < 0.5 ? 'live-bgm' : 'live-bgm2';
+      var el = document.getElementById(src);
+      if (!el) return;
+      el.volume = _muted ? 0 : 0.55;
+      el.currentTime = 0;
+      el.onended = function() { _tapPhase = 'tapping'; showLiveResult(); };
+      el.play().catch(function(){});
+    }
+    function stopLiveBGM() {
+      pauseAllAudio();
+    }
+
+    var _tapCount = 0;
+    var _tapPhase = 'waiting';
+    var _tapTimer = null;
+    var _pendingResult = null;
+
+    function showLiveOverlay(success, resultText) {
+      var overlay  = document.getElementById('live-overlay');
+      var title    = document.getElementById('live-title');
+      var result   = document.getElementById('live-result');
+      var closeBtn = document.getElementById('live-close');
+      var tapCount = document.getElementById('live-tap-count');
+      var tapHint  = document.getElementById('live-tap-hint');
+      var successEl= document.getElementById('live-success');
+
+      _tapCount = 0;
+      _tapPhase = 'waiting';
+      _pendingResult = { success: success, text: resultText };
+
+      overlay.querySelectorAll('img').forEach(function(i) { i.classList.remove('in'); });
+      [title, result, closeBtn, successEl].forEach(function(el) { el.classList.remove('in'); });
+      if (tapCount) { tapCount.textContent = ''; tapCount.style.display = ''; }
+      if (tapHint)  tapHint.style.display = '';
+      overlay.classList.add('show');
+      startLiveBGM();
+
+      setTimeout(function() { document.getElementById('live-hinata').classList.add('in'); }, 100);
+      setTimeout(function() { document.getElementById('live-hayate').classList.add('in'); }, 300);
+      setTimeout(function() { document.getElementById('live-kouta').classList.add('in'); }, 500);
+      setTimeout(function() { title.classList.add('in'); }, 700);
+      setTimeout(function() {
+        _tapPhase = 'tapping';
+      }, 900);
+
+      overlay.onclick = function(e) {
+        if (_tapPhase !== 'tapping') return;
+        _tapCount++;
+        if (tapCount) tapCount.textContent = _tapCount;
+        spawnSpark(e.clientX, e.clientY);
+      };
+    }
+
+    function spawnSpark(x, y) {
+      var hot = _tapCount >= 100;
+      var symbols = hot
+        ? ['✦','✧','❄','★','🎵','💥','⚡','🌟']
+        : ['✦','✧','❄','★','·'];
+      var count = hot ? 10 : 4;
+      var maxDist = hot ? 120 : 60;
+      var colors = hot
+        ? ['#fde68a','#c4b5fd','#93c5fd','#fca5a5','#ffffff']
+        : ['#c4b5fd'];
+
+      for (var i = 0; i < count; i++) {
+        var el = document.createElement('div');
+        el.className = 'spark';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        var angle = Math.random() * Math.PI * 2;
+        var dist  = (hot ? 60 : 40) + Math.random() * maxDist;
+        el.style.left = x + 'px';
+        el.style.top  = y + 'px';
+        el.style.color = colors[Math.floor(Math.random() * colors.length)];
+        if (hot) el.style.fontSize = (16 + Math.random() * 16) + 'px';
+        el.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+        el.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+        document.body.appendChild(el);
+        setTimeout(function(e) { e.remove(); }, 900, el);
+      }
+    }
+
+    function showLiveResult() {
+      if (_tapPhase !== 'tapping') return;
+      _tapPhase = 'result';
+      clearTimeout(_tapTimer);
+
+      var overlay  = document.getElementById('live-overlay');
+      overlay.onclick = null;
+
+      var result   = document.getElementById('live-result');
+      var closeBtn = document.getElementById('live-close');
+      var tapCount = document.getElementById('live-tap-count');
+      var tapHint  = document.getElementById('live-tap-hint');
+      var successEl= document.getElementById('live-success');
+
+      if (tapCount) tapCount.style.display = 'none';
+      if (tapHint)  tapHint.style.display  = 'none';
+
+      var bonus = _tapCount >= 180 ? 20 : _tapCount >= 100 ? 12 : _tapCount >= 50 ? 5 : 0;
+      if (bonus > 0) {
+        st.skill  = (st.skill || 0) + bonus;
+        st.yaruki = clamp(st.yaruki + bonus * 0.5);
+        save();
+      }
+
+      var p = _pendingResult;
+      var gotSweets = p.success && _tapCount >= 200;
+      if (gotSweets) {
+        st.sweets = (st.sweets || 0) + 1;
+        save();
+      }
+      _pendingSweetsGet = gotSweets;
+
+      successEl.textContent = randLine(LIVE_SUCCESS_LINES);
+      successEl.classList.add('in');
+      setTimeout(function() {
+        closeBtn.classList.add('in');
+      }, 800);
+    }
+
+    var _pendingSweetsGet = false;
+
+    function showSweetsGet() {
+      var el = document.getElementById('sweets-get-overlay');
+      if (el) el.classList.add('show');
+    }
+    function closeSweetsGet() {
+      var el = document.getElementById('sweets-get-overlay');
+      if (el) el.classList.remove('show');
+    }
+
+    function closeLive() {
+      var overlay = document.getElementById('live-overlay');
+      overlay.classList.remove('show');
+      stopLiveBGM();
+      setSpeech(randLine(LIVE_LINES), null);
+      bounce();
+      render();
+      if (_pendingSweetsGet) {
+        _pendingSweetsGet = false;
+        setTimeout(showSweetsGet, 300);
+      }
+    }
+
+    /* ── 表示 ── */
+    function setSpeech(text, imgOverride) {
+      var el = document.getElementById('speech-text');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(function() { el.textContent = text; el.style.opacity = '1'; }, 150);
+      _speechLock = true;
+      clearTimeout(_speechTimer);
+      if (imgOverride) {
+        setImg(imgOverride);
+        clearTimeout(_imgTimer);
+        _imgTimer = setTimeout(function() { _imgTimer = null; setImg(getCharaState()); }, 3000);
+      }
+      _speechTimer = setTimeout(function() { _speechLock = false; autoSpeech(); }, 4000);
+    }
+
+    function autoSpeech() {
+      if (_speechLock) return;
+      var el = document.getElementById('speech-text');
+      if (!el) return;
+      var line = randLine(SPEECHES[getCharaState()] || SPEECHES.normal);
+      el.style.opacity = '0';
+      setTimeout(function() { el.textContent = line; el.style.opacity = '1'; }, 150);
+    }
+
+    function setImg(state) {
+      var img = document.getElementById('chara-img');
+      if (!img) return;
+      var src = CHARA_IMGS[state] || CHARA_IMGS.normal;
+      if (img.getAttribute('src') !== src) img.src = src;
+    }
+
+    function bounce() {
+      var img = document.getElementById('chara-img');
+      if (!img) return;
+      img.classList.remove('bounce');
+      void img.offsetWidth;
+      img.classList.add('bounce');
+    }
+
+    function render() {
+      var kibun = calcKibun();
+      if (!_imgTimer) setImg(getCharaState());
+      setBar('onaka',  Math.round(st.onaka));
+      setBar('suimin', Math.round(st.suimin));
+      setBar('yaruki', Math.round(st.yaruki));
+      setBar('kibun',  kibun);
+      setBar('renshu-ge', Math.round(st.renshuGe || 0));
+
+      var badge = document.getElementById('skill-badge');
+      if (badge) badge.textContent = 'Drum Lv.' + getLevel();
+      var liveBadge = document.getElementById('live-count-badge');
+      if (liveBadge) liveBadge.textContent = 'LIVE × ' + (st.liveCount || 0);
+
+      // ライブボタン状態
+      var liveBtn = document.getElementById('btn-live');
+      var liveCd  = document.getElementById('cd-live');
+      if (liveBtn) {
+        var locked = (st.renshuGe || 0) < LIVE_UNLOCK_RENSHU;
+        var onCd   = cdRemain('live') > 0;
+        liveBtn.className = 'live-btn' + (locked || onCd ? ' locked' : '');
+        if (liveCd) liveCd.textContent = locked
+          ? '練習ゲージ満タンで解放'
+          : onCd ? fmtCD(cdRemain('live')) + ' 休憩中' : '';
+      }
+
+      var sweetsBtn   = document.getElementById('btn-sweets');
+      var sweetsCount = document.getElementById('sweets-count');
+      var sc = st.sweets || 0;
+      if (sweetsBtn)   sweetsBtn.classList.toggle('on-cd', sc === 0);
+      if (sweetsCount) sweetsCount.textContent = '×' + sc;
+
+      updateCD();
+    }
+
+    function setBar(name, val) {
+      var fill = document.getElementById('bar-' + name);
+      var valEl = document.getElementById('val-' + name);
+      if (fill) {
+        fill.style.width = val + '%';
+        var cls = 'stat-bar-fill';
+        if (name === 'renshu-ge') cls += ' renshu-ge';
+        else if (val < 25) cls += ' low';
+        else if (val < 50) cls += ' mid';
+        fill.className = cls;
+      }
+      if (valEl) valEl.textContent = val;
+    }
+
+    function updateCD() {
+      ['meshi','neru','renshu','flyer'].forEach(function(a) {
+        var btn  = document.getElementById('btn-' + a);
+        var cdEl = document.getElementById('cd-' + a);
+        var rem  = cdRemain(a);
+        if (btn)  btn.classList.toggle('on-cd', rem > 0);
+        if (cdEl) cdEl.textContent = rem > 0 ? fmtCD(rem) : '';
+      });
+    }
+
+    /* ── トースト ── */
+    var _toastTimer = null;
+    function flash(msg) {
+      var el = document.getElementById('toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2200);
+    }
+
+    /* ── タイマー ── */
+    setInterval(function() {
+      var sec = 30;
+      st.onaka  = clamp(st.onaka  - DECAY.onaka  * sec);
+      st.suimin = clamp(st.suimin - DECAY.suimin * sec);
+      st.yaruki = clamp(st.yaruki - DECAY.yaruki * sec);
+      fluctuateKibun();
+      save();
+      render();
+      if (!_speechLock) autoSpeech();
+    }, 30 * 1000);
+
+    setInterval(updateCD, 10 * 1000);
+
+    setInterval(function() {
+      if (!_speechLock) autoSpeech();
+    }, 2 * 60 * 1000);
+
+    /* ── 雪アニメーション ── */
+    (function() {
+      var canvas = document.getElementById('snow-canvas');
+      var ctx = canvas.getContext('2d');
+      var flakes = [];
+      var N = 60;
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      for (var i = 0; i < N; i++) {
+        flakes.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          r: Math.random() * 2.5 + 0.5,
+          sp: Math.random() * 0.8 + 0.3,
+          sw: Math.random() * 0.6 - 0.3,
+          op: Math.random() * 0.4 + 0.1
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        flakes.forEach(function(f) {
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + f.op + ')';
+          ctx.fill();
+          f.y += f.sp;
+          f.x += f.sw;
+          if (f.y > canvas.height + 5) {
+            f.y = -5;
+            f.x = Math.random() * canvas.width;
+          }
+          if (f.x > canvas.width + 5)  f.x = -5;
+          if (f.x < -5) f.x = canvas.width + 5;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    /* ── BGM ── */
+    var _muted = false;
+
+    /* ── 起動 ── */
+    load();
+    render();
+    autoSpeech();
+  </script>
+</body>
+</html>
