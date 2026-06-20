@@ -4082,48 +4082,44 @@ function submitUtPw() {
       }, 700);
     }
 
-    // shopkeeper 画像切り替え
-    // 4章以降：いつもの＋ピアスクロップランダム / 3章：青年ナギランダム / 2-2〜2-4：子どもナギランダム
+    // shopkeeper 画像切り替え（進行度別ランダム）
     var shopImg = document.querySelector('.shopkeeper-img');
     if (shopImg) {
-      var ch22Read = _seenProseScenes.has(6);
-      var ch25Read = _seenProseScenes.has(9);
-      var youngKey = 'sf_ut_young_nagi_revealed';
       var targetSrc;
+      var _pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; };
       if (localStorage.getItem('sf_ut_ep_complete') === 'true') {
-        // エピローグクリア後：5パターンランダム
-        var _epPool = ['nagi_shop_young_close.webp', 'nagi_ch3.webp', 'nagi_woman.webp', 'nagi_ch4.webp', 'shopkeeper.webp'];
-        targetSrc = _epPool[Math.floor(Math.random() * _epPool.length)];
+        // エピローグクリア後：少年/青年/女性/中年/デフォルト
+        targetSrc = _pick(['nagi_shop_young_close.webp','nagi_ch3.webp','nagi_woman.webp','nagi_ch4.webp','shopkeeper.webp']);
       } else if (stCh4Unlocked) {
-        // 4章解放後：shopkeeper.webp と nagi_ch4.webp をランダム
-        targetSrc = Math.random() < 0.5 ? 'nagi_ch4.webp' : 'shopkeeper.webp';
-      } else if (ch3Unlocked) {
-        // 3-2〜3-4：青年ナギ（初回必ず、以降50%ランダム）
-        var ch32Read = _seenProseScenes.has(11);
-        var ch35Read = _seenProseScenes.has(14);
-        var youngKeyCh3 = 'sf_ut_young_nagi_revealed_ch3';
-        if (!ch32Read || ch35Read) {
-          targetSrc = 'shopkeeper.webp';
-        } else {
-          var firstRevealCh3 = !localStorage.getItem(youngKeyCh3);
-          if (firstRevealCh3) {
-            localStorage.setItem(youngKeyCh3, '1');
-            targetSrc = 'nagi_ch3.webp';
-          } else {
-            targetSrc = Math.random() < 0.5 ? 'nagi_ch3.webp' : 'shopkeeper.webp';
-          }
-        }
-      } else if (!ch22Read || ch25Read) {
+        // 第四章：店のナギ/ナギ/中年
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch3.webp','nagi_ch4.webp']);
+      } else if (_seenProseScenes.has(19)) {
+        // 3-5読了後：子ども/デフォルト/ナギ（3-2と同じ）
+        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp','nagi_ch4.webp']);
+      } else if (_seenProseScenes.has(18)) {
+        // 3-4読了後：デフォルト/ナギ/女性
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_woman.webp']);
+      } else if (_seenProseScenes.has(17)) {
+        // 3-3読了後：デフォルト/ナギ/青年
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_ch3.webp']);
+      } else if (_seenProseScenes.has(16)) {
+        // 3-2読了後：子ども/デフォルト/ナギ
+        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp','nagi_ch4.webp']);
+      } else if (_seenProseScenes.has(15)) {
+        // 3-1読了後：デフォルト/ナギ
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp']);
+      } else if (ch4Unlocked) {
+        // 第三章解放・3-1未読：デフォルトのみ
         targetSrc = 'shopkeeper.webp';
+      } else if (ch3Unlocked) {
+        // 第二章：デフォルト/ナギ/青年
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_ch3.webp']);
+      } else if (ch21Unlocked) {
+        // 第一章：デフォルト/ナギ/子ども
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_shop_young_close.webp']);
       } else {
-        // 2-2〜2-4：子どもナギ（初回必ず、以降50%ランダム）
-        var firstReveal = !localStorage.getItem(youngKey);
-        if (firstReveal) {
-          localStorage.setItem(youngKey, '1');
-          targetSrc = 'nagi_shop_young_close.webp';
-        } else {
-          targetSrc = Math.random() < 0.5 ? 'nagi_shop_young_close.webp' : 'shopkeeper.webp';
-        }
+        // Prologue：デフォルト/顔
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp']);
       }
       if (shopImg.src.split('/').pop() !== targetSrc) {
         shopImg.style.opacity = '0';
