@@ -1214,6 +1214,31 @@
         </div>
       </div>
 
+      <!-- ch-between-5: 3-5読了後・第四章未解放時 -->
+      <div id="ch-between-5" style="display:none;padding:24px 0 8px;">
+        <button disabled style="width:100%;background:none;border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:default;opacity:0.4;">
+          <span style="font-family:'Noto Serif JP',serif;font-size:13px;color:#475569;letter-spacing:2px;">第四章</span>
+          <span id="ch4-lock-timer" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:2px;color:#e2e8f0;"></span>
+        </button>
+      </div>
+
+      <!-- 第四章 アコーディオン -->
+      <div class="ch-section" id="ch-section-5" style="display:none;">
+        <button class="ch-section-header" onclick="toggleChSection(5)">
+          <span class="ch-section-name">第四章</span>
+          <span class="ch-section-arr" id="ch-arr-5">›</span>
+        </button>
+        <div class="ch-section-body" id="ch-body-5">
+          <div class="chapter-item" id="chapter-item-20">
+            <button class="chapter-header" onclick="openChapterPopup(20)">
+              <span class="chapter-num">4-1</span>
+              <span class="chapter-title">ケーキの箱</span>
+              <span class="chapter-arr">▶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- フッター -->
       <div class="chapter-footer" id="chapter-footer" style="display:none;">
         <a href="../../sweets/index.html" class="ch-back-btn" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#a78bfa;text-decoration:none;">帰る</a>
@@ -2161,6 +2186,11 @@ function submitUtPw() {
       label: '3-5.  それで良かったの？',
       text:
 '　なんとなく気になって、また店に来た。\n\n　子ども。\n　見たこともない楽器を鳴らす男。\n　本を読んでいた女性。\n\n　来るたびに、店にいる人間が違う。\n\n　それなのに、\n　どこか同じ場所に触れられている気がする。\n\n　気持ち悪い。\n\n　なのに、足が向く。\n\n　あの男に会ったら、\n　今度こそ言う。\n\n　何を言うのかは、\n　まだ決まっていない。\n\n　それでも、\n　あのままにはしておけなかった。\n\n　一言言えたなら。\n　少しはスッキリするはずだ。\n\n　ドアを開ける。\n\n　チリン。\n\n　店内は静かだった。\n\n　タバコの匂いはしない。\n　楽器の音もしない。\n　本をめくる音もない。\n\n　あの男の姿も、見当たらない。\n\n　言いに来た言葉が、行き場をなくす。\n\n　仕方なく、棚の前に立つ。\n\n　メトロノーム。\n　懐中時計。\n　パズル。\n\n　前に触ったものが、同じ場所に置かれていた。\n\n　やりかけのまま。\n\n　あと、少し。\n\n　コウタは無意識にそれを手に取る。\n\n　ここを、こうして。\n　次に、ここを動かす。\n\n　分かる。\n\n　解ける。\n\n　でも、最後の一手で指が止まる。\n\n　入る場所はある。\n　入れれば完成する。\n\n　ただ、その形は少し変わる。\n\n　綺麗に整っていたものが、少しだけ歪む。\n　でも、なぜかその方が、本当の形に見えた。\n\n「それ、最後まで解くの」\n\n　後ろから声がした。\n\n　振り返る。\n\n　この間の少年がいた。\n\n「……いたのか」\n\n　少年は悪びれずに笑う。\n\n「解けるんでしょ」\n\n「解けるなら、解くだろ」\n\n　コウタはそう言って、もう一度パズルを見る。\n\n　でも、指は動かない。\n\n　少年が言う。\n\n「じゃあ、解いたあとは？」\n\n　コウタは答えられない。\n\n　解いたあとは。\n\n　形は整う。\n　完成する。\n　それ以上、動かなくなる。\n\n　それだけだ。\n\n「完成させたいの」\n\n「……別に」\n\n「でも、直そうとした」\n\n　コウタは黙る。\n\n「空いてるところ、見つけるの上手いよね」\n\n　その言葉に、胸の奥が少し硬くなる。\n\n　ライブの音が戻る。\n\n　ヒナタが迷った時。\n　ハヤテの音が走った時。\n　自分のフレーズを引っ込めた時。\n\n　三人の音が崩れないように。\n　空いた場所を埋めるように。\n　前に出すぎないように。\n\n　それで、まとまった。\n\n　それでよかった。\n\n　そう思っていた。\n\n「でもさ」\n\n　少年の声は軽い。\n\n　軽いから、余計に逃げ場がない。\n\n「空いてるところを埋めたんじゃなくて」\n\n　少し間。\n\n「本当は、自分がそこに入るのをやめただけじゃないの」\n\n　喉の奥が詰まる。\n\n　言い返そうとして、言葉が出ない。\n\n　少年は責めていない。\n　ただ、見ている。\n\n　手の中のパズル。\n　残った最後の一手。\n　入れれば変わる形。\n\n　少年が、静かに言う。\n\n「ねえ」\n\n「それで、よかったの？」\n\n　その瞬間。\n\n　頭の奥で、何かが熱くなる。\n\n「……良かったに決まってるだろ」\n\n　声は思ったより低く出た。\n\n「俺が出なかったから、まとまったんだよ」\n\n「俺が空いてるところを埋めたから、あの音になったんだ」\n\n　言えば言うほど、苦しくなる。\n\n　それでも止まらない。\n\n「……勝手に決めんなよ」\n\n　喉の奥が、\n　熱くなる。\n\n　それでも、\n　止まらなかった。\n\n「俺の音を、勝手に触るな！」\n\n　声が、店の中に響いた。\n\n　自分でも驚くくらい、\n　大きな声だった。\n\n　言った直後。\n\n　あ、と思った。\n\n　少年は、黙ってこちらを見ていた。\n\n　怒ってはいない。\n　泣きそうでもない。\n　驚いてすらいない。\n\n　ただ、\n　まっすぐ見ていた。\n\n　それが、余計に刺さった。\n\n　謝らなきゃ。\n\n　すぐにそう思った。\n\n　大人気なかった。\n　子ども相手に、何を言っているんだ。\n\n　分かっている。\n\n　分かっているのに、声が出ない。\n\n　謝ったら、今の言葉まで消える気がした。\n　怒った理由まで、なかったことになる気がした。\n\n　コウタは、パズルを棚に戻す。\n\n　最後の一手は、入れないまま。\n\n　何も言わずに出口へ向かう。\n\n　少年は止めなかった。\n\n　背中に、声が落ちる。\n\n「それで、よかったの？」\n\n　振り返らない。\n\n　ドアを開ける。\n\n　チリン。\n\n　少し遅れて、鈴が鳴った。\n\n　外の空気は冷たかった。\n\n　なのに耳の奥には、まだ残っている。\n\n　パズルの音ではなく。\n　あの少年の声でもなく。\n\n　自分が出してしまった、\n　大きな声だけが。'
+    },
+    {
+      label: '4-1.  ケーキの箱',
+      text:
+'　昨日の声が、\n　まだ耳の奥に残っていた。\n\n　勝手に決めるなよ。\n\n　俺の音を、勝手に触るな。\n\n　あんな大きな声を出すつもりはなかった。\n\n　まして、\n　子ども相手に。\n\n　謝らなきゃ、とは思った。\n\n　その場で。\n　すぐに。\n\n　でも、言えなかった。\n\n　言えなかったことの方が、\n　ずっと残っている。\n\n　今日も、いるだろうか。\n\n　あの少年が。\n\n　謝るには、\n　もう遅い。\n\n　でも。\n\n　何もしないままよりは、\n　ましな気がした。\n\n　駅前のケーキ屋で足を止める。\n\n　ショーケースの中には、\n　いちご。\n　チョコ。\n　チーズ。\n　モンブラン。\n\n　何が好きかなんて知らない。\n\n　そもそも、\n　子どもが甘いものを好きかどうかも分からない。\n\n　それでも、\n　手ぶらでは行けなかった。\n\n「……これと、これ」\n\n　ふたつでいいはずだった。\n\n　なのに、\n　気づけば三つ選んでいた。\n\n　白い箱を受け取る。\n　細いリボンがかかっている。\n\n　持ってみると、\n　思ったより軽かった。\n\n　店の前に立つ。\n\n　少しだけ息を吐く。\n\n　謝るだけだ。\n\n　昨日は悪かった。\n　大きな声を出した。\n\n　それだけ言えばいい。\n\n　ドアを開ける。\n\n　チリン。\n\n　鈴が鳴る。\n\n　店内は静かだった。\n\n　棚の上のメトロノーム。\n　懐中時計。\n　パズル。\n\n　昨日と同じ場所にある。\n\n　でも、\n　少年の姿はなかった。\n\n「……」\n\n　コウタは、少しだけ肩の力を抜く。\n\n　安心したのか。\n　がっかりしたのか。\n\n　自分でもよく分からない。\n\n　カウンターの奥に、人影があった。\n\n　顔を上げる。\n\n　店主らしき男がいた。\n\n　けれど、\n　前に楽器を鳴らしていた男とは少し違って見えた。\n\n　もっと年上で。\n　落ち着いていて。\n\n　煙草の匂いがした。\n\n　少し苦い匂い。\n\n　いつか、路地裏でカードを差し出した男に似ている。\n\n　そう思って、\n　すぐに違うと思う。\n\n　似ているだけだ。\n\n　たぶん。\n\n　コウタは気まずくなって、\n　少し離れた棚の前に立つ。\n\n　何かを見るふりをする。\n\n　メトロノーム。\n　懐中時計。\n　パズル。\n\n　どれも、\n　昨日より少しだけ見づらい。\n\n　白い箱を持つ手に、\n　妙に力が入る。\n\n　視線を感じた。\n\n　横を見る。\n\n　男が、\n　ケーキの箱を見ていた。\n\n　かなり見ていた。\n\n　コウタは、\n　箱を少しだけ反対側へずらす。\n\n　男の視線も、\n　その分だけ動いた。\n\n　……見るなよ。\n\n　そう思ったけど、\n　言えるわけがない。\n\n　隠すには遅い。\n　説明するのも変だ。\n\n　コウタはしばらく黙る。\n\n　黙ったまま、\n　箱を見る。\n\n　それから、\n　男を見る。\n\n「……食べます？」\n\n　言ってから、\n　ああ、また変なことを言った、と思った。'
     }
   ];
 
@@ -2180,6 +2210,7 @@ function submitUtPw() {
   var ch44Unlocked = localStorage.getItem('sf_undertone_ch44_unlocked') === 'true';
   var ch45Unlocked = localStorage.getItem('sf_undertone_ch45_unlocked') === 'true';
   var ch43Unlocked = localStorage.getItem('sf_undertone_ch43_unlocked') === 'true';
+  var stCh4Unlocked = localStorage.getItem('sf_undertone_stch4_unlocked') === 'true';
   var tarotMode = 'oracle';
   var spreadDraws = [];
   var spreadFlipped = [false, false, false];
@@ -2322,6 +2353,16 @@ function submitUtPw() {
         if (el3 && el3.parentElement && el3.parentElement.parentElement &&
             el3.parentElement.parentElement.style.display !== 'none') {
           if (_r3 > 0) { el3.textContent = formatLockDays(_r3); anyActive = true; }
+          else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
+        }
+      }
+      var _ch4At = parseInt(localStorage.getItem('sf_ut_ch4_unlock_at') || '0');
+      if (_ch4At) {
+        var _r4 = Math.max(0, 14*86400000 - (Date.now() - _ch4At));
+        var el4 = document.getElementById('ch4-lock-timer');
+        if (el4 && el4.parentElement && el4.parentElement.parentElement &&
+            el4.parentElement.parentElement.style.display !== 'none') {
+          if (_r4 > 0) { el4.textContent = formatLockDays(_r4); anyActive = true; }
           else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
         }
       }
@@ -3116,7 +3157,9 @@ function submitUtPw() {
     ALL_CHAPTERS.forEach(function(ch, i) {
       var item = document.getElementById('chapter-item-' + i);
       if (!item) return;
-      if (i === 19) {
+      if (i === 20) {
+        item.style.display = stCh4Unlocked ? '' : 'none'; // 第四章1話目：即時
+      } else if (i === 19) {
         applyTimedChapter(19, ch45Unlocked);
       } else if (i === 18) {
         applyTimedChapter(18, ch44Unlocked);
@@ -3163,8 +3206,13 @@ function submitUtPw() {
     // 第四章セクション表示（第三章）
     var sec4 = document.getElementById('ch-section-4');
     if (sec4) sec4.style.display = ch4Unlocked ? '' : 'none';
+    // 第五章セクション表示（第四章）
+    var sec5 = document.getElementById('ch-section-5');
+    if (sec5) sec5.style.display = stCh4Unlocked ? '' : 'none';
     // 最新の章だけ開く、それ以外は閉じる
-    if (ch4Unlocked) {
+    if (stCh4Unlocked) {
+      closeChSection(1); closeChSection(2); closeChSection(3); closeChSection(4); openChSection(5);
+    } else if (ch4Unlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); openChSection(4);
     } else if (ch3Unlocked) {
       closeChSection(1); closeChSection(2); openChSection(3);
@@ -3246,6 +3294,22 @@ function submitUtPw() {
         var _rem3 = _ch4UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch4UnlockAt)) : 0;
         var el3 = document.getElementById('ch3-lock-timer');
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
+      }
+    }
+    // 14日タイマーチェック：第四章自動解放
+    if (_ch4UnlockAt && !stCh4Unlocked && Date.now() - _ch4UnlockAt >= 14 * 86400000) {
+      stCh4Unlocked = true;
+      localStorage.setItem('sf_undertone_stch4_unlocked', 'true');
+    }
+    // ch-between-5：3-5読了後・第四章未解放時
+    var ch3Done = !!localStorage.getItem('sf_ut_ch3_complete');
+    var between5 = document.getElementById('ch-between-5');
+    if (between5) {
+      between5.style.display = (ch3Done && !stCh4Unlocked) ? '' : 'none';
+      if (ch3Done && !stCh4Unlocked) {
+        var _rem4 = _ch4UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch4UnlockAt)) : 0;
+        var el4 = document.getElementById('ch4-lock-timer');
+        if (el4) el4.textContent = _rem4 > 0 ? formatLockDays(_rem4) : '';
       }
     }
     // チュートリアル中（1章解放前）は「占う」のみ表示
@@ -3465,7 +3529,7 @@ function submitUtPw() {
           setTimeout(function() { showItemUnlock('コンビニの缶ビール', '../../item/beer.webp'); }, 300);
         };
       }
-      if (idx === 16 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
+      if (idx === 20 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
         localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
         _itemUnlockCb = function() {
           setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
@@ -4090,9 +4154,8 @@ function submitUtPw() {
       loupeCount.textContent = '× ' + lpCnt;
       loupeRow.style.display = lpCnt > 0 ? 'flex' : 'none';
     }
-    // クッキー表示（3-2読了後）
-    var ch41Read = _seenProseScenes.has(15);
-    var ch42Read = _seenProseScenes.has(16);
+    // クッキー表示（第四章解放後）
+    var ch41Read = _seenProseScenes.has(20);
     var cakeRow      = document.getElementById('shop-cake-row');
     var cakeCount    = document.getElementById('shop-cake-count');
     var cakeEatBtn   = document.getElementById('shop-cake-eat-btn');
@@ -4100,19 +4163,20 @@ function submitUtPw() {
     if (cakeRow && cakeCount) {
       var ckCnt = _mItems['cookie'] || 0;
       cakeCount.textContent = '× ' + ckCnt;
-      cakeRow.style.display = _seenProseScenes.has(16) ? 'flex' : 'none';
+      cakeRow.style.display = stCh4Unlocked ? 'flex' : 'none';
       if (cakeEatBtn) cakeEatBtn.style.opacity = ckCnt > 0 ? '1' : '0.4';
-      // 渡す：3-2読了後かつ所持あり
-      if (cakeGiveBtn) cakeGiveBtn.style.display = (ch42Read && ckCnt > 0) ? 'block' : 'none';
+      // 渡す：4-1読了後かつ所持あり
+      if (cakeGiveBtn) cakeGiveBtn.style.display = (ch41Read && ckCnt > 0) ? 'block' : 'none';
     }
   }
 
   /* ── Chapter Cover ── */
   function renderCharCover() {
-    var ch41Read = _seenProseScenes.has(15);
+    var stCh3Read = _seenProseScenes.has(15); // 3-1読了
+    var ch41Read  = _seenProseScenes.has(20); // 4-1読了
     var chars = [
-      { id:'cover-hinata',  active: ch3Unlocked  && !ch41Read },
-      { id:'cover-hayate',  active: ch21Unlocked && !ch3Unlocked },
+      { id:'cover-hinata',  active: ch4Unlocked  && !ch41Read },
+      { id:'cover-hayate',  active: ch21Unlocked && !ch4Unlocked },
       { id:'cover-kouta',   active: ch41Read },
     ];
     // 全章解放後（ch4-1読了後）は全員アクティブ
@@ -4133,8 +4197,9 @@ function submitUtPw() {
     if (!chapterEl) return;
     if (!ch21Unlocked)     chapterEl.textContent = 'Prologue';
     else if (!ch3Unlocked) chapterEl.textContent = '第一章';
-    else if (!ch41Read)    chapterEl.textContent = '第二章';
-    else                   chapterEl.textContent = '第三章';
+    else if (!stCh3Read)   chapterEl.textContent = '第二章';
+    else if (!ch41Read)    chapterEl.textContent = '第三章';
+    else                   chapterEl.textContent = '第四章';
   }
 
   /* ── Tarot ── */
