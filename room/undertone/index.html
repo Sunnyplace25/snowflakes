@@ -4625,6 +4625,7 @@ function submitUtPw() {
     var item = available[Math.floor(Math.random() * available.length)];
     SfSnow.unlockItem(item.key);
     renderStones();
+    updateAppraiseBtn();
     localStorage.setItem('sf_undertone_equip_unlocked', 'true');
     updateEquipBtn();
     unlockRandomTarotImg();
