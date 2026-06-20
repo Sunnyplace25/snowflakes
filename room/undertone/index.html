@@ -2351,6 +2351,7 @@ function submitUtPw() {
    17: function() { ch43Unlocked = true; localStorage.setItem('sf_undertone_ch43_unlocked','true'); },
    18: function() { ch44Unlocked = true; localStorage.setItem('sf_undertone_ch44_unlocked','true'); },
    19: function() { ch45Unlocked  = true; localStorage.setItem('sf_undertone_ch45_unlocked', 'true'); },
+   20: function() { stCh4Unlocked  = true; localStorage.setItem('sf_undertone_stch4_unlocked', 'true'); },
    21: function() { stCh42Unlocked = true; localStorage.setItem('sf_undertone_stch42_unlocked','true'); },
    22: function() { stCh43Unlocked = true; localStorage.setItem('sf_undertone_stch43_unlocked','true'); },
    23: function() { stCh44Unlocked = true; localStorage.setItem('sf_undertone_stch44_unlocked','true'); },
@@ -3282,7 +3283,7 @@ function submitUtPw() {
       } else if (i === 21) {
         applyTimedChapter(21, stCh42Unlocked);
       } else if (i === 20) {
-        if (stCh4Unlocked) { applyTimedChapter(20, false); } else { item.style.display = 'none'; } // 第四章1話目：3-5読了後48h
+        applyTimedChapter(20, stCh4Unlocked); // 第四章1話目：3-5読了後48h
       } else if (i === 19) {
         applyTimedChapter(19, ch45Unlocked);
       } else if (i === 18) {
@@ -3330,16 +3331,16 @@ function submitUtPw() {
     // 第四章セクション表示（第三章）
     var sec4 = document.getElementById('ch-section-4');
     if (sec4) sec4.style.display = ch4Unlocked ? '' : 'none';
-    // 第五章セクション表示（第四章）
+    // 第五章セクション表示（第四章）：3-5読了後に表示
     var sec5 = document.getElementById('ch-section-5');
-    if (sec5) sec5.style.display = stCh4Unlocked ? '' : 'none';
+    if (sec5) sec5.style.display = ch3Done ? '' : 'none';
     // Epilogue セクション表示
     var sec6 = document.getElementById('ch-section-6');
     if (sec6) sec6.style.display = stEpUnlocked ? '' : 'none';
     // 最新の章だけ開く、それ以外は閉じる
     if (stEpUnlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); closeChSection(4); closeChSection(5); openChSection(6);
-    } else if (stCh4Unlocked) {
+    } else if (ch3Done) {
       closeChSection(1); closeChSection(2); closeChSection(3); closeChSection(4); openChSection(5);
     } else if (ch4Unlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); openChSection(4);
@@ -3428,33 +3429,15 @@ function submitUtPw() {
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
       }
     }
-    // アイテム全解放チェック：第四章自動解放
-    if (!stCh4Unlocked &&
-        localStorage.getItem('sf_ut_choco_eaten')  === 'true' &&
-        localStorage.getItem('sf_ut_choco_given')  === 'true' &&
-        localStorage.getItem('sf_ut_cookie_eaten') === 'true' &&
-        localStorage.getItem('sf_ut_cookie_given') === 'true' &&
-        localStorage.getItem('sf_ut_beer_drunk')   === 'true' &&
-        localStorage.getItem('sf_ut_beer_given')   === 'true') {
-      stCh4Unlocked = true;
-      localStorage.setItem('sf_undertone_stch4_unlocked', 'true');
-    }
-    // ch-between-5：3-5読了後・第四章未解放時
+    // ch-between-5：3-5読了後・4-1未解放時（48hカウントダウン表示）
     var ch3Done = !!localStorage.getItem('sf_ut_ch3_complete');
     var between5 = document.getElementById('ch-between-5');
     if (between5) {
       between5.style.display = (ch3Done && !stCh4Unlocked) ? '' : 'none';
       if (ch3Done && !stCh4Unlocked) {
-        var _itemsDone = [
-          localStorage.getItem('sf_ut_choco_eaten')  === 'true',
-          localStorage.getItem('sf_ut_choco_given')  === 'true',
-          localStorage.getItem('sf_ut_cookie_eaten') === 'true',
-          localStorage.getItem('sf_ut_cookie_given') === 'true',
-          localStorage.getItem('sf_ut_beer_drunk')   === 'true',
-          localStorage.getItem('sf_ut_beer_given')   === 'true',
-        ].filter(Boolean).length;
+        var _ts20 = getTimedState(20);
         var el4 = document.getElementById('ch4-lock-timer');
-        if (el4) el4.textContent = _itemsDone + ' / 6';
+        if (el4) el4.textContent = _ts20.state === 'countdown' ? formatCountdown(_ts20.remaining) : '';
       }
     }
     // エピローグ：4章完読で即時解放
@@ -5084,21 +5067,6 @@ function submitUtPw() {
     if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
   };
 
-  function checkCh4ItemsUnlock() {
-    if (stCh4Unlocked) return;
-    if (
-      localStorage.getItem('sf_ut_choco_eaten')  === 'true' &&
-      localStorage.getItem('sf_ut_choco_given')  === 'true' &&
-      localStorage.getItem('sf_ut_cookie_eaten') === 'true' &&
-      localStorage.getItem('sf_ut_cookie_given') === 'true' &&
-      localStorage.getItem('sf_ut_beer_drunk')   === 'true' &&
-      localStorage.getItem('sf_ut_beer_given')   === 'true'
-    ) {
-      stCh4Unlocked = true;
-      localStorage.setItem('sf_undertone_stch4_unlocked', 'true');
-      renderChapterList();
-    }
-  }
 
   window.eatCake = function() {
     var items = SfSnow.getMonthlyItems();
@@ -5110,7 +5078,7 @@ function submitUtPw() {
     localStorage.setItem('sf_ut_cookie_eaten', 'true');
     renderStones();
     showItemMsgPopup('../../item/cookie.webp', '食べた。\n\n＋ 35 Snow');
-    checkCh4ItemsUnlock();
+
   };
 
   window.giveCakeToNagi = function() {
@@ -5124,7 +5092,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_cookie_total', String(total));
     localStorage.setItem('sf_ut_cookie_given', 'true');
     renderStones();
-    checkCh4ItemsUnlock();
+
     // ナギ クッキーポップアップ
     var pop = document.getElementById('nagi-cookie-popup');
     var cookieFortBtn = document.getElementById('nagi-cookie-fortune-btn');
@@ -5178,7 +5146,7 @@ function submitUtPw() {
     localStorage.setItem('sf_ut_beer_drunk', 'true');
     renderStones();
     showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 35 Snow');
-    checkCh4ItemsUnlock();
+
   };
 
   window.giveBeerToNagi = function() {
@@ -5192,7 +5160,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_beer_total', String(total));
     localStorage.setItem('sf_ut_beer_given', 'true');
     renderStones();
-    checkCh4ItemsUnlock();
+
     // ナギポップアップ
     var pop = document.getElementById('nagi-beer-popup');
     var beerFortBtn = document.getElementById('nagi-beer-fortune-btn');
@@ -5770,7 +5738,7 @@ function submitUtPw() {
     localStorage.setItem('sf_ut_choco_eaten', 'true');
     renderStones();
     showItemMsgPopup('../../item/chocolate.webp', '甘い。\n\n+ 35 Snow');
-    checkCh4ItemsUnlock();
+
   };
 
   window.giveChocolateToNagi = function() {
@@ -5788,7 +5756,7 @@ function submitUtPw() {
     localStorage.setItem('sf_nagi_choco_total', String(total));
     localStorage.setItem('sf_ut_choco_given', 'true');
     renderStones();
-    checkCh4ItemsUnlock();
+
     setTimeout(function() { showChocoScene(total); }, 200);
   };
 
