@@ -3565,6 +3565,35 @@ document.addEventListener('visibilitychange', function() {
   })();
 </script>
 <!-- 始まりのベース 公開ポップアップ (2026-06-13) -->
+<!-- ハヤテっち公開ポップアップ (2026-06-21) -->
+<div id="hayatecchi-popup" style="position:fixed;inset:0;z-index:9390;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.88);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+  <div id="hayatecchi-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(15,22,40,0.98);border:1px solid rgba(253,230,138,0.25);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 16px;">NEW</p>
+    <img src="hayatecchi/hayate_practice.webp" alt="ハヤテ" style="width:100px;height:100px;object-fit:contain;image-rendering:pixelated;margin-bottom:16px;filter:drop-shadow(0 0 14px rgba(253,230,138,0.35));">
+    <p style="font-size:18px;font-weight:300;color:#e2e8f0;font-family:'Noto Serif JP',serif;margin:0 0 6px;">ハヤテっち</p>
+    <p style="font-size:13px;line-height:2;color:#94a3b8;margin:0 0 24px;">公開しました！</p>
+    <a href="hayatecchi/" style="display:block;width:100%;box-sizing:border-box;margin:0 auto 12px;padding:10px 28px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;cursor:pointer;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.16)'" onmouseout="this.style.background='rgba(253,230,138,0.08)'">SWEETs へ →</a>
+    <button onclick="document.getElementById('hayatecchi-popup').style.opacity='0';document.getElementById('hayatecchi-popup').style.pointerEvents='none';" style="background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:8px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='#475569';this.style.borderColor='rgba(255,255,255,0.08)'">閉じる</button>
+  </div>
+</div>
+<script>
+  (function() {
+    var pub = new Date('2026-06-21T00:00:00+09:00');
+    var now = new Date();
+    if (now < pub || now - pub > 7 * 86400000) return;
+    var key = 'sf_hayatecchi_popup_20260621';
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, '1');
+      setTimeout(function() {
+        var pop = document.getElementById('hayatecchi-popup');
+        var box = document.getElementById('hayatecchi-box');
+        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
+        if (box) box.style.transform = 'none';
+      }, 600);
+    }
+  })();
+</script>
+
 <div id="hajimari-popup" style="position:fixed;inset:0;z-index:9360;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.85);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
   <div id="hajimari-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(15,22,40,0.98);border:1px solid rgba(252,165,165,0.2);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fca5a5;margin:0 0 12px;">SHORT STORY</p>
