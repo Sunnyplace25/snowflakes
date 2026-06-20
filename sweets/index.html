@@ -922,7 +922,6 @@
         <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
         <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
         <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
-        <span><img src="../item/earring_hayate.webp"> 黄色い石のピアス + カシス × 100</span>
       </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
@@ -6360,13 +6359,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var isUnlocked = SfSnow.isUnlocked(item.id);
       html += '<div class="exch-card" style="margin-top:' + (lockedRooms.length > 0 ? '4' : '0') + 'px;">';
       html += '<div style="padding:18px 16px;">';
-      html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">';
-      html += '<img src="../item/earring_hayate.webp" alt="黄色い石のピアス" style="width:46px;flex-shrink:0;' + (isUnlocked ? '' : 'opacity:0.45;filter:grayscale(0.6);') + '">';
-      html += '<div style="text-align:left;">';
-      html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin-bottom:4px;">黄色い石のピアス</p>';
-      html += '<p style="font-size:11px;color:#94a3b8;letter-spacing:0.5px;line-height:1.9;">路地裏の店でハヤテが選んだ黄色い石のピアス。<br>選んだ理由は、なんとなく。</p>';
-      html += '</div></div>';
       if (isUnlocked) {
+        html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">';
+        html += '<img src="../item/earring_hayate.webp" alt="黄色い石のピアス" style="width:46px;flex-shrink:0;">';
+        html += '<div style="text-align:left;">';
+        html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin-bottom:4px;">黄色い石のピアス</p>';
+        html += '<p style="font-size:11px;color:#94a3b8;letter-spacing:0.5px;line-height:1.9;">路地裏の店でハヤテが選んだ黄色い石のピアス。<br>選んだ理由は、なんとなく。</p>';
+        html += '</div></div>';
         html += '<div style="display:flex;gap:8px;">';
         html += '<a href="../room/hayate/" style="flex:1;text-align:center;padding:9px 8px;border:1px solid rgba(253,230,138,0.22);border-radius:100px;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#fde68a;text-decoration:none;">Under tone で鑑定</a>';
         html += '<a href="../hayatecchi/" style="flex:1;text-align:center;padding:9px 8px;border:1px solid rgba(253,230,138,0.22);border-radius:100px;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:2px;color:#fde68a;text-decoration:none;">ハヤテっちであそぶ</a>';
@@ -6375,7 +6374,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var hasEarring = SfSnow.isUnlocked('earring_hayate');
         var haveCassis = candies['cassis'] || 0;
         var ready = hasEarring && haveCassis >= item.cost.amount;
-        html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;margin-bottom:10px;text-align:center;">ハヤテっち</p>';
+        html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;margin-bottom:12px;text-align:center;">ハヤテっち</p>';
         html += '<div style="font-size:10px;letter-spacing:1px;margin-bottom:12px;display:flex;flex-direction:column;gap:5px;">';
         html += '<div style="display:flex;align-items:center;gap:6px;color:' + (hasEarring ? '#94a3b8' : '#ef4444') + ';"><img src="../item/earring_hayate.webp" style="width:14px;opacity:0.8;"> 黄色い石のピアス' + (hasEarring ? '' : '&nbsp;―&nbsp;<a href="../room/hayate/" style="color:#fde68a66;text-decoration:none;font-size:9px;letter-spacing:1px;">Under tone で入手</a>') + '</div>';
         html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;"> カシスキャンディー × 100</div>';
