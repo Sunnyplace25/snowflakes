@@ -133,7 +133,7 @@
       line-height: 1.75;
       color: #cbd5e1;
       letter-spacing: 0.5px;
-      transition: opacity 0.2s;
+      transition: opacity 0.1s;
     }
 
     .section-label {
@@ -469,6 +469,10 @@
       .live-btn { padding: 12px 10px 10px; gap: 4px; margin-top: 7px; }
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ハヤテっち">
 </head>
 <body>
   <canvas id="snow-canvas"></canvas>
@@ -572,6 +576,19 @@
         <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#8b5cf6;">音楽が流れます</span>
         <span class="action-cd" id="cd-live" style="color:#475569;"></span>
       </button>
+    </div>
+  </div>
+
+  <!-- ホームに追加 -->
+  <div id="a2hs-bar" style="display:none;max-width:360px;margin:0 auto 12px;padding:0 20px;">
+    <button id="a2hs-btn" style="width:100%;padding:11px;border-radius:10px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);color:#fde68a;font-size:12px;letter-spacing:2px;cursor:pointer;font-family:'Cormorant Garamond',serif;">
+      ＋ ホーム画面に追加
+    </button>
+  </div>
+  <!-- iOS用ガイド -->
+  <div id="ios-a2hs" style="display:none;max-width:360px;margin:0 auto 12px;padding:0 20px;">
+    <div style="border:1px solid rgba(253,230,138,0.2);border-radius:10px;padding:14px 16px;background:rgba(253,230,138,0.04);font-size:11px;color:#64748b;line-height:2;text-align:center;">
+      Safari の <span style="color:#fde68a;">共有ボタン</span> →<br>「ホーム画面に追加」でいつでも起動できます
     </div>
   </div>
 
@@ -1190,7 +1207,7 @@
       var el = document.getElementById('speech-text');
       if (!el) return;
       el.style.opacity = '0';
-      setTimeout(function() { el.textContent = text; el.style.opacity = '1'; }, 150);
+      setTimeout(function() { el.textContent = text; el.style.opacity = '1'; }, 120);
       _speechLock = true;
       clearTimeout(_speechTimer);
       if (imgOverride) {
@@ -1366,6 +1383,32 @@
     load();
     render();
     autoSpeech();
+
+    /* ── ホームに追加 ── */
+    (function() {
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone) return; // すでにホーム追加済み
+
+      if (isIOS) {
+        document.getElementById('ios-a2hs').style.display = 'block';
+      } else {
+        var _deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', function(e) {
+          e.preventDefault();
+          _deferredPrompt = e;
+          document.getElementById('a2hs-bar').style.display = 'block';
+        });
+        document.getElementById('a2hs-btn').addEventListener('click', function() {
+          if (!_deferredPrompt) return;
+          _deferredPrompt.prompt();
+          _deferredPrompt.userChoice.then(function() {
+            _deferredPrompt = null;
+            document.getElementById('a2hs-bar').style.display = 'none';
+          });
+        });
+      }
+    })();
 
     /* ── DATA BACKUP (Supabase) ── */
     (function() {
