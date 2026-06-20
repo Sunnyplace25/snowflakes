@@ -1074,16 +1074,22 @@
 })();
 </script>
 
-<!-- ハヤテっち パスワードゲート -->
+<!-- ハヤテっち 購入ゲート -->
 <div id="hayate-gate" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(8,13,24,0.9);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
   <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 24px;text-align:center;">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#fde68a;margin-bottom:20px;">PASSWORD</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#fde68a;margin-bottom:6px;">ハヤテっち</p>
+    <p style="font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:22px;font-family:'Noto Serif JP',serif;">ハヤテを育てるたまごっちライク<br>買い切り ¥100</p>
+    <a href="https://buy.stripe.com/dRm14p6Od5ycfHegkbdZ601" target="_blank"
+      style="display:block;width:100%;box-sizing:border-box;padding:12px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.45);border-radius:100px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;text-decoration:none;margin-bottom:20px;">
+      購入する →
+    </a>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:10px;">購入済みの方</p>
     <input id="hayate-gate-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
-      style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:8px;"
+      style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:6px;"
       placeholder="············"
       onkeydown="if(event.key==='Enter')checkHayateGate()">
-    <p id="hayate-gate-err" style="font-size:11px;color:#ef4444;letter-spacing:1px;min-height:18px;margin-bottom:16px;font-family:'Noto Serif JP',serif;"></p>
-    <button onclick="checkHayateGate()" style="width:100%;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:10px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;">ENTER</button>
+    <p id="hayate-gate-err" style="font-size:11px;color:#ef4444;letter-spacing:1px;min-height:16px;margin-bottom:12px;font-family:'Noto Serif JP',serif;"></p>
+    <button onclick="checkHayateGate()" style="width:100%;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:9px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:12px;">ENTER</button>
     <button onclick="closeHayateGate()" style="background:none;border:none;color:#334155;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;cursor:pointer;">閉じる</button>
   </div>
 </div>
@@ -1093,7 +1099,6 @@
     document.getElementById('hayate-gate-input').value = '';
     document.getElementById('hayate-gate-err').textContent = '';
     document.getElementById('hayate-gate').classList.add('show');
-    setTimeout(function(){ document.getElementById('hayate-gate-input').focus(); }, 100);
   }
   function closeHayateGate() {
     document.getElementById('hayate-gate').classList.remove('show');
