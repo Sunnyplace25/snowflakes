@@ -6298,6 +6298,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateOshiButtons(ch);
   };
   function initOshi() {
+    return; // 一時非表示
     var anyUnlocked = DOOR_CONFIG.some(function(d) { return SfSnow.isUnlocked(d.roomId); });
     var sec = document.getElementById('oshi-section');
     if (sec) sec.style.display = anyUnlocked ? 'block' : 'none';
