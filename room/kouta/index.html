@@ -578,6 +578,9 @@
             <button onclick="stopKoutaPC();document.getElementById('kouta-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:8px 20px;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">いいえ</button>
           </div>
         </div>
+        <div id="kouta-hs-kindle" style="display:none;margin-bottom:4px;">
+          <a href="https://www.amazon.co.jp/stores/author/B0GPJX645L/allbooks" target="_blank" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;text-decoration:none;text-align:center;padding:9px 20px;border:1px solid rgba(252,165,165,0.3);border-radius:100px;transition:border-color 0.2s;margin-bottom:10px;" onmouseenter="this.style.borderColor='rgba(252,165,165,0.7)'" onmouseleave="this.style.borderColor='rgba(252,165,165,0.3)'">Kindle で読む</a>
+        </div>
         <button id="kouta-hs-close" onclick="stopKoutaPC();document.getElementById('kouta-hs-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#475569'">▶ 閉じる</button>
       </div>
     </div>
@@ -993,11 +996,14 @@
       document.getElementById('kouta-hs-label').textContent = label;
       document.getElementById('kouta-hs-desc').textContent  = desc;
       document.getElementById('kouta-hs-popup').classList.add('show');
-      var taskEl  = document.getElementById('kouta-hs-task');
-      var closeEl = document.getElementById('kouta-hs-close');
-      var isPC = (label === 'PC');
-      if (taskEl)  taskEl.style.display  = isPC ? 'block' : 'none';
-      if (closeEl) closeEl.style.display = isPC ? 'none'  : '';
+      var taskEl   = document.getElementById('kouta-hs-task');
+      var kindleEl = document.getElementById('kouta-hs-kindle');
+      var closeEl  = document.getElementById('kouta-hs-close');
+      var isPC        = (label === 'PC');
+      var isBookshelf = (label === 'BOOKSHELF');
+      if (taskEl)   taskEl.style.display   = isPC        ? 'block' : 'none';
+      if (kindleEl) kindleEl.style.display = isBookshelf ? 'block' : 'none';
+      if (closeEl)  closeEl.style.display  = isPC        ? 'none'  : '';
     }
 
     var STRINGS_FIND_KEY = 'sf_kouta_found_first_strings';
