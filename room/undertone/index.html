@@ -2563,35 +2563,41 @@ function submitUtPw() {
     })();
     // シーケンシャル表示
     setTimeout(function() {
-      if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
+      if (src) {
+        if (unlockEl) { unlockEl.style.transition = 'opacity 0.8s'; unlockEl.style.opacity = '1'; }
+      } else {
+        if (unlockEl) unlockEl.style.display = 'none';
+      }
       if (itemKey && itemBlock) {
         setTimeout(function() {
           itemBlock.style.transition = 'opacity 0.8s'; itemBlock.style.opacity = '1';
         }, 1000);
       }
     }, 1200);
-    // 自動再生（初回のみ・muted→フェードイン）
-    var _ccAudio = new Audio(src);
-    _ccAudio.volume = 0;
-    _ccAudio.onended = function() { if (ccPlayBtn) ccPlayBtn.textContent = '▶'; };
-    if (ccPlayBtn) ccPlayBtn.textContent = '❚❚';
-    setTimeout(function() {
-      _ccAudio.play().then(function() {
-        var step = 0, steps = 20;
-        var t = setInterval(function() {
-          step++;
-          _ccAudio.volume = Math.min(0.8 * step / steps, 0.8);
-          if (step >= steps) clearInterval(t);
-        }, 60);
-      }).catch(function() {
-        if (ccPlayBtn) ccPlayBtn.textContent = '▶';
-      });
-    }, 1400);
-    if (ccPlayBtn) {
-      ccPlayBtn.onclick = function() {
-        if (_ccAudio.paused) { _ccAudio.play(); ccPlayBtn.textContent = '❚❚'; }
-        else { _ccAudio.pause(); ccPlayBtn.textContent = '▶'; }
-      };
+    // 自動再生（楽曲あり時のみ）
+    if (src) {
+      var _ccAudio = new Audio(src);
+      _ccAudio.volume = 0;
+      _ccAudio.onended = function() { if (ccPlayBtn) ccPlayBtn.textContent = '▶'; };
+      if (ccPlayBtn) ccPlayBtn.textContent = '❚❚';
+      setTimeout(function() {
+        _ccAudio.play().then(function() {
+          var step = 0, steps = 20;
+          var t = setInterval(function() {
+            step++;
+            _ccAudio.volume = Math.min(0.8 * step / steps, 0.8);
+            if (step >= steps) clearInterval(t);
+          }, 60);
+        }).catch(function() {
+          if (ccPlayBtn) ccPlayBtn.textContent = '▶';
+        });
+      }, 1400);
+      if (ccPlayBtn) {
+        ccPlayBtn.onclick = function() {
+          if (_ccAudio.paused) { _ccAudio.play(); ccPlayBtn.textContent = '❚❚'; }
+          else { _ccAudio.pause(); ccPlayBtn.textContent = '▶'; }
+        };
+      }
     }
     renderShopMusic();
   };
@@ -3585,6 +3591,12 @@ function submitUtPw() {
         _pendingComplete = (function(withPendant) {
           return function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3', withPendant); };
         })(_givesPendant);
+      }
+      // 4-5読了 → CHAPTER 4 COMPLETE（楽曲・アイテムは後日追加）
+      if (idx === 24 && !localStorage.getItem('sf_ut_ch4_complete')) {
+        localStorage.setItem('sf_ut_ch4_complete', 'true');
+        renderChapterList();
+        _pendingComplete = function() { showChapterComplete(4); };
       }
       // アイテム解放：テキストを閉じた後にポップアップ
       if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
