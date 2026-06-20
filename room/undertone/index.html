@@ -3688,6 +3688,15 @@ function submitUtPw() {
           setTimeout(function() { showItemUnlock('コンビニの缶ビール', '../../item/beer.webp'); }, 300);
         };
       }
+      if (idx === 16 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
+        localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
+        var _ci = SfSnow.getMonthlyItems();
+        _ci['cookie'] = (_ci['cookie'] || 0) + 1;
+        localStorage.setItem('sf_monthly_items', JSON.stringify(_ci));
+        _itemUnlockCb = function() {
+          setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
+        };
+      }
     }
     document.getElementById('prose-label').textContent = ch.label;
 
@@ -4095,8 +4104,8 @@ function submitUtPw() {
         // 第三章解放・3-1未読：デフォルトのみ
         targetSrc = 'shopkeeper.webp';
       } else if (ch3Unlocked) {
-        // 第二章：デフォルト/ナギ/青年
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_ch3.webp']);
+        // 第二章：青年ナギのみ（中年は4章から）
+        targetSrc = 'nagi_ch3.webp';
       } else if (ch21Unlocked) {
         // 第一章：デフォルト/ナギ/子ども
         targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_shop_young_close.webp']);
@@ -4313,8 +4322,8 @@ function submitUtPw() {
       loupeCount.textContent = '× ' + lpCnt;
       loupeRow.style.display = lpCnt > 0 ? 'flex' : 'none';
     }
-    // クッキー表示（3-5読了後）
-    var _ch3Complete = !!localStorage.getItem('sf_ut_ch3_complete');
+    // クッキー表示（3-2読了後）
+    var ch42Read = _seenProseScenes.has(16);
     var cakeRow      = document.getElementById('shop-cake-row');
     var cakeCount    = document.getElementById('shop-cake-count');
     var cakeEatBtn   = document.getElementById('shop-cake-eat-btn');
@@ -4322,18 +4331,12 @@ function submitUtPw() {
     if (cakeRow && cakeCount) {
       var ckCnt = _mItems['cookie'] || 0;
       cakeCount.textContent = '× ' + ckCnt;
-      cakeRow.style.display = _ch3Complete ? 'flex' : 'none';
+      cakeRow.style.display = ch42Read ? 'flex' : 'none';
       if (cakeEatBtn) cakeEatBtn.style.opacity = ckCnt > 0 ? '1' : '0.4';
       if (cakeGiveBtn) {
         cakeGiveBtn.style.display = ckCnt > 0 ? 'block' : 'none';
         cakeGiveBtn.style.opacity = '1';
       }
-    }
-    // クッキー初回ポップアップ（ショップ初訪問時）
-    if (_ch3Complete && localStorage.getItem('sf_ut_cookie_unlock_pending') && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
-      localStorage.removeItem('sf_ut_cookie_unlock_pending');
-      localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
-      setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 400);
     }
   }
 
