@@ -2416,16 +2416,6 @@ function submitUtPw() {
           else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
         }
       }
-      var _ch4At = parseInt(localStorage.getItem('sf_ut_ch4_unlock_at') || '0');
-      if (_ch4At) {
-        var _r4 = Math.max(0, 14*86400000 - (Date.now() - _ch4At));
-        var el4 = document.getElementById('ch4-lock-timer');
-        if (el4 && el4.parentElement && el4.parentElement.parentElement &&
-            el4.parentElement.parentElement.style.display !== 'none') {
-          if (_r4 > 0) { el4.textContent = formatLockDays(_r4); anyActive = true; }
-          else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
-        }
-      }
       if (!anyActive) {
         clearInterval(_countdownInterval);
         _countdownInterval = null;
@@ -3370,8 +3360,14 @@ function submitUtPw() {
         if (el3) el3.textContent = _rem3 > 0 ? formatLockDays(_rem3) : '';
       }
     }
-    // 14日タイマーチェック：第四章自動解放
-    if (_ch4UnlockAt && !stCh4Unlocked && Date.now() - _ch4UnlockAt >= 14 * 86400000) {
+    // アイテム全解放チェック：第四章自動解放
+    if (!stCh4Unlocked &&
+        localStorage.getItem('sf_ut_choco_eaten')  === 'true' &&
+        localStorage.getItem('sf_ut_choco_given')  === 'true' &&
+        localStorage.getItem('sf_ut_cookie_eaten') === 'true' &&
+        localStorage.getItem('sf_ut_cookie_given') === 'true' &&
+        localStorage.getItem('sf_ut_beer_drunk')   === 'true' &&
+        localStorage.getItem('sf_ut_beer_given')   === 'true') {
       stCh4Unlocked = true;
       localStorage.setItem('sf_undertone_stch4_unlocked', 'true');
     }
@@ -3381,9 +3377,16 @@ function submitUtPw() {
     if (between5) {
       between5.style.display = (ch3Done && !stCh4Unlocked) ? '' : 'none';
       if (ch3Done && !stCh4Unlocked) {
-        var _rem4 = _ch4UnlockAt ? Math.max(0, 14*86400000 - (Date.now() - _ch4UnlockAt)) : 0;
+        var _itemsDone = [
+          localStorage.getItem('sf_ut_choco_eaten')  === 'true',
+          localStorage.getItem('sf_ut_choco_given')  === 'true',
+          localStorage.getItem('sf_ut_cookie_eaten') === 'true',
+          localStorage.getItem('sf_ut_cookie_given') === 'true',
+          localStorage.getItem('sf_ut_beer_drunk')   === 'true',
+          localStorage.getItem('sf_ut_beer_given')   === 'true',
+        ].filter(Boolean).length;
         var el4 = document.getElementById('ch4-lock-timer');
-        if (el4) el4.textContent = _rem4 > 0 ? formatLockDays(_rem4) : '';
+        if (el4) el4.textContent = _itemsDone + ' / 6';
       }
     }
     // チュートリアル中（1章解放前）は「占う」のみ表示
@@ -3578,12 +3581,16 @@ function submitUtPw() {
         renderChapterList();
         _pendingComplete = function() { showChapterComplete(2, 'Under tone', 'Vo.Hinata', 'sound/undertone_hinata.mp3'); };
       }
-      // 3-5読了 → CHAPTER 3 COMPLETE + Kouta楽曲解放
+      // 3-5読了 → CHAPTER 3 COMPLETE + Kouta楽曲解放 + クッキー解放
       if (idx === 19 && !localStorage.getItem('sf_ut_ch3_complete')) {
         localStorage.setItem('sf_ut_ch3_complete', 'true');
         localStorage.setItem('sf_ut_kouta_unlocked', 'true');
         if (!localStorage.getItem('sf_ut_ch4_unlock_at')) {
           localStorage.setItem('sf_ut_ch4_unlock_at', String(Date.now()));
+        }
+        // クッキー解放フラグ（ショップ初回表示時にポップアップ）
+        if (!localStorage.getItem('sf_ut_cookie_unlock_shown')) {
+          localStorage.setItem('sf_ut_cookie_unlock_pending', 'true');
         }
         renderChapterList();
         var _givesPendant = SfSnow.isUnlocked('snowflake_obsidian') && !SfSnow.isUnlocked('obsidian_pendant');
@@ -3607,12 +3614,6 @@ function submitUtPw() {
         localStorage.setItem('sf_ut_beer_unlock_shown', 'true');
         _itemUnlockCb = function() {
           setTimeout(function() { showItemUnlock('コンビニの缶ビール', '../../item/beer.webp'); }, 300);
-        };
-      }
-      if (idx === 20 && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
-        localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
-        _itemUnlockCb = function() {
-          setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
         };
       }
     }
@@ -4196,8 +4197,7 @@ function submitUtPw() {
     document.getElementById('stone-progress').textContent =
       obtained + ' / ' + STONE_ITEMS.length + '  RARE ITEMS';
     var _mItems = SfSnow.getMonthlyItems();
-    // チョコレート表示（ch21解���後〜3-1読了前）
-    var ch31Read = _seenProseScenes.has(10);
+    // チョコレート表示（ch21解放後）
     var chocoRow = document.getElementById('shop-chocolate-row');
     var chocoCount = document.getElementById('shop-chocolate-count');
     var chocoEatBtn = document.getElementById('shop-chocolate-eat-btn');
@@ -4206,7 +4206,6 @@ function submitUtPw() {
       var cnt = _mItems['chocolate_hayate'] || 0;
       chocoCount.textContent = '× ' + cnt;
       chocoRow.style.display = ch21Unlocked ? 'flex' : 'none';
-      if (chocoGiveBtn && ch31Read) chocoGiveBtn.style.display = 'none';
       if (chocoEatBtn) chocoEatBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       if (chocoGiveBtn) {
         var ch22Read = _seenProseScenes.has(6);
@@ -4214,7 +4213,7 @@ function submitUtPw() {
         if (ch22Read) chocoGiveBtn.style.opacity = cnt > 0 ? '1' : '0.4';
       }
     }
-    // ビール表示（2-2読了後）
+    // ビール表示（ch3Unlocked後）
     var beerRow      = document.getElementById('shop-beer-row');
     var beerCount    = document.getElementById('shop-beer-count');
     var beerDrinkBtn = document.getElementById('shop-beer-drink-btn');
@@ -4224,7 +4223,10 @@ function submitUtPw() {
       beerCount.textContent = '× ' + bCnt;
       beerRow.style.display = ch3Unlocked ? 'flex' : 'none';
       if (beerDrinkBtn) beerDrinkBtn.style.opacity = bCnt > 0 ? '1' : '0.4';
-      if (beerGiveBtn) beerGiveBtn.style.display = 'none'; // 3章以降は飲むのみ
+      if (beerGiveBtn) {
+        beerGiveBtn.style.display = bCnt > 0 ? 'block' : 'none';
+        beerGiveBtn.style.opacity = '1';
+      }
     }
     // ルーペ表示（所持している場合のみ）
     var loupeRow   = document.getElementById('shop-loupe-row');
@@ -4234,8 +4236,8 @@ function submitUtPw() {
       loupeCount.textContent = '× ' + lpCnt;
       loupeRow.style.display = lpCnt > 0 ? 'flex' : 'none';
     }
-    // クッキー表示（第四章解放後）
-    var ch41Read = _seenProseScenes.has(20);
+    // クッキー表示（3-5読了後）
+    var _ch3Complete = !!localStorage.getItem('sf_ut_ch3_complete');
     var cakeRow      = document.getElementById('shop-cake-row');
     var cakeCount    = document.getElementById('shop-cake-count');
     var cakeEatBtn   = document.getElementById('shop-cake-eat-btn');
@@ -4243,10 +4245,18 @@ function submitUtPw() {
     if (cakeRow && cakeCount) {
       var ckCnt = _mItems['cookie'] || 0;
       cakeCount.textContent = '× ' + ckCnt;
-      cakeRow.style.display = stCh4Unlocked ? 'flex' : 'none';
+      cakeRow.style.display = _ch3Complete ? 'flex' : 'none';
       if (cakeEatBtn) cakeEatBtn.style.opacity = ckCnt > 0 ? '1' : '0.4';
-      // 渡す：4-1読了後かつ所持あり
-      if (cakeGiveBtn) cakeGiveBtn.style.display = (ch41Read && ckCnt > 0) ? 'block' : 'none';
+      if (cakeGiveBtn) {
+        cakeGiveBtn.style.display = ckCnt > 0 ? 'block' : 'none';
+        cakeGiveBtn.style.opacity = '1';
+      }
+    }
+    // クッキー初回ポップアップ（ショップ初訪問時）
+    if (_ch3Complete && localStorage.getItem('sf_ut_cookie_unlock_pending') && !localStorage.getItem('sf_ut_cookie_unlock_shown')) {
+      localStorage.removeItem('sf_ut_cookie_unlock_pending');
+      localStorage.setItem('sf_ut_cookie_unlock_shown', 'true');
+      setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 400);
     }
   }
 
@@ -4982,6 +4992,22 @@ function submitUtPw() {
     if (arrow) arrow.style.transform = open ? '' : 'rotate(90deg)';
   };
 
+  function checkCh4ItemsUnlock() {
+    if (stCh4Unlocked) return;
+    if (
+      localStorage.getItem('sf_ut_choco_eaten')  === 'true' &&
+      localStorage.getItem('sf_ut_choco_given')  === 'true' &&
+      localStorage.getItem('sf_ut_cookie_eaten') === 'true' &&
+      localStorage.getItem('sf_ut_cookie_given') === 'true' &&
+      localStorage.getItem('sf_ut_beer_drunk')   === 'true' &&
+      localStorage.getItem('sf_ut_beer_given')   === 'true'
+    ) {
+      stCh4Unlocked = true;
+      localStorage.setItem('sf_undertone_stch4_unlocked', 'true');
+      renderChapterList();
+    }
+  }
+
   window.eatCake = function() {
     var items = SfSnow.getMonthlyItems();
     var cnt = items['cookie'] || 0;
@@ -4989,8 +5015,10 @@ function submitUtPw() {
     items['cookie'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
     SfSnow.addDirect(35, 'クッキーを食べる');
+    localStorage.setItem('sf_ut_cookie_eaten', 'true');
     renderStones();
     showItemMsgPopup('../../item/cookie.webp', '食べた。\n\n＋ 35 Snow');
+    checkCh4ItemsUnlock();
   };
 
   window.giveCakeToNagi = function() {
@@ -5002,7 +5030,9 @@ function submitUtPw() {
     // 累計カウント更新
     var total = parseInt(localStorage.getItem('sf_nagi_cookie_total') || '0') + 1;
     localStorage.setItem('sf_nagi_cookie_total', String(total));
+    localStorage.setItem('sf_ut_cookie_given', 'true');
     renderStones();
+    checkCh4ItemsUnlock();
     // ナギ クッキーポップアップ
     var pop = document.getElementById('nagi-cookie-popup');
     var cookieFortBtn = document.getElementById('nagi-cookie-fortune-btn');
@@ -5053,8 +5083,10 @@ function submitUtPw() {
     items['beer'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
     SfSnow.addDirect(35, 'ビールを飲む');
+    localStorage.setItem('sf_ut_beer_drunk', 'true');
     renderStones();
     showItemMsgPopup('../../item/beer.webp', '飲んだ。\n\n＋ 35 Snow');
+    checkCh4ItemsUnlock();
   };
 
   window.giveBeerToNagi = function() {
@@ -5066,7 +5098,9 @@ function submitUtPw() {
     // 累計カウント更新
     var total = parseInt(localStorage.getItem('sf_nagi_beer_total') || '0') + 1;
     localStorage.setItem('sf_nagi_beer_total', String(total));
+    localStorage.setItem('sf_ut_beer_given', 'true');
     renderStones();
+    checkCh4ItemsUnlock();
     // ナギポップアップ
     var pop = document.getElementById('nagi-beer-popup');
     var beerFortBtn = document.getElementById('nagi-beer-fortune-btn');
@@ -5641,8 +5675,10 @@ function submitUtPw() {
     items['chocolate_hayate'] = cnt - 1;
     localStorage.setItem('sf_monthly_items', JSON.stringify(items));
     SfSnow.addDirect(35, '甘い。');
+    localStorage.setItem('sf_ut_choco_eaten', 'true');
     renderStones();
     showItemMsgPopup('../../item/chocolate.webp', '甘い。\n\n+ 35 Snow');
+    checkCh4ItemsUnlock();
   };
 
   window.giveChocolateToNagi = function() {
@@ -5658,7 +5694,9 @@ function submitUtPw() {
     // 累計カウント更新
     var total = parseInt(localStorage.getItem('sf_nagi_choco_total') || '0') + 1;
     localStorage.setItem('sf_nagi_choco_total', String(total));
+    localStorage.setItem('sf_ut_choco_given', 'true');
     renderStones();
+    checkCh4ItemsUnlock();
     setTimeout(function() { showChocoScene(total); }, 200);
   };
 
