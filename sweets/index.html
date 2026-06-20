@@ -706,17 +706,14 @@
   .nc-arrow{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:36px;height:36px;color:#64748b;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:all 0.2s;flex-shrink:0;}
   .nc-arrow:hover{border-color:rgba(147,197,253,0.4);color:#93c5fd;}
   /* ── Interview ── */
-  .itv-section-label{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#f9a8d4;text-align:center;margin:32px 0 20px;}
-  /* アコーディオン */
-  .itv-accordion{display:flex;flex-direction:column;gap:8px;}
-  .itv-acc-item{border:1px solid rgba(255,255,255,0.07);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;}
-  .itv-acc-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:none;border:none;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;}
-  .itv-acc-header-left{display:flex;align-items:center;gap:10px;}
-  .itv-acc-status{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;}
-  .itv-acc-arrow{font-size:16px;color:#334155;transition:transform 0.25s;line-height:1;}
-  .itv-acc-item.open .itv-acc-arrow{transform:rotate(90deg);}
-  .itv-acc-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
-  .itv-acc-item.open .itv-acc-body{max-height:200px;}
+  .itv-section-acc{border:1px solid rgba(255,255,255,0.07);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;margin:32px 0 0;}
+  .itv-section-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;background:none;border:none;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;}
+  .itv-section-arrow{font-size:10px;color:#334155;transition:transform 0.25s;flex-shrink:0;}
+  .itv-section-acc.open .itv-section-arrow{transform:rotate(90deg);}
+  .itv-section-title{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#f9a8d4;}
+  .itv-section-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease;}
+  .itv-section-acc.open .itv-section-body{max-height:400px;}
+  .itv-acc-status{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:10px;}
   .itv-acc-inner{padding:0 18px 18px;text-align:center;}
   .itv-locked{padding:0;text-align:center;}
   .itv-candy-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:1px;color:#94a3b8;margin-bottom:12px;}
@@ -927,21 +924,19 @@
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
       <!-- Interview section -->
-      <div id="interview-section" style="max-width:480px;margin:32px auto 0;padding-bottom:12px;">
-        <p class="itv-section-label" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</p>
-        <div class="itv-accordion">
+      <div id="interview-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
+        <div class="itv-section-acc" id="itv-section-acc">
+          <button class="itv-section-header" onclick="toggleItvSection()">
+            <span class="itv-section-arrow" id="itv-section-arrow">▶</span>
+            <span class="itv-section-title" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</span>
+          </button>
+          <div class="itv-section-body">
+            <div style="display:flex;gap:10px;padding:0 12px 16px;">
 
-          <!-- ハヤテ -->
-          <div class="itv-acc-item" id="itv-card-hayate">
-            <button class="itv-acc-header" onclick="toggleItv('hayate')">
-              <div class="itv-acc-header-left">
-                <span class="itv-char-name" style="color:#fde68a;">HAYATE</span>
-                <span class="itv-acc-status" id="itv-status-hayate">LOCKED</span>
-              </div>
-              <span class="itv-acc-arrow">›</span>
-            </button>
-            <div class="itv-acc-body" id="itv-acc-body-hayate">
-              <div class="itv-acc-inner">
+              <!-- ハヤテ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
+                <p class="itv-acc-status" id="itv-status-hayate">LOCKED</p>
                 <div id="itv-locked-hayate">
                   <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
@@ -950,20 +945,11 @@
                   <span class="itv-read-btn">読む →</span>
                 </a>
               </div>
-            </div>
-          </div>
 
-          <!-- ヒナタ -->
-          <div class="itv-acc-item" id="itv-card-hinata">
-            <button class="itv-acc-header" onclick="toggleItv('hinata')">
-              <div class="itv-acc-header-left">
-                <span class="itv-char-name" style="color:#93c5fd;">HINATA</span>
-                <span class="itv-acc-status" id="itv-status-hinata">LOCKED</span>
-              </div>
-              <span class="itv-acc-arrow">›</span>
-            </button>
-            <div class="itv-acc-body" id="itv-acc-body-hinata">
-              <div class="itv-acc-inner">
+              <!-- ヒナタ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
+                <p class="itv-acc-status" id="itv-status-hinata">LOCKED</p>
                 <div id="itv-locked-hinata">
                   <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
@@ -972,20 +958,11 @@
                   <span class="itv-read-btn">読む →</span>
                 </a>
               </div>
-            </div>
-          </div>
 
-          <!-- コウタ -->
-          <div class="itv-acc-item" id="itv-card-kouta">
-            <button class="itv-acc-header" onclick="toggleItv('kouta')">
-              <div class="itv-acc-header-left">
-                <span class="itv-char-name" style="color:#fca5a5;">KOUTA</span>
-                <span class="itv-acc-status" id="itv-status-kouta">LOCKED</span>
-              </div>
-              <span class="itv-acc-arrow">›</span>
-            </button>
-            <div class="itv-acc-body" id="itv-acc-body-kouta">
-              <div class="itv-acc-inner">
+              <!-- コウタ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
+                <p class="itv-acc-status" id="itv-status-kouta">LOCKED</p>
                 <div id="itv-locked-kouta">
                   <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
@@ -994,9 +971,9 @@
                   <span class="itv-read-btn">読む →</span>
                 </a>
               </div>
+
             </div>
           </div>
-
         </div>
       </div><!-- /interview-section -->
     </div>
@@ -7353,9 +7330,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderInterviews();
   }
 
-  function toggleItv(char) {
-    var item = document.getElementById('itv-card-' + char);
-    if (item) item.classList.toggle('open');
+  function toggleItvSection() {
+    var acc = document.getElementById('itv-section-acc');
+    if (acc) acc.classList.toggle('open');
   }
 
   function renderInterviews() {
