@@ -2548,7 +2548,8 @@ function submitUtPw() {
     if (itemBlock) {
       if (itemKey) {
         if (itemImg) itemImg.src = '../../item/' + itemKey + '.webp';
-        if (itemName) itemName.textContent = itemKey === 'obsidian_pendant' ? '雪片のペンダントトップ' : itemKey;
+        var _itemNames = { obsidian_pendant: '雪片のペンダントトップ', puzzle: 'パズル' };
+        if (itemName) itemName.textContent = _itemNames[itemKey] || itemKey;
         itemBlock.style.display = 'block';
         itemBlock.style.opacity = '0';
         itemBlock.style.transition = '';
@@ -3665,12 +3666,16 @@ function submitUtPw() {
         renderChapterList();
         _pendingComplete = function() { showChapterComplete(4); };
       }
-      // Epilogue読了 → ALL COMPLETE + After Tone解放
+      // Epilogue読了 → ALL COMPLETE + After Tone解放 + パズルアイテム付与
       if (idx === 25 && !localStorage.getItem('sf_ut_ep_complete')) {
         localStorage.setItem('sf_ut_ep_complete', 'true');
         localStorage.setItem('sf_ut_ep_unlocked', 'true');
+        var _givesPuzzle = !SfSnow.isUnlocked('puzzle');
+        if (_givesPuzzle) SfSnow.unlockItem('puzzle');
         renderChapterList();
-        _pendingComplete = function() { showChapterComplete('ALL', 'After Tone', 'cover ver.', 'sound/after_tone.mp3'); };
+        _pendingComplete = (function(withPuzzle) {
+          return function() { showChapterComplete('ALL', 'After Tone', 'cover ver.', 'sound/after_tone.mp3', withPuzzle ? 'puzzle' : null); };
+        })(_givesPuzzle);
       }
       // アイテム解放：テキストを閉じた後にポップアップ
       if (idx === 6 && !localStorage.getItem('sf_ut_choco_unlock_shown')) {
