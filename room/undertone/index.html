@@ -4090,7 +4090,11 @@ function submitUtPw() {
       var ch25Read = _seenProseScenes.has(9);
       var youngKey = 'sf_ut_young_nagi_revealed';
       var targetSrc;
-      if (stCh4Unlocked) {
+      if (localStorage.getItem('sf_ut_ep_complete') === 'true') {
+        // エピローグクリア後：5パターンランダム
+        var _epPool = ['nagi_shop_young_close.webp', 'nagi_ch3.webp', 'nagi_woman.webp', 'nagi_ch4.webp', 'shopkeeper.webp'];
+        targetSrc = _epPool[Math.floor(Math.random() * _epPool.length)];
+      } else if (stCh4Unlocked) {
         // 4章解放後：shopkeeper.webp と nagi_ch4.webp をランダム
         targetSrc = Math.random() < 0.5 ? 'nagi_ch4.webp' : 'shopkeeper.webp';
       } else if (ch3Unlocked) {
