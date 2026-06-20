@@ -2456,16 +2456,6 @@ function submitUtPw() {
           else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
         }
       }
-      var _epAt = parseInt(localStorage.getItem('sf_ut_ep_unlock_at') || '0');
-      if (_epAt) {
-        var _rEp = Math.max(0, 7*86400000 - (Date.now() - _epAt));
-        var elEp2 = document.getElementById('ep-lock-timer');
-        if (elEp2 && elEp2.parentElement && elEp2.parentElement.parentElement &&
-            elEp2.parentElement.parentElement.style.display !== 'none') {
-          if (_rEp > 0) { elEp2.textContent = formatLockDays(_rEp); anyActive = true; }
-          else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
-        }
-      }
       if (!anyActive) {
         clearInterval(_countdownInterval);
         _countdownInterval = null;
@@ -3450,23 +3440,15 @@ function submitUtPw() {
         if (el4) el4.textContent = _itemsDone + ' / 6';
       }
     }
-    // 7日タイマーチェック：エピローグ自動解放
-    var _epUnlockAt = parseInt(localStorage.getItem('sf_ut_ep_unlock_at') || '0');
-    if (_epUnlockAt && !stEpUnlocked && Date.now() - _epUnlockAt >= 7 * 86400000) {
+    // エピローグ：4章完読で即時解放
+    var ch4Done = !!localStorage.getItem('sf_ut_ch4_complete');
+    if (ch4Done && !stEpUnlocked) {
       stEpUnlocked = true;
       localStorage.setItem('sf_undertone_step_unlocked', 'true');
     }
-    // ch-between-6：4章完読後・エピローグ未解放時
-    var ch4Done = !!localStorage.getItem('sf_ut_ch4_complete');
+    // ch-between-6 は使わない（常に非表示）
     var between6 = document.getElementById('ch-between-6');
-    if (between6) {
-      between6.style.display = (ch4Done && !stEpUnlocked) ? '' : 'none';
-      if (ch4Done && !stEpUnlocked) {
-        var _remEp = _epUnlockAt ? Math.max(0, 7*86400000 - (Date.now() - _epUnlockAt)) : 0;
-        var elEp = document.getElementById('ep-lock-timer');
-        if (elEp) elEp.textContent = _remEp > 0 ? formatLockDays(_remEp) : '';
-      }
-    }
+    if (between6) between6.style.display = 'none';
     // チュートリアル中（1章解放前）は「占う」のみ表示
     var _pillAppraise = document.getElementById('pill-appraise');
     var _pillSweets   = document.getElementById('pill-sweets');
@@ -3677,12 +3659,9 @@ function submitUtPw() {
           return function() { showChapterComplete(3, 'Under tone', 'Vo.Kouta', 'sound/undertone_kouta.mp3', withPendant); };
         })(_givesPendant);
       }
-      // 4-5読了 → CHAPTER 4 COMPLETE + エピローグタイマー開始
+      // 4-5読了 → CHAPTER 4 COMPLETE
       if (idx === 24 && !localStorage.getItem('sf_ut_ch4_complete')) {
         localStorage.setItem('sf_ut_ch4_complete', 'true');
-        if (!localStorage.getItem('sf_ut_ep_unlock_at')) {
-          localStorage.setItem('sf_ut_ep_unlock_at', String(Date.now()));
-        }
         renderChapterList();
         _pendingComplete = function() { showChapterComplete(4); };
       }
