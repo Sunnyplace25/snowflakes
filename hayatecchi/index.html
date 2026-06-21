@@ -729,6 +729,35 @@
     /* ── ドラム練習ミニゲーム ── */
     var _drumTimer = null, _drumCount = 0, _drumActive = false, _drumLastMemo = -1;
     var _drumAudio = null;
+    var _clickInterval = null;
+    var _clickCtx = null;
+
+    function playClick(accent) {
+      try {
+        if (!_clickCtx) _clickCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var ctx = _clickCtx;
+        var osc  = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = accent ? 1200 : 900;
+        gain.gain.setValueAtTime(accent ? 0.5 : 0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.04);
+      } catch(e) {}
+    }
+    function startClick() {
+      var beat = 0;
+      playClick(true);
+      _clickInterval = setInterval(function() {
+        beat = (beat + 1) % 4;
+        playClick(beat === 0);
+      }, 500); // BPM120
+    }
+    function stopClick() {
+      if (_clickInterval) { clearInterval(_clickInterval); _clickInterval = null; }
+    }
 
     function openDrumGame() {
       var btn = document.getElementById('btn-renshu');
@@ -748,6 +777,7 @@
       if (_drumTimer) { clearInterval(_drumTimer); _drumTimer = null; }
       _drumActive = false;
       if (_drumAudio) { _drumAudio.pause(); }
+      stopClick();
     }
     function startDrumGame() {
       _drumCount = 0; _drumActive = true;
@@ -763,6 +793,7 @@
         _drumAudio.volume = 0.6;
         _drumAudio.play().catch(function(){});
       }
+      startClick();
       _drumTimer = setInterval(function() {
         sec--;
         document.getElementById('drum-timer').textContent = sec;
@@ -792,6 +823,7 @@
     }
     function endDrumGame() {
       if (_drumAudio) { _drumAudio.pause(); }
+      stopClick();
       var n = _drumCount;
       var grade, speech, geUp, skillUp;
       if (n <= 10) {
