@@ -664,6 +664,11 @@
           <span>フライヤーを配る</span>
           <span class="action-cd" id="cd-flyer"></span>
         </button>
+        <button class="action-btn" id="btn-gaishutsu" onclick="doAction('gaishutsu')">
+          <span class="action-icon">🚶</span>
+          <span>外出する</span>
+          <span class="action-cd" id="cd-gaishutsu"></span>
+        </button>
         <button class="action-btn" id="btn-sweets" onclick="doAction('sweets')">
           <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
           <span>SWEETs</span>
@@ -748,10 +753,11 @@
       yaruki:  8 / 3600    // 約12時間で空
     };
     var CD_SEC = {
-      meshi:  15 * 60,
-      neru:   30 * 60,
-      renshu: 30 * 60,
-      flyer:  20 * 60,
+      meshi:     15 * 60,
+      neru:      30 * 60,
+      renshu:    30 * 60,
+      flyer:     20 * 60,
+      gaishutsu: 45 * 60,
       live:   3600
     };
 
@@ -917,6 +923,16 @@
       '俺が笑ってるうちは、大丈夫ってことにしとこ',
       '帰る場所がある音って、強いんだよ',
       '俺たちの音、まだ終わってないから'
+    ];
+    var GAISHUTSU_LINES = [
+      'やっぱ外出ると気持ちいいな',
+      'ちょっと歩いてきた。頭スッキリした',
+      '外の空気うまい。なんか元気出てきた',
+      '久しぶりにぶらぶらしてきた。いい気分転換になった',
+      'なんもしない日も大事だな',
+      'コンビニ行って来た。うまいもんあると思ったんだけど',
+      '河原座ってたらなんか曲のイメージ浮かんだ',
+      '外歩いてたら知らん犬に吠えられた。なんで？'
     ];
     var FLYER_LINES = [
       'フライヤー配ってきた！　反応よかったわ',
@@ -1094,6 +1110,15 @@
           speech = randLine(TALK_LINES);
           st.yaruki = clamp(st.yaruki + 2);
         }
+      }
+      else if (action === 'gaishutsu') {
+        st.yaruki  = clamp(st.yaruki + 20);
+        st.kibun   = clamp(st.kibun  + 20);
+        st.onaka   = clamp(st.onaka  - 15);
+        st.suimin  = clamp(st.suimin - 10);
+        st.cd.gaishutsu = cdTime(CD_SEC.gaishutsu);
+        speech = randLine(GAISHUTSU_LINES);
+        toast  = 'やるき +20　きぶん +20　おなか -15　すいみん -10';
       }
       else if (action === 'flyer') {
         st.yaruki = clamp(st.yaruki + 8);
@@ -1415,7 +1440,7 @@
     }
 
     function updateCD() {
-      ['meshi','neru','renshu','flyer'].forEach(function(a) {
+      ['meshi','neru','renshu','flyer','gaishutsu'].forEach(function(a) {
         var btn  = document.getElementById('btn-' + a);
         var cdEl = document.getElementById('cd-' + a);
         var rem  = cdRemain(a);
