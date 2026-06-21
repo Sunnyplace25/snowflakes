@@ -439,6 +439,37 @@
     .live-overlay-close.in { opacity: 1; }
     .live-overlay-close:hover { color: #c4b5fd; border-color: rgba(196,181,253,0.4); }
 
+    /* 通常LIVEタップリング */
+    .live-tap-ring {
+      display: none;
+      width: 130px; height: 130px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(196,181,253,0.35);
+      box-shadow: 0 0 16px rgba(196,181,253,0.08);
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      cursor: pointer; user-select: none;
+      -webkit-user-select: none;
+      flex-shrink: 0;
+    }
+    .live-tap-ring-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px; letter-spacing: 2px; color: #c4b5fd;
+      line-height: 1;
+    }
+    .live-tap-ring-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px; letter-spacing: 5px; color: #475569;
+      margin-top: 4px;
+    }
+    @keyframes tap-ring-hit {
+      0%   { transform: scale(1);    box-shadow: 0 0 0px rgba(196,181,253,0);   border-color: rgba(196,181,253,0.35); }
+      25%  { transform: scale(1.12); box-shadow: 0 0 28px rgba(196,181,253,0.55); border-color: rgba(196,181,253,0.9); }
+      100% { transform: scale(1);    box-shadow: 0 0 8px rgba(196,181,253,0.1);  border-color: rgba(196,181,253,0.3); }
+    }
+    .live-tap-ring.hit { animation: tap-ring-hit 0.22s ease-out forwards; }
+
     /* リズムモード */
     .live-overlay.slow-mode { background: rgba(2,8,24,0.98); }
     .live-rhythm-ring {
@@ -2282,8 +2313,10 @@
       <img src="hayate_practice.webp" alt="ハヤテ" id="live-hayate" class="center">
       <img src="kouta_live.webp" alt="コウタ" id="live-kouta">
     </div>
-    <div class="live-tap-count" id="live-tap-count"></div>
-    <div class="live-tap-hint" id="live-tap-hint">— TAP —</div>
+    <div class="live-tap-ring" id="live-tap-ring">
+      <div class="live-tap-ring-count" id="live-tap-ring-count">0</div>
+      <div class="live-tap-ring-label">TAP</div>
+    </div>
     <div class="live-rhythm-ring" id="live-rhythm-ring"></div>
     <div class="live-rhythm-feedback" id="live-rhythm-feedback"></div>
     <div class="live-success" id="live-success">成功！</div>
@@ -2983,8 +3016,13 @@
 
       overlay.querySelectorAll('img').forEach(function(i) { i.classList.remove('in','live-char-perfect','live-char-good'); });
       [title, result, closeBtn, successEl].forEach(function(el) { el.classList.remove('in'); });
-      if (tapCount) { tapCount.textContent = ''; tapCount.style.display = ''; }
-      if (tapHint)  tapHint.style.display = '';
+      if (tapCount) { tapCount.textContent = ''; tapCount.style.display = 'none'; }
+      var tapHint = document.getElementById('live-tap-hint');
+      if (tapHint)  tapHint.style.display = 'none';
+      var tapRing = document.getElementById('live-tap-ring');
+      var tapRingCount = document.getElementById('live-tap-ring-count');
+      if (tapRing) { tapRing.style.display = 'none'; }
+      if (tapRingCount) tapRingCount.textContent = '0';
       overlay.classList.add('show');
       startLiveBGM();
 
@@ -3000,28 +3038,33 @@
 
       setTimeout(function() {
         _tapPhase = 'tapping';
+        var tr = document.getElementById('live-tap-ring');
+        if (tr) tr.style.display = 'flex';
       }, 900);
+
+      function doTap(x, y) {
+        _tapCount++;
+        var trc = document.getElementById('live-tap-ring-count');
+        if (trc) trc.textContent = _tapCount;
+        var tr = document.getElementById('live-tap-ring');
+        if (tr) { tr.classList.remove('hit'); void tr.offsetWidth; tr.classList.add('hit'); }
+        spawnSpark(x, y);
+      }
 
       var _liveTapLastTouch = 0;
       overlay.ontouchstart = function(e) {
         if (_tapPhase !== 'tapping') return;
-        // 閉じるボタン・その子要素はスルー
         if (e.target.closest && e.target.closest('#live-close')) return;
         e.preventDefault();
         _liveTapLastTouch = Date.now();
-        _tapCount++;
-        if (tapCount) tapCount.textContent = _tapCount;
         var t = e.changedTouches[0];
-        spawnSpark(t.clientX, t.clientY);
+        doTap(t.clientX, t.clientY);
       };
       overlay.onclick = function(e) {
         if (_tapPhase !== 'tapping') return;
         if (e.target.closest && e.target.closest('#live-close')) return;
-        // touchstart から500ms以内のclickは無視（二重発火防止）
         if (Date.now() - _liveTapLastTouch < 500) return;
-        _tapCount++;
-        if (tapCount) tapCount.textContent = _tapCount;
-        spawnSpark(e.clientX, e.clientY);
+        doTap(e.clientX, e.clientY);
       };
     }
 
@@ -3145,6 +3188,8 @@
 
       if (tapCount) tapCount.style.display = 'none';
       if (tapHint)  tapHint.style.display  = 'none';
+      var tapRing = document.getElementById('live-tap-ring');
+      if (tapRing) tapRing.style.display = 'none';
 
       var bonus;
       if (_currentLiveIsSlow) {
