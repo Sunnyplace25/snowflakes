@@ -48,7 +48,7 @@
       z-index: 0;
     }
 
-    /* 背景ハヤテ */
+    /* 背景3人 */
     .bg-char {
       position: fixed;
       inset: 0;
@@ -60,14 +60,14 @@
       overflow: hidden;
     }
     .bg-char img {
-      height: 90%;
-      width: auto;
-      object-fit: contain;
-      object-position: bottom center;
-      opacity: 0.12;
-      filter: grayscale(0.2);
-      mask-image: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0) 100%);
-      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0) 100%);
+      width: 33.3%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0.15;
+      filter: grayscale(0.1);
+      mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
     }
 
     .cards-wrap {
@@ -349,9 +349,11 @@
 </head>
 <body>
 
-  <!-- 背景ハヤテ -->
+  <!-- 背景3人 -->
   <div class="bg-char">
+    <img src="hinata_phone.png" alt="">
     <img src="hayate_phone.png" alt="">
+    <img src="kouta_phone.png" alt="">
   </div>
 
   <div class="cards-wrap">
