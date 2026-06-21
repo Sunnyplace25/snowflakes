@@ -3455,10 +3455,6 @@
       if (localStorage.getItem('ht_unlocked') === '1') {
         gate.style.display = 'none'; return;
       }
-      // 未解錠: アプリ本体を隠す（ゲート以外）
-      document.querySelectorAll('body > *:not(#pw-gate)').forEach(function(el) {
-        el.style.display = 'none';
-      });
       var input = document.getElementById('pw-input');
       if (input) input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') checkPW();
@@ -3470,10 +3466,6 @@
       if (val === 'HARDGUMI') {
         localStorage.setItem('ht_unlocked', '1');
         document.getElementById('pw-gate').style.display = 'none';
-        document.querySelectorAll('body > *:not(#pw-gate)').forEach(function(el) {
-          el.style.display = '';
-        });
-        load(); render(); autoSpeech();
       } else {
         if (err) { err.textContent = 'ちがうよ'; setTimeout(function(){ err.textContent=''; },1500); }
         document.getElementById('pw-input').value = '';
@@ -3481,11 +3473,9 @@
     }
 
     /* ── 起動 ── */
-    if (localStorage.getItem('ht_unlocked') === '1') {
-      load();
-      render();
-      autoSpeech();
-    }
+    load();
+    render();
+    autoSpeech();
 
     /* ── ホームに追加 ── */
     (function() {
