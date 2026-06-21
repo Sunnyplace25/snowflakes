@@ -1161,7 +1161,7 @@
     /* ── 状態 ── */
     var st = {
       onaka: 80, suimin: 80, yaruki: 70, kibun: 75,
-      renshuGe: 0, skill: 0, liveCount: 0, sweets: 0,
+      renshuGe: 75, skill: 0, liveCount: 0, sweets: 0,
       lastSaved: new Date().toISOString(),
       cd: {}
     };
@@ -1177,7 +1177,7 @@
         if (!d) return;
         st = d;
         if (!st.cd) st.cd = {};
-        if (st.renshuGe === undefined) st.renshuGe = 0;
+        if (st.renshuGe === undefined) st.renshuGe = 75;
         if (st.sweets   === undefined) st.sweets   = 0;
         if (st.kibun     === undefined) st.kibun     = 75;
         if (st.liveCount === undefined) st.liveCount = 0;
