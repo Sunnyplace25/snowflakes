@@ -644,25 +644,36 @@
 
     /* ── ドラム図鑑アイテム ── */
     var DRUM_ITEMS = [
-      // 楽器
-      { id:'stick',    name:'スティック',       img:'drum_stick.webp',    desc:'ドラムを叩くための棒。重さで音の出方がけっこう変わる。',                    cat:'楽器' },
-      { id:'snare',    name:'スネア',           img:'drum_snare.webp',    desc:'タン！と鳴る中心の太鼓。リズムの顔ともいわれる存在。',                     cat:'楽器' },
-      { id:'bass',     name:'バスドラム',       img:'drum_bass.webp',     desc:'足で踏む大きな太鼓。地味に見えて、いちばん下で支えてる。',                  cat:'楽器' },
-      { id:'hihat',    name:'ハイハット',       img:'drum_hihat.webp',    desc:'2枚のシンバルを足で開け閉め。チッチッって音が曲を歩かせる。',              cat:'楽器' },
-      { id:'cymbal',   name:'シンバル',         img:'drum_cymbal.webp',   desc:'シャーン！と鳴る金色の円盤。ここぞって時に鳴らしたい。',                   cat:'楽器' },
-      { id:'tom',      name:'タム',             img:'drum_tom.webp',      desc:'音程違いの太鼓。フィルインで使うと気持ちいい。',                           cat:'楽器' },
-      { id:'click',    name:'クリック',         img:'drum_click.webp',    desc:'テンポを合わせる道具。ちょっと厳しいけど、頼りになる。',                   cat:'楽器' },
-      { id:'fillin',   name:'フィルイン',       img:'drum_fillin.webp',   desc:'次の場面に行くための合図みたいなもの。複数ドラムを一気に叩く。',           cat:'楽器' },
-      // お手入れ道具（画像あり）
-      { id:'drumkey',  name:'ドラムキー',       img:'drum_key.webp',      desc:'ドラムのネジを回して、音の張り具合を調整する小さな道具。ドラマーの必需品。', cat:'道具' },
-      { id:'bag',      name:'スティックケース', img:'drum_stick_bag.webp',desc:'スティックを入れておくケース。予備のスティックを持ち歩くための相棒。',     cat:'道具' },
-      { id:'gel',      name:'ミュートジェル',   img:'drum_mute_gel.webp', desc:'太鼓やシンバルの響きを少し抑える小さなジェル。音を落ち着かせたいときに。', cat:'道具' },
-      { id:'oil',      name:'ペダルオイル',     img:'drum_pedal_oil.webp',desc:'ペダルの動きをなめらかにするためのオイル。踏み心地に関わる大事なお手入れ。', cat:'道具' },
-      // お手入れ道具（画像あり）
-      { id:'cloth',    name:'チューニングクロス', img:'drum_cloth.webp',         desc:'シェルや金属パーツを拭く布。指紋やほこりを取って、ドラムをきれいに保つよ。', cat:'道具' },
-      { id:'cleaner',  name:'シンバルクリーナー', img:'drum_cymbal_cleaner.webp',desc:'シンバルのくすみや汚れを落とす道具。使いすぎず、やさしく磨くのが大事。',   cat:'道具' },
-      { id:'headcln',  name:'ヘッドクリーナー',  img:'drum_head_cleaner.webp',  desc:'ドラムヘッドの汚れを軽く拭き取るための道具。叩く面をきれいにしておくと気分も上がる。', cat:'道具' },
-      { id:'head',     name:'予備ヘッド',        img:'drum_spare_head.webp',    desc:'破れたり古くなったときに交換するドラムの皮。音を大きく変える大事なパーツ。', cat:'道具' },
+      // ── ドラム道具 ──
+      { id:'stick',        name:'スティック',       img:'drum_stick.webp',      desc:'ドラムを叩くための棒。重さで音の出方がけっこう変わる。',                         cat:'ドラム道具' },
+      { id:'snare',        name:'スネア',           img:'drum_snare.webp',      desc:'タン！と鳴る中心の太鼓。リズムの顔ともいわれる存在。',                          cat:'ドラム道具' },
+      { id:'bass',         name:'バスドラム',       img:'drum_bass.webp',       desc:'足で踏む大きな太鼓。地味に見えて、いちばん下で支えてる。',                       cat:'ドラム道具' },
+      { id:'hihat',        name:'ハイハット',       img:'drum_hihat.webp',      desc:'2枚のシンバルを足で開け閉め。チッチッって音が曲を歩かせる。',                   cat:'ドラム道具' },
+      { id:'cymbal',       name:'シンバル',         img:'drum_cymbal.webp',     desc:'シャーン！と鳴る金色の円盤。ここぞって時に鳴らしたい。',                        cat:'ドラム道具' },
+      { id:'tom',          name:'タム',             img:'drum_tom.webp',        desc:'音程違いの太鼓。フィルインで使うと気持ちいい。',                                cat:'ドラム道具' },
+      { id:'click',        name:'クリック',         img:'drum_click.webp',      desc:'テンポを合わせる道具。ちょっと厳しいけど、頼りになる。',                        cat:'ドラム道具' },
+      { id:'fillin',       name:'フィルイン',       img:'drum_fillin.webp',     desc:'次の場面に行くための合図みたいなもの。複数ドラムを一気に叩く。',                cat:'ドラム道具' },
+      { id:'kickpedal',    name:'キックペダル',     img:'drum_kick_pedal.webp', desc:'バスドラムを踏むためのペダル。ドラマー感が強い。',                              cat:'ドラム道具' },
+      { id:'twinpedal',    name:'ツインペダル',     img:'drum_twin_pedal.webp', desc:'左右の足で連打できるペダル。ちょっと上級者感あり。',                            cat:'ドラム道具' },
+      { id:'throne',       name:'ドラムスローン',   img:'drum_throne.webp',     desc:'ドラム用の椅子。座る高さで叩きやすさが変わる。',                               cat:'ドラム道具' },
+      { id:'mat',          name:'ドラムマット',     img:'drum_mat.webp',        desc:'セットの下に敷くマット。ずれ防止。',                                            cat:'ドラム道具' },
+      { id:'practicepad',  name:'練習パッド',       img:'drum_practice_pad.webp',desc:'音を小さくして練習できるパッド。ハヤテっちらしい。',                           cat:'ドラム道具' },
+      // ── お手入れ道具 ──
+      { id:'drumkey',      name:'ドラムキー',       img:'drum_key.webp',        desc:'ドラムのネジを回して、音の張り具合を調整する小さな道具。ドラマーの必需品。',    cat:'お手入れ' },
+      { id:'gel',          name:'ミュートジェル',   img:'drum_mute_gel.webp',   desc:'太鼓やシンバルの響きを少し抑える小さなジェル。音を落ち着かせたいときに。',    cat:'お手入れ' },
+      { id:'oil',          name:'ペダルオイル',     img:'drum_pedal_oil.webp',  desc:'ペダルの動きをなめらかにするためのオイル。踏み心地に関わる大事なお手入れ。',  cat:'お手入れ' },
+      { id:'cloth',        name:'チューニングクロス',img:'drum_cloth.webp',     desc:'シェルや金属パーツを拭く布。指紋やほこりを取って、ドラムをきれいに保つよ。',  cat:'お手入れ' },
+      { id:'cleaner',      name:'シンバルクリーナー',img:'drum_cymbal_cleaner.webp',desc:'シンバルのくすみや汚れを落とす道具。使いすぎず、やさしく磨くのが大事。',  cat:'お手入れ' },
+      { id:'headcln',      name:'ヘッドクリーナー', img:'drum_head_cleaner.webp',desc:'ドラムヘッドの汚れを軽く拭き取るための道具。叩く面をきれいにしておくと気分も上がる。', cat:'お手入れ' },
+      { id:'head',         name:'予備ヘッド',       img:'drum_spare_head.webp', desc:'破れたり古くなったときに交換するドラムの皮。音を大きく変える大事なパーツ。', cat:'お手入れ' },
+      // ── ハヤテの持ちもの ──
+      { id:'grip',         name:'グリップテープ',   img:'drum_grip_tape.webp',  desc:'スティックに巻いて滑りにくくする道具。',                                       cat:'持ちもの' },
+      { id:'sparesticks',  name:'予備スティック',   img:'drum_spare_sticks.webp',desc:'折れたとき用のストック。',                                                    cat:'持ちもの' },
+      { id:'bag',          name:'スティックケース', img:'drum_stick_bag.webp',  desc:'スティックを入れておくケース。予備のスティックを持ち歩くための相棒。',          cat:'持ちもの' },
+      { id:'keycase',      name:'チューニングキーケース',img:'drum_key_case.webp',desc:'ドラムキーを入れておく小さなケース。',                                        cat:'持ちもの' },
+      // ── ライブ準備 ──
+      { id:'earmonitor',   name:'イヤモニ',         img:'drum_earmonitor.webp', desc:'ライブや練習で音を聴くためのイヤホン。',                                        cat:'ライブ準備' },
+      { id:'cymbalcase',   name:'シンバルケース',   img:'drum_cymbal_case.webp',desc:'シンバルを運ぶ大きめケース。',                                                  cat:'ライブ準備' },
     ];
 
     /* ── ドラム練習ミニゲーム ── */
@@ -1129,12 +1140,13 @@
       var got = st.drumItems || {};
       var list = document.getElementById('drum-zukan-list');
       list.innerHTML = '';
-      var cats = ['楽器', '道具'];
+      var catLabels = { 'ドラム道具':'INSTRUMENTS', 'お手入れ':'MAINTENANCE', '持ちもの':'MY STUFF', 'ライブ準備':'LIVE GEAR' };
+      var cats = ['ドラム道具', 'お手入れ', '持ちもの', 'ライブ準備'];
       cats.forEach(function(cat) {
         var items = DRUM_ITEMS.filter(function(i){ return i.cat === cat; });
         var catDiv = document.createElement('div');
         catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#64748b;margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
-        catDiv.textContent = '― ' + (cat === '楽器' ? 'INSTRUMENTS' : 'MAINTENANCE') + ' ―';
+        catDiv.textContent = '― ' + (catLabels[cat] || cat) + ' ―';
         list.appendChild(catDiv);
         var col = document.createElement('div');
         col.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
@@ -1346,7 +1358,7 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
           <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
-        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 16</span></div>
+        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 26</span></div>
         <div id="drum-zukan-list"></div>
       </div>
       <!-- 詳細画面 -->
