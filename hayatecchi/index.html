@@ -554,9 +554,14 @@
 
     function openMiniGame() {
       document.getElementById('cocktail-modal').style.display = 'flex';
-      document.getElementById('oc-intro').style.display = 'block';
+      document.getElementById('oc-welcome').style.display = 'block';
+      document.getElementById('oc-intro').style.display = 'none';
       document.getElementById('oc-play').style.display = 'none';
       document.getElementById('oc-result').style.display = 'none';
+    }
+    function ocGoIntro() {
+      document.getElementById('oc-welcome').style.display = 'none';
+      document.getElementById('oc-intro').style.display = 'block';
     }
     function closeMiniGame() {
       document.getElementById('cocktail-modal').style.display = 'none';
@@ -576,11 +581,11 @@
       OC_COLORS.forEach(function(c) {
         var btn = document.createElement('button');
         btn.id = 'ocbtn-' + c.id;
-        btn.style.cssText = 'padding:12px 4px 8px;background:rgba(255,255,255,0.02);border:2px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:all 0.18s;';
+        btn.style.cssText = 'padding:4px;background:transparent;border:2px solid transparent;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all 0.18s;';
         var imgEl = c.img
-          ? '<img src="' + c.img + '" style="width:52px;height:52px;object-fit:contain;image-rendering:pixelated;">'
-          : '<div style="width:36px;height:36px;border-radius:50%;background:' + c.hex + ';"></div>';
-        btn.innerHTML = imgEl + '<span style="font-size:9px;color:#64748b;">' + c.name + '</span>';
+          ? '<img src="' + c.img + '" style="width:100%;aspect-ratio:1/1;object-fit:contain;image-rendering:pixelated;display:block;">'
+          : '<div style="width:100%;aspect-ratio:1/1;border-radius:50%;background:' + c.hex + ';"></div>';
+        btn.innerHTML = imgEl;
         btn.onclick = function() { ocToggle(c.id); };
         grid.appendChild(btn);
       });
@@ -599,8 +604,8 @@
         var btn = document.getElementById('ocbtn-' + c.id);
         if (!btn) return;
         var sel = _ocSelected.indexOf(c.id) >= 0;
-        btn.style.borderColor = sel ? c.hex : 'rgba(255,255,255,0.08)';
-        btn.style.background   = sel ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.02)';
+        btn.style.borderColor = sel ? c.hex : 'transparent';
+        btn.style.background   = sel ? 'rgba(255,255,255,0.07)' : 'transparent';
       });
       var disp = document.getElementById('oc-selected-display');
       disp.innerHTML = _ocSelected.map(function(id) {
@@ -787,6 +792,16 @@
   <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
     <div style="width:100%;max-width:400px;position:relative;">
 
+      <!-- りんウェルカム画面 -->
+      <div id="oc-welcome" style="display:none;text-align:center;padding:8px 0;">
+        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#64748b;margin-bottom:20px;">― BAR STARS ―</div>
+        <img src="rin_stars.webp" alt="りん" style="width:min(200px,55vw);margin-bottom:20px;border-radius:12px;">
+        <div style="font-family:'Noto Serif JP',serif;font-size:18px;color:#fde68a;letter-spacing:3px;margin-bottom:12px;">STARSへようこそ！</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:2;margin-bottom:28px;">今夜も一杯、作っていこう。</div>
+        <button onclick="ocGoIntro()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">入店する</button>
+      </div>
+
       <!-- イントロ画面 -->
       <div id="oc-intro" style="text-align:center;padding:8px 0;">
         <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
@@ -808,7 +823,7 @@
           <div id="oc-customer-text" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2;"></div>
         </div>
         <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:12px;">シロップを選ぶ（2〜3種類）</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;" id="oc-syrup-grid"></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;" id="oc-syrup-grid"></div>
         <div id="oc-selected-display" style="min-height:32px;margin-bottom:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
         <div style="display:flex;gap:8px;">
           <button onclick="ocReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#64748b;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
