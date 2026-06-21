@@ -2984,11 +2984,6 @@
         rhythmBeat();
         _rhythmInterval = setInterval(function() {
           if (_tapPhase !== 'tapping') { clearInterval(_rhythmInterval); _rhythmInterval = null; return; }
-          if (_rhythmBeats >= RHYTHM_TOTAL) {
-            clearInterval(_rhythmInterval); _rhythmInterval = null;
-            if (_liveAudioEl) _liveAudioEl.onended = null;
-            showLiveResult(); return;
-          }
           rhythmBeat();
         }, RHYTHM_BEAT_MS);
       }, 900);
@@ -3081,7 +3076,8 @@
 
       var bonus;
       if (_currentLiveIsSlow) {
-        bonus = _rhythmHits >= RHYTHM_TOTAL ? 20 : _rhythmHits >= Math.ceil(RHYTHM_TOTAL*0.7) ? 12 : _rhythmHits >= Math.ceil(RHYTHM_TOTAL*0.4) ? 5 : 0;
+        var _rb = Math.max(_rhythmBeats, 1);
+        bonus = _rhythmHits >= Math.ceil(_rb*1.0) ? 20 : _rhythmHits >= Math.ceil(_rb*0.7) ? 12 : _rhythmHits >= Math.ceil(_rb*0.4) ? 5 : 0;
       } else {
         bonus = _tapCount >= 180 ? 20 : _tapCount >= 100 ? 12 : _tapCount >= 50 ? 5 : 0;
       }
@@ -3092,7 +3088,7 @@
       }
 
       var p = _pendingResult;
-      var gotSweets = p.success && (_currentLiveIsSlow ? _rhythmHits >= Math.ceil(RHYTHM_TOTAL*0.7) : _tapCount >= 200);
+      var gotSweets = p.success && (_currentLiveIsSlow ? _rhythmHits >= Math.ceil(Math.max(_rhythmBeats,1)*0.7) : _tapCount >= 200);
       if (gotSweets) {
         st.sweets = (st.sweets || 0) + 1;
         save();
