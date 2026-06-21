@@ -205,6 +205,7 @@
     .line-shipped { color:#6ee7b7; border:1px solid rgba(110,231,183,0.35); background:rgba(110,231,183,0.06); }
     .line-planned { color:#93c5fd; border:1px solid rgba(147,197,253,0.3); background:rgba(147,197,253,0.05); }
     .line-archive { color:#94a3b8; border:1px solid rgba(148,163,184,0.25); background:rgba(148,163,184,0.04); }
+    .line-premium { color:#fde68a; border:1px solid rgba(253,230,138,0.3); background:rgba(253,230,138,0.05); }
     .factory-line hr { flex:1; border:none; border-top:1px solid rgba(255,255,255,0.07); }
     .factory-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; max-width:760px; margin:0 auto 48px; }
     .f-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:22px 20px; text-decoration:none; display:block; transition:transform 0.2s, border-color 0.2s; position:relative; color:inherit; }
@@ -539,6 +540,26 @@
       <p style="text-align:center;font-size:12px;color:#475569;letter-spacing:2px;font-family:'Cormorant Garamond',serif;margin-bottom:40px;">山吹ことりがつくったもの、全部。</p>
 
       <div style="max-width:760px;margin:0 auto;">
+        <!-- PREMIUM -->
+        <div class="factory-line">
+          <span class="factory-line-label line-premium">PREMIUM</span>
+          <hr>
+        </div>
+        <div class="factory-grid">
+          <div class="f-card" onclick="openHayateGate()" style="border-color:rgba(253,230,138,0.45);box-shadow:0 0 18px rgba(253,230,138,0.18),0 0 40px rgba(253,230,138,0.08);animation:hayate-glow 3s ease-in-out infinite;cursor:pointer;">
+            <p class="f-type">GAME</p>
+            <p class="f-name">ハヤテっち</p>
+            <p class="f-desc">ハヤテの日常に入り込むキャラクター育成ゲーム。ドラム練習、SWEETs補給、声かけでコンディションを整えて、ライブ成功を目指せ。ホーム画面に追加して、いつでもハヤテに会いにきてね。</p>
+          </div>
+          <div class="f-card" style="border-color:rgba(147,197,253,0.45);cursor:default;box-shadow:0 0 18px rgba(147,197,253,0.18),0 0 40px rgba(147,197,253,0.08);animation:hinata-glow 3s ease-in-out infinite;">
+            <span class="f-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.3);">ベータ版</span>
+            <p class="f-type">WEB APP</p>
+            <p class="f-name">放課後のヒナタ</p>
+            <p class="f-desc">誰もいない放課後の音楽室で、高校時代のヒナタと少しだけ話せるAIチャットアプリです。</p>
+            <a href="hinata-chat/lp.html" target="_blank" style="display:inline-block;margin-top:10px;padding:6px 14px;border:1px solid rgba(147,197,253,0.3);border-radius:20px;color:#93c5fd;font-size:10px;letter-spacing:2px;text-decoration:none;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(147,197,253,0.1)'" onmouseout="this.style.background='none'">詳細・応援 →</a>
+          </div>
+        </div>
+
         <!-- SHIPPED -->
         <div class="factory-line">
           <span class="factory-line-label line-shipped">SHIPPED</span>
@@ -575,18 +596,6 @@
             <p class="f-name">タスク管理アプリ</p>
             <p class="f-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
           </a>
-          <div class="f-card" onclick="openHayateGate()" style="border-color:rgba(253,230,138,0.45);box-shadow:0 0 18px rgba(253,230,138,0.18),0 0 40px rgba(253,230,138,0.08);animation:hayate-glow 3s ease-in-out infinite;cursor:pointer;">
-            <p class="f-type">GAME</p>
-            <p class="f-name">ハヤテっち</p>
-            <p class="f-desc">ハヤテの日常に入り込むキャラクター育成ゲーム。ドラム練習、SWEETs補給、声かけでコンディションを整えて、ライブ成功を目指せ。ホーム画面に追加して、いつでもハヤテに会いにきてね。</p>
-          </div>
-          <div class="f-card" style="border-color:rgba(147,197,253,0.45);cursor:default;box-shadow:0 0 18px rgba(147,197,253,0.18),0 0 40px rgba(147,197,253,0.08);animation:hinata-glow 3s ease-in-out infinite;">
-            <span class="f-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.3);">ベータ版</span>
-            <p class="f-type">WEB APP</p>
-            <p class="f-name">放課後のヒナタ</p>
-            <p class="f-desc">誰もいない放課後の音楽室で、高校時代のヒナタと少しだけ話せるAIチャットアプリです。</p>
-            <a href="hinata-chat/lp.html" target="_blank" style="display:inline-block;margin-top:10px;padding:6px 14px;border:1px solid rgba(147,197,253,0.3);border-radius:20px;color:#93c5fd;font-size:10px;letter-spacing:2px;text-decoration:none;font-family:'Cormorant Garamond',serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(147,197,253,0.1)'" onmouseout="this.style.background='none'">詳細・応援 →</a>
-          </div>
         </div>
 
         <!-- PLANNED -->
