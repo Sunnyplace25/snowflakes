@@ -478,6 +478,30 @@
   <meta name="apple-mobile-web-app-title" content="ハヤテっち">
 </head>
 <body>
+
+  <!-- スプラッシュ画面 -->
+  <div id="splash" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#fffbeb 0%,#fef3c7 40%,#fde68a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity 0.5s;">
+    <img src="logo.png" alt="ハヤテっち" style="width:min(320px,85vw);image-rendering:pixelated;margin-bottom:-10px;">
+    <img src="hayate_normal.webp" alt="ハヤテ" style="width:min(200px,55vw);image-rendering:pixelated;">
+    <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:3px;color:#92400e;margin-top:16px;animation:splash-blink 1.2s ease-in-out infinite;">タップして始める</p>
+  </div>
+  <style>
+    @keyframes splash-blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  </style>
+  <script>
+    (function() {
+      var splash = document.getElementById('splash');
+      function dismiss() {
+        splash.style.opacity = '0';
+        setTimeout(function() { splash.style.display = 'none'; }, 500);
+        splash.removeEventListener('click', dismiss);
+        splash.removeEventListener('touchstart', dismiss);
+      }
+      splash.addEventListener('click', dismiss);
+      splash.addEventListener('touchstart', dismiss);
+    })();
+  </script>
+
   <canvas id="snow-canvas"></canvas>
   <audio id="live-bgm" src="live1.mp3" preload="auto"></audio>
   <audio id="live-bgm2" src="live2.mp3" preload="auto"></audio></audio>
