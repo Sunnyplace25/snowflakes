@@ -502,13 +502,13 @@
     })();
     // ── オリジナルカクテルゲーム ────────────────────────
     var OC_COLORS = [
-      { id:'red',    name:'赤',   hex:'#DC2626', rgb:[220,38,38],   meaning:'情熱・勇気・焦り' },
-      { id:'blue',   name:'青',   hex:'#2563EB', rgb:[37,99,235],   meaning:'静けさ・信頼・孤独' },
-      { id:'white',  name:'白',   hex:'#E2E8F0', rgb:[226,232,240], meaning:'純粋・余白・はじまり' },
-      { id:'yellow', name:'黄色', hex:'#EAB308', rgb:[234,179,8],   meaning:'希望・明るさ・無邪気' },
-      { id:'purple', name:'紫',   hex:'#7C3AED', rgb:[124,58,237],  meaning:'秘密・夜・予感' },
-      { id:'green',  name:'緑',   hex:'#16A34A', rgb:[22,163,74],   meaning:'癒し・再生・安心' },
-      { id:'black',  name:'黒',   hex:'#334155', rgb:[51,65,85],    meaning:'記憶・後悔・深い音' }
+      { id:'red',    name:'赤',   hex:'#DC2626', rgb:[220,38,38],   meaning:'情熱・勇気・焦り',    img:'syrup_red.webp'    },
+      { id:'blue',   name:'青',   hex:'#2563EB', rgb:[37,99,235],   meaning:'静けさ・信頼・孤独',  img:'syrup_blue.webp'   },
+      { id:'white',  name:'白',   hex:'#E2E8F0', rgb:[226,232,240], meaning:'純粋・余白・はじまり', img:'syrup_white.webp'  },
+      { id:'yellow', name:'黄色', hex:'#EAB308', rgb:[234,179,8],   meaning:'希望・明るさ・無邪気', img:'syrup_yellow.webp' },
+      { id:'purple', name:'紫',   hex:'#7C3AED', rgb:[124,58,237],  meaning:'秘密・夜・予感',      img:'syrup_purple.webp' },
+      { id:'green',  name:'緑',   hex:'#16A34A', rgb:[22,163,74],   meaning:'癒し・再生・安心',    img:null                },
+      { id:'black',  name:'黒',   hex:'#334155', rgb:[51,65,85],    meaning:'記憶・後悔・深い音',  img:null                }
     ];
     var OC_RECIPES = {
       'white+yellow':        { name:'First Light',    kotoba:'はじまりを怖がらないで',         desc:'朝の光みたいに、やわらかく背中を押す一杯。',            mixHex:'#FEF9C3' },
@@ -577,8 +577,10 @@
         var btn = document.createElement('button');
         btn.id = 'ocbtn-' + c.id;
         btn.style.cssText = 'padding:12px 4px 8px;background:rgba(255,255,255,0.02);border:2px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:all 0.18s;';
-        btn.innerHTML = '<div style="width:26px;height:26px;border-radius:50%;background:' + c.hex + ';"></div>'
-          + '<span style="font-size:9px;color:#64748b;">' + c.name + '</span>';
+        var imgEl = c.img
+          ? '<img src="' + c.img + '" style="width:52px;height:52px;object-fit:contain;image-rendering:pixelated;">'
+          : '<div style="width:36px;height:36px;border-radius:50%;background:' + c.hex + ';"></div>';
+        btn.innerHTML = imgEl + '<span style="font-size:9px;color:#64748b;">' + c.name + '</span>';
         btn.onclick = function() { ocToggle(c.id); };
         grid.appendChild(btn);
       });
