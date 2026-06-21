@@ -37,7 +37,7 @@
       line-height: 1.8; margin-bottom: 8px;
     }
     .sub {
-      font-size: 12px; color: #475569; letter-spacing: 1px;
+      font-size: 12px; color: white; letter-spacing: 1px;
       line-height: 2; margin-bottom: 40px;
     }
 
@@ -60,7 +60,7 @@
       user-select: all;
     }
     .pw-hint {
-      font-size: 11px; color: #475569; letter-spacing: 1px; line-height: 2;
+      font-size: 11px; color: white; letter-spacing: 1px; line-height: 2;
     }
 
     .copy-btn {
@@ -96,18 +96,22 @@
 
     .back {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; letter-spacing: 3px; color: #334155;
+      font-size: 11px; letter-spacing: 3px; color: #94a3b8;
       text-decoration: none; transition: color 0.2s;
     }
-    .back:hover { color: #64748b; }
+    .back:hover { color: white; }
 
     .note {
       margin-top: 36px;
-      font-size: 11px; color: #334155; letter-spacing: 1px; line-height: 2.2;
+      font-size: 11px; color: white; letter-spacing: 1px; line-height: 2.2;
     }
+
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.4; }
+    .wrap { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
+<canvas id="snow"></canvas>
 <div class="wrap">
   <div class="snowflake">❄</div>
   <p class="label">THANK YOU</p>
@@ -131,6 +135,30 @@
   </p>
 </div>
 
+<script>
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 70}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
 <script>
   // パスワードをlocalStorageに保存しておく（ことりファクトリーの入力補助）
   localStorage.setItem('ht_unlocked', '1');
