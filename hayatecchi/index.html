@@ -804,10 +804,13 @@
     }
 
     // prob: 0.0〜1.0 の確率でゲット試行。elがあればパネル表示、なければflash通知。
+    // おにぎりは消費型なので図鑑登録済みでも常にプールに残す。
     function tryGetDrumItem(prob, el) {
       if (!st.drumItems) st.drumItems = {};
       if (Math.random() > prob) { if (el) el.style.display = 'none'; return null; }
-      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
+      var unseenItems = DRUM_ITEMS.filter(function(item){
+        return !st.drumItems[item.id] || item.id === 'onigiri';
+      });
       if (unseenItems.length === 0) { if (el) el.style.display = 'none'; return null; }
       var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
       st.drumItems[got.id] = true;
