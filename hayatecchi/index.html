@@ -1069,7 +1069,6 @@
       var list = document.getElementById('zukan-list');
       list.innerHTML = '';
 
-      // 作ったことあるレシピを新しい順に表示
       var entries = Object.keys(log).sort(function(a,b){ return (log[b].last||0)-(log[a].last||0); });
 
       if (entries.length === 0) {
@@ -1078,25 +1077,48 @@
         entries.forEach(function(key) {
           var entry = log[key];
           var recipe = key === 'mystery'
-            ? { name:'Mystery Blend', kotoba:'まだ名前のない、あなただけの一杯', img:'cocktail_mystery.webp' }
+            ? { name:'Mystery Blend', kotoba:'まだ名前のない、あなただけの一杯', desc:'どんな組み合わせでも、それがあなたの一杯。', img:'cocktail_mystery.webp' }
             : OC_RECIPES[key];
           if (!recipe) return;
-          var imgHtml = recipe.img
-            ? '<img src="' + recipe.img + '" style="width:72px;height:72px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;">'
-            : '<div style="width:72px;height:72px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;"></div>';
-          var card = document.createElement('div');
-          card.style.cssText = 'display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;';
-          card.innerHTML =
-            imgHtml +
+
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
+          row.innerHTML =
+            (recipe.img
+              ? '<img src="' + recipe.img + '" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;">'
+              : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;"></div>') +
             '<div style="flex:1;min-width:0;">' +
-              '<div style="font-family:\'Cormorant Garamond\',serif;font-size:16px;color:#fde68a;letter-spacing:2px;margin-bottom:4px;">' + recipe.name + '</div>' +
-              '<div style="font-size:11px;color:#94a3b8;line-height:1.7;margin-bottom:6px;">「' + recipe.kotoba + '」</div>' +
-              '<div style="font-size:10px;color:#475569;">' + entry.count + '回 作った</div>' +
-            '</div>';
-          list.appendChild(card);
+              '<div style="font-family:\'Cormorant Garamond\',serif;font-size:15px;color:#fde68a;letter-spacing:2px;">' + recipe.name + '</div>' +
+              '<div style="font-size:10px;color:#475569;margin-top:2px;">' + entry.count + '回 作った</div>' +
+            '</div>' +
+            '<div style="font-size:10px;color:#334155;flex-shrink:0;">›</div>';
+
+          row.onclick = (function(r, cnt) {
+            return function() { openZukanDetail(r, cnt); };
+          })(recipe, entry.count);
+
+          list.appendChild(row);
         });
       }
+      document.getElementById('zukan-list-view').style.display = 'block';
+      document.getElementById('zukan-detail-view').style.display = 'none';
       document.getElementById('zukan-modal').style.display = 'flex';
+    }
+    function openZukanDetail(recipe, count) {
+      document.getElementById('zukan-detail-content').innerHTML =
+        '<div style="text-align:center;">' +
+          (recipe.img ? '<img src="' + recipe.img + '" style="width:min(180px,50vw);image-rendering:pixelated;margin-bottom:24px;">' : '') +
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:24px;color:#fde68a;letter-spacing:4px;margin-bottom:20px;">' + recipe.name + '</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#cbd5e1;line-height:2;padding:16px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:14px;">「' + recipe.kotoba + '」</div>' +
+          (recipe.desc ? '<div style="font-size:12px;color:#94a3b8;line-height:2;margin-bottom:20px;">' + recipe.desc + '</div>' : '') +
+          '<div style="font-size:10px;color:#475569;letter-spacing:2px;">' + count + '回 作った</div>' +
+        '</div>';
+      document.getElementById('zukan-list-view').style.display = 'none';
+      document.getElementById('zukan-detail-view').style.display = 'block';
+    }
+    function closeZukanDetail() {
+      document.getElementById('zukan-list-view').style.display = 'block';
+      document.getElementById('zukan-detail-view').style.display = 'none';
     }
     function closeZukan() {
       document.getElementById('zukan-modal').style.display = 'none';
@@ -1111,52 +1133,57 @@
       cats.forEach(function(cat) {
         var items = DRUM_ITEMS.filter(function(i){ return i.cat === cat; });
         var catDiv = document.createElement('div');
-        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#94a3b8;margin:16px 0 10px;font-family:\'Cormorant Garamond\',serif;';
+        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#64748b;margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
         catDiv.textContent = '― ' + (cat === '楽器' ? 'INSTRUMENTS' : 'MAINTENANCE') + ' ―';
         list.appendChild(catDiv);
-        var grid = document.createElement('div');
-        grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;';
+        var col = document.createElement('div');
+        col.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
         items.forEach(function(item) {
           var unlocked = !!got[item.id];
-          var card = document.createElement('div');
-          card.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,' + (unlocked ? '0.12' : '0.04') + ');border-radius:10px;padding:10px 6px;text-align:center;';
-          card.innerHTML =
-            '<div style="height:56px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">' +
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,' + (unlocked ? '0.09' : '0.04') + ');border-radius:12px;' + (unlocked ? 'cursor:pointer;' : '');
+          row.innerHTML =
+            '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
               (unlocked && item.img
-                ? '<img src="' + item.img + '" style="max-width:52px;max-height:52px;object-fit:contain;image-rendering:pixelated;">'
-                : '<div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);"></div>') +
+                ? '<img src="' + item.img + '" style="max-width:44px;max-height:44px;object-fit:contain;image-rendering:pixelated;">'
+                : '<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);"></div>') +
             '</div>' +
-            '<div style="font-size:9px;color:' + (unlocked ? '#e2e8f0' : '#334155') + ';line-height:1.4;">' + (unlocked ? item.name : '？？？') + '</div>';
+            '<div style="flex:1;">' +
+              '<div style="font-size:13px;color:' + (unlocked ? '#e2e8f0' : '#334155') + ';">' + (unlocked ? item.name : '？？？') + '</div>' +
+              (unlocked ? '<div style="font-size:10px;color:#475569;margin-top:2px;">' + item.cat + '</div>' : '') +
+            '</div>' +
+            (unlocked ? '<div style="font-size:10px;color:#334155;flex-shrink:0;">›</div>' : '');
           if (unlocked) {
-            card.title = item.desc;
-            card.style.cursor = 'pointer';
-            card.onclick = function() { showDrumItemDetail(item); };
+            row.onclick = (function(it) { return function() { openDrumItemDetail(it); }; })(item);
           }
-          grid.appendChild(card);
+          col.appendChild(row);
         });
-        list.appendChild(grid);
+        list.appendChild(col);
       });
       var total = DRUM_ITEMS.length;
       var collected = Object.keys(got).length;
       document.getElementById('drum-zukan-progress').textContent = collected + ' / ' + total;
+      document.getElementById('drum-zukan-list-view').style.display = 'block';
+      document.getElementById('drum-zukan-detail-view').style.display = 'none';
       document.getElementById('drum-zukan-modal').style.display = 'flex';
+    }
+    function openDrumItemDetail(item) {
+      document.getElementById('drum-zukan-detail-content').innerHTML =
+        '<div style="text-align:center;">' +
+          (item.img ? '<img src="' + item.img + '" style="width:min(160px,45vw);object-fit:contain;image-rendering:pixelated;margin-bottom:24px;">' : '<div style="font-size:64px;margin-bottom:24px;">🥁</div>') +
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;color:#c4b5fd;letter-spacing:4px;margin-bottom:8px;">' + item.name + '</div>' +
+          '<div style="font-size:10px;color:#475569;letter-spacing:2px;margin-bottom:24px;">' + item.cat + '</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#cbd5e1;line-height:2;padding:16px 18px;background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.1);border-radius:14px;">' + item.desc + '</div>' +
+        '</div>';
+      document.getElementById('drum-zukan-list-view').style.display = 'none';
+      document.getElementById('drum-zukan-detail-view').style.display = 'block';
     }
     function closeDrumZukan() {
       document.getElementById('drum-zukan-modal').style.display = 'none';
-      document.getElementById('drum-item-detail').style.display = 'none';
     }
-    function showDrumItemDetail(item) {
-      var el = document.getElementById('drum-item-detail');
-      el.innerHTML =
-        '<div style="position:fixed;inset:0;z-index:10002;background:rgba(4,8,18,0.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;" onclick="this.parentNode.style.display=\'none\'">' +
-          '<div style="max-width:320px;text-align:center;">' +
-            (item.img ? '<img src="' + item.img + '" style="width:100px;height:100px;object-fit:contain;image-rendering:pixelated;margin-bottom:20px;">' : '<div style="font-size:56px;margin-bottom:20px;">🥁</div>') +
-            '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;color:#fde68a;letter-spacing:3px;margin-bottom:16px;">' + item.name + '</div>' +
-            '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#94a3b8;line-height:2;padding:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">' + item.desc + '</div>' +
-            '<div style="font-size:10px;color:#475569;margin-top:16px;">タップで閉じる</div>' +
-          '</div>' +
-        '</div>';
-      el.style.display = 'block';
+    function closeDrumItemDetail() {
+      document.getElementById('drum-zukan-list-view').style.display = 'block';
+      document.getElementById('drum-zukan-detail-view').style.display = 'none';
     }
 
     function openHowTo(e) {
@@ -1291,24 +1318,45 @@
   <!-- カクテル図鑑モーダル -->
   <div id="zukan-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
     <div style="width:100%;max-width:400px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL BOOK</div>
-        <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      <!-- リスト画面 -->
+      <div id="zukan-list-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL BOOK</div>
+          <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+        </div>
+        <div id="zukan-list" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
-      <div id="zukan-list" style="display:flex;flex-direction:column;gap:16px;"></div>
+      <!-- 詳細画面 -->
+      <div id="zukan-detail-view" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+          <button onclick="closeZukanDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
+          <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+        </div>
+        <div id="zukan-detail-content"></div>
+      </div>
     </div>
   </div>
 
   <!-- ドラム図鑑モーダル -->
   <div id="drum-zukan-modal" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
-    <div id="drum-item-detail" style="display:none;"></div>
     <div style="width:100%;max-width:400px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
-        <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      <!-- リスト画面 -->
+      <div id="drum-zukan-list-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
+          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+        </div>
+        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 16</span></div>
+        <div id="drum-zukan-list"></div>
       </div>
-      <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 16</span></div>
-      <div id="drum-zukan-list"></div>
+      <!-- 詳細画面 -->
+      <div id="drum-zukan-detail-view" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+          <button onclick="closeDrumItemDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
+          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+        </div>
+        <div id="drum-zukan-detail-content"></div>
+      </div>
     </div>
   </div>
 
