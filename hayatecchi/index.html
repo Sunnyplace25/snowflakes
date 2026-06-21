@@ -2163,7 +2163,7 @@
       st.yaruki    = clamp(st.yaruki + (success ? 30 : 10));
       st.liveCount = (st.liveCount || 0) + 1;
       st.renshuGe  = 0;
-      st.cd.live   = cdTime(CD_SEC.live);
+      // st.cd.live = cdTime(CD_SEC.live); // テスト中CD無効
 
       var resultText = success
         ? 'ライブ成功！！\nドラムスキル +' + skillGain
