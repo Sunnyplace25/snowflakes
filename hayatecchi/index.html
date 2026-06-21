@@ -552,12 +552,58 @@
     ];
     var _ocSelected = [], _ocCustomerIdx = -1;
 
+    var _barBGM = null;
+    function startBarBGM() {
+      if (_barBGM) return;
+      _barBGM = new Audio('bar_bgm.mp3');
+      _barBGM.loop   = true;
+      _barBGM.volume = 0.18;
+      _barBGM.play().catch(function(){});
+    }
+    function stopBarBGM() {
+      if (_barBGM) { _barBGM.pause(); _barBGM.currentTime = 0; _barBGM = null; }
+    }
+
+    var _gameSnowRAF = null;
+    function startGameSnow() {
+      var canvas = document.getElementById('game-snow-canvas');
+      var ctx = canvas.getContext('2d');
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      var flakes = [];
+      for (var i = 0; i < 55; i++) {
+        flakes.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+          r: Math.random()*2.2+0.4, sp: Math.random()*0.7+0.25,
+          sw: Math.random()*0.5-0.25, op: Math.random()*0.35+0.08 });
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        flakes.forEach(function(f) {
+          ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(255,255,255,'+f.op+')'; ctx.fill();
+          f.y += f.sp; f.x += f.sw;
+          if (f.y > canvas.height+5) { f.y = -5; f.x = Math.random()*canvas.width; }
+          if (f.x > canvas.width+5) f.x = -5;
+          if (f.x < -5) f.x = canvas.width+5;
+        });
+        _gameSnowRAF = requestAnimationFrame(draw);
+      }
+      draw();
+    }
+    function stopGameSnow() {
+      if (_gameSnowRAF) { cancelAnimationFrame(_gameSnowRAF); _gameSnowRAF = null; }
+      var canvas = document.getElementById('game-snow-canvas');
+      if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     function openMiniGame() {
       document.getElementById('cocktail-modal').style.display = 'flex';
       document.getElementById('oc-welcome').style.display = 'block';
       document.getElementById('oc-intro').style.display = 'none';
       document.getElementById('oc-play').style.display = 'none';
       document.getElementById('oc-result').style.display = 'none';
+      startGameSnow();
+      startBarBGM();
     }
     function ocGoIntro() {
       document.getElementById('oc-welcome').style.display = 'none';
@@ -565,6 +611,8 @@
     }
     function closeMiniGame() {
       document.getElementById('cocktail-modal').style.display = 'none';
+      stopGameSnow();
+      stopBarBGM();
     }
     function ocStart() {
       document.getElementById('oc-intro').style.display = 'none';
@@ -663,20 +711,8 @@
     var MAX_SHOTS = 6;
     var _cgShots = {}, _cgTarget = null;
 
-    function openMiniGame() {
-      document.getElementById('cocktail-modal').style.display = 'flex';
-      document.getElementById('cg-welcome').style.display = 'block';
-      document.getElementById('cg-game-header').style.display = 'none';
-      document.getElementById('cg-play').style.display = 'none';
-      document.getElementById('cg-result').style.display = 'none';
-    }
     function cgStartGame() {
-      document.getElementById('cg-welcome').style.display = 'none';
-      document.getElementById('cg-game-header').style.display = 'flex';
       cgInit();
-    }
-    function closeMiniGame() {
-      document.getElementById('cocktail-modal').style.display = 'none';
     }
     function cgInit() {
       _cgTarget = CG_COCKTAILS[Math.floor(Math.random() * CG_COCKTAILS.length)];
@@ -790,7 +826,8 @@
 
   <!-- カクテルミニゲーム（オリジナルカクテル） -->
   <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
-    <div style="width:100%;max-width:400px;position:relative;">
+    <canvas id="game-snow-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+    <div style="width:100%;max-width:400px;position:relative;z-index:1;">
 
       <!-- りんウェルカム画面 -->
       <div id="oc-welcome" style="display:none;text-align:center;padding:8px 0;">
