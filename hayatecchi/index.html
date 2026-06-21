@@ -525,7 +525,7 @@
       <!-- ⚙ 遊び方（イラスト左上のギアに重ねる） -->
       <button onclick="openHowTo(event)" style="position:absolute;top:1.8%;left:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
       <!-- ❤（イラスト右上） -->
-      <button onclick="openZukan(event)" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
+      <button onclick="openZukanHub(event)" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
     </div>
   </div>
   <script>
@@ -1290,6 +1290,21 @@
       document.getElementById('drum-zukan-detail-view').style.display = 'none';
     }
 
+    function openZukanHub(e) {
+      if (e) e.stopPropagation();
+      var cocktailCount = Object.keys(st.zukanLog || {}).length;
+      var cocktailTotal = Object.keys(OC_RECIPES).length + 1;
+      var drumCount = Object.keys(st.drumItems || {}).length;
+      var gorokuCount = Object.keys(st.drumLog || {}).length;
+      document.getElementById('hub-cocktail-count').textContent = cocktailCount + ' / ' + cocktailTotal + ' 収集';
+      document.getElementById('hub-drum-count').textContent = drumCount + ' / ' + DRUM_ITEMS.length + ' 収集';
+      document.getElementById('hub-goroku-count').textContent = gorokuCount + ' / ' + DRUM_MEMOS.length + ' 収集';
+      document.getElementById('zukan-hub-modal').style.display = 'flex';
+    }
+    function closeZukanHub() {
+      document.getElementById('zukan-hub-modal').style.display = 'none';
+    }
+
     function openGoroku(e) {
       if (e) e.stopPropagation();
       var log = st.drumLog || {};
@@ -1749,6 +1764,39 @@
       <span>Snow flakes</span>
     </button>
   </nav>
+
+  <!-- 図鑑ハブモーダル -->
+  <div id="zukan-hub-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;">
+    <div style="width:100%;max-width:360px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#e2e8f0;">COLLECTION</div>
+        <button onclick="closeZukanHub()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <button onclick="closeZukanHub();openZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(253,230,138,0.05);border:1px solid rgba(253,230,138,0.2);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
+          <span style="font-size:32px;">🍸</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#fde68a;letter-spacing:3px;margin-bottom:4px;">カクテル図鑑</div>
+            <div id="hub-cocktail-count" style="font-size:10px;color:#94a3b8;"></div>
+          </div>
+        </button>
+        <button onclick="closeZukanHub();openDrumZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.2);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
+          <span style="font-size:32px;">🥁</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#c4b5fd;letter-spacing:3px;margin-bottom:4px;">ドラム図鑑</div>
+            <div id="hub-drum-count" style="font-size:10px;color:#94a3b8;"></div>
+          </div>
+        </button>
+        <button onclick="closeZukanHub();openGoroku(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(110,231,183,0.05);border:1px solid rgba(110,231,183,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
+          <span style="font-size:32px;">📖</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#6ee7b7;letter-spacing:3px;margin-bottom:4px;">語録</div>
+            <div id="hub-goroku-count" style="font-size:10px;color:#94a3b8;"></div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 語録モーダル -->
   <div id="goroku-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
