@@ -511,13 +511,13 @@
       { id:'black',  name:'黒',   hex:'#334155', rgb:[51,65,85],    meaning:'記憶・後悔・深い音',  img:'syrup_black.webp'  }
     ];
     var OC_RECIPES = {
-      'white+yellow':        { name:'First Light',    kotoba:'はじまりを怖がらないで',         desc:'朝の光みたいに、やわらかく背中を押す一杯。',            mixHex:'#FEF9C3' },
-      'blue+white':          { name:'Silent Snow',    kotoba:'静けさの中に残る約束',           desc:'言葉にしなかった想いを、そっと沈める淡い青のカクテル。', mixHex:'#BFDBFE' },
-      'black+red':           { name:'Burning Memory', kotoba:'忘れられない熱',                 desc:'過去に残った痛みと、それでも消えない情熱を混ぜた一杯。', mixHex:'#7F1D1D' },
-      'blue+purple':         { name:'Moon Veil',      kotoba:'近づけない夜に、心だけ触れる',   desc:'月明かりのように淡く、秘密を包む夜のカクテル。',         mixHex:'#4C1D95' },
-      'green+white':         { name:'Tender Leaf',    kotoba:'傷ついた場所にも、春は来る',     desc:'疲れた心をゆっくり戻す、やさしい回復の味。',            mixHex:'#D1FAE5' },
-      'red+yellow':          { name:'Live Spark',     kotoba:'鳴らせば、景色は変わる',         desc:'ライブ前の高揚感みたいな、明るく弾ける一杯。',           mixHex:'#FEF08A' },
-      'black+blue':          { name:'Deep Tone',      kotoba:'沈んだ音ほど、遠くまで届く',     desc:'静かな夜に似合う、深く落ち着いたカクテル。',            mixHex:'#1E3A5F' },
+      'white+yellow':        { name:'First Light',    kotoba:'はじまりを怖がらないで',         desc:'朝の光みたいに、やわらかく背中を押す一杯。',            mixHex:'#FEF9C3', img:'cocktail_first_light.webp'    },
+      'blue+white':          { name:'Silent Snow',    kotoba:'静けさの中に残る約束',           desc:'言葉にしなかった想いを、そっと沈める淡い青のカクテル。', mixHex:'#BFDBFE', img:'cocktail_silent_snow.webp'    },
+      'black+red':           { name:'Burning Memory', kotoba:'忘れられない熱',                 desc:'過去に残った痛みと、それでも消えない情熱を混ぜた一杯。', mixHex:'#7F1D1D', img:'cocktail_burning_memory.webp' },
+      'blue+purple':         { name:'Moon Veil',      kotoba:'近づけない夜に、心だけ触れる',   desc:'月明かりのように淡く、秘密を包む夜のカクテル。',         mixHex:'#4C1D95', img:'cocktail_moon_veil.webp'      },
+      'green+white':         { name:'Tender Leaf',    kotoba:'傷ついた場所にも、春は来る',     desc:'疲れた心をゆっくり戻す、やさしい回復の味。',            mixHex:'#D1FAE5', img:'cocktail_tender_leaf.webp'    },
+      'red+yellow':          { name:'Live Spark',     kotoba:'鳴らせば、景色は変わる',         desc:'ライブ前の高揚感みたいな、明るく弾ける一杯。',           mixHex:'#FEF08A', img:'cocktail_live_spark.webp'     },
+      'black+blue':          { name:'Deep Tone',      kotoba:'沈んだ音ほど、遠くまで届く',     desc:'静かな夜に似合う、深く落ち着いたカクテル。',            mixHex:'#1E3A5F', img:'cocktail_deep_tone.webp'      },
       'purple+white':        { name:'Secret Bloom',   kotoba:'言えなかった想いが、静かに咲く', desc:'秘めた気持ちを花のようにほどく、淡い紫の一杯。',         mixHex:'#EDE9FE' },
       'red+white':           { name:'Little Heart',   kotoba:'まっすぐな気持ちは、隠せない',   desc:'甘酸っぱくて少し照れる、素直な恋の味。',                mixHex:'#FECDD3' },
       'blue+green':          { name:'Calm River',     kotoba:'流れても、失くならないもの',      desc:'落ち着きと癒しをくれる、静かな水辺のような一杯。',       mixHex:'#A7F3D0' },
@@ -672,7 +672,13 @@
       var autoHex = '#'+[r,g,b].map(function(v){return('0'+Math.min(255,v).toString(16)).slice(-2);}).join('');
       document.getElementById('oc-play').style.display = 'none';
       document.getElementById('oc-result').style.display = 'block';
-      document.getElementById('oc-result-fill').style.background = recipe ? recipe.mixHex : autoHex;
+      var glassEl = document.getElementById('oc-result-glass');
+      var fillEl  = document.getElementById('oc-result-fill');
+      if (recipe && recipe.img) {
+        glassEl.innerHTML = '<img src="' + recipe.img + '" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;">';
+      } else {
+        glassEl.innerHTML = '<div style="width:64px;height:104px;border-radius:0 0 22px 22px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;"><div style="position:absolute;bottom:0;left:0;right:0;height:80%;background:' + (recipe ? recipe.mixHex : autoHex) + ';transition:background 0.5s;"></div></div>';
+      }
       if (recipe) {
         document.getElementById('oc-result-name').textContent = recipe.name;
         document.getElementById('oc-result-kotoba').textContent = '「' + recipe.kotoba + '」';
@@ -875,9 +881,7 @@
           <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <img src="hayate_shaker.webp" alt="ハヤテ" style="width:min(160px,45vw);image-rendering:pixelated;margin-bottom:12px;">
-        <div style="width:64px;height:104px;border-radius:0 0 22px 22px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto 20px;">
-          <div id="oc-result-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;transition:background 0.5s;"></div>
-        </div>
+        <div id="oc-result-glass" style="margin-bottom:20px;"></div>
         <div id="oc-result-name" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fde68a;letter-spacing:4px;margin-bottom:14px;"></div>
         <div id="oc-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;padding:14px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:10px;"></div>
         <div id="oc-result-desc" style="font-size:11px;color:#94a3b8;line-height:1.9;margin-bottom:18px;"></div>
