@@ -11,6 +11,43 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* パスワードゲート */
+    #pw-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #080f1e;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; padding: 32px;
+    }
+    #pw-gate .pw-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; letter-spacing: 6px; color: #c4b5fd;
+    }
+    #pw-gate .pw-sub {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 11px; color: #475569; letter-spacing: 1px;
+    }
+    #pw-gate input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(196,181,253,0.25);
+      border-radius: 10px;
+      color: #e2e8f0; font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; letter-spacing: 6px;
+      padding: 12px 20px; text-align: center;
+      width: 100%; max-width: 280px; outline: none;
+    }
+    #pw-gate input::placeholder { color: #334155; letter-spacing: 2px; font-size: 13px; }
+    #pw-gate button {
+      background: none; border: 1px solid rgba(196,181,253,0.3);
+      border-radius: 100px; color: #c4b5fd;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 4px;
+      padding: 10px 32px; cursor: pointer;
+    }
+    #pw-gate .pw-err {
+      font-size: 11px; color: #f87171; min-height: 16px;
+    }
+
     body {
       background: #080f1e;
       color: #e2e8f0;
@@ -572,6 +609,15 @@
   <meta name="apple-mobile-web-app-title" content="ハヤテっち">
 </head>
 <body>
+
+  <!-- パスワードゲート -->
+  <div id="pw-gate">
+    <div class="pw-title">HAYATECCHI</div>
+    <div class="pw-sub">パスワードを入力してください</div>
+    <input id="pw-input" type="password" placeholder="password" autocomplete="off" autocapitalize="none">
+    <div class="pw-err" id="pw-err"></div>
+    <button onclick="checkPW()">— 入る —</button>
+  </div>
 
   <!-- スプラッシュ画面 -->
   <!-- ホーム追加バナー（初回のみ） -->
@@ -3402,10 +3448,44 @@
     /* ── BGM ── */
     var _muted = false;
 
+    /* ── パスワードゲート ── */
+    (function() {
+      var gate = document.getElementById('pw-gate');
+      if (!gate) return;
+      if (localStorage.getItem('ht_unlocked') === '1') {
+        gate.style.display = 'none'; return;
+      }
+      // 未解錠: アプリ本体を隠す（ゲート以外）
+      document.querySelectorAll('body > *:not(#pw-gate)').forEach(function(el) {
+        el.style.display = 'none';
+      });
+      var input = document.getElementById('pw-input');
+      if (input) input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkPW();
+      });
+    })();
+    function checkPW() {
+      var val = (document.getElementById('pw-input').value || '').trim().toUpperCase();
+      var err = document.getElementById('pw-err');
+      if (val === 'HARDGUMI') {
+        localStorage.setItem('ht_unlocked', '1');
+        document.getElementById('pw-gate').style.display = 'none';
+        document.querySelectorAll('body > *:not(#pw-gate)').forEach(function(el) {
+          el.style.display = '';
+        });
+        load(); render(); autoSpeech();
+      } else {
+        if (err) { err.textContent = 'ちがうよ'; setTimeout(function(){ err.textContent=''; },1500); }
+        document.getElementById('pw-input').value = '';
+      }
+    }
+
     /* ── 起動 ── */
-    load();
-    render();
-    autoSpeech();
+    if (localStorage.getItem('ht_unlocked') === '1') {
+      load();
+      render();
+      autoSpeech();
+    }
 
     /* ── ホームに追加 ── */
     (function() {
