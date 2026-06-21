@@ -2204,6 +2204,7 @@
         if (!d) return;
         st = d;
         if (!st.cd) st.cd = {};
+        delete st.cd.meshi; // meshiはCDなし（旧データ対策）
         if (st.renshuGe === undefined) st.renshuGe = 75;
         if (st.sweets   === undefined) st.sweets   = 0;
         if (st.kibun     === undefined) st.kibun     = 75;
@@ -3262,7 +3263,9 @@
 
       // 強制睡眠中は全ボタンロック（updateCDでも同様に管理）
       var forceLock = cdRemain('forceSleep') > 0;
-      ['meshi','neru','renshu','flyer','gaishutsu','game'].forEach(function(id) {
+      var meshiB = document.getElementById('btn-meshi');
+      if (meshiB) meshiB.classList.toggle('on-cd', forceLock); // meshiはCDなし
+      ['neru','renshu','flyer','gaishutsu','game'].forEach(function(id) {
         var b = document.getElementById('btn-' + id);
         if (b) b.classList.toggle('on-cd', forceLock || cdRemain(id) > 0);
       });
