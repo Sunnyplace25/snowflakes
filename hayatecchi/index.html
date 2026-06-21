@@ -500,9 +500,134 @@
       document.getElementById('splash-wrap').addEventListener('click', dismissSplash);
       document.getElementById('splash-wrap').addEventListener('touchstart', dismissSplash);
     })();
+    // ── カクテルミニゲーム ──────────────────────────────
+    var CG_ING = [
+      { id:'cassis',    name:'カシス',    emoji:'🍇', rgb:[130,30,180] },
+      { id:'orange',    name:'オレンジ',  emoji:'🍊', rgb:[255,145,10] },
+      { id:'lemon',     name:'レモン',    emoji:'🍋', rgb:[255,225,0]  },
+      { id:'blue',      name:'ブルー',    emoji:'💙', rgb:[0,140,255]  },
+      { id:'grenadine', name:'グレナデン',emoji:'🍒', rgb:[220,20,80]  },
+      { id:'soda',      name:'ソーダ',    emoji:'💧', rgb:[210,240,255]},
+      { id:'melon',     name:'メロン',    emoji:'🍈', rgb:[40,200,100] }
+    ];
+    var CG_COCKTAILS = [
+      { name:'カシスソーダ',       kotoba:'あなたのことを、ずっと考えている',         recipe:{cassis:2,soda:1},      color:'#9D64CD' },
+      { name:'カシスオレンジ',     kotoba:'好きという気持ちは、隠しきれない',         recipe:{cassis:2,orange:1},    color:'#AC447B' },
+      { name:'ブルーハワイ',       kotoba:'夢の続きを、一緒に見よう',               recipe:{blue:2,soda:1},        color:'#46ADFF' },
+      { name:'テキーラサンライズ', kotoba:'情熱は、夜明けを連れてくる',              recipe:{grenadine:1,orange:2}, color:'#F36721' },
+      { name:'ミモザ',             kotoba:'無邪気に、あなたを好きでいる',            recipe:{orange:1,lemon:2},     color:'#FFC603' },
+      { name:'メロンソーダ',       kotoba:'さわやかな気持ちで、また会いたい',        recipe:{melon:2,soda:1},       color:'#61D598' },
+      { name:'コスモポリタン',     kotoba:'洗練された愛を、あなたに',               recipe:{grenadine:2,cassis:1}, color:'#C41874' },
+      { name:'シンデレラ',         kotoba:'夢を信じれば、きっと届く',               recipe:{orange:1,lemon:1,soda:1}, color:'#F0CB58' }
+    ];
+    var MAX_SHOTS = 6;
+    var _cgShots = {}, _cgTarget = null;
+
     function openMiniGame() {
-      flash('ミニゲーム　準備中…');
+      document.getElementById('cocktail-modal').style.display = 'flex';
+      cgInit();
     }
+    function closeMiniGame() {
+      document.getElementById('cocktail-modal').style.display = 'none';
+    }
+    function cgInit() {
+      _cgTarget = CG_COCKTAILS[Math.floor(Math.random() * CG_COCKTAILS.length)];
+      _cgShots = {};
+      document.getElementById('cg-target-fill').style.background = _cgTarget.color;
+      document.getElementById('cg-your-fill').style.height = '0%';
+      document.getElementById('cg-your-fill').style.background = '#fff';
+      document.getElementById('cg-shots-label').textContent = '0 / ' + MAX_SHOTS;
+      document.getElementById('cg-pct').textContent = '—';
+      document.getElementById('cg-emoji').textContent = '🍹';
+      document.getElementById('cg-play').style.display = 'block';
+      document.getElementById('cg-result').style.display = 'none';
+      var grid = document.getElementById('cg-ing-grid');
+      grid.innerHTML = '';
+      CG_ING.forEach(function(ing) {
+        var btn = document.createElement('button');
+        btn.id = 'cgbtn-' + ing.id;
+        btn.style.cssText = 'padding:10px 4px 8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent;';
+        btn.innerHTML = '<span style="font-size:20px;">' + ing.emoji + '</span>'
+          + '<span style="font-size:8px;color:#64748b;">' + ing.name + '</span>'
+          + '<span id="cgc-' + ing.id + '" style="font-size:9px;color:#fde68a;min-height:12px;"></span>';
+        btn.onclick = function() { cgAdd(ing.id); };
+        grid.appendChild(btn);
+      });
+    }
+    function cgTotalShots() {
+      return Object.keys(_cgShots).reduce(function(s,k){ return s + _cgShots[k]; }, 0);
+    }
+    function cgMix() {
+      var total = cgTotalShots();
+      if (!total) return null;
+      var r=0,g=0,b=0;
+      CG_ING.forEach(function(ing) {
+        var n = _cgShots[ing.id] || 0;
+        r += ing.rgb[0]*n; g += ing.rgb[1]*n; b += ing.rgb[2]*n;
+      });
+      return [Math.round(r/total), Math.round(g/total), Math.round(b/total)];
+    }
+    function cgSimilarity(rgb, hex) {
+      var r2=parseInt(hex.slice(1,3),16), g2=parseInt(hex.slice(3,5),16), b2=parseInt(hex.slice(5,7),16);
+      var d = Math.sqrt(Math.pow(rgb[0]-r2,2)+Math.pow(rgb[1]-g2,2)+Math.pow(rgb[2]-b2,2));
+      return Math.round((1 - d/441.67) * 100);
+    }
+    function cgToHex(rgb) {
+      return '#'+rgb.map(function(v){return ('0'+Math.min(255,v).toString(16)).slice(-2);}).join('');
+    }
+    function cgAdd(id) {
+      if (cgTotalShots() >= MAX_SHOTS) { flash('最大6shotまで'); return; }
+      _cgShots[id] = (_cgShots[id]||0) + 1;
+      var total = cgTotalShots();
+      document.getElementById('cgc-'+id).textContent = '×'+_cgShots[id];
+      document.getElementById('cg-shots-label').textContent = total + ' / ' + MAX_SHOTS;
+      var mixed = cgMix();
+      if (mixed) {
+        var hex = cgToHex(mixed);
+        document.getElementById('cg-your-fill').style.background = hex;
+        document.getElementById('cg-your-fill').style.height = Math.min(80, total*14) + '%';
+        var sim = cgSimilarity(mixed, _cgTarget.color);
+        document.getElementById('cg-pct').textContent = sim + '%';
+        document.getElementById('cg-emoji').textContent = sim>=88?'✨':sim>=70?'😊':sim>=50?'🤔':'💭';
+      }
+    }
+    function cgReset() {
+      _cgShots = {};
+      document.getElementById('cg-your-fill').style.height = '0%';
+      document.getElementById('cg-shots-label').textContent = '0 / ' + MAX_SHOTS;
+      document.getElementById('cg-pct').textContent = '—';
+      document.getElementById('cg-emoji').textContent = '🍹';
+      CG_ING.forEach(function(ing){ var el=document.getElementById('cgc-'+ing.id); if(el) el.textContent=''; });
+    }
+    function cgComplete() {
+      var mixed = cgMix();
+      var sim = mixed ? cgSimilarity(mixed, _cgTarget.color) : 0;
+      var hex  = mixed ? cgToHex(mixed) : '#0f172a';
+      document.getElementById('cg-play').style.display = 'none';
+      document.getElementById('cg-result').style.display = 'block';
+      document.getElementById('cg-result-fill').style.background = hex;
+      document.getElementById('cg-result-score').textContent = sim + '%';
+      if (sim >= 85) {
+        document.getElementById('cg-result-label').textContent = 'PERFECT';
+        document.getElementById('cg-result-name').textContent = _cgTarget.name;
+        document.getElementById('cg-result-kotoba').textContent = _cgTarget.kotoba;
+        document.getElementById('cg-result-reward').textContent = '★ SWEETs +1';
+        st.sweets = (st.sweets||0) + 1; save();
+      } else if (sim >= 65) {
+        document.getElementById('cg-result-label').textContent = 'GOOD';
+        document.getElementById('cg-result-name').textContent = _cgTarget.name;
+        document.getElementById('cg-result-kotoba').textContent = _cgTarget.kotoba;
+        document.getElementById('cg-result-reward').textContent = 'きぶん +15';
+        st.kibun = clamp(st.kibun + 15); save();
+      } else {
+        document.getElementById('cg-result-label').textContent = 'TRY AGAIN';
+        document.getElementById('cg-result-name').textContent = '…もう少し！';
+        document.getElementById('cg-result-kotoba').textContent = '色が少し違うみたい。\nもう一度混ぜてみて。';
+        document.getElementById('cg-result-reward').textContent = '';
+      }
+    }
+    function cgPlayAgain() { cgInit(); }
+    // ──────────────────────────────────────────────────
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
@@ -511,6 +636,64 @@
       document.getElementById('howto-modal').style.display = 'none';
     }
   </script>
+
+  <!-- カクテルミニゲーム -->
+  <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL</div>
+        <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+
+      <!-- プレイ画面 -->
+      <div id="cg-play">
+        <div style="display:flex;align-items:flex-end;justify-content:center;gap:24px;margin-bottom:20px;">
+          <!-- ターゲット -->
+          <div style="text-align:center;">
+            <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:8px;">TARGET</div>
+            <div style="width:56px;height:90px;border-radius:0 0 18px 18px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;">
+              <div id="cg-target-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;transition:background 0.4s;"></div>
+            </div>
+          </div>
+          <!-- メーター -->
+          <div style="text-align:center;padding-bottom:8px;">
+            <div style="font-size:28px;margin-bottom:4px;" id="cg-emoji">🍹</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fde68a;" id="cg-pct">—</div>
+          </div>
+          <!-- 自分のグラス -->
+          <div style="text-align:center;">
+            <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:8px;">YOUR MIX</div>
+            <div style="width:56px;height:90px;border-radius:0 0 18px 18px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;">
+              <div id="cg-your-fill" style="position:absolute;bottom:0;left:0;right:0;height:0%;transition:all 0.35s;"></div>
+            </div>
+            <div style="font-size:9px;color:#334155;margin-top:6px;" id="cg-shots-label">0 / 6</div>
+          </div>
+        </div>
+
+        <!-- 材料ボタン -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;" id="cg-ing-grid"></div>
+
+        <!-- コントロール -->
+        <div style="display:flex;gap:8px;">
+          <button onclick="cgReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#64748b;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
+          <button onclick="cgComplete()" style="flex:2;padding:11px 0;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.28);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">完成！</button>
+        </div>
+      </div>
+
+      <!-- リザルト画面 -->
+      <div id="cg-result" style="display:none;text-align:center;padding:8px 0;">
+        <div id="cg-result-glass" style="width:72px;height:116px;border-radius:0 0 24px 24px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto 20px;">
+          <div id="cg-result-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;"></div>
+        </div>
+        <div id="cg-result-score" style="font-family:'Cormorant Garamond',serif;font-size:36px;color:#fde68a;margin-bottom:4px;"></div>
+        <div id="cg-result-label" style="font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:16px;"></div>
+        <div id="cg-result-name" style="font-family:'Noto Serif JP',serif;font-size:17px;color:#e2e8f0;letter-spacing:3px;margin-bottom:16px;"></div>
+        <div id="cg-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;padding:16px 20px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:16px;"></div>
+        <div id="cg-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
+        <button onclick="cgPlayAgain()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">もう一度</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 遊び方モーダル -->
   <div id="howto-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.96);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
