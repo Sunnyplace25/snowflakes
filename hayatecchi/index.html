@@ -2573,16 +2573,6 @@
 
       updateCD();
 
-      // おにぎり個数表示（ごはんボタン）
-      var oc = st.onigiriCount || 0;
-      var meshiCdEl = document.getElementById('cd-meshi');
-      if (meshiCdEl) {
-        meshiCdEl.textContent = 'おにぎり ×' + oc;
-        meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#475569';
-      }
-      var onigiriBadge = document.getElementById('onigiri-badge');
-      if (onigiriBadge) onigiriBadge.textContent = oc > 0 ? '×' + oc : '';
-
       // たいりょく20以下で強制休憩（全ボタン2分ロック）
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
         _autoSleepTriggered = true;
@@ -2632,7 +2622,14 @@
     }
 
     function updateCD() {
-      ['meshi','neru','renshu','flyer','gaishutsu'].forEach(function(a) {
+      // meshi は CD なし → おにぎり個数を常時表示
+      var meshiCdEl = document.getElementById('cd-meshi');
+      if (meshiCdEl) {
+        var oc = st.onigiriCount || 0;
+        meshiCdEl.textContent = '×' + oc;
+        meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#94a3b8';
+      }
+      ['neru','renshu','flyer','gaishutsu'].forEach(function(a) {
         var btn  = document.getElementById('btn-' + a);
         var cdEl = document.getElementById('cd-' + a);
         var rem  = cdRemain(a);
