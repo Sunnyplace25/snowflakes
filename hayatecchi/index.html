@@ -457,6 +457,40 @@
       margin-bottom: 12px;
     }
     .live-success.in { opacity: 1; }
+    /* フッターナビ */
+    .footer-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 56px;
+      background: rgba(6,10,22,0.97);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 500;
+      backdrop-filter: blur(8px);
+    }
+    .footer-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      color: #64748b;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+    .footer-btn:active { color: #e2e8f0; }
+    .footer-btn .f-icon { font-size: 20px; line-height: 1; }
+
     @media (max-height: 780px), (max-width: 375px) {
       .chara-img-wrap { height: 200px; }
       .chara-img { max-height: 195px; }
@@ -490,7 +524,7 @@
       <img src="splash.webp" alt="ハヤテっち" style="width:100%;height:100%;object-fit:cover;display:block;">
       <!-- ⚙ 遊び方（イラスト左上のギアに重ねる） -->
       <button onclick="openHowTo(event)" style="position:absolute;top:1.8%;left:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
-      <!-- ❤（イラスト右上に重ねる・後で機能追加） -->
+      <!-- ❤（イラスト右上） -->
       <button onclick="openZukan(event)" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
     </div>
   </div>
@@ -1256,6 +1290,34 @@
       document.getElementById('drum-zukan-detail-view').style.display = 'none';
     }
 
+    function openGoroku(e) {
+      if (e) e.stopPropagation();
+      var log = st.drumLog || {};
+      var list = document.getElementById('goroku-list');
+      list.innerHTML = '';
+      var collected = Object.keys(log).length;
+      document.getElementById('goroku-progress').textContent = collected + ' / ' + DRUM_MEMOS.length;
+      DRUM_MEMOS.forEach(function(memo, i) {
+        var unlocked = !!log[i];
+        var row = document.createElement('div');
+        row.style.cssText = 'padding:14px 16px;background:rgba(110,231,183,0.03);border:1px solid rgba(110,231,183,' + (unlocked ? '0.12' : '0.04') + ');border-radius:12px;';
+        if (unlocked) {
+          row.innerHTML =
+            '<div style="font-size:9px;letter-spacing:3px;color:#6ee7b7;margin-bottom:8px;">MEMO ' + (i+1) + '</div>' +
+            '<div style="font-family:\'Noto Serif JP\',serif;font-size:12px;color:#e2e8f0;line-height:2;">' + memo + '</div>';
+        } else {
+          row.innerHTML =
+            '<div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:6px;">MEMO ' + (i+1) + '</div>' +
+            '<div style="font-size:12px;color:#475569;">練習してゲットしよう</div>';
+        }
+        list.appendChild(row);
+      });
+      document.getElementById('goroku-modal').style.display = 'flex';
+    }
+    function closeGoroku() {
+      document.getElementById('goroku-modal').style.display = 'none';
+    }
+
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
@@ -1663,6 +1725,42 @@
 
 
   <div class="toast" id="toast"></div>
+
+  <!-- フッターナビ -->
+  <nav class="footer-nav">
+    <button class="footer-btn" onclick="openHowTo(event)">
+      <span class="f-icon">⚙</span>
+      <span>遊び方</span>
+    </button>
+    <button class="footer-btn" onclick="openDrumZukan(event)">
+      <span class="f-icon">🥁</span>
+      <span>ドラム図鑑</span>
+    </button>
+    <button class="footer-btn" onclick="openZukan(event)">
+      <span class="f-icon">🍸</span>
+      <span>カクテル図鑑</span>
+    </button>
+    <button class="footer-btn" onclick="openGoroku(event)">
+      <span class="f-icon">📖</span>
+      <span>語録</span>
+    </button>
+    <button class="footer-btn" onclick="window.open('https://sunnyplace25.github.io/snowflakes/','_blank')">
+      <span class="f-icon">❄</span>
+      <span>Snow flakes</span>
+    </button>
+  </nav>
+
+  <!-- 語録モーダル -->
+  <div id="goroku-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#6ee7b7;">DRUM MEMO</div>
+        <button onclick="closeGoroku()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;margin-bottom:20px;">収集: <span id="goroku-progress">0 / 40</span></div>
+      <div id="goroku-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
 
   <!-- SWEETsゲット -->
   <div class="sweets-get-overlay" id="sweets-get-overlay" onclick="closeSweetsGet()">
@@ -2338,8 +2436,23 @@
         _tapPhase = 'tapping';
       }, 900);
 
+      var _liveTapLastTouch = 0;
+      overlay.ontouchstart = function(e) {
+        if (_tapPhase !== 'tapping') return;
+        // 閉じるボタン・その子要素はスルー
+        if (e.target.closest && e.target.closest('#live-close')) return;
+        e.preventDefault();
+        _liveTapLastTouch = Date.now();
+        _tapCount++;
+        if (tapCount) tapCount.textContent = _tapCount;
+        var t = e.changedTouches[0];
+        spawnSpark(t.clientX, t.clientY);
+      };
       overlay.onclick = function(e) {
         if (_tapPhase !== 'tapping') return;
+        if (e.target.closest && e.target.closest('#live-close')) return;
+        // touchstart から500ms以内のclickは無視（二重発火防止）
+        if (Date.now() - _liveTapLastTouch < 500) return;
         _tapCount++;
         if (tapCount) tapCount.textContent = _tapCount;
         spawnSpark(e.clientX, e.clientY);
@@ -2444,6 +2557,7 @@
     }
 
     function closeLive() {
+      if (_tapPhase === 'tapping') return; // タッピング中は閉じない
       var overlay = document.getElementById('live-overlay');
       overlay.classList.remove('show');
       stopLiveBGM();
