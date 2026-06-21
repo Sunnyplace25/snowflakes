@@ -610,6 +610,57 @@
       .action-grid { gap: 6px; }
       .live-btn { padding: 10px 10px 8px; gap: 4px; margin-top: 7px; }
     }
+
+    /* 初回説明画面 */
+    #intro-screen {
+      position: fixed; inset: 0; z-index: 9998;
+      background: #080f1e;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0; padding: 40px 32px;
+      opacity: 0; transition: opacity 0.6s;
+    }
+    #intro-screen.show { opacity: 1; }
+    #intro-screen.hide { opacity: 0; pointer-events: none; }
+    .intro-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 6px; color: #475569;
+      margin-bottom: 10px;
+    }
+    .intro-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; letter-spacing: 4px; color: #e2e8f0;
+      margin-bottom: 28px;
+    }
+    .intro-img {
+      width: 100px; height: auto;
+      margin-bottom: 28px;
+      image-rendering: pixelated;
+    }
+    .intro-desc {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px; color: #94a3b8;
+      line-height: 2.2; text-align: center;
+      margin-bottom: 36px;
+    }
+    .intro-desc b { color: #c4b5fd; font-weight: 400; }
+    .intro-items {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 40px;
+    }
+    .intro-item {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px; letter-spacing: 2px; color: #64748b;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 100px; padding: 6px 14px;
+    }
+    .intro-start {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px; letter-spacing: 5px; color: #c4b5fd;
+      border: 1px solid rgba(196,181,253,0.3);
+      border-radius: 100px; padding: 12px 36px;
+      background: none; cursor: pointer;
+    }
   </style>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -625,6 +676,27 @@
     <input id="pw-input" type="password" placeholder="password" autocomplete="off" autocapitalize="none">
     <div class="pw-err" id="pw-err"></div>
     <button onclick="checkPW()">— 入る —</button>
+  </div>
+
+  <!-- 初回説明画面 -->
+  <div id="intro-screen">
+    <div class="intro-label">Snow flakes</div>
+    <div class="intro-title">ハヤテっち</div>
+    <img class="intro-img" src="hayate_normal.webp" alt="ハヤテ">
+    <div class="intro-desc">
+      Snow flakes の<b>ドラマー・ハヤテ</b>を<br>
+      日常からサポートする育成ゲーム。<br>
+      ご飯をあげて、練習に付き合って、<br>
+      一緒にLIVEへ行こう。
+    </div>
+    <div class="intro-items">
+      <span class="intro-item">🍙 ごはん</span>
+      <span class="intro-item">🥁 ドラム練習</span>
+      <span class="intro-item">🎤 LIVE</span>
+      <span class="intro-item">📖 語録</span>
+      <span class="intro-item">🍴 食べ歩き</span>
+    </div>
+    <button class="intro-start" onclick="closeIntro()">— 始める —</button>
   </div>
 
   <!-- スプラッシュ画面 -->
@@ -3470,16 +3542,33 @@
       if (val === 'HARDGUMI') {
         localStorage.setItem('ht_unlocked', '1');
         document.getElementById('pw-gate').style.display = 'none';
+        showIntroIfFirst();
       } else {
         if (err) { err.textContent = 'ちがうよ'; setTimeout(function(){ err.textContent=''; },1500); }
         document.getElementById('pw-input').value = '';
       }
     }
 
+    function showIntroIfFirst() {
+      if (localStorage.getItem('ht_intro_seen') === '1') return;
+      var el = document.getElementById('intro-screen');
+      if (!el) return;
+      el.style.display = 'flex';
+      setTimeout(function() { el.classList.add('show'); }, 50);
+    }
+    function closeIntro() {
+      localStorage.setItem('ht_intro_seen', '1');
+      var el = document.getElementById('intro-screen');
+      if (!el) return;
+      el.classList.add('hide');
+      setTimeout(function() { el.style.display = 'none'; }, 600);
+    }
+
     /* ── 起動 ── */
     load();
     render();
     autoSpeech();
+    showIntroIfFirst();
 
     /* ── ホームに追加 ── */
     (function() {
