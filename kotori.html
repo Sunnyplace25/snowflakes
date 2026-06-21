@@ -1079,9 +1079,11 @@
   <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 24px;text-align:center;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#fde68a;margin-bottom:6px;">ハヤテっち</p>
     <p style="font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:22px;font-family:'Noto Serif JP',serif;">ハヤテの日常に入り込む<br>キャラクター育成ゲーム<br>買い切り ¥100</p>
-    <div style="display:block;width:100%;box-sizing:border-box;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:100px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;text-align:center;margin-bottom:20px;cursor:default;">
-      準備中
-    </div>
+    <a id="hayate-buy-btn" href="#" target="_blank" onclick="return openStripe(event)"
+      style="display:block;width:100%;box-sizing:border-box;padding:12px;background:rgba(253,230,138,0.08);border:1.5px solid rgba(253,230,138,0.35);border-radius:100px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;text-align:center;margin-bottom:20px;cursor:pointer;text-decoration:none;transition:background 0.2s;"
+      onmouseover="this.style.background='rgba(253,230,138,0.16)'" onmouseout="this.style.background='rgba(253,230,138,0.08)'">
+      ¥100 で購入する
+    </a>
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:10px;">購入済みの方</p>
     <input id="hayate-gate-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
       style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:6px;"
@@ -1094,6 +1096,19 @@
 </div>
 <style>#hayate-gate.show{display:flex!important;}</style>
 <script>
+  // StripeリンクURL（作成後ここを差し替える）
+  var STRIPE_URL = '';
+
+  function openStripe(e) {
+    if (!STRIPE_URL) {
+      e.preventDefault();
+      alert('準備中です。もうしばらくお待ちください。');
+      return false;
+    }
+    e.currentTarget.href = STRIPE_URL;
+    return true;
+  }
+
   function openHayateGate() {
     document.getElementById('hayate-gate-input').value = '';
     document.getElementById('hayate-gate-err').textContent = '';
