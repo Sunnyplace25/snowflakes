@@ -1816,7 +1816,9 @@
 
   <canvas id="snow-canvas"></canvas>
   <audio id="live-bgm" src="live1.mp3" preload="auto"></audio>
-  <audio id="live-bgm2" src="live2.mp3" preload="auto"></audio></audio>
+  <audio id="live-bgm2" src="live2.mp3" preload="auto"></audio>
+  <audio id="live-bgm3" src="live3.mp3" preload="auto"></audio>
+  <audio id="live-bgm4" src="live4.mp3" preload="auto"></audio>
   <div class="wrapper">
 
     <!-- キャラ -->
@@ -2742,7 +2744,7 @@
     }
     function startLiveBGM() {
       pauseAllAudio();
-      var src = Math.random() < 0.5 ? 'live-bgm' : 'live-bgm2';
+      var _r = Math.random(); var src = _r < 0.25 ? 'live-bgm' : _r < 0.5 ? 'live-bgm2' : _r < 0.75 ? 'live-bgm3' : 'live-bgm4';
       var el = document.getElementById(src);
       if (!el) return;
       el.volume = _muted ? 0 : 0.55;
