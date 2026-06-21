@@ -2124,39 +2124,6 @@ function sfShare() {
   }
 </script>
 <style>
-  #ls-popup {
-    position: fixed; top: 50%; left: 50%; z-index: 9998;
-    transform: translate(-50%, -50%) scale(0.95);
-    display: none; flex-direction: row; align-items: center; gap: 14px;
-    background: rgba(10,18,34,0.97); border: 1px solid rgba(186,230,253,0.25);
-    border-radius: 14px; padding: 20px 24px 20px 20px;
-    max-width: 340px; width: calc(100vw - 48px);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.7);
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  #ls-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  #ls-jacket { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-  #ls-info { display: flex; flex-direction: column; gap: 4px; }
-  #ls-label { font-size: 10px; letter-spacing: 2px; color: #7dd3fc; font-family: 'Cormorant Garamond', serif; }
-  #ls-title { font-size: 16px; color: #f0f8ff; font-family: 'Cormorant Garamond', serif; letter-spacing: 1px; line-height: 1.2; }
-  #ls-artist { font-size: 11px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; letter-spacing: 1px; }
-  #ls-spotify {
-    display: inline-block; margin-top: 6px; padding: 5px 12px;
-    background: #1db954; color: #fff; border-radius: 20px;
-    font-size: 11px; letter-spacing: 1px; text-decoration: none;
-    font-family: 'Cormorant Garamond', serif;
-  }
-  #ls-close {
-    position: absolute; top: 8px; right: 10px;
-    background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer; padding: 0;
-  }
-  @media (max-width: 600px) {
-    #ls-popup { max-width: calc(100vw - 48px); }
-    #ls-jacket { width: 60px; height: 60px; }
-  }
-</style>
-<style>
   #chara-popup {
     position: fixed; bottom: 24px; right: 20px; z-index: 9999;
     display: flex; align-items: flex-end; gap: 10px;
@@ -2312,17 +2279,6 @@ function sfShare() {
   </div>
 </div>
 
-<div id="ls-popup" style="position:relative;">
-  <button id="ls-close">✕</button>
-  <img id="ls-jacket" src="item/jacket_littlesnow.webp" alt="Little Snow">
-  <div id="ls-info">
-    <span id="ls-label">NEW SINGLE</span>
-    <span id="ls-title">Little Snow</span>
-    <span id="ls-artist">Snow flakes</span>
-    <span style="font-size:10px;color:#64748b;font-family:'Cormorant Garamond',serif;letter-spacing:0.5px;">c/w 音が消えるまでは</span>
-    <a id="ls-spotify" href="https://open.spotify.com/intl-ja/album/5I4Ge2faqF3Yfk0YhnSxO7" target="_blank" rel="noopener">Spotifyで聴く →</a>
-  </div>
-</div>
 
 <div id="chara-popup">
   <div id="chara-bubble">
@@ -2340,24 +2296,7 @@ function sfShare() {
 </div>
 
 <script>
-  (function() {
-    var LS_DAY_KEY = 'sf_ls_popup_day';
-    var todayStr = new Date().toLocaleDateString('ja-JP');
-    if (localStorage.getItem(LS_DAY_KEY) === todayStr) return;
-    var popup = document.getElementById('ls-popup');
-    document.getElementById('ls-close').addEventListener('click', function() {
-      popup.classList.remove('show');
-      setTimeout(function() { popup.style.display = 'none'; }, 500);
-    });
-    setTimeout(function() {
-      popup.style.display = 'flex';
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() { popup.classList.add('show'); });
-      });
-      localStorage.setItem(LS_DAY_KEY, todayStr);
-    }, 1200);
-  })();
-</script>
+  </script>
 
 <script>
   // ── PWA install prompt ──
@@ -3542,28 +3481,8 @@ document.addEventListener('visibilitychange', function() {
 </script>
 
 <!-- Shukusou jacket notice popup (2026-06-03) -->
-<div id="shukusou-jacket-popup" style="position:fixed;inset:0;z-index:9370;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.82);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
-  <div id="shukusou-jacket-box" style="text-align:center;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);background:rgba(20,25,45,0.96);border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 36px;max-width:320px;width:90%;">
-    <img src="./music/cover_shukusou.webp" alt="祝奏" style="width:160px;border-radius:8px;margin:0 auto 20px;display:block;box-shadow:0 4px 24px rgba(0,0,0,0.4);">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;margin:0 0 12px;">MUSIC</p>
-    <p style="font-size:13px;line-height:2;color:#cbd5e1;letter-spacing:0.5px;margin:0 0 20px;">祝奏 Wedding Session<br>楽曲が追加されました</p>
-    <button onclick="document.getElementById('shukusou-jacket-popup').style.opacity='0';document.getElementById('shukusou-jacket-popup').style.pointerEvents='none';setTimeout(function(){var el=document.getElementById('sweets-limited-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},300);" style="display:block;width:100%;margin:0 auto 20px;padding:10px 28px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.4);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(253,230,138,0.18)'" onmouseout="this.style.background='rgba(253,230,138,0.1)'">SWEETs LIMITED へ →</button>
-    <button onclick="document.getElementById('shukusou-jacket-popup').style.opacity='0';document.getElementById('shukusou-jacket-popup').style.pointerEvents='none';" style="background:none;border:1px solid rgba(253,230,138,0.2);border-radius:100px;padding:8px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#94a3b8';this.style.borderColor='rgba(253,230,138,0.4)'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(253,230,138,0.2)'">閉じる</button>
-  </div>
-</div>
 <script>
-  (function() {
-    if (!localStorage.getItem('sf_shukusou_jacket_top_20260603')) {
-      localStorage.setItem('sf_shukusou_jacket_top_20260603', '1');
-      setTimeout(function() {
-        var pop = document.getElementById('shukusou-jacket-popup');
-        var box = document.getElementById('shukusou-jacket-box');
-        if (pop) { pop.style.opacity = '1'; pop.style.pointerEvents = 'auto'; }
-        if (box) box.style.transform = 'none';
-      }, 800);
-    }
-  })();
-</script>
+  </script>
 <!-- 始まりのベース 公開ポップアップ (2026-06-13) -->
 <!-- ハヤテっち公開ポップアップ (2026-06-21) -->
 <div id="hayatecchi-popup" style="position:fixed;inset:0;z-index:9390;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.88);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
