@@ -642,6 +642,29 @@
       'よし、今日のドラムメモ終わり。続きは叩いて覚えよ'
     ];
 
+    /* ── ドラム図鑑アイテム ── */
+    var DRUM_ITEMS = [
+      // 楽器
+      { id:'stick',    name:'スティック',       img:'drum_stick.webp',    desc:'ドラムを叩くための棒。重さで音の出方がけっこう変わる。',                    cat:'楽器' },
+      { id:'snare',    name:'スネア',           img:'drum_snare.webp',    desc:'タン！と鳴る中心の太鼓。リズムの顔ともいわれる存在。',                     cat:'楽器' },
+      { id:'bass',     name:'バスドラム',       img:'drum_bass.webp',     desc:'足で踏む大きな太鼓。地味に見えて、いちばん下で支えてる。',                  cat:'楽器' },
+      { id:'hihat',    name:'ハイハット',       img:'drum_hihat.webp',    desc:'2枚のシンバルを足で開け閉め。チッチッって音が曲を歩かせる。',              cat:'楽器' },
+      { id:'cymbal',   name:'シンバル',         img:'drum_cymbal.webp',   desc:'シャーン！と鳴る金色の円盤。ここぞって時に鳴らしたい。',                   cat:'楽器' },
+      { id:'tom',      name:'タム',             img:'drum_tom.webp',      desc:'音程違いの太鼓。フィルインで使うと気持ちいい。',                           cat:'楽器' },
+      { id:'click',    name:'クリック',         img:'drum_click.webp',    desc:'テンポを合わせる道具。ちょっと厳しいけど、頼りになる。',                   cat:'楽器' },
+      { id:'fillin',   name:'フィルイン',       img:'drum_fillin.webp',   desc:'次の場面に行くための合図みたいなもの。複数ドラムを一気に叩く。',           cat:'楽器' },
+      // お手入れ道具（画像あり）
+      { id:'drumkey',  name:'ドラムキー',       img:'drum_key.webp',      desc:'ドラムのネジを回して、音の張り具合を調整する小さな道具。ドラマーの必需品。', cat:'道具' },
+      { id:'bag',      name:'スティックケース', img:'drum_stick_bag.webp',desc:'スティックを入れておくケース。予備のスティックを持ち歩くための相棒。',     cat:'道具' },
+      { id:'gel',      name:'ミュートジェル',   img:'drum_mute_gel.webp', desc:'太鼓やシンバルの響きを少し抑える小さなジェル。音を落ち着かせたいときに。', cat:'道具' },
+      { id:'oil',      name:'ペダルオイル',     img:'drum_pedal_oil.webp',desc:'ペダルの動きをなめらかにするためのオイル。踏み心地に関わる大事なお手入れ。', cat:'道具' },
+      // お手入れ道具（画像あり）
+      { id:'cloth',    name:'チューニングクロス', img:'drum_cloth.webp',         desc:'シェルや金属パーツを拭く布。指紋やほこりを取って、ドラムをきれいに保つよ。', cat:'道具' },
+      { id:'cleaner',  name:'シンバルクリーナー', img:'drum_cymbal_cleaner.webp',desc:'シンバルのくすみや汚れを落とす道具。使いすぎず、やさしく磨くのが大事。',   cat:'道具' },
+      { id:'headcln',  name:'ヘッドクリーナー',  img:'drum_head_cleaner.webp',  desc:'ドラムヘッドの汚れを軽く拭き取るための道具。叩く面をきれいにしておくと気分も上がる。', cat:'道具' },
+      { id:'head',     name:'予備ヘッド',        img:'drum_spare_head.webp',    desc:'破れたり古くなったときに交換するドラムの皮。音を大きく変える大事なパーツ。', cat:'道具' },
+    ];
+
     /* ── ドラム練習ミニゲーム ── */
     var _drumTimer = null, _drumCount = 0, _drumActive = false, _drumLastMemo = -1;
 
@@ -675,9 +698,13 @@
         }
       }, 1000);
     }
+    var _drumLastTouch = 0;
     function drumTap(e) {
       if (e) e.preventDefault();
       if (!_drumActive) return;
+      // touchstart + click 二重発火を防ぐ
+      if (e && e.type === 'touchstart') { _drumLastTouch = Date.now(); }
+      else if (e && e.type === 'click' && Date.now() - _drumLastTouch < 500) return;
       _drumCount++;
       var btn = document.getElementById('drum-tap-btn');
       btn.style.background = 'rgba(110,231,183,0.22)';
@@ -735,6 +762,27 @@
           '<div style="font-family:\'Noto Serif JP\',serif;font-size:12px;color:#94a3b8;line-height:1.9;">' + DRUM_MEMOS[memoIdx] + '</div>' +
           '<div style="font-size:10px;color:#334155;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
+
+      // ドラム図鑑アイテムをランダムゲット
+      if (!st.drumItems) st.drumItems = {};
+      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
+      var itemEl = document.getElementById('drum-result-item');
+      if (unseenItems.length > 0) {
+        var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
+        st.drumItems[got.id] = true;
+        save();
+        if (itemEl) {
+          itemEl.style.display = 'block';
+          itemEl.innerHTML =
+            '<div style="font-size:9px;letter-spacing:3px;color:#c4b5fd;margin-bottom:6px;">― 図鑑ゲット！ ―</div>' +
+            (got.img ? '<img src="' + got.img + '" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' : '<div style="font-size:28px;margin-bottom:4px;">🥁</div>') +
+            '<div style="font-size:13px;color:#e2e8f0;">' + got.name + '</div>' +
+            '<div style="font-size:10px;color:#64748b;margin-top:2px;">' + got.cat + ' ' + Object.keys(st.drumItems).length + ' / ' + DRUM_ITEMS.length + '</div>';
+        }
+      } else {
+        if (itemEl) itemEl.style.display = 'none';
+      }
+
       render();
     }
 
@@ -1054,6 +1102,63 @@
       document.getElementById('zukan-modal').style.display = 'none';
     }
 
+    function openDrumZukan(e) {
+      if (e) e.stopPropagation();
+      var got = st.drumItems || {};
+      var list = document.getElementById('drum-zukan-list');
+      list.innerHTML = '';
+      var cats = ['楽器', '道具'];
+      cats.forEach(function(cat) {
+        var items = DRUM_ITEMS.filter(function(i){ return i.cat === cat; });
+        var catDiv = document.createElement('div');
+        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#94a3b8;margin:16px 0 10px;font-family:\'Cormorant Garamond\',serif;';
+        catDiv.textContent = '― ' + (cat === '楽器' ? 'INSTRUMENTS' : 'MAINTENANCE') + ' ―';
+        list.appendChild(catDiv);
+        var grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:8px;';
+        items.forEach(function(item) {
+          var unlocked = !!got[item.id];
+          var card = document.createElement('div');
+          card.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,' + (unlocked ? '0.12' : '0.04') + ');border-radius:10px;padding:10px 6px;text-align:center;';
+          card.innerHTML =
+            '<div style="height:56px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;">' +
+              (unlocked && item.img
+                ? '<img src="' + item.img + '" style="max-width:52px;max-height:52px;object-fit:contain;image-rendering:pixelated;">'
+                : '<div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);"></div>') +
+            '</div>' +
+            '<div style="font-size:9px;color:' + (unlocked ? '#e2e8f0' : '#334155') + ';line-height:1.4;">' + (unlocked ? item.name : '？？？') + '</div>';
+          if (unlocked) {
+            card.title = item.desc;
+            card.style.cursor = 'pointer';
+            card.onclick = function() { showDrumItemDetail(item); };
+          }
+          grid.appendChild(card);
+        });
+        list.appendChild(grid);
+      });
+      var total = DRUM_ITEMS.length;
+      var collected = Object.keys(got).length;
+      document.getElementById('drum-zukan-progress').textContent = collected + ' / ' + total;
+      document.getElementById('drum-zukan-modal').style.display = 'flex';
+    }
+    function closeDrumZukan() {
+      document.getElementById('drum-zukan-modal').style.display = 'none';
+      document.getElementById('drum-item-detail').style.display = 'none';
+    }
+    function showDrumItemDetail(item) {
+      var el = document.getElementById('drum-item-detail');
+      el.innerHTML =
+        '<div style="position:fixed;inset:0;z-index:10002;background:rgba(4,8,18,0.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;" onclick="this.parentNode.style.display=\'none\'">' +
+          '<div style="max-width:320px;text-align:center;">' +
+            (item.img ? '<img src="' + item.img + '" style="width:100px;height:100px;object-fit:contain;image-rendering:pixelated;margin-bottom:20px;">' : '<div style="font-size:56px;margin-bottom:20px;">🥁</div>') +
+            '<div style="font-family:\'Cormorant Garamond\',serif;font-size:20px;color:#fde68a;letter-spacing:3px;margin-bottom:16px;">' + item.name + '</div>' +
+            '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#94a3b8;line-height:2;padding:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">' + item.desc + '</div>' +
+            '<div style="font-size:10px;color:#475569;margin-top:16px;">タップで閉じる</div>' +
+          '</div>' +
+        '</div>';
+      el.style.display = 'block';
+    }
+
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
@@ -1095,6 +1200,9 @@
         <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:18px;color:#e2e8f0;margin-bottom:8px;">5秒間、スネアを叩け！</div>
         <div style="font-size:12px;color:#64748b;margin-bottom:36px;">連打数で評価が変わるよ</div>
         <button onclick="startDrumGame()" style="padding:16px 56px;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.35);border-radius:14px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
+        <div style="margin-top:24px;">
+          <button onclick="openDrumZukan(event)" style="background:none;border:none;color:#64748b;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">🥁 ドラム図鑑 <span id="drum-zukan-count-label"></span></button>
+        </div>
       </div>
 
       <!-- ゲーム中 -->
@@ -1113,7 +1221,8 @@
         <div id="drum-result-count" style="font-size:13px;color:#64748b;margin-bottom:20px;"></div>
         <div id="drum-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.9;background:rgba(110,231,183,0.04);border:1px solid rgba(110,231,183,0.12);border-radius:12px;padding:14px 18px;margin-bottom:16px;"></div>
         <div id="drum-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:16px;"></div>
-        <div id="drum-result-memo" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left;"></div>
+        <div id="drum-result-memo" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:left;"></div>
+        <div id="drum-result-item" style="display:none;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.18);border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;"></div>
         <button onclick="closeDrumGame()" style="padding:12px 44px;background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);border-radius:10px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;">とじる</button>
       </div>
     </div>
@@ -1187,6 +1296,19 @@
         <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
       </div>
       <div id="zukan-list" style="display:flex;flex-direction:column;gap:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ドラム図鑑モーダル -->
+  <div id="drum-zukan-modal" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
+    <div id="drum-item-detail" style="display:none;"></div>
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
+        <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+      <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 16</span></div>
+      <div id="drum-zukan-list"></div>
     </div>
   </div>
 
@@ -1431,6 +1553,11 @@
       <div class="sweets-get-text">SWEETs ゲット！</div>
       <div class="sweets-get-sub">タップして閉じる</div>
     </div>
+  </div>
+
+  <!-- LIVEカウントダウン -->
+  <div id="live-countdown-overlay" style="display:none;position:fixed;inset:0;z-index:10005;background:rgba(4,8,20,0.97);align-items:center;justify-content:center;">
+    <div id="live-countdown-num" style="font-family:'Cormorant Garamond',serif;font-size:120px;color:#c4b5fd;line-height:1;user-select:none;"></div>
   </div>
 
   <!-- ライブ演出 -->
@@ -1958,8 +2085,40 @@
         ? 'ライブ成功！！\nドラムスキル +' + skillGain
         : 'ライブ終了\n次はもっとうまくやる';
 
-      showLiveOverlay(success, resultText);
       save();
+      showLiveCountdown(function() { showLiveOverlay(success, resultText); });
+    }
+
+    function showLiveCountdown(cb) {
+      var overlay = document.getElementById('live-countdown-overlay');
+      var numEl   = document.getElementById('live-countdown-num');
+      overlay.style.display = 'flex';
+      var n = 3;
+      numEl.textContent = n;
+      numEl.style.transform = 'scale(1.3)';
+      numEl.style.opacity = '1';
+      var tick = function() {
+        numEl.style.transition = 'none';
+        numEl.style.transform = 'scale(1.4)';
+        numEl.style.opacity = '1';
+        setTimeout(function() {
+          numEl.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
+          numEl.style.transform = 'scale(0.6)';
+          numEl.style.opacity = '0.1';
+        }, 50);
+        setTimeout(function() {
+          n--;
+          if (n > 0) {
+            numEl.style.transition = 'none';
+            numEl.textContent = n;
+            tick();
+          } else {
+            overlay.style.display = 'none';
+            cb();
+          }
+        }, 900);
+      };
+      tick();
     }
 
     function pauseAllAudio() {
@@ -2167,6 +2326,8 @@
       if (badge) badge.textContent = 'Drum Lv.' + getLevel();
       var liveBadge = document.getElementById('live-count-badge');
       if (liveBadge) liveBadge.textContent = 'LIVE × ' + (st.liveCount || 0);
+      var dzLabel = document.getElementById('drum-zukan-count-label');
+      if (dzLabel) { var dc = Object.keys(st.drumItems || {}).length; dzLabel.textContent = dc > 0 ? dc + ' / ' + DRUM_ITEMS.length : ''; }
 
       // ライブボタン状態
       var liveBtn = document.getElementById('btn-live');
