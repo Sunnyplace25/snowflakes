@@ -2554,7 +2554,7 @@
       '今日の音、俺けっこう好きだった',
       'まだ手が震えてる。気持ちいい意味で',
       '終わってもまだ鳴ってる気がする',
-      'お前が来てくれてよかった',
+      '来てくれてよかった',
       'これがあるから、やめらんないんだよな',
       '今日も一緒にいてくれてありがとう'
     ];
@@ -2598,6 +2598,10 @@
     var _imgTimer = null;
 
     function doAction(action) {
+      if (cdRemain('forceSleep') > 0 && action !== 'hanasu') {
+        flash('もう限界だ……少し待って');
+        return;
+      }
       var remain = cdRemain(action);
       // おでかけ: きぶん20以下なら時間外でも発動可
       var gaishutsuEmergency = (action === 'gaishutsu' && (st.kibun || 0) <= 20);
@@ -2799,17 +2803,20 @@
         el.pause();
       });
     }
+    var _liveAudioEl = null;
     function startLiveBGM() {
       pauseAllAudio();
       var _ids = ['live-bgm','live-bgm2','live-bgm3','live-bgm4','live-bgm5','live-bgm6']; var src = _ids[Math.floor(Math.random()*_ids.length)]; _currentLiveIsSlow = (src === 'live-bgm5' || src === 'live-bgm6');
-      var el = document.getElementById(src);
-      if (!el) return;
-      el.volume = _muted ? 0 : 0.55;
-      el.currentTime = 0;
-      el.onended = function() { _tapPhase = 'tapping'; showLiveResult(); };
-      el.play().catch(function(){});
+      if (_liveAudioEl) _liveAudioEl.onended = null;
+      _liveAudioEl = document.getElementById(src);
+      if (!_liveAudioEl) return;
+      _liveAudioEl.volume = _muted ? 0 : 0.55;
+      _liveAudioEl.currentTime = 0;
+      _liveAudioEl.onended = function() { showLiveResult(); };
+      _liveAudioEl.play().catch(function(){});
     }
     function stopLiveBGM() {
+      if (_liveAudioEl) { _liveAudioEl.onended = null; _liveAudioEl = null; }
       pauseAllAudio();
     }
 
@@ -2924,6 +2931,7 @@
           if (_tapPhase !== 'tapping') { clearInterval(_rhythmInterval); _rhythmInterval = null; return; }
           if (_rhythmBeats >= RHYTHM_TOTAL) {
             clearInterval(_rhythmInterval); _rhythmInterval = null;
+            if (_liveAudioEl) _liveAudioEl.onended = null;
             showLiveResult(); return;
           }
           rhythmBeat();
