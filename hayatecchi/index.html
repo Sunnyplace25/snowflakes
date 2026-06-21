@@ -495,7 +495,7 @@
       transition: color 0.2s;
     }
     .footer-btn:active { color: #e2e8f0; }
-    .footer-btn .f-icon { font-size: 20px; line-height: 1; }
+    .footer-btn .f-icon { font-size: 18px; line-height: 1; }
 
     @media (max-height: 780px), (max-width: 375px) {
       .chara-img-wrap { height: 200px; }
@@ -808,10 +808,19 @@
     /* ── ドラム練習ミニゲーム ── */
     var _drumTimer = null, _drumCount = 0, _drumActive = false, _drumLastMemo = -1;
     var _drumAudio = null;
+    var _drumSessionCount = 0; // 連続練習回数
+    var _drumBreakUntil = 0;   // 休憩終了時刻
 
     function openDrumGame() {
       var btn = document.getElementById('btn-renshu');
       if (btn && btn.classList.contains('on-cd')) return;
+      // 5回連続で5分休憩
+      if (_drumBreakUntil > Date.now()) {
+        var rem = Math.ceil((_drumBreakUntil - Date.now()) / 1000);
+        var m = Math.floor(rem / 60), s = rem % 60;
+        flash('ちょっと休んで……あと ' + m + '分' + (s > 0 ? s + '秒' : ''));
+        return;
+      }
       document.getElementById('drum-modal').style.display = 'flex';
       document.getElementById('drum-intro').style.display = 'block';
       document.getElementById('drum-play').style.display   = 'none';
@@ -886,6 +895,12 @@
       st.skill    = (st.skill || 0) + skillUp;
       st.onaka    = clamp(st.onaka - 10);
       // st.cd.renshu = cdTime(CD_SEC.renshu); // テスト中CD無効
+      // 連続練習カウント
+      _drumSessionCount++;
+      if (_drumSessionCount >= 5) {
+        _drumBreakUntil = Date.now() + 5 * 60 * 1000;
+        _drumSessionCount = 0;
+      }
       save();
 
       document.getElementById('drum-play').style.display   = 'none';
@@ -1714,7 +1729,7 @@
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🥁</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ドラム練習</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">れんしゅうゲージを溜めてLIVEを解放！ 練習回数に応じてDrum Lvも上がるよ。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ドラム練習</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">れんしゅうゲージを溜めてLIVEを解放！ 練習中は音楽が流れるよ。5回続けると休憩が必要になる。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">💬</span>
@@ -1726,7 +1741,7 @@
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🚶</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">おでかけ</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">ハヤテを外に出して、気分転換させよう。外出先によって、ハヤテのひとことが変わるよ。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">おでかけ</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">気分転換に外へ。メンバーと遭遇したり、外食して腹を満たすことも。きぶんが低いときは時間外でも出られるよ。</div></div>
             </div>
           </div>
         </div>
@@ -1736,8 +1751,11 @@
           <div style="background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.15);border-radius:14px;padding:16px;">
             <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               れんしゅうゲージが一定以上溜まると、LIVEに挑戦できるよ。<br><br>
-              LIVEを重ねると <span style="color:#c4b5fd;">Drum Lv</span> がアップ！<br><br>
-              ライブ中は音楽が流れるので、音量に気をつけて楽しんでね。
+              ライブ中は画面をタップしてハヤテを応援しよう！<br>
+              終演後はハヤテから一言もらえるよ。<br><br>
+              LIVEをこなすと <span style="color:#c4b5fd;">Drum Lv</span> がアップ！<br>
+              成功すると <span style="color:#fde68a;">SWEETs</span> や図鑑アイテムもゲットできる。<br><br>
+              ライブ中は音楽が流れるので、音量に気をつけてね。
             </p>
           </div>
         </div>
@@ -1746,8 +1764,8 @@
           <div style="font-size:10px;letter-spacing:4px;color:#fde68a;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">SWEETs</div>
           <div style="background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;padding:16px;">
             <p style="font-size:12px;color:#cbd5e1;line-height:2;">
-              LIVEが成功すると <span style="color:#fde68a;">SWEETs</span> がもらえるよ！<br>
-              ハヤテに食べさせると、きぶんが満タンになる。
+              LIVEが成功するともらえるお菓子。<br>
+              ハヤテに食べさせると、全ステータスが回復するよ。
             </p>
           </div>
         </div>
@@ -1757,7 +1775,21 @@
           <div style="background:rgba(125,211,252,0.04);border:1px solid rgba(125,211,252,0.15);border-radius:14px;padding:16px;">
             <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               色のシロップを混ぜて、オリジナルカクテルを作ろう。<br>
-              完成した一杯には、名前とカクテル言葉がつくよ。
+              完成した一杯には、名前とカクテル言葉がつくよ。<br>
+              1日5杯まで。
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:10px;letter-spacing:4px;color:#fb923c;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">COLLECTION</div>
+          <div style="background:rgba(253,186,116,0.04);border:1px solid rgba(253,186,116,0.1);border-radius:14px;padding:16px;">
+            <p style="font-size:12px;color:#cbd5e1;line-height:2;">
+              ♡ボタンを押すとCOLLECTIONが開くよ。<br><br>
+              <span style="color:#6ee7b7;">📖 語録</span>：ドラム練習でハヤテのメモを収集<br>
+              <span style="color:#fde68a;">🍸 カクテル図鑑</span>：バイトで作ったカクテルを記録<br>
+              <span style="color:#c4b5fd;">🥁 ドラム図鑑</span>：LIVEをこなしてアイテムをゲット<br>
+              <span style="color:#fb923c;">🍴 食べ歩き図鑑</span>：おでかけ外食でたまに発見
             </p>
           </div>
         </div>
@@ -1925,6 +1957,10 @@
       <span class="f-icon">📖</span>
       <span>語録</span>
     </button>
+    <button class="footer-btn" onclick="openFoodZukan(event)">
+      <span class="f-icon">🍴</span>
+      <span>食べ歩き</span>
+    </button>
     <button class="footer-btn" onclick="window.open('https://sunnyplace25.github.io/snowflakes/','_blank')">
       <span class="f-icon">❄</span>
       <span>Snow flakes</span>
@@ -1939,6 +1975,13 @@
         <button onclick="closeZukanHub()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
+        <button onclick="closeZukanHub();openGoroku(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(110,231,183,0.05);border:1px solid rgba(110,231,183,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
+          <span style="font-size:32px;">📖</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#6ee7b7;letter-spacing:3px;margin-bottom:4px;">語録</div>
+            <div id="hub-goroku-count" style="font-size:10px;color:#94a3b8;"></div>
+          </div>
+        </button>
         <button onclick="closeZukanHub();openZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(253,230,138,0.05);border:1px solid rgba(253,230,138,0.2);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
           <span style="font-size:32px;">🍸</span>
           <div>
@@ -1951,13 +1994,6 @@
           <div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#c4b5fd;letter-spacing:3px;margin-bottom:4px;">ドラム図鑑</div>
             <div id="hub-drum-count" style="font-size:10px;color:#94a3b8;"></div>
-          </div>
-        </button>
-        <button onclick="closeZukanHub();openGoroku(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(110,231,183,0.05);border:1px solid rgba(110,231,183,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
-          <span style="font-size:32px;">📖</span>
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#6ee7b7;letter-spacing:3px;margin-bottom:4px;">語録</div>
-            <div id="hub-goroku-count" style="font-size:10px;color:#94a3b8;"></div>
           </div>
         </button>
         <button onclick="closeZukanHub();openFoodZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(253,186,116,0.05);border:1px solid rgba(253,186,116,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
