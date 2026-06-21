@@ -659,7 +659,7 @@
       st.renshuGe = clamp(st.renshuGe + geUp, 0, 100);
       st.skill    = (st.skill || 0) + skillUp;
       st.onaka    = clamp(st.onaka - 10);
-      st.cd.renshu = cdTime(CD_SEC.renshu);
+      // st.cd.renshu = cdTime(CD_SEC.renshu); // テスト中CD無効
       save();
 
       document.getElementById('drum-play').style.display   = 'none';
