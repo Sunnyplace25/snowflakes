@@ -2007,21 +2007,6 @@
           </div>
         </div>
 
-        <div>
-          <div style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">DATA BACKUP</div>
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
-            <p style="font-size:11px;color:#cbd5e1;line-height:1.8;margin-bottom:14px;text-align:center;">IDとPINを設定するとデータを保存できます。<br>必ずメモしておいてください。</p>
-            <input id="backup-id" type="text" placeholder="バックアップID" maxlength="20"
-              style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
-            <input id="backup-pin" type="tel" placeholder="PIN（数字4桁）" maxlength="4" pattern="[0-9]*" inputmode="numeric"
-              style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <button onclick="backupSave()" style="padding:9px;border-radius:8px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);color:#fde68a;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">保存する</button>
-              <button onclick="backupRestore()" style="padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#cbd5e1;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">復元する</button>
-            </div>
-            <div id="backup-msg" style="font-size:11px;color:#cbd5e1;text-align:center;margin-top:10px;min-height:16px;"></div>
-          </div>
-        </div>
 
       </div>
     </div>
@@ -3649,66 +3634,6 @@
       }
     })();
 
-    /* ── DATA BACKUP (Supabase) ── */
-    (function() {
-      var SB_URL = 'https://pjmqunhjyafzqjxwyunb.supabase.co';
-      var SB_KEY = 'sb_publishable_kMNnLJ9VR6fW02U9CANbkQ_FGVjUpY7';
-      var API    = SB_URL + '/rest/v1/sf_user_data';
-
-      function sbH(extra) {
-        var h = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
-        if (extra) Object.assign(h, extra);
-        return h;
-      }
-
-      function getKey() {
-        var id  = (document.getElementById('backup-id').value  || '').trim();
-        var pin = (document.getElementById('backup-pin').value || '').trim();
-        return { id: id, pin: pin, key: 'hayate_' + id + ':' + pin };
-      }
-
-      function setMsg(txt, col) {
-        var el = document.getElementById('backup-msg');
-        if (el) { el.textContent = txt; el.style.color = col || '#64748b'; }
-      }
-
-      window.backupSave = async function() {
-        var k = getKey();
-        if (!k.id)            { setMsg('IDを入力してください', '#f87171'); return; }
-        if (!/^\d{4}$/.test(k.pin)) { setMsg('PINは数字4桁で入力してください', '#f87171'); return; }
-        setMsg('保存中…');
-        try {
-          var res = await fetch(API, {
-            method: 'POST',
-            headers: sbH({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-            body: JSON.stringify({ email: k.key, payload: { hayatecchi: JSON.stringify(st) }, updated_at: new Date().toISOString() })
-          });
-          if (res.ok) { setMsg('保存しました！', '#6ee7b7'); }
-          else        { setMsg('保存に失敗しました', '#f87171'); }
-        } catch(e)  { setMsg('通信エラー', '#f87171'); }
-      };
-
-      window.backupRestore = async function() {
-        var k = getKey();
-        if (!k.id)            { setMsg('IDを入力してください', '#f87171'); return; }
-        if (!/^\d{4}$/.test(k.pin)) { setMsg('PINは数字4桁で入力してください', '#f87171'); return; }
-        setMsg('復元中…');
-        try {
-          var res = await fetch(API + '?email=eq.' + encodeURIComponent(k.key) + '&select=payload&limit=1', { headers: sbH() });
-          var data = await res.json();
-          if (data && data[0] && data[0].payload && data[0].payload.hayatecchi) {
-            var saved = JSON.parse(data[0].payload.hayatecchi);
-            st = saved;
-            if (!st.cd) st.cd = {};
-            save();
-            render();
-            setMsg('復元しました！', '#6ee7b7');
-          } else {
-            setMsg('データが見つかりません', '#f87171');
-          }
-        } catch(e) { setMsg('通信エラー', '#f87171'); }
-      };
-    })();
   </script>
 </body>
 </html>
