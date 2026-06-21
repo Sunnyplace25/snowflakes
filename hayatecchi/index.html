@@ -816,7 +816,7 @@
           '<div style="font-size:10px;color:#94a3b8;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
 
-      // 練習報酬: 60%おにぎり / 40%図鑑アイテム
+      // 練習報酬: 60%おにぎり（図鑑アイテムはLIVEのみ）
       var itemEl = document.getElementById('drum-result-item');
       if (Math.random() < 0.6) {
         if (!st.onigiriCount) st.onigiriCount = 0;
@@ -831,7 +831,7 @@
           '<div style="font-size:13px;color:#e2e8f0;">おにぎり</div>' +
           '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">所持: ×' + st.onigiriCount + '</div>';
       } else {
-        tryGetDrumItem(1.0, itemEl);
+        itemEl.style.display = 'none';
       }
 
       render();
@@ -2328,7 +2328,6 @@
           speech = randLine(GAISHUTSU_LINES);
           toast  = 'やるき +20　きぶん +20　おなか -15　たいりょく -10';
         }
-        setTimeout(function(){ tryGetDrumItem(0.4, null); }, 300);
       }
       else if (action === 'flyer') {
         st.yaruki = clamp(st.yaruki + 8);
