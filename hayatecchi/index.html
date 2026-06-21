@@ -782,27 +782,32 @@
           '<div style="font-size:10px;color:#475569;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
 
-      // ドラム図鑑アイテムをランダムゲット
-      if (!st.drumItems) st.drumItems = {};
-      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
-      var itemEl = document.getElementById('drum-result-item');
-      if (unseenItems.length > 0) {
-        var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
-        st.drumItems[got.id] = true;
-        save();
-        if (itemEl) {
-          itemEl.style.display = 'block';
-          itemEl.innerHTML =
-            '<div style="font-size:9px;letter-spacing:3px;color:#c4b5fd;margin-bottom:6px;">― 図鑑ゲット！ ―</div>' +
-            (got.img ? '<img src="' + got.img + '" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' : '<div style="font-size:28px;margin-bottom:4px;">🥁</div>') +
-            '<div style="font-size:13px;color:#e2e8f0;">' + got.name + '</div>' +
-            '<div style="font-size:10px;color:#64748b;margin-top:2px;">' + got.cat + ' ' + Object.keys(st.drumItems).length + ' / ' + DRUM_ITEMS.length + '</div>';
-        }
-      } else {
-        if (itemEl) itemEl.style.display = 'none';
-      }
+      // ドラム図鑑アイテムをランダムゲット（毎回）
+      tryGetDrumItem(1.0, document.getElementById('drum-result-item'));
 
       render();
+    }
+
+    // prob: 0.0〜1.0 の確率でゲット試行。elがあればパネル表示、なければflash通知。
+    function tryGetDrumItem(prob, el) {
+      if (!st.drumItems) st.drumItems = {};
+      if (Math.random() > prob) { if (el) el.style.display = 'none'; return null; }
+      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
+      if (unseenItems.length === 0) { if (el) el.style.display = 'none'; return null; }
+      var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
+      st.drumItems[got.id] = true;
+      save();
+      if (el) {
+        el.style.display = 'block';
+        el.innerHTML =
+          '<div style="font-size:9px;letter-spacing:3px;color:#c4b5fd;margin-bottom:6px;">― 図鑑ゲット！ ―</div>' +
+          (got.img ? '<img src="' + got.img + '" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' : '<div style="font-size:28px;margin-bottom:4px;">🥁</div>') +
+          '<div style="font-size:13px;color:#e2e8f0;">' + got.name + '</div>' +
+          '<div style="font-size:10px;color:#64748b;margin-top:2px;">' + got.cat + ' ' + Object.keys(st.drumItems).length + ' / ' + DRUM_ITEMS.length + '</div>';
+      } else {
+        flash('図鑑ゲット！ ' + got.name);
+      }
+      return got;
     }
 
     var _barBGM = null;
@@ -2047,20 +2052,17 @@
       var speech = '', toast = '', imgOverride = null;
 
       if (action === 'meshi') {
+        var hasOnigiri = st.drumItems && st.drumItems['onigiri'];
         if (st.onaka >= 95) {
           speech = 'もう腹いっぱいだって……';
-        } else if (st.onaka >= 50) {
-          // お腹が半分以上 → 少なめ回復・10分CD
-          st.onaka = clamp(st.onaka + 20);
-          st.cd.meshi = cdTime(10 * 60);
-          speech = 'うまい！！';
-          toast  = 'おなか +20';
+        } else if (!hasOnigiri) {
+          speech = 'いまおにぎりないや……';
         } else {
-          // ペコペコ → しっかり回復・15分CD
-          st.onaka = clamp(st.onaka + 50);
-          st.cd.meshi = cdTime(15 * 60);
-          speech = '腹減ってた……うまい！！';
-          toast  = 'おなか +50';
+          var gain = st.onaka < 50 ? 50 : 20;
+          st.onaka = clamp(st.onaka + gain);
+          speech = st.onaka < 50 ? '腹減ってた……うまい！！' : 'うまい！！';
+          toast  = 'おなか +' + gain;
+          // CDなし（持ってるぶんだけあげられる）
         }
       }
       else if (action === 'neru') {
@@ -2121,6 +2123,7 @@
           speech = randLine(GAISHUTSU_LINES);
           toast  = 'やるき +20　きぶん +20　おなか -15　たいりょく -10';
         }
+        setTimeout(function(){ tryGetDrumItem(0.4, null); }, 300);
       }
       else if (action === 'flyer') {
         st.yaruki = clamp(st.yaruki + 8);
@@ -2130,6 +2133,7 @@
         speech = randLine(FLYER_LINES);
         toast  = 'やる気 +8　きぶん +5　おなか -10';
         imgOverride = 'flyer';
+        setTimeout(function(){ tryGetDrumItem(0.4, null); }, 300);
       }
       else if (action === 'sweets') {
         if ((st.sweets || 0) <= 0) { flash('SWEETsないな……またもらってこよう'); return; }
@@ -2331,6 +2335,8 @@
         save();
       }
       _pendingSweetsGet = gotSweets;
+      // LIVE報酬：図鑑アイテムを必ずゲット
+      setTimeout(function(){ tryGetDrumItem(1.0, null); }, 600);
 
       successEl.textContent = randLine(LIVE_SUCCESS_LINES);
       successEl.classList.add('in');
