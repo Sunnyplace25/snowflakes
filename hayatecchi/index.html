@@ -1820,6 +1820,7 @@
   <audio id="live-bgm3" src="live3.mp3" preload="auto"></audio>
   <audio id="live-bgm4" src="live4.mp3" preload="auto"></audio>
   <audio id="live-bgm5" src="live5.mp3" preload="auto"></audio>
+  <audio id="live-bgm6" src="live6.mp3" preload="auto"></audio>
   <div class="wrapper">
 
     <!-- キャラ -->
@@ -2745,7 +2746,7 @@
     }
     function startLiveBGM() {
       pauseAllAudio();
-      var _r = Math.random(); var src = _r < 0.2 ? 'live-bgm' : _r < 0.4 ? 'live-bgm2' : _r < 0.6 ? 'live-bgm3' : _r < 0.8 ? 'live-bgm4' : 'live-bgm5';
+      var _ids = ['live-bgm','live-bgm2','live-bgm3','live-bgm4','live-bgm5','live-bgm6']; var src = _ids[Math.floor(Math.random()*_ids.length)];
       var el = document.getElementById(src);
       if (!el) return;
       el.volume = _muted ? 0 : 0.55;
