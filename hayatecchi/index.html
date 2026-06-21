@@ -850,6 +850,10 @@
     }
 
     function openMiniGame() {
+      if (cdRemain('bar') > 0) {
+        flash('また来てね…あと ' + fmtCD(cdRemain('bar')));
+        return;
+      }
       document.getElementById('cocktail-modal').style.display = 'flex';
       document.getElementById('oc-welcome').style.display = 'block';
       document.getElementById('oc-intro').style.display = 'none';
@@ -939,18 +943,29 @@
       st.zukanLog[logKey].count++;
       st.zukanLog[logKey].last = Date.now();
 
+      // バー回数カウント
+      if (!st.barCount) st.barCount = 0;
+      st.barCount++;
+      var barRemain = 5 - st.barCount;
+      if (st.barCount >= 5) {
+        st.barCount = 0;
+        st.cd.bar = cdTime(CD_SEC.bar);
+      }
+
       if (recipe) {
         document.getElementById('oc-result-name').textContent = recipe.name;
         document.getElementById('oc-result-kotoba').textContent = '「' + recipe.kotoba + '」';
         document.getElementById('oc-result-desc').textContent = recipe.desc;
-        document.getElementById('oc-result-reward').textContent = 'きぶん +15　やるき +10';
+        var rewardTxt = 'きぶん +15　やるき +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '　（次まで少し待って）');
+        document.getElementById('oc-result-reward').textContent = rewardTxt;
         st.kibun = clamp(st.kibun + 15); st.yaruki = clamp(st.yaruki + 10); save();
       } else {
         glassEl.innerHTML = '<img src="cocktail_mystery.webp" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;">';
         document.getElementById('oc-result-name').textContent = 'Mystery Blend';
         document.getElementById('oc-result-kotoba').textContent = '「まだ名前のない、あなただけの一杯」';
         document.getElementById('oc-result-desc').textContent = 'まだ誰も知らない、未知のカクテル。';
-        document.getElementById('oc-result-reward').textContent = 'きぶん +10';
+        var rewardTxt2 = 'きぶん +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '　（次まで少し待って）');
+        document.getElementById('oc-result-reward').textContent = rewardTxt2;
         st.kibun = clamp(st.kibun + 10); save();
       }
     }
@@ -1577,9 +1592,9 @@
           <span class="action-cd" id="cd-gaishutsu"></span>
         </button>
         <button class="action-btn" id="btn-game" onclick="openMiniGame()">
-          <span class="action-icon">🎮</span>
-          <span>ゲーム</span>
-          <span class="action-cd"></span>
+          <span class="action-icon"><img src="cocktail_amber_night.webp" style="width:28px;height:28px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
+          <span>バー</span>
+          <span class="action-cd" id="cd-bar"></span>
         </button>
         <button class="action-btn" id="btn-sweets" onclick="doAction('sweets')">
           <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
@@ -1659,7 +1674,8 @@
       renshu:    30 * 60,
       flyer:     20 * 60,
       gaishutsu: 45 * 60,
-      live:   3600
+      live:   30 * 60,
+      bar:    3 * 3600
     };
 
     /* ── 状態 ── */
@@ -2460,6 +2476,19 @@
         if (btn)  btn.classList.toggle('on-cd', rem > 0);
         if (cdEl) cdEl.textContent = rem > 0 ? fmtCD(rem) : '';
       });
+      // バー（カクテル）
+      var barBtn  = document.getElementById('btn-game');
+      var barCdEl = document.getElementById('cd-bar');
+      var barRem  = cdRemain('bar');
+      if (barBtn)  barBtn.classList.toggle('on-cd', barRem > 0);
+      if (barCdEl) {
+        if (barRem > 0) {
+          barCdEl.textContent = fmtCD(barRem);
+        } else {
+          var count = st.barCount || 0;
+          barCdEl.textContent = count > 0 ? (5 - count) + '回' : '';
+        }
+      }
     }
 
     /* ── トースト ── */
