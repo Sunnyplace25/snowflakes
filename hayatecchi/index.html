@@ -782,8 +782,23 @@
           '<div style="font-size:10px;color:#475569;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
 
-      // ドラム図鑑アイテムをランダムゲット（毎回）
-      tryGetDrumItem(1.0, document.getElementById('drum-result-item'));
+      // 練習報酬: 60%おにぎり / 40%図鑑アイテム
+      var itemEl = document.getElementById('drum-result-item');
+      if (Math.random() < 0.6) {
+        if (!st.onigiriCount) st.onigiriCount = 0;
+        st.onigiriCount++;
+        if (!st.drumItems) st.drumItems = {};
+        st.drumItems['onigiri'] = true;
+        save();
+        itemEl.style.display = 'block';
+        itemEl.innerHTML =
+          '<div style="font-size:9px;letter-spacing:3px;color:#6ee7b7;margin-bottom:6px;">― ごはん ゲット！ ―</div>' +
+          '<img src="item_onigiri.webp" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' +
+          '<div style="font-size:13px;color:#e2e8f0;">おにぎり</div>' +
+          '<div style="font-size:10px;color:#64748b;margin-top:2px;">所持: ×' + st.onigiriCount + '</div>';
+      } else {
+        tryGetDrumItem(1.0, itemEl);
+      }
 
       render();
     }
@@ -796,6 +811,10 @@
       if (unseenItems.length === 0) { if (el) el.style.display = 'none'; return null; }
       var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
       st.drumItems[got.id] = true;
+      if (got.id === 'onigiri') {
+        if (!st.onigiriCount) st.onigiriCount = 0;
+        st.onigiriCount++;
+      }
       save();
       if (el) {
         el.style.display = 'block';
@@ -1705,7 +1724,8 @@
         if (st.renshuGe === undefined) st.renshuGe = 75;
         if (st.sweets   === undefined) st.sweets   = 0;
         if (st.kibun     === undefined) st.kibun     = 75;
-        if (st.liveCount === undefined) st.liveCount = 0;
+        if (st.liveCount    === undefined) st.liveCount    = 0;
+        if (st.onigiriCount === undefined) st.onigiriCount = 0;
         var elapsed = Math.max(0, (Date.now() - new Date(st.lastSaved).getTime()) / 1000);
         st.onaka  = clamp(st.onaka  - DECAY.onaka  * elapsed);
         st.suimin = clamp(st.suimin - DECAY.suimin * elapsed);
@@ -2052,7 +2072,7 @@
       var speech = '', toast = '', imgOverride = null;
 
       if (action === 'meshi') {
-        var hasOnigiri = st.drumItems && st.drumItems['onigiri'];
+        var hasOnigiri = (st.onigiriCount || 0) > 0;
         if (st.onaka >= 95) {
           speech = 'もう腹いっぱいだって……';
         } else if (!hasOnigiri) {
@@ -2060,6 +2080,7 @@
         } else {
           var gain = st.onaka < 50 ? 50 : 20;
           st.onaka = clamp(st.onaka + gain);
+          st.onigiriCount = (st.onigiriCount || 0) - 1;
           speech = st.onaka < 50 ? '腹減ってた……うまい！！' : 'うまい！！';
           toast  = 'おなか +' + gain;
           // CDなし（持ってるぶんだけあげられる）
@@ -2445,6 +2466,14 @@
       if (sweetsCount) sweetsCount.textContent = '×' + sc;
 
       updateCD();
+
+      // おにぎり個数表示（ごはんボタン）
+      var meshiCdEl = document.getElementById('cd-meshi');
+      if (meshiCdEl && cdRemain('meshi') <= 0) {
+        var oc = st.onigiriCount || 0;
+        meshiCdEl.textContent = '×' + oc;
+        meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#475569';
+      }
 
       // たいりょく20以下で強制休憩
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
