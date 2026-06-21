@@ -598,6 +598,80 @@
     ];
     var _ocSelected = [], _ocCustomerIdx = -1;
 
+    /* ── ドラム練習ミニゲーム ── */
+    var _drumTimer = null, _drumCount = 0, _drumActive = false;
+
+    function openDrumGame() {
+      var btn = document.getElementById('btn-renshu');
+      if (btn && btn.classList.contains('on-cd')) return;
+      document.getElementById('drum-modal').style.display = 'flex';
+      document.getElementById('drum-intro').style.display = 'block';
+      document.getElementById('drum-play').style.display   = 'none';
+      document.getElementById('drum-result').style.display = 'none';
+    }
+    function closeDrumGame() {
+      document.getElementById('drum-modal').style.display = 'none';
+      if (_drumTimer) { clearInterval(_drumTimer); _drumTimer = null; }
+      _drumActive = false;
+    }
+    function startDrumGame() {
+      _drumCount = 0; _drumActive = true;
+      var sec = 5;
+      document.getElementById('drum-intro').style.display = 'none';
+      document.getElementById('drum-play').style.display   = 'block';
+      document.getElementById('drum-timer').textContent = sec;
+      document.getElementById('drum-count').innerHTML = '0 <span style="font-size:13px;color:#64748b;">回</span>';
+      _drumTimer = setInterval(function() {
+        sec--;
+        document.getElementById('drum-timer').textContent = sec;
+        if (sec <= 0) {
+          clearInterval(_drumTimer); _drumTimer = null;
+          _drumActive = false;
+          endDrumGame();
+        }
+      }, 1000);
+    }
+    function drumTap(e) {
+      if (e) e.preventDefault();
+      if (!_drumActive) return;
+      _drumCount++;
+      var btn = document.getElementById('drum-tap-btn');
+      btn.style.background = 'rgba(110,231,183,0.22)';
+      btn.style.transform  = 'scale(0.92)';
+      setTimeout(function() {
+        btn.style.background = 'rgba(110,231,183,0.08)';
+        btn.style.transform  = 'scale(1)';
+      }, 80);
+      document.getElementById('drum-count').innerHTML = _drumCount + ' <span style="font-size:13px;color:#64748b;">回</span>';
+    }
+    function endDrumGame() {
+      var n = _drumCount;
+      var grade, speech, geUp, skillUp;
+      if (n <= 10) {
+        grade = 'Miss'; speech = 'まだ寝起きの音だな……'; geUp = 10; skillUp = 1;
+      } else if (n <= 25) {
+        grade = 'Good'; speech = 'いい感じに温まってきた！'; geUp = 20; skillUp = 3;
+      } else {
+        grade = 'Perfect'; speech = 'お、今日いけるかも！！'; geUp = 30; skillUp = 5;
+      }
+      var gradeColor = grade === 'Perfect' ? '#fde68a' : grade === 'Good' ? '#6ee7b7' : '#94a3b8';
+
+      st.renshuGe = clamp(st.renshuGe + geUp, 0, 100);
+      st.skill    = (st.skill || 0) + skillUp;
+      st.onaka    = clamp(st.onaka - 10);
+      st.cd.renshu = cdTime(CD_SEC.renshu);
+      save();
+
+      document.getElementById('drum-play').style.display   = 'none';
+      document.getElementById('drum-result').style.display = 'block';
+      document.getElementById('drum-result-grade').textContent   = grade;
+      document.getElementById('drum-result-grade').style.color   = gradeColor;
+      document.getElementById('drum-result-count').textContent   = n + '回';
+      document.getElementById('drum-result-speech').textContent  = '「' + speech + '」';
+      document.getElementById('drum-result-reward').textContent  = '練習ゲージ +' + geUp + '　Drum Lv経験値 +' + skillUp;
+      render();
+    }
+
     var _barBGM = null;
     function startBarBGM() {
       if (_barBGM) return;
@@ -896,6 +970,41 @@
     }
   </script>
 
+  <!-- ドラム練習ミニゲーム -->
+  <div id="drum-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;">
+    <div style="width:100%;max-width:360px;text-align:center;position:relative;">
+      <button onclick="closeDrumGame()" style="position:absolute;top:-8px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+
+      <!-- イントロ -->
+      <div id="drum-intro">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:24px;">― DRUM PRACTICE ―</div>
+        <div style="font-size:48px;margin-bottom:16px;">🥁</div>
+        <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:18px;color:#e2e8f0;margin-bottom:8px;">5秒間、スネアを叩け！</div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:36px;">連打数で評価が変わるよ</div>
+        <button onclick="startDrumGame()" style="padding:16px 56px;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.35);border-radius:14px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
+      </div>
+
+      <!-- ゲーム中 -->
+      <div id="drum-play" style="display:none;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:20px;">― DRUM PRACTICE ―</div>
+        <div id="drum-timer" style="font-family:'Cormorant Garamond',serif;font-size:56px;color:#6ee7b7;margin-bottom:8px;line-height:1;">5</div>
+        <div style="font-size:11px;color:#64748b;margin-bottom:28px;">秒</div>
+        <div id="drum-count" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#e2e8f0;margin-bottom:36px;">0 <span style="font-size:13px;color:#64748b;">回</span></div>
+        <button id="drum-tap-btn" ontouchstart="drumTap(event)" onclick="drumTap(event)" style="width:160px;height:160px;border-radius:50%;background:rgba(110,231,183,0.08);border:2px solid rgba(110,231,183,0.3);color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.08s;user-select:none;">TAP!</button>
+      </div>
+
+      <!-- 結果 -->
+      <div id="drum-result" style="display:none;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:24px;">― RESULT ―</div>
+        <div id="drum-result-grade" style="font-family:'Cormorant Garamond',serif;font-size:40px;color:#6ee7b7;margin-bottom:8px;"></div>
+        <div id="drum-result-count" style="font-size:13px;color:#64748b;margin-bottom:20px;"></div>
+        <div id="drum-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.9;background:rgba(110,231,183,0.04);border:1px solid rgba(110,231,183,0.12);border-radius:12px;padding:14px 18px;margin-bottom:16px;"></div>
+        <div id="drum-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:28px;"></div>
+        <button onclick="closeDrumGame()" style="padding:12px 44px;background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);border-radius:10px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;">とじる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- カクテルミニゲーム（オリジナルカクテル） -->
   <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
     <canvas id="game-snow-canvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
@@ -1132,7 +1241,7 @@
           <span>寝かせる</span>
           <span class="action-cd" id="cd-neru"></span>
         </button>
-        <button class="action-btn" id="btn-renshu" onclick="doAction('renshu')">
+        <button class="action-btn" id="btn-renshu" onclick="openDrumGame()">
           <span class="action-icon">🥁</span>
           <span>ドラム練習</span>
           <span class="action-cd" id="cd-renshu"></span>
