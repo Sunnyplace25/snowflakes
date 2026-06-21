@@ -514,14 +514,14 @@
 
         if (isIOS) {
           el.innerHTML =
-            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加しよう！</div>' +
+            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加するといつでもハヤテに会えるよ！</div>' +
             '<div style="font-size:11px;color:#94a3b8;line-height:1.9;">Safariの <span style="color:#e2e8f0;">共有ボタン</span> →<br>「<span style="color:#e2e8f0;">ホーム画面に追加</span>」でアプリとして使えるよ。</div>' +
             '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="margin-top:12px;padding:8px 24px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">閉じる</button>';
           el.style.display = 'flex';
         } else if (_deferredPrompt) {
           el.innerHTML =
-            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加しよう！</div>' +
-            '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px;">アプリとしていつでも起動できるよ。</div>' +
+            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加するといつでもハヤテに会えるよ！</div>' +
+            '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px;"></div>' +
             '<div style="display:flex;gap:8px;justify-content:center;">' +
             '<button id="a2hs-yes" style="padding:8px 24px;background:rgba(253,230,138,0.15);border:1px solid rgba(253,230,138,0.4);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">追加する</button>' +
             '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#64748b;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">あとで</button>' +
