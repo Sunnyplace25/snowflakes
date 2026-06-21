@@ -1416,7 +1416,7 @@
           <div style="background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;padding:16px;">
             <p style="font-size:12px;color:#94a3b8;line-height:2;">
               5つのゲージで、ハヤテのコンディションをチェック！<br>
-              <span style="color:#fde68a;">おなか</span> / <span style="color:#fde68a;">すいみん</span> / <span style="color:#fde68a;">やるき</span> / <span style="color:#fde68a;">きぶん</span> が下がりすぎると、ハヤテの調子が悪くなるよ。<br><br>
+              <span style="color:#fde68a;">おなか</span> / <span style="color:#fde68a;">たいりょく</span> / <span style="color:#fde68a;">やるき</span> / <span style="color:#fde68a;">きぶん</span> が下がりすぎると、ハヤテの調子が悪くなるよ。<br><br>
               <span style="color:#6ee7b7;">れんしゅう</span> ゲージは、ドラム練習でだけ溜まる特別なゲージ。<br>
               LIVEに挑戦する前に、しっかり練習しておこう！
             </p>
@@ -1432,7 +1432,7 @@
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">💤</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">休憩</div><div style="font-size:11px;color:#64748b;line-height:1.6;">すいみんを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">休憩</div><div style="font-size:11px;color:#64748b;line-height:1.6;">たいりょくを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🥁</span>
@@ -1534,7 +1534,7 @@
         <div class="stat-val" id="val-onaka">80</div>
       </div>
       <div class="stat-row">
-        <div class="stat-name">すいみん</div>
+        <div class="stat-name">たいりょく</div>
         <div class="stat-bar-bg"><div class="stat-bar-fill" id="bar-suimin" style="width:80%"></div></div>
         <div class="stat-val" id="val-suimin">80</div>
       </div>
@@ -2075,7 +2075,7 @@
             st.cd.live = liveCdMs > Date.now() ? new Date(liveCdMs).toISOString() : null;
           }
           speech = 'zzz…　すっきりした！';
-          toast  = 'すいみん +40';
+          toast  = 'たいりょく +40';
           imgOverride = 'sleepy';
         }
       }
@@ -2119,7 +2119,7 @@
           toast = names[met] + ' に会った！　きぶん +10';
         } else {
           speech = randLine(GAISHUTSU_LINES);
-          toast  = 'やるき +20　きぶん +20　おなか -15　すいみん -10';
+          toast  = 'やるき +20　きぶん +20　おなか -15　たいりょく -10';
         }
       }
       else if (action === 'flyer') {
@@ -2440,10 +2440,10 @@
 
       updateCD();
 
-      // すいみん20以下で強制おやすみ
+      // たいりょく20以下で強制休憩
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
         _autoSleepTriggered = true;
-        setSpeech('もう限界だ……ねむい', null);
+        setSpeech('もう限界だ……つかれた', null);
         setTimeout(function() {
           st.suimin = clamp(st.suimin + 40);
           st.cd.neru = cdTime(CD_SEC.neru);
@@ -2453,7 +2453,7 @@
           }
           setImg('sleepy', 3000);
           setSpeech('zzz…　すっきりした！', null);
-          flash('強制おやすみ　すいみん +40');
+          flash('強制休憩　たいりょく +40');
           save();
           render();
         }, 2000);
