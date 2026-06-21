@@ -723,7 +723,7 @@
       // ── ライブ準備（追加） ──
       { id:'setlist',      name:'セットリスト',     img:'item_setlist.webp',    desc:'ライブの曲順メモ。これを見ながら本番に臨む。',         cat:'ライブ準備' },
       // ── レア ──
-      { id:'stick_rare',   name:'Kakeru のスティック', img:'drum_stick_rare.webp', desc:'「Kakeru」と刻まれた1本だけのスティック。誰かの名前か、それとも——', cat:'レア', rare: true },
+      { id:'stick_rare',   name:'Kakeru のスティック', img:'drum_stick_rare.webp', desc:'ハヤテの兄が、昔使っていた古いスティック。\nライブ前にそっと握る、ハヤテのお守りのような1本。', cat:'レア', rare: true },
     ];
 
     /* ── ドラム練習ミニゲーム ── */
@@ -1286,7 +1286,7 @@
           (item.img ? '<img src="' + item.img + '" style="width:min(160px,45vw);object-fit:contain;image-rendering:pixelated;margin-bottom:24px;">' : '<div style="font-size:64px;margin-bottom:24px;">🥁</div>') +
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;color:#c4b5fd;letter-spacing:4px;margin-bottom:8px;">' + item.name + '</div>' +
           '<div style="font-size:10px;color:#94a3b8;letter-spacing:2px;margin-bottom:24px;">' + item.cat + '</div>' +
-          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#e2e8f0;line-height:2;padding:16px 18px;background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.1);border-radius:14px;">' + item.desc + '</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#e2e8f0;line-height:2;padding:16px 18px;background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.1);border-radius:14px;">' + item.desc.replace(/\n/g,'<br>') + '</div>' +
         '</div>';
       document.getElementById('drum-zukan-list-view').style.display = 'none';
       document.getElementById('drum-zukan-detail-view').style.display = 'block';
@@ -2660,7 +2660,8 @@
       document.getElementById('drum-item-get-img').style.display = item.img ? 'block' : 'none';
       document.getElementById('drum-item-get-name').textContent = item.name;
       document.getElementById('drum-item-get-cat').textContent  = item.cat;
-      document.getElementById('drum-item-get-desc').textContent = item.desc;
+      var descEl = document.getElementById('drum-item-get-desc');
+      descEl.innerHTML = item.desc.replace(/\n/g,'<br>');
       document.getElementById('drum-item-get-progress').textContent = collected + ' / ' + DRUM_ITEMS.length;
       el.classList.add('show');
       el.onclick = function() { closeDrumItemGet(); };
