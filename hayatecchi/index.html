@@ -1662,6 +1662,19 @@
     </div>
   </div>
 
+  <!-- ドラム図鑑ゲット -->
+  <div class="sweets-get-overlay" id="drum-item-get-overlay">
+    <div class="sweets-get-box" style="border-color:rgba(196,181,253,0.45);max-width:280px;padding:40px 32px;">
+      <img id="drum-item-get-img" src="" alt="" style="width:88px;height:88px;object-fit:contain;image-rendering:pixelated;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#c4b5fd;margin-bottom:10px;">― 図鑑 ゲット！ ―</div>
+      <div id="drum-item-get-name" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#e2e8f0;letter-spacing:3px;margin-bottom:4px;"></div>
+      <div id="drum-item-get-cat" style="font-size:10px;color:#475569;letter-spacing:2px;margin-bottom:14px;"></div>
+      <div id="drum-item-get-desc" style="font-size:11px;color:#94a3b8;line-height:1.9;margin-bottom:16px;"></div>
+      <div id="drum-item-get-progress" style="font-size:10px;color:#64748b;letter-spacing:1px;margin-bottom:16px;"></div>
+      <div style="font-size:10px;color:#475569;">タップして閉じる</div>
+    </div>
+  </div>
+
   <!-- LIVEカウントダウン -->
   <div id="live-countdown-overlay" style="display:none;position:fixed;inset:0;z-index:10005;background:rgba(4,8,20,0.97);align-items:center;justify-content:center;">
     <div id="live-countdown-num" style="font-family:'Cormorant Garamond',serif;font-size:120px;color:#c4b5fd;line-height:1;user-select:none;"></div>
@@ -2158,10 +2171,13 @@
       }
       else if (action === 'sweets') {
         if ((st.sweets || 0) <= 0) { flash('SWEETsないな……またもらってこよう'); return; }
-        st.sweets = (st.sweets || 0) - 1;
-        st.kibun  = 100;
+        st.sweets  = (st.sweets || 0) - 1;
+        st.kibun   = 100;
+        st.onaka   = 100;
+        st.suimin  = 100;
+        st.yaruki  = 100;
         speech = randLine(SWEETS_LINES);
-        toast  = 'きぶん 満タン！';
+        toast  = 'おなか・たいりょく・やるき・きぶん　全部回復！';
       }
 
       if (speech) setSpeech(speech, imgOverride);
@@ -2356,8 +2372,8 @@
         save();
       }
       _pendingSweetsGet = gotSweets;
-      // LIVE報酬：図鑑アイテムを必ずゲット
-      setTimeout(function(){ tryGetDrumItem(1.0, null); }, 600);
+      // LIVE報酬：図鑑アイテムを必ずゲット（閉じるときにポップアップ）
+      _pendingDrumItem = tryGetDrumItemSilent();
 
       successEl.textContent = randLine(LIVE_SUCCESS_LINES);
       successEl.classList.add('in');
@@ -2367,7 +2383,23 @@
     }
 
     var _pendingSweetsGet = false;
+    var _pendingDrumItem  = null;
     var _autoSleepTriggered = false;
+
+    // LIVE用: UIなしでアイテム取得（結果オブジェクトを返す）
+    function tryGetDrumItemSilent() {
+      if (!st.drumItems) st.drumItems = {};
+      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
+      if (unseenItems.length === 0) return null;
+      var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
+      st.drumItems[got.id] = true;
+      if (got.id === 'onigiri') {
+        if (!st.onigiriCount) st.onigiriCount = 0;
+        st.onigiriCount++;
+      }
+      save();
+      return got;
+    }
 
     function showSweetsGet() {
       var el = document.getElementById('sweets-get-overlay');
@@ -2385,6 +2417,32 @@
       setSpeech(randLine(LIVE_LINES), null);
       bounce();
       render();
+      if (_pendingDrumItem) {
+        var item = _pendingDrumItem;
+        _pendingDrumItem = null;
+        setTimeout(function() { showDrumItemGet(item); }, 300);
+      } else if (_pendingSweetsGet) {
+        _pendingSweetsGet = false;
+        setTimeout(showSweetsGet, 300);
+      }
+    }
+
+    function showDrumItemGet(item) {
+      var el = document.getElementById('drum-item-get-overlay');
+      if (!el) return;
+      var collected = Object.keys(st.drumItems || {}).length;
+      document.getElementById('drum-item-get-img').src = item.img || '';
+      document.getElementById('drum-item-get-img').style.display = item.img ? 'block' : 'none';
+      document.getElementById('drum-item-get-name').textContent = item.name;
+      document.getElementById('drum-item-get-cat').textContent  = item.cat;
+      document.getElementById('drum-item-get-desc').textContent = item.desc;
+      document.getElementById('drum-item-get-progress').textContent = collected + ' / ' + DRUM_ITEMS.length;
+      el.classList.add('show');
+      el.onclick = function() { closeDrumItemGet(); };
+    }
+    function closeDrumItemGet() {
+      var el = document.getElementById('drum-item-get-overlay');
+      if (el) el.classList.remove('show');
       if (_pendingSweetsGet) {
         _pendingSweetsGet = false;
         setTimeout(showSweetsGet, 300);
