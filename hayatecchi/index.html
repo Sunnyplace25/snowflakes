@@ -722,6 +722,8 @@
       { id:'notebook',     name:'ノート',           img:'item_notebook.webp',   desc:'フレーズや気づきをメモする練習ノート。ハヤテの記録が詰まってる。', cat:'持ちもの' },
       // ── ライブ準備（追加） ──
       { id:'setlist',      name:'セットリスト',     img:'item_setlist.webp',    desc:'ライブの曲順メモ。これを見ながら本番に臨む。',         cat:'ライブ準備' },
+      // ── レア ──
+      { id:'stick_rare',   name:'Kakeru のスティック', img:'drum_stick_rare.webp', desc:'「Kakeru」と刻まれた1本だけのスティック。誰かの名前か、それとも——', cat:'レア', rare: true },
     ];
 
     /* ── ドラム練習ミニゲーム ── */
@@ -1238,13 +1240,14 @@
       var got = st.drumItems || {};
       var list = document.getElementById('drum-zukan-list');
       list.innerHTML = '';
-      var catLabels = { 'ドラム道具':'INSTRUMENTS', 'お手入れ':'MAINTENANCE', '持ちもの':'MY STUFF', 'ライブ準備':'LIVE GEAR' };
-      var cats = ['ドラム道具', 'お手入れ', '持ちもの', 'ライブ準備'];
+      var catLabels = { 'ドラム道具':'INSTRUMENTS', 'お手入れ':'MAINTENANCE', '持ちもの':'MY STUFF', 'ライブ準備':'LIVE GEAR', 'レア':'― RARE ―' };
+      var cats = ['ドラム道具', 'お手入れ', '持ちもの', 'ライブ準備', 'レア'];
       cats.forEach(function(cat) {
         var items = DRUM_ITEMS.filter(function(i){ return i.cat === cat; });
+        var isRare = cat === 'レア';
         var catDiv = document.createElement('div');
-        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#94a3b8;margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
-        catDiv.textContent = '― ' + (catLabels[cat] || cat) + ' ―';
+        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:' + (isRare ? '#fde68a' : '#94a3b8') + ';margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
+        catDiv.textContent = isRare ? catLabels[cat] : '― ' + (catLabels[cat] || cat) + ' ―';
         list.appendChild(catDiv);
         var col = document.createElement('div');
         col.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
@@ -2603,9 +2606,14 @@
     var _autoSleepTriggered = false;
 
     // LIVE用: UIなしでアイテム取得（結果オブジェクトを返す）
+    // レアアイテムは5%のみプールに入れる
     function tryGetDrumItemSilent() {
       if (!st.drumItems) st.drumItems = {};
-      var unseenItems = DRUM_ITEMS.filter(function(item){ return !st.drumItems[item.id]; });
+      var unseenItems = DRUM_ITEMS.filter(function(item){
+        if (st.drumItems[item.id]) return false;
+        if (item.rare) return Math.random() < 0.05; // レアは5%でプールに入る
+        return true;
+      });
       if (unseenItems.length === 0) return null;
       var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
       st.drumItems[got.id] = true;
