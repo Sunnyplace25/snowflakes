@@ -1432,7 +1432,7 @@
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">💤</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">寝かせる</div><div style="font-size:11px;color:#64748b;line-height:1.6;">すいみんを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">休憩</div><div style="font-size:11px;color:#64748b;line-height:1.6;">すいみんを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🥁</span>
@@ -1568,7 +1568,7 @@
         </button>
         <button class="action-btn" id="btn-neru" onclick="doAction('neru')">
           <span class="action-icon">💤</span>
-          <span>寝かせる</span>
+          <span>休憩</span>
           <span class="action-cd" id="cd-neru"></span>
         </button>
         <button class="action-btn" id="btn-renshu" onclick="openDrumGame()">
@@ -1592,7 +1592,7 @@
           <span class="action-cd" id="cd-gaishutsu"></span>
         </button>
         <button class="action-btn" id="btn-game" onclick="openMiniGame()">
-          <span class="action-icon"><img src="cocktail_amber_night.webp" style="width:28px;height:28px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
+          <span class="action-icon">🍸</span>
           <span>バー</span>
           <span class="action-cd" id="cd-bar"></span>
         </button>
@@ -1669,11 +1669,11 @@
       yaruki:  8 / 3600    // 約12時間で空
     };
     var CD_SEC = {
-      meshi:     15 * 60,
-      neru:      30 * 60,
+      meshi:     10 * 60,   // 半分以上のとき（ペコペコ時は別処理）
+      neru:       5 * 60,
       renshu:    30 * 60,
       flyer:     20 * 60,
-      gaishutsu: 45 * 60,
+      gaishutsu: 30 * 60,
       live:   30 * 60,
       bar:    3 * 3600
     };
@@ -2049,11 +2049,18 @@
       if (action === 'meshi') {
         if (st.onaka >= 95) {
           speech = 'もう腹いっぱいだって……';
-        } else {
-          st.onaka = clamp(st.onaka + 30);
-          st.cd.meshi = cdTime(CD_SEC.meshi);
+        } else if (st.onaka >= 50) {
+          // お腹が半分以上 → 少なめ回復・10分CD
+          st.onaka = clamp(st.onaka + 20);
+          st.cd.meshi = cdTime(10 * 60);
           speech = 'うまい！！';
-          toast  = 'おなか +30';
+          toast  = 'おなか +20';
+        } else {
+          // ペコペコ → しっかり回復・15分CD
+          st.onaka = clamp(st.onaka + 50);
+          st.cd.meshi = cdTime(15 * 60);
+          speech = '腹減ってた……うまい！！';
+          toast  = 'おなか +50';
         }
       }
       else if (action === 'neru') {
