@@ -2558,9 +2558,10 @@
         } else {
           var gain = st.onaka < 50 ? 50 : 20;
           st.onaka = clamp(st.onaka + gain);
+          st.kibun = clamp(st.kibun + 5);
           st.onigiriCount = (st.onigiriCount || 0) - 1;
           speech = st.onaka < 50 ? '腹減ってた……うまい！！' : 'うまい！！';
-          toast  = 'おなか +' + gain;
+          toast  = 'おなか +' + gain + '　きぶん +5';
           // CDなし（持ってるぶんだけあげられる）
         }
       }
