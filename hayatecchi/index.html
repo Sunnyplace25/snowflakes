@@ -525,6 +525,14 @@
 
     function openMiniGame() {
       document.getElementById('cocktail-modal').style.display = 'flex';
+      document.getElementById('cg-welcome').style.display = 'block';
+      document.getElementById('cg-game-header').style.display = 'none';
+      document.getElementById('cg-play').style.display = 'none';
+      document.getElementById('cg-result').style.display = 'none';
+    }
+    function cgStartGame() {
+      document.getElementById('cg-welcome').style.display = 'none';
+      document.getElementById('cg-game-header').style.display = 'flex';
       cgInit();
     }
     function closeMiniGame() {
@@ -626,7 +634,10 @@
         document.getElementById('cg-result-reward').textContent = '';
       }
     }
-    function cgPlayAgain() { cgInit(); }
+    function cgPlayAgain() {
+      document.getElementById('cg-game-header').style.display = 'flex';
+      cgInit();
+    }
     // ──────────────────────────────────────────────────
     function openHowTo(e) {
       if (e) e.stopPropagation();
@@ -640,7 +651,18 @@
   <!-- カクテルミニゲーム -->
   <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
     <div style="width:100%;max-width:400px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+
+      <!-- ウェルカム画面 -->
+      <div id="cg-welcome" style="display:none;text-align:center;padding:8px 0;">
+        <button onclick="closeMiniGame()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:16px;">― BAR STARS ―</div>
+        <img src="rin_stars.webp" alt="りん" style="width:min(280px,80vw);border-radius:16px;margin-bottom:20px;">
+        <div style="font-family:'Noto Serif JP',serif;font-size:18px;color:#fde68a;letter-spacing:3px;margin-bottom:8px;">STARSへようこそ！</div>
+        <div style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;margin-bottom:28px;">カクテルの色に合わせて、<br>材料を混ぜてみてね。</div>
+        <button onclick="cgStartGame()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
+      </div>
+
+      <div id="cg-game-header" style="display:none;justify-content:space-between;align-items:center;margin-bottom:20px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL</div>
         <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
       </div>
