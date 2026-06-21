@@ -1182,6 +1182,7 @@
     }
 
     var _pendingSweetsGet = false;
+    var _autoSleepTriggered = false;
 
     function showSweetsGet() {
       var el = document.getElementById('sweets-get-overlay');
@@ -1278,6 +1279,26 @@
       if (sweetsCount) sweetsCount.textContent = '×' + sc;
 
       updateCD();
+
+      // すいみん20以下で強制おやすみ
+      if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
+        _autoSleepTriggered = true;
+        setSpeech('もう限界だ……ねむい', null);
+        setTimeout(function() {
+          st.suimin = clamp(st.suimin + 40);
+          st.cd.neru = cdTime(CD_SEC.neru);
+          if (st.cd.live) {
+            var liveCdMs = new Date(st.cd.live).getTime() - 20 * 60 * 1000;
+            st.cd.live = liveCdMs > Date.now() ? new Date(liveCdMs).toISOString() : null;
+          }
+          setImg('sleepy', 3000);
+          setSpeech('zzz…　すっきりした！', null);
+          flash('強制おやすみ　すいみん +40');
+          save();
+          render();
+        }, 2000);
+      }
+      if ((st.suimin || 0) > 20) _autoSleepTriggered = false;
     }
 
     function setBar(name, val) {
