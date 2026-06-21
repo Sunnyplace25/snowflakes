@@ -806,6 +806,7 @@
         document.getElementById('oc-result-reward').textContent = 'きぶん +15　やるき +10';
         st.kibun = clamp(st.kibun + 15); st.yaruki = clamp(st.yaruki + 10); save();
       } else {
+        glassEl.innerHTML = '<img src="cocktail_mystery.webp" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;">';
         document.getElementById('oc-result-name').textContent = 'Mystery Blend';
         document.getElementById('oc-result-kotoba').textContent = '「まだ名前のない、あなただけの一杯」';
         document.getElementById('oc-result-desc').textContent = 'まだ誰も知らない、未知のカクテル。';
