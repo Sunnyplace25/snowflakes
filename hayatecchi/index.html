@@ -515,16 +515,16 @@
         if (isIOS) {
           el.innerHTML =
             '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加するといつでもハヤテに会えるよ！</div>' +
-            '<div style="font-size:11px;color:#94a3b8;line-height:1.9;">Safariの <span style="color:#e2e8f0;">共有ボタン</span> →<br>「<span style="color:#e2e8f0;">ホーム画面に追加</span>」でアプリとして使えるよ。</div>' +
+            '<div style="font-size:11px;color:#cbd5e1;line-height:1.9;">Safariの <span style="color:#e2e8f0;">共有ボタン</span> →<br>「<span style="color:#e2e8f0;">ホーム画面に追加</span>」でアプリとして使えるよ。</div>' +
             '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="margin-top:12px;padding:8px 24px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">閉じる</button>';
           el.style.display = 'flex';
         } else if (_deferredPrompt) {
           el.innerHTML =
             '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加するといつでもハヤテに会えるよ！</div>' +
-            '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px;"></div>' +
+            '<div style="font-size:11px;color:#cbd5e1;margin-bottom:12px;"></div>' +
             '<div style="display:flex;gap:8px;justify-content:center;">' +
             '<button id="a2hs-yes" style="padding:8px 24px;background:rgba(253,230,138,0.15);border:1px solid rgba(253,230,138,0.4);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">追加する</button>' +
-            '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#64748b;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">あとで</button>' +
+            '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#94a3b8;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">あとで</button>' +
             '</div>';
           el.style.display = 'flex';
           document.getElementById('a2hs-yes').onclick = function() {
@@ -706,7 +706,7 @@
       document.getElementById('drum-intro').style.display = 'none';
       document.getElementById('drum-play').style.display   = 'block';
       document.getElementById('drum-timer').textContent = sec;
-      document.getElementById('drum-count').innerHTML = '0 <span style="font-size:13px;color:#64748b;">回</span>';
+      document.getElementById('drum-count').innerHTML = '0 <span style="font-size:13px;color:#94a3b8;">回</span>';
       _drumTimer = setInterval(function() {
         sec--;
         document.getElementById('drum-timer').textContent = sec;
@@ -732,7 +732,7 @@
         btn.style.background = 'rgba(110,231,183,0.08)';
         btn.style.transform  = 'scale(1)';
       }, 80);
-      document.getElementById('drum-count').innerHTML = _drumCount + ' <span style="font-size:13px;color:#64748b;">回</span>';
+      document.getElementById('drum-count').innerHTML = _drumCount + ' <span style="font-size:13px;color:#94a3b8;">回</span>';
     }
     function endDrumGame() {
       var n = _drumCount;
@@ -777,9 +777,9 @@
       var memoEl = document.getElementById('drum-result-memo');
       if (memoEl) {
         memoEl.innerHTML =
-          '<div style="font-size:9px;letter-spacing:3px;color:#64748b;margin-bottom:8px;">― DRUM MEMO ' + (memoIdx+1) + ' / ' + DRUM_MEMOS.length + ' ―</div>' +
+          '<div style="font-size:9px;letter-spacing:3px;color:#94a3b8;margin-bottom:8px;">― DRUM MEMO ' + (memoIdx+1) + ' / ' + DRUM_MEMOS.length + ' ―</div>' +
           '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#e2e8f0;line-height:2;">' + DRUM_MEMOS[memoIdx] + '</div>' +
-          '<div style="font-size:10px;color:#475569;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
+          '<div style="font-size:10px;color:#94a3b8;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
 
       // 練習報酬: 60%おにぎり / 40%図鑑アイテム
@@ -795,7 +795,7 @@
           '<div style="font-size:9px;letter-spacing:3px;color:#6ee7b7;margin-bottom:6px;">― ごはん ゲット！ ―</div>' +
           '<img src="item_onigiri.webp" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' +
           '<div style="font-size:13px;color:#e2e8f0;">おにぎり</div>' +
-          '<div style="font-size:10px;color:#64748b;margin-top:2px;">所持: ×' + st.onigiriCount + '</div>';
+          '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">所持: ×' + st.onigiriCount + '</div>';
       } else {
         tryGetDrumItem(1.0, itemEl);
       }
@@ -825,7 +825,7 @@
           '<div style="font-size:9px;letter-spacing:3px;color:#c4b5fd;margin-bottom:6px;">― 図鑑ゲット！ ―</div>' +
           (got.img ? '<img src="' + got.img + '" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' : '<div style="font-size:28px;margin-bottom:4px;">🥁</div>') +
           '<div style="font-size:13px;color:#e2e8f0;">' + got.name + '</div>' +
-          '<div style="font-size:10px;color:#64748b;margin-top:2px;">' + got.cat + ' ' + Object.keys(st.drumItems).length + ' / ' + DRUM_ITEMS.length + '</div>';
+          '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">' + got.cat + ' ' + Object.keys(st.drumItems).length + ' / ' + DRUM_ITEMS.length + '</div>';
       }
       return got;
     }
@@ -940,7 +940,7 @@
       var disp = document.getElementById('oc-selected-display');
       disp.innerHTML = _ocSelected.map(function(id) {
         var c = OC_COLORS.find(function(x){return x.id===id;});
-        return '<span style="padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:100px;font-size:10px;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:' + c.hex + ';display:inline-block;"></span>' + c.name + '</span>';
+        return '<span style="padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:100px;font-size:10px;color:#cbd5e1;display:inline-flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:' + c.hex + ';display:inline-block;"></span>' + c.name + '</span>';
       }).join('');
     }
     function ocReset() { _ocSelected = []; ocUpdateSelected(); }
@@ -1039,7 +1039,7 @@
         btn.id = 'cgbtn-' + ing.id;
         btn.style.cssText = 'padding:10px 4px 8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent;';
         btn.innerHTML = '<span style="font-size:20px;">' + ing.emoji + '</span>'
-          + '<span style="font-size:8px;color:#64748b;">' + ing.name + '</span>'
+          + '<span style="font-size:8px;color:#94a3b8;">' + ing.name + '</span>'
           + '<span id="cgc-' + ing.id + '" style="font-size:9px;color:#fde68a;min-height:12px;"></span>';
         btn.onclick = function() { cgAdd(ing.id); };
         grid.appendChild(btn);
@@ -1131,7 +1131,7 @@
       var entries = Object.keys(log).sort(function(a,b){ return (log[b].last||0)-(log[a].last||0); });
 
       if (entries.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:40px 0;font-size:13px;color:#475569;">まだカクテルを作ったことがないよ。<br>ゲームで試してみて！</div>';
+        list.innerHTML = '<div style="text-align:center;padding:40px 0;font-size:13px;color:#94a3b8;">まだカクテルを作ったことがないよ。<br>ゲームで試してみて！</div>';
       } else {
         entries.forEach(function(key) {
           var entry = log[key];
@@ -1148,9 +1148,9 @@
               : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;"></div>') +
             '<div style="flex:1;min-width:0;">' +
               '<div style="font-family:\'Cormorant Garamond\',serif;font-size:15px;color:#fde68a;letter-spacing:2px;">' + recipe.name + '</div>' +
-              '<div style="font-size:10px;color:#475569;margin-top:2px;">' + entry.count + '回 作った</div>' +
+              '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">' + entry.count + '回 作った</div>' +
             '</div>' +
-            '<div style="font-size:10px;color:#334155;flex-shrink:0;">›</div>';
+            '<div style="font-size:10px;color:#94a3b8;flex-shrink:0;">›</div>';
 
           row.onclick = (function(r, cnt) {
             return function() { openZukanDetail(r, cnt); };
@@ -1168,9 +1168,9 @@
         '<div style="text-align:center;">' +
           (recipe.img ? '<img src="' + recipe.img + '" style="width:min(180px,50vw);image-rendering:pixelated;margin-bottom:24px;">' : '') +
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:24px;color:#fde68a;letter-spacing:4px;margin-bottom:20px;">' + recipe.name + '</div>' +
-          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#cbd5e1;line-height:2;padding:16px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:14px;">「' + recipe.kotoba + '」</div>' +
-          (recipe.desc ? '<div style="font-size:12px;color:#94a3b8;line-height:2;margin-bottom:20px;">' + recipe.desc + '</div>' : '') +
-          '<div style="font-size:10px;color:#475569;letter-spacing:2px;">' + count + '回 作った</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#e2e8f0;line-height:2;padding:16px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:14px;">「' + recipe.kotoba + '」</div>' +
+          (recipe.desc ? '<div style="font-size:12px;color:#cbd5e1;line-height:2;margin-bottom:20px;">' + recipe.desc + '</div>' : '') +
+          '<div style="font-size:10px;color:#94a3b8;letter-spacing:2px;">' + count + '回 作った</div>' +
         '</div>';
       document.getElementById('zukan-list-view').style.display = 'none';
       document.getElementById('zukan-detail-view').style.display = 'block';
@@ -1193,7 +1193,7 @@
       cats.forEach(function(cat) {
         var items = DRUM_ITEMS.filter(function(i){ return i.cat === cat; });
         var catDiv = document.createElement('div');
-        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#64748b;margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
+        catDiv.style.cssText = 'font-size:9px;letter-spacing:4px;color:#94a3b8;margin:20px 0 10px;font-family:\'Cormorant Garamond\',serif;';
         catDiv.textContent = '― ' + (catLabels[cat] || cat) + ' ―';
         list.appendChild(catDiv);
         var col = document.createElement('div');
@@ -1210,9 +1210,9 @@
             '</div>' +
             '<div style="flex:1;">' +
               '<div style="font-size:13px;color:' + (unlocked ? '#e2e8f0' : '#334155') + ';">' + (unlocked ? item.name : '？？？') + '</div>' +
-              (unlocked ? '<div style="font-size:10px;color:#475569;margin-top:2px;">' + item.cat + '</div>' : '') +
+              (unlocked ? '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">' + item.cat + '</div>' : '') +
             '</div>' +
-            (unlocked ? '<div style="font-size:10px;color:#334155;flex-shrink:0;">›</div>' : '');
+            (unlocked ? '<div style="font-size:10px;color:#94a3b8;flex-shrink:0;">›</div>' : '');
           if (unlocked) {
             row.onclick = (function(it) { return function() { openDrumItemDetail(it); }; })(item);
           }
@@ -1232,8 +1232,8 @@
         '<div style="text-align:center;">' +
           (item.img ? '<img src="' + item.img + '" style="width:min(160px,45vw);object-fit:contain;image-rendering:pixelated;margin-bottom:24px;">' : '<div style="font-size:64px;margin-bottom:24px;">🥁</div>') +
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:22px;color:#c4b5fd;letter-spacing:4px;margin-bottom:8px;">' + item.name + '</div>' +
-          '<div style="font-size:10px;color:#475569;letter-spacing:2px;margin-bottom:24px;">' + item.cat + '</div>' +
-          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#cbd5e1;line-height:2;padding:16px 18px;background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.1);border-radius:14px;">' + item.desc + '</div>' +
+          '<div style="font-size:10px;color:#94a3b8;letter-spacing:2px;margin-bottom:24px;">' + item.cat + '</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#e2e8f0;line-height:2;padding:16px 18px;background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.1);border-radius:14px;">' + item.desc + '</div>' +
         '</div>';
       document.getElementById('drum-zukan-list-view').style.display = 'none';
       document.getElementById('drum-zukan-detail-view').style.display = 'block';
@@ -1278,35 +1278,35 @@
   <!-- ドラム練習ミニゲーム -->
   <div id="drum-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;">
     <div style="width:100%;max-width:360px;text-align:center;position:relative;">
-      <button onclick="closeDrumGame()" style="position:absolute;top:-8px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+      <button onclick="closeDrumGame()" style="position:absolute;top:-8px;right:0;background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
 
       <!-- イントロ -->
       <div id="drum-intro">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:24px;">― DRUM PRACTICE ―</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#cbd5e1;margin-bottom:24px;">― DRUM PRACTICE ―</div>
         <div style="font-size:48px;margin-bottom:16px;">🥁</div>
         <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:18px;color:#e2e8f0;margin-bottom:8px;">5秒間、スネアを叩け！</div>
-        <div style="font-size:12px;color:#64748b;margin-bottom:36px;">連打数で評価が変わるよ</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:36px;">連打数で評価が変わるよ</div>
         <button onclick="startDrumGame()" style="padding:16px 56px;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.35);border-radius:14px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
         <div style="margin-top:24px;">
-          <button onclick="openDrumZukan(event)" style="background:none;border:none;color:#64748b;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">🥁 ドラム図鑑 <span id="drum-zukan-count-label"></span></button>
+          <button onclick="openDrumZukan(event)" style="background:none;border:none;color:#94a3b8;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">🥁 ドラム図鑑 <span id="drum-zukan-count-label"></span></button>
         </div>
       </div>
 
       <!-- ゲーム中 -->
       <div id="drum-play" style="display:none;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:20px;">― DRUM PRACTICE ―</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#cbd5e1;margin-bottom:20px;">― DRUM PRACTICE ―</div>
         <div id="drum-timer" style="font-family:'Cormorant Garamond',serif;font-size:56px;color:#6ee7b7;margin-bottom:8px;line-height:1;">5</div>
-        <div style="font-size:11px;color:#64748b;margin-bottom:28px;">秒</div>
-        <div id="drum-count" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#e2e8f0;margin-bottom:36px;">0 <span style="font-size:13px;color:#64748b;">回</span></div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:28px;">秒</div>
+        <div id="drum-count" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#e2e8f0;margin-bottom:36px;">0 <span style="font-size:13px;color:#94a3b8;">回</span></div>
         <button id="drum-tap-btn" ontouchstart="drumTap(event)" onclick="drumTap(event)" style="width:160px;height:160px;border-radius:50%;background:rgba(110,231,183,0.08);border:2px solid rgba(110,231,183,0.3);color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.08s;user-select:none;">TAP!</button>
       </div>
 
       <!-- 結果 -->
       <div id="drum-result" style="display:none;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:24px;">― RESULT ―</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#cbd5e1;margin-bottom:24px;">― RESULT ―</div>
         <div id="drum-result-grade" style="font-family:'Cormorant Garamond',serif;font-size:40px;color:#6ee7b7;margin-bottom:8px;"></div>
-        <div id="drum-result-count" style="font-size:13px;color:#64748b;margin-bottom:20px;"></div>
-        <div id="drum-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.9;background:rgba(110,231,183,0.04);border:1px solid rgba(110,231,183,0.12);border-radius:12px;padding:14px 18px;margin-bottom:16px;"></div>
+        <div id="drum-result-count" style="font-size:13px;color:#94a3b8;margin-bottom:20px;"></div>
+        <div id="drum-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;line-height:1.9;background:rgba(110,231,183,0.04);border:1px solid rgba(110,231,183,0.12);border-radius:12px;padding:14px 18px;margin-bottom:16px;"></div>
         <div id="drum-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:16px;"></div>
         <div id="drum-result-memo" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:left;"></div>
         <div id="drum-result-item" style="display:none;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.18);border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;"></div>
@@ -1322,21 +1322,21 @@
 
       <!-- りんウェルカム画面 -->
       <div id="oc-welcome" style="display:none;text-align:center;padding:8px 0;">
-        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#64748b;margin-bottom:20px;">― BAR STARS ―</div>
+        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:20px;">― BAR STARS ―</div>
         <img src="rin_stars.webp" alt="りん" style="width:min(200px,55vw);margin-bottom:20px;border-radius:12px;">
         <div style="font-family:'Noto Serif JP',serif;font-size:18px;color:#fde68a;letter-spacing:3px;margin-bottom:12px;">STARSへようこそ！</div>
-        <div style="font-size:12px;color:#94a3b8;line-height:2;margin-bottom:28px;">今夜も一杯、作っていこう。</div>
+        <div style="font-size:12px;color:#cbd5e1;line-height:2;margin-bottom:28px;">今夜も一杯、作っていこう。</div>
         <button onclick="ocGoIntro()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">入店する</button>
       </div>
 
       <!-- イントロ画面 -->
       <div id="oc-intro" style="text-align:center;padding:8px 0;">
-        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#64748b;margin-bottom:20px;">― BAR STARS ―</div>
+        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:20px;">― BAR STARS ―</div>
         <img src="hayate_shaker.webp" alt="ハヤテ" style="width:min(180px,50vw);image-rendering:pixelated;margin-bottom:16px;">
         <div style="font-family:'Noto Serif JP',serif;font-size:16px;color:#fde68a;letter-spacing:2px;margin-bottom:10px;">オリジナルカクテルを<br>作ろう！</div>
-        <div style="font-size:11px;color:#64748b;line-height:2;margin-bottom:28px;">お客さんの悩みを聞いて、<br>合いそうなシロップを選んでみて。</div>
+        <div style="font-size:11px;color:#94a3b8;line-height:2;margin-bottom:28px;">お客さんの悩みを聞いて、<br>合いそうなシロップを選んでみて。</div>
         <button onclick="ocStart()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
       </div>
 
@@ -1344,17 +1344,17 @@
       <div id="oc-play" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">BAR STARS</div>
-          <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeMiniGame()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
-          <div style="font-size:9px;letter-spacing:3px;color:#94a3b8;margin-bottom:10px;">― お客さん ―</div>
-          <div id="oc-customer-text" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2;"></div>
+          <div style="font-size:9px;letter-spacing:3px;color:#cbd5e1;margin-bottom:10px;">― お客さん ―</div>
+          <div id="oc-customer-text" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;line-height:2;"></div>
         </div>
-        <div style="font-size:9px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">シロップを選ぶ（2〜3種類）</div>
+        <div style="font-size:9px;letter-spacing:3px;color:#cbd5e1;margin-bottom:12px;">シロップを選ぶ（2〜3種類）</div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;" id="oc-syrup-grid"></div>
         <div id="oc-selected-display" style="min-height:32px;margin-bottom:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
         <div style="display:flex;gap:8px;">
-          <button onclick="ocReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#64748b;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
+          <button onclick="ocReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
           <button onclick="ocComplete()" style="flex:2;padding:11px 0;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.28);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">完成！</button>
         </div>
       </div>
@@ -1363,12 +1363,12 @@
       <div id="oc-result" style="display:none;text-align:center;padding:8px 0;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">BAR STARS</div>
-          <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeMiniGame()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <div id="oc-result-glass" style="margin-bottom:20px;"></div>
         <div id="oc-result-name" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fde68a;letter-spacing:4px;margin-bottom:14px;"></div>
-        <div id="oc-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;padding:14px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:10px;"></div>
-        <div id="oc-result-desc" style="font-size:11px;color:#94a3b8;line-height:1.9;margin-bottom:18px;"></div>
+        <div id="oc-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:2;padding:14px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:10px;"></div>
+        <div id="oc-result-desc" style="font-size:11px;color:#cbd5e1;line-height:1.9;margin-bottom:18px;"></div>
         <div id="oc-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
         <button onclick="ocNextRound()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">次のお客さん</button>
       </div>
@@ -1382,15 +1382,15 @@
       <div id="zukan-list-view">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL BOOK</div>
-          <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeZukan()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <div id="zukan-list" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
       <!-- 詳細画面 -->
       <div id="zukan-detail-view" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
-          <button onclick="closeZukanDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
-          <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeZukanDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
+          <button onclick="closeZukan()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <div id="zukan-detail-content"></div>
       </div>
@@ -1404,16 +1404,16 @@
       <div id="drum-zukan-list-view">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
-          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
-        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 34</span></div>
+        <div style="font-size:10px;color:#94a3b8;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 34</span></div>
         <div id="drum-zukan-list"></div>
       </div>
       <!-- 詳細画面 -->
       <div id="drum-zukan-detail-view" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
-          <button onclick="closeDrumItemDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#64748b;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
-          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+          <button onclick="closeDrumItemDetail()" style="display:flex;align-items:center;gap:4px;background:none;border:none;color:#94a3b8;font-size:12px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">‹ もどる</button>
+          <button onclick="closeDrumZukan()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
         <div id="drum-zukan-detail-content"></div>
       </div>
@@ -1425,21 +1425,21 @@
     <div style="width:100%;max-width:400px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">HOW TO PLAY</div>
-        <button onclick="closeHowTo()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+        <button onclick="closeHowTo()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:24px;font-family:'M PLUS Rounded 1c',sans-serif;">
 
         <div id="howto-a2hs" style="background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
           <div style="font-size:12px;color:#e2e8f0;line-height:1.7;">ホーム画面に追加すると<br>いつでもハヤテに会えるよ！</div>
-          <div id="howto-a2hs-ios" style="display:none;font-size:10px;color:#94a3b8;line-height:1.8;text-align:right;">共有ボタン →<br>「ホーム画面に追加」</div>
+          <div id="howto-a2hs-ios" style="display:none;font-size:10px;color:#cbd5e1;line-height:1.8;text-align:right;">共有ボタン →<br>「ホーム画面に追加」</div>
           <button id="howto-a2hs-btn" style="display:none;padding:8px 16px;background:rgba(253,230,138,0.15);border:1px solid rgba(253,230,138,0.4);border-radius:8px;color:#fde68a;font-family:'M PLUS Rounded 1c',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">追加する</button>
         </div>
 
         <div>
           <div style="font-size:10px;letter-spacing:4px;color:#fde68a;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">STATUS</div>
           <div style="background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;padding:16px;">
-            <p style="font-size:12px;color:#94a3b8;line-height:2;">
+            <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               5つのゲージで、ハヤテのコンディションをチェック！<br>
               <span style="color:#fde68a;">おなか</span> / <span style="color:#fde68a;">たいりょく</span> / <span style="color:#fde68a;">やるき</span> / <span style="color:#fde68a;">きぶん</span> が下がりすぎると、ハヤテの調子が悪くなるよ。<br><br>
               <span style="color:#6ee7b7;">れんしゅう</span> ゲージは、ドラム練習でだけ溜まる特別なゲージ。<br>
@@ -1453,27 +1453,27 @@
           <div style="display:flex;flex-direction:column;gap:8px;">
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🍙</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ごはん</div><div style="font-size:11px;color:#64748b;line-height:1.6;">おなかを回復するよ。腹が減っては練習できぬ。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ごはん</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">おなかを回復するよ。腹が減っては練習できぬ。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">💤</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">休憩</div><div style="font-size:11px;color:#64748b;line-height:1.6;">たいりょくを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">休憩</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">たいりょくを回復するよ。眠いまま放置すると、疲れて眠っちゃうことも。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🥁</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ドラム練習</div><div style="font-size:11px;color:#64748b;line-height:1.6;">れんしゅうゲージを溜めてLIVEを解放！ 練習回数に応じてDrum Lvも上がるよ。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">ドラム練習</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">れんしゅうゲージを溜めてLIVEを解放！ 練習回数に応じてDrum Lvも上がるよ。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">💬</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">話しかける</div><div style="font-size:11px;color:#64748b;line-height:1.6;">きぶんがアップ。ハヤテのひとことが聞けるよ。話しかけすぎると疲れちゃうかも。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">話しかける</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">きぶんがアップ。ハヤテのひとことが聞けるよ。話しかけすぎると疲れちゃうかも。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">📄</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">仕事</div><div style="font-size:11px;color:#64748b;line-height:1.6;">LIVEの盛り上がりに影響するよ。ライブ前にしっかり配っておこう。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">仕事</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">LIVEの盛り上がりに影響するよ。ライブ前にしっかり配っておこう。</div></div>
             </div>
             <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:10px;">
               <span style="font-size:20px;">🚶</span>
-              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">おでかけ</div><div style="font-size:11px;color:#64748b;line-height:1.6;">ハヤテを外に出して、気分転換させよう。外出先によって、ハヤテのひとことが変わるよ。</div></div>
+              <div><div style="font-size:12px;color:#e2e8f0;margin-bottom:2px;">おでかけ</div><div style="font-size:11px;color:#94a3b8;line-height:1.6;">ハヤテを外に出して、気分転換させよう。外出先によって、ハヤテのひとことが変わるよ。</div></div>
             </div>
           </div>
         </div>
@@ -1481,7 +1481,7 @@
         <div>
           <div style="font-size:10px;letter-spacing:4px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">LIVE</div>
           <div style="background:rgba(196,181,253,0.04);border:1px solid rgba(196,181,253,0.15);border-radius:14px;padding:16px;">
-            <p style="font-size:12px;color:#94a3b8;line-height:2;">
+            <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               れんしゅうゲージが一定以上溜まると、LIVEに挑戦できるよ。<br><br>
               LIVEを重ねると <span style="color:#c4b5fd;">Drum Lv</span> がアップ！<br><br>
               ライブ中は音楽が流れるので、音量に気をつけて楽しんでね。
@@ -1492,7 +1492,7 @@
         <div>
           <div style="font-size:10px;letter-spacing:4px;color:#fde68a;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">SWEETs</div>
           <div style="background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;padding:16px;">
-            <p style="font-size:12px;color:#94a3b8;line-height:2;">
+            <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               LIVEが成功すると <span style="color:#fde68a;">SWEETs</span> がもらえるよ！<br>
               ハヤテに食べさせると、きぶんが満タンになる。
             </p>
@@ -1502,7 +1502,7 @@
         <div>
           <div style="font-size:10px;letter-spacing:4px;color:#7dd3fc;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">GAME</div>
           <div style="background:rgba(125,211,252,0.04);border:1px solid rgba(125,211,252,0.15);border-radius:14px;padding:16px;">
-            <p style="font-size:12px;color:#94a3b8;line-height:2;">
+            <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               色のシロップを混ぜて、オリジナルカクテルを作ろう。<br>
               完成した一杯には、名前とカクテル言葉がつくよ。
             </p>
@@ -1510,18 +1510,18 @@
         </div>
 
         <div>
-          <div style="font-size:10px;letter-spacing:4px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">DATA BACKUP</div>
+          <div style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">DATA BACKUP</div>
           <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
-            <p style="font-size:11px;color:#94a3b8;line-height:1.8;margin-bottom:14px;text-align:center;">IDとPINを設定するとデータを保存できます。<br>必ずメモしておいてください。</p>
+            <p style="font-size:11px;color:#cbd5e1;line-height:1.8;margin-bottom:14px;text-align:center;">IDとPINを設定するとデータを保存できます。<br>必ずメモしておいてください。</p>
             <input id="backup-id" type="text" placeholder="バックアップID" maxlength="20"
               style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
             <input id="backup-pin" type="tel" placeholder="PIN（数字4桁）" maxlength="4" pattern="[0-9]*" inputmode="numeric"
               style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
               <button onclick="backupSave()" style="padding:9px;border-radius:8px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);color:#fde68a;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">保存する</button>
-              <button onclick="backupRestore()" style="padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">復元する</button>
+              <button onclick="backupRestore()" style="padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#cbd5e1;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">復元する</button>
             </div>
-            <div id="backup-msg" style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;min-height:16px;"></div>
+            <div id="backup-msg" style="font-size:11px;color:#cbd5e1;text-align:center;margin-top:10px;min-height:16px;"></div>
           </div>
         </div>
 
@@ -1633,7 +1633,7 @@
         <span style="font-size:20px;">🎸</span>
         <span>LIVE</span>
         <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#8b5cf6;">音楽が流れます</span>
-        <span class="action-cd" id="cd-live" style="color:#475569;"></span>
+        <span class="action-cd" id="cd-live" style="color:#94a3b8;"></span>
       </button>
     </div>
   </div>
@@ -1646,7 +1646,7 @@
   </div>
   <!-- iOS用ガイド -->
   <div id="ios-a2hs" style="display:none;max-width:360px;margin:0 auto 12px;padding:0 20px;">
-    <div style="border:1px solid rgba(253,230,138,0.2);border-radius:10px;padding:14px 16px;background:rgba(253,230,138,0.04);font-size:11px;color:#64748b;line-height:2;text-align:center;">
+    <div style="border:1px solid rgba(253,230,138,0.2);border-radius:10px;padding:14px 16px;background:rgba(253,230,138,0.04);font-size:11px;color:#94a3b8;line-height:2;text-align:center;">
       Safari の <span style="color:#fde68a;">共有ボタン</span> →<br>「ホーム画面に追加」でいつでも起動できます
     </div>
   </div>
@@ -1669,10 +1669,10 @@
       <img id="drum-item-get-img" src="" alt="" style="width:88px;height:88px;object-fit:contain;image-rendering:pixelated;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#c4b5fd;margin-bottom:10px;">― 図鑑 ゲット！ ―</div>
       <div id="drum-item-get-name" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#e2e8f0;letter-spacing:3px;margin-bottom:4px;"></div>
-      <div id="drum-item-get-cat" style="font-size:10px;color:#475569;letter-spacing:2px;margin-bottom:14px;"></div>
-      <div id="drum-item-get-desc" style="font-size:11px;color:#94a3b8;line-height:1.9;margin-bottom:16px;"></div>
-      <div id="drum-item-get-progress" style="font-size:10px;color:#64748b;letter-spacing:1px;margin-bottom:16px;"></div>
-      <div style="font-size:10px;color:#475569;">タップして閉じる</div>
+      <div id="drum-item-get-cat" style="font-size:10px;color:#94a3b8;letter-spacing:2px;margin-bottom:14px;"></div>
+      <div id="drum-item-get-desc" style="font-size:11px;color:#cbd5e1;line-height:1.9;margin-bottom:16px;"></div>
+      <div id="drum-item-get-progress" style="font-size:10px;color:#94a3b8;letter-spacing:1px;margin-bottom:16px;"></div>
+      <div style="font-size:10px;color:#94a3b8;">タップして閉じる</div>
     </div>
   </div>
 
@@ -1682,8 +1682,8 @@
       <img id="encounter-img" src="" alt="" style="width:120px;height:150px;object-fit:contain;image-rendering:pixelated;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
       <div id="encounter-label" style="font-size:10px;letter-spacing:4px;color:#fde68a;margin-bottom:6px;font-family:'Cormorant Garamond',serif;">― 遭遇！ ―</div>
       <div id="encounter-name" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></div>
-      <div id="encounter-speech" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:1.9;margin-bottom:14px;"></div>
-      <div style="font-size:10px;color:#475569;">タップして閉じる</div>
+      <div id="encounter-speech" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;margin-bottom:14px;"></div>
+      <div style="font-size:10px;color:#94a3b8;">タップして閉じる</div>
     </div>
   </div>
 
