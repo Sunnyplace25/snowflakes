@@ -214,8 +214,8 @@
     .action-section { margin-bottom: 20px; }
     .action-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
     }
     .action-btn {
       background: rgba(255,255,255,0.02);
@@ -468,7 +468,7 @@
       .section-label { margin-bottom: 8px; }
       .action-btn { padding: 9px 7px 7px; gap: 4px; }
       .action-icon { font-size: 17px; }
-      .action-grid { gap: 7px; }
+      .action-grid { gap: 6px; }
       .live-btn { padding: 10px 10px 8px; gap: 4px; margin-top: 7px; }
     }
   </style>
@@ -500,6 +500,9 @@
       document.getElementById('splash-wrap').addEventListener('click', dismissSplash);
       document.getElementById('splash-wrap').addEventListener('touchstart', dismissSplash);
     })();
+    function openMiniGame() {
+      flash('ミニゲーム　準備中…');
+    }
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
@@ -668,6 +671,11 @@
           <span class="action-icon">🚶</span>
           <span>外出する</span>
           <span class="action-cd" id="cd-gaishutsu"></span>
+        </button>
+        <button class="action-btn" id="btn-game" onclick="openMiniGame()">
+          <span class="action-icon">🎮</span>
+          <span>ゲーム</span>
+          <span class="action-cd"></span>
         </button>
         <button class="action-btn" id="btn-sweets" onclick="doAction('sweets')">
           <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
