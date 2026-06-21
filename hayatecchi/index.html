@@ -7,7 +7,7 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,7 +41,7 @@
     .wrapper {
       width: 100%;
       max-width: 400px;
-      padding: 32px 20px 100px;
+      padding: 16px 16px 60px;
     }
 
     .app-title {
@@ -65,22 +65,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 28px;
+      margin-bottom: 14px;
     }
     .chara-img-wrap {
       width: 100%;
-      height: 260px;
+      height: 200px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
       position: relative;
     }
     .chara-img {
-      max-height: 255px;
+      max-height: 195px;
       object-fit: contain;
       transition: opacity 0.3s;
     }
-    .chara-img.single { max-width: 210px; }
+    .chara-img.single { max-width: 175px; }
     .chara-img.bounce { animation: chara-bounce 0.4s ease; }
     @keyframes chara-bounce {
       0%   { transform: translateY(0); }
@@ -132,6 +132,7 @@
       border-bottom: 8px solid rgba(253,230,138,0.18);
     }
     .speech-text {
+      font-family: 'Noto Serif JP', serif;
       font-size: 13px;
       line-height: 1.75;
       color: #cbd5e1;
@@ -143,18 +144,18 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 9px;
       letter-spacing: 5px;
-      color: #334155;
-      margin-bottom: 14px;
+      color: #94a3b8;
+      margin-bottom: 8px;
     }
     .divider {
       width: 100%;
       height: 1px;
       background: rgba(255,255,255,0.04);
-      margin: 22px 0;
+      margin: 12px 0;
     }
 
     /* ステータス */
-    .status-section { margin-bottom: 24px; }
+    .status-section { margin-bottom: 12px; }
     .status-header {
       display: flex;
       justify-content: space-between;
@@ -180,7 +181,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px;
       letter-spacing: 2px;
-      color: #94a3b8;
+      color: #e2e8f0;
       width: 60px;
       flex-shrink: 0;
       white-space: nowrap;
@@ -204,7 +205,7 @@
     .stat-val {
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px;
-      color: #cbd5e1;
+      color: #ffffff;
       width: 26px;
       text-align: right;
       flex-shrink: 0;
@@ -215,23 +216,23 @@
     .action-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
     .action-btn {
       background: rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 12px 8px 10px;
-      color: #94a3b8;
+      border-radius: 10px;
+      padding: 8px 4px 7px;
+      color: #e2e8f0;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 11px;
-      letter-spacing: 1px;
+      font-size: 10px;
+      letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 3px;
       -webkit-tap-highlight-color: transparent;
     }
     .action-btn:hover {
@@ -240,12 +241,12 @@
       color: #fde68a;
     }
     .action-btn:active { transform: scale(0.96); }
-    .action-icon { font-size: 19px; line-height: 1; }
+    .action-icon { font-size: 17px; line-height: 1; }
     .action-cd {
       font-family: 'Cormorant Garamond', serif;
       font-size: 9px;
       letter-spacing: 1px;
-      color: #94a3b8;
+      color: #e2e8f0;
       min-height: 14px;
     }
     .action-btn.on-cd { opacity: 0.4; cursor: default; }
@@ -480,6 +481,9 @@
 <body>
 
   <!-- スプラッシュ画面 -->
+  <!-- ホーム追加バナー（初回のみ） -->
+  <div id="a2hs-banner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9998;width:min(340px,calc(100vw-32px));background:rgba(8,15,30,0.97);border:1px solid rgba(253,230,138,0.2);border-radius:16px;padding:20px 20px 18px;flex-direction:column;align-items:center;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.6);backdrop-filter:blur(8px);"></div>
+
   <div id="splash" style="position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;">
     <!-- 画像と透明ボタンをまとめるラッパー（画像のアスペクト比 941:1672 を維持） -->
     <div id="splash-wrap" style="position:relative;width:min(400px,calc(100vw - 32px),calc((100vh - 32px) * 0.563));aspect-ratio:941/1672;border-radius:16px;overflow:hidden;cursor:pointer;">
@@ -492,10 +496,52 @@
   </div>
   <script>
     (function() {
+      var _deferredPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        _deferredPrompt = e;
+      });
+
+      function showA2HS() {
+        if (localStorage.getItem('a2hs_shown')) return;
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (isStandalone) return;
+        localStorage.setItem('a2hs_shown', '1');
+
+        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        var el = document.getElementById('a2hs-banner');
+        if (!el) return;
+
+        if (isIOS) {
+          el.innerHTML =
+            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加しよう！</div>' +
+            '<div style="font-size:11px;color:#94a3b8;line-height:1.9;">Safariの <span style="color:#e2e8f0;">共有ボタン</span> →<br>「<span style="color:#e2e8f0;">ホーム画面に追加</span>」でアプリとして使えるよ。</div>' +
+            '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="margin-top:12px;padding:8px 24px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">閉じる</button>';
+          el.style.display = 'flex';
+        } else if (_deferredPrompt) {
+          el.innerHTML =
+            '<div style="font-size:13px;color:#fde68a;margin-bottom:6px;">ホーム画面に追加しよう！</div>' +
+            '<div style="font-size:11px;color:#94a3b8;margin-bottom:12px;">アプリとしていつでも起動できるよ。</div>' +
+            '<div style="display:flex;gap:8px;justify-content:center;">' +
+            '<button id="a2hs-yes" style="padding:8px 24px;background:rgba(253,230,138,0.15);border:1px solid rgba(253,230,138,0.4);border-radius:8px;color:#fde68a;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">追加する</button>' +
+            '<button onclick="document.getElementById(\'a2hs-banner\').style.display=\'none\'" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#64748b;font-family:\'M PLUS Rounded 1c\',sans-serif;font-size:11px;cursor:pointer;">あとで</button>' +
+            '</div>';
+          el.style.display = 'flex';
+          document.getElementById('a2hs-yes').onclick = function() {
+            _deferredPrompt.prompt();
+            _deferredPrompt.userChoice.then(function() { _deferredPrompt = null; });
+            el.style.display = 'none';
+          };
+        }
+      }
+
       function dismissSplash(e) {
         var splash = document.getElementById('splash');
         splash.style.opacity = '0';
-        setTimeout(function() { splash.style.display = 'none'; }, 500);
+        setTimeout(function() {
+          splash.style.display = 'none';
+          setTimeout(showA2HS, 400);
+        }, 500);
       }
       document.getElementById('splash-wrap').addEventListener('click', dismissSplash);
       document.getElementById('splash-wrap').addEventListener('touchstart', dismissSplash);
@@ -973,6 +1019,22 @@
           </div>
         </div>
 
+        <div>
+          <div style="font-size:10px;letter-spacing:4px;color:#64748b;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">DATA BACKUP</div>
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+            <p style="font-size:11px;color:#94a3b8;line-height:1.8;margin-bottom:14px;text-align:center;">IDとPINを設定するとデータを保存できます。<br>必ずメモしておいてください。</p>
+            <input id="backup-id" type="text" placeholder="バックアップID" maxlength="20"
+              style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
+            <input id="backup-pin" type="tel" placeholder="PIN（数字4桁）" maxlength="4" pattern="[0-9]*" inputmode="numeric"
+              style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;font-family:'M PLUS Rounded 1c',sans-serif;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button onclick="backupSave()" style="padding:9px;border-radius:8px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);color:#fde68a;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">保存する</button>
+              <button onclick="backupRestore()" style="padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:12px;cursor:pointer;font-family:'M PLUS Rounded 1c',sans-serif;">復元する</button>
+            </div>
+            <div id="backup-msg" style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;min-height:16px;"></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1099,22 +1161,6 @@
     </div>
   </div>
 
-  <!-- DATA BACKUP -->
-  <div style="max-width:360px;margin:0 auto 24px;padding:0 20px;">
-    <div style="border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;background:rgba(255,255,255,0.02);">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#475569;text-align:center;margin-bottom:14px;">DATA BACKUP</div>
-      <p style="font-size:11px;color:#64748b;line-height:1.8;margin-bottom:14px;text-align:center;">IDとPINを設定するとデータを保存できます。<br>必ずメモしておいてください。</p>
-      <input id="backup-id" type="text" placeholder="バックアップID" maxlength="20"
-        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none;">
-      <input id="backup-pin" type="tel" placeholder="PIN（数字4桁）" maxlength="4" pattern="[0-9]*" inputmode="numeric"
-        style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e2e8f0;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button onclick="backupSave()" style="padding:9px;border-radius:8px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);color:#fde68a;font-size:12px;cursor:pointer;letter-spacing:1px;">保存する</button>
-        <button onclick="backupRestore()" style="padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:12px;cursor:pointer;letter-spacing:1px;">復元する</button>
-      </div>
-      <div id="backup-msg" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;min-height:16px;"></div>
-    </div>
-  </div>
 
   <div class="toast" id="toast"></div>
 
