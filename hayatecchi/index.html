@@ -2091,7 +2091,9 @@
 
     function doAction(action) {
       var remain = cdRemain(action);
-      if (remain > 0 && action !== 'hanasu') {
+      // おでかけ: きぶん20以下なら時間外でも発動可
+      var gaishutsuEmergency = (action === 'gaishutsu' && (st.kibun || 0) <= 20);
+      if (remain > 0 && action !== 'hanasu' && !gaishutsuEmergency) {
         flash('あと ' + fmtCD(remain) + ' 待って');
         return;
       }
@@ -2182,7 +2184,15 @@
         speech = randLine(FLYER_LINES);
         toast  = 'やる気 +8　きぶん +5　おなか -10';
         imgOverride = 'flyer';
-        setTimeout(function(){ tryGetDrumItem(0.4, null); }, 300);
+        // 仕事はおにぎり40%のみ（図鑑アイテムなし）
+        if (Math.random() < 0.4) {
+          if (!st.onigiriCount) st.onigiriCount = 0;
+          st.onigiriCount++;
+          if (!st.drumItems) st.drumItems = {};
+          st.drumItems['onigiri'] = true;
+          save();
+          flash('おにぎりゲット！　×' + st.onigiriCount);
+        }
       }
       else if (action === 'sweets') {
         if ((st.sweets || 0) <= 0) { flash('SWEETsないな……またもらってこよう'); return; }
