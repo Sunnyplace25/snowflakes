@@ -2315,7 +2315,7 @@ function submitUtPw() {
 
   /* ── Timed chapter unlock (1日1エピソード) ── */
   // key: idx that needs timer, value: idx of previous chapter (must be read first)
-  var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16, 20:19, 21:20, 22:21, 23:22, 24:23 };
+  var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16, 18:17, 19:18, 20:19, 21:20, 22:21, 23:22, 24:23 };
   // 章ごとのロック時間（ms）。全章 48h デフォルト
   var TIMED_THRESHOLDS = {};
 
@@ -4086,20 +4086,20 @@ function submitUtPw() {
         // 第四章：店のナギ/ナギ/中年
         targetSrc = _pick(['shopkeeper.webp','nagi_ch3.webp','nagi_ch4.webp']);
       } else if (_seenProseScenes.has(19)) {
-        // 3-5読了後：子ども/デフォルト/ナギ（3-2と同じ）
-        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp','nagi_ch4.webp']);
+        // 3-5読了後：子ども/デフォルト
+        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp']);
       } else if (_seenProseScenes.has(18)) {
-        // 3-4読了後：デフォルト/ナギ/女性
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_woman.webp']);
+        // 3-4読了後：デフォルト/女性
+        targetSrc = _pick(['shopkeeper.webp','nagi_woman.webp']);
       } else if (_seenProseScenes.has(17)) {
-        // 3-3読了後：デフォルト/ナギ/青年
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_ch3.webp']);
+        // 3-3読了後：デフォルト/青年
+        targetSrc = _pick(['shopkeeper.webp','nagi_ch3.webp']);
       } else if (_seenProseScenes.has(16)) {
-        // 3-2読了後：子ども/デフォルト/ナギ
-        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp','nagi_ch4.webp']);
+        // 3-2読了後：子ども/デフォルト
+        targetSrc = _pick(['nagi_shop_young_close.webp','shopkeeper.webp']);
       } else if (_seenProseScenes.has(15)) {
-        // 3-1読了後：デフォルト/ナギ
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp']);
+        // 3-1読了後：デフォルト
+        targetSrc = 'shopkeeper.webp';
       } else if (ch4Unlocked) {
         // 第三章解放・3-1未読：デフォルトのみ
         targetSrc = 'shopkeeper.webp';
@@ -4107,11 +4107,11 @@ function submitUtPw() {
         // 第二章：青年ナギのみ（中年は4章から）
         targetSrc = 'nagi_ch3.webp';
       } else if (ch21Unlocked) {
-        // 第一章：デフォルト/ナギ/子ども
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp','nagi_shop_young_close.webp']);
+        // 第一章：デフォルト/子ども
+        targetSrc = _pick(['shopkeeper.webp','nagi_shop_young_close.webp']);
       } else {
-        // Prologue：デフォルト/顔
-        targetSrc = _pick(['shopkeeper.webp','nagi_ch4.webp']);
+        // Prologue：デフォルト
+        targetSrc = 'shopkeeper.webp';
       }
       if (shopImg.src.split('/').pop() !== targetSrc) {
         shopImg.style.opacity = '0';
