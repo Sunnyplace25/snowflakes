@@ -1919,6 +1919,16 @@
     </div>
   </div>
 
+  <!-- LIVE終了ポップアップ -->
+  <div class="sweets-get-overlay" id="live-end-overlay" onclick="closeLiveEnd()">
+    <div class="sweets-get-box" style="border-color:rgba(196,181,253,0.35);max-width:280px;padding:32px 24px;">
+      <img src="hayate_live_end.webp" alt="" style="width:min(200px,60vw);object-fit:contain;border-radius:12px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;">
+      <div style="font-size:9px;letter-spacing:4px;color:#c4b5fd;margin-bottom:10px;font-family:'Cormorant Garamond',serif;">― LIVE END ―</div>
+      <div id="live-end-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;line-height:2;margin-bottom:14px;"></div>
+      <div style="font-size:10px;color:#94a3b8;">タップして閉じる</div>
+    </div>
+  </div>
+
   <!-- メンバー遭遇ポップアップ -->
   <div class="sweets-get-overlay" id="encounter-overlay" onclick="closeEncounter()">
     <div class="sweets-get-box" style="border-color:rgba(253,230,138,0.35);max-width:260px;padding:36px 28px;">
@@ -2332,6 +2342,16 @@
       'コウタのベースえぐかった　ヒナタのボーカルもやばかった',
       '客のノリがよくて最高だったわ',
       '次はもっとでかい場所でやろう'
+    ];
+    var LIVE_END_LINES = [
+      '最高だった。ありがとな',
+      'ライブ終わった瞬間が、いちばん好きかもしれない',
+      '今日の音、俺けっこう好きだった',
+      'まだ手が震えてる。気持ちいい意味で',
+      '終わってもまだ鳴ってる気がする',
+      'お前が来てくれてよかった',
+      'これがあるから、やめらんないんだよな',
+      '今日も一緒にいてくれてありがとう'
     ];
 
     var _lastLine = '';
@@ -2751,6 +2771,15 @@
       setSpeech(randLine(LIVE_LINES), null);
       bounce();
       render();
+      setTimeout(showLiveEnd, 300);
+    }
+
+    function showLiveEnd() {
+      document.getElementById('live-end-speech').textContent = '「' + randLine(LIVE_END_LINES) + '」';
+      document.getElementById('live-end-overlay').classList.add('show');
+    }
+    function closeLiveEnd() {
+      document.getElementById('live-end-overlay').classList.remove('show');
       if (_pendingDrumItem) {
         var item = _pendingDrumItem;
         _pendingDrumItem = null;
