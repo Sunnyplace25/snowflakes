@@ -976,12 +976,15 @@
         st.barCount = 0;
         st.cd.bar = cdTime(CD_SEC.bar);
       }
+      // ボタンラベルを残杯数に応じて変える
+      var nextBtn = document.getElementById('oc-next-btn');
+      if (nextBtn) nextBtn.textContent = barRemain > 0 ? '次のお客さん' : '今日はここまで';
 
       if (recipe) {
         document.getElementById('oc-result-name').textContent = recipe.name;
         document.getElementById('oc-result-kotoba').textContent = '「' + recipe.kotoba + '」';
         document.getElementById('oc-result-desc').textContent = recipe.desc;
-        var rewardTxt = 'きぶん +15　やるき +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '　（次まで少し待って）');
+        var rewardTxt = 'きぶん +15　やるき +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '');
         document.getElementById('oc-result-reward').textContent = rewardTxt;
         st.kibun = clamp(st.kibun + 15); st.yaruki = clamp(st.yaruki + 10); save();
       } else {
@@ -989,12 +992,19 @@
         document.getElementById('oc-result-name').textContent = 'Mystery Blend';
         document.getElementById('oc-result-kotoba').textContent = '「まだ名前のない、あなただけの一杯」';
         document.getElementById('oc-result-desc').textContent = 'まだ誰も知らない、未知のカクテル。';
-        var rewardTxt2 = 'きぶん +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '　（次まで少し待って）');
+        var rewardTxt2 = 'きぶん +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '');
         document.getElementById('oc-result-reward').textContent = rewardTxt2;
         st.kibun = clamp(st.kibun + 10); save();
       }
     }
-    function ocNextRound() { ocNewCustomer(); }
+    function ocNextRound() {
+      if (cdRemain('bar') > 0) {
+        flash('今日はここまで…あと ' + fmtCD(cdRemain('bar')));
+        closeMiniGame();
+        return;
+      }
+      ocNewCustomer();
+    }
     // (旧cg関数は使われないが念のため残す)
     var CG_ING = [
       { id:'cassis',    name:'カシス',    emoji:'🍇', rgb:[130,30,180] },
@@ -1370,7 +1380,7 @@
         <div id="oc-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:2;padding:14px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:10px;"></div>
         <div id="oc-result-desc" style="font-size:11px;color:#cbd5e1;line-height:1.9;margin-bottom:18px;"></div>
         <div id="oc-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
-        <button onclick="ocNextRound()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">次のお客さん</button>
+        <button id="oc-next-btn" onclick="ocNextRound()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">次のお客さん</button>
       </div>
     </div>
   </div>
