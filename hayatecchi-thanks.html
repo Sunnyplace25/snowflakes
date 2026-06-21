@@ -108,12 +108,22 @@
 
     #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.4; }
     .wrap { position: relative; z-index: 1; }
+
+    @keyframes card-glow {
+      0%,100% { box-shadow: 0 0 20px rgba(253,230,138,0.3), 0 0 60px rgba(253,230,138,0.1); }
+      50%      { box-shadow: 0 0 40px rgba(253,230,138,0.6), 0 0 100px rgba(253,230,138,0.25); }
+    }
+    .hayate-card {
+      width: 200px; display: block; margin: 0 auto 28px;
+      border-radius: 12px;
+      animation: card-glow 2.5s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
 <canvas id="snow"></canvas>
 <div class="wrap">
-  <img src="hayate_card.png" alt="HAYATE" style="width:200px;display:block;margin:0 auto 28px;border-radius:12px;">
+  <img src="hayate_card.png" alt="HAYATE" class="hayate-card">
   <p class="label">THANK YOU</p>
   <p class="title">ありがとうございます。</p>
   <p class="sub">「ハヤテっち」をお迎えいただき、<br>ありがとうございます。<br><br>ホーム画面に追加すると、<br>いつでもハヤテに会えます。<br><br>あなたの日常のそばで、<br>ハヤテとの時間をお楽しみください。</p>
