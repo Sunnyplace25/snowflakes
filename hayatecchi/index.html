@@ -481,11 +481,14 @@
 
   <!-- スプラッシュ画面 -->
   <div id="splash" style="position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;">
-    <img src="splash.webp" alt="ハヤテっち" style="max-width:min(400px,calc(100vw - 32px));max-height:calc(100vh - 32px);object-fit:contain;border-radius:16px;">
-    <!-- ⚙ 遊び方 -->
-    <button onclick="openHowTo(event)" style="position:absolute;top:14px;left:14px;width:46px;height:46px;background:rgba(10,8,2,0.5);border:2px solid rgba(253,210,60,0.55);border-radius:12px;font-size:22px;cursor:pointer;backdrop-filter:blur(3px);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;">⚙️</button>
-    <!-- ❤ (後で) -->
-    <button style="position:absolute;top:14px;right:14px;width:46px;height:46px;background:rgba(10,8,2,0.5);border:2px solid rgba(253,210,60,0.55);border-radius:12px;font-size:22px;cursor:pointer;backdrop-filter:blur(3px);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;">❤️</button>
+    <!-- 画像と透明ボタンをまとめるラッパー（画像のアスペクト比 941:1672 を維持） -->
+    <div id="splash-wrap" style="position:relative;width:min(400px,calc(100vw - 32px),calc((100vh - 32px) * 0.563));aspect-ratio:941/1672;border-radius:16px;overflow:hidden;cursor:pointer;">
+      <img src="splash.webp" alt="ハヤテっち" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <!-- ⚙ 遊び方（イラスト左上のギアに重ねる） -->
+      <button onclick="openHowTo(event)" style="position:absolute;top:1.8%;left:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
+      <!-- ❤（イラスト右上に重ねる・後で機能追加） -->
+      <button onclick="event.stopPropagation()" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
+    </div>
   </div>
   <script>
     (function() {
@@ -494,9 +497,8 @@
         splash.style.opacity = '0';
         setTimeout(function() { splash.style.display = 'none'; }, 500);
       }
-      var splash = document.getElementById('splash');
-      splash.addEventListener('click', dismissSplash);
-      splash.addEventListener('touchstart', dismissSplash);
+      document.getElementById('splash-wrap').addEventListener('click', dismissSplash);
+      document.getElementById('splash-wrap').addEventListener('touchstart', dismissSplash);
     })();
     function openHowTo(e) {
       if (e) e.stopPropagation();
