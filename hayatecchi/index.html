@@ -598,8 +598,52 @@
     ];
     var _ocSelected = [], _ocCustomerIdx = -1;
 
+    /* ── ドラムメモ ── */
+    var DRUM_MEMOS = [
+      'スティックって、ただの棒じゃないんだよな。重さで音の出方、けっこう変わる',
+      'スネアはリズムの顔。ここが決まると、曲が締まるんだよ',
+      'バスドラムは足で鳴らす低い音。地味に見えて、いちばん下で支えてる',
+      'ハイハットのチッチッて音、あれがあると曲が歩き出す感じする',
+      'シンバルは盛り上げ役。鳴らしすぎるとうるさいけど、決まると最高',
+      'タムはドコドコって動きをつけるやつ。フィルインで使うと気持ちいい',
+      'フィルインは、次の場面に行くための合図みたいなものだな',
+      'クリックはテンポの先生。ちょっと厳しいけど、頼りになる',
+      'ドラムは後ろにいるけど、音ではけっこう前に出てるんだよ',
+      'リズムが安定すると、みんなが安心して音を出せる',
+      'スネアが遅れると、曲がちょっと眠そうになる',
+      'バスドラムが強すぎると、みんなを押しすぎる。ちょうどいいのが大事',
+      'ハイハットを細かく刻むと、曲の緊張感が変わる',
+      'シンバルは光る音。ここぞって時に鳴らしたい',
+      'タム回しは楽しい。楽しいけど、勢いだけだと迷子になる',
+      'ドラムは叩く楽器だけど、叩かない間もかなり大事',
+      '休符って、休んでるんじゃなくて、次の音を待ってる感じ',
+      'いいリズムって、前に出すぎないんだよな',
+      'テンポを守るのって、簡単そうでけっこう難しい',
+      'ライブだと、最初のカウントで空気が変わる',
+      'ワン、ツー、スリー、フォー。ここで迷ったら負け',
+      'スティックの先、チップっていうんだ。ここで音の感じが変わる',
+      'ドラムの椅子はスローンっていう。座り心地、かなり大事',
+      'ペダルの踏み方で、バスドラムの音はけっこう変わる',
+      'シンバルスタンドの高さ、意外と性格出ると思う',
+      'ドラムセットって、一人用の小さな基地みたいだよな',
+      'チューニングで太鼓の響きが変わる。ドラムもちゃんと音を合わせるんだよ',
+      '叩く強さより、どこで鳴らすかのほうが大事なときもある',
+      'リズムが走るっていうのは、少し前のめりになること。気持ちは分かる',
+      'リズムがもたるっていうのは、少し遅れること。眠いとそうなる。たぶん',
+      '練習は裏切らないって言うけど、サボるとすぐバレる',
+      '手だけじゃなくて、足も使うからドラムは忙しい',
+      'ドラムは体力勝負に見えて、実はかなり集中力勝負',
+      '音を大きくするより、気持ちよく鳴らすほうが難しい',
+      'バンドの後ろから、全員の背中を見るの、けっこう好きなんだよな',
+      'いいライブの日は、クリックなしでもみんなの呼吸が合う',
+      '練習中のミスは、ライブで助けてくれることがある',
+      '同じフレーズでも、気分で鳴り方が変わる。そこが面白い',
+      'ドラムは派手だけど、ちゃんと支える楽器なんだよ',
+      'よし、今日のドラムメモ終わり。続きは叩いて覚えよ'
+    ];
+
     /* ── ドラム練習ミニゲーム ── */
-    var _drumTimer = null, _drumCount = 0, _drumActive = false;
+    var _drumTimer = null, _drumCount = 0, _drumActive = false, _drumLastMemo = -1;
 
     function openDrumGame() {
       var btn = document.getElementById('btn-renshu');
@@ -666,9 +710,31 @@
       document.getElementById('drum-result').style.display = 'block';
       document.getElementById('drum-result-grade').textContent   = grade;
       document.getElementById('drum-result-grade').style.color   = gradeColor;
-      document.getElementById('drum-result-count').textContent   = n + '回';
-      document.getElementById('drum-result-speech').textContent  = '「' + speech + '」';
-      document.getElementById('drum-result-reward').textContent  = '練習ゲージ +' + geUp + '　Drum Lv経験値 +' + skillUp;
+      // ドラムメモをランダム抽選（未取得優先）
+      if (!st.drumLog) st.drumLog = {};
+      var unseen = DRUM_MEMOS.map(function(_,i){return i;}).filter(function(i){ return !st.drumLog[i]; });
+      var memoIdx;
+      if (unseen.length > 0) {
+        memoIdx = unseen[Math.floor(Math.random() * unseen.length)];
+      } else {
+        do { memoIdx = Math.floor(Math.random() * DRUM_MEMOS.length); } while(memoIdx === _drumLastMemo && DRUM_MEMOS.length > 1);
+      }
+      _drumLastMemo = memoIdx;
+      st.drumLog[memoIdx] = true;
+      save();
+
+      document.getElementById('drum-result-count').textContent  = n + '回';
+      document.getElementById('drum-result-speech').textContent = '「' + speech + '」';
+      document.getElementById('drum-result-reward').textContent = '練習ゲージ +' + geUp + '　Drum Lv経験値 +' + skillUp;
+
+      // ドラムメモ表示
+      var memoEl = document.getElementById('drum-result-memo');
+      if (memoEl) {
+        memoEl.innerHTML =
+          '<div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:8px;">― DRUM MEMO ' + (memoIdx+1) + ' / ' + DRUM_MEMOS.length + ' ―</div>' +
+          '<div style="font-family:\'Noto Serif JP\',serif;font-size:12px;color:#94a3b8;line-height:1.9;">' + DRUM_MEMOS[memoIdx] + '</div>' +
+          '<div style="font-size:10px;color:#334155;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
+      }
       render();
     }
 
@@ -1046,7 +1112,8 @@
         <div id="drum-result-grade" style="font-family:'Cormorant Garamond',serif;font-size:40px;color:#6ee7b7;margin-bottom:8px;"></div>
         <div id="drum-result-count" style="font-size:13px;color:#64748b;margin-bottom:20px;"></div>
         <div id="drum-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.9;background:rgba(110,231,183,0.04);border:1px solid rgba(110,231,183,0.12);border-radius:12px;padding:14px 18px;margin-bottom:16px;"></div>
-        <div id="drum-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:28px;"></div>
+        <div id="drum-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:16px;"></div>
+        <div id="drum-result-memo" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:24px;text-align:left;"></div>
         <button onclick="closeDrumGame()" style="padding:12px 44px;background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);border-radius:10px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;">とじる</button>
       </div>
     </div>
