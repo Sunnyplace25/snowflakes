@@ -491,7 +491,7 @@
       <!-- ⚙ 遊び方（イラスト左上のギアに重ねる） -->
       <button onclick="openHowTo(event)" style="position:absolute;top:1.8%;left:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
       <!-- ❤（イラスト右上に重ねる・後で機能追加） -->
-      <button onclick="event.stopPropagation()" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
+      <button onclick="openZukan(event)" style="position:absolute;top:1.8%;right:3%;width:10%;aspect-ratio:1/1;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:8px;"></button>
     </div>
   </div>
   <script>
@@ -799,6 +799,13 @@
       } else {
         glassEl.innerHTML = '<div style="width:64px;height:104px;border-radius:0 0 22px 22px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;"><div style="position:absolute;bottom:0;left:0;right:0;height:80%;background:' + (recipe ? recipe.mixHex : autoHex) + ';transition:background 0.5s;"></div></div>';
       }
+      // 図鑑に記録
+      if (!st.zukanLog) st.zukanLog = {};
+      var logKey = recipe ? key : 'mystery';
+      if (!st.zukanLog[logKey]) st.zukanLog[logKey] = { count: 0 };
+      st.zukanLog[logKey].count++;
+      st.zukanLog[logKey].last = Date.now();
+
       if (recipe) {
         document.getElementById('oc-result-name').textContent = recipe.name;
         document.getElementById('oc-result-kotoba').textContent = '「' + recipe.kotoba + '」';
@@ -942,6 +949,45 @@
       cgInit();
     }
     // ──────────────────────────────────────────────────
+    function openZukan(e) {
+      if (e) e.stopPropagation();
+      var log = st.zukanLog || {};
+      var list = document.getElementById('zukan-list');
+      list.innerHTML = '';
+
+      // 作ったことあるレシピを新しい順に表示
+      var entries = Object.keys(log).sort(function(a,b){ return (log[b].last||0)-(log[a].last||0); });
+
+      if (entries.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:40px 0;font-size:13px;color:#475569;">まだカクテルを作ったことがないよ。<br>ゲームで試してみて！</div>';
+      } else {
+        entries.forEach(function(key) {
+          var entry = log[key];
+          var recipe = key === 'mystery'
+            ? { name:'Mystery Blend', kotoba:'まだ名前のない、あなただけの一杯', img:'cocktail_mystery.webp' }
+            : OC_RECIPES[key];
+          if (!recipe) return;
+          var imgHtml = recipe.img
+            ? '<img src="' + recipe.img + '" style="width:72px;height:72px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;">'
+            : '<div style="width:72px;height:72px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;"></div>';
+          var card = document.createElement('div');
+          card.style.cssText = 'display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px;';
+          card.innerHTML =
+            imgHtml +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-family:\'Cormorant Garamond\',serif;font-size:16px;color:#fde68a;letter-spacing:2px;margin-bottom:4px;">' + recipe.name + '</div>' +
+              '<div style="font-size:11px;color:#94a3b8;line-height:1.7;margin-bottom:6px;">「' + recipe.kotoba + '」</div>' +
+              '<div style="font-size:10px;color:#475569;">' + entry.count + '回 作った</div>' +
+            '</div>';
+          list.appendChild(card);
+        });
+      }
+      document.getElementById('zukan-modal').style.display = 'flex';
+    }
+    function closeZukan() {
+      document.getElementById('zukan-modal').style.display = 'none';
+    }
+
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
@@ -1063,6 +1109,17 @@
         <div id="oc-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
         <button onclick="ocNextRound()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">次のお客さん</button>
       </div>
+    </div>
+  </div>
+
+  <!-- カクテル図鑑モーダル -->
+  <div id="zukan-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL BOOK</div>
+        <button onclick="closeZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+      <div id="zukan-list" style="display:flex;flex-direction:column;gap:16px;"></div>
     </div>
   </div>
 
