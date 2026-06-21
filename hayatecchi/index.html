@@ -3252,16 +3252,14 @@
         }, 2000);
       }
 
-      // 強制睡眠中は全ボタンロック
+      // 強制睡眠中は全ボタンロック（updateCDでも同様に管理）
       var forceLock = cdRemain('forceSleep') > 0;
       ['meshi','neru','renshu','flyer','gaishutsu','game'].forEach(function(id) {
         var b = document.getElementById('btn-' + id);
-        if (b && forceLock) b.classList.add('on-cd');
+        if (b) b.classList.toggle('on-cd', forceLock || cdRemain(id) > 0);
       });
       var liveB = document.getElementById('btn-live');
-      if (liveB && forceLock) liveB.classList.add('locked');
-      var barB = document.getElementById('btn-game');
-      if (barB && forceLock) barB.classList.add('on-cd');
+      if (liveB) liveB.classList.toggle('locked', forceLock);
       if ((st.suimin || 0) > 20) _autoSleepTriggered = false;
     }
 
@@ -3280,6 +3278,7 @@
     }
 
     function updateCD() {
+      var forceLock = cdRemain('forceSleep') > 0;
       // meshi は CD なし → おにぎり個数を常時表示
       var meshiCdEl = document.getElementById('cd-meshi');
       if (meshiCdEl) {
@@ -3287,18 +3286,20 @@
         meshiCdEl.textContent = '×' + oc;
         meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#94a3b8';
       }
+      var meshiBtn = document.getElementById('btn-meshi');
+      if (meshiBtn) meshiBtn.classList.toggle('on-cd', forceLock);
       ['neru','renshu','flyer','gaishutsu'].forEach(function(a) {
         var btn  = document.getElementById('btn-' + a);
         var cdEl = document.getElementById('cd-' + a);
         var rem  = cdRemain(a);
-        if (btn)  btn.classList.toggle('on-cd', rem > 0);
+        if (btn)  btn.classList.toggle('on-cd', rem > 0 || forceLock);
         if (cdEl) cdEl.textContent = rem > 0 ? fmtCD(rem) : '';
       });
       // バー（カクテル）
       var barBtn  = document.getElementById('btn-game');
       var barCdEl = document.getElementById('cd-bar');
       var barRem  = cdRemain('bar');
-      if (barBtn)  barBtn.classList.toggle('on-cd', barRem > 0);
+      if (barBtn)  barBtn.classList.toggle('on-cd', barRem > 0 || forceLock);
       if (barCdEl) {
         if (barRem > 0) {
           barCdEl.textContent = fmtCD(barRem);
@@ -3307,6 +3308,9 @@
           barCdEl.textContent = count > 0 ? (5 - count) + '回' : '';
         }
       }
+      // LIVEボタン
+      var liveB = document.getElementById('btn-live');
+      if (liveB) liveB.classList.toggle('locked', forceLock);
     }
 
     /* ── トースト ── */
