@@ -480,14 +480,9 @@
 <body>
 
   <!-- スプラッシュ画面 -->
-  <div id="splash" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#fffbeb 0%,#fef3c7 40%,#fde68a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity 0.5s;">
-    <img src="logo.png" alt="ハヤテっち" style="width:min(320px,85vw);image-rendering:pixelated;margin-bottom:-10px;">
-    <img src="icon.webp" alt="ハヤテ" style="width:min(200px,55vw);image-rendering:pixelated;border-radius:28px;">
-    <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:3px;color:#92400e;margin-top:16px;animation:splash-blink 1.2s ease-in-out infinite;">タップして始める</p>
+  <div id="splash" style="position:fixed;inset:0;z-index:9999;background:#0a0a1a;display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;cursor:pointer;">
+    <img src="splash.webp" alt="ハヤテっち" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
   </div>
-  <style>
-    @keyframes splash-blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-  </style>
   <script>
     (function() {
       var splash = document.getElementById('splash');
