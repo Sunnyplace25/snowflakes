@@ -1587,7 +1587,7 @@
       <div class="section-label">action</div>
       <div class="action-grid">
         <button class="action-btn" id="btn-meshi" onclick="doAction('meshi')">
-          <span class="action-icon">🍙</span>
+          <span class="action-icon" style="position:relative;display:inline-block;">🍙<span id="onigiri-badge" style="position:absolute;top:-4px;right:-8px;font-size:9px;font-family:'M PLUS Rounded 1c',sans-serif;color:#6ee7b7;line-height:1;"></span></span>
           <span>ごはん</span>
           <span class="action-cd" id="cd-meshi"></span>
         </button>
@@ -2564,12 +2564,14 @@
       updateCD();
 
       // おにぎり個数表示（ごはんボタン）
+      var oc = st.onigiriCount || 0;
       var meshiCdEl = document.getElementById('cd-meshi');
-      if (meshiCdEl && cdRemain('meshi') <= 0) {
-        var oc = st.onigiriCount || 0;
-        meshiCdEl.textContent = '×' + oc;
+      if (meshiCdEl) {
+        meshiCdEl.textContent = 'おにぎり ×' + oc;
         meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#475569';
       }
+      var onigiriBadge = document.getElementById('onigiri-badge');
+      if (onigiriBadge) onigiriBadge.textContent = oc > 0 ? '×' + oc : '';
 
       // たいりょく20以下で強制休憩（全ボタン2分ロック）
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
