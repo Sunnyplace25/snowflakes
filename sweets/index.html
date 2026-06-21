@@ -6255,10 +6255,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         el.classList.add('unlocked');
         var url = d.url;
         var doorId = d.doorId;
-        var goRoom = function(e) {
+        var goRoom = (function(doorId, url) { return function(e) {
           e.stopPropagation();
+          markRoomSeen(doorId, new Date().toISOString().slice(0, 10));
           location.href = url;
-        };
+        }; })(doorId, url);
         el.onclick = goRoom;
         var chibi = el.querySelector('.door-chibi');
         var label = el.querySelector('.door-label');
