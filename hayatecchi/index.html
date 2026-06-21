@@ -1675,6 +1675,17 @@
     </div>
   </div>
 
+  <!-- メンバー遭遇ポップアップ -->
+  <div class="sweets-get-overlay" id="encounter-overlay" onclick="closeEncounter()">
+    <div class="sweets-get-box" style="border-color:rgba(253,230,138,0.35);max-width:260px;padding:36px 28px;">
+      <img id="encounter-img" src="" alt="" style="width:120px;height:150px;object-fit:contain;image-rendering:pixelated;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
+      <div id="encounter-label" style="font-size:10px;letter-spacing:4px;color:#fde68a;margin-bottom:6px;font-family:'Cormorant Garamond',serif;">― 遭遇！ ―</div>
+      <div id="encounter-name" style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#e2e8f0;letter-spacing:3px;margin-bottom:6px;"></div>
+      <div id="encounter-speech" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:1.9;margin-bottom:14px;"></div>
+      <div style="font-size:10px;color:#475569;">タップして閉じる</div>
+    </div>
+  </div>
+
   <!-- LIVEカウントダウン -->
   <div id="live-countdown-overlay" style="display:none;position:fixed;inset:0;z-index:10005;background:rgba(4,8,20,0.97);align-items:center;justify-content:center;">
     <div id="live-countdown-num" style="font-family:'Cormorant Garamond',serif;font-size:120px;color:#c4b5fd;line-height:1;user-select:none;"></div>
@@ -2149,10 +2160,11 @@
         if (Math.random() < 0.4) {
           var members = ['hinata','kouta','rin'];
           var met = members[Math.floor(Math.random() * members.length)];
-          var names = { hinata:'ヒナタ', kouta:'コウタ', rin:'りん' };
-          speech = randLine(ENCOUNTER_LINES[met]);
+          var encSpeech = randLine(ENCOUNTER_LINES[met]);
+          speech = encSpeech;
           st.kibun = clamp(st.kibun + 10);
-          toast = names[met] + ' に会った！　きぶん +10';
+          toast = { hinata:'ヒナタ', kouta:'コウタ', rin:'りん' }[met] + ' に会った！　きぶん +10';
+          setTimeout(function() { showEncounter(met, encSpeech); }, 400);
         } else {
           speech = randLine(GAISHUTSU_LINES);
           toast  = 'やるき +20　きぶん +20　おなか -15　たいりょく -10';
@@ -2449,6 +2461,21 @@
       }
     }
 
+    var MEMBER_IMGS = { hinata:'hinata_live.webp', kouta:'kouta_live.webp', rin:'rin_chibi.webp' };
+    var MEMBER_NAMES = { hinata:'ヒナタ', kouta:'コウタ', rin:'りん' };
+    function showEncounter(member, speech) {
+      var el = document.getElementById('encounter-overlay');
+      if (!el) return;
+      document.getElementById('encounter-img').src    = MEMBER_IMGS[member] || '';
+      document.getElementById('encounter-name').textContent   = MEMBER_NAMES[member] + ' に会った！';
+      document.getElementById('encounter-speech').textContent = '「' + speech + '」';
+      el.classList.add('show');
+    }
+    function closeEncounter() {
+      var el = document.getElementById('encounter-overlay');
+      if (el) el.classList.remove('show');
+    }
+
     /* ── 表示 ── */
     function setSpeech(text, imgOverride) {
       var el = document.getElementById('speech-text');
@@ -2533,10 +2560,13 @@
         meshiCdEl.style.color = oc > 0 ? '#6ee7b7' : '#475569';
       }
 
-      // たいりょく20以下で強制休憩
+      // たいりょく20以下で強制休憩（全ボタン2分ロック）
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
         _autoSleepTriggered = true;
+        st.cd.forceSleep = cdTime(2 * 60); // 2分間すべてロック
+        save();
         setSpeech('もう限界だ……つかれた', null);
+        setImg('sleepy', 3000);
         setTimeout(function() {
           st.suimin = clamp(st.suimin + 40);
           st.cd.neru = cdTime(CD_SEC.neru);
@@ -2544,13 +2574,23 @@
             var liveCdMs = new Date(st.cd.live).getTime() - 20 * 60 * 1000;
             st.cd.live = liveCdMs > Date.now() ? new Date(liveCdMs).toISOString() : null;
           }
-          setImg('sleepy', 3000);
           setSpeech('zzz…　すっきりした！', null);
           flash('強制休憩　たいりょく +40');
           save();
           render();
         }, 2000);
       }
+
+      // 強制睡眠中は全ボタンロック
+      var forceLock = cdRemain('forceSleep') > 0;
+      ['meshi','neru','renshu','flyer','gaishutsu','game'].forEach(function(id) {
+        var b = document.getElementById('btn-' + id);
+        if (b && forceLock) b.classList.add('on-cd');
+      });
+      var liveB = document.getElementById('btn-live');
+      if (liveB && forceLock) liveB.classList.add('locked');
+      var barB = document.getElementById('btn-game');
+      if (barB && forceLock) barB.classList.add('on-cd');
       if ((st.suimin || 0) > 20) _autoSleepTriggered = false;
     }
 
