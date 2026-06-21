@@ -500,7 +500,140 @@
       document.getElementById('splash-wrap').addEventListener('click', dismissSplash);
       document.getElementById('splash-wrap').addEventListener('touchstart', dismissSplash);
     })();
-    // ── カクテルミニゲーム ──────────────────────────────
+    // ── オリジナルカクテルゲーム ────────────────────────
+    var OC_COLORS = [
+      { id:'red',    name:'赤',   hex:'#DC2626', rgb:[220,38,38],   meaning:'情熱・勇気・焦り' },
+      { id:'blue',   name:'青',   hex:'#2563EB', rgb:[37,99,235],   meaning:'静けさ・信頼・孤独' },
+      { id:'white',  name:'白',   hex:'#E2E8F0', rgb:[226,232,240], meaning:'純粋・余白・はじまり' },
+      { id:'yellow', name:'黄色', hex:'#EAB308', rgb:[234,179,8],   meaning:'希望・明るさ・無邪気' },
+      { id:'purple', name:'紫',   hex:'#7C3AED', rgb:[124,58,237],  meaning:'秘密・夜・予感' },
+      { id:'green',  name:'緑',   hex:'#16A34A', rgb:[22,163,74],   meaning:'癒し・再生・安心' },
+      { id:'black',  name:'黒',   hex:'#334155', rgb:[51,65,85],    meaning:'記憶・後悔・深い音' }
+    ];
+    var OC_RECIPES = {
+      'white+yellow':        { name:'First Light',    kotoba:'はじまりを怖がらないで',         desc:'朝の光みたいに、やわらかく背中を押す一杯。',            mixHex:'#FEF9C3' },
+      'blue+white':          { name:'Silent Snow',    kotoba:'静けさの中に残る約束',           desc:'言葉にしなかった想いを、そっと沈める淡い青のカクテル。', mixHex:'#BFDBFE' },
+      'black+red':           { name:'Burning Memory', kotoba:'忘れられない熱',                 desc:'過去に残った痛みと、それでも消えない情熱を混ぜた一杯。', mixHex:'#7F1D1D' },
+      'blue+purple':         { name:'Moon Veil',      kotoba:'近づけない夜に、心だけ触れる',   desc:'月明かりのように淡く、秘密を包む夜のカクテル。',         mixHex:'#4C1D95' },
+      'green+white':         { name:'Tender Leaf',    kotoba:'傷ついた場所にも、春は来る',     desc:'疲れた心をゆっくり戻す、やさしい回復の味。',            mixHex:'#D1FAE5' },
+      'red+yellow':          { name:'Live Spark',     kotoba:'鳴らせば、景色は変わる',         desc:'ライブ前の高揚感みたいな、明るく弾ける一杯。',           mixHex:'#FEF08A' },
+      'black+blue':          { name:'Deep Tone',      kotoba:'沈んだ音ほど、遠くまで届く',     desc:'静かな夜に似合う、深く落ち着いたカクテル。',            mixHex:'#1E3A5F' },
+      'purple+white':        { name:'Secret Bloom',   kotoba:'言えなかった想いが、静かに咲く', desc:'秘めた気持ちを花のようにほどく、淡い紫の一杯。',         mixHex:'#EDE9FE' },
+      'red+white':           { name:'Little Heart',   kotoba:'まっすぐな気持ちは、隠せない',   desc:'甘酸っぱくて少し照れる、素直な恋の味。',                mixHex:'#FECDD3' },
+      'blue+green':          { name:'Calm River',     kotoba:'流れても、失くならないもの',      desc:'落ち着きと癒しをくれる、静かな水辺のような一杯。',       mixHex:'#A7F3D0' },
+      'blue+red':            { name:'Tension Rose',   kotoba:'ぶつかりながら、惹かれてる',     desc:'感情がぶつかり合う、甘くて複雑な一杯。',                mixHex:'#9F1239' },
+      'purple+red':          { name:'Midnight Rush',  kotoba:'夜に燃える情熱',                 desc:'夜の深さと情熱が溶け合う、ドラマチックな一杯。',         mixHex:'#6B21A8' },
+      'green+red':           { name:'Wild Bloom',     kotoba:'情熱が、新しい芽吹きを呼ぶ',     desc:'エネルギーが自然にあふれ出す、生命力あふれる一杯。',     mixHex:'#15803D' },
+      'blue+yellow':         { name:'Morning Tide',   kotoba:'静かな希望が、波になる',          desc:'澄んだ空と光が交わる、清々しい朝のカクテル。',           mixHex:'#93C5FD' },
+      'black+white':         { name:'Yin Yang',       kotoba:'光と影は、同じ場所にある',        desc:'対極にあるものが溶け合う、静かな均衡の一杯。',           mixHex:'#94A3B8' },
+      'purple+yellow':       { name:'Dream Dust',     kotoba:'夢のかけらが、光る夜',            desc:'キラキラと散る星のような、不思議な輝きの一杯。',         mixHex:'#C4B5FD' },
+      'green+yellow':        { name:'Sunny Field',    kotoba:'明るい場所へ、一歩ずつ',          desc:'やわらかな日差しと風が運ぶ、元気のでる一杯。',           mixHex:'#D9F99D' },
+      'black+yellow':        { name:'Amber Night',    kotoba:'輝きの中に、深い音',              desc:'煌めく夜の底に沈む、琥珀色のカクテル。',                mixHex:'#D97706' },
+      'green+purple':        { name:'Mystic Garden',  kotoba:'秘密の庭で、静かに育つもの',      desc:'神秘的な植物が咲く、静かな夜の庭のような一杯。',         mixHex:'#5B21B6' },
+      'black+purple':        { name:'Dark Iris',      kotoba:'見えない夜に、予感だけが咲く',    desc:'暗闇の中で息をひそめる、深紫の静かな一杯。',            mixHex:'#3B0764' },
+      'black+green':         { name:'Forest Depth',   kotoba:'深い場所にいても、根はある',      desc:'大地に根ざした深い森のような、力強い一杯。',             mixHex:'#14532D' },
+      'blue+white+yellow':   { name:'Clear Chord',    kotoba:'迷いながらでも、音は前へ進む',    desc:'ヒナタの音みたいに、迷いながらも真っすぐな一杯。',       mixHex:'#BAE6FD' },
+      'black+red+white':     { name:'Low Flame',      kotoba:'言葉にしない熱を、胸に灯す',      desc:'コウタの低音みたいに、静かで深い炎を宿す一杯。',         mixHex:'#881337' },
+      'green+red+yellow':    { name:'Rhythm Pop',     kotoba:'笑った分だけ、音は跳ねる',        desc:'ハヤテのドラムみたいに、跳ねて弾ける元気な一杯。',       mixHex:'#FCD34D' }
+    };
+    var OC_CUSTOMERS = [
+      'なんか最近、元気が出なくて…',
+      '大事な人に、うまく言葉を伝えられなくて',
+      '一人でいる夜が、なんか怖くて',
+      '新しいこと、はじめたいんだけど踏み出せなくて',
+      '本番が近くて、緊張してるんです',
+      '昔のことが、まだ頭から離れなくて',
+      'もう一度やり直したいって、思ってるんです',
+      '誰かに怒ってる自分に、疲れちゃって',
+      '言いたいことがあるのに、声が出なくて',
+      'なんとなく、さびしいんですよね',
+      '頑張りすぎて、何もしたくなくなってきた',
+      'ずっと待ってる人がいるけど、連絡できなくて'
+    ];
+    var _ocSelected = [], _ocCustomerIdx = -1;
+
+    function openMiniGame() {
+      document.getElementById('cocktail-modal').style.display = 'flex';
+      document.getElementById('oc-intro').style.display = 'block';
+      document.getElementById('oc-play').style.display = 'none';
+      document.getElementById('oc-result').style.display = 'none';
+    }
+    function closeMiniGame() {
+      document.getElementById('cocktail-modal').style.display = 'none';
+    }
+    function ocStart() {
+      document.getElementById('oc-intro').style.display = 'none';
+      ocNewCustomer();
+    }
+    function ocNewCustomer() {
+      _ocSelected = [];
+      var idx;
+      do { idx = Math.floor(Math.random() * OC_CUSTOMERS.length); } while(idx === _ocCustomerIdx && OC_CUSTOMERS.length > 1);
+      _ocCustomerIdx = idx;
+      document.getElementById('oc-customer-text').textContent = OC_CUSTOMERS[idx];
+      var grid = document.getElementById('oc-syrup-grid');
+      grid.innerHTML = '';
+      OC_COLORS.forEach(function(c) {
+        var btn = document.createElement('button');
+        btn.id = 'ocbtn-' + c.id;
+        btn.style.cssText = 'padding:12px 4px 8px;background:rgba(255,255,255,0.02);border:2px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:all 0.18s;';
+        btn.innerHTML = '<div style="width:26px;height:26px;border-radius:50%;background:' + c.hex + ';"></div>'
+          + '<span style="font-size:9px;color:#64748b;">' + c.name + '</span>';
+        btn.onclick = function() { ocToggle(c.id); };
+        grid.appendChild(btn);
+      });
+      ocUpdateSelected();
+      document.getElementById('oc-play').style.display = 'block';
+      document.getElementById('oc-result').style.display = 'none';
+    }
+    function ocToggle(id) {
+      var idx = _ocSelected.indexOf(id);
+      if (idx >= 0) { _ocSelected.splice(idx, 1); }
+      else { if (_ocSelected.length >= 3) { flash('3種類まで'); return; } _ocSelected.push(id); }
+      ocUpdateSelected();
+    }
+    function ocUpdateSelected() {
+      OC_COLORS.forEach(function(c) {
+        var btn = document.getElementById('ocbtn-' + c.id);
+        if (!btn) return;
+        var sel = _ocSelected.indexOf(c.id) >= 0;
+        btn.style.borderColor = sel ? c.hex : 'rgba(255,255,255,0.08)';
+        btn.style.background   = sel ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.02)';
+      });
+      var disp = document.getElementById('oc-selected-display');
+      disp.innerHTML = _ocSelected.map(function(id) {
+        var c = OC_COLORS.find(function(x){return x.id===id;});
+        return '<span style="padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:100px;font-size:10px;color:#94a3b8;display:inline-flex;align-items:center;gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:' + c.hex + ';display:inline-block;"></span>' + c.name + '</span>';
+      }).join('');
+    }
+    function ocReset() { _ocSelected = []; ocUpdateSelected(); }
+    function ocComplete() {
+      if (_ocSelected.length < 2) { flash('2種類以上選んでね'); return; }
+      var key = _ocSelected.slice().sort().join('+');
+      var recipe = OC_RECIPES[key];
+      var rgbs = _ocSelected.map(function(id){ return OC_COLORS.find(function(c){return c.id===id;}).rgb; });
+      var r=0,g=0,b=0; rgbs.forEach(function(c){r+=c[0];g+=c[1];b+=c[2];});
+      r=Math.round(r/rgbs.length); g=Math.round(g/rgbs.length); b=Math.round(b/rgbs.length);
+      var autoHex = '#'+[r,g,b].map(function(v){return('0'+Math.min(255,v).toString(16)).slice(-2);}).join('');
+      document.getElementById('oc-play').style.display = 'none';
+      document.getElementById('oc-result').style.display = 'block';
+      document.getElementById('oc-result-fill').style.background = recipe ? recipe.mixHex : autoHex;
+      if (recipe) {
+        document.getElementById('oc-result-name').textContent = recipe.name;
+        document.getElementById('oc-result-kotoba').textContent = '「' + recipe.kotoba + '」';
+        document.getElementById('oc-result-desc').textContent = recipe.desc;
+        document.getElementById('oc-result-reward').textContent = 'きぶん +15　やるき +10';
+        st.kibun = clamp(st.kibun + 15); st.yaruki = clamp(st.yaruki + 10); save();
+      } else {
+        document.getElementById('oc-result-name').textContent = 'Mystery Blend';
+        document.getElementById('oc-result-kotoba').textContent = '「まだ名前のない、あなただけの一杯」';
+        document.getElementById('oc-result-desc').textContent = 'まだ誰も知らない、未知のカクテル。';
+        document.getElementById('oc-result-reward').textContent = 'きぶん +10';
+        st.kibun = clamp(st.kibun + 10); save();
+      }
+    }
+    function ocNextRound() { ocNewCustomer(); }
+    // (旧cg関数は使われないが念のため残す)
     var CG_ING = [
       { id:'cassis',    name:'カシス',    emoji:'🍇', rgb:[130,30,180] },
       { id:'orange',    name:'オレンジ',  emoji:'🍊', rgb:[255,145,10] },
@@ -648,71 +781,53 @@
     }
   </script>
 
-  <!-- カクテルミニゲーム -->
+  <!-- カクテルミニゲーム（オリジナルカクテル） -->
   <div id="cocktail-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 48px;">
-    <div style="width:100%;max-width:400px;">
+    <div style="width:100%;max-width:400px;position:relative;">
 
-      <!-- ウェルカム画面 -->
-      <div id="cg-welcome" style="display:none;text-align:center;padding:8px 0;">
-        <button onclick="closeMiniGame()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:16px;">― BAR STARS ―</div>
-        <img src="rin_stars.webp" alt="りん" style="width:min(280px,80vw);border-radius:16px;margin-bottom:20px;">
-        <div style="font-family:'Noto Serif JP',serif;font-size:18px;color:#fde68a;letter-spacing:3px;margin-bottom:8px;">STARSへようこそ！</div>
-        <div style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;margin-bottom:28px;">カクテルの色に合わせて、<br>材料を混ぜてみてね。</div>
-        <button onclick="cgStartGame()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
+      <!-- イントロ画面 -->
+      <div id="oc-intro" style="text-align:center;padding:8px 0;">
+        <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#64748b;margin-bottom:20px;">― BAR STARS ―</div>
+        <img src="hayate_shaker.webp" alt="ハヤテ" style="width:min(180px,50vw);image-rendering:pixelated;margin-bottom:16px;">
+        <div style="font-family:'Noto Serif JP',serif;font-size:16px;color:#fde68a;letter-spacing:2px;margin-bottom:10px;">オリジナルカクテルを<br>作ろう！</div>
+        <div style="font-size:11px;color:#64748b;line-height:2;margin-bottom:28px;">お客さんの悩みを聞いて、<br>合いそうなシロップを選んでみて。</div>
+        <button onclick="ocStart()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
       </div>
 
-      <div id="cg-game-header" style="display:none;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">COCKTAIL</div>
-        <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
-      </div>
-
-      <!-- プレイ画面 -->
-      <div id="cg-play">
-        <div style="display:flex;align-items:flex-end;justify-content:center;gap:24px;margin-bottom:20px;">
-          <!-- ターゲット -->
-          <div style="text-align:center;">
-            <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:8px;">TARGET</div>
-            <div style="width:56px;height:90px;border-radius:0 0 18px 18px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;">
-              <div id="cg-target-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;transition:background 0.4s;"></div>
-            </div>
-          </div>
-          <!-- メーター -->
-          <div style="text-align:center;padding-bottom:8px;">
-            <div style="font-size:28px;margin-bottom:4px;" id="cg-emoji">🍹</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fde68a;" id="cg-pct">—</div>
-          </div>
-          <!-- 自分のグラス -->
-          <div style="text-align:center;">
-            <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:8px;">YOUR MIX</div>
-            <div style="width:56px;height:90px;border-radius:0 0 18px 18px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto;">
-              <div id="cg-your-fill" style="position:absolute;bottom:0;left:0;right:0;height:0%;transition:all 0.35s;"></div>
-            </div>
-            <div style="font-size:9px;color:#334155;margin-top:6px;" id="cg-shots-label">0 / 6</div>
-          </div>
+      <!-- ゲーム画面 -->
+      <div id="oc-play" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">BAR STARS</div>
+          <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
-
-        <!-- 材料ボタン -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;" id="cg-ing-grid"></div>
-
-        <!-- コントロール -->
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;margin-bottom:20px;">
+          <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:10px;">― お客さん ―</div>
+          <div id="oc-customer-text" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2;"></div>
+        </div>
+        <div style="font-size:9px;letter-spacing:3px;color:#475569;margin-bottom:12px;">シロップを選ぶ（2〜3種類）</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;" id="oc-syrup-grid"></div>
+        <div id="oc-selected-display" style="min-height:32px;margin-bottom:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
         <div style="display:flex;gap:8px;">
-          <button onclick="cgReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#64748b;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
-          <button onclick="cgComplete()" style="flex:2;padding:11px 0;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.28);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">完成！</button>
+          <button onclick="ocReset()" style="flex:1;padding:11px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#64748b;font-family:'Noto Serif JP',serif;font-size:11px;cursor:pointer;-webkit-tap-highlight-color:transparent;">リセット</button>
+          <button onclick="ocComplete()" style="flex:2;padding:11px 0;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.28);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">完成！</button>
         </div>
       </div>
 
       <!-- リザルト画面 -->
-      <div id="cg-result" style="display:none;text-align:center;padding:8px 0;">
-        <div id="cg-result-glass" style="width:72px;height:116px;border-radius:0 0 24px 24px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto 20px;">
-          <div id="cg-result-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;"></div>
+      <div id="oc-result" style="display:none;text-align:center;padding:8px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#fde68a;">BAR STARS</div>
+          <button onclick="closeMiniGame()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
-        <div id="cg-result-score" style="font-family:'Cormorant Garamond',serif;font-size:36px;color:#fde68a;margin-bottom:4px;"></div>
-        <div id="cg-result-label" style="font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:16px;"></div>
-        <div id="cg-result-name" style="font-family:'Noto Serif JP',serif;font-size:17px;color:#e2e8f0;letter-spacing:3px;margin-bottom:16px;"></div>
-        <div id="cg-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;padding:16px 20px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:16px;"></div>
-        <div id="cg-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
-        <button onclick="cgPlayAgain()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">もう一度</button>
+        <div style="width:64px;height:104px;border-radius:0 0 22px 22px;border:1px solid rgba(255,255,255,0.15);background:#0f172a;position:relative;overflow:hidden;margin:0 auto 20px;">
+          <div id="oc-result-fill" style="position:absolute;bottom:0;left:0;right:0;height:80%;transition:background 0.5s;"></div>
+        </div>
+        <div id="oc-result-name" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#fde68a;letter-spacing:4px;margin-bottom:14px;"></div>
+        <div id="oc-result-kotoba" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:2;padding:14px 18px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.1);border-radius:14px;margin-bottom:10px;"></div>
+        <div id="oc-result-desc" style="font-size:11px;color:#64748b;line-height:1.9;margin-bottom:18px;"></div>
+        <div id="oc-result-reward" style="font-size:11px;color:#fde68a;letter-spacing:3px;margin-bottom:24px;"></div>
+        <button onclick="ocNextRound()" style="padding:12px 40px;background:rgba(253,230,138,0.08);border:1px solid rgba(253,230,138,0.25);border-radius:10px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">次のお客さん</button>
       </div>
     </div>
   </div>
