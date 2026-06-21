@@ -677,8 +677,11 @@
       { id:'towel',        name:'タオル',           img:'item_towel.webp',      desc:'ライブ中の汗ふき。ステージには必ず持っていく。',  cat:'ライブ準備' },
       { id:'water',        name:'水',               img:'item_water.webp',      desc:'ステージ上の水分補給。ドラムは体力使うから大事。', cat:'ライブ準備' },
       // ── ハヤテの持ちもの（追加） ──
-      { id:'onigiri',      name:'おにぎり',         img:'item_onigiri.webp',    desc:'ライブ前のエネルギー補給。シンプルなやつが好き。', cat:'持ちもの' },
-      { id:'phone',        name:'スマホ',           img:'item_phone.webp',      desc:'セトリ確認やクリックアプリに使う。意外と必需品。', cat:'持ちもの' },
+      { id:'onigiri',      name:'おにぎり',         img:'item_onigiri.webp',    desc:'ライブ前のエネルギー補給。シンプルなやつが好き。',     cat:'持ちもの' },
+      { id:'phone',        name:'スマホ',           img:'item_phone.webp',      desc:'セトリ確認やクリックアプリに使う。意外と必需品。',     cat:'持ちもの' },
+      { id:'notebook',     name:'ノート',           img:'item_notebook.webp',   desc:'フレーズや気づきをメモする練習ノート。ハヤテの記録が詰まってる。', cat:'持ちもの' },
+      // ── ライブ準備（追加） ──
+      { id:'setlist',      name:'セットリスト',     img:'item_setlist.webp',    desc:'ライブの曲順メモ。これを見ながら本番に臨む。',         cat:'ライブ準備' },
     ];
 
     /* ── ドラム練習ミニゲーム ── */
@@ -1363,7 +1366,7 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#c4b5fd;">DRUM BOOK</div>
           <button onclick="closeDrumZukan()" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
         </div>
-        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 32</span></div>
+        <div style="font-size:10px;color:#475569;margin-bottom:16px;">収集: <span id="drum-zukan-progress">0 / 34</span></div>
         <div id="drum-zukan-list"></div>
       </div>
       <!-- 詳細画面 -->
