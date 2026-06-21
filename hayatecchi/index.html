@@ -728,6 +728,7 @@
 
     /* ── ドラム練習ミニゲーム ── */
     var _drumTimer = null, _drumCount = 0, _drumActive = false, _drumLastMemo = -1;
+    var _drumAudio = null;
 
     function openDrumGame() {
       var btn = document.getElementById('btn-renshu');
@@ -736,11 +737,17 @@
       document.getElementById('drum-intro').style.display = 'block';
       document.getElementById('drum-play').style.display   = 'none';
       document.getElementById('drum-result').style.display = 'none';
+      // 音源プリロード
+      if (!_drumAudio) {
+        _drumAudio = new Audio('drum_track.mp3');
+        _drumAudio.preload = 'auto';
+      }
     }
     function closeDrumGame() {
       document.getElementById('drum-modal').style.display = 'none';
       if (_drumTimer) { clearInterval(_drumTimer); _drumTimer = null; }
       _drumActive = false;
+      if (_drumAudio) { _drumAudio.pause(); }
     }
     function startDrumGame() {
       _drumCount = 0; _drumActive = true;
@@ -749,6 +756,13 @@
       document.getElementById('drum-play').style.display   = 'block';
       document.getElementById('drum-timer').textContent = sec;
       document.getElementById('drum-count').innerHTML = '0 <span style="font-size:13px;color:#94a3b8;">回</span>';
+      // ランダム箇所から再生
+      if (_drumAudio) {
+        var dur = _drumAudio.duration || 325;
+        _drumAudio.currentTime = Math.random() * Math.max(0, dur - 15);
+        _drumAudio.volume = 0.6;
+        _drumAudio.play().catch(function(){});
+      }
       _drumTimer = setInterval(function() {
         sec--;
         document.getElementById('drum-timer').textContent = sec;
@@ -777,6 +791,7 @@
       document.getElementById('drum-count').innerHTML = _drumCount + ' <span style="font-size:13px;color:#94a3b8;">回</span>';
     }
     function endDrumGame() {
+      if (_drumAudio) { _drumAudio.pause(); }
       var n = _drumCount;
       var grade, speech, geUp, skillUp;
       if (n <= 10) {
