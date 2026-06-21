@@ -1124,6 +1124,13 @@
     return true;
   }
 
+  // URLパラメータでゲートを自動オープン
+  window.addEventListener('DOMContentLoaded', function() {
+    if (new URLSearchParams(location.search).get('gate') === 'hayate') {
+      openHayateGate();
+    }
+  });
+
   function openHayateGate() {
     document.getElementById('hayate-gate-input').value = '';
     document.getElementById('hayate-gate-err').textContent = '';
