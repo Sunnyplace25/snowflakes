@@ -379,15 +379,16 @@
     </div>
 
     <!-- 既に購入済み -->
-    <div style="flex:1;min-width:0;max-width:460px;background:#0f1729;border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-      <img src="hayatecchi_title.webp" alt="ハヤテっち" style="width:160px;display:block;margin:0 auto 24px;">
-      <p style="font-size:11px;color:#64748b;letter-spacing:1px;line-height:2;margin-bottom:20px;font-family:'Noto Serif JP',serif;">パスワードは購入完了ページに表示されます。<br>メモしておくといつでも使えます。</p>
-      <input id="hayate-gate-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
-        style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:6px;box-sizing:border-box;"
-        placeholder="············"
-        onkeydown="if(event.key==='Enter')checkHayateGate()">
-      <p id="hayate-gate-err" style="font-size:11px;color:#ef4444;letter-spacing:1px;min-height:16px;margin-bottom:12px;font-family:'Noto Serif JP',serif;"></p>
-      <button onclick="checkHayateGate()" style="width:100%;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:9px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">ENTER</button>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+      <div style="max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(253,230,138,0.2);border-radius:20px;padding:32px 24px;text-align:center;">
+        <img src="hayatecchi_title.webp" alt="ハヤテっち" style="width:160px;display:block;margin:0 auto 24px;">
+        <input id="hayate-gate-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+          style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 16px;color:#e2e8f0;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;text-align:center;outline:none;margin-bottom:6px;"
+          placeholder="············"
+          onkeydown="if(event.key==='Enter')checkHayateGate()">
+        <p id="hayate-gate-err" style="font-size:11px;color:#ef4444;letter-spacing:1px;min-height:16px;margin-bottom:12px;font-family:'Noto Serif JP',serif;"></p>
+        <button onclick="checkHayateGate()" style="width:100%;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:9px;color:#475569;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:12px;">ENTER</button>
+      </div>
     </div>
 
   </div>
