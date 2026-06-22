@@ -4790,19 +4790,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function _checkEarringUnlock() {}
 
     function _checkShikishiDistribution() {
-      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙＋バックステージパスを配布
+      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布
       if (SWEETS_VERSION !== '2026-summer') return;
       var mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
       var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
       var hasSpringRecord = Object.keys(mItems).some(function(k){ return (mItems[k]||0) > 0; })
                          || unlocked.length > 0;
       if (!hasSpringRecord) return;
-      // 色紙配布終了（2026 Summer切替時に停止）
-      if (!SfSnow.isUnlocked('backstage_pass')) {
-        SfSnow.unlockItem('backstage_pass');
-        localStorage.setItem('sf_backstage_pass', 'true');
+      if (!SfSnow.isUnlocked('shikishi_hinata')) {
+        SfSnow.unlockItem('shikishi_hinata');
         if (typeof renderItemRows === 'function') renderItemRows();
-        if (typeof gtag === 'function') gtag('event', 'get_backstage_pass', { season: SWEETS_VERSION });
+        if (typeof gtag === 'function') gtag('event', 'get_shikishi', { season: SWEETS_VERSION });
+        var popup = document.getElementById('shikishi-get-popup');
+        if (popup) popup.classList.add('show');
       }
     }
 
