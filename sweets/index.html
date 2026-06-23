@@ -839,7 +839,7 @@
 
 
     <!-- 小説導線カード + DATA BACKUP（横並び） -->
-    <div class="section" style="padding-top:0;">
+    <div class="section" id="sw-top" style="padding-top:0;">
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;">
 
         <!-- 左：小説導線カード -->
@@ -7866,15 +7866,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   #sw-dot-nav a.pnav-active .pnd { width: 6px; height: 6px; box-shadow: 0 0 5px #f9a8d4; }
 </style>
 <nav id="sw-dot-nav">
+  <a href="#sw-top"><span class="pnd"></span>DATA BACKUP</a>
   <a href="#rooms-section"><span class="pnd"></span>STUDIO</a>
   <a href="#sw-exchange"><span class="pnd"></span>EXCHANGE</a>
+  <a href="#undertone-section"><span class="pnd"></span>NOVEL GAME</a>
+  <a href="#items-section"><span class="pnd"></span>ITEMS</a>
   <a href="#sw-another"><span class="pnd"></span>ANOTHER</a>
+  <a href="#live-archive-section"><span class="pnd"></span>LIVE ARCHIVE</a>
   <a href="#music-section"><span class="pnd"></span>MUSIC</a>
   <a href="#sw-notes"><span class="pnd"></span>NOTES</a>
+  <a href="../support-lp.html"><span class="pnd"></span>SUPPORT</a>
 </nav>
 <script>
 (function() {
-  var ANCHORS = ['#rooms-section','#sw-exchange','#sw-another','#music-section','#sw-notes'];
+  var ANCHORS = ['#sw-top','#rooms-section','#sw-exchange','#undertone-section','#items-section','#sw-another','#live-archive-section','#music-section','#sw-notes'];
   var links = document.querySelectorAll('#sw-dot-nav a');
   var nav = document.getElementById('sw-dot-nav');
   function updateActive() {
@@ -7882,7 +7887,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var active = null;
     ANCHORS.forEach(function(sel) {
       var el = document.querySelector(sel);
-      if (el && el.offsetTop <= mid) active = sel;
+      if (el && el.offsetHeight > 0 && el.offsetTop <= mid) active = sel;
     });
     links.forEach(function(a) {
       a.classList.toggle('pnav-active', a.getAttribute('href') === active);
