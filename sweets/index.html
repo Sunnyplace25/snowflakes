@@ -1087,7 +1087,7 @@
     <!-- Items section -->
     <div class="section" id="items-section" style="display:none;">
       <div class="section-label">items</div>
-      <p style="font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:clamp(0px,0.4vw,1px);color:#e2e8f0;text-align:center;margin-bottom:20px;white-space:nowrap;">ガチャやコンテンツを回ってアイテムを集めよう</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:clamp(0px,0.4vw,1px);color:#e2e8f0;text-align:center;margin-bottom:20px;">ガチャやコンテンツを回ってアイテムを集めよう</p>
       <div id="items-body" style="display:flex;max-width:480px;margin:0 auto;flex-direction:column;gap:16px;width:100%;">
 
         <!-- 通常アイテム -->
@@ -7919,12 +7919,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   });
   // ログイン後に表示
   var content = document.getElementById('content');
-  if (content) {
-    if (content.classList.contains('visible')) btn.classList.add('mob-visible');
-    new MutationObserver(function() {
-      if (content.classList.contains('visible')) btn.classList.add('mob-visible');
-    }).observe(content, { attributes: true, attributeFilter: ['class'] });
+  function checkMobBtn() {
+    if (content && content.classList.contains('visible')) btn.classList.add('mob-visible');
   }
+  if (content) {
+    checkMobBtn();
+    new MutationObserver(checkMobBtn).observe(content, { attributes: true, attributeFilter: ['class'] });
+  }
+  // フォールバック：DOMContentLoaded後にも確認
+  document.addEventListener('DOMContentLoaded', checkMobBtn);
+  setTimeout(checkMobBtn, 1000);
 })();
 </script>
 
