@@ -1016,6 +1016,7 @@
               <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">Under tone</p>
               <p style="font-size:11px;color:#475569;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
               <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#4c3f8a;margin-top:10px;">NOVEL GAME &amp; FORTUNE</p>
+              <p id="ut-card-timer" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#6d5fc4;margin-top:10px;border:1px solid rgba(196,181,253,0.2);border-radius:100px;padding:3px 10px;width:fit-content;">次話まで <span id="ut-card-timer-count"></span></p>
             </div>
             <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
           </a>
@@ -7613,21 +7614,29 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   }
 
   var nf = document.getElementById('ut-nagi-float');
-  var navTimer = document.getElementById('ut-nav-timer');
-  var navCnt   = document.getElementById('ut-nav-count');
+  var navTimer  = document.getElementById('ut-nav-timer');
+  var navCnt    = document.getElementById('ut-nav-count');
+  var cardTimer = document.getElementById('ut-card-timer');
+  var cardCnt   = document.getElementById('ut-card-timer-count');
+
+  function updateTimers() {
+    var t = getActiveTimer();
+    if (t) {
+      var txt = fmtMs(t.rem);
+      if (navCnt) navCnt.textContent = txt;
+      if (navTimer) navTimer.style.display = '';
+      if (cardCnt) cardCnt.textContent = txt;
+      if (cardTimer) cardTimer.style.display = '';
+    } else {
+      if (navTimer) navTimer.style.display = 'none';
+      if (cardTimer) cardTimer.style.display = 'none';
+    }
+  }
 
   var active = getActiveTimer();
   if (active) {
-    if (navCnt) navCnt.textContent = fmtMs(active.rem);
-    if (navTimer) navTimer.style.display = '';
-    setInterval(function(){
-      var t = getActiveTimer();
-      if (!t) {
-        if (navTimer) navTimer.style.display = 'none';
-        return;
-      }
-      if (navCnt) navCnt.textContent = fmtMs(t.rem);
-    }, 1000);
+    updateTimers();
+    setInterval(updateTimers, 1000);
   } else if (isUTAccessible() && !hasStarted()) {
     setTimeout(function(){ reveal(nf); }, 2000);
   }
