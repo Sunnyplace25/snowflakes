@@ -3522,44 +3522,41 @@ document.addEventListener('visibilitychange', function() {
   })();
 </script>
 
-<!-- Page Dot Nav (Desktop only) -->
+<!-- Page Nav (Desktop only) -->
 <style>
   #page-dot-nav {
-    position: fixed; right: 18px; top: 50%; transform: translateY(-50%);
-    z-index: 500; display: flex; flex-direction: column; gap: 13px;
-    align-items: flex-end;
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+    z-index: 500; display: flex; flex-direction: column; gap: 4px;
+    align-items: flex-end; pointer-events: none;
   }
   @media (max-width: 899px) { #page-dot-nav { display: none; } }
   .pnav-item {
-    display: flex; align-items: center; gap: 9px;
-    background: none; border: none; padding: 0; cursor: pointer;
-    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    background: none; border: none; padding: 5px 0 5px 12px;
+    cursor: pointer; text-decoration: none;
+    pointer-events: auto;
   }
   .pnav-label {
     font-family: 'Cormorant Garamond', serif;
     font-size: 9px; letter-spacing: 3px;
-    color: #334155; opacity: 0;
-    transform: translateX(4px);
-    transition: opacity 0.2s, transform 0.2s, color 0.2s;
-    white-space: nowrap; pointer-events: none;
+    color: #334155;
+    transition: color 0.2s;
+    white-space: nowrap;
   }
-  .pnav-item:hover .pnav-label { opacity: 1; transform: translateX(0); color: var(--pnav-color, #93c5fd); }
-  .pnav-item.pnav-active .pnav-label { opacity: 1; transform: translateX(0); color: var(--pnav-color, #93c5fd); }
+  .pnav-item:hover .pnav-label { color: var(--pnav-color, #93c5fd); }
+  .pnav-item.pnav-active .pnav-label { color: var(--pnav-color, #93c5fd); }
   .pnav-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: #1e293b; border: 1px solid #334155;
-    flex-shrink: 0; transition: all 0.25s;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #334155; flex-shrink: 0; transition: all 0.25s;
   }
   .pnav-item:hover .pnav-dot {
     background: var(--pnav-color, #93c5fd);
-    border-color: var(--pnav-color, #93c5fd);
-    box-shadow: 0 0 6px var(--pnav-color, #93c5fd);
+    box-shadow: 0 0 5px var(--pnav-color, #93c5fd);
   }
   .pnav-item.pnav-active .pnav-dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     background: var(--pnav-color, #93c5fd);
-    border-color: var(--pnav-color, #93c5fd);
-    box-shadow: 0 0 8px var(--pnav-color, #93c5fd);
+    box-shadow: 0 0 7px var(--pnav-color, #93c5fd);
   }
 </style>
 <nav id="page-dot-nav" aria-label="ページナビゲーション"></nav>
@@ -3594,12 +3591,10 @@ document.addEventListener('visibilitychange', function() {
         if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
-    el.setAttribute('aria-label', item.label);
     el.innerHTML = '<span class="pnav-label">' + item.label + '</span><span class="pnav-dot"></span>';
     nav.appendChild(el);
   });
 
-  // アクティブ状態をスクロールで更新
   var anchorItems = ITEMS.filter(function(i) { return i.target; });
   var navEls = Array.from(nav.querySelectorAll('.pnav-item'));
 
