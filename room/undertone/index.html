@@ -3345,16 +3345,16 @@ function submitUtPw() {
     // 第四章セクション表示（第三章）
     var sec4 = document.getElementById('ch-section-4');
     if (sec4) sec4.style.display = ch4Unlocked ? '' : 'none';
-    // 第五章セクション表示（第四章）：3-5読了後に表示
+    // 第五章セクション表示（第四章）：4-1解放後に表示（ch-between-5と排他）
     var sec5 = document.getElementById('ch-section-5');
-    if (sec5) sec5.style.display = ch3Done ? '' : 'none';
+    if (sec5) sec5.style.display = stCh4Unlocked ? '' : 'none';
     // Epilogue セクション表示
     var sec6 = document.getElementById('ch-section-6');
     if (sec6) sec6.style.display = stEpUnlocked ? '' : 'none';
     // 最新の章だけ開く、それ以外は閉じる
     if (stEpUnlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); closeChSection(4); closeChSection(5); openChSection(6);
-    } else if (ch3Done) {
+    } else if (stCh4Unlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); closeChSection(4); openChSection(5);
     } else if (ch4Unlocked) {
       closeChSection(1); closeChSection(2); closeChSection(3); openChSection(4);
@@ -3385,9 +3385,7 @@ function submitUtPw() {
     var between = document.getElementById('ch-between');
     if (between) between.style.display = (ch5Unlocked && !ch21Unlocked) ? '' : 'none';
     if (ch5Unlocked && !ch21Unlocked) updateCh2Btn();
-    // 2-5読了後・3章未公開時のみロックボタンを表示
-    var between3 = document.getElementById('ch-between-3');
-    if (between3) between3.style.display = (ch25Unlocked && !ch3Unlocked) ? '' : 'none';
+    // ch-between-3 は下の ch1Done ブロックで処理
     // ch5読了済み・1章未解放ならカウントダウン開始
     if (ch5Unlocked && !ch21Unlocked) {
       updateCh2Btn();
