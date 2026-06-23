@@ -5346,7 +5346,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       faceEl.style.width = (d.chara === 'AKARI') ? '420px' : '';
       popup.style.display = '';
       popup.classList.add('show');
-      setTimeout(function() { popup.classList.remove('show'); }, 5000);
+      setTimeout(function() { popup.classList.remove('show'); }, 3000);
     }
 
     function closeNoteItemPopup() {
@@ -5367,7 +5367,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         faceEl.style.width = (d.chara === 'AKARI') ? '378px' : '';
         popup.style.display = '';
         popup.classList.add('show');
-        setTimeout(function() { popup.classList.remove('show'); }, 5000);
+        setTimeout(function() { popup.classList.remove('show'); }, 3000);
       }, 350);
     }
 
@@ -5554,12 +5554,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     font-family: 'Noto Serif JP', serif;
     font-weight: 300; line-height: 2.2; margin: 0;
   }
-  #chara-close {
-    position: absolute; top: 12px; right: 15px;
-    font-size: 15px; color: #64748b; cursor: pointer;
-    background: none; border: none; padding: 0; line-height: 1;
-  }
-  #chara-close:hover { color: #cbd5e1; }
   #chara-img img { width: 300px; display: block; }
   #chara-img img.bg-remove { mix-blend-mode: multiply; }
   @media (max-width: 600px) {
@@ -5575,7 +5569,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   <div id="chara-bubble">
     <p id="chara-name"></p>
     <p id="chara-line"></p>
-    <button id="chara-close">✕</button>
   </div>
   <div id="chara-img"><img id="chara-face" src="" alt=""></div>
 </div>
@@ -5694,7 +5687,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       requestAnimationFrame(function() {
         requestAnimationFrame(function() { popup.classList.add('show'); });
       });
-      setTimeout(hidePopup, 6000);
+      setTimeout(hidePopup, 3000);
     }
 
     function showSpecificLine(c) {
@@ -5702,7 +5695,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       applyLineToPopup(c);
     };
 
-    document.getElementById('chara-close').addEventListener('click', hidePopup);
 
     document.addEventListener('click', function(e) {
       var tag = e.target.tagName.toLowerCase();

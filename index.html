@@ -2327,12 +2327,14 @@ function sfShare() {
     var inputWrap = document.getElementById('chara-input-wrap');
     var inputEl = document.getElementById('chara-input');
 
+    var closeBtn = document.getElementById('chara-close');
+
     function closePopup() {
       popup.style.opacity = '0';
       popup.style.transform = 'translateY(24px)';
       setTimeout(function() { popup.style.display = 'none'; }, 600);
     }
-    document.getElementById('chara-close').addEventListener('click', closePopup);
+    closeBtn.addEventListener('click', closePopup);
 
     var askLines = [
       '名前、聞いてもいい？',
@@ -2382,6 +2384,7 @@ function sfShare() {
 
     if (!storedName) {
       // 初回：ヒナタがランダムな一言で名前を聞く
+      closeBtn.style.display = '';
       nameEl.textContent = 'HINATA';
       nameEl.style.color = '#93c5fd';
       lineEl.textContent = askLines[Math.floor(Math.random() * askLines.length)];
@@ -2409,6 +2412,8 @@ function sfShare() {
       });
 
     } else {
+      // 再訪：✕ボタン非表示（3秒自動消え）
+      closeBtn.style.display = 'none';
       // 再訪：インストール促進を20%の確率で差し込む（未インストール時のみ）
       var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       var installShown = localStorage.getItem('sf_install_shown');
@@ -2498,7 +2503,7 @@ function sfShare() {
         } else {
           sessionStorage.setItem('charaShown', '1');
         }
-        setTimeout(closePopup, 5000);
+        setTimeout(closePopup, 3000);
       }, 2500);
     }
   })();
