@@ -3543,14 +3543,14 @@ document.addEventListener('visibilitychange', function() {
     font-size: 9px; letter-spacing: 3px; color: #cbd5e1;
     transition: color 0.2s;
   }
-  #page-dot-nav a::after {
+  #page-dot-nav a::before {
     content: ''; display: block; flex-shrink: 0;
     width: 4px; height: 4px; border-radius: 50%;
     background: currentColor; transition: all 0.2s;
   }
   #page-dot-nav a:hover { color: #93c5fd; }
   #page-dot-nav a.pnav-active { color: #93c5fd; }
-  #page-dot-nav a.pnav-active::after { width: 6px; height: 6px; box-shadow: 0 0 6px #93c5fd; }
+  #page-dot-nav a.pnav-active::before { width: 6px; height: 6px; box-shadow: 0 0 6px #93c5fd; }
 </style>
 <nav id="page-dot-nav">
   <a href="#topics">TOPICS</a>
