@@ -3529,6 +3529,11 @@ document.addEventListener('visibilitychange', function() {
     position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
     z-index: 200; width: fit-content;
     display: flex; flex-direction: column; gap: 2px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  #page-dot-nav.pnav-visible {
+    opacity: 1; pointer-events: auto;
   }
   #page-dot-nav a {
     display: flex; align-items: center; gap: 7px;
@@ -3575,6 +3580,14 @@ document.addEventListener('visibilitychange', function() {
       var href = a.getAttribute('href');
       a.classList.toggle('pnav-active', href === active);
     });
+  }
+  // ヒーロー離れたらナビ表示
+  var nav = document.getElementById('page-dot-nav');
+  var hero = document.querySelector('.hero');
+  if (hero && nav) {
+    new IntersectionObserver(function(entries) {
+      nav.classList.toggle('pnav-visible', !entries[0].isIntersecting);
+    }, { threshold: 0 }).observe(hero);
   }
   window.addEventListener('scroll', updateActive, { passive: true });
   updateActive();
