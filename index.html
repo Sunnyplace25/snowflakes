@@ -3526,9 +3526,9 @@ document.addEventListener('visibilitychange', function() {
 <style>
   @media (max-width: 1279px) { #page-dot-nav { display: none !important; } }
   #page-dot-nav {
-    position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+    position: fixed; left: 12px; top: 50%; transform: translateY(-50%);
     z-index: 200; width: fit-content;
-    display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+    display: flex; flex-direction: column; gap: 0; align-items: flex-start;
     opacity: 0; pointer-events: none;
     transition: opacity 0.4s;
   }
@@ -3536,21 +3536,21 @@ document.addEventListener('visibilitychange', function() {
     opacity: 1; pointer-events: auto;
   }
   #page-dot-nav a {
-    display: flex; align-items: center; gap: 7px;
+    display: flex; align-items: center; gap: 5px;
     text-decoration: none; white-space: nowrap;
-    padding: 4px 6px; width: fit-content;
+    padding: 2px 0; width: fit-content;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 9px; letter-spacing: 3px; color: #cbd5e1;
+    font-size: 8px; letter-spacing: 2px; color: #cbd5e1;
     transition: color 0.2s;
   }
   #page-dot-nav a::before {
     content: ''; display: block; flex-shrink: 0;
-    width: 4px; height: 4px; border-radius: 50%;
+    width: 3px; height: 3px; border-radius: 50%;
     background: currentColor; transition: all 0.2s;
   }
   #page-dot-nav a:hover { color: #93c5fd; }
   #page-dot-nav a.pnav-active { color: #93c5fd; }
-  #page-dot-nav a.pnav-active::before { width: 6px; height: 6px; box-shadow: 0 0 6px #93c5fd; }
+  #page-dot-nav a.pnav-active::before { width: 5px; height: 5px; box-shadow: 0 0 5px #93c5fd; }
 </style>
 <nav id="page-dot-nav">
   <a href="#topics">TOPICS</a>
