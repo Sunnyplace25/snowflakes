@@ -7633,11 +7633,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
   }
 
-  var active = getActiveTimer();
-  if (active) {
-    updateTimers();
-    setInterval(updateTimers, 1000);
-  } else if (isUTAccessible() && !hasStarted()) {
+  updateTimers();
+  setInterval(updateTimers, 1000);
+  if (isUTAccessible() && !hasStarted()) {
     setTimeout(function(){ reveal(nf); }, 2000);
   }
 })();
