@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snow flakes をそっと応援する｜サポートプラン</title>
-  <meta name="description" content="Snow flakes Story & Music Project をそっと応援するプランです。月額100円・300円から選べます。">
+  <title>Snow flakes｜アプリ・サポート</title>
+  <meta name="description" content="Snow flakes のコンテンツ一覧。ハヤテっち・放課後のヒナタ・応援プランをご紹介します。">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +16,6 @@
       --bg:    #0c1220;
       --text:  #e2e8f0;
       --muted: #cbd5e1;
-      --pink:  #f9a8d4;
-      --border: rgba(249,168,212,0.15);
     }
 
     html, body {
@@ -41,8 +39,8 @@
       content: '';
       position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(249,168,212,0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 50% at 80% 80%, rgba(249,168,212,0.03) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(249,168,212,0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 80% 80%, rgba(147,197,253,0.03) 0%, transparent 60%);
       pointer-events: none; z-index: 0;
     }
 
@@ -54,113 +52,288 @@
     .bg-chars img {
       width: 33.3%; height: 100%;
       object-fit: cover; object-position: top center;
-      opacity: 0.15; filter: grayscale(0.1);
+      opacity: 0.12; filter: grayscale(0.1);
       mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
       -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
     }
 
-    .wrap {
+    .page-label {
       position: relative; z-index: 1;
-      width: 100%; max-width: 480px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(249,168,212,0.12);
-      border-radius: 16px;
-      padding: 48px 40px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: #94a3b8;
+      margin-bottom: 40px; opacity: 0.7;
     }
-    @media (max-width: 480px) { .wrap { padding: 36px 24px; } }
+
+    .cards-wrap {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 1360px;
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 0;
+      max-width: 340px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      padding: 40px 32px 36px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-pink  { border: 1px solid rgba(249,168,212,0.25); box-shadow: 0 0 24px rgba(249,168,212,0.08), 0 4px 24px rgba(0,0,0,0.3); }
+    .card-yellow{ border: 1px solid rgba(253,230,138,0.25); box-shadow: 0 0 24px rgba(253,230,138,0.08), 0 4px 24px rgba(0,0,0,0.3); }
+    .card-blue  { border: 1px solid rgba(147,197,253,0.25); box-shadow: 0 0 24px rgba(147,197,253,0.08), 0 4px 24px rgba(0,0,0,0.3); }
+    .card-purple{ border: 1px solid rgba(196,181,253,0.25); box-shadow: 0 0 24px rgba(196,181,253,0.08), 0 4px 24px rgba(0,0,0,0.3); }
+
+    @media (max-width: 1100px) {
+      .cards-wrap { flex-wrap: wrap; max-width: 720px; }
+      .card { max-width: calc(50% - 10px); }
+    }
+    @media (max-width: 680px) {
+      .cards-wrap { flex-direction: column; align-items: center; }
+      .card { max-width: 420px; width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .card { padding: 32px 24px 28px; }
+    }
 
     .label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 11px; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--pink);
-      margin-bottom: 12px; opacity: 0.8;
+      font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .label-pink   { color: #f9a8d4; }
+    .label-yellow { color: #fde68a; }
+    .label-blue   { color: #93c5fd; }
+    .label-purple { color: #c4b5fd; }
+
+    .card-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 22px; font-weight: 300;
+      letter-spacing: 0.1em; color: var(--text);
+      margin-bottom: 6px; line-height: 1.4;
     }
 
-    h1 {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 26px; font-weight: 300;
-      letter-spacing: 0.1em; color: var(--text);
-      margin-bottom: 32px; line-height: 1.5;
+    .label-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
     }
+
+    .card-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+    .price-pink   { color: #f9a8d4; border: 1px solid rgba(249,168,212,0.35); }
+    .price-yellow { color: #fde68a; border: 1px solid rgba(253,230,138,0.35); }
+    .price-blue   { color: #93c5fd; border: 1px solid rgba(147,197,253,0.35); }
+    .price-purple { color: #c4b5fd; border: 1px solid rgba(196,181,253,0.35); }
 
     .divider {
-      width: 32px; height: 1px;
-      background: var(--border); margin-bottom: 28px;
+      width: 28px; height: 1px;
+      margin-bottom: 20px;
     }
+    .divider-pink   { background: rgba(249,168,212,0.2); }
+    .divider-yellow { background: rgba(253,230,138,0.2); }
+    .divider-blue   { background: rgba(147,197,253,0.2); }
+    .divider-purple { background: rgba(196,181,253,0.2); }
 
-    .desc {
-      font-size: 14px; font-weight: 300;
-      line-height: 2.2; color: var(--muted);
-      margin-bottom: 40px;
+    .card-desc {
+      font-size: 13px; font-weight: 300;
+      line-height: 2.1; color: var(--muted);
+      margin-bottom: 28px; flex: 1;
     }
-
-    .desc p + p { margin-top: 20px; }
 
     .btn {
       display: flex; align-items: center;
       justify-content: space-between;
-      padding: 14px 24px;
-      border: 1px solid rgba(249,168,212,0.35);
+      padding: 12px 20px;
       border-radius: 8px;
-      background: rgba(249,168,212,0.07);
-      color: var(--pink);
       font-family: 'Noto Serif JP', serif;
-      font-size: 14px; font-weight: 300;
+      font-size: 13px; font-weight: 300;
       letter-spacing: 0.06em;
       text-decoration: none;
       transition: background 0.2s, border-color 0.2s;
-      margin-bottom: 36px;
     }
 
-    .btn:hover {
+    .btn-pink {
+      border: 1px solid rgba(249,168,212,0.35);
+      background: rgba(249,168,212,0.07);
+      color: #f9a8d4;
+    }
+    .btn-pink:hover {
       background: rgba(249,168,212,0.13);
       border-color: rgba(249,168,212,0.55);
     }
 
-    .price {
+    .btn-yellow {
+      border: 1px solid rgba(253,230,138,0.35);
+      background: rgba(253,230,138,0.07);
+      color: #fde68a;
+    }
+    .btn-yellow:hover {
+      background: rgba(253,230,138,0.13);
+      border-color: rgba(253,230,138,0.55);
+    }
+
+    .btn-blue {
+      border: 1px solid rgba(147,197,253,0.35);
+      background: rgba(147,197,253,0.07);
+      color: #93c5fd;
+    }
+    .btn-blue:hover {
+      background: rgba(147,197,253,0.13);
+      border-color: rgba(147,197,253,0.55);
+    }
+
+    .btn-purple {
+      border: 1px solid rgba(196,181,253,0.35);
+      background: rgba(196,181,253,0.07);
+      color: #c4b5fd;
+    }
+    .btn-purple:hover {
+      background: rgba(196,181,253,0.13);
+      border-color: rgba(196,181,253,0.55);
+    }
+
+    .btn-arrow {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 13px; color: rgba(249,168,212,0.6);
+      font-size: 14px; opacity: 0.6;
     }
 
     .back {
+      position: relative; z-index: 1;
       display: block; text-align: center;
       font-size: 12px; color: var(--muted);
-      opacity: 0.45; letter-spacing: 0.06em;
+      opacity: 0.4; letter-spacing: 0.06em;
       text-decoration: none; transition: opacity 0.2s;
+      margin-top: 40px;
     }
-    .back:hover { opacity: 0.75; }
+    .back:hover { opacity: 0.7; }
   </style>
 </head>
 <body>
+
 <div class="bg-chars">
   <img src="hayate_eat.webp" alt="">
   <img src="kouta_eat.webp" alt="">
   <img src="hinata_eat.webp" alt="">
 </div>
-<div class="wrap">
-  <p class="label">Support Plan</p>
-  <h1>Snow flakes を<br>そっと応援する</h1>
-  <div class="divider"></div>
-  <div class="desc">
-    <p>Snow flakes Story &amp; Music Project をそっと応援してくださる方向けのプランです。</p>
-    <p>いただいたご支援は、物語・楽曲・画像制作・サイト運営など、Snow flakes の世界を少しずつ広げていくために大切に使わせていただきます。</p>
-    <p>応援してくださった方へ、ささやかなお礼として、スノフレの楽屋裏話をご用意しています。</p>
-    <p>月額300円のプランでは、AIチャットアプリ「放課後のヒナタ」もご利用いただけます。</p>
-  </div>
-  <a class="btn" href="https://buy.stripe.com/dRm14p6Od5ycfHegkbdZ601" target="_blank">
-    <span style="display:flex;flex-direction:column;gap:2px;">
+
+<p class="page-label">Snow flakes Contents</p>
+
+<div class="cards-wrap">
+
+  <!-- ¥100/月 応援プラン -->
+  <div class="card card-pink">
+    <div class="label-row">
+      <p class="label label-pink" style="margin-bottom:0;">Support Plan</p>
+      <span class="card-price price-pink">¥100 / 月</span>
+    </div>
+    <p class="card-title">Snow flakes を<br>応援する</p>
+    <div class="divider divider-pink"></div>
+    <p class="card-desc">Snow flakesをそっと応援するプランです。<br>物語・楽曲・サイト運営を支えてくださる方へ、楽屋裏話をご用意しています。</p>
+    <a class="btn btn-pink" href="https://buy.stripe.com/dRm14p6Od5ycfHegkbdZ601" target="_blank">
       <span>そっと応援する</span>
-    </span>
-    <span class="price">¥100/月</span>
-  </a>
-  <a class="btn" href="https://buy.stripe.com/cNi14pc8xe4Idz63xpdZ600" target="_blank" style="margin-bottom:36px;">
-    <span style="display:flex;flex-direction:column;gap:2px;">
-      <span>もっと応援する</span>
-      <span style="font-size:11px;color:#64748b;font-family:'Cormorant Garamond',serif;">放課後のヒナタ</span>
-    </span>
-    <span class="price">¥300/月</span>
-  </a>
-  <a class="back" href="kotori.html">← ことりの部屋へ戻る</a>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- ハヤテっち -->
+  <div class="card card-yellow">
+    <div class="label-row">
+      <p class="label label-yellow" style="margin-bottom:0;">Web Game</p>
+      <span class="card-price price-yellow">¥100 買い切り</span>
+    </div>
+    <p class="card-title">ハヤテっち</p>
+    <div class="divider divider-yellow"></div>
+    <p class="card-desc">Snow flakesのドラマー・ハヤテの日常に入り込む、キャラクター育成ゲームです。遊んでいるうちにドラムに詳しくなれるかも？</p>
+    <a class="btn btn-yellow" href="hayatecchi-lp.html">
+      <span>ハヤテっちを見る</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- 放課後のヒナタ -->
+  <div class="card card-blue">
+    <div class="label-row">
+      <p class="label label-blue" style="margin-bottom:0;">AI Chat</p>
+      <span class="card-price price-blue">¥300 / 月</span>
+    </div>
+    <p class="card-title">放課後の<br>ヒナタ</p>
+    <div class="divider divider-blue"></div>
+    <p class="card-desc">Snow flakesのギタリスト・ヒナタとAIチャットができるアプリです。<br>放課後のほんの少しの時間、ヒナタと話してみてください。</p>
+    <a class="btn btn-blue" href="hinata-chat/lp.html">
+      <span>放課後のヒナタを見る</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- タスク管理アプリ -->
+  <div class="card card-purple">
+    <div class="label-row">
+      <p class="label label-purple" style="margin-bottom:0;">Web App</p>
+      <span class="card-price price-purple">お試し 無料</span>
+    </div>
+    <p class="card-title">タスク管理<br>アプリ</p>
+    <div class="divider divider-purple"></div>
+    <p class="card-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
+    <a class="btn btn-purple" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">
+      <span>アプリを開く</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
 </div>
+
+<a class="back" href="kotori.html">← ことりの部屋へ戻る</a>
+
+<canvas id="snow-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:0;"></canvas>
+<script>
+(function(){
+  var canvas = document.getElementById('snow-canvas');
+  var ctx = canvas.getContext('2d');
+  var flakes = [];
+  var W, H;
+  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  for(var i = 0; i < 55; i++){
+    flakes.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.6 + 0.4,
+      speed: Math.random() * 0.5 + 0.2,
+      drift: Math.random() * 0.3 - 0.15,
+      opacity: Math.random() * 0.4 + 0.1
+    });
+  }
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    flakes.forEach(function(f){
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + f.opacity + ')';
+      ctx.fill();
+      f.y += f.speed;
+      f.x += f.drift;
+      if(f.y > H + 4){ f.y = -4; f.x = Math.random() * W; }
+      if(f.x > W + 4) f.x = -4;
+      if(f.x < -4) f.x = W + 4;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
 </body>
 </html>
