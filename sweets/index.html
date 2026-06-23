@@ -7919,16 +7919,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   });
   // ログイン後に表示
   var content = document.getElementById('content');
-  function checkMobBtn() {
-    if (content && content.classList.contains('visible')) btn.classList.add('mob-visible');
-  }
-  if (content) {
-    checkMobBtn();
-    new MutationObserver(checkMobBtn).observe(content, { attributes: true, attributeFilter: ['class'] });
-  }
-  // フォールバック：DOMContentLoaded後にも確認
-  document.addEventListener('DOMContentLoaded', checkMobBtn);
-  setTimeout(checkMobBtn, 1000);
+  var _mobTimer = setInterval(function() {
+    if (content && content.classList.contains('visible')) {
+      btn.classList.add('mob-visible');
+      clearInterval(_mobTimer);
+    }
+  }, 200);
 })();
 </script>
 
