@@ -3543,21 +3543,27 @@ document.addEventListener('visibilitychange', function() {
     font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.4);
     transition: color 0.2s;
   }
+  #page-dot-nav a .pnd {
+    display: inline-block; flex-shrink: 0;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; transition: all 0.2s;
+  }
   #page-dot-nav a:hover { color: #93c5fd; }
   #page-dot-nav a.pnav-active { color: #93c5fd; }
+  #page-dot-nav a.pnav-active .pnd { width: 6px; height: 6px; box-shadow: 0 0 5px #93c5fd; }
 </style>
 <nav id="page-dot-nav">
-  <a href="#topics">● TOPICS</a>
-  <a href="#characters">● CHARACTERS</a>
-  <a href="#novel">● NOVEL</a>
-  <a href="#short-stories">● STORIES</a>
-  <a href="#qf">● QF</a>
-  <a href="#music">● MUSIC</a>
-  <a href="#sweets">● SWEETs</a>
-  <a href="#links">● LINKS</a>
-  <a href="gacha/">● GACHA</a>
-  <a href="support-lp.html">● GAME</a>
-  <a href="kotori.html">● KOTORI</a>
+  <a href="#topics"><span class="pnd"></span>TOPICS</a>
+  <a href="#characters"><span class="pnd"></span>CHARACTERS</a>
+  <a href="#novel"><span class="pnd"></span>NOVEL</a>
+  <a href="#short-stories"><span class="pnd"></span>STORIES</a>
+  <a href="#qf"><span class="pnd"></span>QF</a>
+  <a href="#music"><span class="pnd"></span>MUSIC</a>
+  <a href="#sweets"><span class="pnd"></span>SWEETs</a>
+  <a href="#links"><span class="pnd"></span>LINKS</a>
+  <a href="gacha/"><span class="pnd"></span>GACHA</a>
+  <a href="support-lp.html"><span class="pnd"></span>GAME</a>
+  <a href="kotori.html"><span class="pnd"></span>KOTORI</a>
 </nav>
 <script>
 (function() {
