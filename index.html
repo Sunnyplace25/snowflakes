@@ -575,7 +575,7 @@ function sfShare() {
 </section>
 
 <!-- Topics -->
-<section style="padding:80px 24px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
+<section id="topics" style="padding:80px 24px;position:relative;z-index:1;background:rgba(255,255,255,0.02);">
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">TOPICS</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:16px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
   <div style="text-align:center;margin-bottom:36px;">
@@ -1022,7 +1022,7 @@ function sfShare() {
 </section>
 
 <!-- Characters -->
-<section class="characters">
+<section id="characters" class="characters">
   <span class="sec-label">CHARACTERS</span>
   <h2 class="sec-title">Snow flakes</h2>
   <div class="char-grid">
@@ -1076,7 +1076,7 @@ function sfShare() {
 </section>
 
 <!-- Novel -->
-<section class="novel">
+<section id="novel" class="novel">
   <span class="sec-label">NOVEL</span>
   <h2 class="sec-title" data-i18n="novel-h2">小説</h2>
   <div class="novel-inner">
@@ -1319,7 +1319,7 @@ function sfShare() {
     </div>
 
     <!-- QF -->
-    <div style="grid-column:1/-1;margin-bottom:4px;text-align:right;">
+    <div id="qf" style="grid-column:1/-1;margin-bottom:4px;text-align:right;">
       <button onclick="openQFInfoPopup()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#3b5f8a;padding:4px 8px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#3b5f8a'">? アイテムについて</button>
     </div>
     <div style="grid-column:1/-1;padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(240,171,252,0.25);position:relative;box-shadow:0 0 24px rgba(240,171,252,0.12);">
@@ -1696,7 +1696,7 @@ function sfShare() {
 </section>
 
 <!-- Closing -->
-<section style="padding:100px 24px 60px;position:relative;z-index:1;text-align:center;">
+<section id="sweets" style="padding:100px 24px 60px;position:relative;z-index:1;text-align:center;">
   <p style="font-size:clamp(22px,3.5vw,32px);font-weight:bold;color:white;line-height:1.8;margin-bottom:48px;" data-i18n="closing-h">あなたの中にも、きっと残る。</p>
 
   <!-- SWEETs -->
@@ -1753,7 +1753,7 @@ function sfShare() {
 </section>
 
 <!-- Links -->
-<section class="links">
+<section id="links" class="links">
   <span class="sec-label">LINKS</span>
   <h2 class="sec-title" data-i18n="links-h2">リンク</h2>
   <div class="links-grid">
@@ -1809,11 +1809,11 @@ function sfShare() {
       </div>
     </a>
 
-    <a class="link-card wip" href="https://sunnyplace25.github.io/rhythm/" target="_blank">
+    <a class="link-card wip" href="hayatecchi-lp.html">
       <span class="link-icon"><i class="fa-solid fa-gamepad" style="color:#fbbf24;"></i></span>
       <div class="link-info">
-        <p class="link-name" data-i18n="link-rhythm-name">リズムゲーム</p>
-        <p class="link-platform" data-i18n="link-rhythm-platform">制作中 — デモで遊べます！</p>
+        <p class="link-name">ハヤテっち</p>
+        <p class="link-platform">Web Game — ¥100</p>
       </div>
     </a>
   </div>
@@ -3520,6 +3520,103 @@ document.addEventListener('visibilitychange', function() {
       }, 800);
     }
   })();
+</script>
+
+<!-- Page Dot Nav (Desktop only) -->
+<style>
+  #page-dot-nav {
+    position: fixed; right: 18px; top: 50%; transform: translateY(-50%);
+    z-index: 500; display: flex; flex-direction: column; gap: 13px;
+    align-items: flex-end;
+  }
+  @media (max-width: 899px) { #page-dot-nav { display: none; } }
+  .pnav-item {
+    display: flex; align-items: center; gap: 9px;
+    background: none; border: none; padding: 0; cursor: pointer;
+    text-decoration: none;
+  }
+  .pnav-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px; letter-spacing: 3px;
+    color: #334155; opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.2s, transform 0.2s, color 0.2s;
+    white-space: nowrap; pointer-events: none;
+  }
+  .pnav-item:hover .pnav-label { opacity: 1; transform: translateX(0); color: var(--pnav-color, #93c5fd); }
+  .pnav-item.pnav-active .pnav-label { opacity: 1; transform: translateX(0); color: var(--pnav-color, #93c5fd); }
+  .pnav-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #1e293b; border: 1px solid #334155;
+    flex-shrink: 0; transition: all 0.25s;
+  }
+  .pnav-item:hover .pnav-dot {
+    background: var(--pnav-color, #93c5fd);
+    border-color: var(--pnav-color, #93c5fd);
+    box-shadow: 0 0 6px var(--pnav-color, #93c5fd);
+  }
+  .pnav-item.pnav-active .pnav-dot {
+    width: 7px; height: 7px;
+    background: var(--pnav-color, #93c5fd);
+    border-color: var(--pnav-color, #93c5fd);
+    box-shadow: 0 0 8px var(--pnav-color, #93c5fd);
+  }
+</style>
+<nav id="page-dot-nav" aria-label="ページナビゲーション"></nav>
+<script>
+(function() {
+  var ITEMS = [
+    { target: '#topics',        label: 'TOPICS',      color: '#93c5fd' },
+    { target: '#characters',    label: 'CHARACTERS',  color: '#e2e8f0' },
+    { target: '#novel',         label: 'NOVEL',       color: '#93c5fd' },
+    { target: '#short-stories', label: 'STORIES',     color: '#c4b5fd' },
+    { target: '#qf',            label: 'QF',          color: '#f0abfc' },
+    { target: '#music',         label: 'MUSIC',       color: '#5aab85' },
+    { target: '#sweets',        label: 'SWEETs',      color: '#f9a8d4' },
+    { target: '#links',         label: 'LINKS',       color: '#94a3b8' },
+    { href: 'gacha/',           label: 'GACHA',       color: '#fde68a' },
+    { href: 'support-lp.html',  label: 'GAME',        color: '#c4b5fd' },
+    { href: 'kotori.html',      label: 'KOTORI',      color: '#f9a8d4' },
+  ];
+  var nav = document.getElementById('page-dot-nav');
+  if (!nav) return;
+
+  ITEMS.forEach(function(item) {
+    var el = document.createElement(item.href ? 'a' : 'button');
+    el.className = 'pnav-item';
+    el.style.setProperty('--pnav-color', item.color);
+    if (item.href) {
+      el.href = item.href;
+    } else {
+      el.setAttribute('type', 'button');
+      el.addEventListener('click', function() {
+        var t = document.querySelector(item.target);
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    el.setAttribute('aria-label', item.label);
+    el.innerHTML = '<span class="pnav-label">' + item.label + '</span><span class="pnav-dot"></span>';
+    nav.appendChild(el);
+  });
+
+  // アクティブ状態をスクロールで更新
+  var anchorItems = ITEMS.filter(function(i) { return i.target; });
+  var navEls = Array.from(nav.querySelectorAll('.pnav-item'));
+
+  function updateActive() {
+    var scrollMid = window.scrollY + window.innerHeight * 0.35;
+    var active = null;
+    anchorItems.forEach(function(item) {
+      var el = document.querySelector(item.target);
+      if (el && el.offsetTop <= scrollMid) active = item.target;
+    });
+    navEls.forEach(function(el, i) {
+      el.classList.toggle('pnav-active', !!ITEMS[i].target && ITEMS[i].target === active);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+})();
 </script>
 </body>
 </html>

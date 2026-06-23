@@ -894,9 +894,9 @@
 
     // デイリーSnow（訪問）
     SfSnow.addWithToast('visit_kotori_room', 'ことりの部屋を訪問');
-    // 14日に1回プロテインコーヒー
-    if (!SfSnow.isNDaysDone('visit_kotori', 14)) {
-      SfSnow.addNDaysItem('visit_kotori', 'proteincoffee', 14);
+    // 月1回プロテインコーヒー
+    if (!SfSnow.isMonthlyDone('visit_kotori_coffee')) {
+      SfSnow.addMonthlyItem('visit_kotori_coffee', 'proteincoffee');
       setTimeout(function() {
         location.href = 'item/?item=proteincoffee';
       }, 1200);
