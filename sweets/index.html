@@ -741,7 +741,10 @@
 
   <nav>
     <a class="nav-back" href="../index.html">← Snow flakes</a>
-    <span class="nav-label">SWEETs ROOM</span>
+    <span style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+      <span class="nav-label">SWEETs ROOM</span>
+      <span id="nav-season-label" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#94a3b8;">SWEETs 2026 Summer</span>
+    </span>
     <span style="display:inline-flex;align-items:center;gap:12px;">
       <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#475569;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#475569'">↗ share</button>
       <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#94a3b8;"><img src="../item/pick.webp" alt="pick" style="width:16px;opacity:0.8;"> <span id="sf-pick-count">0</span></span>
@@ -842,19 +845,7 @@
     <div class="section" id="sw-top" style="padding-top:0;">
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;">
 
-        <!-- 左：小説導線カード -->
-        <div style="flex:1;min-width:240px;background:rgba(10,16,30,0.6);border:1px solid rgba(147,197,253,0.18);border-radius:18px;padding:24px 16px;text-align:center;box-shadow:0 0 60px rgba(147,197,253,0.07),0 0 120px rgba(147,197,253,0.03);backdrop-filter:blur(8px);display:flex;flex-direction:column;justify-content:center;">
-          <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#94a3b8;line-height:2.4;margin-bottom:20px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
-          <div data-no-replace>
-            <p id="sweets-season-label" style="font-family:'Cormorant Garamond',serif;font-size:clamp(11px,3vw,13px);letter-spacing:5px;color:#7dd3fc;margin-bottom:12px;">SWEETs 2026 Spring</p>
-            <div style="display:flex;align-items:center;justify-content:center;">
-              <img id="badge-backstage-pass" src="../item/backstage_pass.webp" alt="バックステージパス" style="width:40px;height:60px;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.5;display:block;margin:0 auto;">
-            </div>
-            <button onclick="goToItems()" style="margin-top:14px;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:clamp(11px,3vw,13px);letter-spacing:4px;color:#7dd3fc;cursor:pointer;transition:opacity 0.2s;padding:0;" onmouseenter="this.style.opacity='0.6'" onmouseleave="this.style.opacity='1'">▶ 持ち物を見る</button>
-          </div>
-        </div>
-
-        <!-- 右：DATA BACKUP -->
+        <!-- DATA BACKUP -->
         <div style="flex:1;min-width:240px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(9px,2.5vw,11px);letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
@@ -877,6 +868,7 @@
     <!-- Rooms section -->
     <div class="section" id="rooms-section">
       <div class="section-label">studio</div>
+      <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#94a3b8;line-height:2.4;text-align:center;margin-bottom:20px;">うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
       <p class="section-req" style="margin-bottom:12px;">解放すると、三人の部屋に入れます</p>
       <div id="rooms-entrance-wrap" style="max-width:480px;margin:12px auto 0;">
         <img src="studio.webp" alt="Snow flakes スノーフレークス スノフレ スタジオ キャラクター 山吹ことり 小説" class="studio-bg">
