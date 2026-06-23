@@ -841,12 +841,17 @@
 
 
 
-    <!-- 小説導線カード + DATA BACKUP（横並び） -->
+    <!-- お知らせ + DATA BACKUP（横並び） -->
     <div class="section" id="sw-top" style="padding-top:0;">
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;">
 
+        <!-- お知らせ -->
+        <div style="flex:1;min-width:200px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 20px;display:flex;flex-direction:column;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;">NOTICE</p>
+        </div>
+
         <!-- DATA BACKUP -->
-        <div style="flex:1;min-width:240px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:1;min-width:200px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(9px,2.5vw,11px);letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
           <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"

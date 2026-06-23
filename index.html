@@ -1963,6 +1963,7 @@ function sfShare() {
       function showTutorial() {
         if (triggered) return;
         triggered = true;
+        localStorage.setItem('sf_tutorial_seen', new Date().toISOString().slice(0,7));
         t.classList.add('ready');
         _startTutSnow();
         requestAnimationFrame(function() {
