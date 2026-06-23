@@ -1961,11 +1961,11 @@ function sfShare() {
     var t = document.getElementById('sf-tutorial');
     t.classList.remove('visible');
     setTimeout(function() { t.classList.remove('ready'); _stopTutSnow(); }, 500);
-    localStorage.setItem('sf_tutorial_seen', new Date().toISOString().slice(0,10));
+    localStorage.setItem('sf_tutorial_seen', new Date().toISOString().slice(0,7));
     if (typeof sfStartHints === 'function') setTimeout(sfStartHints, 800);
   }
   document.addEventListener('DOMContentLoaded', function() {
-    if (localStorage.getItem('sf_tutorial_seen') !== new Date().toISOString().slice(0,10)) {
+    if (localStorage.getItem('sf_tutorial_seen') !== new Date().toISOString().slice(0,7)) {
       var t = document.getElementById('sf-tutorial');
       var triggered = false;
       function showTutorial() {
