@@ -7837,6 +7837,97 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 })();
 </script>
 
+<!-- Mobile Nav -->
+<style>
+  @media (min-width: 720px) { #sw-mob-btn, #sw-mob-overlay, #sw-mob-panel { display: none !important; } }
+
+  #sw-mob-btn {
+    position: fixed; right: 14px; top: 50%; transform: translateY(-50%);
+    z-index: 300; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(249,168,212,0.12); border: 1px solid rgba(249,168,212,0.35);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  #sw-mob-btn.mob-visible { opacity: 1; pointer-events: auto; }
+  #sw-mob-btn svg { width: 14px; height: 14px; stroke: #f9a8d4; fill: none; }
+
+  #sw-mob-overlay {
+    position: fixed; inset: 0; z-index: 301;
+    background: rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  #sw-mob-overlay.open { opacity: 1; pointer-events: auto; }
+
+  #sw-mob-panel {
+    position: fixed; right: 0; top: 0; bottom: 0; z-index: 302;
+    width: 200px;
+    background: rgba(12,18,32,0.97); backdrop-filter: blur(16px);
+    border-left: 1px solid rgba(249,168,212,0.15);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 32px 24px;
+    transform: translateX(100%); transition: transform 0.3s ease;
+  }
+  #sw-mob-panel.open { transform: translateX(0); }
+
+  #sw-mob-panel a {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; padding: 10px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; letter-spacing: 2px; color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: color 0.2s;
+  }
+  #sw-mob-panel a:last-child { border-bottom: none; }
+  #sw-mob-panel a .pnd {
+    display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  #sw-mob-panel a:hover { color: #f9a8d4; }
+</style>
+
+<button id="sw-mob-btn" aria-label="メニュー">
+  <svg viewBox="0 0 16 16" stroke-width="1.5" stroke-linecap="round">
+    <line x1="2" y1="4" x2="14" y2="4"/>
+    <line x1="2" y1="8" x2="14" y2="8"/>
+    <line x1="2" y1="12" x2="14" y2="12"/>
+  </svg>
+</button>
+<div id="sw-mob-overlay"></div>
+<div id="sw-mob-panel">
+  <a href="#sw-top"><span class="pnd"></span>DATA BACKUP</a>
+  <a href="#rooms-section"><span class="pnd"></span>STUDIO</a>
+  <a href="#sw-exchange"><span class="pnd"></span>EXCHANGE</a>
+  <a href="#undertone-section"><span class="pnd"></span>NOVEL GAME</a>
+  <a href="#items-section"><span class="pnd"></span>ITEMS</a>
+  <a href="#sw-another"><span class="pnd"></span>ANOTHER</a>
+  <a href="#live-archive-section"><span class="pnd"></span>LIVE ARCHIVE</a>
+  <a href="#music-section"><span class="pnd"></span>MUSIC</a>
+  <a href="#sw-notes"><span class="pnd"></span>NOTES</a>
+  <a href="../support-lp.html"><span class="pnd"></span>SUPPORT</a>
+</div>
+<script>
+(function() {
+  var btn = document.getElementById('sw-mob-btn');
+  var overlay = document.getElementById('sw-mob-overlay');
+  var panel = document.getElementById('sw-mob-panel');
+  function openMenu() { overlay.classList.add('open'); panel.classList.add('open'); }
+  function closeMenu() { overlay.classList.remove('open'); panel.classList.remove('open'); }
+  btn.addEventListener('click', openMenu);
+  overlay.addEventListener('click', closeMenu);
+  panel.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
+  // ログイン後に表示
+  var content = document.getElementById('content');
+  if (content) {
+    if (content.classList.contains('visible')) btn.classList.add('mob-visible');
+    new MutationObserver(function() {
+      if (content.classList.contains('visible')) btn.classList.add('mob-visible');
+    }).observe(content, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+</script>
+
 <!-- Page Nav (Desktop only) -->
 <style>
   @media (max-width: 719px) { #sw-dot-nav { display: none !important; } }
