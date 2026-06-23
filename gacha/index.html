@@ -881,7 +881,7 @@ function sfShare() {
     transition: opacity 0.5s ease, transform 0.5s ease;
     pointer-events: none;
   }
-  #candy-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  #candy-popup.show { opacity: 1; transform: translateY(0); }
   #candy-bubble {
     background: rgba(10,18,34,0.95);
     border: 1px solid rgba(255,255,255,0.15);
@@ -889,7 +889,6 @@ function sfShare() {
     padding: 18px 20px 16px;
     max-width: 230px;
     backdrop-filter: blur(14px);
-    position: relative;
   }
   #candy-char-name {
     font-family: 'Cormorant Garamond', serif;
@@ -900,12 +899,6 @@ function sfShare() {
     font-family: 'Noto Serif JP', serif;
     font-weight: 300; line-height: 2;
   }
-  #candy-close {
-    position: absolute; top: 10px; right: 12px;
-    font-size: 13px; color: #64748b; cursor: pointer;
-    background: none; border: none; padding: 0;
-  }
-  #candy-close:hover { color: #cbd5e1; }
   #candy-char-img { width: 160px; display: block; }
   @media (max-width: 480px) {
     #candy-popup { bottom: 12px; right: 10px; }
@@ -918,7 +911,6 @@ function sfShare() {
   <div id="candy-bubble">
     <p id="candy-char-name"></p>
     <p id="candy-char-line"></p>
-    <button id="candy-close">✕</button>
   </div>
   <img id="candy-char-img" src="" alt="">
 </div>
@@ -1038,7 +1030,7 @@ function sfShare() {
       document.getElementById('candy-char-line').textContent = lines[Math.floor(Math.random() * lines.length)];
       document.getElementById('candy-char-img').src = CHAR_META[candy.chara].img;
       document.getElementById('candy-char-img').alt = candy.chara.toUpperCase();
-      setTimeout(function() { getCandyPopup().classList.add('show'); }, 900);
+      setTimeout(function() { showCandyToast(); }, 900);
     } else {
       candyWrap.style.display = 'none';
     }
@@ -1064,7 +1056,7 @@ function sfShare() {
         document.getElementById('candy-char-line').textContent = _cc.lines[Math.floor(Math.random() * _cc.lines.length)];
         document.getElementById('candy-char-img').src = CHAR_META[_cc.key].img;
         document.getElementById('candy-char-img').alt = _cc.name;
-        getCandyPopup().classList.add('show');
+        showCandyToast();
       }, _chocoDelay);
     }
     // Beer
@@ -1102,9 +1094,16 @@ function sfShare() {
     }
   });
 
-  document.getElementById('candy-close').addEventListener('click', function() {
-    getCandyPopup().classList.remove('show');
-  });
+  var _candyDismissTimer = null;
+  function showCandyToast() {
+    var p = getCandyPopup();
+    if (_candyDismissTimer) { clearTimeout(_candyDismissTimer); }
+    p.classList.add('show');
+    _candyDismissTimer = setTimeout(function() {
+      p.classList.remove('show');
+      _candyDismissTimer = null;
+    }, 3000);
+  }
 
   savedViewBtn.addEventListener('click', function() {
     var d = loadSaved();
@@ -1405,7 +1404,7 @@ function sfShare() {
           document.getElementById('candy-char-line').textContent = _cc10.lines[Math.floor(Math.random() * _cc10.lines.length)];
           document.getElementById('candy-char-img').src = CHAR_META[_cc10.key].img;
           document.getElementById('candy-char-img').alt = _cc10.name;
-          getCandyPopup().classList.add('show');
+          showCandyToast();
         }, 900);
       });
     });
