@@ -426,6 +426,7 @@
       .music-top .music-card { max-width: 100%; }
       .char-grid  { grid-template-columns: 1fr; max-width: 300px; margin: 0 auto; }
     }
+    @media (max-width: 719px) { .nav-right { display: none !important; } }
   .sp-br { display: none; }
   @media (max-width: 600px) { .sp-br { display: inline; } }
   .qf-br { display: none; }
@@ -3589,6 +3590,94 @@ document.addEventListener('visibilitychange', function() {
   }
   window.addEventListener('scroll', updateActive, { passive: true });
   updateActive();
+})();
+</script>
+
+<!-- Mobile Menu -->
+<style>
+  @media (min-width: 720px) { #sf-mob-btn, #sf-mob-overlay, #sf-mob-panel { display: none !important; } }
+
+  #sf-mob-btn {
+    position: fixed; right: 14px; top: 50%; transform: translateY(-50%);
+    z-index: 300; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(203,213,225,0.1); border: 1px solid rgba(203,213,225,0.3);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 1; pointer-events: auto; transition: opacity 0.4s;
+  }
+  #sf-mob-btn svg { width: 14px; height: 14px; stroke: #cbd5e1; fill: none; }
+
+  #sf-mob-overlay {
+    position: fixed; inset: 0; z-index: 301;
+    background: rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  #sf-mob-overlay.open { opacity: 1; pointer-events: auto; }
+
+  #sf-mob-panel {
+    position: fixed; right: 0; top: 0; bottom: 0; z-index: 302;
+    width: 200px;
+    background: rgba(12,18,32,0.97); backdrop-filter: blur(16px);
+    border-left: 1px solid rgba(203,213,225,0.1);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 32px 24px;
+    transform: translateX(100%); transition: transform 0.3s ease;
+  }
+  #sf-mob-panel.open { transform: translateX(0); }
+
+  #sf-mob-panel a {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; padding: 10px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; letter-spacing: 2px; color: #cbd5e1;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: color 0.2s;
+  }
+  #sf-mob-panel a:last-child { border-bottom: none; }
+  #sf-mob-panel a .pnd {
+    display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  #sf-mob-panel a:hover { color: #93c5fd; }
+  #sf-mob-panel a.link-sweets { color: #f9a8d4; }
+  #sf-mob-panel a.link-sweets:hover { color: #f9a8d4; opacity: 0.8; }
+  #sf-mob-panel a.link-gacha { color: #fde68a; }
+  #sf-mob-panel a.link-gacha:hover { color: #fde68a; opacity: 0.8; }
+</style>
+
+<button id="sf-mob-btn" aria-label="メニュー">
+  <svg viewBox="0 0 16 16" stroke-width="1.5" stroke-linecap="round">
+    <line x1="2" y1="4" x2="14" y2="4"/>
+    <line x1="2" y1="8" x2="14" y2="8"/>
+    <line x1="2" y1="12" x2="14" y2="12"/>
+  </svg>
+</button>
+<div id="sf-mob-overlay"></div>
+<div id="sf-mob-panel">
+  <a href="#topics"><span class="pnd"></span>TOPICS</a>
+  <a href="#characters"><span class="pnd"></span>CHARACTERS</a>
+  <a href="#novel"><span class="pnd"></span>NOVEL</a>
+  <a href="#short-stories"><span class="pnd"></span>STORIES</a>
+  <a href="#qf"><span class="pnd"></span>QF</a>
+  <a href="#music"><span class="pnd"></span>MUSIC</a>
+  <a href="#sweets" class="link-sweets"><span class="pnd"></span>SWEETs</a>
+  <a href="#links"><span class="pnd"></span>LINKS</a>
+  <a href="gacha/" class="link-gacha"><span class="pnd"></span>GACHA</a>
+  <a href="support-lp.html"><span class="pnd"></span>GAME</a>
+  <a href="kotori.html"><span class="pnd"></span>KOTORI</a>
+  <a href="https://sunnyplace25.github.io/taskpwa/" target="_blank"><span class="pnd"></span>アプリ</a>
+</div>
+<script>
+(function() {
+  var btn = document.getElementById('sf-mob-btn');
+  var overlay = document.getElementById('sf-mob-overlay');
+  var panel = document.getElementById('sf-mob-panel');
+  function openMenu() { overlay.classList.add('open'); panel.classList.add('open'); }
+  function closeMenu() { overlay.classList.remove('open'); panel.classList.remove('open'); }
+  btn.addEventListener('click', openMenu);
+  overlay.addEventListener('click', closeMenu);
+  panel.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
 })();
 </script>
 </body>
