@@ -851,20 +851,25 @@
         </div>
 
         <!-- DATA BACKUP -->
-        <div style="flex:1;min-width:200px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(9px,2.5vw,11px);letter-spacing:4px;color:#94a3b8;margin-bottom:14px;">DATA BACKUP</p>
-          <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
-          <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
-            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:1px;outline:none;text-align:center;margin-bottom:6px;"
-            onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-          <input type="password" id="backup-pin-input" placeholder="PIN（数字4桁）" autocomplete="off" maxlength="4" inputmode="numeric"
-            style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:4px;outline:none;text-align:center;margin-bottom:12px;"
-            onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-          <div style="display:flex;gap:6px;">
-            <button onclick="sfBackupSave()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
-            <button onclick="sfBackupRestore()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#64748b;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
+        <div style="flex:1;min-width:200px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden;">
+          <button onclick="(function(b){var body=document.getElementById('backup-acc-body');var arrow=document.getElementById('backup-acc-arrow');var open=body.style.display==='none'||body.style.display==='';if(open){body.style.display='block';arrow.style.transform='rotate(180deg)';}else{body.style.display='none';arrow.style.transform='rotate(0deg)';};})(this)" style="width:100%;background:none;border:none;padding:20px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(9px,2.5vw,11px);letter-spacing:4px;color:#94a3b8;">DATA BACKUP</span>
+            <span id="backup-acc-arrow" style="color:#94a3b8;font-size:10px;transition:transform 0.3s;display:inline-block;">▼</span>
+          </button>
+          <div id="backup-acc-body" style="display:none;padding:0 16px 20px;text-align:center;">
+            <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
+            <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
+              style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:1px;outline:none;text-align:center;margin-bottom:6px;"
+              onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <input type="password" id="backup-pin-input" placeholder="PIN（数字4桁）" autocomplete="off" maxlength="4" inputmode="numeric"
+              style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:4px;outline:none;text-align:center;margin-bottom:12px;"
+              onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <div style="display:flex;gap:6px;">
+              <button onclick="sfBackupSave()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
+              <button onclick="sfBackupRestore()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#94a3b8;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
+            </div>
+            <p id="backup-msg" style="font-size:clamp(10px,2.8vw,12px);color:#94a3b8;letter-spacing:1px;margin-top:10px;min-height:16px;"></p>
           </div>
-          <p id="backup-msg" style="font-size:clamp(10px,2.8vw,12px);color:#94a3b8;letter-spacing:1px;margin-top:10px;min-height:16px;"></p>
         </div>
 
       </div>
