@@ -3570,7 +3570,7 @@ document.addEventListener('visibilitychange', function() {
   var ANCHORS = ['#topics','#characters','#novel','#short-stories','#qf','#music','#sweets','#links'];
   var links = document.querySelectorAll('#page-dot-nav a');
   function updateActive() {
-    var mid = window.scrollY + window.innerHeight * 0.4;
+    var mid = window.scrollY + window.innerHeight * 0.15;
     var active = null;
     ANCHORS.forEach(function(sel) {
       var el = document.querySelector(sel);
