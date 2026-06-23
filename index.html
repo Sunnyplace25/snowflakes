@@ -3524,89 +3524,56 @@ document.addEventListener('visibilitychange', function() {
 
 <!-- Page Nav (Desktop only) -->
 <style>
+  @media (max-width: 899px) { #page-dot-nav { display: none !important; } }
   #page-dot-nav {
-    position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
-    z-index: 500; display: flex; flex-direction: column; gap: 4px;
-    align-items: flex-end; pointer-events: none;
+    position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+    z-index: 200; width: fit-content;
+    display: flex; flex-direction: column; gap: 2px;
   }
-  @media (max-width: 899px) { #page-dot-nav { display: none; } }
-  .pnav-item {
-    display: flex; align-items: center; gap: 8px;
-    background: none; border: none; padding: 5px 0 5px 12px;
-    cursor: pointer; text-decoration: none;
-    pointer-events: auto;
-  }
-  .pnav-label {
+  #page-dot-nav a {
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none; white-space: nowrap;
+    padding: 4px 6px; width: fit-content;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 9px; letter-spacing: 3px;
-    color: #334155;
+    font-size: 9px; letter-spacing: 3px; color: #2d3f55;
     transition: color 0.2s;
-    white-space: nowrap;
   }
-  .pnav-item:hover .pnav-label { color: var(--pnav-color, #93c5fd); }
-  .pnav-item.pnav-active .pnav-label { color: var(--pnav-color, #93c5fd); }
-  .pnav-dot {
+  #page-dot-nav a::after {
+    content: ''; display: block; flex-shrink: 0;
     width: 4px; height: 4px; border-radius: 50%;
-    background: #334155; flex-shrink: 0; transition: all 0.25s;
+    background: currentColor; transition: all 0.2s;
   }
-  .pnav-item:hover .pnav-dot {
-    background: var(--pnav-color, #93c5fd);
-    box-shadow: 0 0 5px var(--pnav-color, #93c5fd);
-  }
-  .pnav-item.pnav-active .pnav-dot {
-    width: 6px; height: 6px;
-    background: var(--pnav-color, #93c5fd);
-    box-shadow: 0 0 7px var(--pnav-color, #93c5fd);
-  }
+  #page-dot-nav a:hover { color: #93c5fd; }
+  #page-dot-nav a.pnav-active { color: #93c5fd; }
+  #page-dot-nav a.pnav-active::after { width: 6px; height: 6px; box-shadow: 0 0 6px #93c5fd; }
 </style>
-<nav id="page-dot-nav" aria-label="ページナビゲーション"></nav>
+<nav id="page-dot-nav">
+  <a href="#topics">TOPICS</a>
+  <a href="#characters">CHARACTERS</a>
+  <a href="#novel">NOVEL</a>
+  <a href="#short-stories">STORIES</a>
+  <a href="#qf">QF</a>
+  <a href="#music">MUSIC</a>
+  <a href="#sweets">SWEETs</a>
+  <a href="#links">LINKS</a>
+  <a href="gacha/">GACHA</a>
+  <a href="support-lp.html">GAME</a>
+  <a href="kotori.html">KOTORI</a>
+</nav>
 <script>
 (function() {
-  var ITEMS = [
-    { target: '#topics',        label: 'TOPICS',      color: '#93c5fd' },
-    { target: '#characters',    label: 'CHARACTERS',  color: '#e2e8f0' },
-    { target: '#novel',         label: 'NOVEL',       color: '#93c5fd' },
-    { target: '#short-stories', label: 'STORIES',     color: '#c4b5fd' },
-    { target: '#qf',            label: 'QF',          color: '#f0abfc' },
-    { target: '#music',         label: 'MUSIC',       color: '#5aab85' },
-    { target: '#sweets',        label: 'SWEETs',      color: '#f9a8d4' },
-    { target: '#links',         label: 'LINKS',       color: '#94a3b8' },
-    { href: 'gacha/',           label: 'GACHA',       color: '#fde68a' },
-    { href: 'support-lp.html',  label: 'GAME',        color: '#c4b5fd' },
-    { href: 'kotori.html',      label: 'KOTORI',      color: '#f9a8d4' },
-  ];
-  var nav = document.getElementById('page-dot-nav');
-  if (!nav) return;
-
-  ITEMS.forEach(function(item) {
-    var el = document.createElement(item.href ? 'a' : 'button');
-    el.className = 'pnav-item';
-    el.style.setProperty('--pnav-color', item.color);
-    if (item.href) {
-      el.href = item.href;
-    } else {
-      el.setAttribute('type', 'button');
-      el.addEventListener('click', function() {
-        var t = document.querySelector(item.target);
-        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    }
-    el.innerHTML = '<span class="pnav-label">' + item.label + '</span><span class="pnav-dot"></span>';
-    nav.appendChild(el);
-  });
-
-  var anchorItems = ITEMS.filter(function(i) { return i.target; });
-  var navEls = Array.from(nav.querySelectorAll('.pnav-item'));
-
+  var ANCHORS = ['#topics','#characters','#novel','#short-stories','#qf','#music','#sweets','#links'];
+  var links = document.querySelectorAll('#page-dot-nav a');
   function updateActive() {
-    var scrollMid = window.scrollY + window.innerHeight * 0.35;
+    var mid = window.scrollY + window.innerHeight * 0.4;
     var active = null;
-    anchorItems.forEach(function(item) {
-      var el = document.querySelector(item.target);
-      if (el && el.offsetTop <= scrollMid) active = item.target;
+    ANCHORS.forEach(function(sel) {
+      var el = document.querySelector(sel);
+      if (el && el.offsetTop <= mid) active = sel;
     });
-    navEls.forEach(function(el, i) {
-      el.classList.toggle('pnav-active', !!ITEMS[i].target && ITEMS[i].target === active);
+    links.forEach(function(a) {
+      var href = a.getAttribute('href');
+      a.classList.toggle('pnav-active', href === active);
     });
   }
   window.addEventListener('scroll', updateActive, { passive: true });
