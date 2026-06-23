@@ -936,15 +936,6 @@ function sfShare() {
           return;
         }
 
-        // 3日以内のみしおりアイテム付与
-        var SHIORI_KEY = 'sf_shiori_moonveil_short_got';
-        var _shioriItem = { key:'shiori_kouta', img:'item/shiori_kouta.webp', name:'本のしおり', desc:'本を買うたびについてくる。\n地味に溜まる。', color:'#fca5a5' };
-        if (!localStorage.getItem(SHIORI_KEY) && typeof SfSnow !== 'undefined' && typeof showBannerItemPopup === 'function') {
-          localStorage.setItem(SHIORI_KEY, '1');
-          SfSnow.unlockItem('shiori_kouta');
-          SfSnow.addMItemDirect('shiori_kouta', 1);
-          setTimeout(function() { showBannerItemPopup(_shioriItem); }, 1000);
-        }
 
         // 3日以内なら表示
         card.style.display = 'block';
