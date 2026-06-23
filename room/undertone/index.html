@@ -2457,6 +2457,17 @@ function submitUtPw() {
           else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
         }
       }
+      // 3-5読了後・第四章1話未解放：ch-between-5内タイマー
+      var _ts20 = getTimedState(20);
+      if (_ts20.state === 'countdown') {
+        var el4 = document.getElementById('ch4-lock-timer');
+        if (el4) { el4.textContent = formatCountdown(_ts20.remaining); anyActive = true; }
+      } else if (_ts20.state === 'available') {
+        var between5El = document.getElementById('ch-between-5');
+        if (between5El && between5El.style.display !== 'none') {
+          clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return;
+        }
+      }
       if (!anyActive) {
         clearInterval(_countdownInterval);
         _countdownInterval = null;
@@ -3268,6 +3279,9 @@ function submitUtPw() {
   function renderChapterList() {
     var cl = document.getElementById('chapter-list');
     cl.style.display = 'block';
+    // 完読フラグ（スコープ先頭で定義しないとvar巻き上げでundefinedになるため）
+    var ch3Done = !!localStorage.getItem('sf_ut_ch3_complete');
+    var ch4Done = !!localStorage.getItem('sf_ut_ch4_complete');
     // 各話の表示制御
     ALL_CHAPTERS.forEach(function(ch, i) {
       var item = document.getElementById('chapter-item-' + i);
@@ -3429,7 +3443,6 @@ function submitUtPw() {
       }
     }
     // ch-between-5：3-5読了後・4-1未解放時（48hカウントダウン表示）
-    var ch3Done = !!localStorage.getItem('sf_ut_ch3_complete');
     var between5 = document.getElementById('ch-between-5');
     if (between5) {
       between5.style.display = (ch3Done && !stCh4Unlocked) ? '' : 'none';
@@ -3440,7 +3453,6 @@ function submitUtPw() {
       }
     }
     // エピローグ：4章完読で即時解放
-    var ch4Done = !!localStorage.getItem('sf_ut_ch4_complete');
     if (ch4Done && !stEpUnlocked) {
       stEpUnlocked = true;
       localStorage.setItem('sf_undertone_step_unlocked', 'true');
