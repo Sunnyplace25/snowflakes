@@ -3273,8 +3273,18 @@
       var res = e.data; // { score, maxCombo, acc, cleared }
       closeRhythmLive();
 
+      // ゲームオーバー時はポップアップ・LIVEエンドを出さずにそのまま戻る
+      if (!res.cleared) {
+        st.liveCount = (st.liveCount || 0) + 1;
+        st.renshuGe  = 0;
+        save();
+        bounce();
+        render();
+        return;
+      }
+
       var acc = res.acc || 0;
-      var success = res.cleared && acc >= 60;
+      var success = acc >= 60;
       var skillGain = acc >= 80 ? 8 : acc >= 60 ? 5 : 2;
       var yaUp     = acc >= 80 ? 20 : acc >= 60 ? 12 : 4;
       var kiUp     = acc >= 80 ? 15 : acc >= 60 ? 8 : 2;
