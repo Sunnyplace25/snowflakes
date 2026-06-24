@@ -227,7 +227,7 @@
 </head>
 <body>
 <div id="game-container">
-    <canvas id="canvas" width="400" height="700"></canvas>
+    <canvas id="canvas" width="400" height="700" tabindex="0" style="outline:none;"></canvas>
 
     <!-- スタート画面バックグラウンド動画 -->
     <video id="start-bg-video" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; border-radius:16px; z-index:1;" playsinline loop muted></video>
@@ -243,7 +243,7 @@
         <button id="embed-close-btn" style="background:rgba(168,216,234,0.1); border:1px solid rgba(168,216,234,0.45); color:#a8d8ea; padding:12px 44px; border-radius:50px; font-size:0.85rem; letter-spacing:4px; cursor:pointer;">とじる</button>
     </div>
 
-    <div id="start-screen">
+    <div id="start-screen"><script>if(window.parent!==window)document.currentScript.parentElement.style.display='none';</script>
         <h1>Snow flakes</h1>
         <div class="author">Kotori Yamabuki</div>
         <div class="diff-wrap">
@@ -404,6 +404,15 @@ let difficulty = 'normal'; // 'easy' | 'normal'
 let laneHeld = [null,null,null,null]; // 押しっぱなし中のホールドノーツ
 let hitEffects = []; // ヒット時の光エフェクト [{x,y,t,grade}]
 let wasCleared = false; // クリアかゲームオーバーか
+let _skipCountdown = false; // 親側でカウントダウン済みの場合はtrue
+
+// レーン別ノーツ色 D / F / J / K
+const LANE_COLORS = [
+    { note: 'rgba(103,232,249,0.9)',  glow: 'rgba(103,232,249,' },  // D: cyan
+    { note: 'rgba(196,181,253,0.9)',  glow: 'rgba(196,181,253,' },  // F: lavender
+    { note: 'rgba(249,168,212,0.9)',  glow: 'rgba(249,168,212,' },  // J: pink
+    { note: 'rgba(110,231,183,0.9)',  glow: 'rgba(110,231,183,' },  // K: mint
+];
 
 // iframe埋め込みモード検出
 const IS_EMBED = window.parent !== window;
@@ -469,6 +478,8 @@ window.addEventListener('load', () => {
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'rg-start') {
                 difficulty = e.data.difficulty || 'normal';
+                _skipCountdown = !!e.data.skipCountdown;
+                canvas.focus();
                 onStartClick();
             }
         });
@@ -542,7 +553,7 @@ async function onStartClick() {
         audioBuffer = null;
     }
 
-    await runCountdown();
+    if (!_skipCountdown) await runCountdown();
 
     startTime = audioCtx.currentTime;
     if (audioBuffer) {
@@ -790,10 +801,11 @@ function drawNotes(now) {
 
         const isHold    = n.type === 'hold';
         const isHolding = isHold && n.holding;
+        const lc = LANE_COLORS[n.lane] || LANE_COLORS[0];
         const noteColor = isHold
             ? (isHolding ? 'rgba(255,230,80,0.95)' : 'rgba(255,210,80,0.88)')
-            : 'rgba(168,216,234,0.88)';
-        const glowColor = isHold ? 'rgba(255,210,80,' : 'rgba(168,216,234,';
+            : lc.note;
+        const glowColor = isHold ? 'rgba(255,210,80,' : lc.glow;
 
         // グロー
         const grd = ctx.createRadialGradient(cx,y,0, cx,y, R*2);
