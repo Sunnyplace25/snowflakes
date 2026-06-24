@@ -3363,7 +3363,8 @@
       setSpeech(success ? randLine(LIVE_LINES) : randLine(LIVE_END_LINES), null);
       bounce();
       render();
-      setTimeout(showLiveEnd, 400);
+      // ホーム画面が見えてから別ボタンを押せる前に即表示（400msだとその間に誤タップされる）
+      showLiveEnd();
     });
 
     function showLiveCountdown(cb) {
