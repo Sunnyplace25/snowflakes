@@ -3263,10 +3263,9 @@
     function closeRhythmLive() {
       var el = document.getElementById('rhythm-live-overlay');
       var iframe = document.getElementById('rhythm-live-iframe');
-      iframe.onload = null; // onload再発火を確実に防ぐ
+      iframe.onload = null;   // ← 先にnull（これ以降のonload発火を封じる）
       el.style.display = 'none';
-      // iframe.srcはクリアしない（srのクリア自体がonload再発火の原因になる）
-      // 次回_startLiveRhythmでsrcを上書きすれば自動的にリセットされる
+      iframe.src = '';        // ← onload=null後なので再発火しない。次回のリロードに必要
     }
 
     window.addEventListener('message', function(e) {
