@@ -633,9 +633,11 @@ async function onStartClick() {
                 setTimeout(_startPreload, 300); // 次回用に再プリロード開始
                 return { buf: audioBuf, chart };
             }
-            // フォールバック：fetch(dataURL)で非同期ロード
+            // フォールバック：fetch(dataURL)で非同期ロード（連続防止も適用）
             try {
-                const b64 = B64[Math.floor(Math.random() * B64.length)];
+                let idx; do { idx = Math.floor(Math.random() * B64.length); } while (B64.length > 1 && idx === _lastBgmIdx);
+                _lastBgmIdx = idx;
+                const b64 = B64[idx];
                 const arr = await _b64ToArrayBuffer(b64);
                 const buf = await audioCtx.decodeAudioData(arr.slice(0));
                 const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
