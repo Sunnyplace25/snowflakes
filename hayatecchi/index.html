@@ -1193,6 +1193,7 @@
       _drumLastMemo = memoIdx;
       st.drumLog[memoIdx] = true;
       save();
+      checkCollectionComplete('goroku', '語録', '📖', Object.keys(st.drumLog).length, DRUM_MEMOS.length);
 
       document.getElementById('drum-result-count').textContent  = n + '回';
       document.getElementById('drum-result-speech').textContent = '「' + speech + '」';
@@ -1244,6 +1245,7 @@
         st.onigiriCount++;
       }
       save();
+      checkCollectionComplete('drum', 'ドラム図鑑', '🥁', Object.keys(st.drumItems).length, DRUM_ITEMS.length);
       if (el) {
         el.style.display = 'block';
         el.innerHTML =
@@ -1413,6 +1415,8 @@
         var rewardTxt = 'きぶん +15　やるき +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '');
         document.getElementById('oc-result-reward').textContent = rewardTxt;
         st.kibun = clamp(st.kibun + 15); st.yaruki = clamp(st.yaruki + 10); save();
+        var _ctotal = Object.keys(OC_RECIPES).length + 1;
+        checkCollectionComplete('cocktail', 'カクテル図鑑', '🍸', Object.keys(st.zukanLog || {}).length, _ctotal);
       } else {
         glassEl.innerHTML = '<img src="cocktail_mystery.webp" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;">';
         document.getElementById('oc-result-name').textContent = 'Mystery Blend';
@@ -1421,6 +1425,8 @@
         var rewardTxt2 = 'きぶん +10' + (barRemain > 0 ? '　あと' + barRemain + '杯' : '');
         document.getElementById('oc-result-reward').textContent = rewardTxt2;
         st.kibun = clamp(st.kibun + 10); save();
+        var _ctotal2 = Object.keys(OC_RECIPES).length + 1;
+        checkCollectionComplete('cocktail', 'カクテル図鑑', '🍸', Object.keys(st.zukanLog || {}).length, _ctotal2);
       }
     }
     function ocNextRound() {
@@ -1743,6 +1749,27 @@
       return PHOTO_ITEMS.filter(function(p){ return p.check(); }).length;
     }
 
+    // ── コレクションコンプリートポップアップ ──
+    function showCompletePop(name, emoji) {
+      var el = document.createElement('div');
+      el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(4,8,18,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;';
+      el.innerHTML =
+        '<div style="font-size:52px;margin-bottom:16px;animation:completePop 0.5s ease-out;">' + emoji + '</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:8px;color:#c4b5fd;margin-bottom:14px;">C O M P L E T E</div>' +
+        '<div style="font-family:\'Noto Serif JP\',serif;font-size:20px;color:#e2e8f0;margin-bottom:6px;">' + name + '</div>' +
+        '<div style="font-size:12px;color:#94a3b8;margin-bottom:36px;letter-spacing:1px;">コンプリートおめでとう！</div>' +
+        '<button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:none;border:1px solid rgba(196,181,253,0.35);border-radius:100px;color:#c4b5fd;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:4px;padding:10px 32px;cursor:pointer;">と じ る</button>';
+      document.body.appendChild(el);
+    }
+    function checkCollectionComplete(key, name, emoji, count, total) {
+      if (count < total) return;
+      if (!st.shownComplete) st.shownComplete = {};
+      if (st.shownComplete[key]) return;
+      st.shownComplete[key] = true;
+      save();
+      setTimeout(function() { showCompletePop(name, emoji); }, 700);
+    }
+
     function openZukanHub(e) {
       if (e) e.stopPropagation();
       var cocktailCount = Object.keys(st.zukanLog || {}).length;
@@ -1756,6 +1783,12 @@
       document.getElementById('hub-goroku-count').textContent = gorokuCount + ' / ' + DRUM_MEMOS.length + ' 収集';
       document.getElementById('hub-food-count').textContent = foodCount + ' / ' + FOOD_ITEMS.length + ' 収集';
       document.getElementById('hub-photo-count').textContent = photoCount + ' / ' + PHOTO_ITEMS.length + ' 解放';
+      // フォトNEWバッジ（未確認の新解放があれば表示）
+      var photoSeenCount = st.photoSeenCount || 0;
+      var photoNewBadge = document.getElementById('hub-photo-new-badge');
+      if (photoNewBadge) photoNewBadge.style.display = photoCount > photoSeenCount ? 'inline-block' : 'none';
+      // フォトコンプリートチェック
+      checkCollectionComplete('photo', 'フォトグラフィー', '📷', photoCount, PHOTO_ITEMS.length);
       document.getElementById('zukan-hub-modal').style.display = 'flex';
     }
     function closeZukanHub() {
@@ -1834,7 +1867,13 @@
       grid.innerHTML = '';
       var unlocked = getPhotoUnlockCount();
       document.getElementById('photo-progress').textContent = unlocked + ' / ' + PHOTO_ITEMS.length;
+      // 確認済みとして記録（NEWバッジを消す）
+      st.photoSeenCount = unlocked;
+      save();
+      var photoNewBadge = document.getElementById('hub-photo-new-badge');
+      if (photoNewBadge) photoNewBadge.style.display = 'none';
 
+      var prevSeen = st.photoSeenCount; // ← already updated above
       PHOTO_ITEMS.forEach(function(p) {
         var isOpen = p.check();
         var cell = document.createElement('div');
@@ -1882,6 +1921,7 @@
       var got = unseen[Math.floor(Math.random() * unseen.length)];
       st.foodItems[got.id] = true;
       save();
+      checkCollectionComplete('food', '食べ歩き図鑑', '🍴', Object.keys(st.foodItems).length, FOOD_ITEMS.length);
       return got;
     }
     function showFoodGet(item) {
@@ -2386,8 +2426,11 @@
         </button>
         <button onclick="closeZukanHub();openPhotoZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(244,114,182,0.05);border:1px solid rgba(244,114,182,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
           <span style="font-size:32px;">📷</span>
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f472b6;letter-spacing:3px;margin-bottom:4px;">フォトグラフィー</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f472b6;letter-spacing:3px;">フォトグラフィー</div>
+              <span id="hub-photo-new-badge" style="display:none;background:#f472b6;color:#080f1e;font-size:9px;font-weight:bold;letter-spacing:1px;padding:2px 6px;border-radius:100px;">NEW</span>
+            </div>
             <div id="hub-photo-count" style="font-size:10px;color:#94a3b8;"></div>
           </div>
         </button>
@@ -3253,7 +3296,8 @@
         el.style.display = 'flex';
         setTimeout(function() {
           iframe.contentWindow.postMessage(
-            { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: true }, '*'
+            { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: true,
+              lastBgmIdx: (st.lastRgBgmIdx !== undefined ? st.lastRgBgmIdx : -1) }, '*'
           );
           setTimeout(function() { iframe.focus(); }, 100);
         }, 100);
@@ -3270,8 +3314,10 @@
 
     window.addEventListener('message', function(e) {
       if (!e.data || e.data.type !== 'rg-result') return;
-      var res = e.data; // { score, maxCombo, acc, cleared }
+      var res = e.data; // { score, maxCombo, acc, cleared, bgmIdx }
       closeRhythmLive();
+      // 前回のBGMインデックスを記録（次回の連続再生防止用）
+      if (res.bgmIdx !== undefined) st.lastRgBgmIdx = res.bgmIdx;
 
       // ゲームオーバー時はポップアップ・LIVEエンドを出さずにそのまま戻る
       if (!res.cleared) {

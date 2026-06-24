@@ -424,7 +424,6 @@ function beatsToChart(beats, totalDuration) {
         gaps.sort((a,b) => a-b);
         const med = gaps[Math.floor(gaps.length / 2)];
         let t = (beats[beats.length-1] || 90) + med;
-        let prev = t;
         while (t < totalDuration - 0.5) {
             const nextT = t + med;
             addBeat(+t.toFixed(4), -1, nextT < totalDuration - 0.5 ? +nextT.toFixed(4) : null);
@@ -441,6 +440,7 @@ function beatsToChart(beats, totalDuration) {
 let CHART = [];
 let _preloaded = null; // { audioBuf: AudioBuffer|null, chart: Note[] }
 let _lastBgmIdx = -1; // 直前に使ったBGMインデックス（連続再生防止）
+let _preloadedBgmIdx = -1; // プリロード済みBGMのインデックス
 
 function _pickNextBgm() {
     let idx;
@@ -452,6 +452,7 @@ function _pickNextBgm() {
 
 function _startPreload() {
     const bgm = _pickNextBgm();
+    _preloadedBgmIdx = _lastBgmIdx;
     _loadArrayBuffer(bgm)
         .then(arr => {
             const offCtx = new OfflineAudioContext(1, 44100, 44100);
@@ -464,7 +465,7 @@ function _startPreload() {
             // URLが失敗した場合はb64にフォールバック
             if (bgm.type === 'url') {
                 const fb = _ALL_BGMS.find(b => b.type === 'b64');
-                if (fb) _loadArrayBuffer(fb)
+                if (fb) return _loadArrayBuffer(fb)
                     .then(arr => new OfflineAudioContext(1,44100,44100).decodeAudioData(arr))
                     .then(audioBuf => { _preloaded = { audioBuf, chart: beatsToChart(detectBeatsFromBuffer(audioBuf), audioBuf.duration) }; })
                     .catch(() => { _preloaded = { audioBuf: null, chart: _fallbackChart() }; });
@@ -604,6 +605,16 @@ window.addEventListener('load', () => {
             if (e.data && e.data.type === 'rg-start') {
                 difficulty = e.data.difficulty || 'normal';
                 _skipCountdown = !!e.data.skipCountdown;
+                // 親から前回のBGMインデックスを受け取り、同じ曲が連続しないよう調整
+                if (e.data.lastBgmIdx !== undefined && e.data.lastBgmIdx >= 0) {
+                    _lastBgmIdx = e.data.lastBgmIdx;
+                    if (_preloadedBgmIdx === _lastBgmIdx) {
+                        // プリロード済みが前回と同じ曲 → 破棄して再プリロード
+                        _preloaded = null;
+                        _preloadedBgmIdx = -1;
+                        _startPreload();
+                    }
+                }
                 canvas.focus();
                 onStartClick();
             }
@@ -746,7 +757,7 @@ function gameLoop() {
     drawJudgeEff();
 
     // 音楽なしモードのみ：全ノーツ消化で終了
-    if (!audioBuffer && notes.every(n => n.hit || n.missed)) {
+    if (!audioBuffer && notes.length > 0 && notes.every(n => n.hit || n.missed)) {
         setTimeout(showClear, 500);
         return;
     }
@@ -1379,7 +1390,7 @@ function showResult() {
     const total   = notes.length;
     const hitCnt  = notes.filter(n=>n.hit).length;
     const missCnt = notes.filter(n=>n.missed).length;
-    const acc     = Math.round(hitCnt/total*100);
+    const acc     = total > 0 ? Math.round(hitCnt/total*100) : 0;
 
     // パネル
     ctx.fillStyle = 'rgba(10,20,35,0.88)';
@@ -1446,7 +1457,8 @@ function sendResultToParent() {
     document.getElementById('embed-close-wrap').style.display = 'none';
     window.parent.postMessage({
         type: 'rg-result',
-        score, maxCombo, acc, cleared: wasCleared
+        score, maxCombo, acc, cleared: wasCleared,
+        bgmIdx: _lastBgmIdx
     }, '*');
 }
 
