@@ -1274,7 +1274,8 @@ function showResult() {
     ctx.fillText('RETRY', W/2, 513);
 
     if (IS_EMBED) {
-        document.getElementById('embed-close-wrap').style.display = 'block';
+        sendResultToParent();
+        return;
     } else {
         canvas.addEventListener('pointerdown', onRetry, {once:true});
     }

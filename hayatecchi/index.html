@@ -3213,7 +3213,14 @@
       st.kibun     = clamp(st.kibun  + kiUp);
       st.liveCount = (st.liveCount || 0) + 1;
       st.renshuGe  = 0;
+
+      var gotSweets = success && acc >= 80;
+      if (gotSweets) { st.sweets = (st.sweets || 0) + 1; }
       save();
+
+      _pendingSweetsGet = gotSweets;
+      _pendingDrumItem  = tryGetDrumItemSilent();
+
       setSpeech(success ? randLine(LIVE_LINES) : randLine(LIVE_END_LINES), null);
       bounce();
       render();
