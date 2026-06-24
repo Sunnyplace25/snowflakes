@@ -3258,6 +3258,7 @@
       var el = document.getElementById('rhythm-live-overlay');
       var iframe = document.getElementById('rhythm-live-iframe');
       el.style.display = 'none';
+      iframe.onload = null; // src変更でonloadが再発火するのを防ぐ
       iframe.src = '';
     }
 

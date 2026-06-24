@@ -251,7 +251,6 @@
         <div class="diff-wrap">
             <button class="diff-btn" id="btn-easy">EASY</button>
             <button class="diff-btn selected" id="btn-normal">NORMAL</button>
-            <button class="diff-btn" id="btn-hard" style="border-color:rgba(255,120,120,0.4);color:rgba(255,140,140,0.6);">HARD</button>
         </div>
         <button id="start-btn">PLAY</button>
         <button id="how-btn">遊び方</button>
@@ -306,36 +305,45 @@
 </div>
 
 <script src="default_bgm.js"></script>
-<script src="bgm_rabbit.js"></script>
 <script src="bgm_shiroima.js"></script>
 <script>
+// ============================================================
+//  ユーティリティ：base64 → ArrayBuffer（信頼性最高の方式）
+// ============================================================
+function _b64ToArrayBuffer(b64) {
+    const base64 = b64.split(',')[1];
+    const binary = atob(base64);
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes.buffer;
+}
+
 // ============================================================
 //  静的フォールバック譜面（audio decode 完全失敗時のみ使用）
 // ============================================================
 function _fallbackChart() {
-    const bpm = 128, beatLen = 60 / bpm;
-    const laneSeq = [0,2,1,3,0,1,2,3,1,0,3,2];
+    const bpm = 128, beat = 60 / bpm;
+    const seq = [0,1,2,3,1,0,3,2,0,2,1,3];
     const chart = [];
-    for (let i = 0; i < 64; i++) {
-        chart.push({ time: +(i * beatLen + 1.0).toFixed(4), lane: laneSeq[i % laneSeq.length] });
-    }
+    for (let i = 0; i < 120; i++)
+        chart.push({ time: +(i * beat + 1.0).toFixed(4), lane: seq[i % seq.length] });
     return chart;
 }
 
 // ============================================================
 //  ビート検出 → 譜面自動生成
 // ============================================================
-function detectBeatsFromBuffer(audioBuffer) {
-    const sr       = audioBuffer.sampleRate;
-    const rawData  = audioBuffer.getChannelData(0);
-    // 最初の90秒だけ解析（それ以降は譜面ループで補完）
-    const maxSamples = Math.min(rawData.length, sr * 90);
-    const data     = rawData.subarray(0, maxSamples);
-    const winSize  = Math.round(sr * 0.05);  // 50ms窓
-    const hopSize  = Math.round(sr * 0.05);  // 50msホップ（25ms→50msで計算量半減）
-    const minGap   = 0.25; // ビート間最小間隔(秒)
+function detectBeatsFromBuffer(audioBuf) {
+    const sr      = audioBuf.sampleRate;
+    const raw     = audioBuf.getChannelData(0);
+    // 最初の90秒だけ解析
+    const maxSamp = Math.min(raw.length, sr * 90);
+    const data    = raw.subarray(0, maxSamp);
+    const winSize = Math.round(sr * 0.05);  // 50ms窓
+    const hopSize = Math.round(sr * 0.025); // 25msホップ（時間分解能）
+    const minGap  = 0.18; // ビート間最小間隔(秒)
 
-    // 低周波エネルギー計算（簡易ローパス：サンプル平均の絶対値）
+    // エネルギー列
     const energies = [];
     for (let i = 0; i + winSize < data.length; i += hopSize) {
         let e = 0;
@@ -343,15 +351,16 @@ function detectBeatsFromBuffer(audioBuffer) {
         energies.push({ t: i / sr, e: e / winSize });
     }
 
-    // 局所平均より大きいピークをビートとして検出
-    const beats = [];
-    const localWin = Math.round(0.5 / 0.025); // 500ms局所窓
-    let lastBeat = -99;
-    for (let i = localWin; i < energies.length - localWin; i++) {
-        const localAvg = energies.slice(i - localWin, i + localWin)
-            .reduce((s, x) => s + x.e, 0) / (localWin * 2);
+    // 局所平均ピーク検出（localWin = 500ms分のホップ数）
+    const beats   = [];
+    const lw      = Math.round(0.5 / 0.025); // 500ms / 25ms = 20
+    let lastBeat  = -99;
+    for (let i = lw; i < energies.length - lw; i++) {
+        let sum = 0;
+        for (let k = i - lw; k < i + lw; k++) sum += energies[k].e;
+        const localAvg = sum / (lw * 2);
         const cur = energies[i];
-        if (cur.e > localAvg * 1.45 &&
+        if (cur.e > localAvg * 1.25 &&           // 閾値を下げてビートを拾いやすく
             cur.e >= energies[i-1].e &&
             cur.e >= energies[i+1].e &&
             cur.t - lastBeat >= minGap) {
@@ -363,50 +372,74 @@ function detectBeatsFromBuffer(audioBuffer) {
 }
 
 function beatsToChart(beats, totalDuration) {
-    const chart = [];
+    // 主にシングルノーツ、ときどきダブル
     const laneSeq = [
-        [0], [2], [1], [3],
-        [0,2], [1,3], [0], [3],
-        [1], [2], [0,3], [2],
+        [0],[1],[2],[3],
+        [0],[2],[1],[3],
+        [0,2],[1],[3],[2],
+        [1,3],[0],[2],[1],
     ];
+    const chart = [];
     let pi = 0;
 
-    // 検出済みビートで譜面生成
     for (let i = 0; i < beats.length; i++) {
         const t = +beats[i].toFixed(4);
         const lanes = laneSeq[pi % laneSeq.length];
-        if (i % 8 === 4 && lanes.length === 1) {
-            const nextBeat = beats[i + 1];
-            if (nextBeat && nextBeat - beats[i] < 0.6) {
-                chart.push({ time: t, lane: lanes[0], type: 'hold', endTime: +nextBeat.toFixed(4) });
-                pi++;
-                continue;
-            }
+        // 8拍に1回ホールド
+        if (i % 8 === 5 && lanes.length === 1 && beats[i+1] && beats[i+1] - beats[i] < 0.55) {
+            chart.push({ time: t, lane: lanes[0], type: 'hold', endTime: +beats[i+1].toFixed(4) });
+            pi++; continue;
         }
         lanes.forEach(l => chart.push({ time: t, lane: l }));
         pi++;
     }
 
-    // 90秒以降：ビート間隔の中央値でループ補完
-    if (totalDuration && beats.length >= 4) {
+    // 90秒以降：中央値ビート間隔でループ補完
+    if (totalDuration && beats.length >= 8) {
         const gaps = [];
         for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i-1]);
         gaps.sort((a,b) => a-b);
-        const medianGap = gaps[Math.floor(gaps.length / 2)];
-        let t = beats[beats.length - 1] + medianGap;
-        while (t < totalDuration - 1.0) {
-            const lanes = laneSeq[pi % laneSeq.length];
-            lanes.forEach(l => chart.push({ time: +t.toFixed(4), lane: l }));
+        const med = gaps[Math.floor(gaps.length / 2)];
+        let t = (beats[beats.length-1] || 90) + med;
+        while (t < totalDuration - 0.5) {
+            laneSeq[pi % laneSeq.length].forEach(l =>
+                chart.push({ time: +t.toFixed(4), lane: l }));
             pi++;
-            t += medianGap;
+            t += med;
         }
     }
 
     return chart.sort((a, b) => a.time - b.time);
 }
 
-// 初期値（audioBuffer解析後に上書き）
+// ============================================================
+//  バックグラウンドプリロード（ページロード時に実行、START高速化）
+// ============================================================
 let CHART = [];
+let _preloaded = null; // { arr: ArrayBuffer, chart: Note[] } | null
+
+function _startPreload() {
+    const B64 = [DEFAULT_BGM, DEFAULT_BGM_SHIROIMA];
+    const b64 = B64[Math.floor(Math.random() * B64.length)];
+    let arr;
+    try { arr = _b64ToArrayBuffer(b64); } catch(e) {
+        _preloaded = { arr: null, chart: _fallbackChart() };
+        return;
+    }
+    // OfflineAudioContext でデコード（ユーザージェスチャー不要）
+    try {
+        const offCtx = new OfflineAudioContext(1, 44100, 44100);
+        offCtx.decodeAudioData(arr.slice(0)).then(buf => {
+            _preloaded = { arr, chart: beatsToChart(detectBeatsFromBuffer(buf), buf.duration) };
+        }).catch(() => {
+            _preloaded = { arr, chart: _fallbackChart() };
+        });
+    } catch(e) {
+        _preloaded = { arr, chart: _fallbackChart() };
+    }
+}
+// 200ms 遅延でプリロード開始（初期描画をブロックしないため）
+setTimeout(_startPreload, 200);
 
 // ============================================================
 //  定数
@@ -506,14 +539,9 @@ window.addEventListener('load', () => {
         difficulty = d;
         document.getElementById('btn-easy').classList.toggle('selected', d === 'easy');
         document.getElementById('btn-normal').classList.toggle('selected', d === 'normal');
-        document.getElementById('btn-hard').classList.toggle('selected', d === 'hard');
-        const hb = document.getElementById('btn-hard');
-        hb.style.borderColor = d === 'hard' ? 'rgba(255,120,120,0.9)' : 'rgba(255,120,120,0.4)';
-        hb.style.color = d === 'hard' ? 'rgba(255,140,140,1)' : 'rgba(255,140,140,0.6)';
     }
     document.getElementById('btn-easy').addEventListener('click', () => setDiff('easy'));
     document.getElementById('btn-normal').addEventListener('click', () => setDiff('normal'));
-    document.getElementById('btn-hard').addEventListener('click', () => setDiff('hard'));
 
     canvas.addEventListener('touchstart', onTap,    {passive:false});
     canvas.addEventListener('touchend',   onRelease, {passive:false});
@@ -566,7 +594,6 @@ async function onStartClick() {
     phase = 'countdown';
     document.getElementById('start-screen').style.display = 'none';
 
-    // 難易度パラメータ設定（ノーツ初期化はaudioBuffer取得後）
     if (difficulty === 'easy') {
         T_PERFECT = 0.12; T_GOOD = 0.24; MISS_LIMIT = 0; SPEED = 280;
     } else if (difficulty === 'hard') {
@@ -574,7 +601,7 @@ async function onStartClick() {
     } else {
         T_PERFECT = 0.07; T_GOOD = 0.14; MISS_LIMIT = 50; SPEED = 380;
     }
-    score    = 0; combo = 0; maxCombo = 0; missCount = 0; judgeEff = null;
+    score = 0; combo = 0; maxCombo = 0; missCount = 0; judgeEff = null;
     laneEff  = [null,null,null,null];
     laneHeld = [null,null,null,null];
     hitEffects = [];
@@ -582,38 +609,35 @@ async function onStartClick() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-    // BGMロード：data:URL は fetch() で直接デコード（charCodeAtループより高速）
-    const B64_BGMS = [DEFAULT_BGM, DEFAULT_BGM_RABBIT, DEFAULT_BGM_SHIROIMA];
-    const URL_BGMS = ['../live1.mp3','../live2.mp3','../live3.mp3','../live4.mp3','../live5.mp3','../live6.mp3'];
+    // === プリロード済みデータを使用（なければその場でロード） ===
+    const B64 = [DEFAULT_BGM, DEFAULT_BGM_SHIROIMA]; // Rabbit除外
 
-    async function loadArrayBuffer() {
-        if (Math.random() < 0.5) {
-            const src = URL_BGMS[Math.floor(Math.random() * URL_BGMS.length)];
-            try {
-                const resp = await fetch(src);
-                if (resp.ok) return await resp.arrayBuffer();
-            } catch(e) { /* fall through */ }
-        }
-        // data: URLをfetch()でデコード（ブラウザネイティブで高速）
-        const b64 = B64_BGMS[Math.floor(Math.random() * B64_BGMS.length)];
-        const resp = await fetch(b64);
-        return resp.arrayBuffer();
-    }
-
-    // 音声ロード と カウントダウン を並列実行（standaloneモード高速化）
+    // カウントダウン と 音声準備 を並列実行
     const [audioResult] = await Promise.all([
-        // 音声ロード＋譜面生成
         (async () => {
+            if (_preloaded) {
+                // プリロード完了済み → 即使用
+                const { arr, chart } = _preloaded;
+                _preloaded = null;
+                setTimeout(_startPreload, 500); // 次回用に再プリロード
+                try {
+                    const buf = arr ? await audioCtx.decodeAudioData(arr) : null;
+                    return { buf, chart };
+                } catch(e) {
+                    return { buf: null, chart };
+                }
+            }
+            // フォールバック：その場でロード
             try {
-                const arrayBuffer = await loadArrayBuffer();
-                const buf = await audioCtx.decodeAudioData(arrayBuffer);
+                const b64 = B64[Math.floor(Math.random() * B64.length)];
+                const arr = _b64ToArrayBuffer(b64);
+                const buf = await audioCtx.decodeAudioData(arr);
                 const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
                 return { buf, chart };
             } catch(e) {
                 return { buf: null, chart: _fallbackChart() };
             }
         })(),
-        // カウントダウン（embed時はスキップ）
         _skipCountdown ? Promise.resolve() : runCountdown(),
     ]);
 
