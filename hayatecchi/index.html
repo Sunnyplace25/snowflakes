@@ -694,71 +694,6 @@
       border-radius: 100px; padding: 12px 36px;
       background: none; cursor: pointer;
     }
-  /* ── ドンとタン リズムゲーム ── */
-  #rg-field {
-    position: relative; width: 100%; height: 260px;
-    overflow: hidden;
-    background: rgba(0,0,0,0.35);
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 12px;
-  }
-  .rg-judge-line {
-    position: absolute; left: 0; right: 0; height: 2px;
-    background: rgba(255,255,255,0.2);
-    bottom: 48px;
-  }
-  .rg-lane-label {
-    position: absolute; bottom: 26px; font-size: 9px; letter-spacing: 2px;
-    font-family: 'Cormorant Garamond', serif; color: rgba(255,255,255,0.2);
-  }
-  .rg-marker {
-    position: absolute; transform: translateX(-50%);
-    display: none; pointer-events: none;
-    transition: none;
-  }
-  .rg-marker-kick {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(252,165,165,0.9), rgba(185,28,28,0.8));
-    border: 2px solid rgba(252,165,165,0.6);
-    left: 25%;
-  }
-  .rg-marker-snare {
-    width: 36px; height: 36px; border-radius: 8px;
-    background: radial-gradient(circle at 35% 35%, rgba(165,180,252,0.9), rgba(67,56,202,0.8));
-    border: 2px solid rgba(165,180,252,0.6);
-    left: 75%;
-  }
-  #rg-feedback {
-    position: absolute; top: 44%; left: 50%; transform: translate(-50%, -50%);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 24px; letter-spacing: 4px;
-    pointer-events: none; opacity: 0;
-    transition: opacity 0.35s;
-    white-space: nowrap;
-  }
-  .rg-btn-kick {
-    flex: 1; height: 80px;
-    background: rgba(239,68,68,0.08);
-    border: 2px solid rgba(239,68,68,0.32);
-    border-radius: 14px; color: #fca5a5;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px; letter-spacing: 3px;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-  .rg-btn-snare {
-    flex: 1; height: 80px;
-    background: rgba(99,102,241,0.08);
-    border: 2px solid rgba(99,102,241,0.32);
-    border-radius: 14px; color: #a5b4fc;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px; letter-spacing: 3px;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-  .rg-btn-kick.rg-hit { background: rgba(239,68,68,0.28); transform: scale(0.93); }
-  .rg-btn-snare.rg-hit { background: rgba(99,102,241,0.28); transform: scale(0.93); }
   </style>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1147,8 +1082,6 @@
       if (_drumTimer) { clearInterval(_drumTimer); _drumTimer = null; }
       _drumActive = false;
       if (_drumAudio) { _drumAudio.pause(); }
-      if (_rgRaf) { cancelAnimationFrame(_rgRaf); _rgRaf = null; }
-      if (_rg) { _rg.done = true; _rg = null; }
     }
     function startDrumGame() {
       _drumCount = 0; _drumActive = true;
@@ -1267,241 +1200,6 @@
       render();
     }
 
-    /* ── ドンとタン リズムゲーム ── */
-    var RG_LEVELS = (function() {
-      var K = 'kick', S = 'snare';
-      function n(b, t) { return { beat: b, type: t }; }
-      return [
-        { bpm: 72,  label: 'Lv.1', sublabel: 'ゆっくりビート', notes: [
-          n(0,K),n(1,S),n(2,K),n(3,S),n(4,K),n(5,S),n(6,K),n(7,S),
-          n(8,K),n(9,S),n(10,K),n(11,S),n(12,K),n(13,S),n(14,K),n(15,S)
-        ]},
-        { bpm: 88,  label: 'Lv.2', sublabel: 'テンポアップ', notes: [
-          n(0,K),n(1,S),n(2,K),n(3,S),n(4,K),n(5,S),n(6,K),n(7,S),
-          n(8,K),n(9,S),n(10,K),n(11,S),n(12,K),n(13,S),n(14,K),n(15,S)
-        ]},
-        { bpm: 100, label: 'Lv.3', sublabel: '3ビート入り', notes: [
-          n(0,K),n(0.5,K),n(1,S),n(2,K),n(3,S),
-          n(4,K),n(4.5,K),n(5,S),n(6,K),n(7,S),
-          n(8,K),n(8.5,K),n(9,S),n(10,K),n(11,S)
-        ]},
-        { bpm: 110, label: 'Lv.4', sublabel: 'ダブルキック', notes: [
-          n(0,K),n(0.5,K),n(1,S),n(2,K),n(2.5,K),n(3,S),
-          n(4,K),n(5,S),n(6,K),n(6.5,K),n(7,S),
-          n(8,K),n(8.5,K),n(9,S),n(10,K),n(10.5,K),n(11,S)
-        ]},
-        { bpm: 120, label: 'Lv.5', sublabel: 'フルパワー', notes: [
-          n(0,K),n(0.5,S),n(1,K),n(1.5,K),n(2,S),
-          n(3,K),n(3.5,S),n(4,K),n(5,S),n(5.5,K),
-          n(6,K),n(6.5,S),n(7,K),n(7.5,K),n(8,S),
-          n(9,K),n(9.5,S),n(10,K),n(11,S)
-        ]},
-      ];
-    })();
-
-    var _rg = null;
-    var _rgRaf = null;
-    var _rgLastTouch = { kick: 0, snare: 0 };
-    var RG_FALL_MS = 1400;
-    var RG_HIT_PERFECT = 55;
-    var RG_HIT_GOOD = 155;
-
-    var RG_SUCCESS_SPEECHES = [
-      'いい。今のは乗れた',
-      'コウタのベースと合わせたら、もっと良くなる',
-      'やっと掴めてきた気がする',
-      'リズムって、こういうことか',
-      '悪くない。もう一回やりたい',
-    ];
-    var RG_FAIL_SPEECHES = [
-      'スネア、少し早い',
-      'キックが遅れてる',
-      'リズム崩れた……もう一回',
-      'まだ体に入ってないな',
-      'ちゃんと聴いて、それから叩く',
-    ];
-
-    function openRhythmSelect() {
-      document.getElementById('drum-intro').style.display  = 'none';
-      document.getElementById('drum-play').style.display   = 'none';
-      document.getElementById('drum-result').style.display = 'none';
-      document.getElementById('rg-play').style.display     = 'none';
-      document.getElementById('rg-result').style.display   = 'none';
-      document.getElementById('rg-select').style.display   = 'block';
-    }
-    function showDrumIntroFromRG() {
-      if (_rgRaf) { cancelAnimationFrame(_rgRaf); _rgRaf = null; }
-      if (_rg) { _rg.done = true; _rg = null; }
-      document.getElementById('rg-select').style.display   = 'none';
-      document.getElementById('rg-play').style.display     = 'none';
-      document.getElementById('rg-result').style.display   = 'none';
-      document.getElementById('drum-intro').style.display  = 'block';
-    }
-
-    function rgStart(lvIdx) {
-      var lv = RG_LEVELS[lvIdx];
-      var bi = 60000 / lv.bpm;
-      var startAt = performance.now() + 1600; // マーカー出現まで少し余裕
-      var notes = lv.notes.map(function(nd) {
-        return { type: nd.type, hitTime: startAt + nd.beat * bi, hit: false, missed: false, el: null };
-      });
-      _rg = {
-        lv: lvIdx, bpm: lv.bpm, notes: notes,
-        combo: 0, maxCombo: 0, perfect: 0, good: 0, miss: 0,
-        done: false, endTime: notes[notes.length - 1].hitTime + 800
-      };
-
-      document.getElementById('rg-select').style.display = 'none';
-      document.getElementById('rg-play').style.display   = 'block';
-      document.getElementById('rg-bpm').textContent = 'BPM ' + lv.bpm;
-      document.getElementById('rg-combo-val').textContent = '0';
-      document.getElementById('rg-feedback').style.opacity = '0';
-
-      // マーカー要素を生成
-      var field = document.getElementById('rg-field');
-      field.querySelectorAll('.rg-marker').forEach(function(el) { el.remove(); });
-      notes.forEach(function(note) {
-        var el = document.createElement('div');
-        el.className = 'rg-marker rg-marker-' + note.type;
-        field.appendChild(el);
-        note.el = el;
-      });
-
-      if (_rgRaf) cancelAnimationFrame(_rgRaf);
-      _rgRaf = requestAnimationFrame(rgTick);
-    }
-
-    function rgTick() {
-      if (!_rg || _rg.done) return;
-      var now = performance.now();
-      var field = document.getElementById('rg-field');
-      if (!field) return;
-      var fieldH = field.offsetHeight || 260;
-      var judgeY = fieldH - 48 - 24; // 判定ラインのtop位置(px) ＝ bottom:48px なので fieldH-48、マーカー中心補正-24
-
-      _rg.notes.forEach(function(note) {
-        if (!note.el) return;
-        if (note.hit) { note.el.style.display = 'none'; return; }
-
-        var enterTime = note.hitTime - RG_FALL_MS;
-        var progress = (now - enterTime) / RG_FALL_MS;
-
-        if (progress < 0) { note.el.style.display = 'none'; return; }
-
-        // ミス判定: 判定窓を過ぎたら
-        if (!note.missed && now > note.hitTime + RG_HIT_GOOD) {
-          note.missed = true;
-          _rg.miss++;
-          _rg.combo = 0;
-          document.getElementById('rg-combo-val').textContent = _rg.combo;
-          rgShowFeedback('MISS', '#64748b');
-        }
-
-        if (progress > 1.4) { note.el.style.display = 'none'; return; }
-
-        var markerH = note.type === 'kick' ? 48 : 36;
-        var topPx = -markerH + (judgeY + markerH) * Math.min(progress, 1.4);
-        note.el.style.display = 'block';
-        note.el.style.top = topPx + 'px';
-        note.el.style.opacity = (now > note.hitTime + RG_HIT_GOOD)
-          ? String(Math.max(0, 1 - (now - note.hitTime - RG_HIT_GOOD) / 180))
-          : '1';
-      });
-
-      if (now >= _rg.endTime) {
-        _rg.done = true;
-        rgEnd();
-        return;
-      }
-      _rgRaf = requestAnimationFrame(rgTick);
-    }
-
-    function rgHit(type, e) {
-      if (e) e.preventDefault();
-      var now = Date.now();
-      if (e && e.type === 'touchstart') { _rgLastTouch[type] = now; }
-      else if (e && e.type === 'click' && now - _rgLastTouch[type] < 500) return;
-      if (!_rg || _rg.done) return;
-
-      var t = performance.now();
-      var best = null, bestDelta = Infinity;
-      _rg.notes.forEach(function(note) {
-        if (note.type !== type || note.hit || note.missed) return;
-        var d = Math.abs(t - note.hitTime);
-        if (d < bestDelta) { bestDelta = d; best = note; }
-      });
-
-      // ボタンフラッシュ
-      var btn = document.getElementById('rg-' + type + '-btn');
-      if (btn) {
-        btn.classList.add('rg-hit');
-        setTimeout(function() { btn.classList.remove('rg-hit'); }, 120);
-      }
-
-      if (best && bestDelta <= RG_HIT_GOOD) {
-        best.hit = true;
-        var perfect = bestDelta <= RG_HIT_PERFECT;
-        if (perfect) _rg.perfect++; else _rg.good++;
-        _rg.combo++;
-        if (_rg.combo > _rg.maxCombo) _rg.maxCombo = _rg.combo;
-        document.getElementById('rg-combo-val').textContent = _rg.combo;
-        rgShowFeedback(perfect ? 'PERFECT' : 'GOOD', perfect ? '#fde68a' : '#6ee7b7');
-      }
-    }
-
-    function rgShowFeedback(text, color) {
-      var el = document.getElementById('rg-feedback');
-      if (!el) return;
-      el.textContent = text;
-      el.style.color = color;
-      el.style.opacity = '1';
-      clearTimeout(el._t);
-      el._t = setTimeout(function() { el.style.opacity = '0'; }, 420);
-    }
-
-    function rgEnd() {
-      if (_rgRaf) { cancelAnimationFrame(_rgRaf); _rgRaf = null; }
-      var r = _rg;
-      var total = r.notes.length;
-      var score = r.perfect * 3 + r.good;
-      var maxScore = total * 3;
-      var pct = score / maxScore;
-
-      var grade, gradeColor, speech, geUp, yaUp, kiUp;
-      if (pct >= 0.8) {
-        grade = 'GREAT'; gradeColor = '#fde68a';
-        speech = randLine(RG_SUCCESS_SPEECHES);
-        geUp = 15; yaUp = 10; kiUp = 10;
-      } else if (pct >= 0.5) {
-        grade = 'GOOD'; gradeColor = '#6ee7b7';
-        speech = randLine(RG_SUCCESS_SPEECHES);
-        geUp = 8; yaUp = 5; kiUp = 5;
-      } else {
-        grade = 'KEEP GOING'; gradeColor = '#94a3b8';
-        speech = randLine(RG_FAIL_SPEECHES);
-        geUp = 3; yaUp = 2; kiUp = 0;
-      }
-
-      st.renshuGe = clamp(st.renshuGe + geUp, 0, 100);
-      st.yaruki   = clamp(st.yaruki   + yaUp, 0, 100);
-      st.kibun    = clamp(st.kibun    + kiUp, 0, 100);
-      save();
-
-      document.getElementById('rg-play').style.display   = 'none';
-      document.getElementById('rg-result').style.display = 'block';
-      document.getElementById('rg-result-grade').textContent = grade;
-      document.getElementById('rg-result-grade').style.color = gradeColor;
-      document.getElementById('rg-result-stats').innerHTML =
-        'PERFECT: ' + r.perfect + '　GOOD: ' + r.good + '　MISS: ' + r.miss +
-        '　<span style="color:#e2e8f0;">MAX COMBO: ' + r.maxCombo + '</span>';
-      document.getElementById('rg-result-speech').textContent = '「' + speech + '」';
-      document.getElementById('rg-result-reward').textContent =
-        '練習ゲージ +' + geUp +
-        (yaUp ? '　やる気 +' + yaUp : '') +
-        (kiUp ? '　気分 +' + kiUp : '');
-      render();
-    }
-
     // prob: 0.0〜1.0 の確率でゲット試行。elがあればパネル表示、なければflash通知。
     // おにぎりは消費型なので図鑑登録済みでも常にプールに残す。
     function tryGetDrumItem(prob, el) {
@@ -1578,7 +1276,6 @@
         flash('また来てね…あと ' + fmtCD(cdRemain('bar')));
         return;
       }
-      if (_liveEndTimer) { clearTimeout(_liveEndTimer); _liveEndTimer = null; }
       document.getElementById('cocktail-modal').style.display = 'flex';
       document.getElementById('oc-welcome').style.display = 'block';
       document.getElementById('oc-intro').style.display = 'none';
@@ -2105,10 +1802,7 @@
         <div style="font-family:'M PLUS Rounded 1c',sans-serif;font-size:18px;color:#e2e8f0;margin-bottom:8px;">5秒間、スネアを叩け！</div>
         <div style="font-size:12px;color:#94a3b8;margin-bottom:36px;">連打数で評価が変わるよ</div>
         <button onclick="startDrumGame()" style="padding:16px 56px;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.35);border-radius:14px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:15px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;">はじめる</button>
-        <div style="margin-top:16px;">
-          <button onclick="openRhythmSelect()" style="padding:12px 40px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.28);border-radius:14px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">ドンとタン</button>
-        </div>
-        <div style="margin-top:20px;">
+        <div style="margin-top:24px;">
           <button onclick="openDrumZukan(event)" style="background:none;border:none;color:#94a3b8;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">🥁 ドラム図鑑 <span id="drum-zukan-count-label"></span></button>
         </div>
       </div>
@@ -2132,62 +1826,6 @@
         <div id="drum-result-memo" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:left;"></div>
         <div id="drum-result-item" style="display:none;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.18);border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;"></div>
         <button onclick="closeDrumGame()" style="padding:12px 44px;background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.25);border-radius:10px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent;">とじる</button>
-      </div>
-
-      <!-- ドンとタン：レベル選択 -->
-      <div id="rg-select" style="display:none;text-align:center;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#cbd5e1;margin-bottom:6px;">― DON to TAN ―</div>
-        <div style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:4px;">ドンとタン</div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:24px;">キックとスネアのタイミングを合わせよう</div>
-        <div style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto 24px;">
-          <button onclick="rgStart(0)" style="padding:12px 0;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Lv.1 ゆっくりビート<span style="font-size:10px;color:#94a3b8;margin-left:8px;">BPM 72</span></button>
-          <button onclick="rgStart(1)" style="padding:12px 0;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Lv.2 テンポアップ<span style="font-size:10px;color:#94a3b8;margin-left:8px;">BPM 88</span></button>
-          <button onclick="rgStart(2)" style="padding:12px 0;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Lv.3 3ビート入り<span style="font-size:10px;color:#94a3b8;margin-left:8px;">BPM 100</span></button>
-          <button onclick="rgStart(3)" style="padding:12px 0;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Lv.4 ダブルキック<span style="font-size:10px;color:#94a3b8;margin-left:8px;">BPM 110</span></button>
-          <button onclick="rgStart(4)" style="padding:12px 0;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">Lv.5 フルパワー<span style="font-size:10px;color:#94a3b8;margin-left:8px;">BPM 120</span></button>
-        </div>
-        <button onclick="showDrumIntroFromRG()" style="background:none;border:none;color:#94a3b8;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'M PLUS Rounded 1c',sans-serif;">← もどる</button>
-      </div>
-
-      <!-- ドンとタン：ゲーム中 -->
-      <div id="rg-play" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <div id="rg-bpm" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#94a3b8;">BPM 72</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#94a3b8;">COMBO <span id="rg-combo-val" style="color:#e2e8f0;font-size:16px;">0</span></div>
-        </div>
-        <div id="rg-field">
-          <div class="rg-judge-line"></div>
-          <div class="rg-lane-label" style="left:16%;">KICK</div>
-          <div class="rg-lane-label" style="right:16%;">SNARE</div>
-          <div id="rg-feedback"></div>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="rg-btn-kick" id="rg-kick-btn"
-            ontouchstart="rgHit('kick',event)" onclick="rgHit('kick',event)">
-            DON<br><span style="font-size:10px;opacity:0.55;letter-spacing:1px;">KICK</span>
-          </button>
-          <button class="rg-btn-snare" id="rg-snare-btn"
-            ontouchstart="rgHit('snare',event)" onclick="rgHit('snare',event)">
-            TAN<br><span style="font-size:10px;opacity:0.55;letter-spacing:1px;">SNARE</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- ドンとタン：リザルト -->
-      <div id="rg-result" style="display:none;text-align:center;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#cbd5e1;margin-bottom:20px;">― RESULT ―</div>
-        <div id="rg-result-grade" style="font-family:'Cormorant Garamond',serif;font-size:36px;margin-bottom:8px;letter-spacing:4px;"></div>
-        <div id="rg-result-stats" style="font-size:11px;color:#94a3b8;margin-bottom:18px;line-height:2;"></div>
-        <div id="rg-result-speech" style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;line-height:1.9;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.12);border-radius:12px;padding:14px 18px;margin-bottom:14px;"></div>
-        <div id="rg-result-reward" style="font-size:11px;color:#6ee7b7;letter-spacing:2px;margin-bottom:14px;"></div>
-        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:left;">
-          <div style="font-size:9px;letter-spacing:3px;color:#94a3b8;margin-bottom:8px;">― DRUM MEMO ―</div>
-          <div style="font-family:'Noto Serif JP',serif;font-size:12px;color:#e2e8f0;line-height:2;">キックとスネアは、ドラムの土台。<br>ドンとタンが合うと、曲が進み出す。</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:center;">
-          <button onclick="openRhythmSelect()" style="padding:10px 28px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.25);border-radius:10px;color:#fca5a5;font-family:'M PLUS Rounded 1c',sans-serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">もう一度</button>
-          <button onclick="showDrumIntroFromRG()" style="padding:10px 28px;background:rgba(110,231,183,0.07);border:1px solid rgba(110,231,183,0.22);border-radius:10px;color:#6ee7b7;font-family:'M PLUS Rounded 1c',sans-serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;">とじる</button>
-        </div>
       </div>
     </div>
   </div>
@@ -3447,7 +3085,6 @@
     var _rhythmBeatStart = 0;
     var _rhythmHits = 0;
     var _rhythmBeats = 0;
-    var _liveEndTimer = null;
     var _rhythmInterval = null;
     var _rhythmTapped = false;
     var RHYTHM_BEAT_MS = 1600;
@@ -3725,11 +3362,10 @@
       setSpeech(randLine(LIVE_LINES), null);
       bounce();
       render();
-      _liveEndTimer = setTimeout(showLiveEnd, 300);
+      setTimeout(showLiveEnd, 300);
     }
 
     function showLiveEnd() {
-      _liveEndTimer = null;
       document.getElementById('live-end-speech').textContent = '「' + randLine(LIVE_END_LINES) + '」';
       document.getElementById('live-end-overlay').classList.add('show');
     }
