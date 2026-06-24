@@ -1276,6 +1276,7 @@
         flash('また来てね…あと ' + fmtCD(cdRemain('bar')));
         return;
       }
+      if (_liveEndTimer) { clearTimeout(_liveEndTimer); _liveEndTimer = null; }
       document.getElementById('cocktail-modal').style.display = 'flex';
       document.getElementById('oc-welcome').style.display = 'block';
       document.getElementById('oc-intro').style.display = 'none';
@@ -3087,6 +3088,7 @@
     var _rhythmBeats = 0;
     var _rhythmInterval = null;
     var _rhythmTapped = false;
+    var _liveEndTimer = null;
     var RHYTHM_BEAT_MS = 1600;
     var RHYTHM_TOTAL = 12;
     var RHYTHM_PERFECT_MS = 220;
@@ -3362,10 +3364,11 @@
       setSpeech(randLine(LIVE_LINES), null);
       bounce();
       render();
-      setTimeout(showLiveEnd, 300);
+      _liveEndTimer = setTimeout(showLiveEnd, 300);
     }
 
     function showLiveEnd() {
+      _liveEndTimer = null;
       document.getElementById('live-end-speech').textContent = '「' + randLine(LIVE_END_LINES) + '」';
       document.getElementById('live-end-overlay').classList.add('show');
     }
