@@ -2389,6 +2389,8 @@
         st.onaka  = clamp(st.onaka  - DECAY.onaka  * elapsed);
         st.suimin = clamp(st.suimin - DECAY.suimin * elapsed);
         st.yaruki = clamp(st.yaruki - DECAY.yaruki * elapsed);
+        // 起動時にすいみんが低すぎる場合はオフライン中に休んだとみなして最低限回復
+        if (st.suimin <= 20) st.suimin = 30;
       } catch(e) {}
     }
     function clamp(v, lo, hi) {
