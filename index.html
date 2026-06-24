@@ -640,6 +640,18 @@ function sfShare() {
   </div>
 
 
+  <!-- 連続ログインカレンダー -->
+  <div id="login-cal-card" style="max-width:680px;margin:0 auto 40px;border-radius:18px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.12);padding:24px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#4e7aa8;margin-bottom:4px;">DAILY LOGIN</p>
+        <p id="cal-streak-label" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:2px;color:#93c5fd;">—</p>
+      </div>
+      <p id="cal-month-label" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#4e7aa8;"></p>
+    </div>
+    <div id="login-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;"></div>
+  </div>
+
   <!-- 活動報告リスト -->
   <div style="max-width:680px;margin:0 auto 80px;">
     <div class="act-wrap">
@@ -2303,6 +2315,108 @@ function sfShare() {
       localStorage.setItem(TOP_DAY, todayStr);
     }
 
+
+    // ── 連続ログインカレンダー ──
+    (function() {
+      var DAYS_KEY = 'sf_login_days';
+      var STREAK_KEY = 'sf_login_streak';
+      var today = todayStr;
+
+      // 訪問日リストを取得・更新
+      var daysRaw = localStorage.getItem(DAYS_KEY);
+      var days = daysRaw ? JSON.parse(daysRaw) : [];
+      var isNewDay = days.indexOf(today) === -1;
+      if (isNewDay) {
+        days.push(today);
+        // 直近90日だけ保持
+        if (days.length > 90) days = days.slice(days.length - 90);
+        localStorage.setItem(DAYS_KEY, JSON.stringify(days));
+      }
+
+      // 連続日数を計算（今日から遡る）
+      function calcStreak() {
+        var streak = 0;
+        var d = new Date();
+        while (true) {
+          var s = d.toLocaleDateString('ja-JP');
+          if (days.indexOf(s) !== -1) { streak++; d.setDate(d.getDate() - 1); }
+          else break;
+        }
+        return streak;
+      }
+      var streak = calcStreak();
+      localStorage.setItem(STREAK_KEY, String(streak));
+
+      // 連続日数に応じてSnow付与（新規の日のみ）
+      if (isNewDay && streak >= 2) {
+        var bonus = streak >= 7 ? 15 : streak >= 5 ? 10 : streak >= 3 ? 5 : 3;
+        setTimeout(function() {
+          if (typeof SfSnow !== 'undefined') SfSnow.addWithToast('streak_' + streak, streak + '日連続ログイン');
+        }, 1200);
+      }
+
+      // カレンダー描画
+      document.addEventListener('DOMContentLoaded', function() {
+        var grid = document.getElementById('login-cal-grid');
+        var streakLabel = document.getElementById('cal-streak-label');
+        var monthLabel = document.getElementById('cal-month-label');
+        if (!grid) return;
+
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = now.getMonth();
+
+        // 月ラベル
+        monthLabel.textContent = year + ' . ' + String(month + 1).padStart(2, '0');
+
+        // 曜日ヘッダー
+        ['日','月','火','水','木','金','土'].forEach(function(d, i) {
+          var cell = document.createElement('div');
+          cell.textContent = d;
+          cell.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:1px;color:#334155;padding:2px 0 6px;';
+          if (i === 0) cell.style.color = '#475569';
+          if (i === 6) cell.style.color = '#475569';
+          grid.appendChild(cell);
+        });
+
+        // 月初の曜日オフセット
+        var firstDay = new Date(year, month, 1).getDay();
+        for (var i = 0; i < firstDay; i++) {
+          grid.appendChild(document.createElement('div'));
+        }
+
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        var todayDate = now.getDate();
+
+        for (var d = 1; d <= daysInMonth; d++) {
+          var dateObj = new Date(year, month, d);
+          var dateStr = dateObj.toLocaleDateString('ja-JP');
+          var visited = days.indexOf(dateStr) !== -1;
+          var isToday = d === todayDate;
+
+          var cell = document.createElement('div');
+          cell.style.cssText = 'position:relative;padding:4px 2px;border-radius:8px;'
+            + (isToday ? 'background:rgba(147,197,253,0.1);' : '');
+
+          var num = document.createElement('div');
+          num.textContent = d;
+          num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:10px;color:'
+            + (isToday ? '#93c5fd' : visited ? '#cbd5e1' : '#1e293b') + ';line-height:1.4;';
+          cell.appendChild(num);
+
+          if (visited) {
+            var stamp = document.createElement('div');
+            stamp.textContent = '❄';
+            stamp.style.cssText = 'font-size:11px;line-height:1;color:' + (isToday ? '#93c5fd' : '#4e7aa8') + ';';
+            cell.appendChild(stamp);
+          }
+          grid.appendChild(cell);
+        }
+
+        // ストリークラベル
+        streakLabel.textContent = streak >= 2 ? streak + '日連続 ❄' : streak === 1 ? '1日目' : '—';
+      });
+    })();
 
     // 1日1回のみ表示（名前登録済みの場合）、未登録は従来通りsessionStorage
     var storedName = localStorage.getItem('sf_visitor_name');
