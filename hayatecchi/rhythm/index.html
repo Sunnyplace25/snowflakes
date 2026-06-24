@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Snow flakes</title>
+    <script>if(new URLSearchParams(location.search).get('embed')==='1'){document.documentElement.classList.add('embed-mode');}</script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html.embed-mode #start-screen { display: none !important; }
         body {
             background: #050a14;
             display: flex;

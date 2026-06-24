@@ -465,6 +465,8 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 13px; letter-spacing: 5px; color: #c4b5fd;
       margin-top: 6px;
+      padding-left: 5px; /* letter-spacing末尾ずれ補正 */
+      text-align: center;
     }
     @keyframes tap-label-pulse {
       0%   { transform: scale(1);    color: #c4b5fd; text-shadow: 0 0 0px transparent; }
@@ -3225,7 +3227,7 @@
       showLiveCountdown(function() {
         var el     = document.getElementById('rhythm-live-overlay');
         var iframe = document.getElementById('rhythm-live-iframe');
-        iframe.src = './rhythm/';
+        iframe.src = './rhythm/?embed=1';
         el.style.display = 'flex';
         iframe.onload = function() {
           setTimeout(function() {
