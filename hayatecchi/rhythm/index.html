@@ -322,9 +322,33 @@ const _ALL_BGMS = [
     { type:'url', src: '../live6.mp3' },
 ];
 
+// URLソング用Blobキャッシュ（1度fetchしたらBlobで保持 → 何度でも再利用可能）
+const _urlBlobCache = {};
+function _prefetchAllUrls() {
+    _ALL_BGMS.filter(b => b.type === 'url').forEach(b => {
+        if (!_urlBlobCache[b.src]) {
+            _urlBlobCache[b.src] = fetch(b.src)
+                .then(r => r.ok ? r.blob() : Promise.reject())
+                .catch(() => null);
+        }
+    });
+}
+setTimeout(_prefetchAllUrls, 1500); // ページ表示後1.5秒で全曲並列フェッチ開始
+
 // ArrayBuffer取得（b64 / URL 両対応）
 async function _loadArrayBuffer(bgm) {
-    const resp = await fetch(bgm.type === 'url' ? bgm.src : bgm.data);
+    if (bgm.type === 'url') {
+        // キャッシュ済みBlobがあればそこから取得（decodeAudioDataはbufferを使い捨てるのでsliceなし）
+        if (_urlBlobCache[bgm.src]) {
+            const blob = await _urlBlobCache[bgm.src];
+            if (blob) return blob.arrayBuffer();
+        }
+        // キャッシュなし（キャッシュ未完了 or 失敗）→ 直接fetch
+        const resp = await fetch(bgm.src);
+        if (!resp.ok) throw new Error('fetch failed');
+        return resp.arrayBuffer();
+    }
+    const resp = await fetch(bgm.data);
     if (!resp.ok) throw new Error('fetch failed');
     return resp.arrayBuffer();
 }
@@ -371,7 +395,7 @@ function detectBeatsFromBuffer(audioBuf) {
         for (let k = i - lw; k < i + lw; k++) sum += energies[k].e;
         const localAvg = sum / (lw * 2);
         const cur = energies[i];
-        if (cur.e > localAvg * 1.25 &&           // 閾値を下げてビートを拾いやすく
+        if (cur.e > localAvg * 1.25 &&
             cur.e >= energies[i-1].e &&
             cur.e >= energies[i+1].e &&
             cur.t - lastBeat >= minGap) {
@@ -379,6 +403,24 @@ function detectBeatsFromBuffer(audioBuf) {
             lastBeat = cur.t;
         }
     }
+
+    // ビートが少なすぎる場合（圧縮音楽など）: 検出ビートからBPMを推定して補完
+    const analyzedDuration = Math.min(audioBuf.duration, 90);
+    const minBeatsExpected = Math.floor(analyzedDuration * 1.2); // 最低1.2拍/秒
+    if (beats.length < minBeatsExpected && beats.length >= 2) {
+        const gaps = [];
+        for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i-1]);
+        gaps.sort((a, b) => a - b);
+        const medGap = gaps[Math.floor(gaps.length / 2)];
+        if (medGap > 0.1 && medGap < 2.0) {
+            // 最初のビートから medGap 間隔で全体に展開
+            const filled = [];
+            let t = beats[0];
+            while (t < analyzedDuration - 0.2) { filled.push(t); t += medGap; }
+            return filled;
+        }
+    }
+
     return beats;
 }
 

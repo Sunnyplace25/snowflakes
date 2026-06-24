@@ -1237,8 +1237,9 @@
       var unseenItems = DRUM_ITEMS.filter(function(item){
         return !st.drumItems[item.id] || item.id === 'onigiri';
       });
-      if (unseenItems.length === 0) { if (el) el.style.display = 'none'; return null; }
-      var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
+      // コンプ後も全アイテムからランダムでループ（onigiriは常にカウントアップ）
+      var pool = unseenItems.length > 0 ? unseenItems : DRUM_ITEMS;
+      var got = pool[Math.floor(Math.random() * pool.length)];
       st.drumItems[got.id] = true;
       if (got.id === 'onigiri') {
         if (!st.onigiriCount) st.onigiriCount = 0;
@@ -3268,7 +3269,7 @@
         ? 'ライブ成功！！\nドラムスキル +' + skillGain
         : 'ライブ終了\n次はもっとうまくやる';
       save();
-      showLiveCountdown(function() { showLiveOverlay(success, resultText); });
+      showLiveCountdown(function(hide) { hide(); showLiveOverlay(success, resultText); });
     }
 
     function _startLiveRhythm() {
@@ -3276,6 +3277,7 @@
       var iframe = document.getElementById('rhythm-live-iframe');
       var _iframeReady = false;
       var _countdownDone = false;
+      var _hideCountdown = null; // カウントオーバーレイを消す関数（両条件揃ってから呼ぶ）
 
       // 前回のonloadハンドラを必ずクリアしてからsrc変更（再発火バグ防止）
       iframe.onload = null;
@@ -3286,13 +3288,16 @@
       };
 
       // カウントダウンを同時に開始
-      showLiveCountdown(function() {
+      showLiveCountdown(function(hide) {
+        _hideCountdown = hide;
         _countdownDone = true;
         _tryLaunch();
       });
 
       function _tryLaunch() {
         if (!_iframeReady || !_countdownDone) return;
+        // カウントを消してからリズムオーバーレイを表示（ホーム画面が一瞬見えるのを防止）
+        if (_hideCountdown) { _hideCountdown(); _hideCountdown = null; }
         el.style.display = 'flex';
         setTimeout(function() {
           iframe.contentWindow.postMessage(
@@ -3378,8 +3383,9 @@
             numEl.textContent = n;
             tick();
           } else {
-            cb(); // 先にコールバック（リズムオーバーレイを表示）
-            overlay.style.display = 'none'; // その後カウント隠す（隙間なし）
+            // hide関数を渡す。呼び出し側が好きなタイミングで消せる
+            var hide = function() { overlay.style.display = 'none'; };
+            cb(hide);
           }
         }, 900);
       };
@@ -3680,8 +3686,12 @@
         if (item.rare) return Math.random() < 0.05; // レアは5%でプールに入る
         return true;
       });
-      if (unseenItems.length === 0) return null;
-      var got = unseenItems[Math.floor(Math.random() * unseenItems.length)];
+      // コンプ後も全アイテムからランダムでループ
+      var pool = unseenItems.length > 0 ? unseenItems : DRUM_ITEMS.filter(function(item){
+        return !item.rare || Math.random() < 0.05;
+      });
+      if (pool.length === 0) return null;
+      var got = pool[Math.floor(Math.random() * pool.length)];
       st.drumItems[got.id] = true;
       if (got.id === 'onigiri') {
         if (!st.onigiriCount) st.onigiriCount = 0;
