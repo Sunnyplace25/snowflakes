@@ -651,8 +651,9 @@
       align-items: center; justify-content: center;
       gap: 0; padding: 40px 32px;
       opacity: 0; transition: opacity 0.6s;
+      pointer-events: none;
     }
-    #intro-screen.show { opacity: 1; }
+    #intro-screen.show { opacity: 1; pointer-events: auto; }
     #intro-screen.hide { opacity: 0; pointer-events: none; }
     .intro-label {
       font-family: 'Cormorant Garamond', serif;
@@ -1502,37 +1503,38 @@
       var list = document.getElementById('zukan-list');
       list.innerHTML = '';
 
-      var entries = Object.keys(log).sort(function(a,b){ return (log[b].last||0)-(log[a].last||0); });
+      // 全レシピを固定順で表示（穴埋め式）
+      var allKeys = Object.keys(OC_RECIPES);
+      allKeys.push('mystery');
+      var MYSTERY = { name:'Mystery Blend', kotoba:'まだ名前のない、あなただけの一杯', desc:'どんな組み合わせでも、それがあなたの一杯。', img:'cocktail_mystery.webp' };
 
-      if (entries.length === 0) {
-        list.innerHTML = '<div style="text-align:center;padding:40px 0;font-size:13px;color:#94a3b8;">まだカクテルを作ったことがないよ。<br>ゲームで試してみて！</div>';
-      } else {
-        entries.forEach(function(key) {
-          var entry = log[key];
-          var recipe = key === 'mystery'
-            ? { name:'Mystery Blend', kotoba:'まだ名前のない、あなただけの一杯', desc:'どんな組み合わせでも、それがあなたの一杯。', img:'cocktail_mystery.webp' }
-            : OC_RECIPES[key];
-          if (!recipe) return;
+      allKeys.forEach(function(key) {
+        var recipe = key === 'mystery' ? MYSTERY : OC_RECIPES[key];
+        if (!recipe) return;
+        var entry = log[key];
+        var found = !!entry;
 
-          var row = document.createElement('div');
-          row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
-          row.innerHTML =
-            (recipe.img
-              ? '<img src="' + recipe.img + '" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;">'
-              : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;"></div>') +
-            '<div style="flex:1;min-width:0;">' +
-              '<div style="font-family:\'Cormorant Garamond\',serif;font-size:15px;color:#fde68a;letter-spacing:2px;">' + recipe.name + '</div>' +
-              '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">' + entry.count + '回 作った</div>' +
-            '</div>' +
-            '<div style="font-size:10px;color:#94a3b8;flex-shrink:0;">›</div>';
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,' + (found ? '0.09' : '0.04') + ');border-radius:14px;' + (found ? 'cursor:pointer;-webkit-tap-highlight-color:transparent;' : '');
+        row.innerHTML =
+          (found && recipe.img
+            ? '<img src="' + recipe.img + '" style="width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;">'
+            : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.04);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:#1e293b;">？</div>') +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-family:\'Cormorant Garamond\',serif;font-size:15px;color:' + (found ? '#fde68a' : '#1e293b') + ';letter-spacing:2px;">' + (found ? recipe.name : '？？？') + '</div>' +
+            '<div style="font-size:10px;color:#475569;margin-top:2px;">' + (found ? entry.count + '回 作った' : '未発見') + '</div>' +
+          '</div>' +
+          (found ? '<div style="font-size:10px;color:#94a3b8;flex-shrink:0;">›</div>' : '');
 
+        if (found) {
           row.onclick = (function(r, cnt) {
             return function() { openZukanDetail(r, cnt); };
           })(recipe, entry.count);
+        }
 
-          list.appendChild(row);
-        });
-      }
+        list.appendChild(row);
+      });
+
       document.getElementById('zukan-list-view').style.display = 'block';
       document.getElementById('zukan-detail-view').style.display = 'none';
       document.getElementById('zukan-modal').style.display = 'flex';
