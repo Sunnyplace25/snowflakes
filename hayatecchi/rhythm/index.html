@@ -427,10 +427,15 @@ function beatsToChart(beats, totalDuration) {
 // ============================================================
 let CHART = [];
 let _preloaded = null; // { audioBuf: AudioBuffer|null, chart: Note[] }
+let _lastBgmIdx = -1; // 直前に使ったBGMインデックス（連続再生防止）
 
 function _startPreload() {
     const B64 = [DEFAULT_BGM, DEFAULT_BGM_SHIROIMA];
-    const b64 = B64[Math.floor(Math.random() * B64.length)];
+    // 前回と違うインデックスを選ぶ
+    let idx;
+    do { idx = Math.floor(Math.random() * B64.length); } while (B64.length > 1 && idx === _lastBgmIdx);
+    _lastBgmIdx = idx;
+    const b64 = B64[idx];
     _b64ToArrayBuffer(b64)
         .then(arr => {
             const offCtx = new OfflineAudioContext(1, 44100, 44100);
