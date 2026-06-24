@@ -3226,16 +3226,32 @@
     function _startLiveRhythm() {
       var el     = document.getElementById('rhythm-live-overlay');
       var iframe = document.getElementById('rhythm-live-iframe');
+      var _iframeReady = false;
+      var _countdownDone = false;
+
+      // iframeをバックグラウンドで先読み開始
       iframe.src = './rhythm/?embed=1';
-      el.style.display = 'flex';
       iframe.onload = function() {
+        _iframeReady = true;
+        _tryLaunch();
+      };
+
+      // カウントダウンを同時に開始
+      showLiveCountdown(function() {
+        _countdownDone = true;
+        _tryLaunch();
+      });
+
+      function _tryLaunch() {
+        if (!_iframeReady || !_countdownDone) return;
+        el.style.display = 'flex';
         setTimeout(function() {
           iframe.contentWindow.postMessage(
-            { type: 'rg-start', difficulty: _rgLiveDiff }, '*'
+            { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: true }, '*'
           );
           setTimeout(function() { iframe.focus(); }, 100);
-        }, 200);
-      };
+        }, 100);
+      }
     }
 
     function closeRhythmLive() {
