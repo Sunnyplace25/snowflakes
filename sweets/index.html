@@ -7648,25 +7648,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 </script>
 
 <script>
-// ── Supabase データ同期（fetch直接呼び出し版）────────────────
+// ── Supabase データ同期（APIルート経由）────────────────
 (function() {
-  var SUPABASE_URL = 'https://pjmqunhjyafzqjxwyunb.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_kMNnLJ9VR6fW02U9CANbkQ_FGVjUpY7';
-  var API = SUPABASE_URL + '/rest/v1/sf_user_data';
-
+  var API = '/snowflakes/api/backup';
 
   var _email = null;
   var _syncTimer = null;
-
-  function sbHeaders(extra) {
-    var h = {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json'
-    };
-    if (extra) Object.assign(h, extra);
-    return h;
-  }
 
   // 除外キー（認証情報など同期不要なもの）
   var SYNC_EXCLUDE = { 'sf_sweets_email': true };
@@ -7692,39 +7679,34 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
+  async function apiPost(body) {
+    try {
+      var res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch(e) { return null; }
+  }
+
   // DB SELECT: email完全一致で1件取得 → payloadを返す（なければnull）
   async function dbSelect(key) {
-    try {
-      var url = API + '?email=eq.' + key + '&select=payload&limit=1';
-      var res = await fetch(url, { headers: sbHeaders() });
-      if (!res.ok) { console.warn('[Supabase] SELECT', res.status, await res.text()); return null; }
-      var data = await res.json();
-      return (data && data[0] && data[0].payload) ? data[0].payload : null;
-    } catch(e) { console.warn('[Supabase] SELECT fetch error', e); return null; }
+    var data = await apiPost({ action: 'select', key: key });
+    return data ? data.payload : null;
   }
 
   // DB SELECT: IDプレフィックスで存在確認 → 既存のemail文字列を返す（なければnull）
   async function dbCheckId(id) {
-    try {
-      var url = API + '?email=ilike.' + id + ':*&select=email&limit=1';
-      var res = await fetch(url, { headers: sbHeaders() });
-      if (!res.ok) return null;
-      var data = await res.json();
-      return (data && data[0]) ? data[0].email : null;
-    } catch(e) { return null; }
+    var data = await apiPost({ action: 'check_id', id: id });
+    return data ? data.existing : null;
   }
 
   // DB UPSERT: email + payload を保存 → 成否(bool)を返す
   async function dbUpsert(key, payload) {
-    try {
-      var res = await fetch(API, {
-        method: 'POST',
-        headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-        body: JSON.stringify({ email: key, payload: payload, updated_at: new Date().toISOString() })
-      });
-      if (!res.ok) { console.warn('[Supabase] UPSERT', res.status, await res.text()); return false; }
-      return true;
-    } catch(e) { console.warn('[Supabase] UPSERT fetch error', e); return false; }
+    var data = await apiPost({ action: 'upsert', key: key, payload: payload });
+    return !!(data && data.ok);
   }
 
   // Supabaseからデータを復元
