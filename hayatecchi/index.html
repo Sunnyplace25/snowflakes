@@ -3332,8 +3332,8 @@
             numEl.textContent = n;
             tick();
           } else {
-            overlay.style.display = 'none';
-            cb();
+            cb(); // 先にコールバック（リズムオーバーレイを表示）
+            overlay.style.display = 'none'; // その後カウント隠す（隙間なし）
           }
         }, 900);
       };
