@@ -375,8 +375,8 @@ function detectBeatsFromBuffer(audioBuf) {
     const maxSamp = Math.min(raw.length, sr * 90);
     const data    = raw.subarray(0, maxSamp);
     const winSize = Math.round(sr * 0.05);  // 50ms窓
-    const hopSize = Math.round(sr * 0.025); // 25msホップ（時間分解能）
-    const minGap  = 0.18; // ビート間最小間隔(秒)
+    const hopSize = Math.round(sr * 0.025); // 25msホップ
+    const minGap  = 0.17;
 
     // エネルギー列
     const energies = [];
@@ -386,39 +386,48 @@ function detectBeatsFromBuffer(audioBuf) {
         energies.push({ t: i / sr, e: e / winSize });
     }
 
-    // 局所平均ピーク検出（localWin = 500ms分のホップ数）
-    const beats   = [];
-    const lw      = Math.round(0.5 / 0.025); // 500ms / 25ms = 20
-    let lastBeat  = -99;
-    for (let i = lw; i < energies.length - lw; i++) {
+    // オンセット強度（エネルギーの増加分だけ見る）
+    // → 圧縮音楽でエネルギーが均一でも「音の立ち上がり」を検出できる
+    const onsets = energies.map((cur, i) => ({
+        t: cur.t,
+        d: i > 0 ? Math.max(0, cur.e - energies[i - 1].e) : 0
+    }));
+
+    // 局所平均オンセット強度のピーク検出
+    const beats  = [];
+    const lw     = Math.round(0.5 / 0.025); // 500ms / 25ms = 20
+    let lastBeat = -99;
+    for (let i = lw; i < onsets.length - lw; i++) {
         let sum = 0;
-        for (let k = i - lw; k < i + lw; k++) sum += energies[k].e;
-        const localAvg = sum / (lw * 2);
-        const cur = energies[i];
-        if (cur.e > localAvg * 1.25 &&
-            cur.e >= energies[i-1].e &&
-            cur.e >= energies[i+1].e &&
+        for (let k = i - lw; k <= i + lw; k++) sum += onsets[k].d;
+        const localAvg = sum / (lw * 2 + 1);
+        const cur = onsets[i];
+        if (cur.d > Math.max(localAvg * 1.2, 1e-7) &&
+            cur.d >= onsets[i - 1].d &&
+            cur.d >= onsets[i + 1].d &&
             cur.t - lastBeat >= minGap) {
             beats.push(cur.t);
             lastBeat = cur.t;
         }
     }
 
-    // ビートが少なすぎる場合（圧縮音楽など）: 検出ビートからBPMを推定して補完
-    const analyzedDuration = Math.min(audioBuf.duration, 90);
-    const minBeatsExpected = Math.floor(analyzedDuration * 1.2); // 最低1.2拍/秒
-    if (beats.length < minBeatsExpected && beats.length >= 2) {
-        const gaps = [];
-        for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i-1]);
-        gaps.sort((a, b) => a - b);
-        const medGap = gaps[Math.floor(gaps.length / 2)];
-        if (medGap > 0.1 && medGap < 2.0) {
-            // 最初のビートから medGap 間隔で全体に展開
-            const filled = [];
-            let t = beats[0];
-            while (t < analyzedDuration - 0.2) { filled.push(t); t += medGap; }
-            return filled;
+    // 最低 2拍/秒 を保証（足りなければBPM推定して全体補完）
+    const analyzedDuration = maxSamp / sr;
+    const minBeats = Math.floor(analyzedDuration * 2.0);
+    if (beats.length < minBeats) {
+        // 推定BPM: 検出ビートの中央値ギャップ。なければデフォルト120BPM
+        let period = 0.5;
+        if (beats.length >= 4) {
+            const gaps = [];
+            for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i - 1]);
+            gaps.sort((a, b) => a - b);
+            const med = gaps[Math.floor(gaps.length / 2)];
+            if (med > 0.15 && med < 1.2) period = med;
         }
+        const filled = [];
+        let t = 0.5;
+        while (t < analyzedDuration - 0.3) { filled.push(t); t += period; }
+        return filled;
     }
 
     return beats;
@@ -460,7 +469,7 @@ function beatsToChart(beats, totalDuration) {
     }
 
     // 90秒以降：中央値ビート間隔でループ補完
-    if (totalDuration && beats.length >= 8) {
+    if (totalDuration && beats.length >= 2) {
         const gaps = [];
         for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i-1]);
         gaps.sort((a,b) => a-b);
