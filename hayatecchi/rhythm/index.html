@@ -683,9 +683,21 @@ window.addEventListener('load', () => {
 // ============================================================
 //  アイドルループ
 // ============================================================
+let _waitingForTouch = false; // モバイルでタッチ待機中フラグ
+
 function idleLoop() {
     ctx.clearRect(0,0,W,H);
     drawBG(); drawSnow(); drawLanes(); drawJudgeLine();
+    // モバイルでAudioContext unlock待機中：タップ案内を表示
+    if (_waitingForTouch) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(168,216,234,0.18)';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('TAP TO START', W / 2, H / 2);
+        ctx.restore();
+    }
     if (phase === 'idle') animId = requestAnimationFrame(idleLoop);
 }
 
@@ -695,8 +707,27 @@ function idleLoop() {
 async function onStartClick() {
     if (phase !== 'idle') return; // 二重呼び出し防止
     cancelAnimationFrame(animId);
-    phase = 'countdown';
+    phase = 'loading'; // ロード中フェーズ（非同期処理完了まで）
     document.getElementById('start-screen').style.display = 'none';
+    // embed モードのみ：ロード中もキャンバスを描画し続ける（黒画面防止）
+    // 通常モードは runCountdown() がビジュアルを担当するため不要
+    if (IS_EMBED) {
+        (function loadingLoop() {
+            if (phase !== 'loading') return;
+            ctx.clearRect(0,0,W,H);
+            drawBG(); drawSnow(); drawLanes(); drawJudgeLine();
+            ctx.save();
+            var t = Date.now() / 500;
+            var dots = '.'.repeat((Math.floor(t) % 3) + 1);
+            ctx.fillStyle = 'rgba(168,216,234,0.5)';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('NOW LOADING' + dots, W / 2, H / 2);
+            ctx.restore();
+            requestAnimationFrame(loadingLoop);
+        })();
+    }
 
     if (difficulty === 'easy') {
         T_PERFECT = 0.12; T_GOOD = 0.24; MISS_LIMIT = 0; SPEED = 280;
@@ -716,7 +747,22 @@ async function onStartClick() {
     if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
 
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    // モバイル（iOS/Android）では AudioContext が suspended 状態で生成される。
+    // postMessage 経由の呼び出しはユーザーのタッチと見なされないため、
+    // resume() がハングする場合がある。次の pointerdown イベントで unlock する。
+    if (audioCtx.state === 'suspended') {
+        _waitingForTouch = true;
+        await new Promise(function(resolve) {
+            function unlock() {
+                document.removeEventListener('pointerdown', unlock, true);
+                _waitingForTouch = false;
+                audioCtx.resume().then(resolve).catch(resolve);
+            }
+            document.addEventListener('pointerdown', unlock, { once: true, capture: true });
+            // デスクトップ・Android Chromeでは即 resolve される
+            audioCtx.resume().then(function() { _waitingForTouch = false; resolve(); }).catch(function() {});
+        });
+    }
 
     // === プリロード済みデータを使用（なければその場でロード） ===
 
@@ -755,6 +801,7 @@ async function onStartClick() {
         _skipCountdown ? Promise.resolve() : runCountdown(),
     ]);
 
+    phase = 'ready'; // loadingLoop を停止させる
     audioBuffer = audioResult.buf;
     CHART       = audioResult.chart;
 
