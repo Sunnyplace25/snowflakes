@@ -1146,9 +1146,9 @@
           '<div style="font-size:10px;color:#94a3b8;margin-top:8px;">収集: ' + Object.keys(st.drumLog).length + ' / ' + DRUM_MEMOS.length + '</div>';
       }
 
-      // 練習報酬: 60%おにぎり（図鑑アイテムはLIVEのみ）
+      // 練習報酬: 30%おにぎり（図鑑アイテムはLIVEのみ）
       var itemEl = document.getElementById('drum-result-item');
-      if (Math.random() < 0.6) {
+      if (Math.random() < 0.3) {
         if (!st.onigiriCount) st.onigiriCount = 0;
         st.onigiriCount++;
         if (!st.drumItems) st.drumItems = {};
