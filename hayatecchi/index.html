@@ -2351,7 +2351,8 @@
         if (!d) return;
         st = d;
         if (!st.cd) st.cd = {};
-        delete st.cd.meshi; // meshiはCDなし（旧データ対策）
+        delete st.cd.meshi;      // meshiはCDなし（旧データ対策）
+        delete st.cd.forceSleep; // forceSleepは起動時にリセット（旧データ対策）
         if (st.renshuGe === undefined) st.renshuGe = 75;
         if (st.sweets   === undefined) st.sweets   = 0;
         if (st.kibun     === undefined) st.kibun     = 75;
@@ -3400,16 +3401,16 @@
 
       updateCD();
 
-      // たいりょく20以下で強制休憩（全ボタン2分ロック）
+      // たいりょく20以下で強制休憩（3秒後に自動回復）
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
         _autoSleepTriggered = true;
-        st.cd.forceSleep = cdTime(2 * 60); // 2分間すべてロック
         save();
         setSpeech('もう限界だ……つかれた', null);
         setImg('sleepy', 3000);
         setTimeout(function() {
           st.suimin = clamp(st.suimin + 40);
           st.cd.neru = cdTime(CD_SEC.neru);
+          st.cd.forceSleep = null;
           if (st.cd.live) {
             var liveCdMs = new Date(st.cd.live).getTime() - 20 * 60 * 1000;
             st.cd.live = liveCdMs > Date.now() ? new Date(liveCdMs).toISOString() : null;
@@ -3418,7 +3419,7 @@
           flash('強制休憩　たいりょく +40');
           save();
           render();
-        }, 2000);
+        }, 3000);
       }
 
       // 強制睡眠中は全ボタンロック（updateCDでも同様に管理）
