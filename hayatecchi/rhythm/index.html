@@ -327,9 +327,12 @@ function _fallbackChart() {
 // ============================================================
 function detectBeatsFromBuffer(audioBuffer) {
     const sr       = audioBuffer.sampleRate;
-    const data     = audioBuffer.getChannelData(0);
+    const rawData  = audioBuffer.getChannelData(0);
+    // 最初の90秒だけ解析（それ以降は譜面ループで補完）
+    const maxSamples = Math.min(rawData.length, sr * 90);
+    const data     = rawData.subarray(0, maxSamples);
     const winSize  = Math.round(sr * 0.05);  // 50ms窓
-    const hopSize  = Math.round(sr * 0.025); // 25msホップ
+    const hopSize  = Math.round(sr * 0.05);  // 50msホップ（25ms→50msで計算量半減）
     const minGap   = 0.25; // ビート間最小間隔(秒)
 
     // 低周波エネルギー計算（簡易ローパス：サンプル平均の絶対値）
@@ -359,19 +362,19 @@ function detectBeatsFromBuffer(audioBuffer) {
     return beats;
 }
 
-function beatsToChart(beats) {
+function beatsToChart(beats, totalDuration) {
     const chart = [];
-    // レーンパターン：音楽的に自然な4レーン配分
     const laneSeq = [
         [0], [2], [1], [3],
         [0,2], [1,3], [0], [3],
         [1], [2], [0,3], [2],
     ];
     let pi = 0;
+
+    // 検出済みビートで譜面生成
     for (let i = 0; i < beats.length; i++) {
         const t = +beats[i].toFixed(4);
         const lanes = laneSeq[pi % laneSeq.length];
-        // 8ビートに1回だけホールドにする
         if (i % 8 === 4 && lanes.length === 1) {
             const nextBeat = beats[i + 1];
             if (nextBeat && nextBeat - beats[i] < 0.6) {
@@ -383,6 +386,22 @@ function beatsToChart(beats) {
         lanes.forEach(l => chart.push({ time: t, lane: l }));
         pi++;
     }
+
+    // 90秒以降：ビート間隔の中央値でループ補完
+    if (totalDuration && beats.length >= 4) {
+        const gaps = [];
+        for (let i = 1; i < beats.length; i++) gaps.push(beats[i] - beats[i-1]);
+        gaps.sort((a,b) => a-b);
+        const medianGap = gaps[Math.floor(gaps.length / 2)];
+        let t = beats[beats.length - 1] + medianGap;
+        while (t < totalDuration - 1.0) {
+            const lanes = laneSeq[pi % laneSeq.length];
+            lanes.forEach(l => chart.push({ time: +t.toFixed(4), lane: l }));
+            pi++;
+            t += medianGap;
+        }
+    }
+
     return chart.sort((a, b) => a.time - b.time);
 }
 
@@ -563,12 +582,11 @@ async function onStartClick() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-    // BGMをランダムで読み込む（URLが失敗した場合はbase64フォールバック）
+    // BGMロード：data:URL は fetch() で直接デコード（charCodeAtループより高速）
     const B64_BGMS = [DEFAULT_BGM, DEFAULT_BGM_RABBIT, DEFAULT_BGM_SHIROIMA];
     const URL_BGMS = ['../live1.mp3','../live2.mp3','../live3.mp3','../live4.mp3','../live5.mp3','../live6.mp3'];
 
     async function loadArrayBuffer() {
-        // 50%の確率でURLを試みる
         if (Math.random() < 0.5) {
             const src = URL_BGMS[Math.floor(Math.random() * URL_BGMS.length)];
             try {
@@ -576,24 +594,31 @@ async function onStartClick() {
                 if (resp.ok) return await resp.arrayBuffer();
             } catch(e) { /* fall through */ }
         }
-        // base64フォールバック
+        // data: URLをfetch()でデコード（ブラウザネイティブで高速）
         const b64 = B64_BGMS[Math.floor(Math.random() * B64_BGMS.length)];
-        const binary = atob(b64.split(',')[1]);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-        return bytes.buffer;
+        const resp = await fetch(b64);
+        return resp.arrayBuffer();
     }
 
-    try {
-        const arrayBuffer = await loadArrayBuffer();
-        audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-        // ビート検出で譜面を自動生成
-        CHART = beatsToChart(detectBeatsFromBuffer(audioBuffer));
-    } catch(e) {
-        // base64も失敗した場合は静的譜面フォールバック
-        audioBuffer = null;
-        CHART = _fallbackChart();
-    }
+    // 音声ロード と カウントダウン を並列実行（standaloneモード高速化）
+    const [audioResult] = await Promise.all([
+        // 音声ロード＋譜面生成
+        (async () => {
+            try {
+                const arrayBuffer = await loadArrayBuffer();
+                const buf = await audioCtx.decodeAudioData(arrayBuffer);
+                const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
+                return { buf, chart };
+            } catch(e) {
+                return { buf: null, chart: _fallbackChart() };
+            }
+        })(),
+        // カウントダウン（embed時はスキップ）
+        _skipCountdown ? Promise.resolve() : runCountdown(),
+    ]);
+
+    audioBuffer = audioResult.buf;
+    CHART       = audioResult.chart;
 
     // ノーツ初期化（CHART確定後）
     if (difficulty === 'easy') {
@@ -616,8 +641,6 @@ async function onStartClick() {
     } else {
         notes = CHART.map(n => ({...n, hit:false, missed:false}));
     }
-
-    if (!_skipCountdown) await runCountdown();
 
     startTime = audioCtx.currentTime;
     if (audioBuffer) {
