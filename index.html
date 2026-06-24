@@ -1953,17 +1953,19 @@ function sfShare() {
     var t = document.getElementById('sf-tutorial');
     t.classList.remove('visible');
     setTimeout(function() { t.classList.remove('ready'); _stopTutSnow(); }, 500);
-    localStorage.setItem('sf_tutorial_seen', new Date().toISOString().slice(0,7));
+    localStorage.setItem('sf_tutorial_seen', Date.now().toString());
     if (typeof sfStartHints === 'function') setTimeout(sfStartHints, 800);
   }
   document.addEventListener('DOMContentLoaded', function() {
-    if (localStorage.getItem('sf_tutorial_seen') !== new Date().toISOString().slice(0,7)) {
+    var _tsSeen = parseInt(localStorage.getItem('sf_tutorial_seen') || '0', 10);
+    var _daysSince = (Date.now() - _tsSeen) / 86400000;
+    if (_daysSince > 30) {
       var t = document.getElementById('sf-tutorial');
       var triggered = false;
       function showTutorial() {
         if (triggered) return;
         triggered = true;
-        localStorage.setItem('sf_tutorial_seen', new Date().toISOString().slice(0,7));
+        localStorage.setItem('sf_tutorial_seen', Date.now().toString());
         t.classList.add('ready');
         _startTutSnow();
         requestAnimationFrame(function() {
