@@ -407,6 +407,8 @@ let wasCleared = false; // クリアかゲームオーバーか
 
 // iframe埋め込みモード検出
 const IS_EMBED = window.parent !== window;
+// 埋め込み時はスタート画面を即座に隠す（window.load前に実行）
+if (IS_EMBED) { var _ss = document.getElementById('start-screen'); if (_ss) _ss.style.display = 'none'; }
 
 // コンボ画像
 const comboImgs = {};  // { 10: HTMLImageElement, 20: ..., 30: ... }
