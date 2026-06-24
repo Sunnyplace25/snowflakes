@@ -1874,7 +1874,6 @@
       var photoNewBadge = document.getElementById('hub-photo-new-badge');
       if (photoNewBadge) photoNewBadge.style.display = 'none';
 
-      var prevSeen = st.photoSeenCount; // ← already updated above
       PHOTO_ITEMS.forEach(function(p) {
         var isOpen = p.check();
         var cell = document.createElement('div');
@@ -3263,6 +3262,7 @@
       st.yaruki    = clamp(st.yaruki + (success ? 30 : 10));
       st.liveCount = (st.liveCount || 0) + 1;
       st.renshuGe  = 0;
+      st.cd.live   = cdTime(CD_SEC.live);
       var resultText = success
         ? 'ライブ成功！！\nドラムスキル +' + skillGain
         : 'ライブ終了\n次はもっとうまくやる';
@@ -3277,13 +3277,13 @@
       var _countdownDone = false;
       var _hideCountdown = null; // カウントオーバーレイを消す関数（両条件揃ってから呼ぶ）
 
-      // 前回のonloadハンドラを必ずクリアしてからsrc変更（再発火バグ防止）
+      // onloadハンドラをsrc変更前に設定（変更後だとFirefoxで発火しない場合がある）
       iframe.onload = null;
-      iframe.src = './rhythm/?embed=1';
       iframe.onload = function() {
         _iframeReady = true;
         _tryLaunch();
       };
+      iframe.src = './rhythm/?embed=1';
 
       // カウントダウンを同時に開始
       showLiveCountdown(function(hide) {
@@ -3326,6 +3326,7 @@
       if (!res.cleared) {
         st.liveCount = (st.liveCount || 0) + 1;
         st.renshuGe  = 0;
+        st.cd.live   = cdTime(CD_SEC.live);
         save();
         bounce();
         render();
@@ -3343,6 +3344,7 @@
       st.kibun     = clamp(st.kibun  + kiUp);
       st.liveCount = (st.liveCount || 0) + 1;
       st.renshuGe  = 0;
+      st.cd.live   = cdTime(CD_SEC.live);
 
       var gotSweets = success && acc >= 80;
       if (gotSweets) { st.sweets = (st.sweets || 0) + 1; }
@@ -3684,10 +3686,8 @@
         if (item.rare) return Math.random() < 0.05; // レアは5%でプールに入る
         return true;
       });
-      // コンプ後も全アイテムからランダムでループ
-      var pool = unseenItems.length > 0 ? unseenItems : DRUM_ITEMS.filter(function(item){
-        return !item.rare || Math.random() < 0.05;
-      });
+      // コンプ後も全アイテムからランダムでループ（レアも含めて均等に）
+      var pool = unseenItems.length > 0 ? unseenItems : DRUM_ITEMS;
       if (pool.length === 0) return null;
       var got = pool[Math.floor(Math.random() * pool.length)];
       st.drumItems[got.id] = true;
@@ -3870,8 +3870,8 @@
       if ((st.suimin || 0) <= 20 && !_autoSleepTriggered) {
         _autoSleepTriggered = true;
         setImg('sleepy', 0);
-        var sc = document.getElementById('sleep-confirm-overlay');
-        if (sc) sc.classList.add('show');
+        var sleepOverlay = document.getElementById('sleep-confirm-overlay');
+        if (sleepOverlay) sleepOverlay.classList.add('show');
       }
 
       // 強制睡眠中は全ボタンロック（updateCDでも同様に管理）
