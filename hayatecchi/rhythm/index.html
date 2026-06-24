@@ -717,13 +717,21 @@ async function onStartClick() {
             ctx.clearRect(0,0,W,H);
             drawBG(); drawSnow(); drawLanes(); drawJudgeLine();
             ctx.save();
-            var t = Date.now() / 500;
-            var dots = '.'.repeat((Math.floor(t) % 3) + 1);
-            ctx.fillStyle = 'rgba(168,216,234,0.5)';
-            ctx.font = '12px monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('NOW LOADING' + dots, W / 2, H / 2);
+            if (_waitingForTouch) {
+                // モバイル：タップ待ち
+                var pulse = 0.5 + 0.5 * Math.sin(Date.now() / 400);
+                ctx.fillStyle = 'rgba(168,216,234,' + (0.6 + pulse * 0.4) + ')';
+                ctx.font = 'bold 15px sans-serif';
+                ctx.fillText('TAP TO START', W / 2, H / 2);
+            } else {
+                var t = Date.now() / 500;
+                var dots = '.'.repeat((Math.floor(t) % 3) + 1);
+                ctx.fillStyle = 'rgba(168,216,234,0.5)';
+                ctx.font = '12px monospace';
+                ctx.fillText('NOW LOADING' + dots, W / 2, H / 2);
+            }
             ctx.restore();
             requestAnimationFrame(loadingLoop);
         })();
