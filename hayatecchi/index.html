@@ -1658,6 +1658,45 @@
       document.getElementById('drum-zukan-detail-view').style.display = 'none';
     }
 
+    var PHOTO_ITEMS = [
+      {
+        id:'photo_01', img:'photo_01.webp',
+        title:'語録', caption:'言葉が、残る。',
+        hint:'語録をすべて集めると解放',
+        check: function() { return Object.keys(st.drumLog || {}).length >= DRUM_MEMOS.length; }
+      },
+      {
+        id:'photo_02', img:'photo_02.webp',
+        title:'BAR STARS', caption:'夜の始まりに、一杯。',
+        hint:'カクテル図鑑をコンプリートすると解放',
+        check: function() { return Object.keys(st.zukanLog || {}).length >= Object.keys(OC_RECIPES).length + 1; }
+      },
+      {
+        id:'photo_03', img:'photo_03.webp',
+        title:'DRUM ROOM', caption:'音が、鳴り止まない。',
+        hint:'ドラム図鑑をコンプリートすると解放',
+        check: function() { return Object.keys(st.drumItems || {}).length >= DRUM_ITEMS.length; }
+      },
+      {
+        id:'photo_04', img:'photo_04.webp',
+        title:'FOOD WALK', caption:'腹が減っては、何もできない。',
+        hint:'食べ歩き図鑑をコンプリートすると解放',
+        check: function() { return Object.keys(st.foodItems || {}).length >= FOOD_ITEMS.length; }
+      },
+      {
+        id:'photo_05', img:'photo_05.webp',
+        title:'SPECIAL', caption:'全部、見てくれてありがとう。',
+        hint:'すべての図鑑をコンプリートすると解放',
+        check: function() {
+          return PHOTO_ITEMS.slice(0,4).every(function(p){ return p.check(); });
+        }
+      },
+    ];
+
+    function getPhotoUnlockCount() {
+      return PHOTO_ITEMS.filter(function(p){ return p.check(); }).length;
+    }
+
     function openZukanHub(e) {
       if (e) e.stopPropagation();
       var cocktailCount = Object.keys(st.zukanLog || {}).length;
@@ -1665,10 +1704,12 @@
       var drumCount = Object.keys(st.drumItems || {}).length;
       var gorokuCount = Object.keys(st.drumLog || {}).length;
       var foodCount = Object.keys(st.foodItems || {}).length;
+      var photoCount = getPhotoUnlockCount();
       document.getElementById('hub-cocktail-count').textContent = cocktailCount + ' / ' + cocktailTotal + ' 収集';
       document.getElementById('hub-drum-count').textContent = drumCount + ' / ' + DRUM_ITEMS.length + ' 収集';
       document.getElementById('hub-goroku-count').textContent = gorokuCount + ' / ' + DRUM_MEMOS.length + ' 収集';
       document.getElementById('hub-food-count').textContent = foodCount + ' / ' + FOOD_ITEMS.length + ' 収集';
+      document.getElementById('hub-photo-count').textContent = photoCount + ' / ' + PHOTO_ITEMS.length + ' 解放';
       document.getElementById('zukan-hub-modal').style.display = 'flex';
     }
     function closeZukanHub() {
@@ -1739,6 +1780,54 @@
     function closeFoodZukan() {
       document.getElementById('food-zukan-modal').style.display = 'none';
       openZukanHub();
+    }
+
+    function openPhotoZukan(e) {
+      if (e) e.stopPropagation();
+      var grid = document.getElementById('photo-grid');
+      grid.innerHTML = '';
+      var unlocked = getPhotoUnlockCount();
+      document.getElementById('photo-progress').textContent = unlocked + ' / ' + PHOTO_ITEMS.length;
+
+      PHOTO_ITEMS.forEach(function(p) {
+        var isOpen = p.check();
+        var cell = document.createElement('div');
+        cell.style.cssText = 'border-radius:12px;overflow:hidden;position:relative;aspect-ratio:3/4;cursor:' + (isOpen ? 'pointer' : 'default') + ';';
+
+        if (isOpen) {
+          cell.style.background = '#0c1220';
+          cell.innerHTML =
+            '<img src="' + p.img + '" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+            '<div style="position:absolute;bottom:0;left:0;right:0;padding:10px 10px 8px;background:linear-gradient(to top,rgba(4,8,18,0.9),transparent);">' +
+              '<div style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:3px;color:#f9a8d4;">' + p.title + '</div>' +
+            '</div>';
+          cell.onclick = function() { openPhotoViewer(p); };
+        } else {
+          cell.style.cssText += 'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;text-align:center;';
+          cell.innerHTML =
+            '<div style="font-size:28px;margin-bottom:8px;opacity:0.3;">📷</div>' +
+            '<div style="font-size:9px;color:#334155;line-height:1.8;">' + p.hint + '</div>';
+        }
+        grid.appendChild(cell);
+      });
+
+      document.getElementById('photo-modal').style.display = 'flex';
+    }
+
+    function closePhotoZukan() {
+      document.getElementById('photo-modal').style.display = 'none';
+      openZukanHub();
+    }
+
+    function openPhotoViewer(p) {
+      document.getElementById('photo-viewer-img').src = p.img;
+      document.getElementById('photo-viewer-title').textContent = p.title;
+      document.getElementById('photo-viewer-caption').textContent = '「' + p.caption + '」';
+      document.getElementById('photo-viewer').style.display = 'flex';
+    }
+
+    function closePhotoViewer() {
+      document.getElementById('photo-viewer').style.display = 'none';
     }
     function tryGetFoodItem() {
       if (!st.foodItems) st.foodItems = {};
@@ -2257,6 +2346,13 @@
             <div id="hub-food-count" style="font-size:10px;color:#94a3b8;"></div>
           </div>
         </button>
+        <button onclick="closeZukanHub();openPhotoZukan(event);" style="display:flex;align-items:center;gap:16px;padding:20px 20px;background:rgba(244,114,182,0.05);border:1px solid rgba(244,114,182,0.15);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left;">
+          <span style="font-size:32px;">📷</span>
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#f472b6;letter-spacing:3px;margin-bottom:4px;">フォトグラフィー</div>
+            <div id="hub-photo-count" style="font-size:10px;color:#94a3b8;"></div>
+          </div>
+        </button>
       </div>
     </div>
   </div>
@@ -2270,6 +2366,29 @@
       </div>
       <div style="font-size:10px;color:#94a3b8;margin-bottom:20px;">収集: <span id="food-zukan-progress">0 / 15</span></div>
       <div id="food-zukan-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- フォトグラフィーモーダル -->
+  <div id="photo-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,8,18,0.97);flex-direction:column;align-items:center;overflow-y:auto;padding:24px 20px 80px;">
+    <div style="width:100%;max-width:400px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:#f472b6;">PHOTOGRAPHY</div>
+        <button onclick="closePhotoZukan()" style="background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;">✕</button>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">解放: <span id="photo-progress"></span></div>
+      <div style="font-size:10px;color:#475569;margin-bottom:20px;">カクテルを作ると解放されるよ</div>
+      <div id="photo-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- フォト拡大ビューア -->
+  <div id="photo-viewer" style="display:none;position:fixed;inset:0;z-index:10100;background:rgba(0,0,0,0.96);flex-direction:column;align-items:center;justify-content:center;padding:20px;" onclick="closePhotoViewer()">
+    <div style="width:100%;max-width:400px;text-align:center;">
+      <img id="photo-viewer-img" src="" alt="" style="width:100%;border-radius:12px;margin-bottom:16px;display:block;">
+      <div id="photo-viewer-title" style="font-family:'Cormorant Garamond',serif;font-size:14px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;"></div>
+      <div id="photo-viewer-caption" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;line-height:1.9;"></div>
+      <div style="font-size:10px;color:#334155;margin-top:16px;">タップして閉じる</div>
     </div>
   </div>
 
