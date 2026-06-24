@@ -434,6 +434,8 @@ function detectBeatsFromBuffer(audioBuf) {
 }
 
 function beatsToChart(beats, totalDuration) {
+    // ビートが1個以下 → フォールバック譜面（無限ループ防止）
+    if (!beats || beats.length < 2) return _fallbackChart();
     // シングル多め・適度なダブル・ホールドをパターンで配置
     const patterns = [
         { lanes:[0] },   { lanes:[1] },   { lanes:[2] },   { lanes:[3] },
@@ -690,6 +692,7 @@ function idleLoop() {
 //  ゲーム開始
 // ============================================================
 async function onStartClick() {
+    if (phase !== 'idle') return; // 二重呼び出し防止
     cancelAnimationFrame(animId);
     phase = 'countdown';
     document.getElementById('start-screen').style.display = 'none';

@@ -3116,8 +3116,9 @@
         st.suimin  = clamp(st.suimin - 10);
         st.gaishutsuCount = (st.gaishutsuCount || 0) + 1;
         st.cd.gaishutsu = cdTime(CD_SEC.gaishutsu);
-        // 40%の確率でメンバーに遭遇
-        if (Math.random() < 0.4) {
+        // 確率: メンバー遭遇40% / 外食35% / 通常25%
+        var _gaishutsuRoll = Math.random();
+        if (_gaishutsuRoll < 0.4) {
           var members = ['hinata','kouta','rin'];
           var met = members[Math.floor(Math.random() * members.length)];
           var encSpeech = randLine(ENCOUNTER_LINES[met]);
@@ -3125,7 +3126,7 @@
           st.kibun = clamp(st.kibun + 10);
           toast = { hinata:'ヒナタ', kouta:'コウタ', rin:'りん' }[met] + ' に会った！　きぶん +10';
           setTimeout(function() { showEncounter(met, encSpeech); }, 400);
-        } else if (Math.random() < 0.35) {
+        } else if (_gaishutsuRoll < 0.75) {
           // 35%で外食してお腹回復
           var eatGain = Math.floor(Math.random() * 21) + 30; // 30〜50
           st.onaka = clamp(st.onaka + eatGain + 15); // もとの -15 を相殺して追加回復
@@ -3696,6 +3697,7 @@
         st.onigiriCount++;
       }
       save();
+      checkCollectionComplete('drum', 'ドラム図鑑', '🥁', Object.keys(st.drumItems).length, DRUM_ITEMS.length);
       return got;
     }
 
