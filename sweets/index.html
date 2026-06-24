@@ -985,7 +985,7 @@
       <div class="section-label">novel game &amp; fortune</div>
 
       <!-- Rare items stone-counter (always visible in undertone section) -->
-      <div style="max-width:480px;margin:0 auto;width:100%;padding-bottom:4px;">
+      <div id="ut-stone-counter-wrap" style="max-width:480px;margin:0 auto;width:100%;padding-bottom:4px;">
         <div id="ut-stone-counter" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;width:100%;"></div>
         <p id="ut-stone-progress" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;text-align:center;margin-bottom:8px;"></p>
         <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:rgba(255,255,255,0.55);text-align:center;margin-top:20px;margin-bottom:16px;line-height:2;">3つのアイテムを入手して Under tone へ</p>
@@ -4933,6 +4933,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (teaserBtn) teaserBtn.setAttribute('onclick', ok ? '' : 'openUndertoneItemsPopup()');
       document.getElementById('undertone-teaser').style.display = ok ? 'none' : '';
       document.getElementById('undertone-link').style.display   = ok ? ''     : 'none';
+
+      // 解放済みならレアアイテム表示を非表示、YouTube を縮小
+      var stoneWrap = document.getElementById('ut-stone-counter-wrap');
+      if (stoneWrap) stoneWrap.style.display = ok ? 'none' : '';
+      var ytWrap = document.getElementById('undertone-yt-wrap');
+      if (ytWrap) {
+        ytWrap.style.maxWidth = ok ? '240px' : '480px';
+        ytWrap.style.margin   = ok ? '0 auto 20px' : '0 auto 20px';
+      }
 
       // プロローグ解放トースト（初回のみ）
       if (ok && !localStorage.getItem('sf_ut_prologue_toast_shown')) {
