@@ -1765,6 +1765,7 @@
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
+      updateDiffUI();
       // ホーム追加導線
       var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
       var a2hsEl = document.getElementById('howto-a2hs');
@@ -2000,11 +2001,19 @@
             <p style="font-size:12px;color:#cbd5e1;line-height:2;">
               れんしゅうゲージが一定以上溜まると、LIVEに挑戦できるよ。<br><br>
               ライブ中は画面をタップしてハヤテを応援しよう！<br>
-              終演後はハヤテから一言もらえるよ。<br><br>
+              <span style="color:#a5b4fc;">LIVE ♪</span> ボタンなら、本格的なリズムゲームでLIVEに参加できるよ。<br><br>
               LIVEをこなすと <span style="color:#c4b5fd;">Drum Lv</span> がアップ！<br>
               成功すると <span style="color:#fde68a;">SWEETs</span> や図鑑アイテムもゲットできる。<br><br>
               ライブ中は音楽が流れるので、音量に気をつけてね。
             </p>
+            <div style="margin-top:16px;border-top:1px solid rgba(196,181,253,0.12);padding-top:16px;">
+              <div style="font-size:10px;letter-spacing:3px;color:#a5b4fc;margin-bottom:10px;font-family:'Cormorant Garamond',serif;">LIVE ♪ 難易度</div>
+              <div style="display:flex;gap:8px;">
+                <button id="diff-easy-btn" onclick="setLiveDiff('easy')" style="flex:1;padding:10px 0;border-radius:10px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'Cormorant Garamond',serif;background:rgba(165,180,252,0.06);border:1px solid rgba(165,180,252,0.25);color:#a5b4fc;-webkit-tap-highlight-color:transparent;">EASY</button>
+                <button id="diff-normal-btn" onclick="setLiveDiff('normal')" style="flex:1;padding:10px 0;border-radius:10px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'Cormorant Garamond',serif;background:rgba(165,180,252,0.06);border:1px solid rgba(165,180,252,0.25);color:#a5b4fc;-webkit-tap-highlight-color:transparent;">NORMAL</button>
+              </div>
+              <div id="diff-current-label" style="font-size:10px;color:#94a3b8;text-align:center;margin-top:8px;letter-spacing:1px;"></div>
+            </div>
           </div>
         </div>
 
@@ -2151,12 +2160,20 @@
       </div>
 
       <!-- ライブボタン -->
-      <button class="live-btn locked" id="btn-live" onclick="doLive()">
-        <span style="font-size:20px;">🎸</span>
-        <span>LIVE</span>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#8b5cf6;">音楽が流れます</span>
-        <span class="action-cd" id="cd-live" style="color:#94a3b8;"></span>
-      </button>
+      <div style="display:flex;gap:10px;max-width:360px;margin:0 auto;width:100%;">
+        <button class="live-btn locked" id="btn-live" onclick="doLive()" style="flex:1;">
+          <span style="font-size:20px;">🎸</span>
+          <span>LIVE</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#8b5cf6;">タップ</span>
+          <span class="action-cd" id="cd-live" style="color:#94a3b8;"></span>
+        </button>
+        <button class="live-btn locked" id="btn-live-rhythm" onclick="doLiveRhythm()" style="flex:1;border-color:rgba(165,180,252,0.35);">
+          <span style="font-size:20px;">🎵</span>
+          <span style="color:#a5b4fc;">LIVE ♪</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#6366f1;">リズムゲーム</span>
+          <span class="action-cd" id="cd-live-rhythm" style="color:#94a3b8;"></span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2353,6 +2370,15 @@
   <!-- LIVEカウントダウン -->
   <div id="live-countdown-overlay" style="display:none;position:fixed;inset:0;z-index:10005;background:rgba(4,8,20,0.97);align-items:center;justify-content:center;">
     <div id="live-countdown-num" style="font-family:'Cormorant Garamond',serif;font-size:120px;color:#c4b5fd;line-height:1;user-select:none;"></div>
+  </div>
+
+  <!-- LIVE ♪ リズムゲームオーバーレイ -->
+  <div id="rhythm-live-overlay" style="display:none;position:fixed;inset:0;z-index:10100;background:#050a14;flex-direction:column;">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(to bottom,rgba(5,10,20,0.9),transparent);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:rgba(165,180,252,0.6);">― LIVE ♪ ―</div>
+      <button onclick="closeRhythmLive()" style="background:none;border:none;color:rgba(165,180,252,0.5);font-size:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 8px;">✕</button>
+    </div>
+    <iframe id="rhythm-live-iframe" src="" style="width:100%;flex:1;border:none;" allow="autoplay" scrolling="no"></iframe>
   </div>
 
   <!-- ライブ演出 -->
@@ -3019,6 +3045,77 @@
       showLiveCountdown(function() { showLiveOverlay(success, resultText); });
     }
 
+    /* ── LIVE ♪ リズムゲームモード ── */
+    var _rgLiveDiff = localStorage.getItem('hayatecchi_live_diff') || 'normal';
+
+    function setLiveDiff(d) {
+      _rgLiveDiff = d;
+      localStorage.setItem('hayatecchi_live_diff', d);
+      updateDiffUI();
+    }
+    function updateDiffUI() {
+      var easy   = document.getElementById('diff-easy-btn');
+      var normal = document.getElementById('diff-normal-btn');
+      var label  = document.getElementById('diff-current-label');
+      if (!easy) return;
+      var sel = 'background:rgba(165,180,252,0.2);border-color:rgba(165,180,252,0.7);color:#c7d2fe;';
+      var unsel = 'background:rgba(165,180,252,0.06);border-color:rgba(165,180,252,0.25);color:#a5b4fc;';
+      easy.style.cssText   += _rgLiveDiff === 'easy'   ? sel : unsel;
+      normal.style.cssText += _rgLiveDiff === 'normal' ? sel : unsel;
+      if (label) label.textContent = '現在: ' + (_rgLiveDiff === 'easy' ? 'EASY' : 'NORMAL');
+    }
+
+    function doLiveRhythm() {
+      if ((st.renshuGe || 0) < LIVE_UNLOCK_RENSHU) {
+        flash('もうちょっとだけ練習してからにしよう');
+        return;
+      }
+      if (cdRemain('live') > 0) {
+        flash('ちょっとだけ休ませて　あと ' + fmtCD(cdRemain('live')));
+        return;
+      }
+      var el = document.getElementById('rhythm-live-overlay');
+      var iframe = document.getElementById('rhythm-live-iframe');
+      iframe.src = './rhythm/';
+      el.style.display = 'flex';
+      // iframeロード後に難易度を送信して開始
+      iframe.onload = function() {
+        setTimeout(function() {
+          iframe.contentWindow.postMessage({ type: 'rg-start', difficulty: _rgLiveDiff }, '*');
+        }, 300);
+      };
+    }
+
+    function closeRhythmLive() {
+      var el = document.getElementById('rhythm-live-overlay');
+      var iframe = document.getElementById('rhythm-live-iframe');
+      el.style.display = 'none';
+      iframe.src = '';
+    }
+
+    window.addEventListener('message', function(e) {
+      if (!e.data || e.data.type !== 'rg-result') return;
+      var res = e.data; // { score, maxCombo, acc, cleared }
+      closeRhythmLive();
+
+      var acc = res.acc || 0;
+      var success = res.cleared && acc >= 60;
+      var skillGain = acc >= 80 ? 8 : acc >= 60 ? 5 : 2;
+      var yaUp     = acc >= 80 ? 20 : acc >= 60 ? 12 : 4;
+      var kiUp     = acc >= 80 ? 15 : acc >= 60 ? 8 : 2;
+
+      st.skill     = (st.skill || 0) + skillGain;
+      st.yaruki    = clamp(st.yaruki + yaUp);
+      st.kibun     = clamp(st.kibun  + kiUp);
+      st.liveCount = (st.liveCount || 0) + 1;
+      st.renshuGe  = 0;
+      save();
+      setSpeech(success ? randLine(LIVE_LINES) : randLine(LIVE_END_LINES), null);
+      bounce();
+      render();
+      setTimeout(showLiveEnd, 400);
+    });
+
     function showLiveCountdown(cb) {
       var overlay = document.getElementById('live-countdown-overlay');
       var numEl   = document.getElementById('live-countdown-num');
@@ -3490,11 +3587,17 @@
       // ライブボタン状態
       var liveBtn = document.getElementById('btn-live');
       var liveCd  = document.getElementById('cd-live');
+      var liveBtnR = document.getElementById('btn-live-rhythm');
+      var liveCdR  = document.getElementById('cd-live-rhythm');
       if (liveBtn) {
         var locked = (st.renshuGe || 0) < LIVE_UNLOCK_RENSHU;
         var onCd   = cdRemain('live') > 0;
         liveBtn.className = 'live-btn' + (locked || onCd ? ' locked' : '');
         if (liveCd) liveCd.textContent = locked
+          ? '練習ゲージ満タンで解放'
+          : onCd ? fmtCD(cdRemain('live')) + ' 休憩中' : '';
+        if (liveBtnR) liveBtnR.className = 'live-btn' + (locked || onCd ? ' locked' : '');
+        if (liveCdR) liveCdR.textContent = locked
           ? '練習ゲージ満タンで解放'
           : onCd ? fmtCD(cdRemain('live')) + ' 休憩中' : '';
       }
