@@ -3131,7 +3131,7 @@
           var eatGain = Math.floor(Math.random() * 21) + 30; // 30〜50
           st.onaka = clamp(st.onaka + eatGain + 15); // もとの -15 を相殺して追加回復
           speech = randLine(GAISHUTSU_GOHAN_LINES);
-          toast  = 'おなか +' + eatGain + '　やるき +20　きぶん +20　たいりょく -10';
+          toast  = 'おなか +' + (eatGain + 15) + '　やるき +20　きぶん +20　たいりょく -10';
           var _pendingFood = tryGetFoodItem();
           if (_pendingFood) { setTimeout(function() { showFoodGet(_pendingFood); }, 400); }
         } else {
@@ -3237,9 +3237,15 @@
       var unsel = 'background:rgba(165,180,252,0.06);border-color:rgba(165,180,252,0.25);color:#a5b4fc;';
       var selH  = 'background:rgba(255,120,120,0.2);border-color:rgba(255,120,120,0.7);color:#fca5a5;';
       var unselH= 'background:rgba(255,120,120,0.06);border-color:rgba(255,120,120,0.25);color:#fca5a5;';
-      easy.style.cssText   += _rgLiveDiff === 'easy'   ? sel  : unsel;
-      normal.style.cssText += _rgLiveDiff === 'normal' ? sel  : unsel;
-      if (hard) hard.style.cssText += _rgLiveDiff === 'hard' ? selH : unselH;
+      // cssText += は累積するので個別プロパティで更新
+      function applyDiff(el, isSelected, bg, bc, col) {
+        el.style.background = bg;
+        el.style.borderColor = bc;
+        el.style.color = col;
+      }
+      applyDiff(easy,   _rgLiveDiff === 'easy',   _rgLiveDiff === 'easy'   ? 'rgba(165,180,252,0.2)' : 'rgba(165,180,252,0.06)', _rgLiveDiff === 'easy'   ? 'rgba(165,180,252,0.7)' : 'rgba(165,180,252,0.25)', _rgLiveDiff === 'easy'   ? '#c7d2fe' : '#a5b4fc');
+      applyDiff(normal, _rgLiveDiff === 'normal', _rgLiveDiff === 'normal' ? 'rgba(165,180,252,0.2)' : 'rgba(165,180,252,0.06)', _rgLiveDiff === 'normal' ? 'rgba(165,180,252,0.7)' : 'rgba(165,180,252,0.25)', _rgLiveDiff === 'normal' ? '#c7d2fe' : '#a5b4fc');
+      if (hard) applyDiff(hard, _rgLiveDiff === 'hard', _rgLiveDiff === 'hard' ? 'rgba(255,120,120,0.2)' : 'rgba(255,120,120,0.06)', _rgLiveDiff === 'hard' ? 'rgba(255,120,120,0.7)' : 'rgba(255,120,120,0.25)', '#fca5a5');
       if (label) label.textContent = '現在: ' + (_rgLiveDiff === 'easy' ? 'EASY' : _rgLiveDiff === 'hard' ? 'HARD' : 'NORMAL');
     }
 

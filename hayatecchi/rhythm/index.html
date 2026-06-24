@@ -568,6 +568,7 @@ const JUDGE_DEF = {
 // ============================================================
 let canvas, ctx;
 let audioCtx, audioBuffer, audioSrc;
+let _startBtnVideoHandler = null;
 let startTime = null;
 let notes = [];
 let snow = [];
@@ -709,6 +710,11 @@ async function onStartClick() {
     laneHeld = [null,null,null,null];
     hitEffects = [];
 
+    // 前回のaudioSrcを停止、audioCtxを閉じてリークを防ぐ
+    try { audioSrc && audioSrc.stop(); } catch(e) {}
+    audioSrc = null;
+    if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
+
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
 
@@ -806,6 +812,7 @@ async function runCountdown() {
 //  メインループ
 // ============================================================
 function gameLoop() {
+    if (!audioCtx) { cancelAnimationFrame(animId); return; }
     const now = audioCtx.currentTime - startTime;
     ctx.clearRect(0,0,W,H);
     drawBG();
@@ -1105,6 +1112,7 @@ function drawJudgeEff() {
 // ============================================================
 function processLane(lane) {
     if (lane < 0 || lane >= LANES) return;
+    if (!audioCtx) return;
     laneEff[lane] = {life:12};
 
     const now = audioCtx.currentTime - startTime;
@@ -1156,6 +1164,7 @@ function processLane(lane) {
 
 function releaseLane(lane) {
     if (lane < 0 || lane >= LANES) return;
+    if (!audioCtx) return;
     const n = laneHeld[lane];
     if (!n) return;
     laneHeld[lane] = null;
@@ -1541,13 +1550,17 @@ function onRetry(e) {
         bgVideo.play();
         startScreen.classList.add('has-video');
 
-        // スタートボタンを押したら動画を停止
-        document.getElementById('start-btn').addEventListener('click', () => {
+        // スタートボタンを押したら動画を停止（スタック防止のため前回リスナーを削除してから追加）
+        const startBtn = document.getElementById('start-btn');
+        if (_startBtnVideoHandler) { startBtn.removeEventListener('click', _startBtnVideoHandler); }
+        _startBtnVideoHandler = () => {
             bgVideo.pause();
             bgVideo.style.display = 'none';
             bgVideo.src = '';
             startScreen.classList.remove('has-video');
-        }, {once: true});
+            _startBtnVideoHandler = null;
+        };
+        startBtn.addEventListener('click', _startBtnVideoHandler, {once: true});
     }
 
     cancelAnimationFrame(animId);
