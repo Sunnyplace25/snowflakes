@@ -3401,7 +3401,7 @@
     var _liveStartTime = 0;
     function startLiveBGM() {
       pauseAllAudio();
-      var _ids = ['live-bgm','live-bgm2','live-bgm3','live-bgm4','live-bgm5','live-bgm6']; var src = _ids[Math.floor(Math.random()*_ids.length)]; _currentLiveIsSlow = (src === 'live-bgm5' || src === 'live-bgm6');
+      var _ids = ['live-bgm','live-bgm2','live-bgm3','live-bgm4']; var src = _ids[Math.floor(Math.random()*_ids.length)]; _currentLiveIsSlow = false;
       if (_liveAudioEl) _liveAudioEl.onended = null;
       _liveAudioEl = document.getElementById(src);
       if (!_liveAudioEl) return;
