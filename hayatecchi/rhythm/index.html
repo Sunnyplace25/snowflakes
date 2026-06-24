@@ -310,12 +310,10 @@
 // ============================================================
 //  ユーティリティ：base64 → ArrayBuffer（信頼性最高の方式）
 // ============================================================
-function _b64ToArrayBuffer(b64) {
-    const base64 = b64.split(',')[1];
-    const binary = atob(base64);
-    const bytes  = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return bytes.buffer;
+// fetch(dataURL) でArrayBufferを取得（ブラウザネイティブ、charCodeAtループ不要）
+async function _b64ToArrayBuffer(b64) {
+    const resp = await fetch(b64);
+    return resp.arrayBuffer();
 }
 
 // ============================================================
@@ -372,26 +370,38 @@ function detectBeatsFromBuffer(audioBuf) {
 }
 
 function beatsToChart(beats, totalDuration) {
-    // 主にシングルノーツ、ときどきダブル
-    const laneSeq = [
-        [0],[1],[2],[3],
-        [0],[2],[1],[3],
-        [0,2],[1],[3],[2],
-        [1,3],[0],[2],[1],
+    // シングル多め・適度なダブル・ホールドをパターンで配置
+    const patterns = [
+        { lanes:[0] },   { lanes:[1] },   { lanes:[2] },   { lanes:[3] },
+        { lanes:[0] },   { lanes:[2] },   { lanes:[1] },   { lanes:[3] },
+        { lanes:[0,2] }, { lanes:[1] },   { lanes:[3] },   { lanes:[2] },
+        { lanes:[0] },   { lanes:[1,3] }, { lanes:[2] },   { lanes:[0] },
+        { lanes:[3] },   { lanes:[1] },   { lanes:[2,0] }, { lanes:[3] },
+        { hold:true, lane:0 }, { lanes:[2] }, { lanes:[1] }, { lanes:[3] },
+        { hold:true, lane:2 }, { lanes:[0] }, { lanes:[3] }, { lanes:[1] },
+        { lanes:[0] },   { lanes:[2] },   { hold:true, lane:1 }, { lanes:[3] },
     ];
     const chart = [];
     let pi = 0;
 
-    for (let i = 0; i < beats.length; i++) {
-        const t = +beats[i].toFixed(4);
-        const lanes = laneSeq[pi % laneSeq.length];
-        // 8拍に1回ホールド
-        if (i % 8 === 5 && lanes.length === 1 && beats[i+1] && beats[i+1] - beats[i] < 0.55) {
-            chart.push({ time: t, lane: lanes[0], type: 'hold', endTime: +beats[i+1].toFixed(4) });
-            pi++; continue;
-        }
-        lanes.forEach(l => chart.push({ time: t, lane: l }));
+    function addBeat(t, i, nextT) {
+        const p = patterns[pi % patterns.length];
         pi++;
+        if (p.hold) {
+            // ホールド：次のビートまで伸ばす
+            if (nextT && nextT - t < 0.7) {
+                chart.push({ time: t, lane: p.lane, type: 'hold', endTime: +nextT.toFixed(4) });
+                return;
+            }
+            // 次ビートが遠い場合は通常ノーツに
+            chart.push({ time: t, lane: p.lane });
+        } else {
+            p.lanes.forEach(l => chart.push({ time: t, lane: l }));
+        }
+    }
+
+    for (let i = 0; i < beats.length; i++) {
+        addBeat(+beats[i].toFixed(4), i, beats[i+1] ? +beats[i+1].toFixed(4) : null);
     }
 
     // 90秒以降：中央値ビート間隔でループ補完
@@ -401,11 +411,11 @@ function beatsToChart(beats, totalDuration) {
         gaps.sort((a,b) => a-b);
         const med = gaps[Math.floor(gaps.length / 2)];
         let t = (beats[beats.length-1] || 90) + med;
+        let prev = t;
         while (t < totalDuration - 0.5) {
-            laneSeq[pi % laneSeq.length].forEach(l =>
-                chart.push({ time: +t.toFixed(4), lane: l }));
-            pi++;
-            t += med;
+            const nextT = t + med;
+            addBeat(+t.toFixed(4), -1, nextT < totalDuration - 0.5 ? +nextT.toFixed(4) : null);
+            t = nextT;
         }
     }
 
@@ -421,25 +431,18 @@ let _preloaded = null; // { arr: ArrayBuffer, chart: Note[] } | null
 function _startPreload() {
     const B64 = [DEFAULT_BGM, DEFAULT_BGM_SHIROIMA];
     const b64 = B64[Math.floor(Math.random() * B64.length)];
-    let arr;
-    try { arr = _b64ToArrayBuffer(b64); } catch(e) {
-        _preloaded = { arr: null, chart: _fallbackChart() };
-        return;
-    }
-    // OfflineAudioContext でデコード（ユーザージェスチャー不要）
-    try {
+    // fetch(dataURL)は完全非同期 → メインスレッドをブロックしない
+    _b64ToArrayBuffer(b64).then(arr => {
         const offCtx = new OfflineAudioContext(1, 44100, 44100);
-        offCtx.decodeAudioData(arr.slice(0)).then(buf => {
-            _preloaded = { arr, chart: beatsToChart(detectBeatsFromBuffer(buf), buf.duration) };
-        }).catch(() => {
-            _preloaded = { arr, chart: _fallbackChart() };
-        });
-    } catch(e) {
-        _preloaded = { arr, chart: _fallbackChart() };
-    }
+        return offCtx.decodeAudioData(arr.slice(0)).then(buf => ({ arr: arr.slice(0), chart: beatsToChart(detectBeatsFromBuffer(buf), buf.duration) }));
+    }).then(result => {
+        _preloaded = result;
+    }).catch(() => {
+        _preloaded = { arr: null, chart: _fallbackChart() };
+    });
 }
-// 200ms 遅延でプリロード開始（初期描画をブロックしないため）
-setTimeout(_startPreload, 200);
+// プリロード開始（100ms後、初期描画優先）
+setTimeout(_startPreload, 100);
 
 // ============================================================
 //  定数
@@ -621,17 +624,17 @@ async function onStartClick() {
                 _preloaded = null;
                 setTimeout(_startPreload, 500); // 次回用に再プリロード
                 try {
-                    const buf = arr ? await audioCtx.decodeAudioData(arr) : null;
+                    const buf = arr ? await audioCtx.decodeAudioData(arr.slice(0)) : null;
                     return { buf, chart };
                 } catch(e) {
                     return { buf: null, chart };
                 }
             }
-            // フォールバック：その場でロード
+            // フォールバック：fetch(dataURL)で非同期ロード
             try {
                 const b64 = B64[Math.floor(Math.random() * B64.length)];
-                const arr = _b64ToArrayBuffer(b64);
-                const buf = await audioCtx.decodeAudioData(arr);
+                const arr = await _b64ToArrayBuffer(b64);
+                const buf = await audioCtx.decodeAudioData(arr.slice(0));
                 const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
                 return { buf, chart };
             } catch(e) {

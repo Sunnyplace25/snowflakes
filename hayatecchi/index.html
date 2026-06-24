@@ -2145,6 +2145,7 @@
               <div style="display:flex;gap:8px;">
                 <button id="diff-easy-btn" onclick="setLiveDiff('easy')" style="flex:1;padding:10px 0;border-radius:10px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'Cormorant Garamond',serif;background:rgba(165,180,252,0.06);border:1px solid rgba(165,180,252,0.25);color:#a5b4fc;-webkit-tap-highlight-color:transparent;">EASY</button>
                 <button id="diff-normal-btn" onclick="setLiveDiff('normal')" style="flex:1;padding:10px 0;border-radius:10px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'Cormorant Garamond',serif;background:rgba(165,180,252,0.06);border:1px solid rgba(165,180,252,0.25);color:#a5b4fc;-webkit-tap-highlight-color:transparent;">NORMAL</button>
+                <button id="diff-hard-btn" onclick="setLiveDiff('hard')" style="flex:1;padding:10px 0;border-radius:10px;font-size:11px;letter-spacing:3px;cursor:pointer;font-family:'Cormorant Garamond',serif;background:rgba(255,120,120,0.06);border:1px solid rgba(255,120,120,0.25);color:#fca5a5;-webkit-tap-highlight-color:transparent;">HARD</button>
               </div>
               <div id="diff-current-label" style="font-size:10px;color:#94a3b8;text-align:center;margin-top:8px;letter-spacing:1px;"></div>
             </div>
@@ -3185,13 +3186,17 @@
     function updateDiffUI() {
       var easy   = document.getElementById('diff-easy-btn');
       var normal = document.getElementById('diff-normal-btn');
+      var hard   = document.getElementById('diff-hard-btn');
       var label  = document.getElementById('diff-current-label');
       if (!easy) return;
       var sel   = 'background:rgba(165,180,252,0.2);border-color:rgba(165,180,252,0.7);color:#c7d2fe;';
       var unsel = 'background:rgba(165,180,252,0.06);border-color:rgba(165,180,252,0.25);color:#a5b4fc;';
-      easy.style.cssText   += _rgLiveDiff === 'easy'   ? sel : unsel;
-      normal.style.cssText += _rgLiveDiff === 'normal' ? sel : unsel;
-      if (label) label.textContent = '現在: ' + (_rgLiveDiff === 'easy' ? 'EASY' : 'NORMAL');
+      var selH  = 'background:rgba(255,120,120,0.2);border-color:rgba(255,120,120,0.7);color:#fca5a5;';
+      var unselH= 'background:rgba(255,120,120,0.06);border-color:rgba(255,120,120,0.25);color:#fca5a5;';
+      easy.style.cssText   += _rgLiveDiff === 'easy'   ? sel  : unsel;
+      normal.style.cssText += _rgLiveDiff === 'normal' ? sel  : unsel;
+      if (hard) hard.style.cssText += _rgLiveDiff === 'hard' ? selH : unselH;
+      if (label) label.textContent = '現在: ' + (_rgLiveDiff === 'easy' ? 'EASY' : _rgLiveDiff === 'hard' ? 'HARD' : 'NORMAL');
     }
 
     function doLiveRandom() {
@@ -3229,7 +3234,8 @@
       var _iframeReady = false;
       var _countdownDone = false;
 
-      // iframeをバックグラウンドで先読み開始
+      // 前回のonloadハンドラを必ずクリアしてからsrc変更（再発火バグ防止）
+      iframe.onload = null;
       iframe.src = './rhythm/?embed=1';
       iframe.onload = function() {
         _iframeReady = true;
@@ -3257,9 +3263,10 @@
     function closeRhythmLive() {
       var el = document.getElementById('rhythm-live-overlay');
       var iframe = document.getElementById('rhythm-live-iframe');
+      iframe.onload = null; // onload再発火を確実に防ぐ
       el.style.display = 'none';
-      iframe.onload = null; // src変更でonloadが再発火するのを防ぐ
-      iframe.src = '';
+      // iframe.srcはクリアしない（srのクリア自体がonload再発火の原因になる）
+      // 次回_startLiveRhythmでsrcを上書きすれば自動的にリセットされる
     }
 
     window.addEventListener('message', function(e) {
