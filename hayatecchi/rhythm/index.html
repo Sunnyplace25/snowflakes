@@ -251,6 +251,7 @@
         <div class="diff-wrap">
             <button class="diff-btn" id="btn-easy">EASY</button>
             <button class="diff-btn selected" id="btn-normal">NORMAL</button>
+            <button class="diff-btn" id="btn-hard" style="border-color:rgba(255,120,120,0.4);color:rgba(255,140,140,0.6);">HARD</button>
         </div>
         <button id="start-btn">PLAY</button>
         <button id="how-btn">遊び方</button>
@@ -309,47 +310,71 @@
 <script src="bgm_shiroima.js"></script>
 <script>
 // ============================================================
-//  譜面データ  time: 秒  lane: 0〜3（左から）
-//  SONG_BPM と SONG_DURATION を楽曲に合わせて変更してください
-//  手動で追加したいときは EXTRA_NOTES に {time, lane} を追記
+//  ビート検出 → 譜面自動生成
 // ============================================================
-const SONG_BPM      = 120;   // ← 楽曲のBPMに合わせて変更
-const SONG_DURATION = 180;   // ← 曲の長さ（秒）に合わせて変更
-const SONG_OFFSET   = 2.0;   // ← 最初のノーツが出るまでの余白（秒）
-const EXTRA_NOTES   = [];    // ← 手動追加ノーツ例: {time:10.0, lane:2}
+function detectBeatsFromBuffer(audioBuffer) {
+    const sr       = audioBuffer.sampleRate;
+    const data     = audioBuffer.getChannelData(0);
+    const winSize  = Math.round(sr * 0.05);  // 50ms窓
+    const hopSize  = Math.round(sr * 0.025); // 25msホップ
+    const minGap   = 0.25; // ビート間最小間隔(秒)
 
-const CHART = (() => {
-    const b = 60 / SONG_BPM;
-    const notes = [];
-    const add  = (t, ...ls) => ls.forEach(l => notes.push({time: +t.toFixed(4), lane: l}));
-    const addH = (t, l, dur) => notes.push({time: +t.toFixed(4), lane: l, type:'hold', endTime: +(t+dur).toFixed(4)});
-
-    // ノーマル用パターン（ロングノーツ含む）
-    const pats = [
-        t => { add(t,0);        add(t+b,2);     add(t+b*2,1);   add(t+b*3,3);   },
-        t => { add(t,1);        add(t+b,3);     add(t+b*2,0);   add(t+b*3,2);   },
-        t => { addH(t,0,b*2);   add(t+b,2);     add(t+b*3,3);                   },
-        t => { add(t,0);add(t+b*.5,1);add(t+b,2);add(t+b*1.5,3);               },
-        t => { add(t,3);        add(t+b,1);     add(t+b*2,2);   add(t+b*3,0);   },
-        t => { addH(t,1,b*2);   add(t+b*2,3);   addH(t+b*2,0,b*2);             },
-        t => { add(t,2);        add(t+b,0);     add(t+b*2,3);   add(t+b*3,1);   },
-        t => { add(t,1,3);      add(t+b*2,0,2);                                 },
-        t => { addH(t,2,b*3);   add(t+b,0);     add(t+b*2,1);   add(t+b*3,3);  },
-        t => { add(t,0);add(t+b,1);add(t+b*2,2);add(t+b*3,3);                  },
-    ];
-
-    let t = SONG_OFFSET;
-    let i = 0;
-    while (t + b*4 <= SONG_DURATION - 1) {
-        pats[i % pats.length](t);
-        t += b * 4;
-        i++;
+    // 低周波エネルギー計算（簡易ローパス：サンプル平均の絶対値）
+    const energies = [];
+    for (let i = 0; i + winSize < data.length; i += hopSize) {
+        let e = 0;
+        for (let j = 0; j < winSize; j++) e += Math.abs(data[i + j]);
+        energies.push({ t: i / sr, e: e / winSize });
     }
 
-    // 手動追加分をマージ
-    for (const n of EXTRA_NOTES) notes.push(n);
-    return notes.sort((a, b) => a.time - b.time);
-})();
+    // 局所平均より大きいピークをビートとして検出
+    const beats = [];
+    const localWin = Math.round(0.5 / 0.025); // 500ms局所窓
+    let lastBeat = -99;
+    for (let i = localWin; i < energies.length - localWin; i++) {
+        const localAvg = energies.slice(i - localWin, i + localWin)
+            .reduce((s, x) => s + x.e, 0) / (localWin * 2);
+        const cur = energies[i];
+        if (cur.e > localAvg * 1.45 &&
+            cur.e >= energies[i-1].e &&
+            cur.e >= energies[i+1].e &&
+            cur.t - lastBeat >= minGap) {
+            beats.push(cur.t);
+            lastBeat = cur.t;
+        }
+    }
+    return beats;
+}
+
+function beatsToChart(beats) {
+    const chart = [];
+    // レーンパターン：音楽的に自然な4レーン配分
+    const laneSeq = [
+        [0], [2], [1], [3],
+        [0,2], [1,3], [0], [3],
+        [1], [2], [0,3], [2],
+    ];
+    let pi = 0;
+    for (let i = 0; i < beats.length; i++) {
+        const t = +beats[i].toFixed(4);
+        const lanes = laneSeq[pi % laneSeq.length];
+        // 8ビートに1回だけホールドにする
+        if (i % 8 === 4 && lanes.length === 1) {
+            const nextBeat = beats[i + 1];
+            if (nextBeat && nextBeat - beats[i] < 0.6) {
+                chart.push({ time: t, lane: lanes[0], type: 'hold', endTime: +nextBeat.toFixed(4) });
+                pi++;
+                continue;
+            }
+        }
+        lanes.forEach(l => chart.push({ time: t, lane: l }));
+        pi++;
+    }
+    return chart.sort((a, b) => a.time - b.time);
+}
+
+// 初期値（audioBuffer解析後に上書き）
+let CHART = [];
 
 // ============================================================
 //  定数
@@ -358,7 +383,7 @@ const W = 400, H = 700;
 const LANES = 4;
 const LANE_W = W / LANES;
 const JUDGE_Y = H - 110;
-const SPEED = 380;           // ノーツ落下速度 px/秒
+let SPEED = 380;             // ノーツ落下速度 px/秒（難易度で変わる）
 const R = 26;                // ノーツ半径
 // 判定幅・ミス上限は難易度で上書きする（let）
 let T_PERFECT = 0.07;
@@ -445,23 +470,26 @@ window.addEventListener('load', () => {
     });
 
     // 難易度ボタン
-    document.getElementById('btn-easy').addEventListener('click', () => {
-        difficulty = 'easy';
-        document.getElementById('btn-easy').classList.add('selected');
-        document.getElementById('btn-normal').classList.remove('selected');
-    });
-    document.getElementById('btn-normal').addEventListener('click', () => {
-        difficulty = 'normal';
-        document.getElementById('btn-normal').classList.add('selected');
-        document.getElementById('btn-easy').classList.remove('selected');
-    });
+    function setDiff(d) {
+        difficulty = d;
+        document.getElementById('btn-easy').classList.toggle('selected', d === 'easy');
+        document.getElementById('btn-normal').classList.toggle('selected', d === 'normal');
+        document.getElementById('btn-hard').classList.toggle('selected', d === 'hard');
+        const hb = document.getElementById('btn-hard');
+        hb.style.borderColor = d === 'hard' ? 'rgba(255,120,120,0.9)' : 'rgba(255,120,120,0.4)';
+        hb.style.color = d === 'hard' ? 'rgba(255,140,140,1)' : 'rgba(255,140,140,0.6)';
+    }
+    document.getElementById('btn-easy').addEventListener('click', () => setDiff('easy'));
+    document.getElementById('btn-normal').addEventListener('click', () => setDiff('normal'));
+    document.getElementById('btn-hard').addEventListener('click', () => setDiff('hard'));
 
     canvas.addEventListener('touchstart', onTap,    {passive:false});
     canvas.addEventListener('touchend',   onRelease, {passive:false});
     canvas.addEventListener('mousedown',  onTap);
     canvas.addEventListener('mouseup',    onRelease);
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup',   onKeyUp);
+    // キーボード：document に登録（iframe埋め込み時もフォーカスが通る）
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup',   onKeyUp);
 
     // コンボ画像を事前ロード
     for (const def of COMBO_IMAGES) {
@@ -506,16 +534,13 @@ async function onStartClick() {
     phase = 'countdown';
     document.getElementById('start-screen').style.display = 'none';
 
-    // 難易度設定を適用
+    // 難易度パラメータ設定（ノーツ初期化はaudioBuffer取得後）
     if (difficulty === 'easy') {
-        T_PERFECT = 0.12; T_GOOD = 0.24; MISS_LIMIT = 0;
-        // イージー：ノーツ量を半分に絞る（ロングノーツは含む）
-        notes = CHART
-            .filter((_, i) => i % 2 === 0)
-            .map(n => ({...n, hit:false, missed:false}));
+        T_PERFECT = 0.12; T_GOOD = 0.24; MISS_LIMIT = 0; SPEED = 280;
+    } else if (difficulty === 'hard') {
+        T_PERFECT = 0.05; T_GOOD = 0.09; MISS_LIMIT = 30; SPEED = 580;
     } else {
-        T_PERFECT = 0.07; T_GOOD = 0.14; MISS_LIMIT = 50;
-        notes = CHART.map(n => ({...n, hit:false, missed:false}));
+        T_PERFECT = 0.07; T_GOOD = 0.14; MISS_LIMIT = 50; SPEED = 380;
     }
     score    = 0; combo = 0; maxCombo = 0; missCount = 0; judgeEff = null;
     laneEff  = [null,null,null,null];
@@ -551,8 +576,33 @@ async function onStartClick() {
             arrayBuffer = await resp.arrayBuffer();
         }
         audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        // ビート検出で譜面を自動生成
+        CHART = beatsToChart(detectBeatsFromBuffer(audioBuffer));
     } catch(e) {
         audioBuffer = null;
+        CHART = [];
+    }
+
+    // ノーツ初期化（CHART確定後）
+    if (difficulty === 'easy') {
+        // EASYはノーツを半分に
+        notes = CHART.filter((_, i) => i % 2 === 0).map(n => ({...n, hit:false, missed:false}));
+    } else if (difficulty === 'hard') {
+        // HARDは全ノーツ（ダブルノーツをさらに追加）
+        const extra = [];
+        CHART.forEach((n, i) => {
+            if (i % 3 === 1 && !n.type) {
+                const mirror = (n.lane + 2) % 4;
+                if (!CHART.find(m => m.time === n.time && m.lane === mirror)) {
+                    extra.push({ ...n, lane: mirror });
+                }
+            }
+        });
+        notes = [...CHART, ...extra]
+            .sort((a, b) => a.time - b.time)
+            .map(n => ({...n, hit:false, missed:false}));
+    } else {
+        notes = CHART.map(n => ({...n, hit:false, missed:false}));
     }
 
     if (!_skipCountdown) await runCountdown();
