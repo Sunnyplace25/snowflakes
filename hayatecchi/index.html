@@ -2605,7 +2605,7 @@
   <script>
     /* ── 定数 ── */
     var SAVE_KEY = 'hayatecchi_v1';
-    var LIVE_UNLOCK_RENSHU = 0;
+    var LIVE_UNLOCK_RENSHU = 100;
 
     var DECAY = {
       onaka:  14 / 3600,   // 約7時間で空
@@ -3252,9 +3252,7 @@
         flash('ちょっとだけ休ませて　あと ' + fmtCD(cdRemain('live')));
         return;
       }
-      // TODO テスト用：常に音ゲーLIVE。テスト後に戻す↓
-      // if (Math.random() < 0.5) { _startLiveTap(); } else { _startLiveRhythm(); }
-      _startLiveRhythm();
+      if (Math.random() < 0.5) { _startLiveTap(); } else { _startLiveRhythm(); }
     }
 
     function _startLiveTap() {
