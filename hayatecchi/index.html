@@ -3224,20 +3224,18 @@
     }
 
     function _startLiveRhythm() {
-      showLiveCountdown(function() {
-        var el     = document.getElementById('rhythm-live-overlay');
-        var iframe = document.getElementById('rhythm-live-iframe');
-        iframe.src = './rhythm/?embed=1';
-        el.style.display = 'flex';
-        iframe.onload = function() {
-          setTimeout(function() {
-            iframe.contentWindow.postMessage(
-              { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: true }, '*'
-            );
-            setTimeout(function() { iframe.focus(); }, 100);
-          }, 300);
-        };
-      });
+      var el     = document.getElementById('rhythm-live-overlay');
+      var iframe = document.getElementById('rhythm-live-iframe');
+      iframe.src = './rhythm/?embed=1';
+      el.style.display = 'flex';
+      iframe.onload = function() {
+        setTimeout(function() {
+          iframe.contentWindow.postMessage(
+            { type: 'rg-start', difficulty: _rgLiveDiff }, '*'
+          );
+          setTimeout(function() { iframe.focus(); }, 100);
+        }, 200);
+      };
     }
 
     function closeRhythmLive() {
