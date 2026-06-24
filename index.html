@@ -2373,9 +2373,9 @@ function sfShare() {
         ['日','月','火','水','木','金','土'].forEach(function(d, i) {
           var cell = document.createElement('div');
           cell.textContent = d;
-          cell.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:1px;color:#334155;padding:2px 0 6px;';
-          if (i === 0) cell.style.color = '#475569';
-          if (i === 6) cell.style.color = '#475569';
+          cell.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:1px;color:#64748b;padding:2px 0 6px;';
+          if (i === 0) cell.style.color = '#94a3b8';
+          if (i === 6) cell.style.color = '#94a3b8';
           grid.appendChild(cell);
         });
 
@@ -2401,7 +2401,7 @@ function sfShare() {
           var num = document.createElement('div');
           num.textContent = d;
           num.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:10px;color:'
-            + (isToday ? '#93c5fd' : visited ? '#cbd5e1' : '#1e293b') + ';line-height:1.4;';
+            + (isToday ? '#93c5fd' : visited ? '#cbd5e1' : '#64748b') + ';line-height:1.4;';
           cell.appendChild(num);
 
           if (visited) {

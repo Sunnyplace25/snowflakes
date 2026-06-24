@@ -3201,12 +3201,9 @@
         flash('ちょっとだけ休ませて　あと ' + fmtCD(cdRemain('live')));
         return;
       }
-      // 50% でリズムゲーム、50% でタップゲーム
-      if (Math.random() < 0.5) {
-        _startLiveTap();
-      } else {
-        _startLiveRhythm();
-      }
+      // TODO テスト用：常に音ゲーLIVE。テスト後に戻す↓
+      // if (Math.random() < 0.5) { _startLiveTap(); } else { _startLiveRhythm(); }
+      _startLiveRhythm();
     }
 
     function _startLiveTap() {
