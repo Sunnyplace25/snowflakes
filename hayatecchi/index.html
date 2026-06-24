@@ -492,12 +492,13 @@
     .live-overlay.slow-mode { background: rgba(2,8,24,0.98); }
     .live-rhythm-ring {
       display: none;
-      width: 90px; height: 90px;
+      width: 110px; height: 110px;
       border-radius: 50%;
       border: 1.5px solid rgba(147,197,253,0.4);
       box-shadow: 0 0 20px rgba(147,197,253,0.1);
       position: relative;
-      margin-bottom: 18px;
+      margin-top: auto;
+      margin-bottom: 12px;
       flex-shrink: 0;
     }
     .live-rhythm-ring::after {
@@ -518,12 +519,20 @@
       100% { transform: scale(1);    box-shadow: 0 0 8px rgba(147,197,253,0.08); border-color: rgba(147,197,253,0.25); }
     }
     .live-rhythm-ring.beat { animation: rhythm-beat 0.55s ease-out forwards; }
+    .live-rhythm-label {
+      display: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
     .live-rhythm-feedback {
       font-family: 'Cormorant Garamond', serif;
       font-size: 13px;
       letter-spacing: 4px;
       min-height: 22px;
-      margin-bottom: 12px;
+      margin-bottom: 80px;
       opacity: 0;
       transition: opacity 0.1s;
     }
@@ -1677,31 +1686,49 @@
 
     var PHOTO_ITEMS = [
       {
-        id:'photo_01', img:'photo_01.webp',
+        id:'photo_goroku', img:'photo_goroku.webp',
         title:'語録', caption:'言葉が、残る。',
         hint:'語録をすべて集めると解放',
         check: function() { return Object.keys(st.drumLog || {}).length >= DRUM_MEMOS.length; }
       },
       {
-        id:'photo_02', img:'photo_02.webp',
+        id:'photo_cocktail', img:'photo_cocktail.webp',
         title:'BAR STARS', caption:'夜の始まりに、一杯。',
         hint:'カクテル図鑑をコンプリートすると解放',
         check: function() { return Object.keys(st.zukanLog || {}).length >= Object.keys(OC_RECIPES).length + 1; }
       },
       {
-        id:'photo_03', img:'photo_03.webp',
+        id:'photo_drum', img:'photo_drum.webp',
         title:'DRUM ROOM', caption:'音が、鳴り止まない。',
         hint:'ドラム図鑑をコンプリートすると解放',
         check: function() { return Object.keys(st.drumItems || {}).length >= DRUM_ITEMS.length; }
       },
       {
-        id:'photo_04', img:'photo_04.webp',
+        id:'photo_food', img:'photo_food.webp',
         title:'FOOD WALK', caption:'腹が減っては、何もできない。',
         hint:'食べ歩き図鑑をコンプリートすると解放',
         check: function() { return Object.keys(st.foodItems || {}).length >= FOOD_ITEMS.length; }
       },
       {
-        id:'photo_05', img:'photo_05.webp',
+        id:'photo_sweets', img:'photo_sweets.webp',
+        title:'SWEET DAYS', caption:'甘いものは、別腹。',
+        hint:'スイーツを50個ゲットすると解放',
+        check: function() { return (st.sweets || 0) >= 50; }
+      },
+      {
+        id:'photo_outing', img:'photo_outing.webp',
+        title:'DAY OFF', caption:'たまには、外へ。',
+        hint:'おでかけ50回で解放',
+        check: function() { return (st.gaishutsuCount || 0) >= 50; }
+      },
+      {
+        id:'photo_live', img:'photo_live.webp',
+        title:'LIVE STAGE', caption:'音が、止まらない夜。',
+        hint:'LIVE50回で解放',
+        check: function() { return (st.liveCount || 0) >= 50; }
+      },
+      {
+        id:'photo_special', img:'photo_special.webp',
         title:'SPECIAL', caption:'全部、見てくれてありがとう。',
         hint:'すべての図鑑をコンプリートすると解放',
         check: function() {
@@ -2521,6 +2548,7 @@
       <div class="live-tap-ring-label">TAP！</div>
     </div>
     <div class="live-rhythm-ring" id="live-rhythm-ring"></div>
+    <div class="live-rhythm-label" id="live-rhythm-label">リズム合わせてTAP</div>
     <div class="live-rhythm-feedback" id="live-rhythm-feedback"></div>
     <div class="live-success" id="live-success">成功！</div>
     <div class="live-overlay-result" id="live-result"></div>
@@ -3040,6 +3068,7 @@
         st.kibun   = clamp(st.kibun  + 20);
         st.onaka   = clamp(st.onaka  - 15);
         st.suimin  = clamp(st.suimin - 10);
+        st.gaishutsuCount = (st.gaishutsuCount || 0) + 1;
         st.cd.gaishutsu = cdTime(CD_SEC.gaishutsu);
         // 40%の確率でメンバーに遭遇
         if (Math.random() < 0.4) {
@@ -3336,6 +3365,8 @@
       var ring = document.getElementById('live-rhythm-ring');
       var fb   = document.getElementById('live-rhythm-feedback');
       if (ring) ring.style.display = 'none';
+      var rhythmLbl = document.getElementById('live-rhythm-label');
+      if (rhythmLbl) rhythmLbl.style.display = 'none';
       if (fb)   { fb.textContent = ''; fb.classList.remove('show'); }
 
       overlay.querySelectorAll('img').forEach(function(i) { i.classList.remove('in','live-char-perfect','live-char-good'); });
@@ -3401,10 +3432,12 @@
       var tapCount = document.getElementById('live-tap-count');
       var tapHint  = document.getElementById('live-tap-hint');
       var ring = document.getElementById('live-rhythm-ring');
+      var rhythmLabel = document.getElementById('live-rhythm-label');
       overlay.classList.add('slow-mode');
       if (tapCount) tapCount.style.display = 'none';
       if (tapHint)  tapHint.style.display  = 'none';
       if (ring) ring.style.display = 'block';
+      if (rhythmLabel) rhythmLabel.style.display = 'block';
       _rhythmHits = 0; _rhythmBeats = 0; _rhythmTapped = false;
 
       var _liveTapLastTouch = 0;
