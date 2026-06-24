@@ -371,8 +371,8 @@ function _fallbackChart() {
 function detectBeatsFromBuffer(audioBuf) {
     const sr      = audioBuf.sampleRate;
     const raw     = audioBuf.getChannelData(0);
-    // 最初の90秒だけ解析
-    const maxSamp = Math.min(raw.length, sr * 90);
+    // 最初の45秒だけ解析（BPM推定に十分、処理を半減）
+    const maxSamp = Math.min(raw.length, sr * 45);
     const data    = raw.subarray(0, maxSamp);
     const winSize = Math.round(sr * 0.05);  // 50ms窓
     const hopSize = Math.round(sr * 0.025); // 25msホップ
@@ -489,9 +489,10 @@ function beatsToChart(beats, totalDuration) {
 //  バックグラウンドプリロード（ページロード時に実行、START高速化）
 // ============================================================
 let CHART = [];
-let _preloaded = null; // { audioBuf: AudioBuffer|null, chart: Note[] }
-let _lastBgmIdx = -1; // 直前に使ったBGMインデックス（連続再生防止）
-let _preloadedBgmIdx = -1; // プリロード済みBGMのインデックス
+let _preloaded     = null;  // { audioBuf, chart } — 準備完了済み
+let _preloadPromise = null; // 進行中のプリロードPromise（完了待ちに使う）
+let _lastBgmIdx    = -1;
+let _preloadedBgmIdx = -1;
 
 function _pickNextBgm() {
     let idx;
@@ -501,29 +502,30 @@ function _pickNextBgm() {
     return _ALL_BGMS[idx];
 }
 
-function _startPreload() {
-    const bgm = _pickNextBgm();
-    _preloadedBgmIdx = _lastBgmIdx;
-    _loadArrayBuffer(bgm)
-        .then(arr => {
-            const offCtx = new OfflineAudioContext(1, 44100, 44100);
-            return offCtx.decodeAudioData(arr);
-        })
-        .then(audioBuf => {
-            _preloaded = { audioBuf, chart: beatsToChart(detectBeatsFromBuffer(audioBuf), audioBuf.duration) };
-        })
+function _doPreloadWork(bgm) {
+    return _loadArrayBuffer(bgm)
+        .then(arr => new OfflineAudioContext(1, 44100, 44100).decodeAudioData(arr))
+        .then(audioBuf => ({ audioBuf, chart: beatsToChart(detectBeatsFromBuffer(audioBuf), audioBuf.duration) }))
         .catch(() => {
-            // URLが失敗した場合はb64にフォールバック
             if (bgm.type === 'url') {
                 const fb = _ALL_BGMS.find(b => b.type === 'b64');
                 if (fb) return _loadArrayBuffer(fb)
                     .then(arr => new OfflineAudioContext(1,44100,44100).decodeAudioData(arr))
-                    .then(audioBuf => { _preloaded = { audioBuf, chart: beatsToChart(detectBeatsFromBuffer(audioBuf), audioBuf.duration) }; })
-                    .catch(() => { _preloaded = { audioBuf: null, chart: _fallbackChart() }; });
-            } else {
-                _preloaded = { audioBuf: null, chart: _fallbackChart() };
+                    .then(audioBuf => ({ audioBuf, chart: beatsToChart(detectBeatsFromBuffer(audioBuf), audioBuf.duration) }))
+                    .catch(() => ({ audioBuf: null, chart: _fallbackChart() }));
             }
+            return { audioBuf: null, chart: _fallbackChart() };
         });
+}
+
+function _startPreload() {
+    const bgm = _pickNextBgm();
+    _preloadedBgmIdx = _lastBgmIdx;
+    _preloadPromise = _doPreloadWork(bgm).then(result => {
+        _preloaded = result;
+        _preloadPromise = null;
+        return result;
+    });
 }
 // プリロード開始（100ms後、初期描画優先）
 setTimeout(_startPreload, 100);
@@ -663,6 +665,7 @@ window.addEventListener('load', () => {
                         // プリロード済みが前回と同じ曲 → 破棄して再プリロード
                         _preloaded = null;
                         _preloadedBgmIdx = -1;
+                        _preloadPromise = null;
                         _startPreload();
                     }
                 }
@@ -712,17 +715,24 @@ async function onStartClick() {
     const [audioResult] = await Promise.all([
         (async () => {
             if (_preloaded) {
-                // プリロード済み AudioBuffer を直接使用 → decodeAudioData不要で即開始
+                // プリロード済み → 即使用
                 const { audioBuf, chart } = _preloaded;
                 _preloaded = null;
-                setTimeout(_startPreload, 300); // 次回用に再プリロード開始
+                setTimeout(_startPreload, 300);
                 return { buf: audioBuf, chart };
             }
-            // フォールバック：その場でロード（連続防止適用）
+            if (_preloadPromise) {
+                // プリロード進行中 → 完了を待つ（二重フェッチしない）
+                const result = await _preloadPromise;
+                _preloaded = null;
+                setTimeout(_startPreload, 300);
+                return result ? { buf: result.audioBuf, chart: result.chart }
+                              : { buf: null, chart: _fallbackChart() };
+            }
+            // どちらもない場合（まれ）: その場でロード
             try {
                 const bgm = _pickNextBgm();
                 let arr = await _loadArrayBuffer(bgm).catch(async () => {
-                    // URLが失敗したらb64にフォールバック
                     const fb = _ALL_BGMS.find(b => b.type === 'b64');
                     return fb ? _loadArrayBuffer(fb) : Promise.reject();
                 });
