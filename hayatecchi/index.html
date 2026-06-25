@@ -3738,7 +3738,12 @@
     function showLiveEnd() {
       _liveEndTimer = null;
       document.getElementById('live-end-speech').textContent = '「' + randLine(LIVE_END_LINES) + '」';
-      document.getElementById('live-end-overlay').classList.add('show');
+      var el = document.getElementById('live-end-overlay');
+      // トランジションを無効にして即表示（フェードイン中は透明だがpointer-events:autoになるバグ回避）
+      el.style.transition = 'none';
+      el.classList.add('show');
+      // 次フレームで通常トランジションに戻す（閉じるアニメのため）
+      requestAnimationFrame(function() { el.style.transition = ''; });
     }
     function closeLiveEnd() {
       document.getElementById('live-end-overlay').classList.remove('show');
