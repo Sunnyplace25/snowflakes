@@ -3258,6 +3258,9 @@
         flash('ちょっとだけ休ませて　あと ' + fmtCD(cdRemain('live')));
         return;
       }
+      // 前回LIVEの未処理ペンディングをリセット（残留防止）
+      _pendingDrumItem = null;
+      _pendingSweetsGet = false;
       if (Math.random() < 0.5) { _startLiveTap(); } else { _startLiveRhythm(); }
     }
 

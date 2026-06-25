@@ -569,6 +569,7 @@ const JUDGE_DEF = {
 let canvas, ctx;
 let audioCtx, audioBuffer, audioSrc;
 let _startBtnVideoHandler = null;
+let _resultSent = false; // sendResultToParent 二重送信防止
 let startTime = null;
 let notes = [];
 let snow = [];
@@ -1579,6 +1580,8 @@ function showResult() {
 }
 
 function sendResultToParent() {
+    if (_resultSent) return;
+    _resultSent = true;
     const total  = notes.length;
     const hitCnt = notes.filter(n => n.hit).length;
     const acc    = total > 0 ? Math.round(hitCnt / total * 100) : 0;
@@ -1593,6 +1596,8 @@ function sendResultToParent() {
 function onRetry(e) {
     e.preventDefault();
     phase = 'idle';
+    _waitingForTouch = false;
+    _resultSent = false;
 
     const startScreen = document.getElementById('start-screen');
     startScreen.style.display = 'flex';
