@@ -702,6 +702,12 @@
   .nc-dot.active{background:#93c5fd;transform:scale(1.35);}
   .nc-arrow{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:36px;height:36px;color:#64748b;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:all 0.2s;flex-shrink:0;}
   .nc-arrow:hover{border-color:rgba(147,197,253,0.4);color:#93c5fd;}
+  /* ── Music like button ── */
+  .mc-like-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;color:#64748b;padding:5px 14px;font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Noto Serif JP',serif;letter-spacing:1px;}
+  .mc-like-btn:hover{border-color:rgba(255,255,255,0.25);color:#94a3b8;}
+  .mc-like-btn.liked{color:#f9a8d4;border-color:rgba(249,168,212,0.45);background:rgba(249,168,212,0.06);}
+  .mc-like-heart{font-size:14px;transition:transform 0.15s;display:inline-block;}
+  .mc-like-btn:active .mc-like-heart{transform:scale(1.5);}
   /* ── Interview ── */
   .itv-section-acc{border:1px solid rgba(255,255,255,0.07);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;margin:32px 0 0;}
   .itv-section-header{width:100%;display:flex;align-items:center;gap:10px;padding:14px 18px;background:none;border:none;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;}
@@ -862,7 +868,7 @@
             </div>
             <div style="border-left:2px solid rgba(253,230,138,0.3);padding-left:12px;">
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fde68a;margin-bottom:4px;">MUSIC</p>
-              <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">アプリゲームハヤテっちで使用している楽曲デモを追加。ギターピックで交換して聴いてみよう！</p>
+              <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">アプリゲームハヤテっちで使用楽曲デモを追加。ギターピックで交換して聴いてみよう！</p>
             </div>
           </div>
         </div>
@@ -7086,6 +7092,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
       html += '</div>';
     }
+    var _mlLiked = localStorage.getItem('sf_song_like_' + item.id);
+    html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);">'
+      + '<button class="mc-like-btn' + (_mlLiked ? ' liked' : '') + '" id="mc-like-btn-' + item.id + '" onclick="event.stopPropagation();handleMusicLike(\'' + item.id + '\')">'
+      + '<span class="mc-like-heart">' + (_mlLiked ? '♥' : '♡') + '</span>好き'
+      + '</button>'
+      + '</div>';
     html += '</div>';
     area.innerHTML = html;
 
@@ -7115,6 +7127,21 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     }
   }
+
+  window.handleMusicLike = function(songId) {
+    var btn = document.getElementById('mc-like-btn-' + songId);
+    if (!btn) return;
+    var key = 'sf_song_like_' + songId;
+    if (localStorage.getItem(key)) {
+      localStorage.removeItem(key);
+      btn.classList.remove('liked');
+      btn.querySelector('.mc-like-heart').textContent = '♡';
+    } else {
+      localStorage.setItem(key, '1');
+      btn.classList.add('liked');
+      btn.querySelector('.mc-like-heart').textContent = '♥';
+    }
+  };
 
   var PLAY_COUNT_KEY = 'sf_play_counts';
   function _getPlayCounts() { try { return JSON.parse(localStorage.getItem(PLAY_COUNT_KEY) || '{}'); } catch(e) { return {}; } }
