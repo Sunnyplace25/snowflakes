@@ -4427,25 +4427,25 @@
     <div class="section" id="live-archive-section" style="display:none;">
       <div class="section-label">live archive</div>
       <div style="max-width:480px;margin:0 auto;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:16px;text-align:center;">BACKSTAGE PASS</p>
 
-        <!-- 準備中の表示（LIVE_ARCHIVE_URL が空の間） -->
-        <div id="live-archive-pending" style="text-align:center;padding:32px 0;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">BACKSTAGE PASS</p>
-          <div onclick="openLiveArchivePendingPopup()" style="display:inline-block;cursor:pointer;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:28px 36px;background:rgba(255,255,255,0.03);transition:background 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.07)'" onmouseleave="this.style.background='rgba(255,255,255,0.03)'">
+        <!-- 横並びレイアウト（URL設定後）: YouTube左 / LIVE右 -->
+        <div id="live-archive-row" style="display:flex;gap:14px;align-items:stretch;">
+
+          <!-- YouTube 埋め込み（Shorts 9:16） -->
+          <div id="live-archive-video" style="flex:1;display:none;">
+            <div style="position:relative;width:100%;padding-top:177.78%;border-radius:12px;overflow:hidden;background:#0c1220;">
+              <iframe id="live-archive-iframe" src="" title="Snow flakes Live Archive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:12px;"></iframe>
+            </div>
+          </div>
+
+          <!-- LIVE カード -->
+          <div id="live-archive-pending" onclick="openLiveArchivePendingPopup()" style="flex:1;cursor:pointer;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(255,255,255,0.03);transition:background 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;padding:20px 12px;" onmouseenter="this.style.background='rgba(255,255,255,0.07)'" onmouseleave="this.style.background='rgba(255,255,255,0.03)'">
             <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:8px;color:#e2e8f0;margin-bottom:8px;">LIVE</p>
             <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#94a3b8;">▶ tap to enter</p>
           </div>
-        </div>
 
-        <!-- YouTube 埋め込み（LIVE_ARCHIVE_URL が設定されたら表示） -->
-        <div id="live-archive-video" style="display:none;">
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;text-align:center;margin-bottom:16px;">BACKSTAGE PASS</p>
-          <div style="position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#0c1220;">
-            <iframe id="live-archive-iframe" src="" title="Snow flakes Live Archive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:10px;"></iframe>
-          </div>
-          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#94a3b8;text-align:center;margin-top:14px;">Sound only — Live Recording</p>
         </div>
-
       </div>
     </div>
 
@@ -4982,8 +4982,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     // ── Live Archive ──
-    // 映像URLが決まったら下記に YouTube embed URL（例: 'https://www.youtube.com/embed/XXXXXXXX'）を入れる
-    var LIVE_ARCHIVE_URL = '';
+    var LIVE_ARCHIVE_URL = 'https://www.youtube.com/embed/HXui56etfSs';
 
     function checkLiveArchiveSection() {
       var hasPass = SfSnow.isUnlocked('backstage_pass');
@@ -4992,14 +4991,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (!hasPass) { sec.style.display = 'none'; return; }
       sec.style.display = '';
       if (LIVE_ARCHIVE_URL) {
-        document.getElementById('live-archive-pending').style.display = 'none';
         var videoWrap = document.getElementById('live-archive-video');
-        videoWrap.style.display = '';
+        videoWrap.style.display = 'block';
         var iframe = document.getElementById('live-archive-iframe');
         if (iframe && !iframe.src) iframe.src = LIVE_ARCHIVE_URL;
-      } else {
-        document.getElementById('live-archive-pending').style.display = '';
-        document.getElementById('live-archive-video').style.display = 'none';
       }
     }
 
