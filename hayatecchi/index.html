@@ -911,6 +911,7 @@
       'ずっと待ってる人がいるけど、連絡できなくて'
     ];
     var _ocSelected = [], _ocCustomerIdx = -1;
+    var _foodLastId = null;
 
     /* ── 食べ歩き図鑑 ── */
     var FOOD_ITEMS = [
@@ -1916,12 +1917,21 @@
     }
     function tryGetFoodItem() {
       if (!st.foodItems) st.foodItems = {};
+      if (Math.random() > 0.4) return null;
       var unseen = FOOD_ITEMS.filter(function(f) { return !st.foodItems[f.id]; });
-      if (unseen.length === 0 || Math.random() > 0.4) return null;
-      var got = unseen[Math.floor(Math.random() * unseen.length)];
-      st.foodItems[got.id] = true;
-      save();
-      checkCollectionComplete('food', '食べ歩き図鑑', '🍴', Object.keys(st.foodItems).length, FOOD_ITEMS.length);
+      var isLoop = unseen.length === 0;
+      var pool = isLoop
+        ? FOOD_ITEMS.filter(function(f) { return f.id !== _foodLastId; })
+        : unseen;
+      if (pool.length === 0) pool = FOOD_ITEMS;
+      var base = pool[Math.floor(Math.random() * pool.length)];
+      _foodLastId = base.id;
+      var got = { id: base.id, name: base.name, img: base.img, comment: base.comment, _isLoop: isLoop };
+      if (!isLoop) {
+        st.foodItems[got.id] = true;
+        save();
+        checkCollectionComplete('food', '食べ歩き図鑑', '🍴', Object.keys(st.foodItems).length, FOOD_ITEMS.length);
+      }
       return got;
     }
     function showFoodGet(item) {
@@ -1929,10 +1939,14 @@
       if (!el) return;
       var img = document.getElementById('food-get-img');
       if (img) { img.src = item.img || ''; img.style.display = item.img ? 'block' : 'none'; }
+      var header = document.getElementById('food-get-header');
+      if (header) header.textContent = item._isLoop ? '― 食べ歩き 語録 ―' : '― 食べ歩き図鑑 ゲット！ ―';
       document.getElementById('food-get-name').textContent = item.name;
       document.getElementById('food-get-comment').textContent = '「' + item.comment + '」';
       var collected = Object.keys(st.foodItems || {}).length;
-      document.getElementById('food-get-progress').textContent = collected + ' / ' + FOOD_ITEMS.length;
+      document.getElementById('food-get-progress').textContent = item._isLoop
+        ? 'コンプリート済み ✓'
+        : collected + ' / ' + FOOD_ITEMS.length;
       el.classList.add('show');
       el.onclick = function() { el.classList.remove('show'); };
     }
@@ -2476,7 +2490,7 @@
   <!-- 食べ物ゲットオーバーレイ -->
   <div class="sweets-get-overlay" id="food-get-overlay">
     <div class="sweets-get-box" style="border-color:rgba(253,186,116,0.35);max-width:270px;padding:36px 28px;">
-      <div style="font-size:9px;letter-spacing:4px;color:#fb923c;margin-bottom:14px;font-family:'Cormorant Garamond',serif;">― 食べ歩き図鑑 ゲット！ ―</div>
+      <div id="food-get-header" style="font-size:9px;letter-spacing:4px;color:#fb923c;margin-bottom:14px;font-family:'Cormorant Garamond',serif;">― 食べ歩き図鑑 ゲット！ ―</div>
       <img id="food-get-img" src="" alt="" style="width:80px;height:80px;object-fit:contain;image-rendering:pixelated;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
       <div id="food-get-name" style="font-family:'Noto Serif JP',serif;font-size:18px;color:#e2e8f0;margin-bottom:10px;"></div>
       <div id="food-get-comment" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;margin-bottom:12px;"></div>
