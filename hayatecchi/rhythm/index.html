@@ -773,44 +773,36 @@ async function onStartClick() {
         });
     }
 
-    // === プリロード済みデータを使用（なければその場でロード） ===
+    // === 音声ロード（先に完了させてからカウントダウン） ===
+    const audioResult = await (async () => {
+        if (_preloaded) {
+            const { audioBuf, chart } = _preloaded;
+            _preloaded = null;
+            setTimeout(_startPreload, 300);
+            return { buf: audioBuf, chart };
+        }
+        if (_preloadPromise) {
+            const result = await _preloadPromise;
+            _preloaded = null;
+            setTimeout(_startPreload, 300);
+            return result ? { buf: result.audioBuf, chart: result.chart }
+                          : { buf: null, chart: _fallbackChart() };
+        }
+        try {
+            const bgm = _pickNextBgm();
+            let arr = await _loadArrayBuffer(bgm).catch(async () => {
+                const fb = _ALL_BGMS.find(b => b.type === 'b64');
+                return fb ? _loadArrayBuffer(fb) : Promise.reject();
+            });
+            const buf = await audioCtx.decodeAudioData(arr);
+            const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
+            return { buf, chart };
+        } catch(e) {
+            return { buf: null, chart: _fallbackChart() };
+        }
+    })();
 
-    // カウントダウン と 音声準備 を並列実行
-    const [audioResult] = await Promise.all([
-        (async () => {
-            if (_preloaded) {
-                // プリロード済み → 即使用
-                const { audioBuf, chart } = _preloaded;
-                _preloaded = null;
-                setTimeout(_startPreload, 300);
-                return { buf: audioBuf, chart };
-            }
-            if (_preloadPromise) {
-                // プリロード進行中 → 完了を待つ（二重フェッチしない）
-                const result = await _preloadPromise;
-                _preloaded = null;
-                setTimeout(_startPreload, 300);
-                return result ? { buf: result.audioBuf, chart: result.chart }
-                              : { buf: null, chart: _fallbackChart() };
-            }
-            // どちらもない場合（まれ）: その場でロード
-            try {
-                const bgm = _pickNextBgm();
-                let arr = await _loadArrayBuffer(bgm).catch(async () => {
-                    const fb = _ALL_BGMS.find(b => b.type === 'b64');
-                    return fb ? _loadArrayBuffer(fb) : Promise.reject();
-                });
-                const buf = await audioCtx.decodeAudioData(arr);
-                const chart = beatsToChart(detectBeatsFromBuffer(buf), buf.duration);
-                return { buf, chart };
-            } catch(e) {
-                return { buf: null, chart: _fallbackChart() };
-            }
-        })(),
-        _skipCountdown ? Promise.resolve() : runCountdown(),
-    ]);
-
-    phase = 'ready'; // loadingLoop を停止させる
+    phase = 'ready'; // loadingLoop を停止
     audioBuffer = audioResult.buf;
     CHART       = audioResult.chart;
 
@@ -835,6 +827,9 @@ async function onStartClick() {
     } else {
         notes = CHART.map(n => ({...n, hit:false, missed:false}));
     }
+
+    // ロード完了後にカウントダウン（黒画面なし・準備できてから3-2-1）
+    if (!_skipCountdown) await runCountdown();
 
     startTime = audioCtx.currentTime;
     if (audioBuffer) {

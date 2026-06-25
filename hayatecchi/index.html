@@ -3283,38 +3283,28 @@
     function _startLiveRhythm() {
       var el     = document.getElementById('rhythm-live-overlay');
       var iframe = document.getElementById('rhythm-live-iframe');
-      var _iframeReady = false;
-      var _countdownDone = false;
-      var _hideCountdown = null; // カウントオーバーレイを消す関数（両条件揃ってから呼ぶ）
 
-      // onloadハンドラをsrc変更前に設定（変更後だとFirefoxで発火しない場合がある）
+      // onloadハンドラをsrc変更前に設定
       iframe.onload = null;
       iframe.onload = function() {
-        _iframeReady = true;
-        _tryLaunch();
-      };
-      iframe.src = './rhythm/?embed=1';
-
-      // カウントダウンを同時に開始
-      showLiveCountdown(function(hide) {
-        _hideCountdown = hide;
-        _countdownDone = true;
-        _tryLaunch();
-      });
-
-      function _tryLaunch() {
-        if (!_iframeReady || !_countdownDone) return;
-        // カウントを消してからリズムオーバーレイを表示（ホーム画面が一瞬見えるのを防止）
+        // iframe読み込み完了 → カウントダウンオーバーレイを閉じてリズム画面を表示
         if (_hideCountdown) { _hideCountdown(); _hideCountdown = null; }
         el.style.display = 'flex';
         setTimeout(function() {
+          // skipCountdown:false → iframe内でロード後に3-2-1カウント
           iframe.contentWindow.postMessage(
-            { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: true,
+            { type: 'rg-start', difficulty: _rgLiveDiff, skipCountdown: false,
               lastBgmIdx: (st.lastRgBgmIdx !== undefined ? st.lastRgBgmIdx : -1) }, '*'
           );
           setTimeout(function() { iframe.focus(); }, 100);
         }, 100);
-      }
+      };
+      iframe.src = './rhythm/?embed=1';
+
+      // 親カウントダウンはiframe読み込み中の画面切り替わり隠しとして表示
+      // （iframeロード完了でonload側からhide()を呼んで消す）
+      var _hideCountdown = null;
+      showLiveCountdown(function(hide) { _hideCountdown = hide; });
     }
 
     function closeRhythmLive() {
