@@ -3320,6 +3320,11 @@
       iframe.onload = null;   // ← 先にnull（これ以降のonload発火を封じる）
       el.style.display = 'none';
       iframe.src = '';        // ← onload=null後なので再発火しない。次回のリロードに必要
+      // ✕ボタンで途中終了した場合もCD設定（rg-resultが来ないのでここで保険として設定）
+      if (!st.cd.live || cdRemain('live') <= 0) {
+        st.cd.live = cdTime(CD_SEC.live);
+        save();
+      }
     }
 
     window.addEventListener('message', function(e) {
@@ -3405,6 +3410,11 @@
         el.pause();
       });
     }
+    // bfcache・タブ切り替え・ブラウザ←→ボタンでページが非表示になった際に音楽を停止
+    window.addEventListener('pagehide', function() { stopLiveBGM(); pauseAllAudio(); });
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') { stopLiveBGM(); pauseAllAudio(); }
+    });
     var _liveAudioEl = null;
     var _liveStartTime = 0;
     function startLiveBGM() {
