@@ -757,6 +757,11 @@
       <span class="intro-item">📖 語録</span>
       <span class="intro-item">🍴 食べ歩き</span>
     </div>
+    <div style="width:100%;max-width:240px;margin-bottom:20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-align:center;margin-bottom:8px;">YOUR NAME</p>
+      <input id="intro-name-input" type="text" maxlength="12" placeholder="名前を入力（任意）"
+        style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-size:13px;outline:none;text-align:center;-webkit-appearance:none;">
+    </div>
     <button class="intro-start" onclick="closeIntro()">— 始める —</button>
   </div>
 
@@ -1968,6 +1973,7 @@
     function openHowTo(e) {
       if (e) e.stopPropagation();
       document.getElementById('howto-modal').style.display = 'flex';
+      openHowToSettings();
       updateDiffUI();
       // ホーム追加導線
       var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -1992,6 +1998,26 @@
     }
     function closeHowTo() {
       document.getElementById('howto-modal').style.display = 'none';
+    }
+    function openHowToSettings() {
+      var input = document.getElementById('settings-name-input');
+      if (input) input.value = st.name || '';
+    }
+    function saveSettingsName() {
+      var input = document.getElementById('settings-name-input');
+      if (!input) return;
+      st.name = input.value.trim();
+      save();
+      flash(st.name ? '「' + st.name + '」で保存したよ' : '名前を削除したよ');
+    }
+    function confirmReset() {
+      document.getElementById('reset-confirm-dialog').style.display = 'flex';
+    }
+    function executeReset() {
+      localStorage.removeItem('hayatecchi_v1');
+      localStorage.removeItem('ht_intro_seen');
+      localStorage.removeItem('ht_unlocked');
+      location.reload();
     }
   </script>
 
@@ -2255,6 +2281,42 @@
         </div>
 
 
+        <div>
+          <div style="font-size:10px;letter-spacing:4px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">SETTINGS</div>
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;">
+
+            <!-- ユーザー名 -->
+            <div>
+              <p style="font-size:10px;letter-spacing:2px;color:#64748b;margin-bottom:8px;">あなたの名前</p>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input id="settings-name-input" type="text" maxlength="12"
+                  style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-size:13px;outline:none;-webkit-appearance:none;">
+                <button onclick="saveSettingsName()" style="padding:8px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;">保存</button>
+              </div>
+            </div>
+
+            <!-- データリセット -->
+            <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;">
+              <p style="font-size:10px;letter-spacing:2px;color:#64748b;margin-bottom:8px;">データ管理</p>
+              <button onclick="confirmReset()" style="width:100%;padding:10px 0;background:rgba(252,165,165,0.06);border:1px solid rgba(252,165,165,0.2);border-radius:8px;color:#fca5a5;font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:1px;cursor:pointer;-webkit-tap-highlight-color:transparent;">最初からやり直す</button>
+              <p style="font-size:10px;color:#334155;margin-top:6px;text-align:center;">※ セーブデータ・図鑑・語録がすべて消えます</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- リセット確認ダイアログ -->
+  <div id="reset-confirm-dialog" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(4,8,18,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:24px;">
+    <div style="background:#0f1829;border:1px solid rgba(252,165,165,0.2);border-radius:20px;padding:28px 24px;max-width:300px;width:100%;text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:16px;">DATA RESET</p>
+      <p style="font-size:13px;color:#e2e8f0;line-height:2;margin-bottom:24px;">セーブデータ・図鑑・語録など<br>すべて削除されます。<br>本当にやり直しますか？</p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('reset-confirm-dialog').style.display='none';" style="flex:1;padding:10px 0;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:100px;color:#64748b;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;">キャンセル</button>
+        <button onclick="executeReset()" style="flex:1;padding:10px 0;background:rgba(252,165,165,0.1);border:1px solid rgba(252,165,165,0.4);border-radius:100px;color:#fca5a5;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;">リセット</button>
       </div>
     </div>
   </div>
@@ -2651,6 +2713,7 @@
 
     /* ── 状態 ── */
     var st = {
+      name: '',
       onaka: 80, suimin: 80, yaruki: 70, kibun: 75,
       renshuGe: 75, skill: 0, liveCount: 0, sweets: 0,
       onigiriCount: 3,
@@ -2671,6 +2734,7 @@
         if (!st.cd) st.cd = {};
         delete st.cd.meshi;      // meshiはCDなし（旧データ対策）
         delete st.cd.forceSleep; // forceSleepは起動時にリセット（旧データ対策）
+        if (st.name      === undefined) st.name      = '';
         if (st.renshuGe === undefined) st.renshuGe = 75;
         if (st.sweets   === undefined) st.sweets   = 0;
         if (st.kibun     === undefined) st.kibun     = 75;
@@ -4098,6 +4162,11 @@
       setTimeout(function() { el.classList.add('show'); }, 50);
     }
     function closeIntro() {
+      var nameInput = document.getElementById('intro-name-input');
+      if (nameInput && nameInput.value.trim()) {
+        st.name = nameInput.value.trim();
+        save();
+      }
       localStorage.setItem('ht_intro_seen', '1');
       var el = document.getElementById('intro-screen');
       if (!el) return;
