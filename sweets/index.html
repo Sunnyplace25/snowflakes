@@ -6517,7 +6517,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">note' + (_nkHasItem ? '<span class="nc-new" style="color:' + _nkColor + ';">アイテムあり</span>' : '') + '</div>' +
+      c.innerHTML = '<div class="nc-tag">note'
+        + (!unlocked ? '<span class="nc-new" style="color:#e2e8f0;border-color:rgba(226,232,240,0.3);">NEW</span>' : '')
+        + (_nkHasItem ? '<span class="nc-new" style="color:' + _nkColor + ';">アイテムあり</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '読む ›' : 'プロテインコーヒー × 1') + '</div>';
       drum.appendChild(c);
@@ -6933,7 +6935,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">music</div>' +
+      c.innerHTML = '<div class="nc-tag">music' + (!unlocked ? '<span class="nc-new" style="color:#f9a8d4;border-color:rgba(249,168,212,0.35);">NEW</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
         '<div class="nc-status">' + (unlocked ? '▶ 聴く ›' : 'ギターピック × ' + item.cost.pick) + '</div>';
       drum.appendChild(c);
