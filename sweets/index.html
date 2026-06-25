@@ -4435,7 +4435,7 @@
           <!-- YouTube 埋め込み（Shorts 9:16） -->
           <div id="live-archive-video" style="flex:1;display:none;">
             <div style="position:relative;width:100%;padding-top:177.78%;border-radius:12px;overflow:hidden;background:#0c1220;">
-              <iframe id="live-archive-iframe" src="" title="Snow flakes Live Archive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:12px;"></iframe>
+              <iframe id="live-archive-iframe" title="Snow flakes Live Archive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border-radius:12px;"></iframe>
             </div>
           </div>
 
@@ -4982,7 +4982,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
 
     // ── Live Archive ──
-    var LIVE_ARCHIVE_URL = 'https://www.youtube.com/embed/HXui56etfSs';
+    var LIVE_ARCHIVE_URL = 'https://www.youtube.com/embed/HXui56etfSs?mute=1';
 
     function checkLiveArchiveSection() {
       var hasPass = SfSnow.isUnlocked('backstage_pass');
@@ -4994,7 +4994,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var videoWrap = document.getElementById('live-archive-video');
         videoWrap.style.display = 'block';
         var iframe = document.getElementById('live-archive-iframe');
-        if (iframe && !iframe.src) iframe.src = LIVE_ARCHIVE_URL;
+        if (iframe && iframe.src !== LIVE_ARCHIVE_URL) iframe.src = LIVE_ARCHIVE_URL;
       }
     }
 
