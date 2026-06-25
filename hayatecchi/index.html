@@ -1752,6 +1752,9 @@
     }
 
     // ── コレクションコンプリートポップアップ ──
+    var _completeQueue = [];
+    var _completeFlushTimer = null;
+
     function showCompletePop(name, emoji) {
       var el = document.createElement('div');
       el.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(4,8,18,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;';
@@ -1763,13 +1766,24 @@
         '<button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:none;border:1px solid rgba(196,181,253,0.35);border-radius:100px;color:#c4b5fd;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:4px;padding:10px 32px;cursor:pointer;">と じ る</button>';
       document.body.appendChild(el);
     }
+    function flushCompleteQueue() {
+      clearTimeout(_completeFlushTimer);
+      if (_completeQueue.length === 0) return;
+      var item = _completeQueue.shift();
+      setTimeout(function() {
+        showCompletePop(item.name, item.emoji);
+      }, 300);
+    }
     function checkCollectionComplete(key, name, emoji, count, total) {
       if (count < total) return;
       if (!st.shownComplete) st.shownComplete = {};
       if (st.shownComplete[key]) return;
       st.shownComplete[key] = true;
       save();
-      setTimeout(function() { showCompletePop(name, emoji); }, 700);
+      _completeQueue.push({ name: name, emoji: emoji });
+      // フォールバック: 図鑑ゲット表示がない場合（語録・カクテル等）は2.5秒後に表示
+      clearTimeout(_completeFlushTimer);
+      _completeFlushTimer = setTimeout(flushCompleteQueue, 2500);
     }
 
     function openZukanHub(e) {
@@ -1948,7 +1962,7 @@
         ? 'コンプリート済み ✓'
         : collected + ' / ' + FOOD_ITEMS.length;
       el.classList.add('show');
-      el.onclick = function() { el.classList.remove('show'); };
+      el.onclick = function() { el.classList.remove('show'); flushCompleteQueue(); };
     }
 
     function openHowTo(e) {
@@ -3732,6 +3746,7 @@
     function closeSweetsGet() {
       var el = document.getElementById('sweets-get-overlay');
       if (el) el.classList.remove('show');
+      flushCompleteQueue();
     }
 
     function closeLive() {
@@ -3771,6 +3786,8 @@
       } else if (_pendingSweetsGet) {
         _pendingSweetsGet = false;
         setTimeout(showSweetsGet, 300);
+      } else {
+        flushCompleteQueue();
       }
     }
 
@@ -3794,6 +3811,8 @@
       if (_pendingSweetsGet) {
         _pendingSweetsGet = false;
         setTimeout(showSweetsGet, 300);
+      } else {
+        flushCompleteQueue();
       }
     }
 
