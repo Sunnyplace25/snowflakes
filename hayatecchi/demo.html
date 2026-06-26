@@ -154,7 +154,7 @@
       z-index: 90;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.4s ease;
+      transition: opacity 1.2s ease;
     }
   </style>
 </head>
@@ -244,17 +244,14 @@
   bgm.play().catch(function(){});
 
   function showScene(idx) {
-    // 暗転
     curtain.style.opacity = '1';
     setTimeout(function(){
-      // 前のシーンを非表示
       scenes.forEach(function(id){
         document.getElementById(id).classList.remove('active');
       });
-      // 新しいシーンを表示
       document.getElementById(scenes[idx]).classList.add('active');
       curtain.style.opacity = '0';
-    }, 400);
+    }, 1200);
   }
 
   function next() {
@@ -263,7 +260,7 @@
     var dur = durations[cur];
     cur++;
     if (cur < scenes.length) {
-      setTimeout(next, dur + 400);
+      setTimeout(next, dur + 1200);
     }
   }
 
