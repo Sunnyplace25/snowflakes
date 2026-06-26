@@ -4,144 +4,113 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ハヤテっち — Opening</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300&family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      width: 100%; height: 100%;
-      background: #000;
-      overflow: hidden;
-      font-family: 'Noto Serif JP', serif;
-    }
+    html, body { width: 100%; height: 100%; background: #060d1a; overflow: hidden; }
 
     #op {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: #060d1a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    /* ── シーン共通 ── */
-    .scene {
-      position: absolute;
-      inset: 0;
+    /* ── スマホ4枚 ── */
+    #phones {
       display: flex;
+      gap: clamp(12px, 3vw, 28px);
       align-items: center;
       justify-content: center;
+      padding: 0 20px;
+    }
+
+    .slot {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 10px;
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
+      transform: translateY(20px);
     }
-    .scene.active {
-      opacity: 1;
-      pointer-events: auto;
+    .slot:nth-child(1) { animation: slideUp 0.6s ease 0.5s forwards; }
+    .slot:nth-child(2) { animation: slideUp 0.6s ease 1.0s forwards; }
+    .slot:nth-child(3) { animation: slideUp 0.6s ease 1.5s forwards; }
+    .slot:nth-child(4) { animation: slideUp 0.6s ease 2.0s forwards; }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── ゲーム画面シーン ── */
-    #scene-game {
-      flex-direction: row;
-      gap: clamp(16px, 4vw, 32px);
-      padding: 0 24px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .phone-slot {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
-    }
-    .phone-slot.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .phone-frame {
+    .frame {
       background: #080f1e;
       border: 1.5px solid rgba(253,230,138,0.25);
-      border-radius: clamp(14px, 3vw, 20px);
+      border-radius: clamp(12px,2.5vw,18px);
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 0 0 2.5px rgba(8,15,30,0.9);
-      width: clamp(100px, 22vw, 160px);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.7);
+      width: clamp(80px, 20vw, 150px);
     }
+    .frame img { width: 100%; display: block; }
 
-    .phone-frame img {
-      width: 100%;
-      display: block;
-    }
-
-    .phone-label {
+    .cap {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(8px, 2vw, 10px);
+      font-size: clamp(8px, 1.8vw, 10px);
       letter-spacing: 0.35em;
-      color: rgba(253,230,138,0.4);
-      text-transform: uppercase;
+      color: rgba(253,230,138,0.35);
     }
 
-    /* ── タイトルシーン ── */
-    #scene-title {
-      flex-direction: column;
+    /* ── タイトル ── */
+    #title-wrap {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       gap: 14px;
       background: #060d1a;
+      opacity: 0;
+      animation: titleIn 1s ease 4.2s forwards;
     }
 
-    .title-eyebrow {
+    @keyframes titleIn { to { opacity: 1; } }
+
+    .t-eye {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(9px, 2.5vw, 11px);
       letter-spacing: 0.5em;
       color: rgba(253,230,138,0.35);
       opacity: 0;
-      transition: opacity 0.8s ease;
+      animation: fadeIn 0.8s ease 4.6s forwards;
     }
-
-    .title-main {
+    .t-main {
       font-family: 'Noto Serif JP', serif;
       font-weight: 300;
-      font-size: clamp(36px, 11vw, 58px);
-      letter-spacing: 0.2em;
+      font-size: clamp(36px, 11vw, 56px);
+      letter-spacing: 0.22em;
       color: #fde68a;
       opacity: 0;
-      transform: scale(0.94);
-      transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
+      transform: scale(0.95);
+      animation: logoIn 1s ease 4.9s forwards;
     }
 
-    #scene-title.active .title-eyebrow { opacity: 1; }
-    #scene-title.active .title-main    { opacity: 1; transform: scale(1); }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes logoIn { to { opacity: 1; transform: scale(1); } }
 
-    /* ── フラッシュ・暗転 ── */
-    #flash {
-      position: fixed; inset: 0;
-      background: #fff;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.1s ease;
-      z-index: 10;
-    }
+    /* ── 暗転アウト ── */
     #curtain {
       position: fixed; inset: 0;
       background: #000;
       opacity: 0; pointer-events: none;
-      z-index: 20;
-      transition: opacity 0.7s ease;
+      z-index: 50;
+      animation: curtainOut 0.8s ease 7.5s forwards;
     }
+    @keyframes curtainOut { to { opacity: 1; } }
 
     /* ── スキップ ── */
     #skip {
-      position: fixed;
-      bottom: 28px; right: 24px;
+      position: fixed; bottom: 28px; right: 24px;
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px; letter-spacing: 0.3em;
-      color: rgba(255,255,255,0.12);
-      z-index: 5;
-      transition: opacity 0.5s;
+      color: rgba(255,255,255,0.2);
+      background: none; border: none; cursor: pointer;
+      z-index: 60;
+      -webkit-tap-highlight-color: transparent;
+      animation: fadeIn 0.6s ease 1s forwards;
       opacity: 0;
     }
   </style>
@@ -150,135 +119,77 @@
 
 <div id="op">
 
-  <!-- ゲーム画面シーン -->
-  <div class="scene" id="scene-game">
-    <div class="phone-slot" id="slot0">
-      <div class="phone-frame"><img src="../hayatecchi_status.webp" alt="STATUS"></div>
-      <span class="phone-label">Status</span>
+  <!-- スマホ4枚 -->
+  <div id="phones">
+    <div class="slot">
+      <div class="frame"><img src="../hayatecchi_status.webp" alt="Status"></div>
+      <span class="cap">Status</span>
     </div>
-    <div class="phone-slot" id="slot1">
-      <div class="phone-frame"><img src="../hayatecchi_drum.jpg" alt="DRUM"></div>
-      <span class="phone-label">Drum</span>
+    <div class="slot">
+      <div class="frame"><img src="../hayatecchi_drum.jpg" alt="Drum"></div>
+      <span class="cap">Drum</span>
     </div>
-    <div class="phone-slot" id="slot2">
-      <div class="phone-frame"><img src="../hayatecchi_bar.webp" alt="BAR"></div>
-      <span class="phone-label">Bar Stars</span>
+    <div class="slot">
+      <div class="frame"><img src="../hayatecchi_bar.webp" alt="Bar"></div>
+      <span class="cap">Bar Stars</span>
     </div>
-    <div class="phone-slot" id="slot3">
-      <div class="phone-frame"><img src="../hayatecchi_collection.webp" alt="COLLECTION"></div>
-      <span class="phone-label">Collection</span>
+    <div class="slot">
+      <div class="frame"><img src="../hayatecchi_collection.webp" alt="Collection"></div>
+      <span class="cap">Collection</span>
     </div>
   </div>
 
-  <!-- タイトルシーン -->
-  <div class="scene" id="scene-title">
-    <p class="title-eyebrow">Snow flakes presents</p>
-    <p class="title-main">ハヤテっち</p>
+  <!-- タイトル -->
+  <div id="title-wrap">
+    <p class="t-eye">Snow flakes presents</p>
+    <p class="t-main">ハヤテっち</p>
   </div>
 
 </div>
 
-<div id="flash"></div>
+<!-- 暗転 -->
 <div id="curtain"></div>
-<p id="skip">tap to skip</p>
+
+<!-- スキップ -->
+<button id="skip" onclick="skipOpening()">tap to skip</button>
 
 <audio id="bgm" src="bgm.mp3" preload="auto"></audio>
 
 <script>
-(function() {
-  var ended = false;
-  var timers = [];
+  // BGM
+  var bgm = document.getElementById('bgm');
+  bgm.volume = 0.15;
+  bgm.play().catch(function(){});
 
-  function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
-  function clearAll() { timers.forEach(clearTimeout); }
+  // 終了タイマー
+  var endTimer = setTimeout(function() {
+    onEnd();
+  }, 8300);
 
-  var bgm     = document.getElementById('bgm');
-  var flash   = document.getElementById('flash');
-  var curtain = document.getElementById('curtain');
-  var skip    = document.getElementById('skip');
-  var sceneGame  = document.getElementById('scene-game');
-  var sceneTi    = document.getElementById('scene-title');
-  var slots   = [0,1,2,3].map(function(i){ return document.getElementById('slot'+i); });
-
-  function fadeBgm(targetVol, duration) {
-    var start = bgm.volume;
-    var steps = Math.ceil(duration / 30);
-    var step = 0;
-    var iv = setInterval(function() {
-      step++;
-      bgm.volume = Math.max(0, Math.min(1, start + (targetVol - start) * (step / steps)));
-      if (step >= steps) clearInterval(iv);
-    }, 30);
+  function skipOpening() {
+    clearTimeout(endTimer);
+    onEnd();
   }
 
-  function doFlash() {
-    flash.style.opacity = '0.9';
-    setTimeout(function(){ flash.style.opacity = '0'; }, 120);
-  }
-
-  function finish() {
-    if (ended) return;
-    ended = true;
-    clearAll();
-
-    fadeBgm(0, 600);
-    curtain.style.opacity = '1';
-
+  function onEnd() {
+    document.getElementById('curtain').style.animation = 'none';
+    document.getElementById('curtain').style.opacity = '1';
+    bgm.pause();
     setTimeout(function() {
       document.getElementById('op').style.display = 'none';
-      curtain.style.opacity = '0';
+      document.getElementById('curtain').style.opacity = '0';
       if (typeof window.HayatecchiOpeningEnd === 'function') {
         window.HayatecchiOpeningEnd();
       }
-    }, 700);
+    }, 800);
   }
 
-  function play() {
-    bgm.volume = 0;
+  window.HayatecchiOpening = { play: function(cb) {
+    window.HayatecchiOpeningEnd = cb;
     bgm.currentTime = 0;
+    bgm.volume = 0.15;
     bgm.play().catch(function(){});
-
-    // BGMフェードイン
-    at(300, function(){ fadeBgm(0.2, 800); });
-
-    // スキップヒント
-    at(600, function(){ skip.style.opacity = '1'; });
-
-    // ゲーム画面シーン
-    at(400, function(){ sceneGame.classList.add('active'); });
-
-    // スロットを順に出す
-    at(600,  function(){ slots[0].classList.add('show'); });
-    at(1100, function(){ slots[1].classList.add('show'); });
-    at(1600, function(){ slots[2].classList.add('show'); });
-    at(2100, function(){ slots[3].classList.add('show'); });
-
-    // フラッシュ → タイトルへ
-    at(4000, function(){
-      sceneGame.style.transition = 'opacity 0.4s ease';
-      sceneGame.style.opacity = '0';
-    });
-    at(4400, function(){
-      sceneGame.classList.remove('active');
-      doFlash();
-    });
-    at(4550, function(){
-      sceneTi.classList.add('active');
-    });
-
-    // 終了
-    at(7200, function(){ finish(); });
-  }
-
-  // スキップ
-  document.getElementById('op').addEventListener('click', finish);
-  skip.addEventListener('click', finish);
-
-  // 外部から使えるようにする
-  window.HayatecchiOpening = { play: play };
-
-  play();
-})();
+  }};
 </script>
 
 </body>
