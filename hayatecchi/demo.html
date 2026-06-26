@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ハヤテっち — Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 縦動画想定：9:16の枠 */
+    #stage {
+      position: relative;
+      width: min(100vw, calc(100vh * 9 / 16));
+      height: min(100vh, calc(100vw * 16 / 9));
+      background: #060d1a;
+      overflow: hidden;
+    }
+
+    /* ── 各シーン共通 ── */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .scene.active { opacity: 1; }
+
+    /* ── シーン1: タイトル ── */
+    #s-title {
+      background: #060d1a;
+      gap: 0;
+    }
+    #s-title img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    /* ── シーン2〜5: ゲーム画面 ── */
+    .game-scene {
+      background: #060d1a;
+      gap: 0;
+      padding: 0;
+    }
+
+    .scene-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(18px) brightness(0.3);
+      transform: scale(1.1);
+      transition: none;
+    }
+
+    .scene-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding: 0 32px;
+      gap: 20px;
+    }
+
+    .scene-label-top {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(9px, 2.5vw, 12px);
+      letter-spacing: 0.45em;
+      color: rgba(253,230,138,0.5);
+      text-transform: uppercase;
+    }
+
+    .scene-phone {
+      width: min(62%, 240px);
+      background: #080f1e;
+      border: 1.5px solid rgba(253,230,138,0.3);
+      border-radius: clamp(14px, 4vw, 22px);
+      overflow: hidden;
+      box-shadow:
+        0 0 60px rgba(253,230,138,0.12),
+        0 12px 48px rgba(0,0,0,0.8);
+    }
+    .scene-phone img { width: 100%; display: block; }
+
+    .scene-caption {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: clamp(12px, 3.5vw, 16px);
+      color: #e2e8f0;
+      letter-spacing: 0.12em;
+      text-align: center;
+      line-height: 1.9;
+    }
+
+    /* ── シーン6: エンド ── */
+    #s-end {
+      background: #060d1a;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .end-eye {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(9px, 2.5vw, 11px);
+      letter-spacing: 0.5em;
+      color: rgba(253,230,138,0.4);
+    }
+    .end-title {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: clamp(36px, 10vw, 52px);
+      letter-spacing: 0.2em;
+      color: #fde68a;
+    }
+    .end-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(9px, 2.5vw, 11px);
+      letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.2);
+      margin-top: 8px;
+    }
+
+    /* ── プログレスバー ── */
+    #progress {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px;
+      background: rgba(253,230,138,0.5);
+      width: 0%;
+      z-index: 100;
+    }
+
+    /* ── 暗転 ── */
+    #curtain {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 90;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- シーン1: タイトル -->
+  <div class="scene" id="s-title">
+    <img src="splash.webp" alt="ハヤテっち">
+  </div>
+
+  <!-- シーン2: ステータス -->
+  <div class="scene game-scene" id="s-status">
+    <div class="scene-bg" style="background-image:url('../hayatecchi_status.webp')"></div>
+    <div class="scene-content">
+      <p class="scene-label-top">Status</p>
+      <div class="scene-phone">
+        <img src="../hayatecchi_status.webp" alt="ステータス">
+      </div>
+      <p class="scene-caption">ハヤテの日常に<br>入り込む</p>
+    </div>
+  </div>
+
+  <!-- シーン3: ドラム -->
+  <div class="scene game-scene" id="s-drum">
+    <div class="scene-bg" style="background-image:url('../hayatecchi_drum.jpg')"></div>
+    <div class="scene-content">
+      <p class="scene-label-top">Drum Practice</p>
+      <div class="scene-phone">
+        <img src="../hayatecchi_drum.jpg" alt="ドラム練習">
+      </div>
+      <p class="scene-caption">連打で腕を磨く</p>
+    </div>
+  </div>
+
+  <!-- シーン4: バー -->
+  <div class="scene game-scene" id="s-bar">
+    <div class="scene-bg" style="background-image:url('../hayatecchi_bar.webp')"></div>
+    <div class="scene-content">
+      <p class="scene-label-top">Bar Stars</p>
+      <div class="scene-phone">
+        <img src="../hayatecchi_bar.webp" alt="バーSTARS">
+      </div>
+      <p class="scene-caption">バーテンダー体験</p>
+    </div>
+  </div>
+
+  <!-- シーン5: コレクション -->
+  <div class="scene game-scene" id="s-col">
+    <div class="scene-bg" style="background-image:url('../hayatecchi_collection.webp')"></div>
+    <div class="scene-content">
+      <p class="scene-label-top">Collection</p>
+      <div class="scene-phone">
+        <img src="../hayatecchi_collection.webp" alt="コレクション">
+      </div>
+      <p class="scene-caption">図鑑を集める</p>
+    </div>
+  </div>
+
+  <!-- シーン6: エンド -->
+  <div class="scene" id="s-end">
+    <p class="end-eye">Snow flakes presents</p>
+    <p class="end-title">ハヤテっち</p>
+    <p class="end-sub">web game ¥100</p>
+  </div>
+
+  <div id="progress"></div>
+  <div id="curtain"></div>
+</div>
+
+<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+
+<script>
+(function(){
+  var scenes = ['s-title','s-status','s-drum','s-bar','s-col','s-end'];
+  // 各シーンの表示時間(ms)
+  var durations = [2800, 3000, 3000, 3000, 3000, 3500];
+  var cur = 0;
+  var curtain = document.getElementById('curtain');
+  var progress = document.getElementById('progress');
+  var bgm = document.getElementById('bgm');
+  var total = durations.reduce(function(a,b){ return a+b; }, 0) + scenes.length * 600;
+  var elapsed = 0;
+  var startTime = null;
+
+  bgm.volume = 0.18;
+  bgm.play().catch(function(){});
+
+  function showScene(idx) {
+    // 暗転
+    curtain.style.opacity = '1';
+    setTimeout(function(){
+      // 前のシーンを非表示
+      scenes.forEach(function(id){
+        document.getElementById(id).classList.remove('active');
+      });
+      // 新しいシーンを表示
+      document.getElementById(scenes[idx]).classList.add('active');
+      curtain.style.opacity = '0';
+    }, 400);
+  }
+
+  function next() {
+    if (cur >= scenes.length) return;
+    showScene(cur);
+    var dur = durations[cur];
+    cur++;
+    if (cur < scenes.length) {
+      setTimeout(next, dur + 400);
+    }
+  }
+
+  // プログレスバー
+  function updateProgress(ts) {
+    if (!startTime) startTime = ts;
+    elapsed = ts - startTime;
+    var pct = Math.min(100, elapsed / total * 100);
+    progress.style.width = pct + '%';
+    if (pct < 100) requestAnimationFrame(updateProgress);
+  }
+
+  next();
+  requestAnimationFrame(updateProgress);
+})();
+</script>
+</body>
+</html>
