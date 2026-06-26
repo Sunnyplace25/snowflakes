@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ハヤテっち — Opening</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #op {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* テキストシーン */
+    #scene-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 28px;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .op-line {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: clamp(13px, 4vw, 16px);
+      color: #94a3b8;
+      letter-spacing: 0.18em;
+      line-height: 2;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .op-line.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* タイトルシーン */
+    #scene-title {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    #scene-title.show {
+      opacity: 1;
+    }
+
+    .op-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(9px, 2.5vw, 11px);
+      letter-spacing: 0.5em;
+      color: rgba(253,230,138,0.4);
+    }
+
+    .op-logo {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: clamp(32px, 10vw, 52px);
+      letter-spacing: 0.2em;
+      color: #fde68a;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.9s ease 0.3s, transform 0.9s ease 0.3s;
+    }
+
+    #scene-title.show .op-logo {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* スキップ */
+    #skip-hint {
+      position: absolute;
+      bottom: 36px;
+      right: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.15);
+      opacity: 0;
+      transition: opacity 0.6s;
+    }
+
+    /* 白フラッシュ */
+    #flash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.12s ease;
+    }
+
+    /* 暗転オーバーレイ */
+    #fade-out {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div id="op">
+
+  <!-- テキストシーン -->
+  <div id="scene-text">
+    <p class="op-line" id="line1">バンドを組んで、何年が経ったんだろう。</p>
+    <p class="op-line" id="line2">今日も、どこかで音を鳴らしている。</p>
+  </div>
+
+  <!-- タイトルシーン -->
+  <div id="scene-title">
+    <p class="op-eyebrow">Snow flakes presents</p>
+    <p class="op-logo">ハヤテっち</p>
+  </div>
+
+  <!-- 白フラッシュ -->
+  <div id="flash"></div>
+
+  <!-- 暗転 -->
+  <div id="fade-out"></div>
+
+  <!-- スキップ -->
+  <p id="skip-hint">tap to skip</p>
+
+</div>
+
+<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+
+<script>
+(function() {
+  var skipped = false;
+  var onEnd = null; // オープニング終了後のコールバック
+
+  // ── タイムライン ──
+  // 0.0s  暗転スタート
+  // 0.8s  BGMフェードイン
+  // 1.0s  テキストシーン表示
+  // 2.0s  line1 表示
+  // 3.8s  line2 表示
+  // 6.5s  テキストシーン フェードアウト
+  // 7.2s  白フラッシュ
+  // 7.4s  タイトルシーン表示
+  // 9.5s  暗転 → 終了
+
+  var timers = [];
+  function at(ms, fn) {
+    timers.push(setTimeout(fn, ms));
+  }
+
+  function clearAll() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function end() {
+    if (skipped) return;
+    skipped = true;
+    clearAll();
+
+    // BGMフェードアウト
+    var bgm = document.getElementById('bgm');
+    var vol = bgm.volume;
+    var fade = setInterval(function() {
+      vol = Math.max(0, vol - 0.05);
+      bgm.volume = vol;
+      if (vol <= 0) {
+        clearInterval(fade);
+        bgm.pause();
+      }
+    }, 40);
+
+    // 暗転して終了
+    var fadeOut = document.getElementById('fade-out');
+    fadeOut.style.transition = 'opacity 0.6s ease';
+    fadeOut.style.opacity = '1';
+
+    setTimeout(function() {
+      document.getElementById('op').style.display = 'none';
+      if (typeof onEnd === 'function') onEnd();
+    }, 650);
+  }
+
+  function play() {
+    var sceneText  = document.getElementById('scene-text');
+    var sceneTi    = document.getElementById('scene-title');
+    var line1      = document.getElementById('line1');
+    var line2      = document.getElementById('line2');
+    var flash      = document.getElementById('flash');
+    var skipHint   = document.getElementById('skip-hint');
+    var bgm        = document.getElementById('bgm');
+
+    // BGM 小音量でスタート
+    bgm.volume = 0;
+    bgm.currentTime = 0;
+    bgm.play().catch(function(){});
+
+    at(600, function() {
+      // BGMフェードイン
+      var v = 0;
+      var fi = setInterval(function() {
+        v = Math.min(0.18, v + 0.01);
+        bgm.volume = v;
+        if (v >= 0.18) clearInterval(fi);
+      }, 60);
+    });
+
+    at(800, function() {
+      sceneText.style.opacity = '1';
+      skipHint.style.opacity = '1';
+    });
+
+    at(1600, function() { line1.classList.add('show'); });
+    at(3400, function() { line2.classList.add('show'); });
+
+    at(6200, function() {
+      sceneText.style.transition = 'opacity 0.9s ease';
+      sceneText.style.opacity = '0';
+    });
+
+    at(7000, function() {
+      // 白フラッシュ
+      flash.style.opacity = '0.85';
+      setTimeout(function() {
+        flash.style.opacity = '0';
+      }, 120);
+    });
+
+    at(7150, function() {
+      sceneTi.classList.add('show');
+    });
+
+    at(9800, function() {
+      end();
+    });
+  }
+
+  // スキップ
+  document.getElementById('op').addEventListener('click', function() {
+    end();
+  });
+
+  // 外部から終了後処理を設定できるようにする
+  window.HayatecchiOpening = {
+    play: function(callback) {
+      onEnd = callback || null;
+      skipped = false;
+      play();
+    }
+  };
+
+  // このページ単体で開いたときはそのまま再生
+  play();
+
+})();
+</script>
+
+</body>
+</html>
