@@ -202,7 +202,24 @@
     </div>
   </div>
 
-  <!-- シーン5: コレクション -->
+  <!-- シーン5: LIVE（HTML再現） -->
+  <div class="scene game-scene" id="s-live">
+    <div class="scene-bg" style="background-image:url('hayate_live_end.webp')"></div>
+    <div class="scene-content">
+      <p class="scene-label-top">Live</p>
+      <div class="scene-phone" style="background:#050a18;padding:16px 12px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(8px,2vw,11px);letter-spacing:5px;color:rgba(253,230,138,0.6);">LIVE</p>
+        <img src="hayate_live_end.webp" alt="LIVE" style="width:55%;border-radius:8px;object-fit:cover;">
+        <div id="live-ring" style="width:clamp(44px,12vw,60px);height:clamp(44px,12vw,60px);border-radius:50%;border:2px solid rgba(253,230,138,0.6);background:rgba(253,230,138,0.1);display:flex;align-items:center;justify-content:center;">
+          <div style="width:40%;height:40%;border-radius:50%;background:rgba(253,230,138,0.35);"></div>
+        </div>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(7px,1.8vw,9px);letter-spacing:3px;color:rgba(253,230,138,0.3);">TAP</p>
+      </div>
+      <p class="scene-caption">音楽に合わせてタップ</p>
+    </div>
+  </div>
+
+  <!-- シーン6: コレクション -->
   <div class="scene game-scene" id="s-col">
     <div class="scene-bg" style="background-image:url('../hayatecchi_collection.webp')"></div>
     <div class="scene-content">
@@ -229,9 +246,9 @@
 
 <script>
 (function(){
-  var scenes = ['s-title','s-status','s-drum','s-bar','s-col','s-end'];
+  var scenes = ['s-title','s-status','s-drum','s-live','s-bar','s-col','s-end'];
   // 各シーンの表示時間(ms)
-  var durations = [2800, 3000, 3000, 3000, 3000, 3500];
+  var durations = [2800, 3000, 3000, 3000, 3000, 3000, 3500];
   var cur = 0;
   var curtain = document.getElementById('curtain');
   var progress = document.getElementById('progress');
