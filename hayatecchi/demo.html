@@ -154,7 +154,7 @@
       z-index: 90;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      transition: opacity 0.8s ease;
     }
   </style>
 </head>
@@ -261,14 +261,19 @@
   bgm.play().catch(function(){});
 
   function showScene(idx) {
+    // 暗転（0.8s）
     curtain.style.opacity = '1';
     setTimeout(function(){
+      // 完全に黒になってからシーン切り替え
       scenes.forEach(function(id){
         document.getElementById(id).classList.remove('active');
       });
       document.getElementById(scenes[idx]).classList.add('active');
-      curtain.style.opacity = '0';
-    }, 1200);
+      // 少し待ってから明転（0.8s）
+      setTimeout(function(){
+        curtain.style.opacity = '0';
+      }, 200);
+    }, 900);
   }
 
   function next() {
@@ -277,7 +282,8 @@
     var dur = durations[cur];
     cur++;
     if (cur < scenes.length) {
-      setTimeout(next, dur + 1200);
+      // 暗転(0.9s) + 暗転中の待機(0.2s) + 明転(0.8s) = 1.9s
+      setTimeout(next, dur + 1900);
     }
   }
 
