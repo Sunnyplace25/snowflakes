@@ -4,238 +4,465 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ハヤテっち — Demo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=M+PLUS+Rounded+1c:wght@400;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width:100%; height:100%; background:#000; overflow:hidden; display:flex; align-items:center; justify-content:center; }
 
-    html, body {
-      width: 100%; height: 100%;
-      background: #000;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* 縦動画想定：9:16の枠 */
     #stage {
       position: relative;
       width: min(100vw, calc(100vh * 9 / 16));
       height: min(100vh, calc(100vw * 16 / 9));
       background: #060d1a;
       overflow: hidden;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
     }
 
-    /* ── 各シーン共通 ── */
     .scene {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.6s ease;
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.6s ease;
     }
     .scene.active { opacity: 1; }
 
-    /* ── シーン1: タイトル ── */
-    #s-title {
-      background: #060d1a;
-      gap: 0;
-    }
-    #s-title img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
-    }
+    /* ── タイトル ── */
+    #s-title img { width:100%; height:100%; object-fit:cover; object-position:top; }
 
-    /* ── シーン2〜5: ゲーム画面 ── */
-    .game-scene {
-      background: #060d1a;
-      gap: 0;
-      padding: 0;
-    }
-
-    .scene-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: blur(18px) brightness(0.3);
-      transform: scale(1.1);
-      transition: none;
-    }
-
-    .scene-content {
+    /* ── 共通スマホ枠 ── */
+    .phone-wrap {
       position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      padding: 0 32px;
-      gap: 20px;
-    }
-
-    .scene-label-top {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(9px, 2.5vw, 12px);
-      letter-spacing: 0.45em;
-      color: rgba(253,230,138,0.5);
-      text-transform: uppercase;
-    }
-
-    .scene-phone {
-      width: min(62%, 240px);
+      width: min(58%, 220px);
       background: #080f1e;
       border: 1.5px solid rgba(253,230,138,0.3);
-      border-radius: clamp(14px, 4vw, 22px);
+      border-radius: clamp(14px,4vw,22px);
       overflow: hidden;
-      box-shadow:
-        0 0 60px rgba(253,230,138,0.12),
-        0 12px 48px rgba(0,0,0,0.8);
+      box-shadow: 0 0 50px rgba(253,230,138,0.15), 0 12px 40px rgba(0,0,0,0.8);
     }
-    .scene-phone img { width: 100%; display: block; }
-
-    .scene-caption {
-      font-family: 'Noto Serif JP', serif;
-      font-weight: 300;
-      font-size: clamp(12px, 3.5vw, 16px);
-      color: #e2e8f0;
-      letter-spacing: 0.12em;
-      text-align: center;
-      line-height: 1.9;
+    .phone-notch {
+      width: 40px; height: 5px;
+      background: rgba(253,230,138,0.1);
+      border-radius: 3px;
+      margin: 7px auto 0;
     }
 
-    /* ── シーン6: エンド ── */
-    #s-end {
-      background: #060d1a;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .end-eye {
+    /* ── ラベル・キャプション共通 ── */
+    .sc-label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(9px, 2.5vw, 11px);
-      letter-spacing: 0.5em;
-      color: rgba(253,230,138,0.4);
+      font-size: clamp(9px,2.5vw,12px);
+      letter-spacing: 0.45em;
+      color: rgba(253,230,138,0.5);
+      margin-bottom: 14px;
     }
-    .end-title {
+    .sc-caption {
       font-family: 'Noto Serif JP', serif;
       font-weight: 300;
-      font-size: clamp(36px, 10vw, 52px);
-      letter-spacing: 0.2em;
+      font-size: clamp(12px,3.5vw,15px);
+      color: #e2e8f0;
+      letter-spacing: 0.1em;
+      text-align: center;
+      line-height: 2;
+      margin-top: 18px;
+    }
+    .sc-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      filter: blur(20px) brightness(0.25);
+      transform: scale(1.1);
+    }
+    .sc-inner {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; width: 100%; padding: 0 28px;
+    }
+
+    /* ════════════════════════════
+       シーン: 会話
+    ════════════════════════════ */
+    #s-chat { background: #080f1e; }
+    .chat-phone {
+      width: min(62%, 240px);
+      background: #0b1220;
+      border: 1.5px solid rgba(253,230,138,0.25);
+      border-radius: clamp(14px,4vw,22px);
+      box-shadow: 0 0 50px rgba(253,230,138,0.1), 0 12px 40px rgba(0,0,0,0.8);
+      padding: 10px 0 16px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .chat-header {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(8px,2vw,10px);
+      letter-spacing: 4px;
+      color: rgba(253,230,138,0.5);
+      margin: 4px 0 8px;
+    }
+    .chat-chara {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 8px;
+      border: 1.5px solid rgba(253,230,138,0.2);
+    }
+    .chat-area {
+      width: 100%; padding: 0 12px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .chat-bubble {
+      background: rgba(253,230,138,0.08);
+      border: 1px solid rgba(253,230,138,0.15);
+      border-radius: 12px 12px 12px 4px;
+      padding: 8px 10px;
+      font-size: clamp(9px,2.5vw,11px);
+      color: #e2e8f0;
+      line-height: 1.6;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      max-width: 88%;
+    }
+    .chat-bubble.you {
+      align-self: flex-end;
+      background: rgba(147,197,253,0.08);
+      border-color: rgba(147,197,253,0.15);
+      border-radius: 12px 12px 4px 12px;
+      color: #93c5fd;
+    }
+    .chat-bubble.show { opacity:1; transform:translateY(0); }
+
+    /* ════════════════════════════
+       シーン: ドラム練習
+    ════════════════════════════ */
+    #s-drum { background: #050a10; }
+    .drum-phone {
+      width: min(62%, 240px);
+      background: #050a10;
+      border: 1.5px solid rgba(253,230,138,0.25);
+      border-radius: clamp(14px,4vw,22px);
+      box-shadow: 0 0 50px rgba(253,230,138,0.15), 0 12px 40px rgba(0,0,0,0.8);
+      padding: 10px 14px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .drum-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(8px,2vw,10px);
+      letter-spacing: 4px;
+      color: rgba(253,230,138,0.5);
+    }
+    .drum-combo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px,6vw,32px);
+      color: #fde68a;
+      letter-spacing: 2px;
+      transition: transform 0.1s ease;
+    }
+    .drum-combo-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(7px,2vw,9px);
+      letter-spacing: 3px;
+      color: rgba(253,230,138,0.4);
+      margin-top: -6px;
+    }
+    .drum-pad-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px; width: 100%;
+    }
+    .drum-pad {
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      border: 1.5px solid rgba(253,230,138,0.15);
+      background: rgba(253,230,138,0.04);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(7px,2vw,9px);
+      letter-spacing: 2px;
+      color: rgba(253,230,138,0.3);
+      transition: background 0.08s, border-color 0.08s, box-shadow 0.08s;
+    }
+    .drum-pad.hit {
+      background: rgba(253,230,138,0.18);
+      border-color: rgba(253,230,138,0.7);
+      box-shadow: 0 0 14px rgba(253,230,138,0.4);
       color: #fde68a;
     }
-    .end-sub {
+    .drum-perfect {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(9px, 2.5vw, 11px);
-      letter-spacing: 0.35em;
-      color: rgba(255,255,255,0.2);
-      margin-top: 8px;
-    }
-
-    /* ── プログレスバー ── */
-    #progress {
-      position: absolute;
-      bottom: 0; left: 0;
-      height: 2px;
-      background: rgba(253,230,138,0.5);
-      width: 0%;
-      z-index: 100;
-    }
-
-    /* ── 暗転 ── */
-    #curtain {
-      position: absolute;
-      inset: 0;
-      background: #000;
-      z-index: 90;
-      pointer-events: none;
+      font-size: clamp(10px,3vw,14px);
+      letter-spacing: 4px;
+      color: #fde68a;
       opacity: 0;
-      transition: opacity 0.8s ease;
+      transition: opacity 0.2s;
     }
+    .drum-perfect.show { opacity: 1; }
+
+    /* ════════════════════════════
+       シーン: LIVE
+    ════════════════════════════ */
+    #s-live { background: #04080f; }
+    .live-phone {
+      width: min(62%, 240px);
+      background: #04080f;
+      border: 1.5px solid rgba(253,230,138,0.25);
+      border-radius: clamp(14px,4vw,22px);
+      box-shadow: 0 0 60px rgba(253,230,138,0.2), 0 12px 40px rgba(0,0,0,0.8);
+      padding: 10px 0 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .live-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(8px,2vw,10px);
+      letter-spacing: 5px;
+      color: rgba(253,230,138,0.6);
+    }
+    .live-chara {
+      width: 60%; border-radius: 8px;
+    }
+    .live-score {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px,4.5vw,22px);
+      color: #fde68a;
+      letter-spacing: 3px;
+    }
+    .live-ring-wrap {
+      position: relative;
+      width: clamp(54px,15vw,72px);
+      height: clamp(54px,15vw,72px);
+    }
+    .live-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 2.5px solid rgba(253,230,138,0.7);
+      background: rgba(253,230,138,0.08);
+      animation: ringPulse 0.8s ease-in-out infinite;
+    }
+    .live-ring-ripple {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(253,230,138,0.4);
+      opacity: 0;
+      animation: ripple 0.8s ease-out infinite;
+    }
+    .live-ring-inner {
+      position: absolute;
+      inset: 25%;
+      border-radius: 50%;
+      background: rgba(253,230,138,0.3);
+      animation: innerPulse 0.8s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%,100% { transform: scale(1); border-color: rgba(253,230,138,0.7); }
+      50%      { transform: scale(0.92); border-color: rgba(253,230,138,1); }
+    }
+    @keyframes ripple {
+      0%   { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+    @keyframes innerPulse {
+      0%,100% { background: rgba(253,230,138,0.2); }
+      50%      { background: rgba(253,230,138,0.5); }
+    }
+    .live-tap-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(7px,2vw,9px);
+      letter-spacing: 3px;
+      color: rgba(253,230,138,0.3);
+      animation: blink 0.8s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
+    .live-perfect-pop {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(11px,3vw,15px);
+      letter-spacing: 4px;
+      color: #fde68a;
+      opacity: 0;
+      transform: translateY(0);
+      transition: opacity 0.15s, transform 0.3s;
+      min-height: 20px;
+    }
+    .live-perfect-pop.show { opacity: 1; transform: translateY(-4px); }
+
+    /* ════════════════════════════
+       シーン: バー
+    ════════════════════════════ */
+    #s-bar { background: #060510; }
+    .bar-phone {
+      width: min(62%, 240px);
+      background: #060510;
+      border: 1.5px solid rgba(196,181,253,0.2);
+      border-radius: clamp(14px,4vw,22px);
+      box-shadow: 0 0 50px rgba(196,181,253,0.1), 0 12px 40px rgba(0,0,0,0.8);
+      padding: 10px 14px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .bar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(8px,2vw,10px);
+      letter-spacing: 5px;
+      color: rgba(196,181,253,0.5);
+    }
+    .bar-glass {
+      width: clamp(36px,10vw,52px);
+      height: clamp(52px,14vw,68px);
+      border: 2px solid rgba(196,181,253,0.3);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+    }
+    .bar-liquid {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(196,181,253,0.6), rgba(147,197,253,0.3));
+      height: 0%;
+      transition: height 0.8s ease;
+      border-radius: 0 0 14px 14px;
+    }
+    .bar-syrup-row {
+      display: flex; gap: 6px;
+    }
+    .bar-syrup {
+      width: clamp(12px,3.5vw,18px);
+      height: clamp(28px,8vw,38px);
+      border-radius: 4px 4px 6px 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .bar-syrup.pour {
+      transform: rotate(-30deg) translateY(-4px);
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    .bar-cocktail-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(8px,2.5vw,11px);
+      letter-spacing: 3px;
+      color: rgba(196,181,253,0.7);
+      min-height: 16px;
+      transition: opacity 0.4s;
+    }
+
+    /* ════════════════════════════
+       シーン: コレクション
+    ════════════════════════════ */
+    #s-col .sc-bg { background-image: url('../hayatecchi_collection.webp'); }
+
+    /* ── エンド ── */
+    #s-end { background: #060d1a; gap: 14px; }
+    .end-eye { font-family:'Cormorant Garamond',serif; font-size:clamp(9px,2.5vw,11px); letter-spacing:0.5em; color:rgba(253,230,138,0.4); }
+    .end-title { font-family:'Noto Serif JP',serif; font-weight:300; font-size:clamp(36px,10vw,52px); letter-spacing:0.2em; color:#fde68a; }
+    .end-sub { font-family:'Cormorant Garamond',serif; font-size:clamp(9px,2.5vw,11px); letter-spacing:0.35em; color:rgba(255,255,255,0.2); margin-top:8px; }
+
+    /* ── プログレス・暗転 ── */
+    #progress { position:absolute; bottom:0; left:0; height:2px; background:rgba(253,230,138,0.4); width:0%; z-index:100; }
+    #curtain { position:absolute; inset:0; background:#000; z-index:90; pointer-events:none; opacity:0; transition:opacity 0.8s ease; }
   </style>
 </head>
 <body>
 <div id="stage">
 
-  <!-- シーン1: タイトル -->
+  <!-- タイトル -->
   <div class="scene" id="s-title">
     <img src="splash.webp" alt="ハヤテっち">
   </div>
 
-  <!-- シーン2: ステータス -->
-  <div class="scene game-scene" id="s-status">
-    <div class="scene-bg" style="background-image:url('../hayatecchi_status.webp')"></div>
-    <div class="scene-content">
-      <p class="scene-label-top">Status</p>
-      <div class="scene-phone">
-        <img src="../hayatecchi_status.webp" alt="ステータス">
+  <!-- 会話シーン -->
+  <div class="scene" id="s-chat" style="background:#080f1e;">
+    <p class="sc-label" style="position:relative;z-index:1;">Chat</p>
+    <div class="chat-phone">
+      <p class="chat-header">HAYATE</p>
+      <img class="chat-chara" src="hayate_normal.webp" alt="ハヤテ">
+      <div class="chat-area">
+        <div class="chat-bubble" id="cb1">今日も練習あんのか</div>
+        <div class="chat-bubble you" id="cb2">一緒に行くよ</div>
+        <div class="chat-bubble" id="cb3">…まあ、邪魔すんなよ</div>
       </div>
-      <p class="scene-caption">ハヤテの日常に<br>入り込む</p>
     </div>
+    <p class="sc-caption">話しかけて、距離を縮める</p>
   </div>
 
-  <!-- シーン3: ドラム -->
-  <div class="scene game-scene" id="s-drum">
-    <div class="scene-bg" style="background-image:url('../hayatecchi_drum.jpg')"></div>
-    <div class="scene-content">
-      <p class="scene-label-top">Drum Practice</p>
-      <div class="scene-phone">
-        <img src="../hayatecchi_drum.jpg" alt="ドラム練習">
-      </div>
-      <p class="scene-caption">連打で腕を磨く</p>
-    </div>
-  </div>
-
-  <!-- シーン4: バー -->
-  <div class="scene game-scene" id="s-bar">
-    <div class="scene-bg" style="background-image:url('../hayatecchi_bar.webp')"></div>
-    <div class="scene-content">
-      <p class="scene-label-top">Bar Stars</p>
-      <div class="scene-phone">
-        <img src="../hayatecchi_bar.webp" alt="バーSTARS">
-      </div>
-      <p class="scene-caption">バーテンダー体験</p>
-    </div>
-  </div>
-
-  <!-- シーン5: LIVE（HTML再現） -->
-  <div class="scene game-scene" id="s-live">
-    <div class="scene-bg" style="background-image:url('hayate_live_end.webp')"></div>
-    <div class="scene-content">
-      <p class="scene-label-top">Live</p>
-      <div class="scene-phone" style="background:#050a18;padding:16px 12px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(8px,2vw,11px);letter-spacing:5px;color:rgba(253,230,138,0.6);">LIVE</p>
-        <img src="hayate_live_end.webp" alt="LIVE" style="width:55%;border-radius:8px;object-fit:cover;">
-        <div id="live-ring" style="width:clamp(44px,12vw,60px);height:clamp(44px,12vw,60px);border-radius:50%;border:2px solid rgba(253,230,138,0.6);background:rgba(253,230,138,0.1);display:flex;align-items:center;justify-content:center;">
-          <div style="width:40%;height:40%;border-radius:50%;background:rgba(253,230,138,0.35);"></div>
+  <!-- ドラム練習シーン -->
+  <div class="scene" id="s-drum" style="background:#050a10;">
+    <div class="sc-bg" style="background-image:url('../hayatecchi_drum.jpg');"></div>
+    <div class="sc-inner">
+      <p class="sc-label">Drum Practice</p>
+      <div class="drum-phone">
+        <p class="drum-title">DRUM PRACTICE</p>
+        <p class="drum-combo" id="drum-combo">0</p>
+        <p class="drum-combo-label">COMBO</p>
+        <div class="drum-pad-wrap">
+          <div class="drum-pad" id="dp0">HH</div>
+          <div class="drum-pad" id="dp1">SN</div>
+          <div class="drum-pad" id="dp2">KI</div>
+          <div class="drum-pad" id="dp3">TOM</div>
         </div>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(7px,1.8vw,9px);letter-spacing:3px;color:rgba(253,230,138,0.3);">TAP</p>
+        <p class="drum-perfect" id="drum-perfect">PERFECT</p>
       </div>
-      <p class="scene-caption">音楽に合わせてタップ</p>
+      <p class="sc-caption">連打で腕を磨く</p>
     </div>
   </div>
 
-  <!-- シーン6: コレクション -->
+  <!-- LIVE シーン -->
+  <div class="scene" id="s-live" style="background:#04080f;">
+    <div class="sc-bg" style="background-image:url('hayate_live_end.webp');"></div>
+    <div class="sc-inner">
+      <p class="sc-label">Live</p>
+      <div class="live-phone">
+        <p class="live-label">LIVE</p>
+        <img class="live-chara" src="hayate_live_end.webp" alt="LIVE">
+        <p class="live-score" id="live-score">0</p>
+        <div class="live-ring-wrap">
+          <div class="live-ring"></div>
+          <div class="live-ring-ripple"></div>
+          <div class="live-ring-inner"></div>
+        </div>
+        <p class="live-tap-hint">TAP</p>
+        <p class="live-perfect-pop" id="live-perfect"></p>
+      </div>
+      <p class="sc-caption">音楽に合わせてタップ</p>
+    </div>
+  </div>
+
+  <!-- バー シーン -->
+  <div class="scene" id="s-bar" style="background:#060510;">
+    <div class="sc-bg" style="background-image:url('../hayatecchi_bar.webp');"></div>
+    <div class="sc-inner">
+      <p class="sc-label">Bar Stars</p>
+      <div class="bar-phone">
+        <p class="bar-title">BAR STARS</p>
+        <div class="bar-glass">
+          <div class="bar-liquid" id="bar-liquid"></div>
+        </div>
+        <div class="bar-syrup-row">
+          <div class="bar-syrup" id="bsy0" style="background:linear-gradient(to bottom,#93c5fd,#3b82f6);"></div>
+          <div class="bar-syrup" id="bsy1" style="background:linear-gradient(to bottom,#c4b5fd,#7c3aed);"></div>
+          <div class="bar-syrup" id="bsy2" style="background:linear-gradient(to bottom,#fde68a,#f59e0b);"></div>
+          <div class="bar-syrup" id="bsy3" style="background:linear-gradient(to bottom,#fca5a5,#ef4444);"></div>
+        </div>
+        <p class="bar-cocktail-name" id="bar-name">　</p>
+      </div>
+      <p class="sc-caption">カクテルを作る</p>
+    </div>
+  </div>
+
+  <!-- コレクション -->
   <div class="scene game-scene" id="s-col">
-    <div class="scene-bg" style="background-image:url('../hayatecchi_collection.webp')"></div>
-    <div class="scene-content">
-      <p class="scene-label-top">Collection</p>
-      <div class="scene-phone">
-        <img src="../hayatecchi_collection.webp" alt="コレクション">
+    <div class="sc-bg" style="background-image:url('../hayatecchi_collection.webp');"></div>
+    <div class="sc-inner">
+      <p class="sc-label">Collection</p>
+      <div class="phone-wrap">
+        <div class="phone-notch"></div>
+        <img src="../hayatecchi_collection.webp" alt="コレクション" style="width:100%;display:block;">
       </div>
-      <p class="scene-caption">図鑑を集める</p>
+      <p class="sc-caption">集めるほど世界が広がる</p>
     </div>
   </div>
 
-  <!-- シーン6: エンド -->
+  <!-- エンド -->
   <div class="scene" id="s-end">
     <p class="end-eye">Snow flakes presents</p>
     <p class="end-title">ハヤテっち</p>
-    <p class="end-sub">web game ¥100</p>
+    <p class="end-sub">web game &nbsp;¥100</p>
   </div>
 
   <div id="progress"></div>
@@ -246,58 +473,166 @@
 
 <script>
 (function(){
-  var scenes = ['s-title','s-status','s-drum','s-live','s-bar','s-col','s-end'];
-  // 各シーンの表示時間(ms)
-  var durations = [2800, 3000, 3000, 3000, 3000, 3000, 3500];
+  var SCENES    = ['s-title','s-chat','s-drum','s-live','s-bar','s-col','s-end'];
+  var DURATIONS = [2600, 4000, 4000, 4000, 4500, 3000, 3500];
   var cur = 0;
   var curtain = document.getElementById('curtain');
-  var progress = document.getElementById('progress');
   var bgm = document.getElementById('bgm');
-  var total = durations.reduce(function(a,b){ return a+b; }, 0) + scenes.length * 600;
-  var elapsed = 0;
-  var startTime = null;
-
   bgm.volume = 0.18;
   bgm.play().catch(function(){});
 
+  /* ── シーン遷移 ── */
   function showScene(idx) {
-    // 暗転（0.8s）
     curtain.style.opacity = '1';
     setTimeout(function(){
-      // 完全に黒になってからシーン切り替え
-      scenes.forEach(function(id){
-        document.getElementById(id).classList.remove('active');
-      });
-      document.getElementById(scenes[idx]).classList.add('active');
-      // 少し待ってから明転（0.8s）
-      setTimeout(function(){
-        curtain.style.opacity = '0';
-      }, 200);
+      SCENES.forEach(function(id){ document.getElementById(id).classList.remove('active'); });
+      document.getElementById(SCENES[idx]).classList.add('active');
+      onSceneStart(SCENES[idx]);
+      setTimeout(function(){ curtain.style.opacity = '0'; }, 200);
     }, 900);
   }
 
   function next() {
-    if (cur >= scenes.length) return;
+    if (cur >= SCENES.length) return;
     showScene(cur);
-    var dur = durations[cur];
-    cur++;
-    if (cur < scenes.length) {
-      // 暗転(0.9s) + 暗転中の待機(0.2s) + 明転(0.8s) = 1.9s
-      setTimeout(next, dur + 1900);
-    }
+    var d = DURATIONS[cur]; cur++;
+    if (cur < SCENES.length) setTimeout(next, d + 1900);
   }
 
-  // プログレスバー
-  function updateProgress(ts) {
+  /* ── プログレス ── */
+  var total = DURATIONS.reduce(function(a,b){return a+b;},0) + SCENES.length * 1900;
+  var startTime = null;
+  var prog = document.getElementById('progress');
+  function tick(ts) {
     if (!startTime) startTime = ts;
-    elapsed = ts - startTime;
-    var pct = Math.min(100, elapsed / total * 100);
-    progress.style.width = pct + '%';
-    if (pct < 100) requestAnimationFrame(updateProgress);
+    prog.style.width = Math.min(100,(ts-startTime)/total*100)+'%';
+    if ((ts-startTime) < total) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  next();
+
+  /* ══════════════════════════════
+     シーン別アニメーション
+  ══════════════════════════════ */
+  var _timers = [];
+  function at(ms, fn) { _timers.push(setTimeout(fn, ms)); }
+
+  function clearScene() {
+    _timers.forEach(clearTimeout); _timers = [];
   }
 
-  next();
-  requestAnimationFrame(updateProgress);
+  function onSceneStart(id) {
+    clearScene();
+    if (id === 's-chat')  startChat();
+    if (id === 's-drum')  startDrum();
+    if (id === 's-live')  startLive();
+    if (id === 's-bar')   startBar();
+  }
+
+  /* ── 会話 ── */
+  function startChat() {
+    var bs = document.querySelectorAll('.chat-bubble');
+    bs.forEach(function(b){ b.classList.remove('show'); });
+    at(400,  function(){ document.getElementById('cb1').classList.add('show'); });
+    at(1400, function(){ document.getElementById('cb2').classList.add('show'); });
+    at(2600, function(){ document.getElementById('cb3').classList.add('show'); });
+  }
+
+  /* ── ドラム ── */
+  var drumCombo = 0;
+  function startDrum() {
+    drumCombo = 0;
+    document.getElementById('drum-combo').textContent = '0';
+    document.getElementById('drum-perfect').classList.remove('show');
+    var pads = [0,1,2,3];
+    var seq = [0,1,0,2,1,3,0,1,2,0,3,1,0,2,1,0];
+    var si = 0;
+    var iv = setInterval(function(){
+      if (si >= seq.length) { clearInterval(iv); return; }
+      var pi = seq[si++];
+      var pad = document.getElementById('dp'+pi);
+      pad.classList.add('hit');
+      drumCombo++;
+      var ce = document.getElementById('drum-combo');
+      ce.textContent = drumCombo;
+      ce.style.transform = 'scale(1.3)';
+      setTimeout(function(){ ce.style.transform = 'scale(1)'; }, 100);
+      if (drumCombo % 4 === 0) {
+        var pf = document.getElementById('drum-perfect');
+        pf.classList.add('show');
+        setTimeout(function(){ pf.classList.remove('show'); }, 500);
+      }
+      setTimeout(function(){ pad.classList.remove('hit'); }, 120);
+    }, 250);
+    _timers.push(iv);
+  }
+
+  /* ── LIVE ── */
+  var liveScore = 0;
+  function startLive() {
+    liveScore = 0;
+    document.getElementById('live-score').textContent = '0';
+    document.getElementById('live-perfect').classList.remove('show');
+    var iv = setInterval(function(){
+      liveScore += Math.floor(Math.random()*150+80);
+      document.getElementById('live-score').textContent = liveScore.toLocaleString();
+      var pf = document.getElementById('live-perfect');
+      var words = ['PERFECT','GREAT','PERFECT','PERFECT','GREAT'];
+      pf.textContent = words[Math.floor(Math.random()*words.length)];
+      pf.classList.add('show');
+      setTimeout(function(){ pf.classList.remove('show'); }, 400);
+    }, 700);
+    _timers.push(iv);
+  }
+
+  /* ── バー ── */
+  var cocktails = ['Blue Shelter','Violet Heat','Amber Kick','Rose Finale'];
+  var syrupColors = [
+    'linear-gradient(to bottom,#93c5fd,#3b82f6)',
+    'linear-gradient(to bottom,#c4b5fd,#7c3aed)',
+    'linear-gradient(to bottom,#fde68a,#f59e0b)',
+    'linear-gradient(to bottom,#fca5a5,#ef4444)',
+  ];
+  function startBar() {
+    var liquid = document.getElementById('bar-liquid');
+    var nameEl = document.getElementById('bar-name');
+    liquid.style.height = '0%';
+    nameEl.textContent = '　';
+    nameEl.style.opacity = '0';
+    var step = 0;
+    var steps = [0,1,2,1]; // syrup indices
+    function pourStep() {
+      if (step >= steps.length) {
+        // 完成
+        var cocktailIdx = Math.floor(Math.random()*cocktails.length);
+        nameEl.textContent = cocktails[cocktailIdx];
+        nameEl.style.opacity = '1';
+        liquid.style.background = syrupColors[steps[steps.length-1]];
+        return;
+      }
+      var si = steps[step];
+      var sy = document.getElementById('bsy'+si);
+      sy.classList.add('pour');
+      // 注ぐ
+      var fill = (step+1) * 22;
+      liquid.style.height = fill + '%';
+      liquid.style.background = syrupColors[si];
+      setTimeout(function(){
+        sy.classList.remove('pour');
+        step++;
+        if (step < steps.length) setTimeout(pourStep, 600);
+        else {
+          setTimeout(function(){
+            var ci = Math.floor(Math.random()*cocktails.length);
+            nameEl.textContent = cocktails[ci];
+            nameEl.style.opacity = '1';
+          }, 400);
+        }
+      }, 700);
+    }
+    at(500, pourStep);
+  }
+
 })();
 </script>
 </body>
