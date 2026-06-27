@@ -803,6 +803,7 @@ function sfShare() {
 
       // 21時以外に公開される追加話（幕間など）— 時刻順に並べる
       var EXTRA_EPISODES = [
+        new Date('2026-06-28T18:00:00'), // #210 18時公開
       ];
 
       // 更新なしの日（21時になっても話数を増やさない）
@@ -830,6 +831,7 @@ function sfShare() {
       var UPDATE_SCHEDULE = {
         '2026-05-23': [12, 21],
         '2026-05-25': [18, 21],
+        '2026-06-28': [18, 21],
       };
 
       function getTodayKey(d) {
