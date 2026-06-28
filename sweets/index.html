@@ -4461,12 +4461,24 @@
             <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#64748b;letter-spacing:1px;text-align:center;line-height:2;margin-bottom:20px;">OPEN 17:30　START 18:00<br>at LIVE HOUSE LOW<br>全自由席</p>
             <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#475569;letter-spacing:1px;line-height:1.8;margin-bottom:12px;">Spring Pass をお持ちの方は無料でご覧いただけます。<br>同じ内容を¥100でもご購入いただけます。</p>
             <div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;">
-              <a href="live-spring-archive.html" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#cbd5e1;border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:10px 20px;text-decoration:none;display:inline-block;text-align:center;">Spring Pass で開く</a>
+              <button onclick="openSpringPassConfirm()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#cbd5e1;border:1px solid rgba(255,255,255,0.2);border-radius:50px;padding:10px 20px;background:none;cursor:pointer;text-align:center;">Spring Pass で開く</button>
               <a href="https://buy.stripe.com/5kQbJ34G57GkeDaec3dZ603" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.3);border-radius:50px;padding:10px 20px;text-decoration:none;display:inline-block;text-align:center;">¥100 で開く</a>
             </div>
           </div>
 
 
+        </div>
+      </div>
+    </div>
+
+    <!-- Spring Pass 確認ポップアップ -->
+    <div id="spring-pass-confirm" onclick="closeSpringPassConfirm()" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(12,18,32,0.75);backdrop-filter:blur(10px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;">
+      <div onclick="event.stopPropagation()" style="text-align:center;max-width:280px;padding:0 24px;transform:translateY(16px) scale(0.95);transition:transform 0.3s cubic-bezier(.18,1.2,.45,1);" id="spring-pass-confirm-box">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">SPRING PASS</p>
+        <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;line-height:2;margin-bottom:28px;">Spring Pass を使いますか？</p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button onclick="useSpringPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">使う</button>
+          <button onclick="closeSpringPassConfirm()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">戻る</button>
         </div>
       </div>
     </div>
@@ -5037,6 +5049,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var box = document.getElementById('live-pending-box');
       if (box) box.style.transform = 'translateY(16px) scale(0.95)';
       setTimeout(function() { pop.style.display = 'none'; }, 380);
+    };
+
+    window.openSpringPassConfirm = function() {
+      var pop = document.getElementById('spring-pass-confirm');
+      if (!pop) return;
+      pop.style.display = 'flex';
+      setTimeout(function() {
+        pop.style.opacity = '1';
+        var box = document.getElementById('spring-pass-confirm-box');
+        if (box) box.style.transform = 'translateY(0) scale(1)';
+      }, 10);
+    };
+    window.closeSpringPassConfirm = function() {
+      var pop = document.getElementById('spring-pass-confirm');
+      if (!pop) return;
+      pop.style.opacity = '0';
+      var box = document.getElementById('spring-pass-confirm-box');
+      if (box) box.style.transform = 'translateY(16px) scale(0.95)';
+      setTimeout(function() { pop.style.display = 'none'; }, 320);
+    };
+    window.useSpringPass = function() {
+      closeSpringPassConfirm();
+      setTimeout(function() {
+        window.open('live-spring-archive.html', '_blank');
+      }, 320);
     };
 
     window.openUndertoneComingSoon = function() {
