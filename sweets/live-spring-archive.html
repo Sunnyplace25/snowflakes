@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
-  <script src="../snow.js"></script>
+  <style>#sf-snow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4;}</style>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { overflow-x: hidden; }
@@ -116,6 +116,7 @@
   </style>
 </head>
 <body>
+<canvas id="sf-snow"></canvas>
 <div class="wrap">
 
   <p class="eyebrow">2026 SWEETs Spring LIVE</p>
@@ -289,5 +290,29 @@
   <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
 
 </div>
+<script>
+  const canvas = document.getElementById('sf-snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 70}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
 </body>
 </html>
