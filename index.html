@@ -1125,8 +1125,9 @@ function sfShare() {
     <h2 style="font-size:clamp(28px,4vw,40px);font-weight:300;color:white;text-align:center;margin-bottom:10px;font-family:'Noto Serif JP',serif;letter-spacing:0.1em;">電子書籍</h2>
     <p style="font-size:11px;letter-spacing:2px;color:#64748b;text-align:center;margin-bottom:48px;font-family:'Cormorant Garamond',serif;">Amazon Kindle にて好評配信中</p>
 
+    <div id="book-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
     <!-- Vol.1 -->
-    <div class="book-card" style="border:1px solid rgba(253,230,138,0.2);">
+    <div class="book-card" style="border:1px solid rgba(253,230,138,0.2);margin-top:0;">
       <div class="book-cover"><img src="Kindle/１.jpg" alt="Snow flakes スノーフレークス 第1巻 戻る場所 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1142,7 +1143,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.2 -->
-    <div class="book-card" style="margin-top:16px;border:1px solid rgba(147,197,253,0.2);">
+    <div class="book-card" style="border:1px solid rgba(147,197,253,0.2);">
       <div class="book-cover"><img src="Kindle/２.jpg" alt="Snow flakes スノーフレークス 第2巻 リトルスノー 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1158,7 +1159,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.3 -->
-    <div class="book-card" style="margin-top:16px;border:1px solid rgba(252,165,165,0.2);">
+    <div class="book-card" style="border:1px solid rgba(252,165,165,0.2);">
       <div class="book-cover"><img src="Kindle/３.jpg" alt="Snow flakes スノーフレークス 第3巻 ショーケース 夏の月 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1174,7 +1175,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.4 -->
-    <div class="book-card" style="margin-top:16px;border:1px solid rgba(253,230,138,0.15);">
+    <div class="book-card" style="border:1px solid rgba(253,230,138,0.15);">
       <div class="book-cover"><img src="Kindle/４.jpg" alt="Snow flakes スノーフレークス 第4巻 ポジション 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1188,6 +1189,8 @@ function sfShare() {
         <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
       </div>
     </div>
+
+    </div><!-- /book-grid -->
 
     <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:32px;letter-spacing:3px;font-family:'Cormorant Garamond',serif;" data-i18n="books-more">以下続刊</p>
 
