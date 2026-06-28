@@ -473,16 +473,12 @@
   /* スマホ 電子書籍 2×2 小カード */
   @media (max-width:640px) {
     #book-grid { gap: 10px !important; }
-    .book-card { flex-direction: column !important; border-radius: 12px !important; }
+    .book-card { flex-direction: column !important; border-radius: 12px !important; overflow: hidden !important; }
     .book-cover { width: 100% !important; aspect-ratio: 2/3; }
-    .book-body { padding: 10px 12px !important; }
-    .book-vol { font-size: 12px !important; margin-bottom: 4px !important; }
-    .book-meta { display: none !important; }
-    .vol-desc { display: none !important; }
-    .book-body > button { display: none !important; }
-    .book-body > div[id^="book-acc"] { display: none !important; }
-    .book-body a { font-size: 11px !important; padding: 6px 10px !important; }
-    .book-body [style*="font-size:11px"][style*="letter-spacing:5px"] { font-size: 9px !important; }
+    .book-cover img { height: 100%; object-fit: cover; }
+    .book-body { padding: 8px 10px !important; }
+    .book-vol { font-size: 11px !important; margin-bottom: 0 !important; line-height: 1.5 !important; }
+    .book-meta, .vol-desc, .book-body > button, .book-body > div[id^="book-acc"], .book-body a, .book-body [style*="letter-spacing:5px"] { display: none !important; }
   }
 
   /* スマホ 短篇カード コンパクト表示 */
