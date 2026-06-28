@@ -117,6 +117,7 @@
 </head>
 <body>
 <canvas id="sf-snow"></canvas>
+<audio id="bgm" src="se_bgm.mp3" loop preload="auto"></audio>
 <div class="wrap">
 
   <p class="eyebrow">2026 SWEETs Spring LIVE</p>
@@ -358,6 +359,14 @@
 
 </div>
 <script>
+  // BGM
+  var bgm = document.getElementById('bgm');
+  bgm.volume = 0.15;
+  document.addEventListener('click', function startBgm() {
+    bgm.play().catch(function(){});
+    document.removeEventListener('click', startBgm);
+  }, { once: true });
+
   // Backstage Pass チェック
   (function() {
     try {
