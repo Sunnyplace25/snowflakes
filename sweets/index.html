@@ -5070,6 +5070,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       setTimeout(function() { pop.style.display = 'none'; }, 320);
     };
     window.useSpringPass = function() {
+      if (typeof gtag === 'function') {
+        gtag('event', 'use_spring_pass', { event_category: 'live_archive', event_label: 'spring_2026' });
+      }
       closeSpringPassConfirm();
       setTimeout(function() {
         window.open('live-spring-archive.html', '_blank');
