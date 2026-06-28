@@ -1142,23 +1142,28 @@ function sfShare() {
     <a class="novel-card" href="https://ncode.syosetu.com/n9009lo/1/" target="_blank" style="display:block;text-decoration:none;color:inherit;cursor:pointer;">
       <p class="novel-meta" data-i18n="novel-meta">小説家になろう　毎日21時更新</p>
       <p class="novel-title">Snow flakes</p>
-      <p class="novel-body" data-i18n="novel-body">
+      <p class="novel-body">
         <span style="color:#cbd5e1;font-style:italic;">「未完成でも、下手でも」</span><br>
-        <span style="color:#cbd5e1;font-style:italic;">「それでも続けたいって思った時が、<br>　名乗るタイミングなんじゃないか」</span><br><br>
-        ヒナタ、コウタ、ハヤテ。<br><br>
-        三人がバンドを組んだのは、<br>
-        高校生のころ。<br><br>
-        ただ音を鳴らして、<br>
-        同じ時間を過ごして、<br>
-        少しずつ、何かが変わっていく。<br><br>
-        言えなかったことも、<br>
-        うまくいかなかった日も、<br>
-        置き去りにした音も。<br><br>
-        そのまま抱えながら、<br>
-        三人は進んでいく。<br><br>
-        未完成なまま、<br>
-        それでも音を鳴らし続ける。
+        <span style="color:#cbd5e1;font-style:italic;">「それでも続けたいって思った時が、<br>　名乗るタイミングなんじゃないか」</span>
       </p>
+      <div id="novel-acc-body" style="display:none;">
+        <p class="novel-body" style="margin-top:20px;" data-i18n="novel-body">
+          ヒナタ、コウタ、ハヤテ。<br><br>
+          三人がバンドを組んだのは、<br>
+          高校生のころ。<br><br>
+          ただ音を鳴らして、<br>
+          同じ時間を過ごして、<br>
+          少しずつ、何かが変わっていく。<br><br>
+          言えなかったことも、<br>
+          うまくいかなかった日も、<br>
+          置き去りにした音も。<br><br>
+          そのまま抱えながら、<br>
+          三人は進んでいく。<br><br>
+          未完成なまま、<br>
+          それでも音を鳴らし続ける。
+        </p>
+      </div>
+      <button onclick="(function(){var b=document.getElementById('novel-acc-body');var btn=document.getElementById('novel-acc-btn');var open=b.style.display==='none';b.style.display=open?'block':'none';btn.textContent=open?'▲':'▼';})()" id="novel-acc-btn" style="display:block;margin-top:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
     </a>
   </div>
 </section>
