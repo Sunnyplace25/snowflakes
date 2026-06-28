@@ -126,7 +126,7 @@
 
   <hr class="divider">
 
-  <p class="setlist-item" style="color:#475569;font-size:9px;letter-spacing:3px;margin-bottom:8px;">SE（Snow flakes）</p>
+  <p class="setlist-item" style="color:#475569;font-size:9px;letter-spacing:3px;margin-bottom:8px;cursor:pointer;" onclick="var b=document.getElementById('bgm');b.currentTime=0;b.play().catch(function(){});">SE（Snow flakes）</p>
   <p class="setlist-item">M01. 置いた音</p>
   <p class="setlist-item">M02. Round Bounce</p>
   <p class="setlist-item">M03. SWEETs</p>
@@ -362,10 +362,13 @@
   // BGM
   var bgm = document.getElementById('bgm');
   bgm.volume = 0.15;
-  document.addEventListener('click', function startBgm() {
-    bgm.play().catch(function(){});
-    document.removeEventListener('click', startBgm);
-  }, { once: true });
+  bgm.play().catch(function() {
+    // 自動再生ブロック時は最初のタップで再生
+    document.addEventListener('click', function startBgm() {
+      bgm.play().catch(function(){});
+      document.removeEventListener('click', startBgm);
+    }, { once: true });
+  });
 
   // Backstage Pass チェック
   (function() {
