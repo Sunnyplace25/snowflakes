@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
-  <style>#sf-snow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4;}</style>
+  <style>#sf-snow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4;}
+  #bgm-btn{position:fixed;bottom:24px;right:20px;z-index:100;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:8px 16px;color:rgba(255,255,255,0.3);font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  </style>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { overflow-x: hidden; }
@@ -118,6 +120,7 @@
 <body>
 <canvas id="sf-snow"></canvas>
 <audio id="bgm" src="se_bgm.mp3" preload="auto"></audio>
+<button id="bgm-btn" onclick="toggleBgm()">▶ music</button>
 <div class="wrap">
 
   <p class="eyebrow">2026 SWEETs Spring LIVE</p>
@@ -361,9 +364,22 @@
 <script>
   // BGM
   var bgm = document.getElementById('bgm');
+  var bgmBtn = document.getElementById('bgm-btn');
   bgm.volume = 0.15;
+
+  function updateBgmBtn() {
+    bgmBtn.textContent = bgm.paused ? '▶ music' : '■ music';
+  }
+  bgm.addEventListener('play', updateBgmBtn);
+  bgm.addEventListener('pause', updateBgmBtn);
+  bgm.addEventListener('ended', updateBgmBtn);
+
+  function toggleBgm() {
+    if (bgm.paused) { bgm.play().catch(function(){}); }
+    else { bgm.pause(); }
+  }
+
   bgm.play().catch(function() {
-    // 自動再生ブロック時は最初のタップで再生
     document.addEventListener('click', function startBgm() {
       bgm.play().catch(function(){});
       document.removeEventListener('click', startBgm);
