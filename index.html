@@ -2390,7 +2390,16 @@ function sfShare() {
       if (isNewDay && streak >= 2) {
         var bonus = streak >= 7 ? 15 : streak >= 5 ? 10 : streak >= 3 ? 5 : 3;
         setTimeout(function() {
-          if (typeof SfSnow !== 'undefined') SfSnow.addWithToast('streak_' + streak, streak + '日連続ログイン');
+          if (typeof SfSnow !== 'undefined') {
+            SfSnow.add('streak_' + streak);
+            // ボーナスポップアップ表示
+            var streakEl = document.getElementById('lb-streak-text');
+            var ptsEl    = document.getElementById('lb-pts-text');
+            var popup    = document.getElementById('login-bonus-popup');
+            if (streakEl) streakEl.textContent = streak + '日';
+            if (ptsEl)    ptsEl.textContent    = '+' + bonus;
+            if (popup)    popup.classList.add('show');
+          }
         }, 1200);
       }
 
@@ -3279,6 +3288,62 @@ document.addEventListener('visibilitychange', function() {
     <img src="item/backstage_pass.webp" alt="バックステージパス" style="width:80px;height:80px;object-fit:contain;margin:0 auto 10px;display:block;filter:drop-shadow(0 0 12px rgba(253,230,138,0.4));">
     <p style="font-size:16px;color:white;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:6px;">バックステージパス</p>
     <p style="font-size:13px;color:#94a3b8;font-weight:300;">入手しました</p>
+  </div>
+</div>
+
+<!-- ── ログインボーナスポップアップ ── -->
+<style>
+  #login-bonus-popup {
+    display: none; position: fixed; inset: 0; z-index: 2100;
+    background: rgba(8,13,24,0.88); backdrop-filter: blur(14px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #login-bonus-popup.show { display: flex; }
+  #login-bonus-card {
+    background: rgba(13,21,38,0.99);
+    border: 1px solid rgba(147,197,253,0.18);
+    border-radius: 20px; padding: 40px 36px; max-width: 360px; width: 100%;
+    text-align: center;
+    animation: bannerCardIn 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  #login-bonus-card .lb-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px; letter-spacing: 7px; color: #4e7aa8; margin-bottom: 20px;
+  }
+  #login-bonus-card .lb-flake {
+    font-size: 36px; margin-bottom: 16px; opacity: 0.85;
+  }
+  #login-bonus-card .lb-streak {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; letter-spacing: 2px; color: #93c5fd; margin-bottom: 6px;
+  }
+  #login-bonus-card .lb-label {
+    font-size: 11px; letter-spacing: 3px; color: #4e7aa8; margin-bottom: 28px;
+  }
+  #login-bonus-card .lb-pts {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px; letter-spacing: 2px; color: #93c5fd; line-height: 1;
+  }
+  #login-bonus-card .lb-pts-label {
+    font-size: 11px; letter-spacing: 4px; color: #4e7aa8; margin-top: 6px; margin-bottom: 32px;
+  }
+  #login-bonus-close {
+    background: none; border: 1px solid rgba(147,197,253,0.25); border-radius: 100px;
+    color: #4e7aa8; font-family: 'Cormorant Garamond', serif;
+    font-size: 11px; letter-spacing: 4px; padding: 10px 28px; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  #login-bonus-close:hover { border-color: rgba(147,197,253,0.55); color: #93c5fd; }
+</style>
+<div id="login-bonus-popup" onclick="document.getElementById('login-bonus-popup').classList.remove('show')">
+  <div id="login-bonus-card" onclick="event.stopPropagation()">
+    <p class="lb-eyebrow">DAILY LOGIN BONUS</p>
+    <p class="lb-flake">❄</p>
+    <p class="lb-streak" id="lb-streak-text">—</p>
+    <p class="lb-label">連続ログイン</p>
+    <p class="lb-pts" id="lb-pts-text">0</p>
+    <p class="lb-pts-label">Snow 獲得</p>
+    <button id="login-bonus-close" onclick="document.getElementById('login-bonus-popup').classList.remove('show')">── 閉じる ──</button>
   </div>
 </div>
 
