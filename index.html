@@ -282,10 +282,10 @@
       background: var(--card); border: 1px solid var(--border);
       border-radius: 18px; overflow: hidden;
     }
-    .ep-jacket { width: 240px; height: 240px; flex-shrink: 0; object-fit: cover; display: block; }
-    .ep-body { padding: 36px 40px; flex: 1; }
-    .ep-type { font-size: 11px; letter-spacing: 5px; color: var(--muted); margin-bottom: 10px; font-family: 'Cormorant Garamond', serif; }
-    .ep-title { font-size: 30px; font-weight: 300; color: white; margin-bottom: 28px; font-family: 'Cormorant Garamond', serif; letter-spacing: 2px; }
+    .ep-jacket { width: 160px; height: 160px; flex-shrink: 0; object-fit: cover; display: block; }
+    .ep-body { padding: 24px 28px; flex: 1; }
+    .ep-type { font-size: 11px; letter-spacing: 5px; color: var(--muted); margin-bottom: 8px; font-family: 'Cormorant Garamond', serif; }
+    .ep-title { font-size: 22px; font-weight: 300; color: white; margin-bottom: 16px; font-family: 'Cormorant Garamond', serif; letter-spacing: 2px; }
     .ep-tracklist { list-style: none; }
     .ep-track {
       display: flex; align-items: baseline; gap: 16px;
@@ -516,6 +516,13 @@
       padding-top: 10px !important;
       margin-top: 0 !important;
     }
+  }
+  @media (max-width:640px) {
+    .novel-body { line-height: 1.8 !important; }
+  }
+  @media (min-width:641px) {
+    .sp-only { display: none !important; }
+    #book-grid { grid-template-columns: 1fr !important; }
   }
   </style>
   <script src="snow.js"></script>
@@ -1138,6 +1145,7 @@ function sfShare() {
 <section id="novel" class="novel">
   <span class="sec-label">NOVEL</span>
   <h2 class="sec-title" data-i18n="novel-h2">小説</h2>
+  <p class="sp-only" style="font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-bottom:32px;font-family:'Cormorant Garamond',serif;">1話から読めます</p>
   <div class="novel-inner">
     <a class="novel-card" href="https://ncode.syosetu.com/n9009lo/1/" target="_blank" style="display:block;text-decoration:none;color:inherit;cursor:pointer;">
       <p class="novel-meta" data-i18n="novel-meta">小説家になろう　毎日21時更新</p>
@@ -1146,24 +1154,21 @@ function sfShare() {
         <span style="color:#cbd5e1;font-style:italic;">「未完成でも、下手でも」</span><br>
         <span style="color:#cbd5e1;font-style:italic;">「それでも続けたいって思った時が、<br>　名乗るタイミングなんじゃないか」</span>
       </p>
-      <div id="novel-acc-body" style="display:none;">
-        <p class="novel-body" style="margin-top:20px;" data-i18n="novel-body">
-          ヒナタ、コウタ、ハヤテ。<br><br>
-          三人がバンドを組んだのは、<br>
-          高校生のころ。<br><br>
-          ただ音を鳴らして、<br>
-          同じ時間を過ごして、<br>
-          少しずつ、何かが変わっていく。<br><br>
-          言えなかったことも、<br>
-          うまくいかなかった日も、<br>
-          置き去りにした音も。<br><br>
-          そのまま抱えながら、<br>
-          三人は進んでいく。<br><br>
-          未完成なまま、<br>
-          それでも音を鳴らし続ける。
-        </p>
-      </div>
-      <button onclick="(function(){var b=document.getElementById('novel-acc-body');var btn=document.getElementById('novel-acc-btn');var open=b.style.display==='none';b.style.display=open?'block':'none';btn.textContent=open?'▲':'▼';})()" id="novel-acc-btn" style="display:block;margin-top:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
+      <p class="novel-body" style="margin-top:20px;" data-i18n="novel-body">
+        ヒナタ、コウタ、ハヤテ。<br><br>
+        三人がバンドを組んだのは、<br>
+        高校生のころ。<br><br>
+        ただ音を鳴らして、<br>
+        同じ時間を過ごして、<br>
+        少しずつ、何かが変わっていく。<br><br>
+        言えなかったことも、<br>
+        うまくいかなかった日も、<br>
+        置き去りにした音も。<br><br>
+        そのまま抱えながら、<br>
+        三人は進んでいく。<br><br>
+        未完成なまま、<br>
+        それでも音を鳴らし続ける。
+      </p>
     </a>
   </div>
 </section>
@@ -1258,31 +1263,24 @@ function sfShare() {
 <!-- Short Stories -->
 <section id="short-stories" style="padding:100px 24px;position:relative;z-index:1;">
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">SHORT STORIES</p>
-  <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2">短編作品</h2>
+  <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:56px;font-family:'Noto Serif JP',serif;" data-i18n="short-h2" style="margin-bottom:12px;">短編作品</h2>
+  <p class="sp-only" style="font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-bottom:44px;font-family:'Cormorant Garamond',serif;">カードをタップして読む</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
-    <div id="short-moonveil-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.4);flex-direction:column;gap:0;display:flex;animation:purpleCardGlow 2.4s ease-in-out infinite;">
+    <div id="short-moonveil-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.4);flex-direction:column;gap:0;display:flex;animation:purpleCardGlow 2.4s ease-in-out infinite;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n9832lr/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.18 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">Moon Veil</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">終わりが決まっているから、触れられなかった。</p>
-      <div id="short-acc-body-7" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;">夜勤の途中、病院の中庭で聞こえた歌声。<br><br>宵子はその声に、子どもの頃の記憶を重ねる。<br><br>声の主は、検査技師の朔。<br><br>終わりが決まった一年の中で、<br>二人はMoon Veilとして、静かに音を重ねていく。</p>
-      </div>
-      <button id="short-acc-btn-7" onclick="toggleShortAcc(7)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9832lr/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
       </div>
     </div>
 
-    <div id="short-kouta-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);flex-direction:column;gap:0;display:flex;">
+    <div id="short-kouta-card" class="short-new-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n5432lz/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.13 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
-      <div id="short-acc-body-0" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;">楽器店で働くコウタは、<br>ベースを選ぶ中学生の姿を見て、昔の自分を思い出す。<br><br>音は変わっていない。<br><br>変わったのは、<br>鳴らし方だけだ。<br><br>スノーフレークスのベーシスト<br>コウタの視点で描く、もう一つの物語。</p>
-      </div>
-      <button id="short-acc-btn-0" onclick="toggleShortAcc(0)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n5432lz/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1291,15 +1289,11 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0964mc/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:6px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short1-title">ひとつ多い音</p>
       <p style="font-size:10px;letter-spacing:2px;color:#f87171;font-family:'Noto Serif JP',serif;margin-bottom:12px;opacity:0.85;">文芸 ホラー日間ランキング最高２位</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short1-quote">「音だけ残ってる、みたいな」</p>
-      <div id="short-acc-body-1" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short1-desc">スタジオで、いつも通り音を出す。<br><br>揃っている。<br>ズレていない。<br><br>――揃いすぎている。<br><br>その音は、<br>ひとつ、多い。</p>
-      </div>
-      <button id="short-acc-btn-1" onclick="toggleShortAcc(1)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0964mc/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1308,14 +1302,10 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0082lu/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.03.28 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short2-title">整えない音</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short2-quote">整えた瞬間、<br>これはきっと、別のものになる。</p>
-      <div id="short-acc-body-2" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short2-desc">整える側としての自分と、歌う側としての自分。昼は仕事で物事を整え、夜はバンドで揺らぎのある音を鳴らすヒナタが、本当に歌いたい音を求めて進んでいく物語。</p>
-      </div>
-      <button id="short-acc-btn-2" onclick="toggleShortAcc(2)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0082lu/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1324,14 +1314,10 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0327lw/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.09 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short3-title">半分のまま</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short3-quote">この夜は、確かに何かを残している。</p>
-      <div id="short-acc-body-3" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short3-desc">同じ音楽制作の現場で働くヒナタと小雪。プロとして信頼し合いながら、一歩を踏み出さないまま曖昧なバランスを保ち続ける。雨の夜から始まる、選ばないまま守られる関係の物語。</p>
-      </div>
-      <button id="short-acc-btn-3" onclick="toggleShortAcc(3)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0327lw/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1340,14 +1326,10 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0679lx/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.30 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short4-title">白い音</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short4-quote">行ってしまった。向こう側に。</p>
-      <div id="short-acc-body-4" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short4-desc">春のキャンパスで出会った、黒いギターケースの学生。<br>ベンチで音を聴く時間が、少しずつ積み重なっていく。<br>置いていかれたわけじゃない。<br>ただ、彼が前に進むほど、同じ場所にはいられなくなっていった。<br><br>スノーフレークスの外側にいた、誰かの物語。</p>
-      </div>
-      <button id="short-acc-btn-4" onclick="toggleShortAcc(4)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0679lx/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1356,14 +1338,10 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0498ly/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short5-title">正しい距離より、<br>触れている方がいい</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short5-quote">「……こっちのほうがいい」</p>
-      <div id="short-acc-body-5" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.6;font-weight:300;margin-bottom:12px;" data-i18n="short5-desc">気づいたら、舞踏会の玉座にいた。<br>金髪の王子と、黒髪の姫。整いすぎた、正しい距離。<br>「ちゃんとしてる。でも、触れてない」<br>近づくほど、その差ははっきりしていく。<br>正しさと、心地よさ。揺れたまま、距離だけが変わっていく物語。</p>
-      </div>
-      <button id="short-acc-btn-5" onclick="toggleShortAcc(5)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0498ly/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1372,13 +1350,9 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n9797ls/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:14px;font-family:'Cormorant Garamond',serif;line-height:1.5;letter-spacing:2px;">ICE BREAKER</p>
-      <div id="short-acc-body-6" style="display:none;">
-        <p style="font-size:14px;color:#cbd5e1;line-height:1.9;font-weight:300;margin-bottom:12px;" data-i18n="short6-desc">名前も立場も知らないまま、それでも場の空気を変えていく人たちがいる。Snow flakesの外側視点から、気づかれないひびと、静かに変わっていく空気を拾う番外編。</p>
-      </div>
-      <button id="short-acc-btn-6" onclick="toggleShortAcc(6)" style="margin-bottom:16px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9797ls/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1658,8 +1632,8 @@ function sfShare() {
       </div>
     </div>
 
-    <!-- SWEETs Limited carousel -->
-    <div class="disco-group" id="sweets-limited-section">
+    <!-- SWEETs Limited (removed) -->
+    <div class="disco-group" id="sweets-limited-section" style="display:none;">
       <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
       <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:18px;overflow:hidden;box-shadow:0 0 18px rgba(249,168,212,0.06);">
         <div style="display:flex;align-items:stretch;">
