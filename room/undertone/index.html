@@ -2031,6 +2031,7 @@ function submitUtPw() {
     { key:'cravat_hayate',       name:'水色の石のクラバットピン',   nameAppraised:'アクアマリンのクラバットピン',       img:'../../item/cravat_hayate.webp',        char:'hayate' },
     { key:'snowflake_obsidian',  name:'黒い石（未鑑定）',           nameAppraised:'スノーフレークオブシディアン',       img:'../../item/snowflake_obsidian.webp',   loupeOnly: true },
     { key:'rainbow_moonstone',   name:'白い石（未鑑定）',            nameAppraised:'レインボームーンストーン',            img:'../../item/rainbow_moonstone.webp',    kireiOnly: true },
+    { key:'spinel_book',         name:'赤い石が嵌め込まれた古書',   nameAppraised:'スピネルが嵌め込まれた古書',         img:'../../item/spinel_book.png',           char:'kouta', rewardOnly: true },
   ];
 
   // キャラクター別に選べる他のレアアイテム
@@ -4621,6 +4622,7 @@ function submitUtPw() {
     earring_hayate:    'なくしても、たぶん戻る',
     ring_kouta:        '選んだな',
     boutonniere_kouta: '……ずっと、持ってたんだな',
+    spinel_book:       '似ているけれど、同じではない',
   };
 
   var STONE_DESCRIPTIONS = {
@@ -4628,6 +4630,7 @@ function submitUtPw() {
     earring_hayate: 'シトリンと呼ばれる、\n淡い黄色の石を使ったピアス。\n\n光を受けると、\n耳元で小さく金色に揺れる。\n\n明るくて、あたたかい。\nけれど、派手すぎない。\n\n場の空気を少しだけ軽くする、\nハヤテによく似た石。',
     ring_kouta: '煙った茶色の石をあしらったリング。\n\n透明な石の奥に、\n灰色の影がゆっくり沈んでいる。\n\n派手ではない。\nけれど、光を受けると、\n静かに深い色を返す。\n\n言葉にしないまま、\n低い音だけを残していく。\n\nコウタによく似た石。',
     boutonniere_kouta: 'ガーネットをあしらった\n白い花のブートニア。\n結婚式の日にコウタの胸元を飾っていた。\n\n派手な誓いではなく、\n長い時間をかけて残った想いを、\n胸元にそっと留めている。\n\nその赤は、\n言葉にしなかった絆の色。',
+    spinel_book: '中央の赤い石は、ルビーではなくスピネル。\nかつてはルビーと間違われることも多かった、\n深い赤を持つ石。\n\n本物に似ているけれど、同じではないもの。\n正しく見えるけれど、少しだけ違うもの。\n\nこの古書は、そういう距離のずれを\n静かに抱えている。',
     cravat_hayate: '人との繋がりや調和を象徴する\nアクアマリンをあしらったクラバットピン。\n\n結婚式の日、\nハヤテの胸元を飾っていた。\n\n幸せな結婚と、人との縁を結ぶ石。',
   };
 
@@ -4853,8 +4856,8 @@ function submitUtPw() {
     var _main3Done = _main3.every(function(k){ return localStorage.getItem('sf_ut_stone_revealed_' + k) === 'true'; });
     var available = STONE_ITEMS.filter(function(s) {
       if (!SfSnow.isUnlocked(s.key)) {
-        // loupeOnly アイテムは妙に冷たい石では解放しない
-        if (s.loupeOnly || s.kireiOnly) return false;
+        // loupeOnly / kireiOnly / rewardOnly アイテムは妙に冷たい石では解放しない
+        if (s.loupeOnly || s.kireiOnly || s.rewardOnly) return false;
         // boutonniere_kouta はメイン3つ鑑定済み後にのみ解放
         if (s.key === 'boutonniere_kouta' && !_main3Done) return false;
         // cravat_hayate は1-5読了後にのみ解放

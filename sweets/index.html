@@ -1264,6 +1264,10 @@
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-boutonniere-kouta-img" src="../item/boutonniere_kouta.webp" alt="boutonniere_kouta" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-boutonniere-kouta-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-boutonniere-kouta-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
+                <tr id="item-row-spinel-book" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-spinel-book-img" src="../item/spinel_book.png" alt="spinel_book" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-spinel-book-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-spinel-book-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
+                </tr>
                 <tr id="item-row-shiori" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-shiori-img" src="../item/shiori_kouta.webp" alt="shiori" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-shiori-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-shiori-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
@@ -5346,6 +5350,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_hayate.webp',
         charaLine: '……見てた？'
       },
+      spinel_book: {
+        noteCardId: 'note_kyori_1',
+        img: '../item/spinel_book.png',
+        name: '赤い石が嵌め込まれた古書',
+        desc: '赤い石が嵌め込まれた古書。古い本のようだが、傷みは少ない。表紙の石だけが、妙にはっきりと光を返している。',
+        color: '#fca5a5',
+        chara: 'KOUTA', charaColor: '#fca5a5',
+        charaImg: '../plofile/chibi_kouta.webp',
+        charaLine: null
+      },
     };
     var _noteItemPendingChara = null;
 
@@ -5886,6 +5900,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-bassstrings-img',  'ri-bassstrings-name',  'ri-bassstrings-check',  'bass_strings_kouta',       'Snow flakes ライブチケット',  null, 'https://www.instagram.com/reel/DXcFCOZlpRK/');
     updateRareItem('ri-ring-img',         'ri-ring-name',         'ri-ring-check',         'ring_kouta',               '黒い石のシルバーリング');
     updateRareItem('ri-boutonniere-kouta-img', 'ri-boutonniere-kouta-name', 'ri-boutonniere-kouta-check', 'boutonniere_kouta', 'コウタのブートニア', null, 'https://ncode.syosetu.com/n9009lo/196');
+    updateRareItem('ri-spinel-book-img', 'ri-spinel-book-name', 'ri-spinel-book-check', 'spinel_book', '赤い石が嵌め込まれた古書');
     updateRareItem('ri-obsidian-pendant-img', 'ri-obsidian-pendant-name', 'ri-obsidian-pendant-check', 'obsidian_pendant', '雪片のペンダントトップ');
     updateRareItem('ri-boutonniere-img', 'ri-boutonniere-name', 'ri-boutonniere-check', 'boutonniere_hayate', 'ハヤテのブートニア', null, 'https://ncode.syosetu.com/n9009lo/186');
     updateRareItem('ri-cravat-img', 'ri-cravat-name', 'ri-cravat-check', 'cravat_hayate', 'アクアマリンのクラバットピン');

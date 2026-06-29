@@ -887,6 +887,30 @@
         </div>
       </div>
 
+      <!-- 赤い石が嵌め込まれた古書 -->
+      <div class="il-item" id="il-spinel-item">
+        <div class="il-header" onclick="toggleIlItem('il-spinel-item')">
+          <span class="item-log-tag" id="il-spinel-tag"><img src="../../item/spinel_book.png" alt="item">赤い石が嵌め込まれた古書</span>
+          <span class="il-arrow">›</span>
+        </div>
+        <div class="il-body">
+          <div id="il-spinel-locked" style="padding:8px 0 16px;">
+            <a href="../undertone/" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-decoration:none;">Under tone で鑑定</a>
+          </div>
+          <div id="il-spinel-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(252,165,165,0.04);border:1px solid rgba(252,165,165,0.15);border-radius:12px;margin-bottom:12px;">
+            <img id="il-spinel-img" src="../../item/spinel_book.png" alt="赤い石が嵌め込まれた古書" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fca5a5;margin-bottom:10px;" id="il-spinel-name">赤い石が嵌め込まれた古書</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;margin-bottom:10px;">赤い石が嵌め込まれた古書。古い本のようだが、傷みは少ない。<br>表紙の石だけが、妙にはっきりと光を返している。</p>
+            <div id="il-spinel-not-appraised">
+              <a href="../undertone/" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;text-decoration:none;">Under tone で鑑定</a>
+            </div>
+            <div id="il-spinel-appraise-content" style="display:none;">
+              <p onclick="document.getElementById('spinel-book-desc-popup').style.display='flex'" style="margin-top:14px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fca5a5;cursor:pointer;opacity:0.7;">── 鑑定する ──</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 黒い石のシルバーリング -->
       <div class="il-item" id="il-ring-item">
         <div class="il-header" onclick="toggleIlItem('il-ring-item')">
@@ -929,6 +953,24 @@
 その赤は、
 言葉にしなかった絆の色。</p>
       <button onclick="document.getElementById('boutonniere-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
+    </div>
+  </div>
+
+  <!-- スピネル古書鑑定ポップアップ -->
+  <div id="spinel-book-desc-popup" style="display:none;position:fixed;inset:0;z-index:695;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('spinel-book-desc-popup').style.display='none'">
+    <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(252,165,165,0.22);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;margin:auto;" onclick="event.stopPropagation()">
+      <img src="../../item/spinel_book.png" alt="スピネルが嵌め込まれた古書" style="width:80px;height:80px;object-fit:cover;border-radius:14px;margin:0 auto 14px;display:block;box-shadow:0 0 28px rgba(252,165,165,0.18);">
+      <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;margin-bottom:20px;">スピネルが嵌め込まれた古書</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;white-space:pre-line;text-align:left;margin-bottom:24px;">中央の赤い石は、ルビーではなくスピネル。
+かつてはルビーと間違われることも多かった、
+深い赤を持つ石。
+
+本物に似ているけれど、同じではないもの。
+正しく見えるけれど、少しだけ違うもの。
+
+この古書は、そういう距離のずれを
+静かに抱えている。</p>
+      <button onclick="document.getElementById('spinel-book-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
     </div>
   </div>
 
@@ -1678,6 +1720,19 @@
       }
     }
 
+    function openSpinelBookHotspot() {
+      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('spinel_book')) {
+        var appraised = localStorage.getItem('sf_ut_stone_revealed_spinel_book') === 'true';
+        var name = appraised ? 'スピネルが嵌め込まれた古書' : '赤い石が嵌め込まれた古書';
+        var desc = appraised
+          ? '中央の赤い石は、ルビーではなくスピネル。\n本物に似ているけれど、同じではないもの。'
+          : '赤い石が嵌め込まれた古書。古い本のようだが、傷みは少ない。\n表紙の石だけが、妙にはっきりと光を返している。';
+        showOwnedItem('../../item/spinel_book.png', name, desc);
+      } else {
+        openRoomHotspot('BOOK', 'サイドテーブルに置かれた古い本。\n表紙の石が、静かに光を返している。');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       SfSnow.updateUI();
       // SWEETs スタジオ：この部屋を訪問済みとしてマーク（扉の更新バッジを消す）
@@ -1930,6 +1985,29 @@
         }
       }
 
+      // 赤い石が嵌め込まれた古書
+      if (SfSnow.isUnlocked('spinel_book')) {
+        var sTag = document.getElementById('il-spinel-tag');
+        if (sTag) { var sImg = sTag.querySelector('img'); if (sImg) { sImg.style.opacity = '1'; sImg.style.filter = 'none'; } sTag.style.color = '#fca5a5'; }
+        var sLocked = document.getElementById('il-spinel-locked');
+        var sOwned  = document.getElementById('il-spinel-owned');
+        if (sLocked) sLocked.style.display = 'none';
+        if (sOwned)  sOwned.style.display  = '';
+        var spinelItem = document.getElementById('il-spinel-item');
+        if (spinelItem) spinelItem.classList.add('open');
+        // 鑑定済みチェック
+        if (localStorage.getItem('sf_ut_stone_revealed_spinel_book') === 'true') {
+          var sNotApp = document.getElementById('il-spinel-not-appraised');
+          var sAppContent = document.getElementById('il-spinel-appraise-content');
+          var sNameEl = document.getElementById('il-spinel-name');
+          var sImgEl = document.getElementById('il-spinel-img');
+          if (sNotApp) sNotApp.style.display = 'none';
+          if (sAppContent) sAppContent.style.display = '';
+          if (sNameEl) sNameEl.textContent = 'スピネルが嵌め込まれた古書';
+          if (sImgEl) { sImgEl.style.cursor = 'pointer'; sImgEl.onclick = function() { document.getElementById('spinel-book-desc-popup').style.display = 'flex'; }; }
+        }
+      }
+
       // 黒い石のシルバーリング
       if (SfSnow.isUnlocked('ring_kouta')) {
         revealItemTag('il-ring-tag', '../../item/ring_kouta.webp', '黒い石のシルバーリング');
@@ -1974,6 +2052,8 @@
       <button class="room-hotspot" style="left:33%;top:63%;" onclick="event.stopPropagation();openRoomHotspot('MUG','飲みかけのコーヒー。\nまだ温かい気がした')">+</button>
       <button class="room-hotspot" style="left:79%;top:46%;" onclick="event.stopPropagation();openRoomHotspot('BOOKSHELF','好きな作家が数人いる。\nじつはハードカバー派。')">+</button>
       <button class="room-hotspot" style="left:86%;top:54%;" onclick="event.stopPropagation();openBookHotspot()">+</button>
+      <button class="room-hotspot" style="left:50%;top:48%;" onclick="event.stopPropagation();openRoomHotspot('BOOKSHELF','窓際の本棚。\n整理されているようで、されていない。\n好きなものだけが増えていく。')">+</button>
+      <button class="room-hotspot" style="left:83%;top:72%;" onclick="event.stopPropagation();openSpinelBookHotspot()">+</button>
       <button class="room-hotspot" style="left:47%;top:15%;" onclick="event.stopPropagation();openBoxHotspot()">+</button>
       <button class="room-hotspot" style="left:8%;top:90%;" onclick="event.stopPropagation();openDiaryHotspot()">+</button>
     </div>
