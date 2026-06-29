@@ -7961,7 +7961,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     display: flex; align-items: center; gap: 10px;
     text-decoration: none; padding: 10px 0;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 13px; letter-spacing: 2px; color: #cbd5e1;
+    font-size: 13px; letter-spacing: 2px; color: var(--c, #cbd5e1);
     border-bottom: 1px solid rgba(255,255,255,0.05);
     transition: color 0.2s;
   }
@@ -7970,7 +7970,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     display: inline-block; width: 4px; height: 4px; border-radius: 50%;
     background: currentColor; flex-shrink: 0;
   }
-  #sw-mob-panel a:hover { color: #f9a8d4; }
+  #sw-mob-panel a:hover { color: var(--c, #f9a8d4); opacity: 0.8; }
 </style>
 
 <button id="sw-mob-btn" aria-label="メニュー">
@@ -7982,16 +7982,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 </button>
 <div id="sw-mob-overlay"></div>
 <div id="sw-mob-panel">
-  <a href="#rooms-section"><span class="pnd"></span>STUDIO</a>
-  <a href="#items-section"><span class="pnd"></span>ITEMS</a>
-  <a href="../gacha/"><span class="pnd"></span>GACHA</a>
-  <a href="#sw-exchange"><span class="pnd"></span>EXCHANGE</a>
-  <a href="#undertone-section"><span class="pnd"></span>NOVEL GAME</a>
-  <a href="#sw-notes"><span class="pnd"></span>NOTES</a>
-  <a href="#music-section"><span class="pnd"></span>MUSIC</a>
-  <a href="#live-archive-section"><span class="pnd"></span>LIVE ARCHIVE</a>
-  <a href="#sw-another"><span class="pnd"></span>ANOTHER</a>
-  <a href="../support-lp.html"><span class="pnd"></span>SUPPORT</a>
+  <a href="#rooms-section" style="--c:#f9a8d4"><span class="pnd"></span>STUDIO</a>
+  <a href="#items-section" style="--c:#86efac"><span class="pnd"></span>ITEMS</a>
+  <a href="../gacha/" style="--c:#c4b5fd"><span class="pnd"></span>GACHA</a>
+  <a href="#sw-exchange" style="--c:#fca5a5"><span class="pnd"></span>EXCHANGE</a>
+  <a href="#undertone-section" style="--c:#a78bfa"><span class="pnd"></span>NOVEL GAME</a>
+  <a href="#sw-notes" style="--c:#93c5fd"><span class="pnd"></span>NOTES</a>
+  <a href="#music-section" style="--c:#fde68a"><span class="pnd"></span>MUSIC</a>
+  <a href="#live-archive-section" style="--c:#7dd3fc"><span class="pnd"></span>LIVE ARCHIVE</a>
+  <a href="#sw-another" style="--c:#f0abfc"><span class="pnd"></span>ANOTHER</a>
+  <a href="../support-lp.html" style="--c:#94a3b8"><span class="pnd"></span>SUPPORT</a>
 </div>
 <script>
 (function() {
@@ -8032,29 +8032,29 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     text-decoration: none; white-space: nowrap;
     padding: 4px 0; width: fit-content;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 11px; letter-spacing: 2px; color: #cbd5e1;
-    transition: color 0.2s;
+    font-size: 11px; letter-spacing: 2px; color: var(--c, #cbd5e1);
+    transition: color 0.2s, opacity 0.2s;
   }
   #sw-dot-nav a .pnd {
     display: inline-block; flex-shrink: 0;
     width: 4px; height: 4px; border-radius: 50%;
     background: currentColor; transition: all 0.2s;
   }
-  #sw-dot-nav a:hover { color: #f9a8d4; }
-  #sw-dot-nav a.pnav-active { color: #f9a8d4; }
-  #sw-dot-nav a.pnav-active .pnd { width: 6px; height: 6px; box-shadow: 0 0 5px #f9a8d4; }
+  #sw-dot-nav a:hover { color: var(--c, #f9a8d4); opacity: 0.8; }
+  #sw-dot-nav a.pnav-active { color: var(--c, #f9a8d4); }
+  #sw-dot-nav a.pnav-active .pnd { width: 6px; height: 6px; box-shadow: 0 0 5px var(--c, #f9a8d4); }
 </style>
 <nav id="sw-dot-nav">
-  <a href="#rooms-section"><span class="pnd"></span>STUDIO</a>
-  <a href="#items-section"><span class="pnd"></span>ITEMS</a>
-  <a href="../gacha/"><span class="pnd"></span>GACHA</a>
-  <a href="#sw-exchange"><span class="pnd"></span>EXCHANGE</a>
-  <a href="#undertone-section"><span class="pnd"></span>NOVEL GAME</a>
-  <a href="#sw-notes"><span class="pnd"></span>NOTES</a>
-  <a href="#music-section"><span class="pnd"></span>MUSIC</a>
-  <a href="#live-archive-section"><span class="pnd"></span>LIVE ARCHIVE</a>
-  <a href="#sw-another"><span class="pnd"></span>ANOTHER</a>
-  <a href="../support-lp.html"><span class="pnd"></span>SUPPORT</a>
+  <a href="#rooms-section" style="--c:#f9a8d4"><span class="pnd"></span>STUDIO</a>
+  <a href="#items-section" style="--c:#86efac"><span class="pnd"></span>ITEMS</a>
+  <a href="../gacha/" style="--c:#c4b5fd"><span class="pnd"></span>GACHA</a>
+  <a href="#sw-exchange" style="--c:#fca5a5"><span class="pnd"></span>EXCHANGE</a>
+  <a href="#undertone-section" style="--c:#a78bfa"><span class="pnd"></span>NOVEL GAME</a>
+  <a href="#sw-notes" style="--c:#93c5fd"><span class="pnd"></span>NOTES</a>
+  <a href="#music-section" style="--c:#fde68a"><span class="pnd"></span>MUSIC</a>
+  <a href="#live-archive-section" style="--c:#7dd3fc"><span class="pnd"></span>LIVE ARCHIVE</a>
+  <a href="#sw-another" style="--c:#f0abfc"><span class="pnd"></span>ANOTHER</a>
+  <a href="../support-lp.html" style="--c:#94a3b8"><span class="pnd"></span>SUPPORT</a>
 </nav>
 <script>
 (function() {
