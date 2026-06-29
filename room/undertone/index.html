@@ -152,12 +152,19 @@
 
     /* Hotspot popup */
     .hotspot-popup {
-      position:fixed; bottom:0; left:0; right:0; z-index:200;
+      position:fixed; inset:0; z-index:200;
       display:none; align-items:flex-end; justify-content:center;
       padding:0 16px 96px;
       pointer-events:none;
+      background:transparent;
+      transition:background 0.3s;
     }
-    .hotspot-popup.show { display:flex; }
+    .hotspot-popup.show {
+      display:flex;
+      pointer-events:auto;
+      background:rgba(12,18,32,0.55);
+      backdrop-filter:blur(4px);
+    }
     .hotspot-card {
       background:rgba(10,16,30,0.97);
       border:1px solid rgba(255,255,255,0.1);
@@ -184,7 +191,7 @@
     }
     .hotspot-desc {
       font-size:14px; color:#e2e8f0; line-height:2.4;
-      font-weight:400; margin-bottom:22px; white-space:pre-line;
+      font-weight:400; margin-bottom:8px; white-space:pre-line;
     }
     .popup-close {
       font-family:'Cormorant Garamond',serif;
@@ -1530,8 +1537,8 @@ function submitUtPw() {
 </div>
 
 <!-- Hotspot popup -->
-<div class="hotspot-popup" id="hotspot-popup">
-  <div class="hotspot-card">
+<div class="hotspot-popup" id="hotspot-popup" onclick="closeHotspot()">
+  <div class="hotspot-card" onclick="event.stopPropagation()">
     <p class="hotspot-label" id="hotspot-label">FOUND</p>
     <p class="hotspot-desc" id="hotspot-desc"></p>
     <p id="hotspot-stone-found" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#c4b5fd;margin-top:10px;"></p>
@@ -1543,7 +1550,7 @@ function submitUtPw() {
         <p id="hotspot-speech-text" style="font-size:13px;color:#e2e8f0;line-height:1.9;"></p>
       </div>
     </div>
-    <button class="popup-close" onclick="closeHotspot()">閉じる</button>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;margin-top:18px;">── tap to close ──</p>
   </div>
 </div>
 
