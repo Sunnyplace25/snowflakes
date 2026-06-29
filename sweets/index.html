@@ -4859,6 +4859,12 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function _doEnter() {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
+      // cottoncandy 所持者へのオープン記念ボーナス（1回限り）
+      if (localStorage.getItem('sf_summer_entered') === '1') {
+        setTimeout(function() {
+          SfSnow.addOnce('cottoncandy_open_bonus', 555, 'オープン記念');
+        }, 1200);
+      }
       initNotes();
       // ログイン後にNOTES・EXCHANGEを再描画
       if (typeof renderNotes === 'function') renderNotes();
