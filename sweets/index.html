@@ -4946,7 +4946,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var prologueReleased = Date.now() >= PROLOGUE_RELEASE;
       var allItems = typeof SfSnow !== 'undefined'
         && UT_STONE_ITEMS.every(function(item) { return SfSnow.isUnlocked(item.key); });
-      var ok = isAdmin || (prologueReleased && allItems);
+      // 7/1〜7/30 はアイテム不要でプロローグまで解放
+      var _utNow = Date.now();
+      var isUTGateOpen = _utNow >= new Date('2026-07-01T00:00:00+09:00').getTime()
+        && _utNow < new Date('2026-07-31T00:00:00+09:00').getTime();
+      var ok = isAdmin || (prologueReleased && (allItems || isUTGateOpen));
 
       var sec = document.getElementById('undertone-section');
       if (!sec) return;

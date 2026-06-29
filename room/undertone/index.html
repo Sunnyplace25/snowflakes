@@ -885,10 +885,23 @@
     return;
   }
 
+  var seenKey = 'sf_ut_prologue_gate_seen';
+
+  // 既に通過済み
+  if (localStorage.getItem(seenKey) === '1') {
+    gate.style.display = 'none';
+    return;
+  }
+
   var allItems = typeof SfSnow !== 'undefined' && ITEMS.every(function(k) { return SfSnow.isUnlocked(k); });
 
-  if (!allItems) {
-    // アイテム未所持: 案内表示
+  // 7/1〜7/30 ゲートオープン期間チェック
+  var _gNow = Date.now();
+  var _isUTGateOpen = _gNow >= new Date('2026-07-01T00:00:00+09:00').getTime()
+    && _gNow < new Date('2026-07-31T00:00:00+09:00').getTime();
+
+  if (!allItems && !_isUTGateOpen) {
+    // アイテム未所持 & ゲートオープン期間外: 案内表示
     msg.innerHTML =
       '<p style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:#94a3b8;line-height:2.4;margin-bottom:28px;">'
       + '3つのレアアイテムを集めると<br>プロローグが解放されます。</p>'
@@ -896,12 +909,14 @@
     return;
   }
 
-  // アイテム所持: 演出してからゲートを外す
-  var seenKey = 'sf_ut_prologue_gate_seen';
-  if (localStorage.getItem(seenKey) === '1') {
+  if (!allItems && _isUTGateOpen) {
+    // ゲートオープン期間: アイテムなしでそのまま通過
     gate.style.display = 'none';
+    localStorage.setItem(seenKey, '1');
     return;
   }
+
+  // アイテム所持: 初回演出
 
   // 初回のみ演出
   var html = '<p style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:5px;color:#94a3b8;margin-bottom:32px;">ITEMS COLLECTED</p>';
@@ -2431,12 +2446,9 @@ function submitUtPw() {
           }
         }
       });
-      // 0-5読了から48hカウントダウン（ch5読了済み・1章未解放）
+      // 第一章解放ボタン更新（アイテム条件）
       if (!ch21Unlocked && ch5Unlocked) {
-        var _ch1AtTick = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
-        var _r1 = _ch1AtTick ? Math.max(0, _ch1AtTick + 48 * 3600000 - Date.now()) : 0;
-        if (_r1 > 0) { updateCh2Btn(); anyActive = true; }
-        else { clearInterval(_countdownInterval); _countdownInterval = null; renderChapterList(); return; }
+        updateCh2Btn();
       }
       // 2日 章間タイマー
       var _ch2At = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
@@ -3298,6 +3310,10 @@ function submitUtPw() {
     cl.style.display = 'block';
     // 完読フラグ（スコープ先頭で定義しないとvar巻き上げでundefinedになるため）
     var ch3Done = !!localStorage.getItem('sf_ut_ch3_complete');
+    // 第一章解放条件: 既解放 OR (0-5読了 && 3アイテム所持)
+    var allStoneItems = typeof SfSnow !== 'undefined'
+      && ['pendant_hinata','earring_hayate','ring_kouta'].every(function(k){ return SfSnow.isUnlocked(k); });
+    var ch21EffectivelyUnlocked = ch21Unlocked || (ch5Unlocked && allStoneItems);
     var ch4Done = !!localStorage.getItem('sf_ut_ch4_complete');
     // 各話の表示制御
     ALL_CHAPTERS.forEach(function(ch, i) {
@@ -3344,7 +3360,7 @@ function submitUtPw() {
       } else if (i === 6) {
         applyTimedChapter(6, ch22Unlocked);
       } else if (i === 5) {
-        item.style.display = ch21Unlocked ? '' : 'none';
+        item.style.display = ch21EffectivelyUnlocked ? '' : 'none';
       } else if (i === 4) {
         item.style.display = ch5Unlocked ? '' : 'none';
       } else if (i === 3) {
@@ -3355,7 +3371,7 @@ function submitUtPw() {
     });
     // 第二章セクション表示
     var sec2 = document.getElementById('ch-section-2');
-    if (sec2) sec2.style.display = ch21Unlocked ? '' : 'none';
+    if (sec2) sec2.style.display = ch21EffectivelyUnlocked ? '' : 'none';
     // 第三章セクション表示（第二章）
     var sec3 = document.getElementById('ch-section-3');
     if (sec3) sec3.style.display = ch3Unlocked ? '' : 'none';
@@ -3377,7 +3393,7 @@ function submitUtPw() {
       closeChSection(1); closeChSection(2); closeChSection(3); openChSection(4);
     } else if (ch3Unlocked) {
       closeChSection(1); closeChSection(2); openChSection(3);
-    } else if (ch21Unlocked) {
+    } else if (ch21EffectivelyUnlocked) {
       closeChSection(1); openChSection(2);
     } else {
       openChSection(1);
@@ -3400,20 +3416,16 @@ function submitUtPw() {
     if (rEp) rEp.style.display = _epUnlocked   ? '' : 'none';
     // 1-5読了後・2章未解放時のみボタンを表示
     var between = document.getElementById('ch-between');
-    if (between) between.style.display = (ch5Unlocked && !ch21Unlocked) ? '' : 'none';
-    if (ch5Unlocked && !ch21Unlocked) updateCh2Btn();
-    // ch-between-3 は下の ch1Done ブロックで処理
-    // ch5読了済み・1章未解放ならカウントダウン開始
-    if (ch5Unlocked && !ch21Unlocked) {
-      updateCh2Btn();
-      startCountdownTimers();
-    }
-    // 0-5読了から48時間後：1章自動解放
-    var _ch1UnlockAt = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
-    if (!ch21Unlocked && ch5Unlocked && _ch1UnlockAt && Date.now() - _ch1UnlockAt >= 48 * 3600000) {
-      ch21Unlocked = true;
-      localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
-      localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
+    if (between) between.style.display = (ch5Unlocked && !ch21EffectivelyUnlocked) ? '' : 'none';
+    if (ch5Unlocked && !ch21EffectivelyUnlocked) updateCh2Btn();
+    // 第一章: アイテム3つで自動解放（既存の48hタイマーから変更）
+    if (!ch21Unlocked && ch5Unlocked) {
+      var _autoStones = typeof SfSnow !== 'undefined'
+        && ['pendant_hinata','earring_hayate','ring_kouta'].every(function(k){ return SfSnow.isUnlocked(k); });
+      if (_autoStones) {
+        ch21Unlocked = true;
+        localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
+      }
     }
     // 2日タイマーチェック：2章自動解放
     var _ch2UnlockAt = parseInt(localStorage.getItem('sf_ut_ch2_unlock_at') || '0');
@@ -3493,34 +3505,20 @@ function submitUtPw() {
     var btn  = document.getElementById('ch-next-btn');
     var cond = document.getElementById('ch-next-cond');
     var cdEl = document.getElementById('ch2-countdown');
+    var hintEl = document.getElementById('ch2-hint');
     if (!btn) return;
-    if (ch21Unlocked) {
-      btn.textContent = '第2章を読む';
+    var _stones = typeof SfSnow !== 'undefined'
+      && ['pendant_hinata','earring_hayate','ring_kouta'].every(function(k){ return SfSnow.isUnlocked(k); });
+    if (ch21Unlocked || _stones) {
       btn.disabled = false;
       if (cond) cond.textContent = '';
       if (cdEl) cdEl.textContent = '';
-      return;
-    }
-    var ok = ch2ConditionMet();
-    btn.disabled = !ok;
-    if (ok) {
+      if (hintEl) hintEl.textContent = '';
+    } else {
+      btn.disabled = true;
       if (cond) cond.textContent = '';
       if (cdEl) cdEl.textContent = '';
-    } else {
-      if (cond) cond.textContent = '';
-      // 0-5読了から48hカウントダウン
-      var hintEl = document.getElementById('ch2-hint');
-      if (cdEl) {
-        var _ch1At2 = parseInt(localStorage.getItem('sf_ut_ch1_unlock_at') || '0');
-        var diff = _ch1At2 ? Math.max(0, _ch1At2 + 48 * 3600000 - Date.now()) : 0;
-        if (diff > 0) {
-          cdEl.textContent = formatCountdown(diff);
-          if (hintEl) hintEl.textContent = '占いや探索をしてアイテムを集めよう';
-        } else {
-          cdEl.textContent = '';
-          if (hintEl) hintEl.textContent = '';
-        }
-      }
+      if (hintEl) hintEl.textContent = '3つのレアアイテムを集めると第一章が解放されます';
     }
   }
 
@@ -3529,10 +3527,11 @@ function submitUtPw() {
       openChapterPopup(5);
       return;
     }
-    if (ch2ConditionMet()) {
+    var _stones = typeof SfSnow !== 'undefined'
+      && ['pendant_hinata','earring_hayate','ring_kouta'].every(function(k){ return SfSnow.isUnlocked(k); });
+    if (_stones) {
       ch21Unlocked = true;
       localStorage.setItem('sf_undertone_ch21_unlocked', 'true');
-      localStorage.setItem('sf_ut_ch1_unlock_shown', 'true');
       renderChapterList();
     }
   };
