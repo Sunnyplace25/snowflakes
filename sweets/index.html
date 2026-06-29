@@ -693,8 +693,8 @@
     }
     .exch-close-btn:hover { color:#cbd5e1; }
   /* ── Notes 3D Carousel ── */
-  .nc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
-  .mc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;}
+  .nc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
+  .mc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
   .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
   .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
   .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
