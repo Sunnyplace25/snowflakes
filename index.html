@@ -654,7 +654,7 @@ function sfShare() {
        style="display:none;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(167,139,250,0.03);border:1px solid rgba(167,139,250,0.25);transition:all 0.4s;position:relative;overflow:hidden;">
       <div style="pointer-events:none;position:absolute;top:14px;right:18px;display:flex;gap:5px;align-items:center;">
         <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#9b4d4d;margin-right:2px;">item</span>
-        <img src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
+        <img id="short-item-img" src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
       </div>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
         <div style="flex:1;min-width:0;">
@@ -997,9 +997,9 @@ function sfShare() {
     (function() {
       // ── 短篇カード設定 ──────────────────────────────────────
       // 短篇を投稿したら以下3つを更新する
-      var SHORT_PUB   = new Date('2026-06-18T12:00:00+09:00');
-      var SHORT_TITLE = 'Moon Veil';
-      var SHORT_URL   = 'https://ncode.syosetu.com/n9832lr/';
+      var SHORT_PUB   = new Date('2026-06-30T12:00:00+09:00');
+      var SHORT_TITLE = '正しい距離より、触れているほうがいい';
+      var SHORT_URL   = 'https://ncode.syosetu.com/n0498ly/';
       // ────────────────────────────────────────────────────────
 
       var SHOW_DAYS = 3;
@@ -1016,7 +1016,6 @@ function sfShare() {
           card.style.display = 'none';
           return;
         }
-
 
         // 3日以内なら表示
         card.style.display = 'block';
@@ -1035,6 +1034,19 @@ function sfShare() {
           var m = ('0' + (SHORT_PUB.getMonth() + 1)).slice(-2);
           var d = ('0' + SHORT_PUB.getDate()).slice(-2);
           dateEl.textContent = y + '.' + m + '.' + d;
+        }
+
+        // デイリーと同じアイテムプールからランダム表示（日付ベースで毎日変わる）
+        if (typeof SF_BANNER_ITEMS !== 'undefined' && SF_BANNER_ITEMS.length) {
+          var today = new Date();
+          var seed  = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+          var picked = SF_BANNER_ITEMS[seed % SF_BANNER_ITEMS.length];
+          var imgEl = document.getElementById('short-item-img');
+          if (imgEl && picked) {
+            imgEl.src   = picked.img;
+            imgEl.title = picked.name;
+            imgEl.alt   = picked.name;
+          }
         }
       }
 
