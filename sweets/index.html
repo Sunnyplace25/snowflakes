@@ -397,6 +397,10 @@
       0%, 100% { box-shadow:0 0 8px 1px rgba(251,146,60,0.15);border-color:rgba(251,146,60,0.3); }
       50%       { box-shadow:0 0 22px 5px rgba(251,146,60,0.42);border-color:rgba(251,146,60,0.6); }
     }
+    @keyframes item-glow-green {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(74,222,128,0.15);border-color:rgba(74,222,128,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(74,222,128,0.38);border-color:rgba(74,222,128,0.55); }
+    }
     @keyframes hinata-link-glow { 0%,100% { box-shadow:0 0 10px rgba(147,197,253,0.2),0 0 24px rgba(147,197,253,0.08); border-color:rgba(147,197,253,0.35); } 50% { box-shadow:0 0 18px rgba(147,197,253,0.4),0 0 40px rgba(147,197,253,0.16); border-color:rgba(147,197,253,0.65); } }
     @keyframes count-blink {
       0%, 100% { opacity:1; }
@@ -694,6 +698,9 @@
   .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
   .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
   .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
+  .nc-card.nc-green,.mc-card.nc-green{border-color:rgba(74,222,128,0.35);animation:item-glow-green 2.5s ease-in-out infinite;}
+  .nc-card.nc-green.nc-active,.mc-card.nc-green.nc-active{border-color:rgba(74,222,128,0.65);box-shadow:0 0 30px rgba(74,222,128,0.2);animation:item-glow-green 2.5s ease-in-out infinite;}
+  .read-btn.green-hover:hover{background:rgba(74,222,128,0.18);}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
@@ -870,9 +877,13 @@
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#c4b5fd;margin-bottom:4px;">UNDER TONE</p>
               <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">宝石のついたアイテムを<br>店で鑑定してみよう！</p>
             </a>
-            <a href="#music-section" style="text-decoration:none;display:block;border-left:2px solid rgba(253,230,138,0.3);padding-left:12px;">
+            <a href="#music-section" style="text-decoration:none;display:block;border-left:2px solid rgba(253,230,138,0.3);padding-left:12px;margin-bottom:8px;">
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fde68a;margin-bottom:4px;">MUSIC</p>
               <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">アプリゲームハヤテっち使用楽曲デモを追加。ギターピックで交換して聴いてみよう！</p>
+            </a>
+            <a href="#sw-notes" style="text-decoration:none;display:block;border-left:2px solid rgba(74,222,128,0.3);padding-left:12px;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4ade80;margin-bottom:4px;">NOTE</p>
+              <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">「正しい距離より、触れている方がいい」解説を追加。プロテインコーヒーで交換できます。</p>
             </a>
           </div>
         </div>
@@ -6239,12 +6250,33 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n　きっと\n　ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n　ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
       ]
     },
+    {
+      id: 'note_kyori_1', type: 'note', isNew: '2026-06-30',
+      title: '「正しい距離より、触れている方がいい」解説',
+      sub: '― 夢の中で見えた、届く距離の話 ―',
+      origin: '',
+      cost: { item: 'proteincoffee', amount: 1 },
+      glowColor: 'green',
+      sections: [
+        { heading: null, body: '「正しい距離より、触れている方がいい」は、Snow flakes本編の外側にある、夢の中の一篇です。\n\n舞踏会。\n玉座。\n黒髪の姫。\n金髪の王子。\n整えられた庭。\n\n現実とは違う場所で、ヒナタは「正しい距離」を見ます。\n\nそれは綺麗で、間違っていなくて、誰にも乱されていない距離です。\nけれどヒナタには、そこに小さな違和感が残る。\n\nちゃんとしている。\nでも、遠い。\n\nこの話は、その違和感を追いかけていく物語です。' },
+        { heading: '夢の中でも、ヒナタはヒナタのまま', body: 'ヒナタは、夢の中で陛下になっています。\n\nけれど、立場が変わっても、ヒナタ自身はほとんど変わりません。\n\n礼儀や順序を理解して動くのではなく、\n見たものに対して、まっすぐ反応する。\n\n「ちゃんとしてる」\n「でも遠い」\n「触れてない」\n\n言葉は少ない。\nけれど、核心だけは外さない。\n\n夢の中の世界は、すべてが整っています。\n音楽も、人の動きも、立ち位置も、距離も。\n\nその中でヒナタだけが、整っているものの中にある違和感を見つけてしまいます。' },
+        { heading: 'ハヤテ王子の正しい距離', body: '夢の中のハヤテは、金髪の王子として現れます。\n\n姿勢も、言葉も、手の取り方も、すべてが整っている。\n\n相手を乱さない。\n踏み込みすぎない。\n場を壊さない。\n\nそれは、間違っていない距離です。\n\nハヤテの距離は、優しくて、正しい。\n誰かを傷つけないための距離でもあります。\n\nだからヒナタは、最初に「ちゃんとしてる」と感じます。\n\nけれど、ちゃんとしているからこそ、届かないものがある。\n\nここで描いているのは、ハヤテの距離が間違っているということではありません。\n正しいからこそ遠くなるものがある、ということです。' },
+        { heading: 'リトルスノーという名前', body: '黒髪の姫は、リトルスノーと呼ばれます。\n\nヒナタはその名前を聞いて、すぐに「合ってる」と言います。\n理由を説明できるわけではありません。\n\nけれどヒナタにとって、名前は理屈より先に届くものです。\n\n黒髪。\n静かな立ち方。\n雪のような名前。\n\nその名前が合っていると思った瞬間、ヒナタの中で彼女の輪郭が少しだけはっきりします。\n\nだから、見続けてしまう。\nただ綺麗だからではなく、その距離が本当に彼女に届いているのかを、気にしてしまう。\n\nリトルスノーという呼び名は、夢の中で彼女の輪郭を決めるものでもあります。\n\nそこから、物語が少しずつ動き始めます。' },
+        { heading: '「あの距離で、いいの」', body: '庭でヒナタは、リトルスノーに問いかけます。\n\n「嫌じゃないの」\n「あの距離で、いいの」\n\nこれは、答えを迫る言葉ではありません。\n\nヒナタが気にしているのは、距離です。\n\n正しい距離。\n綺麗な距離。\n誰にも責められない距離。\n\nその距離の中で、本当に息ができるのか。\n本当に届いているのか。\n\nヒナタは、それを確かめようとしています。\n\nだからこれは、誰かを選ぶ話ではなく、\n「届く距離とは何か」を見る話です。' },
+        { heading: '「触れてない」', body: 'お茶会の場面で、ヒナタははっきり言います。\n\n「ちゃんとしてるけど」\n「触れてない」\n\nこの言葉が、物語の中心です。\n\nハヤテの所作は正しい。\nリトルスノーとの距離も美しい。\nけれどヒナタには、そこに「触れていない」感覚がある。\n\nここでいう「触れる」は、単に手に触れることではありません。\n\n相手の呼吸に届くこと。\n揺れに気づくこと。\n断れる余地を残すこと。\n正しさより先に、その人自身へ届くこと。\n\nだからヒナタは、同じ形をなぞるのではなく、同じ距離へ向かおうとします。' },
+        { heading: '「嫌なら、断ってもいい」', body: 'ヒナタがリトルスノーの手を取った時、その距離は近いです。\n\n手順としては綺麗ではない。\n王子の所作のように整ってもいない。\n\nけれど同時に、ヒナタはこう言います。\n\n「嫌なら、断ってもいい」\n\nこの一言で、ヒナタの距離はただの踏み込みではなくなります。\n\n近い。\nけれど、相手が拒める余地は残している。\n\nそれは、正しい礼儀とは違う形の配慮です。\n\nハヤテの距離は、乱さないための距離。\nヒナタの距離は、届くための距離。\n\nどちらが正しいかを決める話ではありません。\nただ、その違いがリトルスノーの中に残ってしまう。\n\nだから彼女は、あとで「ずるい」と呟きます。' },
+        { heading: 'ハヤテが見抜かれるもの', body: 'この話の中で、ハヤテは誰よりも正しく立っています。\n\n王子として、相手を乱さず、場を崩さず、綺麗に距離を保っている。\n\nだからこそ、ヒナタの「触れてない」という言葉は刺さります。\n\nそれは否定ではなく、見抜かれた感覚に近い。\n\nハヤテ自身も、自分の距離が遠かったことに気づく。\nけれど、それでも崩れない。\n\n「面白い」と呟くハヤテには、余裕と、悔しさと、少しの興味が混ざっています。\n\nここで変わるのは、誰かの答えではありません。\n三人それぞれの「距離の取り方」です。' },
+        { heading: 'コウタは距離を整理する', body: '夢の中のコウタは、参謀役として現れます。\n\nヒナタが感覚で見つけたものを、コウタは言葉にしようとする。\n\nただし、全部を説明するわけではありません。\n\nコウタは、ヒナタが何に触れようとしているのかを見ています。\n\nハヤテとリトルスノーの間にある、正しい距離。\nそこへヒナタが無自覚に触れていく。\n\nコウタはそれを止めない。\nむしろ、少し面白がっている。\n\nそれは、ヒナタがまた何かの核心に触れ始めたことを見ているからです。' },
+        { heading: '現実に戻る', body: '最後にヒナタは、スタジオで目を覚まします。\n\nアンプの唸り。\nドラムのチェック音。\nスティックの跳ね返り。\n\n舞踏会の音は消えて、いつものSnow flakesの音が戻ってくる。\n\nそこでヒナタは、現実のハヤテを見る。\n夢の中の王子ではない、いつものハヤテ。\n\n夢の距離感を少しだけ引きずったまま、ヒナタはハヤテの手に触れてしまう。\n\nそれは、夢の続きを現実に持ち込んだような行動です。\nけれど同時に、夢が現実へ戻っていくための合図でもあります。\n\n「王子じゃないな」\n「夢でよかった」\n\nその言葉で、重くなりすぎた夢は、いつもの三人の空気へ戻っていきます。' },
+        { heading: '正しい距離より、触れている方がいい', body: 'この話に出てくる「正しい距離」は、悪いものではありません。\n\n相手を守るための距離。\n踏み込みすぎないための距離。\n場を壊さないための距離。\n\nそれは必要なものです。\n\nけれど、正しい距離だけでは届かないこともある。\n\n触れないまま守ること。\n触れてしまうことで届くこと。\n\nそのどちらも、簡単には否定できません。\n\nヒナタは、正しさより先に「届いているか」を見てしまう。\nハヤテは、届きすぎないように正しさを保つ。\nリトルスノーは、その二つの距離の違いに気づいてしまう。\nコウタは、それが変わっていく瞬間を見ている。\n\n正しいのに遠いもの。\n不器用なのに届いてしまうもの。\n触れないことで守られるもの。\n触れることで変わってしまうもの。\n\n夢から覚めたあとも、\nその感覚だけが、少しだけ音の中に残っています。' },
+      ]
+    },
     { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, chara:'pink', isNew:true, reward:['chocolate_hayate','beer','cookie'], rewardRepeatable:true },
     { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_j8w3qz.mp3', cost:{ pick:2 }, chara:'hayate', isNew:true, reward:'coaster_hayate', rewardRepeatable:true },
     { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_m5k9vt.mp3', cost:{ pick:2 }, chara:'kouta', reward:'bass_strings_kouta', alwaysGlow:true },
     { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_x2b6nf.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
     { id:'song_nigaipurin', type:'song', title:'苦いプリン（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/nigaipurin_h2m8xk.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
-    { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true },
+    { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true, glowColor:'green' },
     { id:'song_iawasete', type:'song', title:'息を合わせて（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/iawasete_p6m2wy.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_madakokoni', type:'song', title:'まだここにいる（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/madakokoni_r3v8tz.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_madanatteru', type:'song', title:'まだ鳴ってる（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/madanatteru_k7j2nx.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
@@ -6589,7 +6621,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var _nkChara = _nck ? (_nck.indexOf('kouta') !== -1 ? 'kouta' : _nck.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
       var _nkColor = _nkChara === 'kouta' ? '#fca5a5' : _nkChara === 'hinata' ? '#93c5fd' : '#fde68a';
       var c = document.createElement('div');
-      c.className = 'nc-card';
+      c.className = 'nc-card' + (item.glowColor === 'green' ? ' nc-green' : '');
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
@@ -6670,19 +6702,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var hasNoteItem = noteItemD && !noteItemD.monthly && !noteItemOk;
     var _nc_chara = noteItemD ? (noteItemKey.indexOf('kouta') !== -1 ? 'kouta' : noteItemKey.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
     var _nc_col   = _nc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _nc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
-    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : '');
+    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (item.glowColor === 'green' ? 'animation:item-glow-green 2.5s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : ''));
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (hasNoteItem) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _nc_col[0] + ';border:1px solid ' + _nc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
     html += '<div class="post-header"><div class="post-header-left"><div class="post-tag">note</div><div class="post-title">' + item.title + '</div>';
     if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
     html += '</div>';
+    var _ncBtnClass = 'read-btn' + (item.glowColor === 'green' ? ' green-hover' : '');
     if (unlocked) {
-      html += '<button class="read-btn" id="nc-read-btn" onclick="ncToggleContent(this)">読む</button>';
+      html += '<button class="' + _ncBtnClass + '" id="nc-read-btn" onclick="ncToggleContent(this)">読む</button>';
     } else if (item.isStatic) {
-      html += '<button class="read-btn" onclick="notesExchange()">交換する</button>';
+      html += '<button class="' + _ncBtnClass + '" onclick="notesExchange()">交換する</button>';
     } else {
-      html += '<button class="read-btn" onclick="doUnlockNote(\'' + item.id + '\')">交換する</button>';
+      html += '<button class="' + _ncBtnClass + '" onclick="doUnlockNote(\'' + item.id + '\')">交換する</button>';
     }
     html += '</div>';
     if (unlocked) {
@@ -7007,7 +7040,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var _mChara = item.chara || (item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '');
       var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : _mChara === 'pink' ? '#f9a8d4' : '#fde68a';
       var c = document.createElement('div');
-      c.className = 'mc-card';
+      c.className = 'mc-card' + (item.glowColor === 'green' ? ' nc-green' : '');
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
