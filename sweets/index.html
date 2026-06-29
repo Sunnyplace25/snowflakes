@@ -6272,6 +6272,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       origin: '',
       cost: { item: 'proteincoffee', amount: 1 },
       glowColor: 'green',
+      related: { url: 'https://ncode.syosetu.com/n0498ly/', title: '正しい距離より、触れているほうがいい', date: '2026.06.30', type: '短篇' },
       sections: [
         { heading: null, body: '「正しい距離より、触れている方がいい」は、Snow flakes本編の外側にある、夢の中の一篇です。\n\n舞踏会。\n玉座。\n黒髪の姫。\n金髪の王子。\n整えられた庭。\n\n現実とは違う場所で、ヒナタは「正しい距離」を見ます。\n\nそれは綺麗で、間違っていなくて、誰にも乱されていない距離です。\nけれどヒナタには、そこに小さな違和感が残る。\n\nちゃんとしている。\nでも、遠い。\n\nこの話は、その違和感を追いかけていく物語です。' },
         { heading: '夢の中でも、ヒナタはヒナタのまま', body: 'ヒナタは、夢の中で陛下になっています。\n\nけれど、立場が変わっても、ヒナタ自身はほとんど変わりません。\n\n礼儀や順序を理解して動くのではなく、\n見たものに対して、まっすぐ反応する。\n\n「ちゃんとしてる」\n「でも遠い」\n「触れてない」\n\n言葉は少ない。\nけれど、核心だけは外さない。\n\n夢の中の世界は、すべてが整っています。\n音楽も、人の動きも、立ち位置も、距離も。\n\nその中でヒナタだけが、整っているものの中にある違和感を見つけてしまいます。' },
@@ -6640,7 +6641,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       c.dataset.idx = i;
       c.style.transform = 'rotateY(' + (i * _nc.step) + 'deg) translateZ(' + _nc.r + 'px)';
       c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-      c.innerHTML = '<div class="nc-tag">note'
+      var _nkItemIcon = (_nckD && _nckD.img)
+        ? '<div style="pointer-events:none;position:absolute;top:10px;right:10px;display:flex;gap:4px;align-items:center;"><span style="font-family:\'Cormorant Garamond\',serif;font-size:7px;letter-spacing:2px;color:#334155;margin-right:1px;">item</span><img src="' + _nckD.img + '" alt="" style="width:16px;height:16px;object-fit:contain;opacity:0.4;border-radius:2px;"></div>'
+        : '';
+      c.innerHTML = _nkItemIcon +
+        '<div class="nc-tag">note'
         + (!unlocked ? '<span class="nc-new" style="color:#e2e8f0;border-color:rgba(226,232,240,0.3);">NEW</span>' : '')
         + (_nkHasItem ? '<span class="nc-new" style="color:' + _nkColor + ';">アイテムあり</span>' : '') + '</div>' +
         '<div class="nc-title">' + item.title + '</div>' +
