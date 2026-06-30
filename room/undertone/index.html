@@ -1040,6 +1040,7 @@
         <p class="ch-next-cond" id="ch-next-cond"></p>
         <p id="ch2-countdown" style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;text-align:center;margin-top:2px;"></p>
         <p id="ch2-hint" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;text-align:center;margin-top:6px;line-height:2;"></p>
+        <div id="ch2-rare-icons" style="display:none;justify-content:center;gap:20px;margin-top:12px;align-items:center;"></div>
       </div>
 
       <!-- 第二章 アコーディオン -->
@@ -3491,24 +3492,40 @@ function submitUtPw() {
     return _ch1At > 0 && Date.now() - _ch1At >= 48 * 3600000;
   }
 
+  var _CH2_RARE = [
+    { key:'pendant_hinata', img:'../../item/pendant_hinata.webp', name:'ペンダント' },
+    { key:'earring_hayate', img:'../../item/earring_hayate.webp', name:'ピアス' },
+    { key:'ring_kouta',     img:'../../item/ring_kouta.webp',     name:'リング' }
+  ];
+
   function updateCh2Btn() {
-    var btn  = document.getElementById('ch-next-btn');
-    var cond = document.getElementById('ch-next-cond');
-    var cdEl = document.getElementById('ch2-countdown');
-    var hintEl = document.getElementById('ch2-hint');
+    var btn     = document.getElementById('ch-next-btn');
+    var cond    = document.getElementById('ch-next-cond');
+    var cdEl    = document.getElementById('ch2-countdown');
+    var hintEl  = document.getElementById('ch2-hint');
+    var iconsEl = document.getElementById('ch2-rare-icons');
     if (!btn) return;
     var _stones = typeof SfSnow !== 'undefined'
-      && ['pendant_hinata','earring_hayate','ring_kouta'].every(function(k){ return SfSnow.isUnlocked(k); });
+      && _CH2_RARE.every(function(r){ return SfSnow.isUnlocked(r.key); });
     if (ch21Unlocked || _stones) {
       btn.disabled = false;
-      if (cond) cond.textContent = '';
-      if (cdEl) cdEl.textContent = '';
-      if (hintEl) hintEl.textContent = '';
+      if (cond)    cond.textContent    = '';
+      if (cdEl)    cdEl.textContent    = '';
+      if (hintEl)  hintEl.textContent  = '';
+      if (iconsEl) iconsEl.style.display = 'none';
     } else {
       btn.disabled = true;
-      if (cond) cond.textContent = '';
-      if (cdEl) cdEl.textContent = '';
+      if (cond)   cond.textContent   = '';
+      if (cdEl)   cdEl.textContent   = '';
       if (hintEl) hintEl.textContent = '3つのレアアイテムを集めると第一章が解放されます';
+      if (iconsEl) {
+        iconsEl.style.display = 'flex';
+        iconsEl.innerHTML = _CH2_RARE.map(function(r) {
+          var got = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(r.key);
+          return '<img src="' + r.img + '" alt="' + r.name + '" style="width:40px;height:40px;object-fit:contain;'
+            + (got ? '' : 'filter:grayscale(1);opacity:0.3;') + '">';
+        }).join('');
+      }
     }
   }
 
