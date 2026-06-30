@@ -6784,6 +6784,38 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!el) return;
     var open = el.classList.toggle('open');
     btn.textContent = open ? '閉じる' : '読む';
+    // 開いた直後にスクロール不要なコンテンツでもアイテムトリガーを発火させる
+    if (open && el.dataset.sfItemTrigger) {
+      setTimeout(function() {
+        var noScroll = el.scrollHeight <= el.clientHeight + 28;
+        if (noScroll) {
+          // スクロール不要ならすぐに読了とみなして3秒後に付与
+          var itemId = el.dataset.sfItemTrigger;
+          var scrollKey = 'sf_note_scroll_' + itemId;
+          if (itemId) {
+            setTimeout(function() {
+              delete el.dataset.sfItemTrigger;
+              var alreadyScrolled = !!localStorage.getItem(scrollKey);
+              if (!alreadyScrolled) {
+                localStorage.setItem(scrollKey, '1');
+                SfSnow.unlockItem(itemId);
+                if (typeof renderItemRows === 'function') renderItemRows();
+                if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
+                showNoteItemGet(itemId);
+              } else {
+                var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
+                if (!localStorage.getItem(againKey)) {
+                  localStorage.setItem(againKey, '1');
+                  showNoteItemGetAgain(itemId);
+                }
+              }
+            }, 3000);
+          }
+        } else {
+          el.dispatchEvent(new Event('scroll'));
+        }
+      }, 200);
+    }
   };
   // ─────────────────────────────────────────────────────────────
 
