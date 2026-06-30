@@ -648,27 +648,6 @@ function sfShare() {
   <div style="text-align:center;margin-bottom:36px;">
     <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
-  <!-- 短篇カード（公開から3日間だけ表示） -->
-  <div style="max-width:680px;margin:0 auto 12px;">
-    <a id="short-banner" href="#" target="_blank"
-       style="display:none;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(74,222,128,0.03);border:1px solid rgba(74,222,128,0.25);transition:all 0.4s;position:relative;overflow:hidden;">
-      <div style="pointer-events:none;position:absolute;top:14px;right:18px;display:flex;gap:5px;align-items:center;">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#4ade80;margin-right:2px;">item</span>
-        <img id="short-item-img" src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
-      </div>
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
-        <div style="flex:1;min-width:0;">
-          <p id="short-label" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#4ade80;margin-bottom:6px;">短篇</p>
-          <p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#86efac;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
-        </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <p id="short-date" style="font-size:11px;color:#86efac;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">—</p>
-          <p id="short-arrow" style="font-size:20px;color:#86efac;margin-top:4px;">→</p>
-        </div>
-      </div>
-    </a>
-  </div>
-
   <!-- 本編更新バナー -->
   <div style="max-width:680px;margin:0 auto 6px;text-align:right;padding-right:4px;">
     <button onclick="openDailyInfoPopup()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#3b5f8a;padding:4px 8px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#3b5f8a'">? アイテムについて</button>
@@ -701,6 +680,27 @@ function sfShare() {
         <div style="text-align:right;flex-shrink:0;">
           <p id="update-status" style="font-size:12px;color:#4e7aa8;letter-spacing:3px;font-family:'Cormorant Garamond',serif;transition:color 0.5s;">21 : 00</p>
           <p id="update-arrow" style="font-size:20px;color:#4e7aa8;margin-top:6px;transition:all 0.5s;">→</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- 短篇カード（公開から3日間だけ表示） -->
+  <div style="max-width:680px;margin:0 auto 12px;">
+    <a id="short-banner" href="#" target="_blank"
+       style="display:none;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(74,222,128,0.03);border:1px solid rgba(74,222,128,0.25);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div style="pointer-events:none;position:absolute;top:14px;right:18px;display:flex;gap:5px;align-items:center;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#4ade80;margin-right:2px;">item</span>
+        <img id="short-item-img" src="./item/shiori_kouta.webp" title="本のしおり" alt="本のしおり" style="width:20px;height:20px;object-fit:contain;opacity:0.45;border-radius:2px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
+        <div style="flex:1;min-width:0;">
+          <p id="short-label" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#4ade80;margin-bottom:6px;">短篇</p>
+          <p id="short-title" style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#86efac;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">—</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <p id="short-date" style="font-size:11px;color:#86efac;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">—</p>
+          <p id="short-arrow" style="font-size:20px;color:#86efac;margin-top:4px;">→</p>
         </div>
       </div>
     </a>
