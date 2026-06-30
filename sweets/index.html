@@ -4868,7 +4868,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       // オープン期間中はパスワード不要でそのまま入れる
       var _openStart = new Date('2026-07-01T00:00:00+09:00');
       var _openEnd   = new Date('2026-07-31T00:00:00+09:00');
-      if (_now >= _openStart && _now < _openEnd) { unlock(); return; }
+      if (_now >= _openStart && _now < _openEnd) {
+        // cottoncandy入力者にはボーナス用フラグを立てる
+        if (lower === PASSWORD_SUMMER) {
+          localStorage.setItem('sf_summer_entered', '1');
+        }
+        unlock(); return;
+      }
       if (lower === PASSWORD || (_isTransition && lower === PASSWORD_SUMMER)) {
         if (_isTransition && lower === PASSWORD_SUMMER) {
           localStorage.setItem('sf_summer_entered', '1');
