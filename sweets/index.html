@@ -4945,10 +4945,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function _doEnter() {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').classList.add('visible');
-      // cottoncandy 所持者へのオープン記念ボーナス（1回限り）
+      // cottoncandy 所持者へのオープン記念ボーナス（1回限り・ポップアップ表示）
       if (localStorage.getItem('sf_summer_entered') === '1') {
         setTimeout(function() {
-          SfSnow.addOnce('cottoncandy_open_bonus', 555, 'オープン記念');
+          if (!SfSnow.isUnlocked('cottoncandy_open_bonus')) {
+            SfSnow.unlockItem('cottoncandy_open_bonus');
+            SfSnow.addDirect(555); // labelなし＝トーストなし
+            document.getElementById('snow-get-amount').textContent = '555';
+            document.getElementById('snow-get-popup').classList.add('show');
+          }
         }, 1200);
       }
       initNotes();
