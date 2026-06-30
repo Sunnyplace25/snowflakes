@@ -4992,7 +4992,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           var c = JSON.parse(localStorage.getItem('sf_candy') || '{}');
           ['cassis', 'milk', 'honey'].forEach(function(id) { c[id] = (c[id] || 0) + 80; });
           localStorage.setItem('sf_candy', JSON.stringify(c));
-          if (typeof SfSnow.updateCandyUI === 'function') SfSnow.updateCandyUI();
+          SfSnow.updateUI();
           document.getElementById('summer-candy-popup').classList.add('show');
         }
       }, 1800);
