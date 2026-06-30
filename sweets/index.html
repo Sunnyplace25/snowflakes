@@ -964,6 +964,61 @@
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
       <!-- Interview section -->
+      <!-- Summer Interview -->
+      <div id="interview-summer-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
+        <div class="itv-section-acc" id="itv-summer-section-acc">
+          <button class="itv-section-header" onclick="toggleItvSummerSection()">
+            <span class="itv-section-arrow" id="itv-summer-section-arrow">▶</span>
+            <span class="itv-section-title" data-no-replace>SWEETs ‐2026 Summer‐&nbsp;&nbsp;Special Interview</span>
+          </button>
+          <div class="itv-section-body">
+            <div style="display:flex;gap:10px;padding:0 12px 16px;">
+
+              <!-- ハヤテ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
+                <p class="itv-acc-status" id="itv-s-status-hayate">LOCKED</p>
+                <div id="itv-s-locked-hayate">
+                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvSummerModal('hayate')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-s-unlocked-hayate" href="itv_hayate_s.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
+
+              <!-- ヒナタ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
+                <p class="itv-acc-status" id="itv-s-status-hinata">LOCKED</p>
+                <div id="itv-s-locked-hinata">
+                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvSummerModal('hinata')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-s-unlocked-hinata" href="itv_hinata_s.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
+
+              <!-- コウタ -->
+              <div style="flex:1;text-align:center;">
+                <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
+                <p class="itv-acc-status" id="itv-s-status-kouta">LOCKED</p>
+                <div id="itv-s-locked-kouta">
+                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
+                  <button class="itv-unlock-btn" onclick="openItvSummerModal('kouta')">解放する</button>
+                </div>
+                <a class="itv-unlocked-link" id="itv-s-unlocked-kouta" href="itv_kouta_s.html" style="display:none;">
+                  <span class="itv-read-btn">読む →</span>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div><!-- /interview-summer-section -->
+
+      <!-- Spring Interview -->
       <div id="interview-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
         <div class="itv-section-acc" id="itv-section-acc">
           <button class="itv-section-header" onclick="toggleItvSection()">
@@ -7479,8 +7534,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   };
 
   var _itvCurrentChar = null;
+  var _itvMode = 'spring';
 
   function openItvModal(char) {
+    _itvMode = 'spring';
     var cfg = ITV_CONFIG[char];
     if (!cfg) return;
     // キャンディ残高チェック
@@ -7527,6 +7584,69 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (acc) acc.classList.toggle('open');
   }
 
+  // Summer Interview
+  var ITV_SUMMER_CONFIG = {
+    hinata: { candy: 'milk',   cost: 100, label: 'ヒナタへのインタビュー（夏）', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_s_hinata' },
+    kouta:  { candy: 'honey',  cost: 100, label: 'コウタへのインタビュー（夏）', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_s_kouta'  },
+    hayate: { candy: 'cassis', cost: 100, label: 'ハヤテへのインタビュー（夏）', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_s_hayate' }
+  };
+
+  var _itvSummerCurrentChar = null;
+
+  function toggleItvSummerSection() {
+    var acc = document.getElementById('itv-summer-section-acc');
+    if (acc) acc.classList.toggle('open');
+  }
+
+  function openItvSummerModal(char) {
+    var cfg = ITV_SUMMER_CONFIG[char];
+    if (!cfg) return;
+    var candies = SfSnow.getCandies();
+    if ((candies[cfg.candy] || 0) < cfg.cost) {
+      var shortageModal = document.getElementById('itv-shortage-modal');
+      var shortageImg   = document.getElementById('itv-shortage-img');
+      var shortageText  = document.getElementById('itv-shortage-text');
+      if (shortageImg)  shortageImg.src = cfg.img;
+      if (shortageText) shortageText.textContent = 'キャンディーが足りません';
+      if (shortageModal) shortageModal.classList.add('show');
+      return;
+    }
+    _itvSummerCurrentChar = char;
+    _itvMode = 'summer';
+    var modal = document.getElementById('itv-modal');
+    var img   = document.getElementById('itv-modal-candy-img');
+    var title = document.getElementById('itv-modal-title');
+    var desc  = document.getElementById('itv-modal-desc');
+    if (img)   img.src = cfg.img;
+    if (title) { title.textContent = cfg.label; title.style.color = cfg.color; }
+    if (desc)  desc.innerHTML = 'Candy 100を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
+    if (modal) modal.classList.add('show');
+  }
+
+  function unlockSummerInterview() {
+    var char = _itvSummerCurrentChar;
+    if (!char) return;
+    var cfg = ITV_SUMMER_CONFIG[char];
+    var ok = SfSnow.spendCandy(cfg.candy, cfg.cost);
+    if (!ok) { closeItvModal(); return; }
+    localStorage.setItem(cfg.key, 'true');
+    closeItvModal();
+    renderSummerInterviews();
+  }
+
+  function renderSummerInterviews() {
+    ['hinata', 'kouta', 'hayate'].forEach(function(char) {
+      var cfg        = ITV_SUMMER_CONFIG[char];
+      var unlocked   = localStorage.getItem(cfg.key) === 'true';
+      var locked     = document.getElementById('itv-s-locked-'   + char);
+      var unlockedEl = document.getElementById('itv-s-unlocked-' + char);
+      if (locked)     locked.style.display     = unlocked ? 'none' : '';
+      if (unlockedEl) unlockedEl.style.display = unlocked ? ''     : 'none';
+      var statusEl = document.getElementById('itv-s-status-' + char);
+      if (statusEl) statusEl.textContent = unlocked ? 'UNLOCKED' : 'LOCKED';
+    });
+  }
+
   function renderInterviews() {
     ['hinata', 'kouta', 'hayate'].forEach(function(char) {
       var cfg        = ITV_CONFIG[char];
@@ -7538,6 +7658,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var statusEl = document.getElementById('itv-status-' + char);
       if (statusEl) statusEl.textContent = unlocked ? 'UNLOCKED' : 'LOCKED';
     });
+    renderSummerInterviews();
   }
 </script>
 
@@ -7560,7 +7681,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <p class="itv-modal-desc" id="itv-modal-desc"></p>
     <div class="itv-modal-btns">
       <button class="itv-modal-cancel" onclick="closeItvModal()">CANCEL</button>
-      <button class="itv-modal-ok" onclick="unlockInterview()">UNLOCK</button>
+      <button class="itv-modal-ok" onclick="_itvMode==='summer'?unlockSummerInterview():unlockInterview()">UNLOCK</button>
     </div>
   </div>
 </div>
