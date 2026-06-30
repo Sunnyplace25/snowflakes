@@ -333,7 +333,7 @@ function _prefetchAllUrls() {
         }
     });
 }
-setTimeout(_prefetchAllUrls, 1500); // ページ表示後1.5秒で全曲並列フェッチ開始
+// 全曲プリフェッチは廃止：選曲時オンデマンド取得に変更
 
 // ArrayBuffer取得（b64 / URL 両対応）
 async function _loadArrayBuffer(bgm) {
