@@ -5138,13 +5138,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
     };
 
-    // ページロード時：セッション中ならスキップ、保存済みなら自動入力
+    // ページロード時：保存済みなら自動入力
     document.addEventListener('DOMContentLoaded', async function() {
-      // セッション中スキップ（部屋から戻った場合など）
-      if (sessionStorage.getItem('sf_sweets_session') === '1') {
-        _doEnter(); return;
-      }
-
       // ゲートオープンデー (2026/07/01 〜 2026/07/31 JST) はGATEを表示したまま、エンターのみで入れる
 
       // Supabase から復元（localStorageが空でメールが保存されている場合）
