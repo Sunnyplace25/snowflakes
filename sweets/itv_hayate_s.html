@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAYATE Summer Interview | SWEETs ROOM | Snow flakes</title>
+  <script>(function(){if(localStorage.getItem('sf_interview_s_hayate')!=='true'){location.replace('index.html');}})();</script>
+  <script src="../snow.js"></script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#0c1220;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-weight:300;min-height:100vh;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(12,18,32,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);}
+    .nav-back{font-size:13px;color:#64748b;text-decoration:none;font-family:'Cormorant Garamond',serif;letter-spacing:2px;transition:color 0.2s;}
+    .nav-back:hover{color:#cbd5e1;}
+    .nav-label{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#334155;}
+    main{max-width:520px;margin:0 auto;padding:100px 24px 80px;}
+    .itv-eyebrow{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#f9a8d4;text-align:center;margin-bottom:8px;}
+    .itv-title{font-family:'Cormorant Garamond',serif;font-size:28px;letter-spacing:8px;color:#fde68a;text-align:center;margin-bottom:48px;}
+    .itv-block{margin-bottom:36px;}
+    .itv-q{font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:12px;}
+    .itv-bubble{background:rgba(253,230,138,0.03);border:1px solid rgba(253,230,138,0.1);border-radius:12px;padding:16px 18px;margin-bottom:8px;}
+    .itv-bubble-name{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;}
+    .itv-bubble-line{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.4;letter-spacing:1px;}
+    .itv-note{font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;letter-spacing:1px;padding:10px 4px 4px;font-style:italic;}
+    .itv-locked-block{border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;text-align:center;margin-bottom:8px;}
+    .itv-item-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#e2e8f0;margin-bottom:12px;}
+    .itv-item-req img{width:16px;opacity:0.8;}
+    .itv-open-btn{background:none;border:1px solid rgba(253,230,138,0.3);border-radius:100px;padding:7px 22px;color:#fde68a;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-open-btn:hover{border-color:rgba(253,230,138,0.6);color:#fef9c3;}
+    .itv-divider{border:none;border-top:1px solid rgba(255,255,255,0.05);margin:40px 0;}
+    .itv-kotori{background:rgba(253,230,138,0.02);border:1px solid rgba(253,230,138,0.08);border-radius:14px;padding:24px 20px;margin-top:8px;}
+    .itv-kotori-label{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#fde68a;margin-bottom:14px;}
+    .itv-kotori-text{font-family:'Noto Serif JP',serif;font-size:12px;color:#64748b;line-height:2.2;letter-spacing:1px;font-style:italic;}
+    .itv-footer{text-align:center;margin-top:48px;}
+    .itv-back-btn{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 28px;text-decoration:none;transition:all 0.2s;}
+    .itv-back-btn:hover{border-color:rgba(255,255,255,0.25);color:#cbd5e1;}
+    .itv-popup{display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;}
+    .itv-popup.show{display:flex;}
+    .itv-popup-inner{max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 20px;text-align:center;}
+    .itv-popup-img{width:52px;margin-bottom:14px;}
+    .itv-popup-text{font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;}
+    .itv-popup-btns{display:flex;gap:8px;justify-content:center;}
+    .itv-popup-ok{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:8px 24px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-popup-ok:hover{border-color:rgba(255,255,255,0.4);color:#f1f5f9;}
+    .itv-popup-cancel{background:none;border:1px solid rgba(255,255,255,0.06);border-radius:100px;padding:8px 20px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-back" href="index.html">← SWEETs Room</a>
+    <span class="nav-label">INTERVIEW</span>
+    <span></span>
+  </nav>
+  <main>
+    <p class="itv-eyebrow">SWEETs ‐2026 Summer‐&nbsp;&nbsp;Special Interview</p>
+    <p class="itv-title">HAYATE</p>
+
+    <!-- Q1 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. 夏になると、気持ちは変わりますか？</p>
+      <div id="q1-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <button class="itv-open-btn" onclick="openAns(1)">解放する</button>
+      </div>
+      <div id="q1-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HAYATE</p>
+          <p class="itv-bubble-line">「暑いのは苦手」<br>「でも、音はちょっと上がる気がする」<br>「外がうるさい季節って、嫌いじゃない」</p>
+        </div>
+      </div>
+      <div id="q1-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/chocolate.webp"> 一粒のチョコレート × 1</div>
+        <button class="itv-open-btn" onclick="openNote(1)">解放する</button>
+      </div>
+      <div id="q1-note" style="display:none;">
+        <p class="itv-note">ハヤテにとって夏は、落ち着く季節ではなく、少しだけ前へ出てもいいと思える季節です。</p>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. ライブ前、いちばん見ているものは？</p>
+      <div id="q2-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <button class="itv-open-btn" onclick="openAns(2)">解放する</button>
+      </div>
+      <div id="q2-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HAYATE</p>
+          <p class="itv-bubble-line">「客席」<br>「……じゃなくて、二人の背中かな」<br>「ちゃんと今日も鳴るなって、そこで分かる」</p>
+        </div>
+      </div>
+      <div id="q2-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/chocolate.webp"> 一粒のチョコレート × 1</div>
+        <button class="itv-open-btn" onclick="openNote(2)">解放する</button>
+      </div>
+      <div id="q2-note" style="display:none;">
+        <p class="itv-note">ハヤテは盛り上げ役に見えて、実は誰よりも三人の呼吸を確認しています。</p>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. 7月のSnow flakesを一言で言うなら？</p>
+      <div id="q3-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/coaster_hayate.webp"> STARSの紙製コースター × 1</div>
+        <button class="itv-open-btn" onclick="openAns(3)">解放する</button>
+      </div>
+      <div id="q3-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HAYATE</p>
+          <p class="itv-bubble-line">「止まらない音」<br>「暑いし、忙しいし、たぶん全員ちょっと疲れてる」<br>「でも、そういう時の方が、意外と楽しい」</p>
+        </div>
+      </div>
+      <div id="q3-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/chocolate.webp"> 一粒のチョコレート × 1</div>
+        <button class="itv-open-btn" onclick="openNote(3)">解放する</button>
+      </div>
+      <div id="q3-note" style="display:none;">
+        <p class="itv-note">ハヤテにとってSnow flakesは、完璧に整った場所ではなく、少し乱れても一緒に鳴らせる場所です。</p>
+      </div>
+    </div>
+
+    <hr class="itv-divider">
+
+    <!-- ことりの一言 -->
+    <div id="kotori-block" style="display:none;">
+      <div class="itv-kotori">
+        <p class="itv-kotori-label">ことりの一言</p>
+        <p class="itv-kotori-text">7月のハヤテは、いつもより少しだけ前に出ています。<br>軽く笑って、場を動かして、誰かの沈黙を音で拾っていく。<br>楽しそうに見えるその姿の奥に、「三人でいること」をちゃんと選び続けている強さがあります。</p>
+      </div>
+    </div>
+
+    <div class="itv-footer">
+      <a class="itv-back-btn" href="index.html">← SWEETs Room</a>
+    </div>
+  </main>
+
+  <!-- 確認ポップアップ -->
+  <div id="confirm-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="confirm-img" src="">
+      <p class="itv-popup-text" id="confirm-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-cancel" onclick="closePopup('confirm-popup')">キャンセル</button>
+        <button class="itv-popup-ok" id="confirm-ok">交換する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 不足ポップアップ -->
+  <div id="shortage-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="shortage-img" src="">
+      <p class="itv-popup-text" id="shortage-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-ok" onclick="closePopup('shortage-popup')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var ANS_ITEM  = 'coaster_hayate';
+    var NOTE_ITEM = 'chocolate_hayate';
+    var CHAR      = 's_hayate';
+
+    function render() {
+      [1, 2, 3].forEach(function(n) {
+        var ansUnlocked  = localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_ans')  === 'true';
+        var noteUnlocked = localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
+        var ansLock  = document.getElementById('q' + n + '-ans-lock');
+        var ans      = document.getElementById('q' + n + '-ans');
+        var noteLock = document.getElementById('q' + n + '-note-lock');
+        var note     = document.getElementById('q' + n + '-note');
+        if (ansLock)  ansLock.style.display  = ansUnlocked  ? 'none' : '';
+        if (ans)      ans.style.display      = ansUnlocked  ? ''     : 'none';
+        if (noteLock) noteLock.style.display = (ansUnlocked && !noteUnlocked) ? '' : 'none';
+        if (note)     note.style.display     = noteUnlocked ? ''     : 'none';
+      });
+      // 3つすべてのnoteが解放されたらことりの一言を表示
+      var allNotes = [1,2,3].every(function(n){
+        return localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
+      });
+      var kotori = document.getElementById('kotori-block');
+      if (kotori) kotori.style.display = allNotes ? '' : 'none';
+    }
+
+    function closePopup(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function showShortage(img, text) {
+      document.getElementById('shortage-img').src = img;
+      document.getElementById('shortage-text').textContent = text;
+      document.getElementById('shortage-popup').classList.add('show');
+    }
+
+    function showConfirm(img, text, onOk) {
+      document.getElementById('confirm-img').src = img;
+      document.getElementById('confirm-text').innerHTML = text;
+      var btn = document.getElementById('confirm-ok');
+      btn.onclick = function() { closePopup('confirm-popup'); onOk(); };
+      document.getElementById('confirm-popup').classList.add('show');
+    }
+
+    function openAns(n) {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[ANS_ITEM] || 0) < 1) {
+        showShortage('../item/coaster_hayate.webp', 'STARSの紙製コースターが足りません');
+        return;
+      }
+      showConfirm('../item/coaster_hayate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">STARSの紙製コースターを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">回答を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
+        render();
+      });
+    }
+
+    function openNote(n) {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[NOTE_ITEM] || 0) < 1) {
+        showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
+        return;
+      }
+      showConfirm('../item/chocolate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">一粒のチョコレートを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
+        render();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>

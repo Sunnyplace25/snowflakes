@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HINATA Summer Interview | SWEETs ROOM | Snow flakes</title>
+  <script>(function(){if(localStorage.getItem('sf_interview_s_hinata')!=='true'){location.replace('index.html');}})();</script>
+  <script src="../snow.js"></script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#0c1220;color:#e2e8f0;font-family:'Noto Serif JP',serif;font-weight:300;min-height:100vh;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(12,18,32,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);}
+    .nav-back{font-size:13px;color:#64748b;text-decoration:none;font-family:'Cormorant Garamond',serif;letter-spacing:2px;transition:color 0.2s;}
+    .nav-back:hover{color:#cbd5e1;}
+    .nav-label{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#334155;}
+    main{max-width:520px;margin:0 auto;padding:100px 24px 80px;}
+    .itv-eyebrow{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#f9a8d4;text-align:center;margin-bottom:8px;}
+    .itv-title{font-family:'Cormorant Garamond',serif;font-size:28px;letter-spacing:8px;color:#93c5fd;text-align:center;margin-bottom:48px;}
+    .itv-block{margin-bottom:36px;}
+    .itv-q{font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:12px;}
+    .itv-bubble{background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.1);border-radius:12px;padding:16px 18px;margin-bottom:8px;}
+    .itv-bubble-name{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#93c5fd;margin-bottom:10px;}
+    .itv-bubble-line{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.4;letter-spacing:1px;}
+    .itv-note{font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;line-height:2;letter-spacing:1px;padding:10px 4px 4px;font-style:italic;}
+    .itv-locked-block{border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;text-align:center;margin-bottom:8px;}
+    .itv-item-req{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#e2e8f0;margin-bottom:12px;}
+    .itv-item-req img{width:16px;opacity:0.8;}
+    .itv-open-btn{background:none;border:1px solid rgba(147,197,253,0.3);border-radius:100px;padding:7px 22px;color:#93c5fd;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-open-btn:hover{border-color:rgba(147,197,253,0.6);color:#bfdbfe;}
+    .itv-divider{border:none;border-top:1px solid rgba(255,255,255,0.05);margin:40px 0;}
+    .itv-kotori{background:rgba(147,197,253,0.02);border:1px solid rgba(147,197,253,0.08);border-radius:14px;padding:24px 20px;margin-top:8px;}
+    .itv-kotori-label{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:14px;}
+    .itv-kotori-text{font-family:'Noto Serif JP',serif;font-size:12px;color:#64748b;line-height:2.2;letter-spacing:1px;font-style:italic;}
+    .itv-footer{text-align:center;margin-top:48px;}
+    .itv-back-btn{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:10px 28px;text-decoration:none;transition:all 0.2s;}
+    .itv-back-btn:hover{border-color:rgba(255,255,255,0.25);color:#cbd5e1;}
+    .itv-popup{display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;}
+    .itv-popup.show{display:flex;}
+    .itv-popup-inner{max-width:280px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 20px;text-align:center;}
+    .itv-popup-img{width:52px;margin-bottom:14px;}
+    .itv-popup-text{font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:20px;}
+    .itv-popup-btns{display:flex;gap:8px;justify-content:center;}
+    .itv-popup-ok{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:8px 24px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
+    .itv-popup-ok:hover{border-color:rgba(255,255,255,0.4);color:#f1f5f9;}
+    .itv-popup-cancel{background:none;border:1px solid rgba(255,255,255,0.06);border-radius:100px;padding:8px 20px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-back" href="index.html">← SWEETs Room</a>
+    <span class="nav-label">INTERVIEW</span>
+    <span></span>
+  </nav>
+  <main>
+    <p class="itv-eyebrow">SWEETs ‐2026 Summer‐&nbsp;&nbsp;Special Interview</p>
+    <p class="itv-title">HINATA</p>
+
+    <!-- Q1 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. 7月の音は、どんな感じがしますか？</p>
+      <div id="q1-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
+        <button class="itv-open-btn" onclick="openAns(1)">解放する</button>
+      </div>
+      <div id="q1-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HINATA</p>
+          <p class="itv-bubble-line">「少し、重い」<br>「湿ってる」<br>「でも、伸びる音もある」</p>
+        </div>
+      </div>
+      <div id="q1-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/beer.webp"> ビール × 1</div>
+        <button class="itv-open-btn" onclick="openNote(1)">解放する</button>
+      </div>
+      <div id="q1-note" style="display:none;">
+        <p class="itv-note">ヒナタにとって7月の音は、軽く抜けるものではなく、体の中に残っていくものです。</p>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. 暑い季節は、苦手ですか？</p>
+      <div id="q2-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
+        <button class="itv-open-btn" onclick="openAns(2)">解放する</button>
+      </div>
+      <div id="q2-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HINATA</p>
+          <p class="itv-bubble-line">「苦手」<br>「近い感じがする」<br>「空気も、人も」</p>
+        </div>
+      </div>
+      <div id="q2-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/beer.webp"> ビール × 1</div>
+        <button class="itv-open-btn" onclick="openNote(2)">解放する</button>
+      </div>
+      <div id="q2-note" style="display:none;">
+        <p class="itv-note">ヒナタは暑さそのものより、距離が近くなる感覚に少し身構えています。</p>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="itv-block">
+      <p class="itv-q">Q. ライブ前に、何を確認していますか？</p>
+      <div id="q3-ans-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/drinkcoin_hinata.webp"> ドリンクコイン × 1</div>
+        <button class="itv-open-btn" onclick="openAns(3)">解放する</button>
+      </div>
+      <div id="q3-ans" style="display:none;">
+        <div class="itv-bubble">
+          <p class="itv-bubble-name">HINATA</p>
+          <p class="itv-bubble-line">「ギター」<br>「指」<br>「……あと、二人の音」</p>
+        </div>
+      </div>
+      <div id="q3-note-lock" class="itv-locked-block" style="display:none;">
+        <div class="itv-item-req"><img src="../item/beer.webp"> ビール × 1</div>
+        <button class="itv-open-btn" onclick="openNote(3)">解放する</button>
+      </div>
+      <div id="q3-note" style="display:none;">
+        <p class="itv-note">ヒナタは言葉では確認しません。けれど、始まる前のわずかな音で、三人がちゃんとそこにいるかを確かめています。</p>
+      </div>
+    </div>
+
+    <hr class="itv-divider">
+
+    <!-- ことりの一言 -->
+    <div id="kotori-block" style="display:none;">
+      <div class="itv-kotori">
+        <p class="itv-kotori-label">ことりの一言</p>
+        <p class="itv-kotori-text">7月のヒナタは、いつもより少しだけ逃げ場がありません。<br>熱も、音も、人の気配も近くなる季節。<br>それでもギターを持つと、近づきすぎず、離れすぎず、自分の場所に戻っていきます。</p>
+      </div>
+    </div>
+
+    <div class="itv-footer">
+      <a class="itv-back-btn" href="index.html">← SWEETs Room</a>
+    </div>
+  </main>
+
+  <!-- 確認ポップアップ -->
+  <div id="confirm-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="confirm-img" src="">
+      <p class="itv-popup-text" id="confirm-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-cancel" onclick="closePopup('confirm-popup')">キャンセル</button>
+        <button class="itv-popup-ok" id="confirm-ok">交換する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 不足ポップアップ -->
+  <div id="shortage-popup" class="itv-popup">
+    <div class="itv-popup-inner">
+      <img class="itv-popup-img" id="shortage-img" src="">
+      <p class="itv-popup-text" id="shortage-text"></p>
+      <div class="itv-popup-btns">
+        <button class="itv-popup-ok" onclick="closePopup('shortage-popup')">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var ANS_ITEM  = 'drinkcoin_hinata';
+    var NOTE_ITEM = 'beer';
+    var CHAR      = 's_hinata';
+
+    function render() {
+      [1, 2, 3].forEach(function(n) {
+        var ansUnlocked  = localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_ans')  === 'true';
+        var noteUnlocked = localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
+        var ansLock  = document.getElementById('q' + n + '-ans-lock');
+        var ans      = document.getElementById('q' + n + '-ans');
+        var noteLock = document.getElementById('q' + n + '-note-lock');
+        var note     = document.getElementById('q' + n + '-note');
+        if (ansLock)  ansLock.style.display  = ansUnlocked  ? 'none' : '';
+        if (ans)      ans.style.display      = ansUnlocked  ? ''     : 'none';
+        if (noteLock) noteLock.style.display = (ansUnlocked && !noteUnlocked) ? '' : 'none';
+        if (note)     note.style.display     = noteUnlocked ? ''     : 'none';
+      });
+      var allNotes = [1,2,3].every(function(n){
+        return localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
+      });
+      var kotori = document.getElementById('kotori-block');
+      if (kotori) kotori.style.display = allNotes ? '' : 'none';
+    }
+
+    function closePopup(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function showShortage(img, text) {
+      document.getElementById('shortage-img').src = img;
+      document.getElementById('shortage-text').textContent = text;
+      document.getElementById('shortage-popup').classList.add('show');
+    }
+
+    function showConfirm(img, text, onOk) {
+      document.getElementById('confirm-img').src = img;
+      document.getElementById('confirm-text').innerHTML = text;
+      var btn = document.getElementById('confirm-ok');
+      btn.onclick = function() { closePopup('confirm-popup'); onOk(); };
+      document.getElementById('confirm-popup').classList.add('show');
+    }
+
+    function openAns(n) {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[ANS_ITEM] || 0) < 1) {
+        showShortage('../item/drinkcoin_hinata.webp', 'ドリンクコインが足りません');
+        return;
+      }
+      showConfirm('../item/drinkcoin_hinata.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">ドリンクコインを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">回答を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(ANS_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_ans', 'true');
+        render();
+      });
+    }
+
+    function openNote(n) {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[NOTE_ITEM] || 0) < 1) {
+        showShortage('../item/beer.webp', 'ビールが足りません');
+        return;
+      }
+      showConfirm('../item/beer.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">ビールを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
+        localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
+        render();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>
