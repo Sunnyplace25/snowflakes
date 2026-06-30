@@ -4798,7 +4798,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       const lower = val.toLowerCase();
       document.getElementById('pw-input').value = '';
       // オープン期間中はパスワード不要でそのまま入れる
-      var _openStart = new Date('2026-06-29T00:00:00+09:00');
+      var _openStart = new Date('2026-07-01T00:00:00+09:00');
       var _openEnd   = new Date('2026-07-31T00:00:00+09:00');
       if (_now >= _openStart && _now < _openEnd) { unlock(); return; }
       if (lower === PASSWORD || (_isTransition && lower === PASSWORD_SUMMER)) {
@@ -5145,7 +5145,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         _doEnter(); return;
       }
 
-      // ゲートオープンデー (2026/06/29 〜 2026/07/31 JST) はGATEを表示したまま、エンターのみで入れる
+      // ゲートオープンデー (2026/07/01 〜 2026/07/31 JST) はGATEを表示したまま、エンターのみで入れる
 
       // Supabase から復元（localStorageが空でメールが保存されている場合）
       var _savedEmail = localStorage.getItem('sf_sweets_email');
