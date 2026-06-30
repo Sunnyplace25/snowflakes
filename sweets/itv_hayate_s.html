@@ -129,9 +129,15 @@
 
     <!-- ことりの一言 -->
     <div id="kotori-block" style="display:none;">
-      <div class="itv-kotori">
-        <p class="itv-kotori-label">ことりの一言</p>
-        <p class="itv-kotori-text">7月のハヤテは、いつもより少しだけ前に出ています。<br>軽く笑って、場を動かして、誰かの沈黙を音で拾っていく。<br>楽しそうに見えるその姿の奥に、「三人でいること」をちゃんと選び続けている強さがあります。</p>
+      <div id="kotori-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/chocolate.webp"> 一粒のチョコレート × 1</div>
+        <button class="itv-open-btn" onclick="openKotori()">解放する</button>
+      </div>
+      <div id="kotori-content" style="display:none;">
+        <div class="itv-kotori">
+          <p class="itv-kotori-label">ことりの一言</p>
+          <p class="itv-kotori-text">7月のハヤテは、いつもより少しだけ前に出ています。<br>軽く笑って、場を動かして、誰かの沈黙を音で拾っていく。<br>楽しそうに見えるその姿の奥に、「三人でいること」をちゃんと選び続けている強さがあります。</p>
+        </div>
       </div>
     </div>
 
@@ -164,9 +170,11 @@
   </div>
 
   <script>
-    var ANS_ITEM  = 'coaster_hayate';
-    var NOTE_ITEM = 'chocolate_hayate';
-    var CHAR      = 's_hayate';
+    var ANS_ITEM    = 'coaster_hayate';
+    var NOTE_ITEM   = 'chocolate_hayate';
+    var KOTORI_ITEM = 'chocolate_hayate';
+    var KOTORI_KEY  = 'sf_itv_s_hayate_kotori';
+    var CHAR        = 's_hayate';
 
     function render() {
       [1, 2, 3].forEach(function(n) {
@@ -181,12 +189,17 @@
         if (noteLock) noteLock.style.display = (ansUnlocked && !noteUnlocked) ? '' : 'none';
         if (note)     note.style.display     = noteUnlocked ? ''     : 'none';
       });
-      // 3つすべてのnoteが解放されたらことりの一言を表示
+      // 3つすべてのnoteが解放されたらことりの一言ブロックを表示
       var allNotes = [1,2,3].every(function(n){
         return localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
       });
-      var kotori = document.getElementById('kotori-block');
-      if (kotori) kotori.style.display = allNotes ? '' : 'none';
+      var kotoriUnlocked = localStorage.getItem(KOTORI_KEY) === 'true';
+      var kotoriBlock   = document.getElementById('kotori-block');
+      var kotoriLock    = document.getElementById('kotori-lock');
+      var kotoriContent = document.getElementById('kotori-content');
+      if (kotoriBlock)   kotoriBlock.style.display   = allNotes ? '' : 'none';
+      if (kotoriLock)    kotoriLock.style.display    = (allNotes && !kotoriUnlocked) ? '' : 'none';
+      if (kotoriContent) kotoriContent.style.display = kotoriUnlocked ? '' : 'none';
     }
 
     function closePopup(id) {
@@ -231,6 +244,20 @@
       showConfirm('../item/chocolate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">一粒のチョコレートを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
+        render();
+      });
+    }
+
+    function openKotori() {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[KOTORI_ITEM] || 0) < 1) {
+        showShortage('../item/chocolate.webp', '一粒のチョコレートが足りません');
+        return;
+      }
+      showConfirm('../item/chocolate.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">一粒のチョコレートを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(KOTORI_ITEM, 1)) return;
+        localStorage.setItem(KOTORI_KEY, 'true');
         render();
       });
     }

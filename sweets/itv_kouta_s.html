@@ -129,9 +129,15 @@
 
     <!-- ことりの一言 -->
     <div id="kotori-block" style="display:none;">
-      <div class="itv-kotori">
-        <p class="itv-kotori-label">ことりの一言</p>
-        <p class="itv-kotori-text">7月のコウタは、真夏になる前の暑さを静かに受け取っています。<br>照明の熱も、客席の近さも、二人との距離感も、ちゃんと音の一部として覚えている。<br>涼しいふりをしているのに、意外とその季節の温度を一番正確に拾っている人です。</p>
+      <div id="kotori-lock" class="itv-locked-block">
+        <div class="itv-item-req"><img src="../item/cookie.webp"> クッキー × 1</div>
+        <button class="itv-open-btn" onclick="openKotori()">解放する</button>
+      </div>
+      <div id="kotori-content" style="display:none;">
+        <div class="itv-kotori">
+          <p class="itv-kotori-label">ことりの一言</p>
+          <p class="itv-kotori-text">7月のコウタは、真夏になる前の暑さを静かに受け取っています。<br>照明の熱も、客席の近さも、二人との距離感も、ちゃんと音の一部として覚えている。<br>涼しいふりをしているのに、意外とその季節の温度を一番正確に拾っている人です。</p>
+        </div>
       </div>
     </div>
 
@@ -164,9 +170,11 @@
   </div>
 
   <script>
-    var ANS_ITEM  = 'shiori_kouta';
-    var NOTE_ITEM = 'cookie';
-    var CHAR      = 's_kouta';
+    var ANS_ITEM    = 'shiori_kouta';
+    var NOTE_ITEM   = 'cookie';
+    var KOTORI_ITEM = 'cookie';
+    var KOTORI_KEY  = 'sf_itv_s_kouta_kotori';
+    var CHAR        = 's_kouta';
 
     function render() {
       [1, 2, 3].forEach(function(n) {
@@ -184,8 +192,13 @@
       var allNotes = [1,2,3].every(function(n){
         return localStorage.getItem('sf_itv_' + CHAR + '_q' + n + '_note') === 'true';
       });
-      var kotori = document.getElementById('kotori-block');
-      if (kotori) kotori.style.display = allNotes ? '' : 'none';
+      var kotoriUnlocked = localStorage.getItem(KOTORI_KEY) === 'true';
+      var kotoriBlock   = document.getElementById('kotori-block');
+      var kotoriLock    = document.getElementById('kotori-lock');
+      var kotoriContent = document.getElementById('kotori-content');
+      if (kotoriBlock)   kotoriBlock.style.display   = allNotes ? '' : 'none';
+      if (kotoriLock)    kotoriLock.style.display    = (allNotes && !kotoriUnlocked) ? '' : 'none';
+      if (kotoriContent) kotoriContent.style.display = kotoriUnlocked ? '' : 'none';
     }
 
     function closePopup(id) {
@@ -230,6 +243,20 @@
       showConfirm('../item/cookie.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">クッキーを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
         if (!SfSnow.spendMonthlyItem(NOTE_ITEM, 1)) return;
         localStorage.setItem('sf_itv_' + CHAR + '_q' + n + '_note', 'true');
+        render();
+      });
+    }
+
+    function openKotori() {
+      if (typeof SfSnow === 'undefined') return;
+      var items = SfSnow.getMonthlyItems();
+      if ((items[KOTORI_ITEM] || 0) < 1) {
+        showShortage('../item/cookie.webp', 'クッキーが足りません');
+        return;
+      }
+      showConfirm('../item/cookie.webp', '<span style="display:block;font-size:10px;color:#64748b;letter-spacing:2px;margin-bottom:6px;">クッキーを使って</span><span style="display:block;font-size:13px;color:#e2e8f0;letter-spacing:2px;">ことりの一言を解放しますか？</span>', function() {
+        if (!SfSnow.spendMonthlyItem(KOTORI_ITEM, 1)) return;
+        localStorage.setItem(KOTORI_KEY, 'true');
         render();
       });
     }
