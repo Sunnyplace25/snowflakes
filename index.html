@@ -1002,7 +1002,7 @@ function sfShare() {
       var SHORT_URL   = 'https://ncode.syosetu.com/n0498ly/';
       // ────────────────────────────────────────────────────────
 
-      var SHOW_DAYS = 3;
+      var SHORT_END = new Date('2026-07-01T00:00:00+09:00'); // ゲートオープンまで表示
 
       function updateShort() {
         var card = document.getElementById('short-banner');
@@ -1010,9 +1010,8 @@ function sfShare() {
         if (!SHORT_PUB || !SHORT_TITLE) return; // 未設定なら非表示のまま
 
         var now  = new Date();
-        var ms   = now - SHORT_PUB;
 
-        if (ms < 0 || ms >= SHOW_DAYS * 86400000) {
+        if (now < SHORT_PUB || now >= SHORT_END) {
           card.style.display = 'none';
           return;
         }
@@ -2085,6 +2084,16 @@ function sfShare() {
       });
     }
 
+    // 短篇バナー クリック → 戻ってきたらドリンクコイン付与（1回限り）
+    var shortBanner = document.getElementById('short-banner');
+    if (shortBanner) {
+      shortBanner.addEventListener('click', function() {
+        if (!localStorage.getItem('sf_short_item_kyori1')) {
+          sessionStorage.setItem('sf_pending_short_item', '1');
+        }
+      });
+    }
+
     // 封印解放バナー クリック → 戻ってきたらドリンクコイン付与（1回限り）
     var sealedBanner = document.getElementById('sealed-banner');
     if (sealedBanner) {
@@ -2125,6 +2134,17 @@ function sfShare() {
           SfSnow.unlockItem(item.key);
           SfSnow.addMItemDirect(item.key, 1);
           showBannerItemPopup(item);
+        }
+        // 短篇バナー ドリンクコイン付与（1回限り）
+        if (sessionStorage.getItem('sf_pending_short_item') && !localStorage.getItem('sf_short_item_kyori1')) {
+          sessionStorage.removeItem('sf_pending_short_item');
+          localStorage.setItem('sf_short_item_kyori1', '1');
+          var shortItem = SF_BANNER_ITEMS.find(function(b) { return b.key === 'drinkcoin_hinata'; });
+          if (shortItem) {
+            SfSnow.unlockItem(shortItem.key);
+            SfSnow.addMItemDirect(shortItem.key, 1);
+            showBannerItemPopup(shortItem);
+          }
         }
         // 封印解放バナー ドリンクコイン付与
         if (sessionStorage.getItem('sf_pending_sealed_item') && !localStorage.getItem('sf_sealed_ep35_item')) {
