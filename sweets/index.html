@@ -164,6 +164,8 @@
       transition: transform 0.4s cubic-bezier(.18,1.2,.45,1);
     }
     #shikishi-get-popup.show #shikishi-get-box { transform: none; }
+    #summer-candy-popup.show { opacity: 1 !important; pointer-events: auto !important; }
+    #summer-candy-popup.show #summer-candy-box { transform: none !important; }
 
     #snow-get-popup {
       position: fixed; inset: 0; z-index: 9000;
@@ -790,6 +792,21 @@
   <!-- Snow GET popup -->
   <!-- 色紙配布ポップアップ (Summer切り替え時) -->
   <!-- 苦いプリン追加お知らせポップアップ -->
+
+  <!-- Summer キャンディプレゼントポップアップ -->
+  <div id="summer-candy-popup" onclick="document.getElementById('summer-candy-popup').classList.remove('show')" style="position:fixed;inset:0;z-index:9200;display:flex;align-items:center;justify-content:center;background:rgba(12,18,32,0.85);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.4s;">
+    <div onclick="event.stopPropagation()" style="text-align:center;max-width:320px;padding:0 24px;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);" id="summer-candy-box">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:20px;">SWEETs 2026 Summer</p>
+      <div style="display:flex;justify-content:center;gap:14px;margin-bottom:20px;">
+        <img src="../item/candy_cassis.webp" style="width:52px;height:52px;object-fit:contain;">
+        <img src="../item/candy_milk.webp"   style="width:52px;height:52px;object-fit:contain;">
+        <img src="../item/candy_honey.webp"  style="width:52px;height:52px;object-fit:contain;">
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;margin-bottom:8px;">Summer プレゼント</p>
+      <p style="font-size:11px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:28px;">キャンディを各 80 個お届けします。<br>残り 20 個はガチャで集めてみよう。</p>
+      <button onclick="document.getElementById('summer-candy-popup').classList.remove('show')" style="background:rgba(125,211,252,0.08);border:1px solid rgba(125,211,252,0.3);border-radius:50px;padding:12px 36px;color:#7dd3fc;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;">── 受け取る ──</button>
+    </div>
+  </div>
 
   <div id="shikishi-get-popup" onclick="document.getElementById('shikishi-get-popup').classList.remove('show')">
     <div id="shikishi-get-box" onclick="event.stopPropagation()">
@@ -4967,6 +4984,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           }
         }, 1200);
       }
+      // Summer キャンディプレゼント（1回限り・各80個）
+      setTimeout(function() {
+        var giftKey = 'sf_summer_candy_gift_2026';
+        if (!SfSnow.isUnlocked(giftKey)) {
+          SfSnow.unlockItem(giftKey);
+          var c = JSON.parse(localStorage.getItem('sf_candy') || '{}');
+          ['cassis', 'milk', 'honey'].forEach(function(id) { c[id] = (c[id] || 0) + 80; });
+          localStorage.setItem('sf_candy', JSON.stringify(c));
+          if (typeof SfSnow.updateCandyUI === 'function') SfSnow.updateCandyUI();
+          document.getElementById('summer-candy-popup').classList.add('show');
+        }
+      }, 1800);
       initNotes();
       // ログイン後にNOTES・EXCHANGEを再描画
       if (typeof renderNotes === 'function') renderNotes();
