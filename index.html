@@ -997,7 +997,7 @@ function sfShare() {
     (function() {
       // ── 短篇カード設定 ──────────────────────────────────────
       // 短篇を投稿したら以下3つを更新する
-      var SHORT_PUB   = new Date('2026-06-30T12:00:00+09:00');
+      var SHORT_PUB   = new Date('2026-04-01T12:00:00+09:00');
       var SHORT_TITLE = '正しい距離より、触れているほうがいい';
       var SHORT_URL   = 'https://ncode.syosetu.com/n0498ly/';
       // ────────────────────────────────────────────────────────
@@ -1036,11 +1036,9 @@ function sfShare() {
           dateEl.textContent = y + '.' + m + '.' + d;
         }
 
-        // デイリーと同じアイテムプールからランダム表示（日付ベースで毎日変わる）
-        if (typeof SF_BANNER_ITEMS !== 'undefined' && SF_BANNER_ITEMS.length) {
-          var today = new Date();
-          var seed  = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-          var picked = SF_BANNER_ITEMS[seed % SF_BANNER_ITEMS.length];
+        // 短篇アイテム固定：ドリンクコイン
+        if (typeof SF_BANNER_ITEMS !== 'undefined') {
+          var picked = SF_BANNER_ITEMS.find(function(b){ return b.key === 'drinkcoin_hinata'; });
           var imgEl = document.getElementById('short-item-img');
           if (imgEl && picked) {
             imgEl.src   = picked.img;
