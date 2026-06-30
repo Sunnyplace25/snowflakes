@@ -3493,9 +3493,9 @@ function submitUtPw() {
   }
 
   var _CH2_RARE = [
-    { key:'pendant_hinata', img:'../../item/pendant_hinata.webp', name:'ペンダント' },
-    { key:'earring_hayate', img:'../../item/earring_hayate.webp', name:'ピアス' },
-    { key:'ring_kouta',     img:'../../item/ring_kouta.webp',     name:'リング' }
+    { key:'pendant_hinata', img:'../../item/pendant_hinata.webp', name:'ペンダント', link:'../../sweets/#sw-another' },
+    { key:'earring_hayate', img:'../../item/earring_hayate.webp', name:'ピアス',     link:'../../sweets/#undertone-yt-wrap' },
+    { key:'ring_kouta',     img:'../../item/ring_kouta.webp',     name:'リング',     link:'../../sweets/#sw-notes' }
   ];
 
   function updateCh2Btn() {
@@ -3522,8 +3522,10 @@ function submitUtPw() {
         iconsEl.style.display = 'flex';
         iconsEl.innerHTML = _CH2_RARE.map(function(r) {
           var got = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(r.key);
-          return '<img src="' + r.img + '" alt="' + r.name + '" style="width:40px;height:40px;object-fit:contain;'
-            + (got ? '' : 'filter:grayscale(1);opacity:0.3;') + '">';
+          var imgStyle = 'width:40px;height:40px;object-fit:contain;display:block;' + (got ? '' : 'filter:grayscale(1);opacity:0.3;');
+          return '<a href="' + r.link + '" style="display:inline-block;" title="' + r.name + '">'
+            + '<img src="' + r.img + '" alt="' + r.name + '" style="' + imgStyle + '">'
+            + '</a>';
         }).join('');
       }
     }
