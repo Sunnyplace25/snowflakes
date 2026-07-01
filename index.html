@@ -558,9 +558,9 @@
 </nav>
 
 <script>
-function toggleShortAcc(n) {
-  var body = document.getElementById('short-acc-body-' + n);
-  var btn  = document.getElementById('short-acc-btn-' + n);
+function toggleShortAcc(id) {
+  var body = document.getElementById('short-acc-body-' + id);
+  var btn  = document.getElementById('short-acc-btn-' + id);
   if (!body || !btn) return;
   var open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'block';
@@ -1200,7 +1200,7 @@ function sfShare() {
 
     <div id="book-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
     <!-- Vol.1 -->
-    <div class="book-card" style="border:1px solid rgba(253,230,138,0.2);margin-top:0;cursor:pointer;" onclick="window.open('https://amzn.asia/d/03cNGgk3','_blank')">
+    <div class="book-card" style="border:1px solid rgba(253,230,138,0.2);margin-top:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://amzn.asia/d/03cNGgk3','_blank')">
       <div class="book-cover"><img src="Kindle/１.jpg" alt="Snow flakes スノーフレークス 第1巻 戻る場所 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1216,7 +1216,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.2 -->
-    <div class="book-card" style="border:1px solid rgba(147,197,253,0.2);cursor:pointer;" onclick="window.open('https://amzn.asia/d/0brELpId','_blank')">
+    <div class="book-card" style="border:1px solid rgba(147,197,253,0.2);cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://amzn.asia/d/0brELpId','_blank')">
       <div class="book-cover"><img src="Kindle/２.jpg" alt="Snow flakes スノーフレークス 第2巻 リトルスノー 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1232,7 +1232,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.3 -->
-    <div class="book-card" style="border:1px solid rgba(252,165,165,0.2);cursor:pointer;" onclick="window.open('https://amzn.asia/d/03DKJjbm','_blank')">
+    <div class="book-card" style="border:1px solid rgba(252,165,165,0.2);cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://amzn.asia/d/03DKJjbm','_blank')">
       <div class="book-cover"><img src="Kindle/３.jpg" alt="Snow flakes スノーフレークス 第3巻 ショーケース 夏の月 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1248,7 +1248,7 @@ function sfShare() {
     </div>
 
     <!-- Vol.4 -->
-    <div class="book-card" style="border:1px solid rgba(253,230,138,0.15);cursor:pointer;" onclick="window.open('https://amzn.asia/d/0fYRq3BS','_blank')">
+    <div class="book-card" style="border:1px solid rgba(253,230,138,0.15);cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://amzn.asia/d/0fYRq3BS','_blank')">
       <div class="book-cover"><img src="Kindle/４.jpg" alt="Snow flakes スノーフレークス 第4巻 ポジション 小説 山吹ことり Kindle"></div>
       <div class="book-body">
         <p style="font-size:11px;letter-spacing:5px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">Snow flakes</p>
@@ -1277,20 +1277,28 @@ function sfShare() {
   <p class="sp-only" style="font-size:11px;letter-spacing:3px;color:#475569;text-align:center;margin-bottom:44px;font-family:'Cormorant Garamond',serif;">カードをタップして読む</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:920px;margin:0 auto;">
 
-    <div id="short-moonveil-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n9832lr/','_blank')">
+    <div id="short-moonveil-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n9832lr/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.18 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">Moon Veil</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">終わりが決まっているから、触れられなかった。</p>
+      <div id="short-acc-body-moonveil" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-moonveil" onclick="event.stopPropagation();toggleShortAcc('moonveil')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9832lr/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
       </div>
     </div>
 
-    <div id="short-kouta-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n5432lz/','_blank')">
+    <div id="short-kouta-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n5432lz/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.13 / 短篇</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
+      <div id="short-acc-body-kouta" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-kouta" onclick="event.stopPropagation();toggleShortAcc('kouta')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n5432lz/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1299,11 +1307,15 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0964mc/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0964mc/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:6px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short1-title">ひとつ多い音</p>
       <p style="font-size:10px;letter-spacing:2px;color:#f87171;font-family:'Noto Serif JP',serif;margin-bottom:12px;opacity:0.85;">文芸 ホラー日間ランキング最高２位</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short1-quote">「音だけ残ってる、みたいな」</p>
+      <div id="short-acc-body-hitotsu" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-hitotsu" onclick="event.stopPropagation();toggleShortAcc('hitotsu')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0964mc/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1312,10 +1324,14 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0082lu/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0082lu/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.03.28 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short2-title">整えない音</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short2-quote">整えた瞬間、<br>これはきっと、別のものになる。</p>
+      <div id="short-acc-body-totonoeru" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-totonoeru" onclick="event.stopPropagation();toggleShortAcc('totonoeru')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0082lu/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1324,10 +1340,14 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0327lw/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0327lw/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.09 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short3-title">半分のまま</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short3-quote">この夜は、確かに何かを残している。</p>
+      <div id="short-acc-body-hanbun" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-hanbun" onclick="event.stopPropagation();toggleShortAcc('hanbun')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0327lw/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1336,10 +1356,14 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0679lx/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0679lx/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.30 / 短編</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short4-title">白い音</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short4-quote">行ってしまった。向こう側に。</p>
+      <div id="short-acc-body-shiroi" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-shiroi" onclick="event.stopPropagation();toggleShortAcc('shiroi')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0679lx/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1348,10 +1372,14 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(52,211,153,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n0498ly/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(52,211,153,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0498ly/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short5-title">正しい距離より、<br>触れている方がいい</p>
       <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short5-quote">「……こっちのほうがいい」</p>
+      <div id="short-acc-body-tadashii" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-tadashii" onclick="event.stopPropagation();toggleShortAcc('tadashii')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0498ly/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
@@ -1360,9 +1388,13 @@ function sfShare() {
       </div>
     </div>
 
-    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="window.open('https://ncode.syosetu.com/n9797ls/','_blank')">
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n9797ls/','_blank')">
       <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
       <p style="font-size:20px;font-weight:400;color:white;margin-bottom:14px;font-family:'Cormorant Garamond',serif;line-height:1.5;letter-spacing:2px;">ICE BREAKER</p>
+      <div id="short-acc-body-icebreaker" style="display:none;margin-bottom:12px;">
+        <p style="font-size:13px;color:var(--text);line-height:1.9;font-weight:300;"></p>
+      </div>
+      <button id="short-acc-btn-icebreaker" onclick="event.stopPropagation();toggleShortAcc('icebreaker')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9797ls/" target="_blank"
            class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
