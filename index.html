@@ -558,6 +558,13 @@
 </nav>
 
 <script>
+// カード内のリンク・ボタンクリックがカードのonclickに伝播しないようにする
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('#short-stories a, #short-stories button, #book-grid a, #book-grid button').forEach(function(el) {
+    el.addEventListener('click', function(e) { e.stopPropagation(); });
+  });
+});
+
 function toggleShortAcc(id) {
   var body = document.getElementById('short-acc-body-' + id);
   var btn  = document.getElementById('short-acc-btn-' + id);
@@ -1211,7 +1218,7 @@ function sfShare() {
           <p class="vol-desc" data-i18n="vol1-desc-more">気づけば同じ音の中にいる。<br><br>「続ける」と決める前の時間を描く。</p>
         </div>
         <button id="book-acc-btn-1" onclick="event.stopPropagation();toggleBookAcc(1)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
-        <a href="https://amzn.asia/d/03cNGgk3" target="_blank" style="display:inline-block;font-size:14px;color:var(--hinata);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
+        <a href="https://amzn.asia/d/03cNGgk3" target="_blank" style="display:inline-block;font-size:14px;color:var(--hinata);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(147,197,253,0.4);background:rgba(147,197,253,0.07);" data-i18n="vol-btn" onclick="event.stopPropagation()">Kindleで読む →</a>
       </div>
     </div>
 
@@ -1227,7 +1234,7 @@ function sfShare() {
           <p class="vol-desc" data-i18n="vol2-desc-more">形にならない音。言葉にするには、まだ早い感情。<br><br>三人で鳴らすことを選んだあと、音は少しずつ外へ向かいはじめる。<br><br>確かさはない。それでも、手放さなかった。<br><br>触れすぎず、壊さず、距離を測りながら。<br><br>小さな音は、静かに残り続ける。</p>
         </div>
         <button id="book-acc-btn-2" onclick="event.stopPropagation();toggleBookAcc(2)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
-        <a href="https://amzn.asia/d/0brELpId" target="_blank" style="display:inline-block;font-size:14px;color:#c4b5fd;text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(196,181,253,0.4);background:rgba(196,181,253,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
+        <a href="https://amzn.asia/d/0brELpId" target="_blank" style="display:inline-block;font-size:14px;color:#c4b5fd;text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(196,181,253,0.4);background:rgba(196,181,253,0.07);" data-i18n="vol-btn" onclick="event.stopPropagation()">Kindleで読む →</a>
       </div>
     </div>
 
@@ -1243,7 +1250,7 @@ function sfShare() {
           <p class="vol-desc" data-i18n="vol3-desc-more">声に引き寄せられ、選ばなかったはずの場所へ足が向かう。<br><br>正しさと沈黙、優しさと迷い。それぞれの選択は、言葉になる前にすれ違っていく。<br><br>音は、答えをくれない。ただ残り、続いていく。<br><br>――音だけが、置かれたまま。</p>
         </div>
         <button id="book-acc-btn-3" onclick="event.stopPropagation();toggleBookAcc(3)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
-        <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="display:inline-block;font-size:14px;color:var(--kouta);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
+        <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="display:inline-block;font-size:14px;color:var(--kouta);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(252,165,165,0.4);background:rgba(252,165,165,0.07);" data-i18n="vol-btn" onclick="event.stopPropagation()">Kindleで読む →</a>
       </div>
     </div>
 
@@ -1259,7 +1266,7 @@ function sfShare() {
           <p class="vol-desc" data-i18n="vol4-desc-more">前に出る音。支える音。残す音。<br><br>それぞれのポジションで、三人は同じ流れに乗っている。<br><br>音は続く。役割を引き受けたまま。</p>
         </div>
         <button id="book-acc-btn-4" onclick="event.stopPropagation();toggleBookAcc(4)" style="display:block;margin-top:16px;margin-bottom:20px;background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
-        <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn">Kindleで読む →</a>
+        <a href="https://amzn.asia/d/0fYRq3BS" target="_blank" style="display:inline-block;font-size:14px;color:var(--hayate);text-decoration:none;padding:10px 24px;border-radius:100px;border:1.5px solid rgba(253,230,138,0.4);background:rgba(253,230,138,0.07);" data-i18n="vol-btn" onclick="event.stopPropagation()">Kindleで読む →</a>
       </div>
     </div>
 
@@ -1287,7 +1294,7 @@ function sfShare() {
       <button id="short-acc-btn-moonveil" onclick="event.stopPropagation();toggleShortAcc('moonveil')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9832lr/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
       </div>
     </div>
 
@@ -1301,9 +1308,9 @@ function sfShare() {
       <button id="short-acc-btn-kouta" onclick="event.stopPropagation();toggleShortAcc('kouta')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n5432lz/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=0450b39334c146b5" target="_blank"
-           style="font-size:13px;color:#1db954;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(29,185,84,0.25);background:rgba(29,185,84,0.05);">Still（Untitled） →</a>
+           style="font-size:13px;color:#1db954;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(29,185,84,0.25);background:rgba(29,185,84,0.05);" onclick="event.stopPropagation()">Still（Untitled） →</a>
       </div>
     </div>
 
@@ -1318,9 +1325,9 @@ function sfShare() {
       <button id="short-acc-btn-hitotsu" onclick="event.stopPropagation();toggleShortAcc('hitotsu')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0964mc/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" id="undertone-link-from-hitotsu" href="./room/undertone/"
-           style="font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(196,181,253,0.3);background:rgba(196,181,253,0.06);display:none;">Under tone へ →</a>
+           style="font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(196,181,253,0.3);background:rgba(196,181,253,0.06);display:none;" onclick="event.stopPropagation()">Under tone へ →</a>
       </div>
     </div>
 
@@ -1334,9 +1341,9 @@ function sfShare() {
       <button id="short-acc-btn-totonoeru" onclick="event.stopPropagation();toggleShortAcc('totonoeru')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0082lu/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" target="_blank"
-           style="font-size:13px;color:#1ed760;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);">🎵 Little Snow（Raw）</a>
+           style="font-size:13px;color:#1ed760;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);" onclick="event.stopPropagation()">🎵 Little Snow（Raw）</a>
       </div>
     </div>
 
@@ -1350,9 +1357,9 @@ function sfShare() {
       <button id="short-acc-btn-hanbun" onclick="event.stopPropagation();toggleShortAcc('hanbun')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0327lw/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" href="https://suno.com/s/GZb0yhVHmCQBmohG" target="_blank"
-           style="font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(196,181,253,0.35);background:rgba(196,181,253,0.07);">🎵 呼吸の距離</a>
+           style="font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(196,181,253,0.35);background:rgba(196,181,253,0.07);" onclick="event.stopPropagation()">🎵 呼吸の距離</a>
       </div>
     </div>
 
@@ -1366,9 +1373,9 @@ function sfShare() {
       <button id="short-acc-btn-shiroi" onclick="event.stopPropagation();toggleShortAcc('shiroi')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0679lx/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" target="_blank"
-           style="font-size:13px;color:#1ed760;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);">🎵 Little Snow（Near）</a>
+           style="font-size:13px;color:#1ed760;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);" onclick="event.stopPropagation()">🎵 Little Snow（Near）</a>
       </div>
     </div>
 
@@ -1382,9 +1389,9 @@ function sfShare() {
       <button id="short-acc-btn-tadashii" onclick="event.stopPropagation();toggleShortAcc('tadashii')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n0498ly/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
         <a class="short-extra-link" href="https://www.instagram.com/p/DWkPHH_GCaF/" target="_blank"
-           style="font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);">📸 Instagram リール</a>
+           style="font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);" onclick="event.stopPropagation()">📸 Instagram リール</a>
       </div>
     </div>
 
@@ -1397,7 +1404,7 @@ function sfShare() {
       <button id="short-acc-btn-icebreaker" onclick="event.stopPropagation();toggleShortAcc('icebreaker')" style="background:none;border:none;padding:0;font-size:13px;color:#64748b;cursor:pointer;margin-bottom:12px;transition:color 0.2s;" onmouseenter="this.style.color='#94a3b8'" onmouseleave="this.style.color='#64748b'">▼</button>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
         <a href="https://ncode.syosetu.com/n9797ls/" target="_blank"
-           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+           class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
       </div>
     </div>
 
@@ -1636,7 +1643,7 @@ function sfShare() {
     <div class="disco-group">
       <p class="disco-group-label">EP</p>
       <div class="ep-card">
-        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" target="_blank">
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" target="_blank" onclick="event.stopPropagation()">
           <img class="ep-jacket" src="Discography/early_snow.webp" alt="Early Snow Snow flakes スノーフレークス スノフレ 山吹ことり EP" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
         </a>
         <div class="ep-body">
@@ -3802,7 +3809,7 @@ document.addEventListener('visibilitychange', function() {
     <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;letter-spacing:4px;color:#e2e8f0;margin:0 0 4px;">Signal</p>
     <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:2px;color:#64748b;margin:0 0 8px;">c/w グラスの縁</p>
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin:0 0 24px;">6月7日 — 10日</p>
-    <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4fpqDOsUjdcS1lpHbacdKr" target="_blank" onclick="document.getElementById('signal-release-popup').style.opacity='0';document.getElementById('signal-release-popup').style.pointerEvents='none';" style="display:block;width:100%;box-sizing:border-box;margin:0 auto 12px;padding:10px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#e2e8f0;cursor:pointer;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">Spotify で聴く →</a>
+    <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4fpqDOsUjdcS1lpHbacdKr" target="_blank" onclick="document.getElementById('signal-release-popup').style.opacity='0';document.getElementById('signal-release-popup').style.pointerEvents='none';" style="display:block;width:100%;box-sizing:border-box;margin:0 auto 12px;padding:10px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#e2e8f0;cursor:pointer;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'" onclick="event.stopPropagation()">Spotify で聴く →</a>
     <button onclick="document.getElementById('signal-release-popup').style.opacity='0';document.getElementById('signal-release-popup').style.pointerEvents='none';" style="background:none;border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:8px 32px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='#475569';this.style.borderColor='rgba(255,255,255,0.08)'">閉じる</button>
   </div>
 </div>
