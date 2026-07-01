@@ -721,7 +721,11 @@ function sfShare() {
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#4e7aa8;margin-bottom:4px;">DAILY LOGIN</p>
         <p id="cal-streak-label" style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:2px;color:#93c5fd;">—</p>
       </div>
-      <p id="cal-month-label" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#4e7aa8;"></p>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="cal-prev-btn" onclick="calChangeMonth(-1)" style="background:none;border:none;cursor:pointer;font-size:13px;color:#4e7aa8;padding:2px 6px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#4e7aa8'">‹</button>
+        <p id="cal-month-label" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#4e7aa8;min-width:70px;text-align:center;"></p>
+        <button id="cal-next-btn" onclick="calChangeMonth(1)" style="background:none;border:none;cursor:pointer;font-size:13px;color:#4e7aa8;padding:2px 6px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#4e7aa8'">›</button>
+      </div>
     </div>
     <div id="login-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;"></div>
   </div>
@@ -2480,37 +2484,37 @@ function sfShare() {
       }
 
       // カレンダー描画
-      document.addEventListener('DOMContentLoaded', function() {
+      var _calYear, _calMonth;
+      function drawCal(year, month) {
+        _calYear = year; _calMonth = month;
         var grid = document.getElementById('login-cal-grid');
-        var streakLabel = document.getElementById('cal-streak-label');
         var monthLabel = document.getElementById('cal-month-label');
+        var nextBtn = document.getElementById('cal-next-btn');
         if (!grid) return;
 
         var now = new Date();
-        var year = now.getFullYear();
-        var month = now.getMonth();
+        var isCurrentMonth = (year === now.getFullYear() && month === now.getMonth());
 
-        // 月ラベル
+        // 来月以降は非表示
+        if (nextBtn) nextBtn.style.visibility = isCurrentMonth ? 'hidden' : 'visible';
+
         monthLabel.textContent = year + ' . ' + String(month + 1).padStart(2, '0');
+        grid.innerHTML = '';
 
         // 曜日ヘッダー
         ['日','月','火','水','木','金','土'].forEach(function(d, i) {
           var cell = document.createElement('div');
           cell.textContent = d;
           cell.style.cssText = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:1px;color:#64748b;padding:2px 0 6px;';
-          if (i === 0) cell.style.color = '#94a3b8';
-          if (i === 6) cell.style.color = '#94a3b8';
+          if (i === 0 || i === 6) cell.style.color = '#94a3b8';
           grid.appendChild(cell);
         });
 
-        // 月初の曜日オフセット
         var firstDay = new Date(year, month, 1).getDay();
-        for (var i = 0; i < firstDay; i++) {
-          grid.appendChild(document.createElement('div'));
-        }
+        for (var i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
 
         var daysInMonth = new Date(year, month + 1, 0).getDate();
-        var todayDate = now.getDate();
+        var todayDate = isCurrentMonth ? now.getDate() : -1;
 
         for (var d = 1; d <= daysInMonth; d++) {
           var dateObj = new Date(year, month, d);
@@ -2536,9 +2540,22 @@ function sfShare() {
           }
           grid.appendChild(cell);
         }
+      }
 
+      window.calChangeMonth = function(delta) {
+        var d = new Date(_calYear, _calMonth + delta, 1);
+        var now = new Date();
+        // 未来月はスキップ
+        if (d > new Date(now.getFullYear(), now.getMonth(), 1)) return;
+        drawCal(d.getFullYear(), d.getMonth());
+      };
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var now = new Date();
+        drawCal(now.getFullYear(), now.getMonth());
         // ストリークラベル
-        streakLabel.textContent = streak >= 2 ? streak + '日連続 ❄' : streak === 1 ? '1日目' : '—';
+        var streakLabel = document.getElementById('cal-streak-label');
+        if (streakLabel) streakLabel.textContent = streak >= 2 ? streak + '日連続 ❄' : streak === 1 ? '1日目' : '—';
       });
     })();
 
