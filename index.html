@@ -1656,29 +1656,74 @@ function sfShare() {
     <!-- Album: 瞬間に残る -->
     <div class="disco-group" style="margin-top:8px;">
       <p class="disco-group-label">ALBUM</p>
-      <div class="ep-card">
-        <a class="short-extra-link" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()">
-          <img class="ep-jacket" src="Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes スノーフレークス スノフレ 山吹ことり アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-        </a>
-        <div class="ep-body">
-          <p class="ep-type">ALBUM</p>
-          <p class="ep-title">瞬間に残る</p>
-          <ol class="ep-tracklist">
-            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77JSVTY" target="_blank" style="text-decoration:none;color:inherit;">Signal</a></li>
-            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77JN8J3" target="_blank" style="text-decoration:none;color:inherit;">Round Bounce</a></li>
-            <li class="ep-track"><span class="ep-track-num">03</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77HZZT1" target="_blank" style="text-decoration:none;color:inherit;">Rabbit (Full Moon Version)</a></li>
-            <li class="ep-track"><span class="ep-track-num">04</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77KM418" target="_blank" style="text-decoration:none;color:inherit;">置いた音</a></li>
-            <li class="ep-track"><span class="ep-track-num">05</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77DLTWW" target="_blank" style="text-decoration:none;color:inherit;">SWEETs (Brass Band Version)</a></li>
-            <li class="ep-track"><span class="ep-track-num">06</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77DF2TX" target="_blank" style="text-decoration:none;color:inherit;">祝奏</a></li>
-            <li class="ep-track"><span class="ep-track-num">07</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77DZLPH" target="_blank" style="text-decoration:none;color:inherit;">呼吸の距離</a></li>
-            <li class="ep-track"><span class="ep-track-num">08</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H777ZNY9" target="_blank" style="text-decoration:none;color:inherit;">瞬間に残る</a></li>
-            <li class="ep-track"><span class="ep-track-num">09</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77L3T4C" target="_blank" style="text-decoration:none;color:inherit;">花の名前を忘れても</a></li>
-            <li class="ep-track"><span class="ep-track-num">10</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Low Light</a></li>
-            <li class="ep-track"><span class="ep-track-num">11</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77JC85C" target="_blank" style="text-decoration:none;color:inherit;">音が消えるまでは</a></li>
-            <li class="ep-track"><span class="ep-track-num">12</span><a class="ep-track-name" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77FD9L9" target="_blank" style="text-decoration:none;color:inherit;">Little Snow</a></li>
-          </ol>
+      <div class="ep-card" style="display:block;padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="flex-shrink:0;overflow:hidden;">
+            <a id="al-jacket-link" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()" style="display:block;">
+              <img class="ep-jacket" src="Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </a>
+          </div>
+          <div class="ep-body" style="display:flex;flex-direction:column;justify-content:center;">
+            <p class="ep-type">ALBUM</p>
+            <p class="ep-title" style="margin-bottom:16px;">瞬間に残る</p>
+            <p id="al-num" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:4px;">01</p>
+            <a id="al-title-link" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0H77JSVTY" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;">
+              <p id="al-title" style="font-family:'Noto Serif JP',serif;font-size:clamp(13px,3.5vw,17px);font-weight:300;color:#e2e8f0;line-height:1.5;margin-bottom:4px;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#e2e8f0'">Signal</p>
+            </a>
+            <p id="al-duration" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:var(--muted);">03:54</p>
+          </div>
         </div>
+        <div id="al-strip" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
       </div>
+      <script>
+      (function() {
+        var BASE = 'https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        function url(asin) { return asin ? BASE + '&trackAsin=' + asin : BASE; }
+        var AL = [
+          { num:'01', title:'Signal',                      dur:'03:54', asin:'B0H77JSVTY' },
+          { num:'02', title:'Round Bounce',                dur:'03:27', asin:'B0H77JN8J3' },
+          { num:'03', title:'Rabbit (Full Moon Version)',  dur:'02:42', asin:'B0H77HZZT1' },
+          { num:'04', title:'置いた音',                    dur:'04:24', asin:'B0H77KM418' },
+          { num:'05', title:'SWEETs (Brass Band Version)', dur:'03:49', asin:'B0H77DLTWW' },
+          { num:'06', title:'祝奏',                        dur:'04:15', asin:'B0H77DF2TX' },
+          { num:'07', title:'呼吸の距離',                  dur:'02:39', asin:'B0H77DZLPH' },
+          { num:'08', title:'瞬間に残る',                  dur:'02:37', asin:'B0H777ZNY9' },
+          { num:'09', title:'花の名前を忘れても',          dur:'03:45', asin:'B0H77L3T4C' },
+          { num:'10', title:'Low Light',                   dur:'02:44', asin:'' },
+          { num:'11', title:'音が消えるまでは',            dur:'03:51', asin:'B0H77JC85C' },
+          { num:'12', title:'Little Snow',                 dur:'03:22', asin:'B0H77FD9L9' },
+        ];
+        var numEl    = document.getElementById('al-num'),
+            titleEl  = document.getElementById('al-title'),
+            titleLnk = document.getElementById('al-title-link'),
+            durEl    = document.getElementById('al-duration'),
+            jacketLnk= document.getElementById('al-jacket-link'),
+            strip    = document.getElementById('al-strip');
+        function select(idx) {
+          var s = AL[idx];
+          numEl.textContent   = s.num;
+          titleEl.textContent = s.title;
+          durEl.textContent   = s.dur;
+          var u = url(s.asin);
+          titleLnk.href  = u;
+          jacketLnk.href = u;
+          strip.querySelectorAll('.al-th').forEach(function(el, i) {
+            el.style.opacity     = i === idx ? '1' : '0.4';
+            el.style.borderColor = i === idx ? 'rgba(255,255,255,0.55)' : 'transparent';
+            el.style.color       = i === idx ? '#e2e8f0' : '#475569';
+          });
+        }
+        AL.forEach(function(s, i) {
+          var btn = document.createElement('button');
+          btn.className = 'al-th';
+          btn.style.cssText = 'min-width:32px;height:32px;border-radius:6px;border:1px solid transparent;cursor:pointer;background:rgba(255,255,255,0.04);padding:0 6px;flex-shrink:0;transition:all 0.2s;opacity:0.4;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:#475569;';
+          btn.textContent = s.num;
+          btn.addEventListener('click', function() { select(i); });
+          strip.appendChild(btn);
+        });
+        select(0);
+      })();
+      </script>
     </div>
 
     <!-- SWEETs Limited (removed) -->
