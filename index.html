@@ -1653,6 +1653,78 @@ function sfShare() {
       </div>
     </div>
 
+    <!-- Album: 瞬間に残る -->
+    <div class="disco-group" style="margin-top:8px;">
+      <p class="disco-group-label">ALBUM</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:clamp(100px,28vw,160px);flex-shrink:0;overflow:hidden;">
+            <a id="al-jacket-link" href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="al-jacket" src="Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes アルバム" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </a>
+          </div>
+          <div style="padding:clamp(14px,4vw,24px);flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+            <p style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:2px;">ALBUM</p>
+            <p style="font-size:10px;letter-spacing:2px;color:#94a3b8;font-family:'Cormorant Garamond',serif;margin-bottom:10px;">瞬間に残る</p>
+            <p id="al-track-num" style="font-size:10px;letter-spacing:3px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:4px;">01</p>
+            <p id="al-title" style="font-size:clamp(14px,4vw,20px);font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">Signal</p>
+            <p id="al-duration" style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;">03:54</p>
+            <div id="al-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+        <div id="al-strip" style="border-top:1px solid var(--border);padding:14px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
+      </div>
+      <script>
+      (function() {
+        var ALBUM_URL = 'https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        function trackUrl(asin) { return asin ? ALBUM_URL + '&trackAsin=' + asin : ALBUM_URL; }
+        var SF_ALBUM = [
+          { num:'01', title:'Signal',                      duration:'03:54', asin:'B0H77JSVTY' },
+          { num:'02', title:'Round Bounce',                duration:'03:27', asin:'B0H77JN8J3' },
+          { num:'03', title:'Rabbit (Full Moon Version)',  duration:'02:42', asin:'B0H77HZZT1' },
+          { num:'04', title:'置いた音',                    duration:'04:24', asin:'B0H77KM418' },
+          { num:'05', title:'SWEETs (Brass Band Version)', duration:'03:49', asin:'B0H77DLTWW' },
+          { num:'06', title:'祝奏',                        duration:'04:15', asin:'B0H77DF2TX' },
+          { num:'07', title:'呼吸の距離',                  duration:'02:39', asin:'B0H77DZLPH' },
+          { num:'08', title:'瞬間に残る',                  duration:'02:37', asin:'B0H777ZNY9' },
+          { num:'09', title:'花の名前を忘れても',          duration:'03:45', asin:'B0H77L3T4C' },
+          { num:'10', title:'Low Light',                   duration:'02:44', asin:'B0H77JC85C' },
+          { num:'11', title:'音が消えるまでは',            duration:'03:51', asin:'B0H77FD9L9' },
+          { num:'12', title:'Little Snow',                 duration:'03:22', asin:'' },
+        ];
+        var numEl   = document.getElementById('al-track-num'),
+            titleEl = document.getElementById('al-title'),
+            durEl   = document.getElementById('al-duration'),
+            linksEl = document.getElementById('al-links'),
+            jacketLink = document.getElementById('al-jacket-link'),
+            strip   = document.getElementById('al-strip');
+        function selectTrack(idx) {
+          var s = SF_ALBUM[idx];
+          numEl.textContent   = s.num;
+          titleEl.textContent = s.title;
+          durEl.textContent   = s.duration;
+          var url = trackUrl(s.asin);
+          jacketLink.href = url;
+          linksEl.innerHTML = '<a href="' + url + '" target="_blank" style="font-size:12px;color:#5a8fa8;text-decoration:none;padding:5px 14px;border-radius:100px;border:1px solid rgba(90,143,168,0.4);background:rgba(90,143,168,0.07);transition:opacity 0.2s;display:flex;align-items:center;gap:6px;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'"><i class="fa-brands fa-amazon" style="font-size:12px;"></i>Amazon Music</a>';
+          strip.querySelectorAll('.al-thumb').forEach(function(el, i) {
+            el.style.opacity     = i === idx ? '1' : '0.4';
+            el.style.borderColor = i === idx ? 'rgba(90,143,168,0.7)' : 'transparent';
+            el.style.color       = i === idx ? '#e2e8f0' : '#475569';
+          });
+        }
+        SF_ALBUM.forEach(function(s, i) {
+          var btn = document.createElement('button');
+          btn.className = 'al-thumb';
+          btn.style.cssText = 'min-width:34px;height:34px;border-radius:6px;border:1px solid transparent;cursor:pointer;background:rgba(255,255,255,0.04);padding:0 6px;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s,color 0.2s;opacity:0.4;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:#475569;';
+          btn.textContent = s.num;
+          btn.addEventListener('click', function() { selectTrack(i); });
+          strip.appendChild(btn);
+        });
+        selectTrack(0);
+      })();
+      </script>
+    </div>
+
     <!-- SWEETs Limited (removed) -->
     <div class="disco-group" id="sweets-limited-section" style="display:none;">
       <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
