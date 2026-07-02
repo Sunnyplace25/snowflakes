@@ -695,7 +695,7 @@ function sfShare() {
     <button onclick="openDailyInfoPopup()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#3b5f8a;padding:4px 8px;transition:color 0.2s;" onmouseenter="this.style.color='#93c5fd'" onmouseleave="this.style.color='#3b5f8a'">? アイテムについて</button>
   </div>
   <div style="max-width:680px;margin:0 auto 40px;">
-    <a id="update-banner" href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3663032/" target="_blank"
+    <a id="update-banner" href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3663032/" data-override="true" target="_blank"
        style="display:block;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
 
       <div id="update-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(147,197,253,0.08) 0%, transparent 70%);"></div>
@@ -778,6 +778,12 @@ function sfShare() {
       <!-- 活動報告 -->
       <div class="act-list">
         <ul style="list-style:none;padding:0;margin:0;">
+          <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <a href="https://mypage.syosetu.com/mypageblog/view/userid/2212173/blogkey/3663032/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+              <span class="act-date">2026.07.03</span>
+              <span class="act-text">活動報告｜ニューアルバム「瞬間に残る」リリース</span>
+            </a>
+          </li>
           <li style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <a href="https://www.instagram.com/reel/DZ_4P6aFFHs/" target="_blank" class="act-item" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
               <span class="act-date">2026.06.25</span>
@@ -981,7 +987,8 @@ function sfShare() {
           else if (activeHour !== null && nextHour === hours[0]) { nextHour = hours[i]; }
         }
 
-        // 話数・リンクを動的に更新
+        // 話数・リンクを動的に更新（override時はスキップ）
+        if (banner.dataset.override === 'true') return;
         epEl.textContent = '#' + ep;
         banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
 
