@@ -488,6 +488,20 @@
     </div>
   </div>
 
+  <div class="dialog-overlay" id="wristband-dialog">
+    <div class="dialog-box">
+      <p class="dialog-title">使いますか？</p>
+      <div class="dialog-cost">
+        <img src="../../item/wristband_hayate.webp" style="width:56px;object-fit:contain;">
+        <span>古いリストバンド</span>
+      </div>
+      <div class="dialog-btns">
+        <button class="dialog-btn cancel" id="wristband-dialog-cancel">▶ いいえ</button>
+        <button class="dialog-btn confirm" id="wristband-dialog-confirm">▶ はい</button>
+      </div>
+    </div>
+  </div>
+
   <div class="dialog-overlay" id="unlock-dialog">
     <div class="dialog-box">
       <p class="dialog-title">交換しますか？</p>
@@ -1758,15 +1772,21 @@
         if (nameBtn) {
           nameBtn.addEventListener('click', function() {
             if (!nameBtn.classList.contains('ready')) { showAlert('まだもっていません'); return; }
-            showDialog('古いリストバンド', function() {
-              saved.push('pf-name');
-              localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
-              document.getElementById('name-nick').style.display = 'none';
-              document.getElementById('name-full').style.display = 'inline';
-              nameBtn.style.display = 'none';
-            });
+            document.getElementById('wristband-dialog').classList.add('open');
           });
         }
+        document.getElementById('wristband-dialog-cancel').addEventListener('click', function() {
+          document.getElementById('wristband-dialog').classList.remove('open');
+        });
+        document.getElementById('wristband-dialog-confirm').addEventListener('click', function() {
+          document.getElementById('wristband-dialog').classList.remove('open');
+          saved.push('pf-name');
+          localStorage.setItem(SAVE_KEY, JSON.stringify(saved));
+          document.getElementById('name-nick').style.display = 'none';
+          document.getElementById('name-full').style.display = 'inline';
+          if (nameBtn) nameBtn.style.display = 'none';
+          showAlert('ハヤテの名前が解放されました');
+        });
       }
 
       // 解放済みを即表示
