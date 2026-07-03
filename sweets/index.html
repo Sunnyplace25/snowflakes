@@ -5160,9 +5160,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var hasPass = SfSnow.isUnlocked('backstage_pass');
       var sec = document.getElementById('live-archive-section');
       if (!sec) return;
-      if (!hasPass) { sec.style.display = 'none'; return; }
       sec.style.display = '';
-      if (LIVE_ARCHIVE_URL) {
+      if (hasPass && LIVE_ARCHIVE_URL) {
         var videoWrap = document.getElementById('live-archive-video');
         videoWrap.style.display = 'block';
         var iframe = document.getElementById('live-archive-iframe');
