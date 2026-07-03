@@ -5466,6 +5466,18 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         charaImg: '../plofile/chibi_kouta.webp',
         charaLine: null
       },
+      wristband_hayate: {
+        noteCardId: 'note_hayate_1',
+        img: '../item/wristband_hayate.webp',
+        name: '古いリストバンド',
+        desc: 'ハヤテが子どもの頃に行ったイベントのノベルティ。',
+        storyUrl: 'https://ncode.syosetu.com/n5484lz/',
+        storyTitle: '透明なリズム',
+        color: '#fde68a',
+        chara: 'HAYATE', charaColor: '#fde68a',
+        charaImg: '../plofile/chibi_hayate.webp',
+        charaLine: '……ずっと、持ってた'
+      },
     };
     var _noteItemPendingChara = null;
 
@@ -5525,6 +5537,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         if (d.desc) { descEl.textContent = d.desc; descEl.style.display = ''; }
         else { descEl.style.display = 'none'; }
       }
+      var readLink = document.getElementById('note-item-read-link');
+      if (readLink) {
+        if (d.storyUrl) {
+          readLink.href = d.storyUrl;
+          readLink.textContent = '▶ 小説を読む　' + (d.storyTitle || '');
+          readLink.style.display = 'inline-block';
+        } else {
+          readLink.style.display = 'none';
+        }
+      }
       labelEl.style.color = d.color;
       closeBtn.textContent        = '閉じる';
       closeBtn.style.color        = d.color;
@@ -5549,6 +5571,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (emojiEl) emojiEl.style.display = 'none';
       nameEl.textContent = d.name;
       if (descEl) descEl.style.display = 'none';
+      var readLink2 = document.getElementById('note-item-read-link');
+      if (readLink2) readLink2.style.display = 'none';
       labelEl.style.color = '#94a3b8';
       if (msgEl) msgEl.textContent = 'このアイテムは入手済みです';
       closeBtn.textContent       = '閉じる';
@@ -5734,7 +5758,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <p id="note-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;margin-bottom:10px;">ITEM</p>
     <p id="note-item-name" style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;"></p>
     <p id="note-item-msg" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">を入手しました</p>
-    <p id="note-item-desc" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#94a3b8;margin-bottom:32px;line-height:1.8;display:none;"></p>
+    <p id="note-item-desc" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#94a3b8;margin-bottom:20px;line-height:1.8;display:none;"></p>
+    <a id="note-item-read-link" href="" target="_blank" rel="noopener" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#e2e8f0;border:1px solid rgba(255,255,255,0.18);border-radius:100px;padding:8px 22px;text-decoration:none;margin-bottom:24px;transition:border-color 0.2s;">▶ 小説を読む</a>
     <button id="note-item-close-btn" onclick="closeNoteItemPopup()" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:12px 36px;cursor:pointer;transition:background 0.25s;color:#e2e8f0;">閉じる</button>
   </div>
 </div>
@@ -6012,7 +6037,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-cravat-img', 'ri-cravat-name', 'ri-cravat-check', 'cravat_hayate', 'アクアマリンのクラバットピン');
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
-    updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', 'ハヤテのリストバンド');
+    updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', '古いリストバンド');
     // 繰り返し取得アイテム（コースター・ドリンクコイン・しおり）: count表示
     function updateCountableItem(imgId, nameId, checkId, itemKey, itemName, color) {
       var img   = document.getElementById(imgId);
@@ -6377,7 +6402,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       sub: '― 夢の中で見えた、届く距離の話 ―',
       origin: '',
       cost: { item: 'proteincoffee', amount: 1 },
-      glowColor: 'green',
       related: { url: 'https://ncode.syosetu.com/n0498ly/', title: '正しい距離より、触れているほうがいい', date: '2026.06.30', type: '短篇' },
       sections: [
         { heading: null, body: '「正しい距離より、触れている方がいい」は、Snow flakes本編の外側にある、夢の中の一篇です。\n\n舞踏会。\n玉座。\n黒髪の姫。\n金髪の王子。\n整えられた庭。\n\n現実とは違う場所で、ヒナタは「正しい距離」を見ます。\n\nそれは綺麗で、間違っていなくて、誰にも乱されていない距離です。\nけれどヒナタには、そこに小さな違和感が残る。\n\nちゃんとしている。\nでも、遠い。\n\nこの話は、その違和感を追いかけていく物語です。' },
@@ -6427,6 +6451,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       related: { url: 'https://ncode.syosetu.com/n5432lz/', title: '始まりのベース', date: '2026.06.14', type: '短篇' },
       sections: [
         { heading: null, body: 'Snow flakes本編の外で、\nコウタが最初の一本を手にした頃の話です。\n\n書店の隣にあった、小さな楽器店。\n\n本を探しに来たはずのコウタは、\n隣の店から聞こえてきた低い音に足を止めます。\n\n前に出る音ではなく、\n全体を支える音。\n\n目立たないけれど、\nいないと輪郭が変わってしまう音。\n\nそこでコウタは、\n自分が惹かれる音のあり方に出会います。\n\n黒いベース。\n\n背中に乗るケース。\n右手に持つアンプ。\nシールド、チューナー、予備の弦。\n\nそして、\n赤いメッシュの店員が残した、古いZippo。\n\nキン、と鳴る乾いた音。\n\n低く鳴っていたベースの音。\n\nそのどちらも、\n時間が経ってもコウタの中に残っています。\n\n現在のコウタは、\n迷っていた少年に黒いベースを渡します。\n\n多くは語りません。\n\n未来を保証するわけでも、\n才能を決めつけるわけでもない。\n\nただ、始めるために必要なものを並べる。\n\nコウタはずっと、\nそうやって音と向き合ってきました。\n\n低い音は、すぐに消える。\n\nけれど、耳の奥には残る。\n\n「始まりのベース」は、\nコウタが自分の音に出会い、その音を誰かへ渡していくまでをたどる、\n静かな継承の物語です。' },
+        { heading: null, dim: true, body: '物語の核心に触れる部分があるため、解説は控えめにしておきます。' },
+      ]
+    },
+    {
+      id: 'note_hayate_1', type: 'note',
+      title: '「透明なリズム」解説',
+      sub: '― ハヤテの中で、最初に残った音 ―',
+      origin: '',
+      cost: { item: 'proteincoffee', amount: 1 },
+      reward: 'wristband_hayate', rewardDelay: 5000,
+      related: { url: 'https://ncode.syosetu.com/n5484lz/', title: '透明なリズム', date: '2026.07.04', type: '短篇' },
+      sections: [
+        { heading: null, body: 'Snow flakes本編の外で、\n\nハヤテがまだ子どもだった頃の話です。\n\n高い塀に囲まれた家。\n広い日本庭園。\n石灯籠。\n池。\n風に泳ぐ鯉のぼり。\n\n人の出入りが多く、\n大人たちの声がいつもどこかから聞こえてくる家で、\nハヤテは育っていきます。\n\n元気に挨拶をすること。\n廊下の端へ寄ること。\n音を立てずに歩くこと。\n\nそれは教え込まれたものというより、\nその家の空気の中で、\n自然に身についたものでした。\n\nそんな日常の中で、\nハヤテは朔の歌声に出会います。\n\n透明で、\nまっすぐで、\n耳に残る声。\n\nその声を聴いたとき、\nハヤテの中で、何かが少し動きます。\n\n歌うのは朔。\nピアノはみちる。\nハヤテは、叩く。\n\nまだバンドではありません。\n夢と呼ぶには早く、\n約束と呼ぶには幼い。\n\nそれでも、\n音が鳴って、\n誰かが笑って、\n客席の空気が少し変わる。\n\nその感覚だけは、\nハヤテの中に残っていきます。\n\nけれど、\n続いていくはずだったコンサートは、\n大人の言葉で終わります。\n\n朔は歌う場所を失い、\nハヤテもまた、\nその続きを見ることはできなくなる。\n\nそれでも、\n机を叩く指先には、\nあのときのリズムが残っていました。\n\n止まったはずなのに、\n消えていない音。\n\n「透明なリズム」は、\nハヤテが誰かの声を聴き、\nその声を支える楽しさを知る物語です。\n\nまだ名前のない音。\nまだ形にならない衝動。\n\nけれどそのリズムは、\nハヤテの中で、\n静かに続いています。' },
         { heading: null, dim: true, body: '物語の核心に触れる部分があるため、解説は控えめにしておきます。' },
       ]
     },
@@ -6692,7 +6729,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   var NOTE_PUB_DATES = {
     'note_prism_1': new Date('2026-06-17T21:00:00+09:00'),
-    'note_kouta_1': new Date('2026-06-14T12:00:00+09:00')
+    'note_kouta_1': new Date('2026-06-14T12:00:00+09:00'),
+    'note_hayate_1': new Date('2026-07-04T12:00:00+09:00')
   };
 
   function _ncBuildItems() {
