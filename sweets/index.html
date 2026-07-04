@@ -5189,6 +5189,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     };
 
     window.openSpringPassConfirm = function() {
+      if (!SfSnow.isUnlocked('backstage_pass')) { showAlert('もっていません'); return; }
       var pop = document.getElementById('spring-pass-confirm');
       if (!pop) return;
       pop.style.display = 'flex';
