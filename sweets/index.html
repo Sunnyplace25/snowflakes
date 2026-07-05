@@ -6258,14 +6258,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         icon.style.filter  = 'grayscale(1)';
       }
     })();
-    // セクション並び替え: ITEMS → NOTES → MUSIC → LIVE ARCHIVE → ANOTHER
+    // セクション並び替え: EXCHANGE直後にLIVE ARCHIVE / ITEMS直後にNOTES→MUSIC→ANOTHER
     (function() {
-      var main = document.querySelector('.wrapper') || document.body;
+      var exchangeSection    = document.getElementById('sw-exchange');
       var itemsSection       = document.getElementById('items-section');
       var musicSection       = document.getElementById('music-section');
       var liveArchiveSection = document.getElementById('live-archive-section');
-      // NOTESセクション: section-label が "notes" を含む div.section
-      var notesSection   = (function() {
+      var notesSection = (function() {
         var sections = document.querySelectorAll('.section');
         for (var i = 0; i < sections.length; i++) {
           var lbl = sections[i].querySelector('.section-label');
@@ -6273,7 +6272,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         }
         return null;
       })();
-      // ANOTHERセクション: section-label が "another" を含む div.section
       var anotherSection = (function() {
         var sections = document.querySelectorAll('.section');
         for (var i = 0; i < sections.length; i++) {
@@ -6282,14 +6280,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         }
         return null;
       })();
+      // LIVE ARCHIVE を EXCHANGE の直後に移動
+      if (liveArchiveSection && exchangeSection && exchangeSection.parentNode) {
+        exchangeSection.parentNode.insertBefore(liveArchiveSection, exchangeSection.nextSibling);
+      }
+      // ITEMS の直後に NOTES → MUSIC → ANOTHER の順で挿入
       if (!itemsSection || !notesSection || !musicSection || !anotherSection) return;
       var parent = itemsSection.parentNode;
       if (!parent) return;
-      // itemsSection の直後に NOTES → MUSIC → LIVE ARCHIVE → ANOTHER の順で挿入
       var anchor = itemsSection.nextSibling;
       parent.insertBefore(notesSection, anchor);
       parent.insertBefore(musicSection, anchor);
-      if (liveArchiveSection) parent.insertBefore(liveArchiveSection, anchor);
       parent.insertBefore(anotherSection, anchor);
     })();
   });
