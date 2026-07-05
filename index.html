@@ -558,8 +558,11 @@
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">NEW ALBUM</p>
       <p style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:300;color:#f1f5f9;letter-spacing:2px;margin-bottom:4px;">瞬間に残る</p>
       <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;margin-bottom:18px;">Snow flakes</p>
-      <a href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#1db954;color:#000;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
+      <a href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#1db954;color:#000;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:8px;">
         <i class="fa-brands fa-spotify" style="font-size:16px;"></i> Spotify で聴く
+      </a>
+      <a href="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(90,143,168,0.12);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
+        <i class="fa-brands fa-amazon" style="font-size:16px;"></i> Amazon Music で聴く
       </a>
       <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;text-align:center;letter-spacing:1px;line-height:1.8;">ページ下のミニプレーヤーからも聴けます</p>
     </div>
@@ -1564,6 +1567,29 @@ function sfShare() {
       <i class="fa-brands fa-youtube" style="font-size:22px;"></i>
     </a>
   </div>
+  <div style="text-align:center;margin-bottom:16px;">
+    <div style="display:inline-flex;border-radius:100px;border:1px solid rgba(255,255,255,0.1);overflow:hidden;">
+      <button id="svc-btn-sp" onclick="setSfMusicSvc('spotify')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;padding:6px 18px;border:none;background:rgba(30,215,96,0.18);color:#1db954;cursor:pointer;transition:all 0.2s;">Spotify</button>
+      <button id="svc-btn-am" onclick="setSfMusicSvc('amazon')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;padding:6px 18px;border:none;background:transparent;color:#475569;cursor:pointer;transition:all 0.2s;border-left:1px solid rgba(255,255,255,0.1);">Amazon</button>
+    </div>
+  </div>
+  <script>
+  window.sfMusicSvc = localStorage.getItem('sf_music_service') || 'spotify';
+  window.sfMusicSvcCbs = [];
+  window.setSfMusicSvc = function(svc) {
+    window.sfMusicSvc = svc;
+    localStorage.setItem('sf_music_service', svc);
+    var sp = document.getElementById('svc-btn-sp'), am = document.getElementById('svc-btn-am');
+    if (sp) { sp.style.background = svc==='spotify'?'rgba(30,215,96,0.18)':'transparent'; sp.style.color = svc==='spotify'?'#1db954':'#475569'; }
+    if (am) { am.style.background = svc==='amazon'?'rgba(90,143,168,0.18)':'transparent'; am.style.color = svc==='amazon'?'#5a8fa8':'#475569'; }
+    document.querySelectorAll('[data-sp]').forEach(function(a) {
+      a.href = svc==='amazon' ? (a.getAttribute('data-am')||a.getAttribute('data-sp')) : a.getAttribute('data-sp');
+    });
+    window.sfMusicSvcCbs.forEach(function(fn){fn(svc);});
+  };
+  (function(){var svc=window.sfMusicSvc;var sp=document.getElementById('svc-btn-sp'),am=document.getElementById('svc-btn-am');if(sp){sp.style.background=svc==='spotify'?'rgba(30,215,96,0.18)':'transparent';sp.style.color=svc==='spotify'?'#1db954':'#475569';}if(am){am.style.background=svc==='amazon'?'rgba(90,143,168,0.18)':'transparent';am.style.color=svc==='amazon'?'#5a8fa8':'#475569';}})();
+  document.addEventListener('DOMContentLoaded',function(){setSfMusicSvc(window.sfMusicSvc);});
+  </script>
   <p style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:48px;">各楽曲カードから、関連する物語のエピソードを読むことができます。</p>
   <div class="disco-inner">
 
@@ -1593,23 +1619,30 @@ function sfShare() {
         var SF_SINGLES = [
           { img:'Discography/Little Snow.webp', title:'Little Snow /<br class="sp-mb-br">音が消えるまでは', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/album/5I4Ge2faqF3Yfk0YhnSxO7',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H5L1R8L8?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[{ text:'ep.200 →', url:'https://ncode.syosetu.com/n9009lo/200', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
           { img:'Discography/Signal.webp', title:'Signal /<br class="sp-mb-br">グラスの縁', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/album/4fpqDOsUjdcS1lpHbacdKr',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H42LTTCM?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[{ text:'ep.178 →', url:'https://ncode.syosetu.com/n9009lo/178', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },{ text:'ep.133 →', url:'https://ncode.syosetu.com/n9009lo/133', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
-          { img:'Discography/Rabbit.webp', title:'Rabbit /<br class="sp-mb-br">ハッピーエンドはいらない', status:'配信中', musicUrl:'https://open.spotify.com/intl-ja/album/44dOQWscvSwLartZT8UBsJ?si=bU4e5_FpQoqfzC8t2HKELA',
+          { img:'Discography/Rabbit.webp', title:'Rabbit /<br class="sp-mb-br">ハッピーエンドはいらない', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/44dOQWscvSwLartZT8UBsJ?si=bU4e5_FpQoqfzC8t2HKELA',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H38962NT?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[
               { text:'ep.155 →', url:'https://ncode.syosetu.com/n9009lo/155', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },
               { text:'ep.76 →', url:'https://ncode.syosetu.com/n9009lo/76', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }
             ] },
           { img:'Discography/置いた音.webp', title:'置いた音', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GVPRQL4F?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[{ text:'ep.34 →', url:'https://ncode.syosetu.com/n9009lo/34', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
           { img:'Discography/SWEETs.webp', title:'SWEETs', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GTWS1MWZ?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[{ text:'ep.80 →', url:'https://ncode.syosetu.com/n9009lo/80', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
           { img:'Discography/Round Bounce.webp', title:'Round Bounce', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GT7CKP47?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
             links:[{ text:'ep.82 →', url:'https://ncode.syosetu.com/n9009lo/82', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] }
         ];
         var jacketLink=document.getElementById('sp-jacket-link'), jacket=document.getElementById('sp-jacket'),
@@ -1619,7 +1652,7 @@ function sfShare() {
           var s=SF_SINGLES[idx];
           jacket.style.opacity='0';
           setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
-          jacketLink.href=s.musicUrl||'#';
+          jacketLink.href=((window.sfMusicSvc==='amazon'&&s.amazonUrl)?s.amazonUrl:(s.musicUrl||'#'));
           titleEl.innerHTML=s.title; statusEl.textContent=s.status;
           statusEl.style.color=s.statusColor||'var(--muted)';
           linksEl.innerHTML=s.links.map(function(l){
@@ -1655,6 +1688,7 @@ function sfShare() {
             selectSingle(current);
           },10000);
         }
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { selectSingle(current); });
       })();
       </script>
     </div>
@@ -1664,33 +1698,33 @@ function sfShare() {
       <p class="disco-group-label">EP</p>
       <!-- PC: tracklist -->
       <div class="sf-pc-only ep-card">
-        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" target="_blank" onclick="event.stopPropagation()">
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-sp="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()">
           <img class="ep-jacket" src="Discography/early_snow.webp" alt="Early Snow Snow flakes スノーフレークス スノフレ 山吹ことり EP" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
         </a>
         <div class="ep-body">
           <p class="ep-type">EP</p>
           <p class="ep-title">Early Snow</p>
           <ol class="ep-tracklist">
-            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" target="_blank" style="text-decoration:none;color:inherit;">約束はしない</a><span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;margin-left:6px;white-space:nowrap;">Locked</span></li>
-            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f" target="_blank" style="text-decoration:none;color:inherit;">透明のまま</a><span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;margin-left:6px;white-space:nowrap;">Locked</span></li>
+            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" data-sp="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZCXJXb" target="_blank" style="text-decoration:none;color:inherit;">約束はしない</a><span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;margin-left:6px;white-space:nowrap;">Locked</span></li>
+            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f" data-sp="https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFXHKXP" target="_blank" style="text-decoration:none;color:inherit;">透明のまま</a><span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;margin-left:6px;white-space:nowrap;">Locked</span></li>
             <li class="ep-track">
               <span class="ep-track-num">03</span>
-              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Near）</a>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" data-sp="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZBHQJ" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Near）</a>
               <a href="https://ncode.syosetu.com/n0679lx/" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">白い音 →</a>
             </li>
             <li class="ep-track">
               <span class="ep-track-num">04</span>
-              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6" target="_blank" style="text-decoration:none;color:inherit;">Still（Untitled）</a>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6" data-sp="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFWZT26" target="_blank" style="text-decoration:none;color:inherit;">Still（Untitled）</a>
               <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">Kindle 3 →</a>
             </li>
             <li class="ep-track">
               <span class="ep-track-num">05</span>
-              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc" target="_blank" style="text-decoration:none;color:inherit;">名前のない歌</a>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc" data-sp="https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFRL382" target="_blank" style="text-decoration:none;color:inherit;">名前のない歌</a>
               <a href="https://ncode.syosetu.com/n9009lo/19" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">ep.19 →</a>
             </li>
             <li class="ep-track">
               <span class="ep-track-num">06</span>
-              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Raw）</a>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" data-sp="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFQHQF2" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Raw）</a>
               <a href="https://ncode.syosetu.com/n9009lo/53" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">ep.53 →</a>
             </li>
           </ol>
@@ -1700,7 +1734,7 @@ function sfShare() {
       <div class="sf-mobile-only ep-card" style="padding:0;overflow:hidden;">
         <div style="display:flex;align-items:stretch;">
           <div style="flex-shrink:0;overflow:hidden;width:clamp(100px,28vw,160px);">
-            <a id="ep-jacket-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" target="_blank" onclick="event.stopPropagation()" style="display:block;">
+            <a id="ep-jacket-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-sp="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()" style="display:block;">
               <img class="ep-jacket" src="Discography/early_snow.webp" alt="Early Snow Snow flakes スノーフレークス スノフレ 山吹ことり EP" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
             </a>
           </div>
@@ -1719,25 +1753,32 @@ function sfShare() {
       </div>
       <script>
       (function() {
+        var EP_AM = 'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        var EP_SP = 'https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q';
         var EP = [
-          { num:'01', title:'約束はしない',       href:'https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7', locked:true,  extra:null },
-          { num:'02', title:'透明のまま',          href:'https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f', locked:true,  extra:null },
-          { num:'03', title:'Little Snow（Near）', href:'https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d', locked:false, extra:{label:'白い音 →',  href:'https://ncode.syosetu.com/n0679lx/'} },
-          { num:'04', title:'Still（Untitled）',   href:'https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6', locked:false, extra:{label:'Kindle 3 →', href:'https://amzn.asia/d/03DKJjbm'} },
-          { num:'05', title:'名前のない歌',        href:'https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc', locked:false, extra:{label:'ep.19 →',    href:'https://ncode.syosetu.com/n9009lo/19'} },
-          { num:'06', title:'Little Snow（Raw）',  href:'https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903', locked:false, extra:{label:'ep.53 →',    href:'https://ncode.syosetu.com/n9009lo/53'} },
+          { num:'01', title:'約束はしない',       href:'https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZCXJXb', locked:true,  extra:null },
+          { num:'02', title:'透明のまま',          href:'https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFXHKXP', locked:true,  extra:null },
+          { num:'03', title:'Little Snow（Near）', href:'https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZBHQJ', locked:false, extra:{label:'白い音 →',  href:'https://ncode.syosetu.com/n0679lx/'} },
+          { num:'04', title:'Still（Untitled）',   href:'https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFWZT26', locked:false, extra:{label:'Kindle 3 →', href:'https://amzn.asia/d/03DKJjbm'} },
+          { num:'05', title:'名前のない歌',        href:'https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFRL382', locked:false, extra:{label:'ep.19 →',    href:'https://ncode.syosetu.com/n9009lo/19'} },
+          { num:'06', title:'Little Snow（Raw）',  href:'https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFQHQF2', locked:false, extra:{label:'ep.53 →',    href:'https://ncode.syosetu.com/n9009lo/53'} },
         ];
         var numEl    = document.getElementById('ep-num'),
             titleEl  = document.getElementById('ep-track-title'),
             titleLnk = document.getElementById('ep-title-link'),
             lockedEl = document.getElementById('ep-locked'),
             extraEl  = document.getElementById('ep-extra'),
+            epJkLnk  = document.getElementById('ep-jacket-link'),
             strip    = document.getElementById('ep-strip');
+        var current = 0;
         function select(idx) {
+          current = idx;
           var s = EP[idx];
+          var svc = window.sfMusicSvc || 'spotify';
           numEl.textContent   = s.num;
           titleEl.textContent = s.title;
-          titleLnk.href       = s.href;
+          titleLnk.href       = svc === 'amazon' ? (s.amazonHref || EP_AM) : s.href;
+          if (epJkLnk) epJkLnk.href = svc === 'amazon' ? EP_AM : EP_SP;
           lockedEl.style.display = s.locked ? 'inline-block' : 'none';
           if (s.extra) {
             extraEl.style.display = 'inline-block';
@@ -1761,6 +1802,7 @@ function sfShare() {
           strip.appendChild(btn);
         });
         select(0);
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { select(current); });
       })();
       </script>
     </div>
@@ -1770,25 +1812,25 @@ function sfShare() {
       <p class="disco-group-label">ALBUM</p>
       <!-- PC: tracklist -->
       <div class="sf-pc-only ep-card">
-        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" target="_blank" onclick="event.stopPropagation()">
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-sp="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()">
           <img class="ep-jacket" src="Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes スノーフレークス スノフレ 山吹ことり アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
         </a>
         <div class="ep-body">
           <p class="ep-type">ALBUM</p>
           <p class="ep-title">瞬間に残る</p>
           <ol class="ep-tracklist">
-            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" target="_blank" style="text-decoration:none;color:inherit;">Signal</a></li>
-            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe" target="_blank" style="text-decoration:none;color:inherit;">Round Bounce</a></li>
-            <li class="ep-track"><span class="ep-track-num">03</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv" target="_blank" style="text-decoration:none;color:inherit;">Rabbit (Full Moon Version)</a></li>
-            <li class="ep-track"><span class="ep-track-num">04</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF" target="_blank" style="text-decoration:none;color:inherit;">置いた音</a></li>
-            <li class="ep-track"><span class="ep-track-num">05</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6" target="_blank" style="text-decoration:none;color:inherit;">SWEETs (Brass Band Version)</a></li>
-            <li class="ep-track"><span class="ep-track-num">06</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm" target="_blank" style="text-decoration:none;color:inherit;">祝奏</a></li>
-            <li class="ep-track"><span class="ep-track-num">07</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B" target="_blank" style="text-decoration:none;color:inherit;">呼吸の距離</a></li>
-            <li class="ep-track"><span class="ep-track-num">08</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG" target="_blank" style="text-decoration:none;color:inherit;">瞬間に残る</a></li>
-            <li class="ep-track"><span class="ep-track-num">09</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs" target="_blank" style="text-decoration:none;color:inherit;">花の名前を忘れても</a></li>
-            <li class="ep-track"><span class="ep-track-num">10</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg" target="_blank" style="text-decoration:none;color:inherit;">Low Light</a></li>
-            <li class="ep-track"><span class="ep-track-num">11</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC" target="_blank" style="text-decoration:none;color:inherit;">音が消えるまでは</a></li>
-            <li class="ep-track"><span class="ep-track-num">12</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw" target="_blank" style="text-decoration:none;color:inherit;">Little Snow</a></li>
+            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" data-sp="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Signal</a></li>
+            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe" data-sp="https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Round Bounce</a></li>
+            <li class="ep-track"><span class="ep-track-num">03</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv" data-sp="https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Rabbit (Full Moon Version)</a></li>
+            <li class="ep-track"><span class="ep-track-num">04</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF" data-sp="https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">置いた音</a></li>
+            <li class="ep-track"><span class="ep-track-num">05</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6" data-sp="https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">SWEETs (Brass Band Version)</a></li>
+            <li class="ep-track"><span class="ep-track-num">06</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm" data-sp="https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">祝奏</a></li>
+            <li class="ep-track"><span class="ep-track-num">07</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B" data-sp="https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">呼吸の距離</a></li>
+            <li class="ep-track"><span class="ep-track-num">08</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG" data-sp="https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">瞬間に残る</a></li>
+            <li class="ep-track"><span class="ep-track-num">09</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs" data-sp="https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">花の名前を忘れても</a></li>
+            <li class="ep-track"><span class="ep-track-num">10</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg" data-sp="https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Low Light</a></li>
+            <li class="ep-track"><span class="ep-track-num">11</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC" data-sp="https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">音が消えるまでは</a></li>
+            <li class="ep-track"><span class="ep-track-num">12</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw" data-sp="https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Little Snow</a></li>
           </ol>
         </div>
       </div>
@@ -1796,7 +1838,7 @@ function sfShare() {
       <div class="sf-mobile-only ep-card" style="padding:0;overflow:hidden;">
         <div style="display:flex;align-items:stretch;">
           <div style="flex-shrink:0;overflow:hidden;width:clamp(100px,28vw,160px);">
-            <a id="al-jacket-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" target="_blank" onclick="event.stopPropagation()" style="display:block;">
+            <a id="al-jacket-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-sp="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()" style="display:block;">
               <img class="ep-jacket" src="Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
             </a>
           </div>
@@ -1813,6 +1855,8 @@ function sfShare() {
       </div>
       <script>
       (function() {
+        var AL_AM = 'https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        var AL_SP = 'https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g';
         var AL = [
           { num:'01', title:'Signal',                      href:'https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg' },
           { num:'02', title:'Round Bounce',                href:'https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe' },
@@ -1832,12 +1876,15 @@ function sfShare() {
             titleLnk = document.getElementById('al-title-link'),
             jacketLnk= document.getElementById('al-jacket-link'),
             strip    = document.getElementById('al-strip');
+        var current = 0;
         function select(idx) {
+          current = idx;
           var s = AL[idx];
+          var svc = window.sfMusicSvc || 'spotify';
           numEl.textContent   = s.num;
           titleEl.textContent = s.title;
-          titleLnk.href  = s.href;
-          jacketLnk.href = s.href;
+          titleLnk.href  = svc === 'amazon' ? AL_AM : s.href;
+          jacketLnk.href = svc === 'amazon' ? AL_AM : AL_SP;
           strip.querySelectorAll('.al-th').forEach(function(el, i) {
             el.style.opacity     = i === idx ? '1' : '0.4';
             el.style.borderColor = i === idx ? 'rgba(255,255,255,0.55)' : 'transparent';
@@ -1853,6 +1900,7 @@ function sfShare() {
           strip.appendChild(btn);
         });
         select(0);
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { select(current); });
       })();
       </script>
     </div>
