@@ -132,6 +132,12 @@
   <h1 class="hero-title">Music</h1>
   <p class="hero-sub">各サービスで配信中</p>
 
+  <button onclick="shareMusic()" style="display:inline-flex;align-items:center;gap:8px;margin-bottom:36px;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:9px 22px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='#e2e8f0'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='#94a3b8'">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    share
+  </button>
+  <div id="share-toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(30,41,59,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:10px 24px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#94a3b8;z-index:999;white-space:nowrap;">リンクをコピーしました</div>
+
   <p style="font-size:10px;letter-spacing:5px;color:#475569;font-family:'Cormorant Garamond',serif;margin-bottom:20px;">音楽を聴く</p>
   <div class="links">
 
@@ -177,6 +183,20 @@
 </div>
 
 <script>
+  function shareMusic() {
+    var url = 'https://sunnyplace25.github.io/snowflakes/music.html';
+    var text = 'Snow flakes — Music';
+    if (navigator.share) {
+      navigator.share({ title: text, url: url }).catch(function(){});
+    } else {
+      navigator.clipboard.writeText(url).then(function() {
+        var toast = document.getElementById('share-toast');
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 2000);
+      });
+    }
+  }
+
   const canvas = document.getElementById('snow');
   const ctx = canvas.getContext('2d');
   function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
