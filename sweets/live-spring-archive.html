@@ -423,10 +423,15 @@
 
   (function() {
     try {
+      // ?general=1 は一般入場 → バックステージ非表示
+      if (location.search.indexOf('general=1') !== -1) {
+        history.replaceState(null, '', location.pathname);
+        return;
+      }
+
       // ?bs=1 で課金後リダイレクトされた場合
       if (location.search.indexOf('bs=1') !== -1) {
         localStorage.setItem('sf_backstage_paid', '1');
-        // URLからパラメータを除去
         history.replaceState(null, '', location.pathname);
       }
 

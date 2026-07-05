@@ -4585,8 +4585,8 @@
         <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">SPRING PASS</p>
         <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#e2e8f0;letter-spacing:2px;line-height:2;margin-bottom:28px;">Spring Pass を使いますか？</p>
         <div style="display:flex;gap:12px;justify-content:center;">
-          <button onclick="useSpringPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">使う</button>
-          <button onclick="closeSpringPassConfirm()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">戻る</button>
+          <button onclick="useSpringPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">Spring Pass で入場</button>
+          <button onclick="enterGeneralAccess()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">一般入場</button>
         </div>
       </div>
     </div>
@@ -5193,7 +5193,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     };
 
     window.openSpringPassConfirm = function() {
-      if (!SfSnow.isUnlocked('backstage_pass')) { showAlert('もっていません'); return; }
       var pop = document.getElementById('spring-pass-confirm');
       if (!pop) return;
       pop.style.display = 'flex';
@@ -5212,12 +5211,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       setTimeout(function() { pop.style.display = 'none'; }, 320);
     };
     window.useSpringPass = function() {
+      if (!SfSnow.isUnlocked('backstage_pass')) { showAlert('もっていません'); return; }
       if (typeof gtag === 'function') {
         gtag('event', 'use_spring_pass', { event_category: 'live_archive', event_label: 'spring_2026' });
       }
       closeSpringPassConfirm();
       setTimeout(function() {
         window.open('live-spring-archive.html', '_blank');
+      }, 320);
+    };
+    window.enterGeneralAccess = function() {
+      closeSpringPassConfirm();
+      setTimeout(function() {
+        window.open('live-spring-archive.html?general=1', '_blank');
       }, 320);
     };
 
