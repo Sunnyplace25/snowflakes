@@ -739,6 +739,12 @@
           <div style="padding:8px 0 16px;">
             <span class="item-log-desc locked" id="il-1-desc">まだもっていません</span>
           </div>
+          <div id="il-1-owned" style="display:none;text-align:center;padding:20px 16px 24px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.15);border-radius:12px;margin-bottom:12px;">
+            <img src="../../item/wristband_hayate.webp" alt="古いリストバンド" style="width:180px;margin:0 auto 18px;display:block;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:10px;">古いリストバンド</p>
+            <p style="font-size:12px;letter-spacing:1px;color:#94a3b8;line-height:2.1;">かすれた文字とロゴ。どこのライブのものかも忘れた。<br>それでも、捨てられなかった。</p>
+            <a href="https://ncode.syosetu.com/n5484lz/" target="_blank" style="display:inline-block;margin-top:14px;font-size:12px;color:#fde68a;text-decoration:none;padding:6px 16px;border-radius:100px;border:1px solid rgba(253,230,138,0.35);background:rgba(253,230,138,0.07);letter-spacing:1px;">▶ 透明なリズム</a>
+          </div>
         </div>
       </div>
       <!-- STARSの紙製コースター -->
@@ -1875,7 +1881,9 @@
       var desc1 = document.getElementById('il-1-desc');
       if (SfSnow.isUnlocked(ITEM_KEY)) {
         revealItemTag('il-1-tag', '../../item/wristband_hayate.webp', '古いリストバンド');
-        if (desc1) { desc1.className = 'item-log-desc'; desc1.textContent = ''; }
+        if (desc1) { desc1.style.display = 'none'; }
+        var il1owned = document.getElementById('il-1-owned');
+        if (il1owned) il1owned.style.display = '';
         var el1 = document.getElementById('il-1-item');
         if (el1) el1.classList.add('open');
       }
