@@ -295,6 +295,23 @@
 
   <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
 
+  <!-- Backstage Gate（未解放時） -->
+  <div id="backstage-gate" style="display:none;margin-top:60px;">
+    <hr class="divider">
+    <div style="text-align:center;padding:8px 0 32px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#f9a8d4;margin-bottom:24px;">── Backstage Pass ──</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;">アンコールのあとで</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#64748b;letter-spacing:1px;margin-bottom:28px;">楽屋裏のはなし</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;margin-bottom:20px;">バックステージパスを使いますか？</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+        <button onclick="useBackstagePass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">はい</button>
+        <button onclick="document.getElementById('backstage-gate').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">いいえ</button>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:16px;">または</p>
+      <a href="https://buy.stripe.com/5kQbJ34G57GkeDaec3dZ603?success_url=https%3A%2F%2Fsunnyplace25.github.io%2Fsnowflakes%2Fsweets%2Flive-spring-archive.html%3Fbs%3D1" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.25);border-radius:50px;padding:10px 24px;text-decoration:none;display:inline-block;">¥100 で楽屋をのぞく</a>
+    </div>
+  </div>
+
   <!-- Backstage Pass 限定 -->
   <div id="backstage-section" style="display:none;margin-top:60px;">
     <hr class="divider">
@@ -388,11 +405,36 @@
   });
 
   // Backstage Pass チェック
-  (function() {
+  function showBackstage() {
+    document.getElementById('backstage-gate').style.display = 'none';
+    document.getElementById('backstage-section').style.display = 'block';
+  }
+
+  window.useBackstagePass = function() {
     try {
       var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
-      if (unlocked.indexOf('backstage_pass') !== -1) {
-        document.getElementById('backstage-section').style.display = 'block';
+      if (unlocked.indexOf('backstage_pass') === -1) { alert('バックステージパスを持っていません'); return; }
+    } catch(e) { return; }
+    showBackstage();
+  };
+
+  (function() {
+    try {
+      // ?bs=1 で課金後リダイレクトされた場合
+      if (location.search.indexOf('bs=1') !== -1) {
+        localStorage.setItem('sf_backstage_paid', '1');
+        // URLからパラメータを除去
+        history.replaceState(null, '', location.pathname);
+      }
+
+      var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+      var hasBp = unlocked.indexOf('backstage_pass') !== -1;
+      var hasPaid = localStorage.getItem('sf_backstage_paid') === '1';
+
+      if (hasBp || hasPaid) {
+        showBackstage();
+      } else {
+        document.getElementById('backstage-gate').style.display = 'block';
       }
     } catch(e) {}
   })();
