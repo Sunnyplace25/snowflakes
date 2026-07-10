@@ -4958,12 +4958,11 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function _checkEarringUnlock() {}
 
     function _checkShikishiDistribution() {
-      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布
+      // Summer 切り替え後、Spring で遊んだ記録がある人に色紙を配布（2026-07-10 配布終了）
       if (SWEETS_VERSION !== '2026-summer') return;
+      if (_now >= new Date('2026-07-10T00:00:00+09:00')) return;
       var mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}');
-      var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
-      var hasSpringRecord = Object.keys(mItems).some(function(k){ return (mItems[k]||0) > 0; })
-                         || unlocked.length > 0;
+      var hasSpringRecord = Object.keys(mItems).some(function(k){ return (mItems[k]||0) > 0; });
       if (!hasSpringRecord) return;
       if (!SfSnow.isUnlocked('shikishi_hinata')) {
         SfSnow.unlockItem('shikishi_hinata');
