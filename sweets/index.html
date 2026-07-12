@@ -1218,28 +1218,6 @@
       </div>
     </div>
 
-    <!-- Side B section -->
-    <div class="section" id="sideb-section" style="display:none;">
-      <div class="section-label">side b</div>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#4c3f8a;text-align:center;margin-bottom:4px;">UNDER TONE</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:clamp(0px,0.4vw,1px);color:#e2e8f0;text-align:center;margin-bottom:28px;">もう一度、あの場所へ</p>
-
-      <!-- カルーセル -->
-      <div id="sideb-carousel-outer" style="user-select:none;">
-        <div id="sideb-scene" style="width:100%;height:140px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
-          <div id="sideb-drum" style="width:210px;height:116px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
-          <button class="nc-arrow" style="border-color:rgba(196,181,253,0.2);color:#7c6aa5;" onclick="sidebCarouselRotate(-1)">‹</button>
-          <div id="sideb-dots" style="display:flex;gap:8px;align-items:center;"></div>
-          <button class="nc-arrow" style="border-color:rgba(196,181,253,0.2);color:#7c6aa5;" onclick="sidebCarouselRotate(1)">›</button>
-        </div>
-      </div>
-
-      <!-- 選択中チャプターのコンテンツ -->
-      <div id="sideb-content-area" style="margin-top:24px;max-width:480px;margin-left:auto;margin-right:auto;"></div>
-    </div>
-
     <!-- Items section -->
     <div class="section" id="items-section" style="display:none;">
       <div class="section-label">items</div>
@@ -5044,7 +5022,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       initNotes();
       // ログイン後にNOTES・EXCHANGEを再描画
       if (typeof renderNotes === 'function') renderNotes();
-      if (typeof renderSideB === 'function') renderSideB();
       if (typeof renderExchange === 'function') renderExchange();
       if (typeof renderRooms === 'function') { renderRooms(); initOshi(); }
       if (typeof renderItemRows === 'function') renderItemRows();
@@ -6301,7 +6278,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     renderRooms();
     renderExchange();
     renderNotes();
-    renderSideB();
     renderItemRows();
     renderMusic();
     if (typeof checkUndertoneSection === 'function') checkUndertoneSection();
@@ -7082,111 +7058,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   function renderNotes() {
     initNotesCarousel();
   }
-
-  /* ── Side B ── */
-  var SIDEB_CHAPTERS = [
-    { id: 'prologue', label: 'Prologue', initial: 'P', body: null },
-    { id: 'ch1',      label: '第一章',   initial: 'Ⅰ', body: null },
-    { id: 'ch2',      label: '第二章',   initial: 'Ⅱ', body: null },
-    { id: 'ch3',      label: '第三章',   initial: 'Ⅲ', body: null },
-    { id: 'ch4',      label: '第四章',   initial: 'Ⅳ', body: null },
-    { id: 'epilogue', label: 'Epilogue', initial: 'E', body: null },
-  ];
-
-  var _sb = { idx: 0, N: 6, r: 130, step: 60 };
-
-  function initSideBCarousel() {
-    var hasPocketWatch = SfSnow.isUnlocked('pocket_watch');
-    var sec = document.getElementById('sideb-section');
-    if (sec) sec.style.display = hasPocketWatch ? '' : 'none';
-    if (!hasPocketWatch) return;
-
-    var drum = document.getElementById('sideb-drum');
-    var dots = document.getElementById('sideb-dots');
-    if (!drum) return;
-    drum.innerHTML = ''; if (dots) dots.innerHTML = '';
-
-    _sb.N = SIDEB_CHAPTERS.length;
-    _sb.step = 360 / _sb.N;
-    var isMobile = window.innerWidth <= 600;
-    _sb.r = Math.max(isMobile ? 100 : 130, Math.round((isMobile ? 82 : 105) / Math.tan(Math.PI / _sb.N) + 20));
-
-    SIDEB_CHAPTERS.forEach(function(ch, i) {
-      var c = document.createElement('div');
-      c.className = 'nc-card nc-purple';
-      c.dataset.idx = i;
-      c.style.transform = 'rotateY(' + (i * _sb.step) + 'deg) translateZ(' + _sb.r + 'px)';
-      c.onclick = (function(ii) { return function() { _sbSelect(ii); }; })(i);
-      c.innerHTML =
-        '<div class="nc-tag" style="color:#4c3f8a;letter-spacing:6px;">side b</div>' +
-        '<div class="nc-title" style="font-family:\'Cormorant Garamond\',serif;font-size:22px;letter-spacing:4px;color:#c4b5fd;">' + ch.initial + '</div>' +
-        '<div class="nc-status" style="color:#7c6aa5;letter-spacing:3px;">' + ch.label + (ch.body ? ' ›' : ' —') + '</div>';
-      drum.appendChild(c);
-      if (dots) {
-        var d = document.createElement('div');
-        d.className = 'nc-dot' + (i === 0 ? ' active' : '');
-        d.style.background = i === 0 ? '#c4b5fd' : '';
-        d.onclick = (function(ii) { return function() { _sbSelect(ii); }; })(i);
-        dots.appendChild(d);
-      }
-    });
-    _sbUpdate();
-    _sbShowContent(_sb.idx);
-
-    var scene = document.getElementById('sideb-scene');
-    if (scene && !scene._swipeInit) {
-      scene._swipeInit = true;
-      var sx = 0;
-      scene.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
-      scene.addEventListener('touchend', function(e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) sidebCarouselRotate(dx < 0 ? 1 : -1); });
-    }
-  }
-
-  function _sbUpdate() {
-    var drum = document.getElementById('sideb-drum');
-    if (!drum) return;
-    drum.querySelectorAll('.nc-card').forEach(function(c, i) {
-      var angle = ((i - _sb.idx) * _sb.step + 360) % 360;
-      c.style.transform = 'rotateY(' + (i * _sb.step - _sb.idx * _sb.step) + 'deg) translateZ(' + _sb.r + 'px)';
-      c.classList.toggle('nc-active', i === _sb.idx);
-    });
-    var dots = document.getElementById('sideb-dots');
-    if (dots) dots.querySelectorAll('.nc-dot').forEach(function(d, i) {
-      d.classList.toggle('active', i === _sb.idx);
-      d.style.background = i === _sb.idx ? '#c4b5fd' : '';
-    });
-  }
-
-  function _sbSelect(i) { _sb.idx = i; _sbUpdate(); _sbShowContent(i); }
-
-  function _sbShowContent(i) {
-    var area = document.getElementById('sideb-content-area');
-    if (!area) return;
-    var ch = SIDEB_CHAPTERS[i];
-    if (!ch) return;
-    if (!ch.body) {
-      area.innerHTML =
-        '<div style="text-align:center;padding:32px 0;">' +
-        '<p style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:5px;color:#4c3f8a;">— ' + ch.label + ' —</p>' +
-        '<p style="font-family:\'Noto Serif JP\',serif;font-size:12px;color:#334155;letter-spacing:2px;margin-top:16px;">準備中</p>' +
-        '</div>';
-      return;
-    }
-    var html = '<div style="border:1px solid rgba(196,181,253,0.15);border-radius:14px;padding:24px 20px;animation:fadeIn 0.4s ease;">';
-    html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:6px;color:#4c3f8a;margin-bottom:16px;">SIDE B · ' + ch.label + '</p>';
-    ch.body.split('\n').forEach(function(line) {
-      html += '<p style="font-family:\'Noto Serif JP\',serif;font-size:13px;color:' + (line === '' ? 'transparent' : '#94a3b8') + ';line-height:2.2;font-weight:300;">' + (line || '　') + '</p>';
-    });
-    html += '</div>';
-    area.innerHTML = html;
-  }
-
-  window.sidebCarouselRotate = function(dir) {
-    _sb.idx = (_sb.idx + dir + _sb.N) % _sb.N;
-    _sbUpdate(); _sbShowContent(_sb.idx);
-  };
-
-  function renderSideB() { initSideBCarousel(); }
 
   function toggleNoteCard(id, btn) {
     var el = document.getElementById('notes-card-' + id);
@@ -8588,7 +8459,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 </nav>
 <script>
 (function() {
-  var ANCHORS = ['#rooms-section','#items-section','#sw-exchange','#undertone-section','#sideb-section','#sw-notes','#music-section','#live-archive-section','#sw-another'];
+  var ANCHORS = ['#rooms-section','#items-section','#sw-exchange','#undertone-section','#sw-notes','#music-section','#live-archive-section','#sw-another'];
   var links = document.querySelectorAll('#sw-dot-nav a');
   var nav = document.getElementById('sw-dot-nav');
   function updateActive() {
