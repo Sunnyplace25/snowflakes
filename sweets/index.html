@@ -383,6 +383,10 @@
       0%, 100% { box-shadow:0 0 8px 1px rgba(253,230,138,0.15);border-color:rgba(253,230,138,0.3); }
       50%       { box-shadow:0 0 22px 5px rgba(253,230,138,0.38);border-color:rgba(253,230,138,0.55); }
     }
+    @keyframes item-glow-purple {
+      0%, 100% { box-shadow:0 0 8px 1px rgba(196,181,253,0.15);border-color:rgba(196,181,253,0.3); }
+      50%       { box-shadow:0 0 22px 5px rgba(196,181,253,0.38);border-color:rgba(196,181,253,0.55); }
+    }
     @keyframes item-glow-kouta {
       0%, 100% { box-shadow:0 0 8px 1px rgba(252,165,165,0.15);border-color:rgba(252,165,165,0.3); }
       50%       { box-shadow:0 0 22px 5px rgba(252,165,165,0.38);border-color:rgba(252,165,165,0.55); }
@@ -702,8 +706,8 @@
   .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
   .nc-card.nc-green,.mc-card.nc-green{border-color:rgba(74,222,128,0.35);animation:item-glow-green 2.5s ease-in-out infinite;}
   .nc-card.nc-green.nc-active,.mc-card.nc-green.nc-active{border-color:rgba(74,222,128,0.65);box-shadow:0 0 30px rgba(74,222,128,0.2);animation:item-glow-green 2.5s ease-in-out infinite;}
-  .nc-card.nc-purple,.mc-card.nc-purple{border-color:rgba(196,181,253,0.35);animation:item-glow-hayate 2.5s ease-in-out infinite;}
-  .nc-card.nc-purple.nc-active,.mc-card.nc-purple.nc-active{border-color:rgba(196,181,253,0.65);box-shadow:0 0 30px rgba(196,181,253,0.2);animation:item-glow-hayate 2.5s ease-in-out infinite;}
+  .nc-card.nc-purple,.mc-card.nc-purple{border-color:rgba(196,181,253,0.35);animation:item-glow-purple 2.5s ease-in-out infinite;}
+  .nc-card.nc-purple.nc-active,.mc-card.nc-purple.nc-active{border-color:rgba(196,181,253,0.65);box-shadow:0 0 30px rgba(196,181,253,0.2);animation:item-glow-purple 2.5s ease-in-out infinite;}
   .read-btn.green-hover:hover{background:rgba(74,222,128,0.18);}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
@@ -6902,7 +6906,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var hasNoteItem = noteItemD && !noteItemD.monthly && !noteItemOk;
     var _nc_chara = noteItemD ? (noteItemKey.indexOf('kouta') !== -1 ? 'kouta' : noteItemKey.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
     var _nc_col   = _nc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _nc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
-    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (item.glowColor === 'green' ? 'animation:item-glow-green 2.5s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : ''));
+    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (item.glowColor === 'green' ? 'animation:item-glow-green 2.5s ease-in-out infinite;' : (item.glowColor === 'purple' ? 'animation:item-glow-purple 2.5s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : '')));
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (hasNoteItem) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _nc_col[0] + ';border:1px solid ' + _nc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
