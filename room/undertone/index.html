@@ -1472,15 +1472,6 @@
       </div>
     </div>
 
-    <!-- 鍵セクション（棚を見る） -->
-    <div id="shop-keys-row" style="display:none;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;margin-bottom:16px;">
-      <img src="../../item/keys.webp" alt="古い鍵" style="width:44px;height:44px;object-fit:cover;border-radius:9px;flex-shrink:0;">
-      <div style="flex:1;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:4px;">ITEM</p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:1px;">山積みの古い鍵</p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;letter-spacing:1px;margin-top:4px;line-height:1.8;">どれも、用途が分からない</p>
-      </div>
-    </div>
 
     <!-- ビールセクション（第3章） -->
     <div id="shop-beer-row" style="display:none;flex-direction:column;gap:0;margin-bottom:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;">
@@ -1989,6 +1980,24 @@ function submitUtPw() {
     <p id="stone-desc-text" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#94a3b8;letter-spacing:1px;line-height:2.4;white-space:pre-line;text-align:left;margin-bottom:24px;"></p>
     <button onclick="document.getElementById('stone-desc-popup').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;background:none;border:none;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">── 閉じる ──</button>
   </div>
+</div>
+
+<!-- Keys confirm popup -->
+<div id="keys-confirm-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(8,13,24,0.92);backdrop-filter:blur(14px);align-items:center;justify-content:center;" onclick="document.getElementById('keys-confirm-popup').style.display='none'">
+  <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:32px 24px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);" onclick="event.stopPropagation()">
+    <img src="../../item/keys.webp" alt="古い鍵" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;box-shadow:0 0 28px rgba(196,181,253,0.12);">
+    <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#94a3b8;letter-spacing:2px;margin-bottom:20px;line-height:2;">鍵を入手しますか？</p>
+    <button onclick="obtainKeys()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.35);border-radius:50px;padding:12px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">▶ はい</button>
+    <button onclick="document.getElementById('keys-confirm-popup').style.display='none'" style="width:100%;background:none;border:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#475569;cursor:pointer;padding:12px;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">▶ いいえ</button>
+  </div>
+</div>
+
+<!-- Keys get popup -->
+<div id="keys-get-popup" style="display:none;position:fixed;inset:0;z-index:710;background:rgba(8,13,24,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:20px;opacity:0;transition:opacity 0.4s;" onclick="closeKeysGetPopup()">
+  <img src="../../item/keys.webp" alt="古い鍵" style="width:130px;height:130px;object-fit:cover;border-radius:20px;box-shadow:0 0 60px rgba(196,181,253,0.25);">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:6px;color:#c4b5fd;">── 鍵を手に入れた ──</p>
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#475569;letter-spacing:2px;">山積みの古い鍵</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4c3f8a;margin-top:8px;">タップして閉じる</p>
 </div>
 
 <div id="tarot-stone-reveal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
@@ -4281,19 +4290,27 @@ function submitUtPw() {
       var meta = CHARS[pick.char] || CHARS.kouta;
       showInteriorSpeech(meta, pick.speech);
     }
-    // KEYS：初回クリックで入手
+    // KEYS：初回クリックで確認ダイアログ
     if (spot.label === 'KEYS' && !localStorage.getItem('sf_ut_keys_found')) {
-      localStorage.setItem('sf_ut_keys_found', '1');
-      stoneFoundEl.textContent = '— 鍵を手に入れた —';
-      stoneFoundEl.style.display = 'block';
-      renderKeysRow();
+      document.getElementById('keys-confirm-popup').style.display = 'flex';
     }
   }
 
-  function renderKeysRow() {
-    var row = document.getElementById('shop-keys-row');
-    if (row) row.style.display = localStorage.getItem('sf_ut_keys_found') === '1' ? 'flex' : 'none';
-  }
+  window.obtainKeys = function() {
+    document.getElementById('keys-confirm-popup').style.display = 'none';
+    if (localStorage.getItem('sf_ut_keys_found')) return;
+    localStorage.setItem('sf_ut_keys_found', '1');
+    if (typeof SfSnow !== 'undefined') SfSnow.unlockItem('keys');
+    var pop = document.getElementById('keys-get-popup');
+    pop.style.display = 'flex';
+    setTimeout(function() { pop.style.opacity = '1'; }, 20);
+  };
+
+  window.closeKeysGetPopup = function() {
+    var pop = document.getElementById('keys-get-popup');
+    pop.style.opacity = '0';
+    setTimeout(function() { pop.style.display = 'none'; }, 400);
+  };
 
   function showInteriorSpeech(meta, text) {
     var el = document.getElementById('hotspot-speech');
