@@ -4105,14 +4105,14 @@ function submitUtPw() {
       localStorage.setItem('sf_ut_first_visit_at', _firstVisitAt.toString());
     }
     var _allComplete = localStorage.getItem('sf_ut_ep_complete') === 'true';
-    var _interiorUnlocked = ch21Unlocked;
+    var _interiorUnlocked = _allComplete;
 
-    // タブ表示：第一章解放後に店内タブを表示
+    // タブ表示：全コンプリート後に店内タブを表示
     var fortuneUnlocked = !!localStorage.getItem('sf_ut_fortune_unlock_shown');
     var shopNav = document.getElementById('shop-nav');
-    if (shopNav) shopNav.style.display = _interiorUnlocked ? 'flex' : 'none';
+    if (shopNav) shopNav.style.display = _allComplete ? 'flex' : 'none';
     var pillInterior = document.getElementById('pill-interior');
-    if (pillInterior) pillInterior.style.display = _interiorUnlocked ? '' : 'none';
+    if (pillInterior) pillInterior.style.display = _allComplete ? '' : 'none';
     updateEquipBtn();
     // ch3解放後→oracle先表示 / 占い解放済み→oracle / それ以外→interior
     switchShopTab('oracle');
