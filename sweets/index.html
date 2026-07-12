@@ -1180,13 +1180,19 @@
             </a>
           </div>
 
-          <!-- SIDE B panel: Moon Veil -->
+          <!-- SIDE B panel: Moon Veil gate -->
           <div id="ut-panel-b" style="display:none;">
-            <div style="background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.1);border-radius:16px;padding:32px 22px;text-align:center;">
-              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#6d5fc4;margin-bottom:12px;">MOON VEIL</p>
-              <p style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;color:#c4b5fd;margin-bottom:8px;">Moon Veil</p>
-              <p style="font-size:11px;color:#4c3f8a;letter-spacing:1px;font-style:italic;margin-bottom:20px;">── 終わりが決まっていたから、触れられた ──</p>
-              <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#2d2544;letter-spacing:2px;">準備中</p>
+            <!-- アイテムカウンター -->
+            <div id="utb-gate-counter" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;width:100%;"></div>
+            <p id="utb-gate-progress" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#64748b;text-align:center;margin-bottom:8px;"></p>
+            <p id="utb-gate-hint" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:rgba(255,255,255,0.35);text-align:center;margin-top:20px;margin-bottom:24px;line-height:2;">3つのアイテムを集めて Moon Veil へ</p>
+            <!-- 解放後リンク -->
+            <div id="utb-gate-link" style="display:none;">
+              <div style="background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;animation:ut-glow 2.4s ease-in-out infinite;">
+                <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#6d5fc4;margin-bottom:6px;">MOON VEIL</p>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">Moon Veil</p>
+                <p style="font-size:11px;color:#4c3f8a;letter-spacing:1px;font-style:italic;">── 終わりが決まっていたから、触れられた ──</p>
+              </div>
             </div>
           </div>
 
@@ -1451,6 +1457,10 @@
                 <tr id="item-row-pocket-watch" style="cursor:default;">
                   <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-pocket-watch-img" src="../item/pocket_watch.webp" alt="pocket_watch" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-pocket-watch-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-pocket-watch-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#c4b5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+                <tr id="item-row-keys" style="cursor:default;border-top:1px solid rgba(255,255,255,0.04);">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-keys-img" src="../item/keys.webp" alt="keys" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-keys-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-keys-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#c4b5fd;text-align:right;letter-spacing:3px;"></td>
                 </tr>
               </table>
             </div>
@@ -4653,15 +4663,8 @@
       <p class="section-req" id="music-req">
         <img src="../item/pick.webp"> ギターピック　交換アイテム
       </p>
-      <div id="music-scene" style="width:100%;height:140px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
-        <div id="music-drum" style="width:210px;height:116px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
-        <button class="nc-arrow" onclick="musicCarouselRotate(-1)">‹</button>
-        <div id="music-dots" style="display:flex;gap:8px;align-items:center;"></div>
-        <button class="nc-arrow" onclick="musicCarouselRotate(1)">›</button>
-      </div>
-      <div id="music-content-area" style="margin-top:20px;"></div>
+      <div id="music-list" style="display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;"></div>
+      <div id="music-content-area" style="margin-top:16px;"></div>
       <div style="text-align:center;margin-top:20px;">
         <a href="../music.html" style="display:inline-block;padding:11px 32px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);color:#cbd5e1;font-size:12px;letter-spacing:4px;font-family:'Cormorant Garamond',serif;text-decoration:none;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.color='#cbd5e1';this.style.borderColor='rgba(255,255,255,0.15)'">もっと聴く →</a>
       </div>
@@ -5282,6 +5285,43 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (p) p.style.display = 'none';
     };
 
+    var UT_SIDEB_ITEMS = [
+      { key: 'pocket_watch', name: '止まった懐中時計', img: '../item/pocket_watch.webp' },
+      { key: 'keys',         name: '山積みの古い鍵',   img: '../item/keys.webp' },
+      { key: null,           name: '？？？',            img: null, alwaysGrey: true },
+    ];
+
+    function renderSideBGate() {
+      var wrap = document.getElementById('utb-gate-counter');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      var obtained = 0;
+      UT_SIDEB_ITEMS.forEach(function(item) {
+        var got = !item.alwaysGrey && item.key && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key);
+        if (got) obtained++;
+        var div = document.createElement('div');
+        div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:8px;'
+          + 'background:' + (got ? 'rgba(196,181,253,0.04)' : 'rgba(255,255,255,0.02)') + ';'
+          + 'border:1px solid ' + (got ? 'rgba(196,181,253,0.2)' : 'rgba(255,255,255,0.06)') + ';'
+          + 'border-radius:14px;padding:14px 8px;';
+        var imgHtml = item.img
+          ? '<img src="' + item.img + '" alt="' + item.name + '" style="width:56px;height:56px;object-fit:contain;border-radius:10px;' + (got ? '' : 'filter:grayscale(1) brightness(0.4);') + '">'
+          : '<div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;"><span style=\'font-family:Cormorant Garamond,serif;font-size:18px;color:#2d2544;\'>?</span></div>';
+        var labelStyle = 'font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;'
+          + 'color:' + (got ? '#94a3b8' : '#334155') + ';text-align:center;line-height:1.5;';
+        div.innerHTML = imgHtml + '<span style="' + labelStyle + '">' + (got ? item.name : '？？？') + '</span>';
+        wrap.appendChild(div);
+      });
+      var prog = document.getElementById('utb-gate-progress');
+      if (prog) prog.textContent = obtained + ' / ' + UT_SIDEB_ITEMS.filter(function(i){ return !i.alwaysGrey; }).length + '  RARE ITEMS';
+
+      var allGot = UT_SIDEB_ITEMS.every(function(item) { return item.alwaysGrey ? false : (item.key && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked(item.key)); });
+      var link = document.getElementById('utb-gate-link');
+      var hint = document.getElementById('utb-gate-hint');
+      if (link) link.style.display = allGot ? '' : 'none';
+      if (hint) hint.style.display = allGot ? 'none' : '';
+    }
+
     window.switchUTTab = function(side) {
       var tabA = document.getElementById('ut-tab-a');
       var tabB = document.getElementById('ut-tab-b');
@@ -5302,6 +5342,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         tabA.style.color = '#475569';
         panelA.style.display = 'none';
         panelB.style.display = '';
+        renderSideBGate();
       }
     };
 
@@ -6129,6 +6170,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', '古いリストバンド', null, 'https://ncode.syosetu.com/n5484lz/');
     updateRareItem('ri-pocket-watch-img', 'ri-pocket-watch-name', 'ri-pocket-watch-check', 'pocket_watch', '止まった懐中時計');
+    updateRareItem('ri-keys-img', 'ri-keys-name', 'ri-keys-check', 'keys', '山積みの古い鍵');
     // 繰り返し取得アイテム（コースター・ドリンクコイン・しおり）: count表示
     function updateCountableItem(imgId, nameId, checkId, itemKey, itemName, color) {
       var img   = document.getElementById(imgId);
@@ -7343,8 +7385,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
   }
 
-  /* ── Music carousel ── */
-  var _mc = { idx: 0, items: [], N: 0, step: 120, r: 180 };
+  /* ── Music list ── */
+  var _mc = { idx: 0, items: [] };
 
   function renderMusic() {
     var section = document.getElementById('music-section');
@@ -7358,88 +7400,36 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var prevId = _mc.items[_mc.idx] ? _mc.items[_mc.idx].id : null;
     _mc.items = songs;
-    _mc.N = songs.length;
-    _mc.step = 360 / _mc.N;
-    var _mcIsMobile = window.innerWidth <= 600;
-    var _mcBase = _mcIsMobile ? 82 : 105;
-    var _mcMin  = _mcIsMobile ? 100 : 130;
-    var _mcMaxR = _mcIsMobile ? 180 : 220;
-    _mc.r = Math.min(_mcMaxR, Math.max(_mcMin, Math.round(_mcBase / Math.tan(Math.PI / _mc.N) + 20)));
     if (prevId) { for (var pi = 0; pi < songs.length; pi++) { if (songs[pi].id === prevId) { _mc.idx = pi; break; } } }
-    if (_mc.idx >= _mc.N) _mc.idx = 0;
+    if (_mc.idx >= songs.length) _mc.idx = 0;
 
-    var drum = document.getElementById('music-drum');
-    var dots = document.getElementById('music-dots');
-    if (!drum) return;
-    drum.innerHTML = ''; if (dots) dots.innerHTML = '';
+    var list = document.getElementById('music-list');
+    if (!list) return;
+    list.innerHTML = '';
 
     songs.forEach(function(item, i) {
       var unlocked = SfSnow.isUnlocked(item.id);
-      var _mHasItem = item.reward && (!SfSnow.isUnlocked(item.reward) || item.rewardRepeatable);
-      var _mChara = item.chara || (item.reward ? (item.reward.indexOf('kouta') !== -1 ? 'kouta' : item.reward.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '');
-      var _mColor = _mChara === 'kouta' ? '#fca5a5' : _mChara === 'hinata' ? '#93c5fd' : _mChara === 'pink' ? '#f9a8d4' : '#fde68a';
+      var _mChara = item.chara || '';
+      var glowClass = item.glowColor === 'green' ? ' nc-green' : item.glowColor === 'purple' || _mChara === 'purple' ? ' nc-purple' : '';
       var c = document.createElement('div');
-      c.className = 'mc-card' + (item.glowColor === 'green' ? ' nc-green' : '');
+      c.className = 'mc-card' + glowClass + (i === _mc.idx ? ' nc-active' : '');
       c.dataset.idx = i;
-      c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
+      c.style.cssText = 'position:relative;flex-shrink:0;width:150px;height:104px;cursor:pointer;transition:border-color 0.3s,box-shadow 0.3s;';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
       c.innerHTML = '<div class="nc-tag">music' + (!unlocked ? '<span class="nc-new" style="color:#f9a8d4;border-color:rgba(249,168,212,0.35);">NEW</span>' : '') + '</div>' +
-        '<div class="nc-title">' + item.title + '</div>' +
-        '<div class="nc-status">' + (unlocked ? '▶ 聴く ›' : 'ギターピック × ' + item.cost.pick) + '</div>';
-      drum.appendChild(c);
-      if (dots) {
-        var d = document.createElement('div');
-        d.className = 'nc-dot' + (i === _mc.idx ? ' active' : '');
-        d.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
-        dots.appendChild(d);
-      }
+        '<div class="nc-title" style="font-size:11px;line-height:1.4;">' + item.title + '</div>' +
+        '<div class="nc-status">' + (unlocked ? '▶ 聴く' : '× ' + item.cost.pick) + '</div>';
+      list.appendChild(c);
     });
-    _mcUpdate();
     _mcShowContent(_mc.idx);
-
-    var scene = document.getElementById('music-scene');
-    if (scene && !scene._swipeInit) {
-      scene._swipeInit = true;
-      var sx = 0;
-      scene.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
-      scene.addEventListener('touchend', function(e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) musicCarouselRotate(dx < 0 ? 1 : -1); });
-    }
   }
 
-  var _mcAutoTimer = null;
-  function _mcIsPlaying() {
-    var audios = document.querySelectorAll('#music-content-area audio');
-    for (var i = 0; i < audios.length; i++) {
-      if (!audios[i].paused) return true;
-    }
-    return false;
-  }
-  function _mcResetAuto() {
-    if (_mcAutoTimer) clearInterval(_mcAutoTimer);
-    _mcAutoTimer = setInterval(function() {
-      if (_mcIsPlaying()) return;
-      var allDone = _mc.items.every(function(s) { return SfSnow.isUnlocked(s.id); });
-      if (allDone) { clearInterval(_mcAutoTimer); _mcAutoTimer = null; return; }
-      _mc.idx = (_mc.idx + 1) % _mc.N;
-      _mcUpdate(); _mcShowContent(_mc.idx);
-    }, 15000);
-  }
-  _mcResetAuto();
-
-  window.musicCarouselRotate = function(dir) {
-    _mc.idx = (_mc.idx + dir + _mc.N) % _mc.N;
-    _mcUpdate(); _mcShowContent(_mc.idx);
-    _mcResetAuto();
-  };
-
-  function _mcSelect(i) { _mc.idx = i; _mcUpdate(); _mcShowContent(i); }
-
-  function _mcUpdate() {
-    var drum = document.getElementById('music-drum');
-    if (!drum) return;
-    drum.style.transform = 'rotateY(' + (-_mc.idx * _mc.step) + 'deg)';
-    drum.querySelectorAll('.mc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _mc.idx); });
-    document.querySelectorAll('#music-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _mc.idx); });
+  function _mcSelect(i) {
+    _mc.idx = i;
+    document.querySelectorAll('#music-list .mc-card').forEach(function(c, j) {
+      c.classList.toggle('nc-active', j === i);
+    });
+    _mcShowContent(i);
   }
 
   function _mcShowContent(idx) {
