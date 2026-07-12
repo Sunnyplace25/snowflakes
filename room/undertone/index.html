@@ -4291,7 +4291,7 @@ function submitUtPw() {
         showInteriorSpeech(meta, pick.speech);
       }
     } catch(e) {}
-    // KEYS：オールコンプ後・初回クリックで確認ダイアログ（ホットスポットポップアップは閉じてから表示）
+    // KEYS：オールコンプ後・初回クリックで確認ダイアログ
     if (spot.label === 'KEYS' && !SfSnow.isUnlocked('keys') && localStorage.getItem('sf_ut_ep_complete') === 'true') {
       document.getElementById('hotspot-popup').classList.remove('show');
       document.getElementById('keys-confirm-popup').style.display = 'flex';
@@ -4300,7 +4300,7 @@ function submitUtPw() {
 
   window.obtainKeys = function() {
     document.getElementById('keys-confirm-popup').style.display = 'none';
-    if (localStorage.getItem('sf_ut_keys_found')) return;
+    if (SfSnow.isUnlocked('keys')) return;
     localStorage.setItem('sf_ut_keys_found', '1');
     if (typeof SfSnow !== 'undefined') SfSnow.unlockItem('keys');
     var pop = document.getElementById('keys-get-popup');
