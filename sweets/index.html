@@ -5563,6 +5563,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
               if (typeof renderItemRows === 'function') renderItemRows();
               if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
               showNoteItemGet(itemId);
+              setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
             } else {
               var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
               if (!localStorage.getItem(againKey)) {
@@ -5570,7 +5571,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
                 showNoteItemGetAgain(itemId);
               }
             }
-            setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
           }, 10000); // 最下部到達から10秒後
         } else if (!atBottom && _itemTimer) {
           // スクロールが戻ったらタイマーリセット
