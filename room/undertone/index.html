@@ -3556,7 +3556,12 @@ function submitUtPw() {
   var _sounds = {};
 
   /* ── BGM ── */
-  var _bgmAudio = new Audio('sound/bgm_shop.mp3');
+  var _bgmTracks = ['sound/bgm_shop.mp3'];
+  if (localStorage.getItem('sf_ut_ep_complete') === 'true') {
+    _bgmTracks.push('sound/bgm_undertone.mp3');
+  }
+  var _bgmSrc = _bgmTracks[Math.floor(Math.random() * _bgmTracks.length)];
+  var _bgmAudio = new Audio(_bgmSrc);
   _bgmAudio.loop = true;
   _bgmAudio.volume = 0.12;
   var _bgmStarted = false;
