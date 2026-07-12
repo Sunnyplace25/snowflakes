@@ -4408,7 +4408,8 @@ function submitUtPw() {
 
     var chapterEl = document.getElementById('cover-chapter');
     if (!chapterEl) return;
-    if (!ch21Unlocked)     chapterEl.textContent = 'Prologue';
+    if (localStorage.getItem('sf_ut_ep_complete') === 'true') chapterEl.textContent = 'Complete';
+    else if (!ch21Unlocked)     chapterEl.textContent = 'Prologue';
     else if (!ch3Unlocked) chapterEl.textContent = '第一章';
     else if (!stCh3Read)   chapterEl.textContent = '第二章';
     else if (!ch41Read)    chapterEl.textContent = '第三章';
