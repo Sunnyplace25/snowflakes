@@ -2005,6 +2005,14 @@ function submitUtPw() {
   <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4c3f8a;margin-top:8px;">タップして閉じる</p>
 </div>
 
+<!-- Keys already obtained popup -->
+<div id="keys-already-popup" style="display:none;position:fixed;inset:0;z-index:710;background:rgba(8,13,24,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:16px;opacity:0;transition:opacity 0.4s;" onclick="document.getElementById('keys-already-popup').style.opacity='0';setTimeout(function(){document.getElementById('keys-already-popup').style.display='none'},400)">
+  <img src="../../item/keys.webp" alt="古い鍵" style="width:100px;height:100px;object-fit:cover;border-radius:16px;box-shadow:0 0 40px rgba(196,181,253,0.2);">
+  <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;letter-spacing:2px;">古い錠前の鍵</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;color:#475569;">入手済みです</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4c3f8a;margin-top:4px;">タップして閉じる</p>
+</div>
+
 <div id="tarot-stone-reveal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(8,13,24,0.88);backdrop-filter:blur(12px);align-items:center;justify-content:center;">
   <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.25);border-radius:20px;padding:32px 28px;max-width:300px;width:90%;text-align:center;animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1);">
     <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#94a3b8;margin-bottom:20px;">APPRAISE</p>
@@ -3925,6 +3933,7 @@ function submitUtPw() {
   }
 
   var _pendingKeysConfirm = false;
+  var _pendingKeysAlready = false;
 
   window.closeHotspot = function() {
     stopHotspotSfx();
@@ -3939,6 +3948,11 @@ function submitUtPw() {
     if (_pendingKeysConfirm) {
       _pendingKeysConfirm = false;
       document.getElementById('keys-confirm-popup').style.display = 'flex';
+    } else if (_pendingKeysAlready) {
+      _pendingKeysAlready = false;
+      var pop = document.getElementById('keys-already-popup');
+      pop.style.display = 'flex';
+      setTimeout(function() { pop.style.opacity = '1'; }, 20);
     }
   };
 
@@ -4302,9 +4316,13 @@ function submitUtPw() {
         showInteriorSpeech(meta, pick.speech);
       }
     } catch(e) {}
-    // KEYS：オールコンプ後・説明を閉じたら確認ダイアログを出すフラグを立てる
-    if (spot.label === 'KEYS' && !SfSnow.isUnlocked('keys') && localStorage.getItem('sf_ut_ep_complete') === 'true') {
-      _pendingKeysConfirm = true;
+    // KEYS：オールコンプ後・未入手なら確認ダイアログ、入手済みなら入手済みポップアップ
+    if (spot.label === 'KEYS' && localStorage.getItem('sf_ut_ep_complete') === 'true') {
+      if (!SfSnow.isUnlocked('keys')) {
+        _pendingKeysConfirm = true;
+      } else {
+        _pendingKeysAlready = true;
+      }
     }
   }
 
