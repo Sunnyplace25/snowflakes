@@ -3919,6 +3919,8 @@ function submitUtPw() {
     }
   }
 
+  var _pendingKeysConfirm = false;
+
   window.closeHotspot = function() {
     stopHotspotSfx();
     if (_currentHotspot && _currentHotspot.closeAudio) {
@@ -3929,6 +3931,10 @@ function submitUtPw() {
     _currentHotspot = null;
     document.getElementById('hotspot-popup').classList.remove('show');
     hideInteriorSpeech();
+    if (_pendingKeysConfirm) {
+      _pendingKeysConfirm = false;
+      document.getElementById('keys-confirm-popup').style.display = 'flex';
+    }
   };
 
   function showSpeech(char, text) {
@@ -4291,10 +4297,9 @@ function submitUtPw() {
         showInteriorSpeech(meta, pick.speech);
       }
     } catch(e) {}
-    // KEYS：オールコンプ後・初回クリックで確認ダイアログ
+    // KEYS：オールコンプ後・説明を閉じたら確認ダイアログを出すフラグを立てる
     if (spot.label === 'KEYS' && !SfSnow.isUnlocked('keys') && localStorage.getItem('sf_ut_ep_complete') === 'true') {
-      document.getElementById('hotspot-popup').classList.remove('show');
-      document.getElementById('keys-confirm-popup').style.display = 'flex';
+      _pendingKeysConfirm = true;
     }
   }
 
