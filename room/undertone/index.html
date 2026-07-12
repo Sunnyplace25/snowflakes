@@ -1340,6 +1340,7 @@
       <button id="pill-fortune" onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
       <button id="pill-appraise" onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'});flashSection('shop-rawstone-count')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
       <button id="pill-sweets" onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'});flashSection('item-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
+      <button id="pill-interior" onclick="switchShopTab('interior');document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});" style="display:none;flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">棚を見る</button>
     </div>
 
     <!-- MUSIC UNLOCKED セクション -->
@@ -3964,14 +3965,9 @@ function submitUtPw() {
     var ch4Active = _seenProseScenes.has(15); // 4-1読了（仮・確定後更新）
     var char, pool;
     if (ch4Active) {
-      char = 'kouta';
-      if (exploreCount <= 2) {
-        pool = ['……帰りたい'];
-      } else if (exploreCount <= 8) {
-        pool = _ENTRANCE.kouta.concat(['……気になる']);
-      } else {
-        pool = _ENTRANCE.kouta.concat(['今日、開いてるかな']);
-      }
+      var _allChars = ['hinata', 'kouta', 'hayate'];
+      char = _allChars[Math.floor(Math.random() * 3)];
+      pool = _ENTRANCE[char];
     } else if (ch3Unlocked) {
       char = 'hinata';
       pool = _ENTRANCE.hinata;
@@ -4081,12 +4077,15 @@ function submitUtPw() {
       _firstVisitAt = totalVisits === 1 ? Date.now() : Date.now() - 86400001;
       localStorage.setItem('sf_ut_first_visit_at', _firstVisitAt.toString());
     }
-    var _interiorUnlocked = ch3Unlocked || (Date.now() - _firstVisitAt >= 86400000);
+    var _ch3Complete = !!localStorage.getItem('sf_ut_ch3_complete');
+    var _interiorUnlocked = ch3Unlocked || ch4Unlocked || _ch3Complete || (Date.now() - _firstVisitAt >= 86400000);
 
     // タブ表示：初回訪問から24h後 or ch3解放後に店内タブを表示
     var fortuneUnlocked = !!localStorage.getItem('sf_ut_fortune_unlock_shown');
     var shopNav = document.getElementById('shop-nav');
     if (shopNav) shopNav.style.display = _interiorUnlocked ? 'flex' : 'none';
+    var pillInterior = document.getElementById('pill-interior');
+    if (pillInterior) pillInterior.style.display = _interiorUnlocked ? '' : 'none';
     updateEquipBtn();
     // ch3解放後→oracle先表示 / 占い解放済み→oracle / それ以外→interior
     switchShopTab('oracle');
