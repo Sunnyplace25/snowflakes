@@ -1153,16 +1153,43 @@
       <!-- Link: fans -->
       <div id="undertone-link" style="display:none;margin-bottom:20px;">
         <div style="max-width:480px;margin:0 auto;">
-          <a href="../room/undertone/" style="position:relative;display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;animation:ut-glow 2.4s ease-in-out infinite;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
-            <p id="ut-card-timer" style="display:none;position:absolute;top:12px;right:38px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#c4b5fd;border:1px solid rgba(196,181,253,0.25);border-radius:100px;padding:3px 10px;">次話まで <span id="ut-card-timer-count"></span></p>
-            <div>
-              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:6px;">UNDER TONE</p>
-              <p style="font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:4px;color:#c4b5fd;margin-bottom:4px;">Under tone</p>
-              <p style="font-size:11px;color:#94a3b8;letter-spacing:1px;font-style:italic;">── ひとつ多い音に、気づく場所 ──</p>
-              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#a78bfa;margin-top:10px;">NOVEL GAME &amp; FORTUNE</p>
+
+          <!-- Static title header -->
+          <div style="text-align:center;margin-bottom:28px;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#94a3b8;margin-bottom:8px;">UNDER TONE</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">Under tone</p>
+            <p style="font-size:11px;color:#64748b;letter-spacing:1px;font-style:italic;margin-bottom:10px;">── ひとつ多い音に、気づく場所 ──</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#6d5fc4;">NOVEL GAME &amp; FORTUNE</p>
+          </div>
+
+          <!-- SIDE A / SIDE B tabs -->
+          <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:24px;">
+            <button id="ut-tab-a" onclick="switchUTTab('a')" style="flex:1;background:none;border:none;border-bottom:2px solid #c4b5fd;padding:10px 0;margin-bottom:-1px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#e2e8f0;cursor:pointer;transition:color 0.2s,border-color 0.2s;">SIDE A</button>
+            <button id="ut-tab-b" onclick="switchUTTab('b')" style="flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:10px 0;margin-bottom:-1px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:5px;color:#475569;cursor:pointer;transition:color 0.2s,border-color 0.2s;">SIDE B</button>
+          </div>
+
+          <!-- SIDE A panel: Snow flakes -->
+          <div id="ut-panel-a">
+            <a href="../room/undertone/" style="position:relative;display:flex;align-items:center;gap:16px;background:rgba(196,181,253,0.05);border:1px solid rgba(196,181,253,0.15);border-radius:16px;padding:20px 22px;text-decoration:none;transition:background 0.25s,border-color 0.25s;animation:ut-glow 2.4s ease-in-out infinite;" onmouseenter="this.style.background='rgba(196,181,253,0.1)';this.style.borderColor='rgba(196,181,253,0.3)'" onmouseleave="this.style.background='rgba(196,181,253,0.05)';this.style.borderColor='rgba(196,181,253,0.15)'">
+              <p id="ut-card-timer" style="display:none;position:absolute;top:12px;right:38px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#c4b5fd;border:1px solid rgba(196,181,253,0.25);border-radius:100px;padding:3px 10px;">次話まで <span id="ut-card-timer-count"></span></p>
+              <div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#6d5fc4;margin-bottom:6px;">SNOW FLAKES</p>
+                <p style="font-family:'Noto Serif JP',serif;font-size:13px;color:#c4b5fd;letter-spacing:2px;">ノベルゲームを開く</p>
+              </div>
+              <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
+            </a>
+          </div>
+
+          <!-- SIDE B panel: Moon Veil -->
+          <div id="ut-panel-b" style="display:none;">
+            <div style="background:rgba(196,181,253,0.03);border:1px solid rgba(196,181,253,0.1);border-radius:16px;padding:32px 22px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#6d5fc4;margin-bottom:12px;">MOON VEIL</p>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:16px;letter-spacing:4px;color:#c4b5fd;margin-bottom:8px;">Moon Veil</p>
+              <p style="font-size:11px;color:#4c3f8a;letter-spacing:1px;font-style:italic;margin-bottom:20px;">── 終わりが決まっていたから、触れられた ──</p>
+              <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#2d2544;letter-spacing:2px;">準備中</p>
             </div>
-            <span style="margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(196,181,253,0.4);">›</span>
-          </a>
+          </div>
+
         </div>
       </div>
 
@@ -5253,6 +5280,29 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     window.closeUndertoneComingSoon = function() {
       var p = document.getElementById('undertone-coming-popup');
       if (p) p.style.display = 'none';
+    };
+
+    window.switchUTTab = function(side) {
+      var tabA = document.getElementById('ut-tab-a');
+      var tabB = document.getElementById('ut-tab-b');
+      var panelA = document.getElementById('ut-panel-a');
+      var panelB = document.getElementById('ut-panel-b');
+      if (!tabA || !tabB || !panelA || !panelB) return;
+      if (side === 'a') {
+        tabA.style.borderBottomColor = '#c4b5fd';
+        tabA.style.color = '#e2e8f0';
+        tabB.style.borderBottomColor = 'transparent';
+        tabB.style.color = '#475569';
+        panelA.style.display = '';
+        panelB.style.display = 'none';
+      } else {
+        tabB.style.borderBottomColor = '#c4b5fd';
+        tabB.style.color = '#e2e8f0';
+        tabA.style.borderBottomColor = 'transparent';
+        tabA.style.color = '#475569';
+        panelA.style.display = 'none';
+        panelB.style.display = '';
+      }
     };
 
     window.openUndertonePassword = function() {
