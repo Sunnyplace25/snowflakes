@@ -4663,8 +4663,15 @@
       <p class="section-req" id="music-req">
         <img src="../item/pick.webp"> ギターピック　交換アイテム
       </p>
-      <div id="music-list" style="display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;"></div>
-      <div id="music-content-area" style="margin-top:16px;"></div>
+      <div id="music-scene" style="width:100%;height:140px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
+        <div id="music-drum" style="width:210px;height:116px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
+        <button class="nc-arrow" onclick="musicCarouselRotate(-1)">‹</button>
+        <div id="music-dots" style="display:flex;gap:8px;align-items:center;"></div>
+        <button class="nc-arrow" onclick="musicCarouselRotate(1)">›</button>
+      </div>
+      <div id="music-content-area" style="margin-top:20px;"></div>
       <div style="text-align:center;margin-top:20px;">
         <a href="../music.html" style="display:inline-block;padding:11px 32px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);color:#cbd5e1;font-size:12px;letter-spacing:4px;font-family:'Cormorant Garamond',serif;text-decoration:none;transition:color 0.2s,border-color 0.2s;" onmouseover="this.style.color='#e2e8f0';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.color='#cbd5e1';this.style.borderColor='rgba(255,255,255,0.15)'">もっと聴く →</a>
       </div>
@@ -6551,17 +6558,17 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         { heading: '正しい距離より、触れている方がいい', body: 'この話に出てくる「正しい距離」は、悪いものではありません。\n\n相手を守るための距離。\n踏み込みすぎないための距離。\n場を壊さないための距離。\n\nそれは必要なものです。\n\nけれど、正しい距離だけでは届かないこともある。\n\n触れないまま守ること。\n触れてしまうことで届くこと。\n\nそのどちらも、簡単には否定できません。\n\nヒナタは、正しさより先に「届いているか」を見てしまう。\nハヤテは、届きすぎないように正しさを保つ。\nリトルスノーは、その二つの距離の違いに気づいてしまう。\nコウタは、それが変わっていく瞬間を見ている。\n\n正しいのに遠いもの。\n不器用なのに届いてしまうもの。\n触れないことで守られるもの。\n触れることで変わってしまうもの。\n\n夢から覚めたあとも、\nその感覚だけが、少しだけ音の中に残っています。' },
       ]
     },
-    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'Snow flakes SWEETs限定', src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, chara:'pink', isNew:true, reward:['chocolate_hayate','beer','cookie'], rewardRepeatable:true },
-    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'Snow flakes SWEETs限定', src:'../music/gurasu_j8w3qz.mp3', cost:{ pick:2 }, chara:'hayate', isNew:true, reward:'coaster_hayate', rewardRepeatable:true },
-    { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'Snow flakes SWEETs限定', src:'../music/shiroiimama_m5k9vt.mp3', cost:{ pick:2 }, chara:'kouta', reward:'bass_strings_kouta', alwaysGlow:true },
-    { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/kaeranai_x2b6nf.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
-    { id:'song_nigaipurin', type:'song', title:'苦いプリン（Vo.Hinata）', sub:'Snow flakes SWEETs限定', src:'../music/nigaipurin_h2m8xk.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
-    { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'Snow flakes SWEETs限定', src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true, glowColor:'green' },
+    { id:'song_sweets_brass', type:'song', title:'SWEETs – Brass Band Ver.', sub:'',src:'../music/sweets_brass_k9t3vq.mp3', cover:'../music/cover_sweets_brass.webp', cost:{ pick:1 }, chara:'pink', isNew:true, reward:['chocolate_hayate','beer','cookie'], rewardRepeatable:true },
+    { id:'song_gurasu', type:'song', title:'Cocktail-Arc ｜グラスの縁（Vo.Hayate）', sub:'',src:'../music/gurasu_j8w3qz.mp3', cost:{ pick:2 }, chara:'hayate', isNew:true, reward:'coaster_hayate', rewardRepeatable:true },
+    { id:'song_shiroimama', type:'song', title:'Rabbit Arc｜白いまま（Vo.Kouta）', sub:'',src:'../music/shiroiimama_m5k9vt.mp3', cost:{ pick:2 }, chara:'kouta', reward:'bass_strings_kouta', alwaysGlow:true },
+    { id:'song_kaeranai', type:'song', title:'帰らないほどでもない（Vo.Hinata）', sub:'',src:'../music/kaeranai_x2b6nf.mp3', cost:{ pick:2 }, chara:'hinata', reward:'beer', rewardRepeatable:true },
+    { id:'song_nigaipurin', type:'song', title:'苦いプリン（Vo.Hinata）', sub:'',src:'../music/nigaipurin_h2m8xk.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
+    { id:'song_spring_waltz', type:'song', title:'Spring Waltz', sub:'',src:'../music/springwaltz_q1h7ys.mp3', cost:{ pick:2 }, chara:'pink', isNew:true, reward:'cookie', rewardRepeatable:true, glowColor:'green' },
     { id:'song_iawasete', type:'song', title:'息を合わせて（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/iawasete_p6m2wy.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_madakokoni', type:'song', title:'まだここにいる（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/madakokoni_r3v8tz.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_madanatteru', type:'song', title:'まだ鳴ってる（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/madanatteru_k7j2nx.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_natsunomoon', type:'song', title:'夏の月', sub:'Moon Veil（Saku ＆ Yoi）music demo', src:'../music/natsunomoon_v4r8xp.mp3', cost:{ pick:2 }, chara:'purple', isNew:true },
-    { id:'song_shukusou', type:'song', title:'祝奏', sub:'Snow flakes SWEETs限定', src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'orange', isNew:true, reward30s:'boutonniere_hayate', reward:'boutonniere_kouta', alwaysGlow:true },
+    { id:'song_shukusou', type:'song', title:'祝奏', sub:'',src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'orange', isNew:true, reward30s:'boutonniere_hayate', reward:'boutonniere_kouta', alwaysGlow:true },
     { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
     { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
     { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
@@ -7385,8 +7392,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
   }
 
-  /* ── Music list ── */
-  var _mc = { idx: 0, items: [] };
+  /* ── Music carousel ── */
+  var _mc = { idx: 0, items: [], N: 0, step: 120, r: 180 };
 
   function renderMusic() {
     var section = document.getElementById('music-section');
@@ -7400,36 +7407,84 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     var prevId = _mc.items[_mc.idx] ? _mc.items[_mc.idx].id : null;
     _mc.items = songs;
+    _mc.N = songs.length;
+    _mc.step = 360 / _mc.N;
+    var isMobile = window.innerWidth <= 600;
+    var _mcBase = isMobile ? 82 : 105;
+    var _mcMin  = isMobile ? 100 : 130;
+    _mc.r = Math.max(_mcMin, Math.round(_mcBase / Math.tan(Math.PI / _mc.N) + 20));
     if (prevId) { for (var pi = 0; pi < songs.length; pi++) { if (songs[pi].id === prevId) { _mc.idx = pi; break; } } }
-    if (_mc.idx >= songs.length) _mc.idx = 0;
+    if (_mc.idx >= _mc.N) _mc.idx = 0;
 
-    var list = document.getElementById('music-list');
-    if (!list) return;
-    list.innerHTML = '';
+    var drum = document.getElementById('music-drum');
+    var dots = document.getElementById('music-dots');
+    if (!drum) return;
+    drum.innerHTML = ''; if (dots) dots.innerHTML = '';
 
     songs.forEach(function(item, i) {
       var unlocked = SfSnow.isUnlocked(item.id);
       var _mChara = item.chara || '';
-      var glowClass = item.glowColor === 'green' ? ' nc-green' : item.glowColor === 'purple' || _mChara === 'purple' ? ' nc-purple' : '';
+      var glowClass = item.glowColor === 'green' ? ' nc-green' : (_mChara === 'purple' ? ' nc-purple' : '');
       var c = document.createElement('div');
-      c.className = 'mc-card' + glowClass + (i === _mc.idx ? ' nc-active' : '');
+      c.className = 'mc-card' + glowClass;
       c.dataset.idx = i;
-      c.style.cssText = 'position:relative;flex-shrink:0;width:150px;height:104px;cursor:pointer;transition:border-color 0.3s,box-shadow 0.3s;';
+      c.style.transform = 'rotateY(' + (i * _mc.step) + 'deg) translateZ(' + _mc.r + 'px)';
       c.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
       c.innerHTML = '<div class="nc-tag">music' + (!unlocked ? '<span class="nc-new" style="color:#f9a8d4;border-color:rgba(249,168,212,0.35);">NEW</span>' : '') + '</div>' +
-        '<div class="nc-title" style="font-size:11px;line-height:1.4;">' + item.title + '</div>' +
-        '<div class="nc-status">' + (unlocked ? '▶ 聴く' : '× ' + item.cost.pick) + '</div>';
-      list.appendChild(c);
+        '<div class="nc-title">' + item.title + '</div>' +
+        '<div class="nc-status">' + (unlocked ? '▶ 聴く ›' : 'ギターピック × ' + item.cost.pick) + '</div>';
+      drum.appendChild(c);
+      if (dots) {
+        var d = document.createElement('div');
+        d.className = 'nc-dot' + (i === _mc.idx ? ' active' : '');
+        d.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
+        dots.appendChild(d);
+      }
     });
+    _mcUpdate();
     _mcShowContent(_mc.idx);
+
+    var scene = document.getElementById('music-scene');
+    if (scene && !scene._swipeInit) {
+      scene._swipeInit = true;
+      var sx = 0;
+      scene.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
+      scene.addEventListener('touchend', function(e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) musicCarouselRotate(dx < 0 ? 1 : -1); });
+    }
   }
 
-  function _mcSelect(i) {
-    _mc.idx = i;
-    document.querySelectorAll('#music-list .mc-card').forEach(function(c, j) {
-      c.classList.toggle('nc-active', j === i);
-    });
-    _mcShowContent(i);
+  var _mcAutoTimer = null;
+  function _mcIsPlaying() {
+    var audios = document.querySelectorAll('#music-content-area audio');
+    for (var i = 0; i < audios.length; i++) { if (!audios[i].paused) return true; }
+    return false;
+  }
+  function _mcResetAuto() {
+    if (_mcAutoTimer) clearInterval(_mcAutoTimer);
+    _mcAutoTimer = setInterval(function() {
+      if (_mcIsPlaying()) return;
+      var allDone = _mc.items.every(function(s) { return SfSnow.isUnlocked(s.id); });
+      if (allDone) { clearInterval(_mcAutoTimer); _mcAutoTimer = null; return; }
+      _mc.idx = (_mc.idx + 1) % _mc.N;
+      _mcUpdate(); _mcShowContent(_mc.idx);
+    }, 15000);
+  }
+  _mcResetAuto();
+
+  window.musicCarouselRotate = function(dir) {
+    _mc.idx = (_mc.idx + dir + _mc.N) % _mc.N;
+    _mcUpdate(); _mcShowContent(_mc.idx);
+    _mcResetAuto();
+  };
+
+  function _mcSelect(i) { _mc.idx = i; _mcUpdate(); _mcShowContent(i); _mcResetAuto(); }
+
+  function _mcUpdate() {
+    var drum = document.getElementById('music-drum');
+    if (!drum) return;
+    drum.style.transform = 'rotateY(' + (-_mc.idx * _mc.step) + 'deg)';
+    drum.querySelectorAll('.mc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _mc.idx); });
+    document.querySelectorAll('#music-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _mc.idx); });
   }
 
   function _mcShowContent(idx) {
