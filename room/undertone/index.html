@@ -4078,9 +4078,9 @@ function submitUtPw() {
   window.goShop = function goShop() {
     document.getElementById('explore-state').style.display = 'none';
     document.getElementById('shop-state').style.display   = 'block';
-    renderStones();
-    renderShopMusic();
-    updateAppraiseBtn();
+    try { renderStones(); } catch(e) {}
+    try { renderShopMusic(); } catch(e) {}
+    try { updateAppraiseBtn(); } catch(e) {}
     var exploreBtn = document.getElementById('explore-btn');
     if (exploreBtn) exploreBtn.textContent = exploreCount === 1 ? '店を出る' : '路地裏をもう一度歩く';
 
@@ -4289,8 +4289,9 @@ function submitUtPw() {
       var meta = CHARS[pick.char] || CHARS.kouta;
       showInteriorSpeech(meta, pick.speech);
     }
-    // KEYS：初回クリックで確認ダイアログ
+    // KEYS：初回クリックで確認ダイアログ（ホットスポットポップアップは閉じてから表示）
     if (spot.label === 'KEYS' && !localStorage.getItem('sf_ut_keys_found')) {
+      document.getElementById('hotspot-popup').classList.remove('show');
       document.getElementById('keys-confirm-popup').style.display = 'flex';
     }
   }
