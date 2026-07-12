@@ -1415,6 +1415,22 @@
             </div>
           </div>
 
+          <!-- SAKU -->
+          <div id="rare-saku-section" style="margin-bottom:10px;">
+            <div onclick="toggleRareSection('saku')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(196,181,253,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#c4b5fd;">SAKU</span>
+              <span id="rare-saku-arrow" style="font-size:13px;color:#c4b5fd;transition:transform 0.3s;">›</span>
+            </div>
+            <div id="rare-saku-body" style="overflow:hidden;max-height:0;transition:max-height 0.35s ease;">
+              <table style="width:100%;border-collapse:collapse;padding:0 4px;">
+                <tr id="item-row-pocket-watch" style="cursor:default;">
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-pocket-watch-img" src="../item/pocket_watch.webp" alt="pocket_watch" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-pocket-watch-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td id="ri-pocket-watch-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#c4b5fd;text-align:right;letter-spacing:3px;"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
           <!-- EVENT / SPECIAL -->
           <div id="rare-event-section" style="margin-bottom:10px;" data-no-replace>
             <div onclick="toggleRareSection('event')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(249,168,212,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
@@ -6064,6 +6080,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     updateRareItem('ri-drumstick-img', 'ri-drumstick-name', 'ri-drumstick-check', 'drumstick_hayate', '古いドラムスティック');
     updateRareItem('ri-earring-img',   'ri-earring-name',   'ri-earring-check',   'earring_hayate',   '黄色い石のピアス');
     updateRareItem('ri-wristband-img', 'ri-wristband-name', 'ri-wristband-check', 'wristband_hayate', '古いリストバンド', null, 'https://ncode.syosetu.com/n5484lz/');
+    updateRareItem('ri-pocket-watch-img', 'ri-pocket-watch-name', 'ri-pocket-watch-check', 'pocket_watch', '止まった懐中時計');
     // 繰り返し取得アイテム（コースター・ドリンクコイン・しおり）: count表示
     function updateCountableItem(imgId, nameId, checkId, itemKey, itemName, color) {
       var img   = document.getElementById(imgId);
