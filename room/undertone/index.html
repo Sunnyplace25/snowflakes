@@ -1337,7 +1337,7 @@
 
     <!-- セクションナビ -->
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">
-      <button id="pill-fortune" onclick="document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
+      <button id="pill-fortune" onclick="switchShopTab('oracle');document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});flashSection('oracle-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">占う</button>
       <button id="pill-appraise" onclick="document.getElementById('anchor-rawstone').scrollIntoView({behavior:'smooth',block:'start'});flashSection('shop-rawstone-count')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">鑑定する</button>
       <button id="pill-sweets" onclick="document.getElementById('anchor-sweets').scrollIntoView({behavior:'smooth',block:'start'});flashSection('item-section-box')" style="flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">スイーツ</button>
       <button id="pill-interior" onclick="switchShopTab('interior');document.getElementById('anchor-fortune').scrollIntoView({behavior:'smooth',block:'start'});" style="display:none;flex:1;background:none;border:1px solid rgba(196,181,253,0.15);border-radius:100px;padding:8px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7c6aa5;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(196,181,253,0.4)';this.style.color='#c4b5fd'" onmouseout="this.style.borderColor='rgba(196,181,253,0.15)';this.style.color='#7c6aa5'">棚を見る</button>
@@ -4282,15 +4282,17 @@ function submitUtPw() {
     stoneFoundEl.style.display = 'none';
     stoneFoundEl.textContent = '';
     document.getElementById('hotspot-popup').classList.add('show');
-    if (spot.chars && spot.chars.length) {
-      var pool = [];
-      spot.chars.forEach(function(c) { for (var i = 0; i < c.weight; i++) pool.push(c); });
-      var pick = pool[Math.floor(Math.random() * pool.length)];
-      var meta = CHARS[pick.char] || CHARS.kouta;
-      showInteriorSpeech(meta, pick.speech);
-    }
+    try {
+      if (spot.chars && spot.chars.length) {
+        var pool = [];
+        spot.chars.forEach(function(c) { for (var i = 0; i < c.weight; i++) pool.push(c); });
+        var pick = pool[Math.floor(Math.random() * pool.length)];
+        var meta = CHARS[pick.char] || CHARS.kouta;
+        showInteriorSpeech(meta, pick.speech);
+      }
+    } catch(e) {}
     // KEYS：オールコンプ後・初回クリックで確認ダイアログ（ホットスポットポップアップは閉じてから表示）
-    if (spot.label === 'KEYS' && !localStorage.getItem('sf_ut_keys_found') && localStorage.getItem('sf_ut_ep_complete') === 'true') {
+    if (spot.label === 'KEYS' && !SfSnow.isUnlocked('keys') && localStorage.getItem('sf_ut_ep_complete') === 'true') {
       document.getElementById('hotspot-popup').classList.remove('show');
       document.getElementById('keys-confirm-popup').style.display = 'flex';
     }
