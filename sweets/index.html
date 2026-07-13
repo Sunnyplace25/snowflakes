@@ -699,8 +699,8 @@
     }
     .exch-close-btn:hover { color:#cbd5e1; }
   /* ── Notes 3D Carousel ── */
-  .nc-card{position:relative;flex-shrink:0;width:160px;height:94px;border-radius:14px;padding:10px 12px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
-  .mc-card{position:relative;flex-shrink:0;width:160px;height:94px;border-radius:14px;padding:10px 12px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
+  .nc-card{position:relative;flex-shrink:0;width:200px;height:116px;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
+  .mc-card{position:relative;flex-shrink:0;width:200px;height:116px;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
   .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
   .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
   .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
@@ -713,9 +713,6 @@
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
   .nc-status{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;}
-  .mc-card .nc-tag,.nc-card .nc-tag{font-size:8px;letter-spacing:3px;}
-  .mc-card .nc-title,.nc-card .nc-title{font-size:10px;line-height:1.5;padding:4px 0;}
-  .mc-card .nc-status,.nc-card .nc-status{font-size:9px;letter-spacing:1px;}
   .nc-dot{width:6px;height:6px;border-radius:50%;cursor:pointer;transition:all 0.3s;background:rgba(255,255,255,0.15);}
   .nc-dot.active{background:#93c5fd;transform:scale(1.35);}
   .nc-arrow{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:36px;height:36px;color:#64748b;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:all 0.2s;flex-shrink:0;}
@@ -4666,10 +4663,8 @@
       <p class="section-req" id="music-req">
         <img src="../item/pick.webp"> ギターピック　交換アイテム
       </p>
-      <div id="music-scene" style="width:100%;height:110px;overflow:hidden;position:relative;">
-        <div id="music-drum" style="display:flex;gap:12px;position:absolute;top:8px;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
+      <div id="music-scene" style="display:none;"><div id="music-drum"></div></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:4px;">
         <button class="nc-arrow" onclick="musicCarouselRotate(-1)">‹</button>
         <div id="music-dots" style="display:flex;gap:8px;align-items:center;"></div>
         <button class="nc-arrow" onclick="musicCarouselRotate(1)">›</button>
@@ -4690,12 +4685,10 @@
       <!-- EXCHANGE解放コンテンツ（動的） -->
       <div id="notes-dynamic-wrap" style="display:none;"></div>
 
-      <!-- ── ピークカルーセル ── -->
-      <div id="notes-carousel-outer" style="margin-top:28px;user-select:none;">
-        <div id="notes-scene" style="width:100%;height:110px;overflow:hidden;position:relative;">
-          <div id="notes-drum" style="display:flex;gap:12px;position:absolute;top:8px;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
+      <!-- ── ナビ ── -->
+      <div id="notes-carousel-outer" style="margin-top:16px;user-select:none;">
+        <div id="notes-scene" style="display:none;"><div id="notes-drum"></div></div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:4px;">
           <button class="nc-arrow" onclick="notesCarouselRotate(-1)">‹</button>
           <div id="notes-dots" style="display:flex;gap:8px;align-items:center;"></div>
           <button class="nc-arrow" onclick="notesCarouselRotate(1)">›</button>
@@ -7013,7 +7006,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!drum) return;
     var scene = document.getElementById('notes-scene');
     var sceneW = scene ? scene.offsetWidth : 480;
-    var offset = Math.round(sceneW / 2 - 80 - _nc.idx * 172);
+    var offset = Math.round(sceneW / 2 - 100 - _nc.idx * 212);
     drum.style.transform = 'translateX(' + offset + 'px)';
     drum.querySelectorAll('.nc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _nc.idx); });
     document.querySelectorAll('#notes-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _nc.idx); });
@@ -7490,7 +7483,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (!drum) return;
     var scene = document.getElementById('music-scene');
     var sceneW = scene ? scene.offsetWidth : 480;
-    var offset = Math.round(sceneW / 2 - 80 - _mc.idx * 172);
+    var offset = Math.round(sceneW / 2 - 100 - _mc.idx * 212);
     drum.style.transform = 'translateX(' + offset + 'px)';
     drum.querySelectorAll('.mc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _mc.idx); });
     document.querySelectorAll('#music-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _mc.idx); });
