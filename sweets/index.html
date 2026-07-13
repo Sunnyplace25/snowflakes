@@ -997,9 +997,9 @@
     <div class="section" id="sw-exchange">
       <div class="section-label">exchange</div>
       <p class="section-req" id="exch-req">
-        <span><img src="../item/candy_milk.webp"> ミルク × 100</span>
-        <span><img src="../item/candy_honey.webp"> ハニーレモン × 100</span>
-        <span><img src="../item/candy_cassis.webp"> カシス × 100</span>
+        <span><img src="../item/candy_milk.webp"> ミルク × 50</span>
+        <span><img src="../item/candy_honey.webp"> ハニーレモン × 50</span>
+        <span><img src="../item/candy_cassis.webp"> カシス × 50</span>
       </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
@@ -1019,7 +1019,7 @@
                 <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
                 <p class="itv-acc-status" id="itv-s-status-hayate">LOCKED</p>
                 <div id="itv-s-locked-hayate">
-                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvSummerModal('hayate')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-s-unlocked-hayate" href="itv_hayate_s.html" style="display:none;">
@@ -1032,7 +1032,7 @@
                 <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
                 <p class="itv-acc-status" id="itv-s-status-hinata">LOCKED</p>
                 <div id="itv-s-locked-hinata">
-                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvSummerModal('hinata')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-s-unlocked-hinata" href="itv_hinata_s.html" style="display:none;">
@@ -1045,7 +1045,7 @@
                 <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
                 <p class="itv-acc-status" id="itv-s-status-kouta">LOCKED</p>
                 <div id="itv-s-locked-kouta">
-                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvSummerModal('kouta')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-s-unlocked-kouta" href="itv_kouta_s.html" style="display:none;">
@@ -1073,7 +1073,7 @@
                 <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
                 <p class="itv-acc-status" id="itv-status-hayate">LOCKED</p>
                 <div id="itv-locked-hayate">
-                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
@@ -1086,7 +1086,7 @@
                 <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
                 <p class="itv-acc-status" id="itv-status-hinata">LOCKED</p>
                 <div id="itv-locked-hinata">
-                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
@@ -1099,7 +1099,7 @@
                 <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
                 <p class="itv-acc-status" id="itv-status-kouta">LOCKED</p>
                 <div id="itv-locked-kouta">
-                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 100</div>
+                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
                   <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
                 </div>
                 <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
@@ -5472,7 +5472,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         color: '#c4b5fd',
         chara: 'SAKU', charaColor: '#c4b5fd',
         charaImg: null,
-        charaLine: '一年分の時間を、俺に預けてほしい'
+        charaLine: '一年分の時間を、俺に預けてほしい',
+        showOnEveryRead: true
       },
       item_kouta_zippo: {
         noteCardId: 'note_kouta_1',
@@ -5634,12 +5635,20 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
               if (typeof renderItemRows === 'function') renderItemRows();
               if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
               showNoteItemGet(itemId);
-              setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
+              if (!(NOTE_ITEM_DATA[itemId] && NOTE_ITEM_DATA[itemId].showOnEveryRead)) {
+                setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
+              }
             } else {
-              var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
-              if (!localStorage.getItem(againKey)) {
-                localStorage.setItem(againKey, '1');
+              var _niD = NOTE_ITEM_DATA[itemId];
+              if (_niD && _niD.showOnEveryRead) {
+                // 毎回1回だけ表示（日次制限なし・再登録なし）
                 showNoteItemGetAgain(itemId);
+              } else {
+                var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
+                if (!localStorage.getItem(againKey)) {
+                  localStorage.setItem(againKey, '1');
+                  showNoteItemGetAgain(itemId);
+                }
               }
             }
           }, 10000); // 最下部到達から10秒後
@@ -6565,9 +6574,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     { id:'song_madanatteru', type:'song', title:'まだ鳴ってる（Vo.Hinata）', sub:'アプリゲーム ハヤテっち LIVE使用曲 デモ', src:'../music/madanatteru_k7j2nx.mp3', cost:{ pick:2 }, chara:'hinata', isNew:true, reward:'beer', rewardRepeatable:true },
     { id:'song_natsunomoon', type:'song', title:'夏の月', sub:'Moon Veil（Saku ＆ Yoi）music demo', src:'../music/natsunomoon_v4r8xp.mp3', cost:{ pick:2 }, chara:'purple', isNew:true },
     { id:'song_shukusou', type:'song', title:'祝奏', sub:'',src:atob('Li4vbXVzaWMvc2h1a3Vzb3VfbjRwN3J4Lm1wMw=='), cover:'../music/cover_shukusou.webp', cost:{ pick:4 }, chara:'orange', isNew:true, reward30s:'boutonniere_hayate', reward:'boutonniere_kouta', alwaysGlow:true },
-    { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:100 } },
-    { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:100 } },
-    { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:100 } },
+    { id:'room_hayate', type:'room', title:'ハヤテの部屋', char:'hayate', color:'#fde68a', url:'../room/hayate/', cost:{ candy:'cassis', amount:50 } },
+    { id:'room_hinata', type:'room', title:'ヒナタの部屋', char:'hinata', color:'#93c5fd', url:'../room/hinata/', cost:{ candy:'milk',   amount:50 } },
+    { id:'room_kouta',  type:'room', title:'コウタの部屋', char:'kouta',  color:'#fca5a5', url:'../room/kouta/',  cost:{ candy:'honey',  amount:50 } },
     {
       id: 'note_prism_1', type: 'note',
       title: '第1章完結に寄せて｜プリズム',
@@ -6614,6 +6623,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       headingColor: '#c4b5fd',
       glowColor: 'purple',
       reward: 'pocket_watch', rewardOnScroll: true,
+      related: { url: 'https://ncode.syosetu.com/n9832lr/', title: 'Moon Veil', date: '2026', type: '短篇' },
       sections: [
         { heading: null, body: '「Moon Veil」は、Snow flakes本編と並行して進む、朔と宵子、みちるを中心とした物語です。\n\n顔を出さない音楽ユニット。\n偶然広がった歌声。\n最初から決められていた、一年間という活動期限。\n\nけれど、この作品が描いているのは、音楽で成功するまでの物語ではありません。\n\n終わりと分かっている時間の中で、\n一度は諦めたものに触れ、\n誰かと声を重ね、\n最後に自分の進む場所を選ぶまでの物語です。' },
         { heading: 'レールの上を歩く朔', body: '物語の冒頭で、朔は病院の検査技師として働いています。\n\n決められた操作。\n決められた時間。\n必要な断面だけを残し、次へ進む。\n\n仕事は正確で、迷いがない。\nけれど、その生き方は、朔自身の人生とも重なっています。\n\n家の立場。\n病院の将来。\n父親から求められる役割。\nみちるとの婚約。\n\n朔の前には、最初から進むべき道が用意されていました。\n\n朔は、それを強く拒絶しているわけではありません。\n外れたところで、行き先が変わるとは思っていない。\n\nだから、抗わない。\n感情を消しているのではなく、崩れないように整えている。\n\n朔の静けさは、何も望んでいない人の静けさではありません。\n\n望んでも変わらないと知っている人の静けさです。' },
@@ -6822,7 +6832,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;margin-bottom:12px;text-align:center;">ハヤテっち</p>';
         html += '<div style="font-size:10px;letter-spacing:1px;margin-bottom:12px;display:flex;flex-direction:column;gap:5px;">';
         html += '<div style="display:flex;align-items:center;gap:6px;color:' + (hasEarring ? '#94a3b8' : '#ef4444') + ';"><img src="../item/earring_hayate.webp" style="width:14px;opacity:0.8;"> 黄色い石のピアス' + (hasEarring ? '' : '&nbsp;―&nbsp;<a href="../room/hayate/" style="color:#fde68a66;text-decoration:none;font-size:9px;letter-spacing:1px;">Under tone で入手</a>') + '</div>';
-        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;"> カシスキャンディー × 100</div>';
+        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;"> カシスキャンディー × ' + item.cost.amount + '</div>';
         html += '</div>';
         html += '<button class="exch-btn" style="' + (ready ? 'border-color:#fde68a55;color:#fde68a;' : '') + '" onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
       }
@@ -7035,6 +7045,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
     if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
     if (hasNoteItem) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _nc_col[0] + ';border:1px solid ' + _nc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
+    if (item.isNew && !unlocked) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.35);border-radius:100px;padding:3px 10px;">NEW</span>';
     html += '<div class="post-header"><div class="post-header-left"><div class="post-tag">note</div><div class="post-title">' + item.title + '</div>';
     if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
     html += '</div>';
@@ -7436,6 +7447,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (dots) {
         var d = document.createElement('div');
         d.className = 'nc-dot' + (i === _mc.idx ? ' active' : '');
+        d.dataset.idx = i;
         d.onclick = (function(ii) { return function() { _mcSelect(ii); }; })(i);
         dots.appendChild(d);
       }
@@ -7539,6 +7551,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       newRight = '36px';
     }
     if (_mc_hasItem) html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _mc_col[0] + ';border:1px solid ' + _mc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
+    if (showNew && !unlocked) html += '<span style="position:absolute;top:12px;right:' + newRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.35);border-radius:100px;padding:3px 10px;">NEW</span>';
     html += '<div class="post-header"><div class="post-header-left">';
     html += '<div class="post-tag">music</div>';
     html += '<div class="post-title" style="margin-bottom:4px;">' + item.title + '</div>';
@@ -7813,9 +7826,9 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 <!-- Interview unlock JS -->
 <script>
   var ITV_CONFIG = {
-    hinata: { candy: 'milk',   cost: 100, label: 'ヒナタへのインタビュー', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_hinata' },
-    kouta:  { candy: 'honey',  cost: 100, label: 'コウタへのインタビュー', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_kouta'  },
-    hayate: { candy: 'cassis', cost: 100, label: 'ハヤテへのインタビュー', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_hayate' }
+    hinata: { candy: 'milk',   cost: 50, label: 'ヒナタへのインタビュー', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_hinata' },
+    kouta:  { candy: 'honey',  cost: 50, label: 'コウタへのインタビュー', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_kouta'  },
+    hayate: { candy: 'cassis', cost: 50, label: 'ハヤテへのインタビュー', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_hayate' }
   };
 
   var _itvCurrentChar = null;
@@ -7843,7 +7856,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var desc  = document.getElementById('itv-modal-desc');
     if (img)   img.src = cfg.img;
     if (title) { title.textContent = cfg.label; title.style.color = cfg.color; }
-    if (desc)  desc.innerHTML = 'Candy 100を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
+    if (desc)  desc.innerHTML = 'Candy 50を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
     if (modal) modal.classList.add('show');
   }
 
@@ -7871,12 +7884,33 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   // Summer Interview
   var ITV_SUMMER_CONFIG = {
-    hinata: { candy: 'milk',   cost: 100, label: 'ヒナタへのインタビュー（夏）', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_s_hinata' },
-    kouta:  { candy: 'honey',  cost: 100, label: 'コウタへのインタビュー（夏）', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_s_kouta'  },
-    hayate: { candy: 'cassis', cost: 100, label: 'ハヤテへのインタビュー（夏）', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_s_hayate' }
+    hinata: { candy: 'milk',   cost: 50, label: 'ヒナタへのインタビュー（夏）', color: '#93c5fd',  img: '../item/candy_milk.webp',   key: 'sf_interview_s_hinata' },
+    kouta:  { candy: 'honey',  cost: 50, label: 'コウタへのインタビュー（夏）', color: '#fca5a5',  img: '../item/candy_honey.webp',  key: 'sf_interview_s_kouta'  },
+    hayate: { candy: 'cassis', cost: 50, label: 'ハヤテへのインタビュー（夏）', color: '#fde68a',  img: '../item/candy_cassis.webp', key: 'sf_interview_s_hayate' }
   };
 
   var _itvSummerCurrentChar = null;
+
+  // ── 差額返金 (100→50変更時の一回限り処理) ──
+  (function() {
+    if (localStorage.getItem('sf_candy_refund_v2')) return;
+    var c = JSON.parse(localStorage.getItem('sf_candy') || '{}');
+    var changed = false;
+    // 部屋解放
+    if (SfSnow.isUnlocked('room_hayate')) { c['cassis'] = (c['cassis'] || 0) + 50; changed = true; }
+    if (SfSnow.isUnlocked('room_hinata')) { c['milk']   = (c['milk']   || 0) + 50; changed = true; }
+    if (SfSnow.isUnlocked('room_kouta'))  { c['honey']  = (c['honey']  || 0) + 50; changed = true; }
+    // Spring インタビュー
+    if (localStorage.getItem('sf_interview_hayate')) { c['cassis'] = (c['cassis'] || 0) + 50; changed = true; }
+    if (localStorage.getItem('sf_interview_hinata')) { c['milk']   = (c['milk']   || 0) + 50; changed = true; }
+    if (localStorage.getItem('sf_interview_kouta'))  { c['honey']  = (c['honey']  || 0) + 50; changed = true; }
+    // Summer インタビュー
+    if (localStorage.getItem('sf_interview_s_hayate')) { c['cassis'] = (c['cassis'] || 0) + 50; changed = true; }
+    if (localStorage.getItem('sf_interview_s_hinata')) { c['milk']   = (c['milk']   || 0) + 50; changed = true; }
+    if (localStorage.getItem('sf_interview_s_kouta'))  { c['honey']  = (c['honey']  || 0) + 50; changed = true; }
+    if (changed) localStorage.setItem('sf_candy', JSON.stringify(c));
+    localStorage.setItem('sf_candy_refund_v2', '1');
+  })();
 
   function toggleItvSummerSection() {
     var acc = document.getElementById('itv-summer-section-acc');
@@ -7904,7 +7938,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var desc  = document.getElementById('itv-modal-desc');
     if (img)   img.src = cfg.img;
     if (title) { title.textContent = cfg.label; title.style.color = cfg.color; }
-    if (desc)  desc.innerHTML = 'Candy 100を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
+    if (desc)  desc.innerHTML = 'Candy 50を使って<br>' + cfg.label + 'を解放しますか？<br><br>これは、本人に少しだけ近い場所で聞く質問です。<br>一度解放すると、いつでも読むことができます。';
     if (modal) modal.classList.add('show');
   }
 
@@ -7961,7 +7995,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 <!-- Interview unlock modal -->
 <div id="itv-modal">
   <div class="itv-modal-inner">
-    <div class="itv-modal-candy"><img id="itv-modal-candy-img" src=""> CANDY × 100</div>
+    <div class="itv-modal-candy"><img id="itv-modal-candy-img" src=""> CANDY × 50</div>
     <p class="itv-modal-title" id="itv-modal-title"></p>
     <p class="itv-modal-desc" id="itv-modal-desc"></p>
     <div class="itv-modal-btns">
