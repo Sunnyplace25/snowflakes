@@ -699,7 +699,7 @@
     }
     .exch-close-btn:hover { color:#cbd5e1; }
   /* ── Notes 3D Carousel ── */
-  .nc-card{position:absolute;width:210px;height:116px;top:0;left:0;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
+  .nc-card{position:absolute;width:160px;height:94px;top:0;left:0;border-radius:14px;padding:10px 12px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
   .mc-card{position:absolute;width:160px;height:94px;top:0;left:0;border-radius:14px;padding:10px 12px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;backface-visibility:hidden;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
   .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
   .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
@@ -713,9 +713,9 @@
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
   .nc-title{font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:1.65;flex:1;display:flex;align-items:center;padding:6px 0;}
   .nc-status{font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;}
-  .mc-card .nc-tag{font-size:8px;letter-spacing:3px;}
-  .mc-card .nc-title{font-size:10px;line-height:1.5;padding:4px 0;}
-  .mc-card .nc-status{font-size:9px;letter-spacing:1px;}
+  .mc-card .nc-tag,.nc-card .nc-tag{font-size:8px;letter-spacing:3px;}
+  .mc-card .nc-title,.nc-card .nc-title{font-size:10px;line-height:1.5;padding:4px 0;}
+  .mc-card .nc-status,.nc-card .nc-status{font-size:9px;letter-spacing:1px;}
   .nc-dot{width:6px;height:6px;border-radius:50%;cursor:pointer;transition:all 0.3s;background:rgba(255,255,255,0.15);}
   .nc-dot.active{background:#93c5fd;transform:scale(1.35);}
   .nc-arrow{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:50%;width:36px;height:36px;color:#64748b;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:all 0.2s;flex-shrink:0;}
@@ -4692,8 +4692,8 @@
 
       <!-- ── ピークカルーセル ── -->
       <div id="notes-carousel-outer" style="margin-top:28px;user-select:none;">
-        <div id="notes-scene" style="width:100%;height:140px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
-          <div id="notes-drum" style="width:210px;height:116px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
+        <div id="notes-scene" style="width:100%;height:120px;perspective:900px;display:flex;align-items:center;justify-content:center;overflow:visible;">
+          <div id="notes-drum" style="width:160px;height:94px;position:relative;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94);"></div>
         </div>
         <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:14px;">
           <button class="nc-arrow" onclick="notesCarouselRotate(-1)">‹</button>
@@ -6927,8 +6927,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var _ncDisplayN = Math.max(_nc.N, 6);
     _nc.step = 360 / _ncDisplayN;
     var _ncIsMobile = window.innerWidth <= 600;
-    var _ncBase = _ncIsMobile ? 82 : 105;
-    var _ncMin  = _ncIsMobile ? 100 : 130;
+    var _ncBase = _ncIsMobile ? 60 : 80;
+    var _ncMin  = _ncIsMobile ? 85 : 110;
     _nc.r = Math.max(_ncMin, Math.round(_ncBase / Math.tan(Math.PI / _ncDisplayN) + 20));
     // 現在表示中のカードを維持
     if (prevId) {
