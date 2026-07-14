@@ -4622,6 +4622,28 @@
       </div><!-- /post-content -->
       </div><!-- /post-card -->
 
+      <div id="ss-ikichi" class="post-card" style="display:none;">
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="post-tag">short story</div>
+            <div class="post-title">閾値</div>
+            <div class="post-date">2026</div>
+          </div>
+          <a href="https://ncode.syosetu.com/n9342lt/" target="_blank" rel="noopener" class="read-btn" style="text-decoration:none;">読む</a>
+        </div>
+      </div>
+
+      <div id="ss-mada" class="post-card" style="display:none;">
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="post-tag">short story series</div>
+            <div class="post-title">まだ鳴っている</div>
+            <div class="post-date">2026</div>
+          </div>
+          <a id="ss-mada-link" href="https://ncode.syosetu.com/n8678mk/" target="_blank" rel="noopener" class="read-btn" style="text-decoration:none;">読む</a>
+        </div>
+      </div>
+
     </div>
 
     <!-- Live Archive section (backstage pass holders only) -->
@@ -7970,6 +7992,10 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var el = document.getElementById('banner-ikichi');
       if (el) el.style.display = 'block';
     }
+    if (now >= ikichi_start) {
+      var ssIkichi = document.getElementById('ss-ikichi');
+      if (ssIkichi) ssIkichi.style.display = 'block';
+    }
 
     // まだ鳴っている: 2026-07-20 23:00 〜 2026-08-31
     var mada_start = new Date('2026-07-20T23:00:00');
@@ -7987,6 +8013,19 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var ep = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
         if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/' + ep;
         if (epLabel) epLabel.textContent = 'ep.' + ep + ' UPDATE';
+      }
+    }
+    if (now >= mada_start) {
+      var ssMada = document.getElementById('ss-mada');
+      var ssMadaLink = document.getElementById('ss-mada-link');
+      if (ssMada) ssMada.style.display = 'block';
+      if (ssMadaLink) {
+        if (now >= mada_top) {
+          ssMadaLink.href = 'https://ncode.syosetu.com/n8678mk/';
+        } else {
+          var epS = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
+          ssMadaLink.href = 'https://ncode.syosetu.com/n8678mk/' + epS;
+        }
       }
     }
   })();
