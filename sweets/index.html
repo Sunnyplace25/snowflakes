@@ -5096,13 +5096,13 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           document.getElementById('summer-candy-popup').classList.add('show');
         }
       }, 1800);
-      initNotes();
+      try { initNotes(); } catch(e) {}
       // ログイン後にNOTES・EXCHANGEを再描画
-      if (typeof renderNotes === 'function') renderNotes();
-      if (typeof renderExchange === 'function') renderExchange();
-      if (typeof renderRooms === 'function') { renderRooms(); initOshi(); }
-      if (typeof renderItemRows === 'function') renderItemRows();
-      if (typeof renderMusic === 'function') renderMusic();
+      try { if (typeof renderNotes === 'function') renderNotes(); } catch(e) {}
+      try { if (typeof renderExchange === 'function') renderExchange(); } catch(e) {}
+      try { if (typeof renderRooms === 'function') { renderRooms(); initOshi(); } } catch(e) {}
+      try { if (typeof renderItemRows === 'function') renderItemRows(); } catch(e) {}
+      try { if (typeof renderMusic === 'function') renderMusic(); } catch(e) {}
       // Under tone 路地裏 section
       checkUndertoneSection();
       // Live Archive section
@@ -5429,14 +5429,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
       if (localStorage.getItem(SWEETS_KEY) === '1' &&
           localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
-        // 保存済み → 自動入室
+        // 保存済み → パスワード自動入力のみ（エンターは必要）
         const input = document.getElementById('pw-input');
         input.value = PASSWORD;
         const cb = document.getElementById('keep-login-cb');
         if (cb) cb.checked = true;
+        // バックアップメールを入力欄に表示
         const bei = document.getElementById('backup-email-input');
         if (bei && _savedEmail) bei.value = _savedEmail;
-        _doEnter();
+        input.focus();
       } else {
         // バージョン不一致 → 旧ログイン情報をクリア
         localStorage.removeItem(SWEETS_KEY);

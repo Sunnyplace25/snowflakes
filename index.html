@@ -752,6 +752,45 @@ function sfShare() {
     </a>
   </div>
 
+  <!-- 短篇バナー 閾値（2026-07-18 12:00〜07-31） -->
+  <div id="banner-ikichi" style="display:none;max-width:680px;margin:0 auto 12px;">
+    <a id="banner-ikichi-link" href="https://ncode.syosetu.com/n9342lt/" target="_blank" rel="noopener"
+       style="display:block;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.18);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div style="pointer-events:none;position:absolute;top:14px;right:18px;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#64748b;">item ?</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">SHORT STORY · NEW</p>
+          <p style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#bfdbfe;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">閾値</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <p style="font-size:11px;color:#93c5fd;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">2026.07.18</p>
+          <p style="font-size:20px;color:#93c5fd;margin-top:4px;">→</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- 短篇連載バナー まだ鳴っている（2026-07-20 23:00〜08-31） -->
+  <div id="banner-mada" style="display:none;max-width:680px;margin:0 auto 12px;">
+    <a id="banner-mada-link" href="https://ncode.syosetu.com/n8678mk/" target="_blank" rel="noopener"
+       style="display:block;text-decoration:none;border-radius:16px;padding:24px 32px;background:rgba(125,211,252,0.02);border:1px solid rgba(125,211,252,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div style="pointer-events:none;position:absolute;top:14px;right:18px;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:3px;color:#64748b;">item ?</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:6px;">SHORT STORY SERIES · <span id="banner-mada-ep-label">ep.1</span></p>
+          <p style="font-size:clamp(15px,2.5vw,20px);font-weight:300;color:#bae6fd;font-family:'Noto Serif JP',serif;letter-spacing:0.04em;">まだ鳴っている</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <p style="font-size:11px;color:#7dd3fc;font-family:'Cormorant Garamond',serif;letter-spacing:1px;">2026.07.20〜</p>
+          <p style="font-size:20px;color:#7dd3fc;margin-top:4px;">→</p>
+        </div>
+      </div>
+    </a>
+  </div>
 
   <!-- 連続ログインカレンダー -->
   <div id="login-cal-card" style="max-width:680px;margin:0 auto 40px;border-radius:18px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.12);padding:24px 20px;">
@@ -1107,6 +1146,50 @@ function sfShare() {
       // Moon Veil カード：常に表示
       var card = document.getElementById('short-moonveil-card');
       if (card) card.style.display = 'flex';
+    })();
+  </script>
+
+  <script>
+    // ── 短篇バナー：閾値 & まだ鳴っている ──
+    (function() {
+      var IKICHI_START = new Date('2026-07-18T12:00:00+09:00');
+      var IKICHI_END   = new Date('2026-07-31T23:59:59+09:00');
+      var MADA_START   = new Date('2026-07-20T23:00:00+09:00');
+      var MADA_TOP     = new Date('2026-07-28T00:00:00+09:00');
+      var MADA_END     = new Date('2026-08-31T23:59:59+09:00');
+
+      function updateStoryBanners() {
+        var now = new Date();
+
+        // 閾値
+        var ikichi = document.getElementById('banner-ikichi');
+        if (ikichi) {
+          ikichi.style.display = (now >= IKICHI_START && now <= IKICHI_END) ? 'block' : 'none';
+        }
+
+        // まだ鳴っている
+        var mada = document.getElementById('banner-mada');
+        if (mada) {
+          mada.style.display = (now >= MADA_START && now <= MADA_END) ? 'block' : 'none';
+        }
+
+        // EP リンク更新
+        var madaLink = document.getElementById('banner-mada-link');
+        var madaLabel = document.getElementById('banner-mada-ep-label');
+        if (madaLink && now >= MADA_START) {
+          if (now >= MADA_TOP) {
+            madaLink.href = 'https://ncode.syosetu.com/n8678mk/';
+            if (madaLabel) madaLabel.textContent = '連載';
+          } else {
+            var ep = Math.min(8, Math.floor((now - MADA_START) / 86400000) + 1);
+            madaLink.href = 'https://ncode.syosetu.com/n8678mk/' + ep + '/';
+            if (madaLabel) madaLabel.textContent = 'ep.' + ep;
+          }
+        }
+      }
+
+      updateStoryBanners();
+      setInterval(updateStoryBanners, 60000);
     })();
   </script>
 
@@ -2336,6 +2419,27 @@ function sfShare() {
       });
     }
 
+    // 閾値バナー クリック → 戻ってきたらランダムアイテム付与（1回限り）
+    var ikichiBanner = document.getElementById('banner-ikichi-link');
+    if (ikichiBanner) {
+      ikichiBanner.addEventListener('click', function() {
+        if (!localStorage.getItem('sf_ikichi_item')) {
+          sessionStorage.setItem('sf_pending_ikichi_item', '1');
+        }
+      });
+    }
+
+    // まだ鳴っているバナー クリック → 戻ってきたらランダムアイテム付与（1日1回）
+    var madaBanner = document.getElementById('banner-mada-link');
+    if (madaBanner) {
+      madaBanner.addEventListener('click', function() {
+        var today = new Date().toISOString().slice(0, 10);
+        if (localStorage.getItem('sf_mada_item_' + today) !== '1') {
+          sessionStorage.setItem('sf_pending_mada_item', '1');
+        }
+      });
+    }
+
     // 封印解放バナー クリック → 戻ってきたらドリンクコイン付与（1回限り）
     var sealedBanner = document.getElementById('sealed-banner');
     if (sealedBanner) {
@@ -2376,6 +2480,29 @@ function sfShare() {
           SfSnow.unlockItem(item.key);
           SfSnow.addMItemDirect(item.key, 1);
           showBannerItemPopup(item);
+        }
+        // 閾値バナー ランダムアイテム付与（1回限り）
+        if (sessionStorage.getItem('sf_pending_ikichi_item') && !localStorage.getItem('sf_ikichi_item')) {
+          sessionStorage.removeItem('sf_pending_ikichi_item');
+          localStorage.setItem('sf_ikichi_item', '1');
+          var ikichi = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
+          SfSnow.unlockItem(ikichi.key);
+          SfSnow.addMItemDirect(ikichi.key, 1);
+          showBannerItemPopup(ikichi);
+        }
+        // まだ鳴っているバナー ランダムアイテム付与（1日1回）
+        if (sessionStorage.getItem('sf_pending_mada_item')) {
+          var todayMada = new Date().toISOString().slice(0, 10);
+          if (localStorage.getItem('sf_mada_item_' + todayMada) !== '1') {
+            sessionStorage.removeItem('sf_pending_mada_item');
+            localStorage.setItem('sf_mada_item_' + todayMada, '1');
+            var mada = SF_BANNER_ITEMS[Math.floor(Math.random() * SF_BANNER_ITEMS.length)];
+            SfSnow.unlockItem(mada.key);
+            SfSnow.addMItemDirect(mada.key, 1);
+            showBannerItemPopup(mada);
+          } else {
+            sessionStorage.removeItem('sf_pending_mada_item');
+          }
         }
         // 短篇バナー ドリンクコイン付与（1回限り）
         if (sessionStorage.getItem('sf_pending_short_item') && !localStorage.getItem('sf_short_item_kyori1')) {
