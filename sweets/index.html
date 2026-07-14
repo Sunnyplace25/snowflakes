@@ -5429,15 +5429,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
       if (localStorage.getItem(SWEETS_KEY) === '1' &&
           localStorage.getItem(SWEETS_VER_KEY) === SWEETS_VERSION) {
-        // 保存済み → パスワード自動入力のみ（エンターは必要）
+        // 保存済み → 自動入室
         const input = document.getElementById('pw-input');
         input.value = PASSWORD;
         const cb = document.getElementById('keep-login-cb');
         if (cb) cb.checked = true;
-        // バックアップメールを入力欄に表示
         const bei = document.getElementById('backup-email-input');
         if (bei && _savedEmail) bei.value = _savedEmail;
-        input.focus();
+        _doEnter();
       } else {
         // バージョン不一致 → 旧ログイン情報をクリア
         localStorage.removeItem(SWEETS_KEY);
