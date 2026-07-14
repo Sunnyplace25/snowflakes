@@ -3906,7 +3906,7 @@ document.addEventListener('visibilitychange', function() {
     el.id = 'sf-hint';
     el.style.cssText = 'position:fixed;z-index:7500;opacity:0;transition:opacity 0.35s,transform 0.35s;pointer-events:auto;';
     el.innerHTML =
-      '<div style="background:rgba(13,20,38,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:16px 18px 14px;min-width:180px;max-width:210px;position:relative;box-shadow:0 4px 24px rgba(0,0,0,0.5);">' +
+      '<div style="background:rgba(13,20,38,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:16px 18px 14px;min-width:180px;max-width:min(210px,calc(100vw - 20px));position:relative;box-shadow:0 4px 24px rgba(0,0,0,0.5);">' +
         '<p id="sf-hint-text" style="font-size:13px;color:#e2e8f0;line-height:1.9;letter-spacing:0.5px;margin:0 0 14px;font-family:\'Noto Serif JP\',serif;font-weight:300;"></p>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;">' +
           '<button id="sf-hint-next" style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:3px;color:#93c5fd;background:none;border:1px solid rgba(147,197,253,0.3);border-radius:100px;padding:5px 14px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'rgba(147,197,253,0.7)\'" onmouseout="this.style.borderColor=\'rgba(147,197,253,0.3)\'">次へ →</button>' +
@@ -3987,6 +3987,22 @@ document.addEventListener('visibilitychange', function() {
     hintEl.style.transform = 'translateY(8px)';
     positionHint(STEPS[idx]);
     requestAnimationFrame(function() {
+      // ビューポートからはみ出していたら位置を修正
+      var rect = hintEl.getBoundingClientRect();
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var pad = 10;
+      if (hintEl.style.top && rect.bottom > vh - pad) {
+        hintEl.style.top = Math.max(pad, parseFloat(hintEl.style.top) - (rect.bottom - vh + pad)) + 'px';
+      }
+      if (hintEl.style.top && parseFloat(hintEl.style.top) < pad) {
+        hintEl.style.top = pad + 'px';
+      }
+      if (hintEl.style.left && rect.right > vw - pad) {
+        hintEl.style.left = Math.max(pad, parseFloat(hintEl.style.left) - (rect.right - vw + pad)) + 'px';
+      }
+      if (hintEl.style.right && rect.left < pad) {
+        hintEl.style.right = Math.max(pad, parseFloat(hintEl.style.right) - (pad - rect.left)) + 'px';
+      }
       requestAnimationFrame(function() {
         hintEl.style.opacity   = '1';
         hintEl.style.transform = 'translateY(0)';
