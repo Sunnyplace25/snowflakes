@@ -953,6 +953,28 @@
       </div>
     </div>
 
+    <!-- 短篇バナー -->
+    <div id="banner-ikichi" style="display:none;margin-bottom:16px;padding:0 8px;">
+      <a href="https://ncode.syosetu.com/n9342lt/" target="_blank" rel="noopener"
+        style="display:block;background:rgba(249,168,212,0.05);border:1px solid rgba(249,168,212,0.2);border-radius:16px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s,background 0.2s;"
+        onmouseover="this.style.background='rgba(249,168,212,0.1)';this.style.borderColor='rgba(249,168,212,0.4)'"
+        onmouseout="this.style.background='rgba(249,168,212,0.05)';this.style.borderColor='rgba(249,168,212,0.2)'">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#f9a8d4;margin-bottom:6px;">SHORT STORY · NEW</p>
+        <p style="font-family:'Noto Serif JP',serif;font-size:14px;color:#f1f5f9;letter-spacing:1px;margin-bottom:2px;">閾値</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#94a3b8;">小説家になろう ▶</p>
+      </a>
+    </div>
+    <div id="banner-mada-nateiru" style="display:none;margin-bottom:16px;padding:0 8px;">
+      <a id="banner-mada-nateiru-link" href="https://ncode.syosetu.com/n8678mk/" target="_blank" rel="noopener"
+        style="display:block;background:rgba(147,197,253,0.05);border:1px solid rgba(147,197,253,0.2);border-radius:16px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s,background 0.2s;"
+        onmouseover="this.style.background='rgba(147,197,253,0.1)';this.style.borderColor='rgba(147,197,253,0.4)'"
+        onmouseout="this.style.background='rgba(147,197,253,0.05)';this.style.borderColor='rgba(147,197,253,0.2)'">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#93c5fd;margin-bottom:6px;">SHORT STORY SERIES · <span id="banner-mada-ep-label">UPDATE</span></p>
+        <p style="font-family:'Noto Serif JP',serif;font-size:14px;color:#f1f5f9;letter-spacing:1px;margin-bottom:2px;">まだ鳴っている</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#94a3b8;">小説家になろう ▶</p>
+      </a>
+    </div>
+
     <!-- Rooms section -->
     <div class="section" id="rooms-section">
       <div class="section-label">studio</div>
@@ -7936,21 +7958,64 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   </div>
 </div>
 
+<!-- 短篇バナー制御 -->
+<script>
+  (function() {
+    var now = new Date();
+
+    // 閾値: 2026-07-18 12:00 〜 2026-07-31
+    var ikichi_start = new Date('2026-07-18T12:00:00');
+    var ikichi_end   = new Date('2026-07-31T23:59:59');
+    if (now >= ikichi_start && now <= ikichi_end) {
+      var el = document.getElementById('banner-ikichi');
+      if (el) el.style.display = 'block';
+    }
+
+    // まだ鳴っている: 2026-07-20 23:00 〜 2026-08-31
+    var mada_start = new Date('2026-07-20T23:00:00');
+    var mada_top   = new Date('2026-07-28T00:00:00'); // 07-28〜は連載トップ
+    var mada_end   = new Date('2026-08-31T23:59:59');
+    if (now >= mada_start && now <= mada_end) {
+      var banner = document.getElementById('banner-mada-nateiru');
+      if (banner) banner.style.display = 'block';
+      var linkEl  = document.getElementById('banner-mada-nateiru-link');
+      var epLabel = document.getElementById('banner-mada-ep-label');
+      if (now >= mada_top) {
+        if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/';
+        if (epLabel) epLabel.textContent = 'COMPLETE';
+      } else {
+        var ep = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
+        if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/' + ep;
+        if (epLabel) epLabel.textContent = 'ep.' + ep + ' UPDATE';
+      }
+    }
+  })();
+</script>
+
 <!-- 最新話リンク自動更新 -->
 <script>
   (function() {
-    var BASE_EP   = 160;
-    var BASE_TIME = new Date('2026-05-11T21:00:00');
+    var BASE_EP   = 230;
+    var BASE_TIME = new Date('2026-07-14T21:00:00');
     var EXTRA_EPISODES = [
-      new Date('2026-05-23T12:00:00'),
-      new Date('2026-05-25T18:00:00'),
+      new Date('2026-07-15T18:00:00'), // #231
+      new Date('2026-07-20T18:00:00'), // #237
+      new Date('2026-07-22T18:00:00'), // #240
+      new Date('2026-07-23T18:00:00'), // #242
+      new Date('2026-08-17T21:00:00'), // #268 同時2本
+      new Date('2026-08-18T21:00:00'), // #270 同時2本
     ];
-    var now  = new Date();
-    var ms   = now - BASE_TIME;
+    var SKIP_DAYS = [
+      new Date('2026-07-23T21:00:00'), // 7/23 18時のみ
+      new Date('2026-08-19T21:00:00'), // 8/19 更新なし
+    ];
+    var now    = new Date();
+    var ms     = now - BASE_TIME;
     if (ms < 0) return;
     var days   = Math.floor(ms / 86400000);
     var extras = EXTRA_EPISODES.filter(function(d) { return now >= d; }).length;
-    var ep     = BASE_EP + days + extras;
+    var skips  = SKIP_DAYS.filter(function(d) { return now >= d; }).length;
+    var ep     = BASE_EP + days + extras - skips;
     var el     = document.getElementById('novel-latest-link');
     if (el) el.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
   })();
