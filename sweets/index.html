@@ -4926,10 +4926,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     // ── 夏のホラー特集リンク表示制御 ──
     (function() {
       var now = new Date();
-      var s = new Date('2026-07-18T00:00:00+09:00');
-      var e = new Date('2026-08-31T23:59:59+09:00');
       var wrap = document.getElementById('horror-link-wrap');
-      if (wrap && now >= s && now <= e) wrap.style.display = 'block';
+      if (wrap) wrap.style.display = 'block';
     })();
   </script>
 
