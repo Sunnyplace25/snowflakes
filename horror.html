@@ -44,9 +44,9 @@
 
     .section-label {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 8px;
-      letter-spacing: 7px;
-      color: #b91c1c;
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: #f87171;
       margin-bottom: 10px;
     }
 
@@ -61,9 +61,9 @@
 
     .header-sub {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 10px;
+      font-size: 13px;
       letter-spacing: 3px;
-      color: #334155;
+      color: #94a3b8;
       margin-bottom: 56px;
     }
 
@@ -96,12 +96,12 @@
     .story-card:hover { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.28); }
     .story-card.locked { border-color: rgba(255,255,255,0.04); background: transparent; pointer-events: none; }
 
-    .story-date { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#f87171; min-width:48px; flex-shrink:0; }
+    .story-date { font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:1px; color:#ffb3b3; min-width:60px; flex-shrink:0; }
     .story-card.locked .story-date { color:#64748b; }
-    .story-title { font-family:'Noto Serif JP',serif; font-size:14px; font-weight:300; color:#fecaca; flex:1; line-height:1.5; }
+    .story-title { font-family:'Noto Serif JP',serif; font-size:17px; font-weight:300; color:#fff5f5; flex:1; line-height:1.6; }
     .story-card.locked .story-title { color:#64748b; }
-    .story-arrow { font-size:16px; color:#f87171; flex-shrink:0; }
-    .story-card.locked .story-arrow { color:#334155; }
+    .story-arrow { font-size:17px; color:#ffb3b3; flex-shrink:0; }
+    .story-card.locked .story-arrow { color:#475569; }
 
     /* シリーズ */
     .series-block { margin-bottom: 28px; }
@@ -121,14 +121,14 @@
     .ep-row:hover { background:rgba(239,68,68,0.05); }
     .ep-row.locked { pointer-events:none; }
 
-    .ep-num   { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:2px; color:#b91c1c; min-width:28px; flex-shrink:0; }
-    .ep-row.locked .ep-num { color:#334155; }
-    .ep-date  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:1px; color:#f87171; min-width:46px; flex-shrink:0; }
+    .ep-num   { font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:2px; color:#ffb3b3; min-width:40px; flex-shrink:0; }
+    .ep-row.locked .ep-num { color:#475569; }
+    .ep-date  { font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:1px; color:#ffb3b3; min-width:58px; flex-shrink:0; }
     .ep-row.locked .ep-date { color:#64748b; }
-    .ep-title { font-family:'Noto Serif JP',serif; font-size:12px; font-weight:300; color:#fecaca; flex:1; line-height:1.4; }
+    .ep-title { font-family:'Noto Serif JP',serif; font-size:16px; font-weight:300; color:#fff5f5; flex:1; line-height:1.6; }
     .ep-row.locked .ep-title { color:#64748b; }
-    .ep-arrow { font-size:12px; color:#f87171; flex-shrink:0; }
-    .ep-row.locked .ep-arrow { color:#334155; }
+    .ep-arrow { font-size:16px; color:#ffb3b3; flex-shrink:0; }
+    .ep-row.locked .ep-arrow { color:#475569; }
 
     .divider { height:1px; background:rgba(255,255,255,0.03); margin:24px 0; }
 
@@ -207,6 +207,49 @@
     .ex-card.locked .ex-card-title { color: #64748b; }
     .ex-card.locked .ex-card-label { color: #334155; }
     .ex-card.locked .ex-card-toggle { color: #334155; font-size: 9px; letter-spacing: 2px; }
+
+    /* タグバッジ */
+    .story-tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #f87171;
+      flex-shrink: 0;
+    }
+    .story-tag.tag-series { color: #fde68a; border-color: rgba(253,230,138,0.35); }
+
+    /* シリーズ展開行 */
+    details.series-details { margin-bottom: 2px; }
+    .series-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(239,68,68,0.14);
+      background: rgba(239,68,68,0.025);
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      transition: background 0.25s, border-color 0.25s;
+      color: inherit;
+    }
+    .series-row::-webkit-details-marker { display: none; }
+    details summary::-webkit-details-marker { display: none; }
+    .series-row:hover { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.28); }
+    .series-arrow { font-size: 9px; color: #f87171; flex-shrink: 0; transition: transform 0.2s; }
+    details[open] .series-arrow { transform: rotate(90deg); }
+    .series-meta-row {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #94a3b8;
+      padding: 8px 22px 6px;
+    }
+    .ep-list-wrap { padding-left: 8px; }
   </style>
 </head>
 <body>
@@ -218,19 +261,9 @@
   <h1>夏のホラー特集</h1>
   <p class="header-sub">2026.07.18 — 08.16</p>
 
-  <!-- WEB EXCLUSIVE -->
-  <div class="story-section">
-    <p class="story-section-label">WEB EXCLUSIVE</p>
-    <div class="ex-card" id="ex-card-kankei">
-      <div class="ex-card-header" onclick="toggleEx(this)">
-        <div class="ex-card-meta">
-          <p class="ex-card-label">夏のSnow flakes EXTRA STORY</p>
-          <p class="ex-card-title">関係者</p>
-        </div>
-        <span class="ex-card-toggle">読む</span>
-      </div>
-      <div class="ex-card-body">
-        <p class="ex-story-text">　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
+  <div id="story-timeline"></div>
+<!--STORYTEXT_START
+　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
 
 　金属が擦れ、冷たい朝の空気が一気に入ってくる。
 
@@ -1403,67 +1436,24 @@
 　けれど。
 
 　女性がどこから部屋を出たのか、
-　誰も見ていなかった。</p>
-        <button class="ex-close-btn" onclick="toggleEx(this.closest('.ex-card').querySelector('.ex-card-header'))">── 閉じる ──</button>
-      </div>
-    </div>
-  </div>
-
-  <div style="height:8px;"></div>
-  <div id="ex-link-yoninnme"></div>
-
-  <div style="height:8px;"></div>
-  <div id="ex-link-tebiki"></div>
-
-  <div class="divider"></div>
-
-  <!-- 単発 -->
-  <div class="story-section">
-    <p class="story-section-label">SHORT STORY</p>
-    <div id="short-stories"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- シリーズ一覧 -->
-  <div class="story-section">
-    <p class="story-section-label">SERIES</p>
-    <div id="series-list"></div>
-  </div>
+　誰も見ていなかった。
+STORYTEXT_END-->
 
 </div>
 
 <script>
 (function() {
   var now = new Date();
-  function avail(dateStr) { return now >= new Date(dateStr); }
+  function avail(d) { return now >= new Date(d); }
 
-  /* ── 単発 ── */
-  var shorts = [
-    { date:'2026-07-18T00:00:00+09:00', label:'07.18', title:'閾値', url:'https://ncode.syosetu.com/n9342lt/' },
-    { date:'2026-07-19T00:00:00+09:00', label:'07.19', title:'出禁', url:'https://ncode.syosetu.com/n1609mm/' },
-  ];
-
-  var shortWrap = document.getElementById('short-stories');
-  shorts.forEach(function(s) {
-    var ok = avail(s.date);
-    var el = document.createElement(ok ? 'a' : 'div');
-    el.className = 'story-card' + (ok ? '' : ' locked');
-    if (ok) { el.href = s.url; el.target = '_blank'; el.rel = 'noopener'; }
-    el.innerHTML =
-      '<span class="story-date">' + s.label + '</span>' +
-      '<span class="story-title">' + (ok ? s.title : '？？？') + '</span>' +
-      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-    shortWrap.appendChild(el);
-  });
-
-  /* ── シリーズ ── */
-  var seriesList = [
+  var timeline = [
+    { type:'story', date:'2026-07-18T00:00:00+09:00', label:'07.18', title:'閾値',    url:'https://ncode.syosetu.com/n9342lt/' },
+    { type:'story', date:'2026-07-19T00:00:00+09:00', label:'07.19', title:'出禁',    url:'https://ncode.syosetu.com/n1609mm/' },
     {
-      title: 'まだ、鳴っている',
-      meta:  '全9話 · 2026.07.20 — 07.28 · 毎晩23:00',
-      baseUrl: 'https://ncode.syosetu.com/n8678mk/',
-      eps: [
+      type:'series', label:'07.20', title:'まだ、鳴っている',
+      meta:'全9話 · 07.20 — 07.28 · 毎晩23:00',
+      baseUrl:'https://ncode.syosetu.com/n8678mk/',
+      eps:[
         { ep:1, date:'2026-07-20T23:00:00+09:00', label:'07.20', title:'四拍目が来ない' },
         { ep:2, date:'2026-07-21T23:00:00+09:00', label:'07.21', title:'叩き返すな' },
         { ep:3, date:'2026-07-22T23:00:00+09:00', label:'07.22', title:'知らない音が鳴っている' },
@@ -1475,11 +1465,14 @@
         { ep:9, date:'2026-07-28T23:00:00+09:00', label:'07.28', title:'誰もいないアンコール' },
       ]
     },
+    { type:'web',   date:'2026-07-30T23:00:00+09:00', label:'07.30', title:'関係者', url:'./horror_kankei.html' },
+    { type:'web',   date:'2026-08-02T23:00:00+09:00', label:'08.02', title:'四人目', url:'./horror_yoninnme.html' },
+    { type:'web',   date:'2026-08-06T23:00:00+09:00', label:'08.06', title:'手引き', url:'./horror_tebiki.html' },
     {
-      title: '音の鳴る石',
-      meta:  '全7話 · 2026.08.10 — 08.16 · 毎晩23:00',
-      baseUrl: 'https://ncode.syosetu.com/n5455ml/',
-      eps: [
+      type:'series', label:'08.10', title:'音の鳴る石',
+      meta:'全7話 · 08.10 — 08.16 · 毎晩23:00',
+      baseUrl:'https://ncode.syosetu.com/n5455ml/',
+      eps:[
         { ep:1, date:'2026-08-10T23:00:00+09:00', label:'08.10', title:'序章　赤いランプ' },
         { ep:2, date:'2026-08-11T23:00:00+09:00', label:'08.11', title:'第一章　煙の指輪' },
         { ep:3, date:'2026-08-12T23:00:00+09:00', label:'08.12', title:'第二章　片耳の光' },
@@ -1491,96 +1484,64 @@
     },
   ];
 
-  var seriesWrap = document.getElementById('series-list');
-  seriesList.forEach(function(s, si) {
-    if (si > 0) {
-      var div = document.createElement('div');
-      div.className = 'divider';
-      div.style.margin = '28px 0';
-      seriesWrap.appendChild(div);
-    }
-    var block = document.createElement('div');
-    block.className = 'series-block';
-    block.innerHTML =
-      '<div class="series-header">' +
-        '<p class="series-title">' + s.title + '</p>' +
-        '<p class="series-meta">' + s.meta + '</p>' +
-      '</div>' +
-      '<div class="ep-list" id="ep-list-' + si + '"></div>';
-    seriesWrap.appendChild(block);
+  var wrap = document.getElementById('story-timeline');
 
-    var epWrap = document.getElementById('ep-list-' + si);
-    s.eps.forEach(function(e) {
-      var ok = avail(e.date);
+  timeline.forEach(function(item) {
+    if (item.type === 'story' || item.type === 'web') {
+      var ok = avail(item.date);
       var el = document.createElement(ok ? 'a' : 'div');
-      el.className = 'ep-row' + (ok ? '' : ' locked');
-      if (ok) { el.href = s.baseUrl + e.ep; el.target = '_blank'; el.rel = 'noopener'; }
+      el.className = 'story-card' + (ok ? '' : ' locked');
+      if (ok) {
+        el.href = item.url;
+        if (item.type === 'story') { el.target = '_blank'; el.rel = 'noopener'; }
+      }
+      var tag = item.type === 'web'
+        ? '<span class="story-tag">WEB限定</span>'
+        : '';
       el.innerHTML =
-        '<span class="ep-num">ep.' + e.ep + '</span>' +
-        '<span class="ep-date">' + e.label + '</span>' +
-        '<span class="ep-title">' + (ok ? e.title : '？？？') + '</span>' +
-        '<span class="ep-arrow">' + (ok ? '→' : '—') + '</span>';
-      epWrap.appendChild(el);
-    });
+        '<span class="story-date">' + item.label + '</span>' +
+        '<span class="story-title">' + (ok ? item.title : '？？？') + '</span>' +
+        tag +
+        '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
+      wrap.appendChild(el);
+
+    } else if (item.type === 'series') {
+      var details = document.createElement('details');
+      details.className = 'series-details';
+
+      var summary = document.createElement('summary');
+      summary.className = 'series-row';
+      summary.innerHTML =
+        '<span class="story-date">' + item.label + '</span>' +
+        '<span class="story-title">' + item.title + '</span>' +
+        '<span class="story-tag tag-series">連載</span>' +
+        '<span class="series-arrow">▶</span>';
+      details.appendChild(summary);
+
+      var metaEl = document.createElement('p');
+      metaEl.className = 'series-meta-row';
+      metaEl.textContent = item.meta;
+      details.appendChild(metaEl);
+
+      var epList = document.createElement('div');
+      epList.className = 'ep-list ep-list-wrap';
+      item.eps.forEach(function(e) {
+        var ok = avail(e.date);
+        var row = document.createElement(ok ? 'a' : 'div');
+        row.className = 'ep-row' + (ok ? '' : ' locked');
+        if (ok) { row.href = item.baseUrl + e.ep; row.target = '_blank'; row.rel = 'noopener'; }
+        row.innerHTML =
+          '<span class="ep-num">ep.' + e.ep + '</span>' +
+          '<span class="ep-date">' + e.label + '</span>' +
+          '<span class="ep-title">' + (ok ? e.title : '？？？') + '</span>' +
+          '<span class="ep-arrow">' + (ok ? '→' : '—') + '</span>';
+        epList.appendChild(row);
+      });
+      details.appendChild(epList);
+
+      wrap.appendChild(details);
+    }
   });
-})();
-</script>
-
-<script>
-function toggleEx(header) {
-  var card = header.closest('.ex-card');
-  var body = card.querySelector('.ex-card-body');
-  var toggle = header.querySelector('.ex-card-toggle');
-  var isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  if (toggle) toggle.textContent = isOpen ? '読む' : '閉じる';
-}
-
-(function() {
-  var YONIN_DATE = new Date('2026-08-02T23:00:00+09:00');
-  var wrap = document.getElementById('ex-link-yoninnme');
-  if (wrap) {
-    var ok = new Date() >= YONIN_DATE;
-    var el = document.createElement(ok ? 'a' : 'div');
-    el.className = 'story-card' + (ok ? '' : ' locked');
-    if (ok) { el.href = './horror_yoninnme.html'; }
-    el.innerHTML =
-      '<span class="story-date">08.02</span>' +
-      '<span class="story-title">' + (ok ? '四人目' : '？？？') + '</span>' +
-      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-    wrap.appendChild(el);
-  }
-})();
-
-(function() {
-  var TEBIKI_DATE = new Date('2026-08-06T23:00:00+09:00');
-  var wrap = document.getElementById('ex-link-tebiki');
-  if (wrap) {
-    var ok = new Date() >= TEBIKI_DATE;
-    var el = document.createElement(ok ? 'a' : 'div');
-    el.className = 'story-card' + (ok ? '' : ' locked');
-    if (ok) { el.href = './horror_tebiki.html'; }
-    el.innerHTML =
-      '<span class="story-date">08.06</span>' +
-      '<span class="story-title">' + (ok ? '手引き' : '？？？') + '</span>' +
-      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-    wrap.appendChild(el);
-  }
-})();
-
-(function() {
-  var KANKEI_DATE = new Date('2026-07-30T23:00:00+09:00');
-  var card = document.getElementById('ex-card-kankei');
-  if (!card) return;
-  var ok = new Date() >= KANKEI_DATE;
-  var el = document.createElement(ok ? 'a' : 'div');
-  el.className = 'story-card' + (ok ? '' : ' locked');
-  if (ok) { el.href = './horror_kankei.html'; }
-  el.innerHTML =
-    '<span class="story-date">07.30</span>' +
-    '<span class="story-title">' + (ok ? '関係者' : '？？？') + '</span>' +
-    '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-  card.parentNode.replaceChild(el, card);
 })();
 </script>
 
