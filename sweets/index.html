@@ -1474,7 +1474,7 @@
           </div>
 
           <!-- SAKU -->
-          <div id="rare-saku-section" style="margin-bottom:10px;">
+          <div id="rare-saku-section" style="margin-bottom:10px;display:none;" data-show-from="2026-09-01T00:00:00+09:00">
             <div onclick="toggleRareSection('saku')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(196,181,253,0.08);border-radius:8px;padding:10px 14px;cursor:pointer;user-select:none;">
               <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:5px;color:#c4b5fd;">SAKU</span>
               <span id="rare-saku-arrow" style="font-size:13px;color:#c4b5fd;transition:transform 0.3s;">›</span>
@@ -4932,6 +4932,16 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       var now = new Date();
       var wrap = document.getElementById('horror-link-wrap');
       if (wrap) wrap.style.display = 'block';
+    })();
+
+    // ── data-show-from による表示制御 ──
+    (function() {
+      var now = new Date();
+      document.querySelectorAll('[data-show-from]').forEach(function(el) {
+        if (now >= new Date(el.getAttribute('data-show-from'))) {
+          el.style.display = '';
+        }
+      });
     })();
   </script>
 
