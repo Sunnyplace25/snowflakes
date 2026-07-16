@@ -1548,6 +1548,34 @@ STORYTEXT_END-->
 })();
 </script>
 
+<audio id="horror-bgm" loop preload="none"></audio>
+<button id="bgm-btn" onclick="toggleBGM()" style="position:fixed;bottom:24px;right:20px;z-index:100;background:rgba(10,10,20,0.75);border:1px solid rgba(239,68,68,0.25);border-radius:50px;padding:8px 16px;color:#f87171;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color 0.2s,color 0.2s;">♪ BGM</button>
+<script>
+var _bgmPlaying = false;
+var _bgmTracks = ['./horror_bgm.mp3', './horror_bgm2.mp3'];
+function toggleBGM() {
+  var audio = document.getElementById('horror-bgm');
+  var btn   = document.getElementById('bgm-btn');
+  if (_bgmPlaying) {
+    audio.pause();
+    btn.style.color = '#f87171';
+    btn.style.borderColor = 'rgba(239,68,68,0.25)';
+    btn.textContent = '♪ BGM';
+    _bgmPlaying = false;
+  } else {
+    if (!audio.src || audio.ended || audio.paused && audio.currentTime === 0) {
+      audio.src = _bgmTracks[Math.floor(Math.random() * _bgmTracks.length)];
+    }
+    audio.volume = 0.15;
+    audio.play();
+    btn.style.color = '#fca5a5';
+    btn.style.borderColor = 'rgba(239,68,68,0.6)';
+    btn.textContent = '♪ ON';
+    _bgmPlaying = true;
+  }
+}
+</script>
+
 <canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 <script>
 (function() {
