@@ -18,6 +18,16 @@
       padding: 60px 20px 100px;
     }
 
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('./horror_bg.webp') center center / 55% auto no-repeat;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .container { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
 
     .back-link {
