@@ -693,6 +693,17 @@ function toggleBGM() {
     _bgmPlaying = true;
   }
 }
+window.addEventListener('load', function() {
+  var btn = document.getElementById('bgm-btn');
+  _bgmAudio.src = _bgmTracks[_bgmIndex];
+  _bgmAudio.volume = 0.15;
+  _bgmAudio.play().then(function() {
+    btn.style.color = '#fca5a5';
+    btn.style.borderColor = 'rgba(239,68,68,0.6)';
+    btn.textContent = '♪ ON';
+    _bgmPlaying = true;
+  }).catch(function() {});
+});
 </script>
 
 <canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
