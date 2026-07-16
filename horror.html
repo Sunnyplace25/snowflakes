@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>夏のホラー特集 — Snow flakes</title>
+  <link rel="icon" href="./favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a14;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      padding: 60px 20px 100px;
+    }
+
+    .container { max-width: 600px; margin: 0 auto; }
+
+    .back-link {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #475569;
+      text-decoration: none;
+      margin-bottom: 52px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: #94a3b8; }
+
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 8px;
+      letter-spacing: 7px;
+      color: #7f1d1d;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: clamp(22px, 4.5vw, 30px);
+      color: #fca5a5;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .header-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #334155;
+      margin-bottom: 56px;
+    }
+
+    .story-section { margin-bottom: 44px; }
+
+    .story-section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 8px;
+      letter-spacing: 5px;
+      color: #7f1d1d;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(239,68,68,0.1);
+      margin-bottom: 12px;
+    }
+
+    /* 単発カード */
+    .story-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(239,68,68,0.14);
+      background: rgba(239,68,68,0.025);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.25s, border-color 0.25s;
+      margin-bottom: 8px;
+    }
+    .story-card:hover { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.28); }
+    .story-card.locked { border-color: rgba(255,255,255,0.04); background: transparent; pointer-events: none; }
+
+    .story-date { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#ef4444; min-width:48px; flex-shrink:0; }
+    .story-card.locked .story-date { color:#1e293b; }
+    .story-title { font-family:'Noto Serif JP',serif; font-size:14px; font-weight:300; color:#fca5a5; flex:1; line-height:1.5; }
+    .story-card.locked .story-title { color:#1e293b; }
+    .story-arrow { font-size:16px; color:#ef4444; flex-shrink:0; }
+    .story-card.locked .story-arrow { color:#1e293b; }
+
+    /* シリーズ */
+    .series-block { margin-bottom: 28px; }
+
+    .series-header { margin-bottom: 14px; }
+    .series-title { font-family:'Noto Serif JP',serif; font-size:clamp(16px,3.5vw,21px); font-weight:300; color:#fca5a5; margin-bottom:5px; }
+    .series-meta  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:#334155; }
+
+    .ep-list { display:flex; flex-direction:column; gap:2px; }
+
+    .ep-row {
+      display:flex; align-items:center; gap:12px;
+      padding:11px 18px; border-radius:10px;
+      text-decoration:none; color:inherit;
+      transition:background 0.2s;
+    }
+    .ep-row:hover { background:rgba(239,68,68,0.05); }
+    .ep-row.locked { pointer-events:none; }
+
+    .ep-num   { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:2px; color:#7f1d1d; min-width:28px; flex-shrink:0; }
+    .ep-row.locked .ep-num { color:#1e293b; }
+    .ep-date  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:1px; color:#ef4444; min-width:46px; flex-shrink:0; }
+    .ep-row.locked .ep-date { color:#334155; }
+    .ep-title { font-family:'Noto Serif JP',serif; font-size:12px; font-weight:300; color:#fca5a5; flex:1; line-height:1.4; }
+    .ep-row.locked .ep-title { color:#1e293b; }
+    .ep-arrow { font-size:12px; color:#ef4444; flex-shrink:0; }
+    .ep-row.locked .ep-arrow { color:#1e293b; }
+
+    .divider { height:1px; background:rgba(255,255,255,0.03); margin:24px 0; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <a href="./" class="back-link">← SNOW FLAKES</a>
+
+  <p class="section-label">SUMMER HORROR 2026</p>
+  <h1>夏のホラー特集</h1>
+  <p class="header-sub">2026.07.18 — 08.16</p>
+
+  <!-- 単発 -->
+  <div class="story-section">
+    <p class="story-section-label">SHORT STORY</p>
+    <div id="short-stories"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- シリーズ一覧 -->
+  <div class="story-section">
+    <p class="story-section-label">SERIES</p>
+    <div id="series-list"></div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var now = new Date();
+  function avail(dateStr) { return now >= new Date(dateStr); }
+
+  /* ── 単発 ── */
+  var shorts = [
+    { date:'2026-07-18T00:00:00+09:00', label:'07.18', title:'閾値', url:'https://ncode.syosetu.com/n9342lt/' },
+    { date:'2026-07-19T00:00:00+09:00', label:'07.19', title:'出禁', url:'https://ncode.syosetu.com/n1609mm/' },
+  ];
+
+  var shortWrap = document.getElementById('short-stories');
+  shorts.forEach(function(s) {
+    var ok = avail(s.date);
+    var el = document.createElement(ok ? 'a' : 'div');
+    el.className = 'story-card' + (ok ? '' : ' locked');
+    if (ok) { el.href = s.url; el.target = '_blank'; el.rel = 'noopener'; }
+    el.innerHTML =
+      '<span class="story-date">' + s.label + '</span>' +
+      '<span class="story-title">' + s.title + '</span>' +
+      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
+    shortWrap.appendChild(el);
+  });
+
+  /* ── シリーズ ── */
+  var seriesList = [
+    {
+      title: 'まだ、鳴っている',
+      meta:  '全9話 · 2026.07.20 — 07.28 · 毎晩23:00',
+      baseUrl: 'https://ncode.syosetu.com/n8678mk/',
+      eps: [
+        { ep:1, date:'2026-07-20T23:00:00+09:00', label:'07.20', title:'四拍目が来ない' },
+        { ep:2, date:'2026-07-21T23:00:00+09:00', label:'07.21', title:'叩き返すな' },
+        { ep:3, date:'2026-07-22T23:00:00+09:00', label:'07.22', title:'知らない音が鳴っている' },
+        { ep:4, date:'2026-07-23T23:00:00+09:00', label:'07.23', title:'氷が呼ぶ' },
+        { ep:5, date:'2026-07-24T23:00:00+09:00', label:'07.24', title:'返しが先に鳴る' },
+        { ep:6, date:'2026-07-25T23:00:00+09:00', label:'07.25', title:'怖' },
+        { ep:7, date:'2026-07-26T23:00:00+09:00', label:'07.26', title:'一緒にいすぎてこわい' },
+        { ep:8, date:'2026-07-27T23:00:00+09:00', label:'07.27', title:'幸せすぎてこわい' },
+        { ep:9, date:'2026-07-28T23:00:00+09:00', label:'07.28', title:'誰もいないアンコール' },
+      ]
+    },
+    {
+      title: '音の鳴る石',
+      meta:  '全7話 · 2026.08.10 — 08.16 · 毎晩23:00',
+      baseUrl: 'https://ncode.syosetu.com/n5455ml/',
+      eps: [
+        { ep:1, date:'2026-08-10T23:00:00+09:00', label:'08.10', title:'序章　赤いランプ' },
+        { ep:2, date:'2026-08-11T23:00:00+09:00', label:'08.11', title:'第一章　煙の指輪' },
+        { ep:3, date:'2026-08-12T23:00:00+09:00', label:'08.12', title:'第二章　片耳の光' },
+        { ep:4, date:'2026-08-13T23:00:00+09:00', label:'08.13', title:'第三章　青い歌' },
+        { ep:5, date:'2026-08-14T23:00:00+09:00', label:'08.14', title:'第四章　取材' },
+        { ep:6, date:'2026-08-15T23:00:00+09:00', label:'08.15', title:'第五章　Under tone' },
+        { ep:7, date:'2026-08-16T23:00:00+09:00', label:'08.16', title:'終章　残響' },
+      ]
+    },
+  ];
+
+  var seriesWrap = document.getElementById('series-list');
+  seriesList.forEach(function(s, si) {
+    if (si > 0) {
+      var div = document.createElement('div');
+      div.className = 'divider';
+      div.style.margin = '28px 0';
+      seriesWrap.appendChild(div);
+    }
+    var block = document.createElement('div');
+    block.className = 'series-block';
+    block.innerHTML =
+      '<div class="series-header">' +
+        '<p class="series-title">' + s.title + '</p>' +
+        '<p class="series-meta">' + s.meta + '</p>' +
+      '</div>' +
+      '<div class="ep-list" id="ep-list-' + si + '"></div>';
+    seriesWrap.appendChild(block);
+
+    var epWrap = document.getElementById('ep-list-' + si);
+    s.eps.forEach(function(e) {
+      var ok = avail(e.date);
+      var el = document.createElement(ok ? 'a' : 'div');
+      el.className = 'ep-row' + (ok ? '' : ' locked');
+      if (ok) { el.href = s.baseUrl + e.ep; el.target = '_blank'; el.rel = 'noopener'; }
+      el.innerHTML =
+        '<span class="ep-num">ep.' + e.ep + '</span>' +
+        '<span class="ep-date">' + e.label + '</span>' +
+        '<span class="ep-title">' + e.title + '</span>' +
+        '<span class="ep-arrow">' + (ok ? '→' : '—') + '</span>';
+      epWrap.appendChild(el);
+    });
+  });
+})();
+</script>
+</body>
+</html>
