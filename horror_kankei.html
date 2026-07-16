@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>夏のホラー特集 — Snow flakes</title>
+  <title>関係者 — 夏のホラー特集</title>
   <link rel="icon" href="./favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
     }
     .back-link:hover { color: #94a3b8; }
 
-    .section-label {
+    .story-label {
       font-family: 'Cormorant Garamond', serif;
       font-size: 8px;
       letter-spacing: 7px;
@@ -59,7 +59,7 @@
       margin-bottom: 6px;
     }
 
-    .header-sub {
+    .story-date {
       font-family: 'Cormorant Garamond', serif;
       font-size: 10px;
       letter-spacing: 3px;
@@ -67,170 +67,35 @@
       margin-bottom: 56px;
     }
 
-    .story-section { margin-bottom: 44px; }
-
-    .story-section-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 8px;
-      letter-spacing: 5px;
-      color: #b91c1c;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(239,68,68,0.1);
-      margin-bottom: 12px;
-    }
-
-    /* 単発カード */
-    .story-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 20px;
-      border-radius: 14px;
-      border: 1px solid rgba(239,68,68,0.14);
-      background: rgba(239,68,68,0.025);
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.25s, border-color 0.25s;
-      margin-bottom: 8px;
-    }
-    .story-card:hover { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.28); }
-    .story-card.locked { border-color: rgba(255,255,255,0.04); background: transparent; pointer-events: none; }
-
-    .story-date { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#f87171; min-width:48px; flex-shrink:0; }
-    .story-card.locked .story-date { color:#64748b; }
-    .story-title { font-family:'Noto Serif JP',serif; font-size:14px; font-weight:300; color:#fecaca; flex:1; line-height:1.5; }
-    .story-card.locked .story-title { color:#64748b; }
-    .story-arrow { font-size:16px; color:#f87171; flex-shrink:0; }
-    .story-card.locked .story-arrow { color:#334155; }
-
-    /* シリーズ */
-    .series-block { margin-bottom: 28px; }
-
-    .series-header { margin-bottom: 14px; }
-    .series-title { font-family:'Noto Serif JP',serif; font-size:clamp(16px,3.5vw,21px); font-weight:300; color:#fecaca; margin-bottom:5px; }
-    .series-meta  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:#334155; }
-
-    .ep-list { display:flex; flex-direction:column; gap:2px; }
-
-    .ep-row {
-      display:flex; align-items:center; gap:12px;
-      padding:11px 18px; border-radius:10px;
-      text-decoration:none; color:inherit;
-      transition:background 0.2s;
-    }
-    .ep-row:hover { background:rgba(239,68,68,0.05); }
-    .ep-row.locked { pointer-events:none; }
-
-    .ep-num   { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:2px; color:#b91c1c; min-width:28px; flex-shrink:0; }
-    .ep-row.locked .ep-num { color:#334155; }
-    .ep-date  { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:1px; color:#f87171; min-width:46px; flex-shrink:0; }
-    .ep-row.locked .ep-date { color:#64748b; }
-    .ep-title { font-family:'Noto Serif JP',serif; font-size:12px; font-weight:300; color:#fecaca; flex:1; line-height:1.4; }
-    .ep-row.locked .ep-title { color:#64748b; }
-    .ep-arrow { font-size:12px; color:#f87171; flex-shrink:0; }
-    .ep-row.locked .ep-arrow { color:#334155; }
-
-    .divider { height:1px; background:rgba(255,255,255,0.03); margin:24px 0; }
-
-    /* WEB EXCLUSIVE */
-    .ex-card {
-      border: 1px solid rgba(239,68,68,0.14);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .ex-card-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 22px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .ex-card-header:hover { background: rgba(239,68,68,0.05); }
-    .ex-card-meta {
-      flex: 1;
-    }
-    .ex-card-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 8px;
-      letter-spacing: 5px;
-      color: #b91c1c;
-      margin-bottom: 5px;
-    }
-    .ex-card-title {
+    .story-body {
       font-family: 'Noto Serif JP', serif;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 300;
-      color: #fecaca;
-      letter-spacing: 0.05em;
-    }
-    .ex-card-toggle {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: #f87171;
-      flex-shrink: 0;
-      transition: opacity 0.2s;
-    }
-    .ex-card-body {
-      display: none;
-      padding: 0 28px 32px;
-      border-top: 1px solid rgba(239,68,68,0.08);
-    }
-    .ex-card-body.open { display: block; }
-    .ex-story-text {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 13px;
-      font-weight: 300;
-      color: #cbd5e1;
-      line-height: 2.4;
+      color: #e2e8f0;
+      line-height: 2.6;
       white-space: pre-wrap;
-      padding-top: 28px;
     }
-    .ex-close-btn {
-      display: block;
-      margin: 28px auto 0;
-      background: none;
-      border: 1px solid rgba(239,68,68,0.2);
-      border-radius: 50px;
-      padding: 10px 32px;
-      color: #f87171;
+
+    .story-end {
       font-family: 'Cormorant Garamond', serif;
       font-size: 11px;
       letter-spacing: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
+      color: #334155;
+      text-align: center;
+      margin-top: 56px;
     }
-    .ex-close-btn:hover { background: rgba(239,68,68,0.06); }
-
-    .ex-card.locked .ex-card-header { cursor: default; pointer-events: none; }
-    .ex-card.locked .ex-card-title { color: #64748b; }
-    .ex-card.locked .ex-card-label { color: #334155; }
-    .ex-card.locked .ex-card-toggle { color: #334155; font-size: 9px; letter-spacing: 2px; }
   </style>
 </head>
 <body>
 <div class="container">
 
-  <a href="./" class="back-link">← SNOW FLAKES</a>
+  <a href="./horror.html" class="back-link">← SUMMER HORROR 2026</a>
 
-  <p class="section-label">SUMMER HORROR 2026</p>
-  <h1>夏のホラー特集</h1>
-  <p class="header-sub">2026.07.18 — 08.16</p>
+  <p class="story-label">WEB EXCLUSIVE · 夏のSnow flakes EXTRA STORY</p>
+  <h1>関係者</h1>
+  <p class="story-date">2026.07.30</p>
 
-  <!-- WEB EXCLUSIVE -->
-  <div class="story-section">
-    <p class="story-section-label">WEB EXCLUSIVE</p>
-    <div class="ex-card" id="ex-card-kankei">
-      <div class="ex-card-header" onclick="toggleEx(this)">
-        <div class="ex-card-meta">
-          <p class="ex-card-label">夏のSnow flakes EXTRA STORY</p>
-          <p class="ex-card-title">関係者</p>
-        </div>
-        <span class="ex-card-toggle">読む</span>
-      </div>
-      <div class="ex-card-body">
-        <p class="ex-story-text">　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
+  <div class="story-body">　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
 
 　金属が擦れ、冷たい朝の空気が一気に入ってくる。
 
@@ -1403,167 +1268,11 @@
 　けれど。
 
 　女性がどこから部屋を出たのか、
-　誰も見ていなかった。</p>
-        <button class="ex-close-btn" onclick="toggleEx(this.closest('.ex-card').querySelector('.ex-card-header'))">── 閉じる ──</button>
-      </div>
-    </div>
-  </div>
+　誰も見ていなかった。</div>
 
-  <div style="height:8px;"></div>
-  <div id="ex-link-yoninnme"></div>
-
-  <div class="divider"></div>
-
-  <!-- 単発 -->
-  <div class="story-section">
-    <p class="story-section-label">SHORT STORY</p>
-    <div id="short-stories"></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- シリーズ一覧 -->
-  <div class="story-section">
-    <p class="story-section-label">SERIES</p>
-    <div id="series-list"></div>
-  </div>
+  <p class="story-end">＊</p>
 
 </div>
-
-<script>
-(function() {
-  var now = new Date();
-  function avail(dateStr) { return now >= new Date(dateStr); }
-
-  /* ── 単発 ── */
-  var shorts = [
-    { date:'2026-07-18T00:00:00+09:00', label:'07.18', title:'閾値', url:'https://ncode.syosetu.com/n9342lt/' },
-    { date:'2026-07-19T00:00:00+09:00', label:'07.19', title:'出禁', url:'https://ncode.syosetu.com/n1609mm/' },
-  ];
-
-  var shortWrap = document.getElementById('short-stories');
-  shorts.forEach(function(s) {
-    var ok = avail(s.date);
-    var el = document.createElement(ok ? 'a' : 'div');
-    el.className = 'story-card' + (ok ? '' : ' locked');
-    if (ok) { el.href = s.url; el.target = '_blank'; el.rel = 'noopener'; }
-    el.innerHTML =
-      '<span class="story-date">' + s.label + '</span>' +
-      '<span class="story-title">' + (ok ? s.title : '？？？') + '</span>' +
-      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-    shortWrap.appendChild(el);
-  });
-
-  /* ── シリーズ ── */
-  var seriesList = [
-    {
-      title: 'まだ、鳴っている',
-      meta:  '全9話 · 2026.07.20 — 07.28 · 毎晩23:00',
-      baseUrl: 'https://ncode.syosetu.com/n8678mk/',
-      eps: [
-        { ep:1, date:'2026-07-20T23:00:00+09:00', label:'07.20', title:'四拍目が来ない' },
-        { ep:2, date:'2026-07-21T23:00:00+09:00', label:'07.21', title:'叩き返すな' },
-        { ep:3, date:'2026-07-22T23:00:00+09:00', label:'07.22', title:'知らない音が鳴っている' },
-        { ep:4, date:'2026-07-23T23:00:00+09:00', label:'07.23', title:'氷が呼ぶ' },
-        { ep:5, date:'2026-07-24T23:00:00+09:00', label:'07.24', title:'返しが先に鳴る' },
-        { ep:6, date:'2026-07-25T23:00:00+09:00', label:'07.25', title:'怖' },
-        { ep:7, date:'2026-07-26T23:00:00+09:00', label:'07.26', title:'一緒にいすぎてこわい' },
-        { ep:8, date:'2026-07-27T23:00:00+09:00', label:'07.27', title:'幸せすぎてこわい' },
-        { ep:9, date:'2026-07-28T23:00:00+09:00', label:'07.28', title:'誰もいないアンコール' },
-      ]
-    },
-    {
-      title: '音の鳴る石',
-      meta:  '全7話 · 2026.08.10 — 08.16 · 毎晩23:00',
-      baseUrl: 'https://ncode.syosetu.com/n5455ml/',
-      eps: [
-        { ep:1, date:'2026-08-10T23:00:00+09:00', label:'08.10', title:'序章　赤いランプ' },
-        { ep:2, date:'2026-08-11T23:00:00+09:00', label:'08.11', title:'第一章　煙の指輪' },
-        { ep:3, date:'2026-08-12T23:00:00+09:00', label:'08.12', title:'第二章　片耳の光' },
-        { ep:4, date:'2026-08-13T23:00:00+09:00', label:'08.13', title:'第三章　青い歌' },
-        { ep:5, date:'2026-08-14T23:00:00+09:00', label:'08.14', title:'第四章　取材' },
-        { ep:6, date:'2026-08-15T23:00:00+09:00', label:'08.15', title:'第五章　Under tone' },
-        { ep:7, date:'2026-08-16T23:00:00+09:00', label:'08.16', title:'終章　残響' },
-      ]
-    },
-  ];
-
-  var seriesWrap = document.getElementById('series-list');
-  seriesList.forEach(function(s, si) {
-    if (si > 0) {
-      var div = document.createElement('div');
-      div.className = 'divider';
-      div.style.margin = '28px 0';
-      seriesWrap.appendChild(div);
-    }
-    var block = document.createElement('div');
-    block.className = 'series-block';
-    block.innerHTML =
-      '<div class="series-header">' +
-        '<p class="series-title">' + s.title + '</p>' +
-        '<p class="series-meta">' + s.meta + '</p>' +
-      '</div>' +
-      '<div class="ep-list" id="ep-list-' + si + '"></div>';
-    seriesWrap.appendChild(block);
-
-    var epWrap = document.getElementById('ep-list-' + si);
-    s.eps.forEach(function(e) {
-      var ok = avail(e.date);
-      var el = document.createElement(ok ? 'a' : 'div');
-      el.className = 'ep-row' + (ok ? '' : ' locked');
-      if (ok) { el.href = s.baseUrl + e.ep; el.target = '_blank'; el.rel = 'noopener'; }
-      el.innerHTML =
-        '<span class="ep-num">ep.' + e.ep + '</span>' +
-        '<span class="ep-date">' + e.label + '</span>' +
-        '<span class="ep-title">' + (ok ? e.title : '？？？') + '</span>' +
-        '<span class="ep-arrow">' + (ok ? '→' : '—') + '</span>';
-      epWrap.appendChild(el);
-    });
-  });
-})();
-</script>
-
-<script>
-function toggleEx(header) {
-  var card = header.closest('.ex-card');
-  var body = card.querySelector('.ex-card-body');
-  var toggle = header.querySelector('.ex-card-toggle');
-  var isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  if (toggle) toggle.textContent = isOpen ? '読む' : '閉じる';
-}
-
-(function() {
-  var YONIN_DATE = new Date('2026-08-02T23:00:00+09:00');
-  var wrap = document.getElementById('ex-link-yoninnme');
-  if (wrap) {
-    var ok = new Date() >= YONIN_DATE;
-    var el = document.createElement(ok ? 'a' : 'div');
-    el.className = 'story-card' + (ok ? '' : ' locked');
-    if (ok) { el.href = './horror_yoninnme.html'; }
-    el.innerHTML =
-      '<span class="story-date">08.02</span>' +
-      '<span class="story-title">' + (ok ? '四人目' : '？？？') + '</span>' +
-      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-    wrap.appendChild(el);
-  }
-})();
-
-(function() {
-  var KANKEI_DATE = new Date('2026-07-30T23:00:00+09:00');
-  var card = document.getElementById('ex-card-kankei');
-  if (!card) return;
-  var ok = new Date() >= KANKEI_DATE;
-  var el = document.createElement(ok ? 'a' : 'div');
-  el.className = 'story-card' + (ok ? '' : ' locked');
-  if (ok) { el.href = './horror_kankei.html'; }
-  el.innerHTML =
-    '<span class="story-date">07.30</span>' +
-    '<span class="story-title">' + (ok ? '関係者' : '？？？') + '</span>' +
-    '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
-  card.parentNode.replaceChild(el, card);
-})();
-</script>
 
 <canvas id="snow-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 <script>
