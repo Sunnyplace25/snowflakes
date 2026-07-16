@@ -1412,6 +1412,9 @@
   <div style="height:8px;"></div>
   <div id="ex-link-yoninnme"></div>
 
+  <div style="height:8px;"></div>
+  <div id="ex-link-tebiki"></div>
+
   <div class="divider"></div>
 
   <!-- 単発 -->
@@ -1544,6 +1547,22 @@ function toggleEx(header) {
     el.innerHTML =
       '<span class="story-date">08.02</span>' +
       '<span class="story-title">' + (ok ? '四人目' : '？？？') + '</span>' +
+      '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
+    wrap.appendChild(el);
+  }
+})();
+
+(function() {
+  var TEBIKI_DATE = new Date('2026-08-06T23:00:00+09:00');
+  var wrap = document.getElementById('ex-link-tebiki');
+  if (wrap) {
+    var ok = new Date() >= TEBIKI_DATE;
+    var el = document.createElement(ok ? 'a' : 'div');
+    el.className = 'story-card' + (ok ? '' : ' locked');
+    if (ok) { el.href = './horror_tebiki.html'; }
+    el.innerHTML =
+      '<span class="story-date">08.06</span>' +
+      '<span class="story-title">' + (ok ? '手引き' : '？？？') + '</span>' +
       '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
     wrap.appendChild(el);
   }
