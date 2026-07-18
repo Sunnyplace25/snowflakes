@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIVE Archive — SWEETs Summer 2026 | Snow flakes</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>#sf-snow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4;}
+  #bgm-btn{position:fixed;bottom:24px;right:20px;z-index:100;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:8px 16px;color:rgba(255,255,255,0.3);font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    body {
+      background: #0c1220;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 60px 20px 80px;
+    }
+
+    .wrap {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 5px;
+      color: #64748b;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #e2e8f0;
+      text-align: center;
+      line-height: 2;
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #475569;
+      text-align: center;
+      line-height: 2.2;
+      margin-bottom: 40px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 24px 0;
+    }
+
+    .setlist-item {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #cbd5e1;
+      line-height: 2.2;
+    }
+
+    .mc-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #64748b;
+      margin: 28px 0 14px;
+    }
+
+    .mc-line {
+      font-size: 10px;
+      letter-spacing: 1px;
+      line-height: 2.4;
+      color: #cbd5e1;
+    }
+
+    .mc-line .hay { color: #fde68a; }
+    .mc-line .kou { color: #fca5a5; }
+    .mc-line .hin { color: #93c5fd; }
+    .mc-line .aud { color: #64748b; }
+
+    .encore-divider {
+      text-align: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #334155;
+      margin: 32px 0;
+    }
+
+    .end-note {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #334155;
+      margin-top: 32px;
+    }
+
+    .back-btn {
+      display: block;
+      text-align: center;
+      margin-top: 48px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #64748b;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<canvas id="sf-snow"></canvas>
+<audio id="bgm" src="se_bgm.mp3" preload="auto"></audio>
+<button id="bgm-btn" onclick="toggleBgm()">▶ music</button>
+<div class="wrap">
+
+  <p class="eyebrow">2026 SWEETs Summer LIVE</p>
+  <p class="title">Snow flakes<br>2026 Summer Festival</p>
+  <p class="meta">野外フェス</p>
+
+  <hr class="divider">
+
+  <p class="setlist-item" style="color:#475569;font-size:9px;letter-spacing:3px;margin-bottom:8px;cursor:pointer;" onclick="var b=document.getElementById('bgm');b.currentTime=0;b.play().catch(function(){});">SE（Snow flakes）</p>
+  <p class="setlist-item">M01. </p>
+  <p class="setlist-item">M02. </p>
+  <p class="setlist-item">M03. </p>
+  <p class="setlist-item">M04. </p>
+
+  <p class="mc-label">MC １</p>
+  <div class="mc-line">
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M05. </p>
+  <p class="setlist-item">M06. </p>
+  <p class="setlist-item">M07. </p>
+  <p class="setlist-item">M08. </p>
+
+  <p class="mc-label">MC ２</p>
+  <div class="mc-line">
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M09. </p>
+  <p class="setlist-item">M10. </p>
+  <p class="setlist-item">M11. </p>
+
+  <p class="mc-label">MC ３</p>
+  <div class="mc-line">
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M12. </p>
+
+  <p class="end-note" style="margin-top:16px;">（終演）</p>
+
+  <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
+
+  <!-- Festival Band Gate（未解放時） -->
+  <div id="festival-gate" style="display:none;margin-top:60px;">
+    <hr class="divider">
+    <div style="text-align:center;padding:8px 0 32px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:24px;">── Festival Band ──</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;">フェスのあとで</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#64748b;letter-spacing:1px;margin-bottom:28px;">楽屋裏のはなし</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;margin-bottom:20px;">Festival Band を使いますか？</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+        <button onclick="useFestivalBandPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#7dd3fc;border:1px solid rgba(125,211,252,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">はい</button>
+        <button onclick="document.getElementById('festival-gate').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">いいえ</button>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:16px;">または</p>
+      <a href="#" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.25);border-radius:50px;padding:10px 24px;text-decoration:none;display:inline-block;">¥100 で楽屋をのぞく</a>
+    </div>
+  </div>
+
+  <!-- Festival Band 限定 -->
+  <div id="festival-section" style="display:none;margin-top:60px;">
+    <hr class="divider">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;text-align:center;margin-bottom:32px;">── Festival Band ──</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:28px;">フェスのあとで</p>
+
+    <div style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;line-height:2.6;color:#cbd5e1;">
+      <p>（準備中）</p>
+    </div>
+  </div>
+
+</div>
+<script>
+  // BGM
+  var bgm = document.getElementById('bgm');
+  var bgmBtn = document.getElementById('bgm-btn');
+  bgm.volume = 0.15;
+
+  function updateBgmBtn() {
+    bgmBtn.textContent = bgm.paused ? '▶ music' : '■ music';
+  }
+  bgm.addEventListener('play', updateBgmBtn);
+  bgm.addEventListener('pause', updateBgmBtn);
+  bgm.addEventListener('ended', updateBgmBtn);
+
+  function toggleBgm() {
+    if (bgm.paused) { bgm.play().catch(function(){}); }
+    else { bgm.pause(); }
+  }
+
+  bgm.play().catch(function() {
+    document.addEventListener('click', function startBgm() {
+      bgm.play().catch(function(){});
+      document.removeEventListener('click', startBgm);
+    }, { once: true });
+  });
+
+  // Festival Band チェック
+  function showFestival() {
+    document.getElementById('festival-gate').style.display = 'none';
+    document.getElementById('festival-section').style.display = 'block';
+  }
+
+  window.useFestivalBandPass = function() {
+    try {
+      var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+      if (unlocked.indexOf('festival_band') === -1) { alert('フェスリストバンドを持っていません'); return; }
+    } catch(e) { return; }
+    showFestival();
+  };
+
+  (function() {
+    try {
+      // ?general=1 は一般入場 → Festival非表示
+      if (location.search.indexOf('general=1') !== -1) {
+        history.replaceState(null, '', location.pathname);
+        return;
+      }
+
+      // ?fb=1 で課金後リダイレクトされた場合
+      if (location.search.indexOf('fb=1') !== -1) {
+        localStorage.setItem('sf_festival_paid', '1');
+        history.replaceState(null, '', location.pathname);
+      }
+
+      var unlocked = JSON.parse(localStorage.getItem('sf_unlocked') || '[]');
+      var hasBand = unlocked.indexOf('festival_band') !== -1;
+      var hasPaid = localStorage.getItem('sf_festival_paid') === '1';
+
+      if (hasBand || hasPaid) {
+        showFestival();
+      } else {
+        document.getElementById('festival-gate').style.display = 'block';
+      }
+    } catch(e) {}
+  })();
+
+  const canvas = document.getElementById('sf-snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 70}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
