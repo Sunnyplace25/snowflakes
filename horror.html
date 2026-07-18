@@ -140,6 +140,8 @@
 
     .story-date { font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:1px; color:#ffb3b3; min-width:60px; flex-shrink:0; }
     .story-card.locked .story-date { color:#64748b; }
+    .story-time { display:block; font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#94a3b8; margin-top:2px; }
+    .story-card.locked .story-time { color:#475569; }
     .story-title { font-family:'Noto Serif JP',serif; font-size:17px; font-weight:300; color:#fff5f5; flex:1; line-height:1.6; }
     .story-card.locked .story-title { color:#64748b; }
     .story-arrow { font-size:17px; color:#ffb3b3; flex-shrink:0; }
@@ -167,6 +169,8 @@
     .ep-row.locked .ep-num { color:#475569; }
     .ep-date  { font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:1px; color:#ffb3b3; min-width:58px; flex-shrink:0; }
     .ep-row.locked .ep-date { color:#64748b; }
+    .ep-time { display:block; font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#94a3b8; margin-top:2px; }
+    .ep-row.locked .ep-time { color:#475569; }
     .ep-title { font-family:'Noto Serif JP',serif; font-size:16px; font-weight:300; color:#fff5f5; flex:1; line-height:1.6; }
     .ep-row.locked .ep-title { color:#64748b; }
     .ep-arrow { font-size:16px; color:#ffb3b3; flex-shrink:0; }
@@ -1492,6 +1496,7 @@ STORYTEXT_END-->
 (function() {
   var now = new Date();
   function avail(d) { return now >= new Date(d); }
+  function timeLabel(iso) { var m = iso.match(/T(\d{2}:\d{2})/); return m ? m[1] : ''; }
 
   var timeline = [
     { type:'story', date:'2026-07-18T00:00:00+09:00', label:'07.18', title:'閾値',    url:'https://ncode.syosetu.com/n9342lt/' },
@@ -1545,8 +1550,9 @@ STORYTEXT_END-->
       var tag = item.type === 'web'
         ? '<span class="story-tag">SWEETs限定</span>'
         : '';
+      var t = timeLabel(item.date);
       el.innerHTML =
-        '<span class="story-date">' + item.label + '</span>' +
+        '<span class="story-date">' + item.label + (t ? '<span class="story-time">' + t + '</span>' : '') + '</span>' +
         '<span class="story-title">' + (ok ? item.title : '？？？') + '</span>' +
         tag +
         '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
@@ -1577,9 +1583,10 @@ STORYTEXT_END-->
         var row = document.createElement(ok ? 'a' : 'div');
         row.className = 'ep-row' + (ok ? '' : ' locked');
         if (ok) { row.href = item.baseUrl + e.ep; row.target = '_blank'; row.rel = 'noopener'; }
+        var et = timeLabel(e.date);
         row.innerHTML =
           '<span class="ep-num">ep.' + e.ep + '</span>' +
-          '<span class="ep-date">' + e.label + '</span>' +
+          '<span class="ep-date">' + e.label + (et ? '<span class="ep-time">' + et + '</span>' : '') + '</span>' +
           '<span class="ep-title">' + (ok ? e.title : '？？？') + '</span>' +
           '<span class="ep-arrow">' + (ok ? '→' : '—') + '</span>';
         epList.appendChild(row);
