@@ -4616,18 +4616,7 @@
       </div><!-- /post-content -->
       </div><!-- /post-card -->
 
-      <div id="ss-ikichi" class="post-card" style="display:none;">
-        <div class="post-header">
-          <div class="post-header-left">
-            <div class="post-tag">short story</div>
-            <div class="post-title">閾値</div>
-            <div class="post-date">2026</div>
-          </div>
-          <a href="https://ncode.syosetu.com/n9342lt/" target="_blank" rel="noopener" class="read-btn" style="text-decoration:none;">読む</a>
-        </div>
-      </div>
-
-      <div id="ss-mada" class="post-card" style="display:none;">
+<div id="ss-mada" class="post-card" style="display:none;">
         <div class="post-header">
           <div class="post-header-left">
             <div class="post-tag">short story series</div>
@@ -8048,14 +8037,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   (function() {
     var now = new Date();
 
-    // 閾値: 2026-07-18 12:00〜
-    var ikichi_start = new Date('2026-07-18T12:00:00');
-    if (now >= ikichi_start) {
-      var ssIkichi = document.getElementById('ss-ikichi');
-      if (ssIkichi) ssIkichi.style.display = 'block';
-    }
-
-    // まだ鳴っている: 2026-07-20 23:00 〜 2026-08-31
+// まだ鳴っている: 2026-07-20 23:00 〜 2026-08-31
     var mada_start = new Date('2026-07-20T23:00:00');
     var mada_top   = new Date('2026-07-28T00:00:00'); // 07-28〜は連載トップ
     var mada_end   = new Date('2026-08-31T23:59:59');
