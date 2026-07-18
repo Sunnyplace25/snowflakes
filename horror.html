@@ -21,14 +21,29 @@
       padding: 60px 20px 100px;
     }
 
+    @keyframes bgFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 0.08; }
+    }
+
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 6px rgba(248,113,113,0.5), 0 0 14px rgba(239,68,68,0.25); }
+      to   { text-shadow: 0 0 12px rgba(248,113,113,1), 0 0 28px rgba(239,68,68,0.7), 0 0 50px rgba(185,28,28,0.45); }
+    }
+
+    body {
+      --bg-img: url('./horror_bg.webp');
+    }
+
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: url('./horror_bg.webp') center center / 55% auto no-repeat;
-      opacity: 0.08;
+      background: var(--bg-img) center center / 55% auto no-repeat;
+      opacity: 0;
       pointer-events: none;
       z-index: 0;
+      animation: bgFadeIn 2.4s ease forwards;
     }
 
     .container { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
@@ -51,6 +66,7 @@
       letter-spacing: 6px;
       color: #f87171;
       margin-bottom: 10px;
+      animation: glowPulse 2.2s ease-in-out infinite alternate;
     }
 
     h1 {
@@ -60,6 +76,8 @@
       color: #fca5a5;
       letter-spacing: 0.08em;
       margin-bottom: 6px;
+      animation: glowPulse 2.2s ease-in-out infinite alternate;
+      animation-delay: 0.3s;
     }
 
     .header-sub {
@@ -67,8 +85,29 @@
       font-size: 13px;
       letter-spacing: 3px;
       color: #94a3b8;
-      margin-bottom: 56px;
+      margin-bottom: 40px;
+      animation: glowPulse 2.2s ease-in-out infinite alternate;
+      animation-delay: 0.6s;
     }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 52px;
+      background: none;
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 50px;
+      padding: 8px 20px;
+      color: #f87171;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .share-btn:hover { background: rgba(239,68,68,0.07); border-color: rgba(239,68,68,0.45); }
+    .share-btn svg { width: 13px; height: 13px; fill: none; stroke: #f87171; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
     .story-section { margin-bottom: 44px; }
 
@@ -262,7 +301,12 @@
 
   <p class="section-label">SUMMER HORROR 2026</p>
   <h1>夏のホラー特集</h1>
-  <p class="header-sub">2026.07.18 — 08.16</p>
+  <p class="header-sub">2026.07.18 — 08.16 &nbsp;23:00</p>
+
+  <button class="share-btn" onclick="shareHorror()">
+    <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    SHARE
+  </button>
 
   <div id="story-timeline"></div>
 <!--STORYTEXT_START
@@ -1562,6 +1606,43 @@ STORYTEXT_END-->
       Sound Production：Snow flakes
     </p>
   </div>
+
+<script>
+// ランダム背景
+(function() {
+  var imgs = [
+    './horror_bg.webp',   // 既存
+    './horror_bg2.webp',  // オレンジ髪女の子
+    './horror_bg3.webp',  // レコーダー写真
+    './horror_bg4.webp',  // スタジオ背面女の子
+    './horror_bg5.webp',  // 赤髪男・ギター
+    './horror_bg6.webp',  // バーテンダー女の子
+    './horror_bg7.webp',  // 茶髪男・ギター
+    './horror_bg8.webp',  // 金髪男・ドラム
+  ];
+  var picked = imgs[Math.floor(Math.random() * imgs.length)];
+  document.body.style.setProperty('--bg-img', 'url("' + picked + '")');
+})();
+
+// シェア
+function shareHorror() {
+  var data = {
+    title: '夏のホラー特集 — Snow flakes',
+    text: 'SUMMER HORROR 2026\n夏のホラー特集\n2026.07.18 — 08.16',
+    url: 'https://sunnyplace25.github.io/snowflakes/horror.html'
+  };
+  if (navigator.share) {
+    navigator.share(data).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(data.url).then(function() {
+      var btn = document.querySelector('.share-btn');
+      var orig = btn.innerHTML;
+      btn.textContent = 'COPIED';
+      setTimeout(function() { btn.innerHTML = orig; }, 1800);
+    });
+  }
+}
+</script>
 
 <audio id="horror-bgm" preload="none"></audio>
 <button id="bgm-btn" onclick="toggleBGM()" style="position:fixed;bottom:24px;right:20px;z-index:100;background:rgba(10,10,20,0.75);border:1px solid rgba(239,68,68,0.25);border-radius:50px;padding:8px 16px;color:#f87171;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color 0.2s,color 0.2s;">♪ BGM</button>
