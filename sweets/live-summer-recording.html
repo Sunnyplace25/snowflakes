@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Recording — NORTH COAST RISING 2026 | Snow flakes</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { overflow-x: hidden; }
+    body {
+      background: linear-gradient(to bottom, #0a1628 0%, #0e2754 25%, #2d1b6e 55%, #7c2d52 78%, #c2410c 92%, #ea8c1a 100%);
+      background-attachment: fixed;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 60px 20px 80px;
+    }
+    #sf-snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.4; }
+    .wrap { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+      text-align: center;
+      padding-left: 6px;
+    }
+    .title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: #e2e8f0;
+      text-align: center;
+      line-height: 2;
+      margin-bottom: 10px;
+      padding-left: 3px;
+    }
+    .meta {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #7dd3fc;
+      text-align: center;
+      line-height: 2.2;
+      margin-bottom: 40px;
+      padding-left: 2px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 24px 0;
+    }
+    .track {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .track-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #475569;
+      width: 28px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .track-info { flex: 1; min-width: 0; }
+    .track-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+    .track-info audio {
+      width: 100%;
+      height: 28px;
+      accent-color: #7dd3fc;
+    }
+    .back-btn {
+      display: block;
+      text-align: center;
+      margin-top: 48px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #64748b;
+      text-decoration: none;
+    }
+    /* gate */
+    #rec-gate {
+      text-align: center;
+      padding: 60px 0 40px;
+    }
+  </style>
+</head>
+<body>
+<canvas id="sf-snow"></canvas>
+<div class="wrap">
+
+  <p class="eyebrow">NORTH COAST RISING 2026</p>
+  <p class="title">Snow flakes</p>
+  <p class="meta">LIVE RECORDING</p>
+
+  <!-- Gate（未購入時） -->
+  <div id="rec-gate">
+    <hr class="divider">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:24px;">LIVE RECORDING</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:28px;">全8曲のライブ音源を聴けます</p>
+    <a href="#" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:12px 32px;text-decoration:none;display:inline-block;">¥300 で聴く</a>
+  </div>
+
+  <!-- 音源（購入後） -->
+  <div id="rec-content" style="display:none;">
+    <hr class="divider">
+
+    <div class="track">
+      <span class="track-num">M01</span>
+      <div class="track-info">
+        <p class="track-title">Round Bounce</p>
+        <audio controls src="sf2026ncr_a7f3e.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M02</span>
+      <div class="track-info">
+        <p class="track-title">Rabbit</p>
+        <audio controls src="sf2026ncr_b2d91.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+<div class="track">
+      <span class="track-num">M03</span>
+      <div class="track-info">
+        <p class="track-title">SWEETs</p>
+        <audio controls src="sf2026ncr_c4a0f.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M04</span>
+      <div class="track-info">
+        <p class="track-title">Blue Night Drive</p>
+        <audio controls src="sf2026ncr_d8e52.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M05</span>
+      <div class="track-info">
+        <p class="track-title">Signal</p>
+        <audio controls src="sf2026ncr_e1c7b.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M06</span>
+      <div class="track-info">
+        <p class="track-title">In One Sky</p>
+        <audio controls src="sf2026ncr_f6094.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M07</span>
+      <div class="track-info">
+        <p class="track-title">Little Snow</p>
+        <audio controls src="sf2026ncr_g3d28.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <div class="track">
+      <span class="track-num">M08</span>
+      <div class="track-info">
+        <p class="track-title">プリズム</p>
+        <audio controls src="sf2026ncr_h9b4e.mp3" preload="none"></audio>
+      </div>
+    </div>
+
+    <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
+  </div>
+
+</div>
+<script>
+  (function() {
+    try {
+      var hasPaid = localStorage.getItem('sf_summer_rec_paid') === '1';
+      if (hasPaid) {
+        document.getElementById('rec-gate').style.display = 'none';
+        document.getElementById('rec-content').style.display = 'block';
+      }
+    } catch(e) {}
+  })();
+
+  const canvas = document.getElementById('sf-snow');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  const flakes = Array.from({length: 70}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    r: Math.random()*1.8+0.4, speed: Math.random()*0.5+0.15,
+    drift: (Math.random()-0.5)*0.25
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#fff';
+    for (const f of flakes) {
+      ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,Math.PI*2); ctx.fill();
+      f.y+=f.speed; f.x+=f.drift;
+      if(f.y>canvas.height+4){f.y=-4;f.x=Math.random()*canvas.width;}
+      if(f.x<-4)f.x=canvas.width+4;
+      if(f.x>canvas.width+4)f.x=-4;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>

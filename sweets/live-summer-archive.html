@@ -18,7 +18,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { overflow-x: hidden; }
     body {
-      background: #0c1220;
+      background: linear-gradient(to bottom, #0a1628 0%, #0e2754 25%, #2d1b6e 55%, #7c2d52 78%, #c2410c 92%, #ea8c1a 100%);
+      background-attachment: fixed;
       color: #e2e8f0;
       font-family: 'Noto Serif JP', serif;
       font-weight: 300;
@@ -122,7 +123,7 @@
 </head>
 <body>
 <canvas id="sf-snow"></canvas>
-<audio id="bgm" src="se_bgm.mp3" preload="auto"></audio>
+<audio id="bgm" src="bgm_summer.mp3" preload="auto"></audio>
 <button id="bgm-btn" onclick="toggleBgm()">▶ music</button>
 <div class="wrap">
 
@@ -130,81 +131,230 @@
   <p class="title">Snow flakes</p>
   <p class="meta">8.15 SAT　17:30－18:10<br>at HORIZON FIELD</p>
 
-  <hr class="divider">
-
-  <p class="setlist-item" style="color:#475569;font-size:9px;letter-spacing:3px;margin-bottom:8px;cursor:pointer;" onclick="var b=document.getElementById('bgm');b.currentTime=0;b.play().catch(function(){});">SE（Snow flakes）</p>
-  <p class="setlist-item">M01. </p>
-  <p class="setlist-item">M02. </p>
-  <p class="setlist-item">M03. </p>
-  <p class="setlist-item">M04. </p>
-
-  <p class="mc-label">MC １</p>
-  <div class="mc-line">
-  </div>
-
-  <hr class="divider">
-
-  <p class="setlist-item">M05. </p>
-  <p class="setlist-item">M06. </p>
-  <p class="setlist-item">M07. </p>
-  <p class="setlist-item">M08. </p>
-
-  <p class="mc-label">MC ２</p>
-  <div class="mc-line">
-  </div>
-
-  <hr class="divider">
-
-  <p class="setlist-item">M09. </p>
-  <p class="setlist-item">M10. </p>
-  <p class="setlist-item">M11. </p>
-
-  <p class="mc-label">MC ３</p>
-  <div class="mc-line">
-  </div>
-
-  <hr class="divider">
-
-  <p class="setlist-item">M12. </p>
-
-  <p class="end-note" style="margin-top:16px;">（終演）</p>
-
-  <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
-
   <!-- Festival Band Gate（未解放時） -->
-  <div id="festival-gate" style="display:none;margin-top:60px;">
+  <div id="festival-gate" style="display:none;margin-top:32px;">
     <hr class="divider">
     <div style="text-align:center;padding:8px 0 32px;">
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:24px;">── Festival Band ──</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;">フェスのあとで</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#64748b;letter-spacing:1px;margin-bottom:28px;">楽屋裏のはなし</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;margin-bottom:20px;">Festival Band を使いますか？</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:6px;">Backstage</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#cbd5e1;letter-spacing:1px;margin-bottom:20px;">Festival Band を使いますか？</p>
       <div style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
-        <button onclick="useFestivalBandPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#7dd3fc;border:1px solid rgba(125,211,252,0.4);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">はい</button>
-        <button onclick="document.getElementById('festival-gate').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">いいえ</button>
+        <button onclick="useFestivalBandPass()" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#7dd3fc;border:1px solid rgba(125,211,252,0.5);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">はい</button>
+        <button onclick="document.getElementById('festival-gate').style.display='none'" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#94a3b8;border:1px solid rgba(255,255,255,0.25);border-radius:50px;padding:10px 24px;background:none;cursor:pointer;">いいえ</button>
       </div>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#334155;margin-bottom:16px;">または</p>
-      <a href="#" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.25);border-radius:50px;padding:10px 24px;text-decoration:none;display:inline-block;">¥100 で楽屋をのぞく</a>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#64748b;margin-bottom:16px;">または</p>
+      <a href="#" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.45);border-radius:50px;padding:10px 24px;text-decoration:none;display:inline-block;">¥100 で楽屋をのぞく</a>
     </div>
   </div>
 
   <!-- Festival Band 限定 -->
-  <div id="festival-section" style="display:none;margin-top:60px;">
+  <div id="festival-section" style="display:none;margin-top:32px;">
     <hr class="divider">
     <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;text-align:center;margin-bottom:32px;">── Festival Band ──</p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:28px;">フェスのあとで</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#e2e8f0;margin-bottom:28px;">Backstage</p>
 
     <div style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:1px;line-height:2.6;color:#cbd5e1;">
-      <p>（準備中）</p>
+      <p style="margin-bottom:1em;">　ステージの向こうから、低い歓声が聞こえている。</p>
+      <p style="margin-bottom:1em;">　別のステージの音が、風に乗って途切れ途切れに届く。</p>
+      <p style="margin-bottom:1em;">　スタッフが忙しなく行き交う中、ハヤテは椅子に座ったまま、膝の上で両手を組んでいた。</p>
+      <p style="margin-bottom:1em;">「……人、多くない？」</p>
+      <p style="margin-bottom:1em;">　コウタがステージ袖から戻ってくる。</p>
+      <p style="margin-bottom:1em;">「多い」</p>
+      <p style="margin-bottom:1em;">「どれくらい」</p>
+      <p style="margin-bottom:1em;">「見ないほうがいい」</p>
+      <p style="margin-bottom:1em;">「見たんだろ」</p>
+      <p style="margin-bottom:1em;">「見た」</p>
+      <p style="margin-bottom:1em;">　ハヤテは小さく息を吐いた。</p>
+      <p style="margin-bottom:1em;">「聞かなきゃよかった」</p>
+      <p style="margin-bottom:1em;">　少し離れたところで、ヒナタがギターのストラップを直している。</p>
+      <p style="margin-bottom:1em;">　さっきから同じ場所を、何度も触っていた。</p>
+      <p style="margin-bottom:1em;">　コウタがそれを見る。</p>
+      <p style="margin-bottom:1em;">「それ、もう大丈夫じゃない？」</p>
+      <p style="margin-bottom:1em;">「分かってる」</p>
+      <p style="margin-bottom:1em;">「五回くらい直してるけど」</p>
+      <p style="margin-bottom:1em;">「分かってるって」</p>
+      <p style="margin-bottom:1em;">　ヒナタは手を離した。</p>
+      <p style="margin-bottom:1em;">　その直後、またストラップの位置を確かめる。</p>
+      <p style="margin-bottom:1em;">　ハヤテが笑った。</p>
+      <p style="margin-bottom:1em;">「緊張してんじゃん」</p>
+      <p style="margin-bottom:1em;">「してない」</p>
+      <p style="margin-bottom:1em;">「してる人の動きだろ、それ」</p>
+      <p style="margin-bottom:1em;">「お前もさっきから手、組んだり離したりしてるけど」</p>
+      <p style="margin-bottom:1em;">　言われて、ハヤテが手元を見る。</p>
+      <p style="margin-bottom:1em;">　すぐに両手を離した。</p>
+      <p style="margin-bottom:1em;">「これは別に」</p>
+      <p style="margin-bottom:1em;">「何が別なんだよ」</p>
+      <p style="margin-bottom:1em;">　コウタは笑いながら、ベースを肩に掛ける。</p>
+      <p style="margin-bottom:1em;">　けれど、ストラップに通した指先が少しだけ落ち着かない。</p>
+      <p style="margin-bottom:1em;">　ヒナタがそれに気づく。</p>
+      <p style="margin-bottom:1em;">「コウタも緊張してるだろ」</p>
+      <p style="margin-bottom:1em;">「俺は普通」</p>
+      <p style="margin-bottom:1em;">「さっきから水飲みすぎ」</p>
+      <p style="margin-bottom:1em;">「暑いから」</p>
+      <p style="margin-bottom:1em;">「五分で一本空けてる」</p>
+      <p style="margin-bottom:1em;">　コウタは手に持っていたペットボトルを見る。</p>
+      <p style="margin-bottom:1em;">　ほとんど空になっていた。</p>
+      <p style="margin-bottom:1em;">「……喉乾く日もあるだろ」</p>
+      <p style="margin-bottom:1em;">「今日だけな」</p>
+      <p style="margin-bottom:1em;">　三人の間に、少しだけ笑いが落ちる。</p>
+      <p style="margin-bottom:1em;">　すぐ近くで、スタッフの声が飛んだ。</p>
+      <p style="margin-bottom:1em;">「Snow flakesさん、あと五分です！」</p>
+      <p style="margin-bottom:1em;">「はい」</p>
+      <p style="margin-bottom:1em;">　三人の声が、少しだけ重なる。</p>
+      <p style="margin-bottom:1em;">　ステージ側から、客席のざわめきが大きくなっていく。</p>
+      <p style="margin-bottom:1em;">　ハヤテが立ち上がった。</p>
+      <p style="margin-bottom:1em;">「やばいな」</p>
+      <p style="margin-bottom:1em;">「何が」</p>
+      <p style="margin-bottom:1em;">「本当に始まる」</p>
+      <p style="margin-bottom:1em;">「そりゃ始まるだろ」</p>
+      <p style="margin-bottom:1em;">「分かってるけど」</p>
+      <p style="margin-bottom:1em;">　コウタがステージ袖の隙間から、もう一度客席を見る。</p>
+      <p style="margin-bottom:1em;">　前方には、Snow flakesのタオルを掲げている人がいた。</p>
+      <p style="margin-bottom:1em;">　その後ろには、まだ誰を待っているのか分からない顔も並んでいる。</p>
+      <p style="margin-bottom:1em;">「いつもの人もいる」</p>
+      <p style="margin-bottom:1em;">　コウタが言う。</p>
+      <p style="margin-bottom:1em;">「知らない人も、かなりいるけど」</p>
+      <p style="margin-bottom:1em;">　ヒナタは一度だけ、深く息を吸った。</p>
+      <p style="margin-bottom:1em;">「じゃあ、覚えて帰ってもらえばいい」</p>
+      <p style="margin-bottom:1em;">　ハヤテがヒナタを見る。</p>
+      <p style="margin-bottom:1em;">「急にそれっぽいこと言うな」</p>
+      <p style="margin-bottom:1em;">「今言わないで、いつ言うんだよ」</p>
+      <p style="margin-bottom:1em;">「確かに」</p>
+      <p style="margin-bottom:1em;">　コウタが笑う。</p>
+      <p style="margin-bottom:1em;">　ステージ上で、転換スタッフが最後の確認を終える。</p>
+      <p style="margin-bottom:1em;">　照明が一度落ちた。</p>
+      <p style="margin-bottom:1em;">　客席の声が、少し大きくなる。</p>
+      <p style="margin-bottom:1em;">　ヒナタが右手を出す。</p>
+      <p style="margin-bottom:1em;">「行くか」</p>
+      <p style="margin-bottom:1em;">　コウタがその上に手を重ねる。</p>
+      <p style="margin-bottom:1em;">　ハヤテは一瞬ためらってから、最後に手を乗せた。</p>
+      <p style="margin-bottom:1em;">「間違えても止まるなよ」</p>
+      <p style="margin-bottom:1em;">「お前が一番危ないだろ」</p>
+      <p style="margin-bottom:1em;">「今日は大丈夫」</p>
+      <p style="margin-bottom:1em;">「今日はって言うな」</p>
+      <p style="margin-bottom:1em;">　また笑いが起きる。</p>
+      <p style="margin-bottom:1em;">　スタッフが袖から顔を出した。</p>
+      <p style="margin-bottom:1em;">「スタンバイお願いします！」</p>
+      <p style="margin-bottom:1em;">　三人は手を離す。</p>
+      <p style="margin-bottom:1em;">　ヒナタが先頭に立った。</p>
+      <p style="margin-bottom:1em;">「じゃあ、行こう」</p>
+      <p style="margin-bottom:1em;">　暗いステージへ続く階段の向こうで、SEが鳴り始める。</p>
+      <p style="margin-bottom:1em;">　歓声が、一気に膨らんだ。</p>
+      <p>　三人はもう何も言わず、その音の中へ歩いていった。</p>
     </div>
   </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item" style="color:#475569;font-size:9px;letter-spacing:3px;margin-bottom:8px;">SE</p>
+  <p class="setlist-item">M01. Round Bounce</p>
+  <p class="setlist-item">M02. Rabbit</p>
+
+  <p class="mc-label">MC 1</p>
+  <div class="mc-line">
+    <p><span class="hin">ヒナタ：</span>こんにちは。Snow flakesです。</p>
+    <p><span class="kou">コウタ：</span>初めて見るって人、多いと思うんですけど。<br>立ち止まってくれて、ありがとうございます。</p>
+    <p><span class="hay">ハヤテ：</span>人、多いな。</p>
+    <p><span class="hin">ヒナタ：</span>さっき、見ないほうがいいって言われてただろ。</p>
+    <p><span class="hay">ハヤテ：</span>ステージに出たら、嫌でも見えるだろ。</p>
+    <p><span class="kou">コウタ：</span>今日は暑いので、ちゃんと水飲んでください。</p>
+    <p><span class="hin">ヒナタ：</span>お前が一番飲んでたけどな。</p>
+    <p><span class="kou">コウタ：</span>喉乾いてたんだよ。</p>
+    <p><span class="hin">ヒナタ：</span>五分で一本。</p>
+    <p><span class="kou">コウタ：</span>暑かったんだって。</p>
+    <p><span class="hin">ヒナタ：</span>俺たちの時間は、まだ始まったばっかりなんで。最後まで、一緒にいてください。</p>
+    <p><span class="hin">ヒナタ：</span>次の曲、SWEETs。</p>
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M03. SWEETs</p>
+  <p class="setlist-item">M04. Blue Night Drive</p>
+
+  <p class="mc-label">MC 2</p>
+  <div class="mc-line">
+    <p><span class="kou">コウタ：</span>ありがとうございます。</p>
+    <p><span class="hin">ヒナタ：</span>野外、すごいな。</p>
+    <p><span class="hay">ハヤテ：</span>何が？</p>
+    <p><span class="hin">ヒナタ：</span>音が、どこまでも飛んでいく感じする。</p>
+    <p><span class="kou">コウタ：</span>風に乗って、かなり遠くまで行ってそうだね。</p>
+    <p><span class="hay">ハヤテ：</span>別のステージまで聞こえてたりして。</p>
+    <p><span class="hin">ヒナタ：</span>それはちょっと迷惑だろ。</p>
+    <p><span class="kou">コウタ：</span>今日ここに来るまでにも、いろんな音を聴いたと思います。別のステージの音だったり。人の声だったり。風の音だったり。</p>
+    <p><span class="hin">ヒナタ：</span>その中に、俺たちの音も残ればいいなと思ってます。初めて聴く人も。いつも来てくれてる人も。今だけは、同じ場所にいるんで。</p>
+    <p><span class="hin">ヒナタ：</span>次の曲、Signal。</p>
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M05. Signal</p>
+  <p class="setlist-item">M06. In One Sky</p>
+
+  <p class="mc-label">MC 3</p>
+  <div class="mc-line">
+    <p><span class="hay">ハヤテ：</span>ありがとうございます。</p>
+    <p><span class="kou">コウタ：</span>ちょっと日が傾いてきたね。</p>
+    <p><span class="hin">ヒナタ：</span>さっきより風も涼しい。フェスの夕方って、少し寂しくなるんだよな。</p>
+    <p><span class="hay">ハヤテ：</span>まだ終わらないぞ。</p>
+    <p><span class="hin">ヒナタ：</span>分かってる。</p>
+    <p><span class="kou">コウタ：</span>俺たちも終わったら、普通に会場を歩いてるかもしれないです。</p>
+    <p><span class="hay">ハヤテ：</span>見つけても、飯食ってるときはそっとしといてください。</p>
+    <p><span class="hin">ヒナタ：</span>また条件つけるなよ。</p>
+    <p><span class="kou">コウタ：</span>声かけてもらって大丈夫です。ハヤテ以外は。</p>
+    <p><span class="hay">ハヤテ：</span>なんで俺だけ。</p>
+    <p><span class="hin">ヒナタ：</span>残り二曲です。<br>今日、ここで初めて会った人もいると思います。<br>たまたま通りかかって、立ち止まってくれた人も。いつも来てくれてる人も。<br>今日ここで鳴った音を、ひとつでも持って帰ってもらえたらうれしいです。</p>
+    <p><span class="hin">ヒナタ：</span>Little Snow。</p>
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M07. Little Snow</p>
+
+  <p class="mc-label">ラストMC</p>
+  <div class="mc-line">
+    <p><span class="hin">ヒナタ：</span>ありがとうございます。<br>次で最後です。</p>
+    <p><span class="kou">コウタ：</span>最後は、みんなに一緒に歌ってほしいです。<br>知らない人も、最初は聴いてるだけで大丈夫です。</p>
+    <p><span class="hay">ハヤテ：</span>何回か出てくるから。覚えたら、声を聞かせてください。</p>
+    <p><span class="hin">ヒナタ：</span>今日初めて俺たちを見た人も。ずっと聴いてくれてる人も。<br>最後は関係なく、一緒に歌ってください。</p>
+    <p><span class="hin">ヒナタ：</span>いける？</p>
+    <p><span class="aud">観客：イェーイ！</span></p>
+    <p><span class="hin">ヒナタ：</span>まだいけるだろ。</p>
+    <p><span class="aud">観客：イェーイ！</span></p>
+    <p><span class="hay">ハヤテ：</span>後ろまで、ちゃんと届かせてください。</p>
+    <p><span class="hin">ヒナタ：</span>最後の曲。<br>プリズム。</p>
+  </div>
+
+  <hr class="divider">
+
+  <p class="setlist-item">M08. プリズム</p>
+
+<div class="mc-line" style="margin-top:20px;">
+    <p><span class="hin">ヒナタ：</span>ありがとうございました。</p>
+    <p><span class="kou">コウタ：</span>最高でした。</p>
+    <p><span class="hay">ハヤテ：</span>最後まで、フェス楽しんでいってください。</p>
+    <p><span style="color:#94a3b8;">三人：ありがとうございました！</span></p>
+  </div>
+
+  <p class="end-note" style="margin-top:24px;">（終演）</p>
+
+  <hr class="divider">
+
+  <div style="text-align:center;padding:8px 0 32px;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:16px;">LIVE RECORDING</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:24px;">NORTH COAST RISING 2026<br>Snow flakes ライブ音源（全8曲）<br>全曲新規撮り下ろし</p>
+    <a href="live-summer-recording.html" target="_blank" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:50px;padding:12px 32px;text-decoration:none;display:inline-block;">¥300 で聴く</a>
+  </div>
+
+  <a class="back-btn" onclick="window.close()" href="javascript:void(0)">── 閉じる ──</a>
+
+</div>
 
 </div>
 <script>
   // BGM
   var bgm = document.getElementById('bgm');
   var bgmBtn = document.getElementById('bgm-btn');
-  bgm.volume = 0.15;
+  bgm.volume = 0.07;
 
   function updateBgmBtn() {
     bgmBtn.textContent = bgm.paused ? '▶ music' : '■ music';

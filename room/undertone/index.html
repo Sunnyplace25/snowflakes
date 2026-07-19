@@ -2319,8 +2319,8 @@ function submitUtPw() {
 
   /* ── State vars ── */
   // 8/1以降は章間待機を 48h → 24h に短縮
-  var CHAPTER_WAIT = Date.now() >= new Date('2026-08-01T00:00:00+09:00').getTime()
-    ? 86400000 : 172800000; // 8/1以降24h、それ以前48h
+  var IS_AUG1 = Date.now() >= new Date('2026-08-01T00:00:00+09:00').getTime();
+  var CHAPTER_WAIT = IS_AUG1 ? 86400000 : 172800000; // 8/1以降24h、それ以前48h
   var ch21Unlocked = localStorage.getItem('sf_undertone_ch21_unlocked') === 'true';
   var ch22Unlocked = localStorage.getItem('sf_undertone_ch22_unlocked') === 'true';
   var ch23Unlocked = localStorage.getItem('sf_undertone_ch23_unlocked') === 'true';
@@ -2351,8 +2351,11 @@ function submitUtPw() {
   /* ── Timed chapter unlock (1日1エピソード) ── */
   // key: idx that needs timer, value: idx of previous chapter (must be read first)
   var TIMED_CHAPTERS = { 6:5, 7:6, 8:7, 9:8, 11:10, 12:11, 13:12, 14:13, 16:15, 17:16, 18:17, 19:18, 20:19, 21:20, 22:21, 23:22, 24:23 };
-  // 章ごとのロック時間（ms）。全章 48h デフォルト
+  // 章ごとのロック時間（ms）。8/1以降は章内即解放（0ms）、章間はCHAPTER_WAIT
   var TIMED_THRESHOLDS = {};
+  if (IS_AUG1) {
+    [6,7,8,9,11,12,13,14,16,17,18,19,21,22,23,24].forEach(function(i){ TIMED_THRESHOLDS[i] = 0; });
+  }
 
   function getTimedState(idx) {
     var prevIdx = TIMED_CHAPTERS[idx];
