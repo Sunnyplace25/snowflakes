@@ -1553,10 +1553,9 @@ STORYTEXT_END-->
         ? '<span class="story-tag">SWEETs限定</span>'
         : '';
       var t = timeLabel(item.date);
-      var rankHtml = (ok && item.rank) ? '<span class="story-rank">' + item.rank + '</span>' : '';
       el.innerHTML =
         '<span class="story-date">' + item.label + (t ? '<span class="story-time">' + t + '</span>' : '') + '</span>' +
-        '<span class="story-title-wrap"><span class="story-title">' + (ok ? item.title : '？？？') + '</span>' + rankHtml + '</span>' +
+        '<span class="story-title-wrap"><span class="story-title">' + (ok ? item.title : '？？？') + '</span></span>' +
         tag +
         '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
       wrap.appendChild(el);
@@ -1609,7 +1608,14 @@ STORYTEXT_END-->
   </a>
 </div>
 
-<div style="text-align:center;margin-top:72px;padding-bottom:8px;">
+<div style="max-width:480px;margin:32px auto 0;padding:0 20px;">
+  <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#f87171;line-height:2.4;text-align:left;">
+    閾値 — 7.20 小説家になろう ［日間］ホラー文芸 10位 獲得<br>
+    出禁 — 7.20 小説家になろう ［日間］ホラー文芸 5位 獲得
+  </p>
+</div>
+
+<div style="text-align:center;margin-top:40px;padding-bottom:8px;">
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#334155;line-height:2.2;">
       BGM『Backstage』<br>
       Music Direction &amp; Concept：山吹ことり<br>
