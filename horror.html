@@ -142,8 +142,10 @@
     .story-card.locked .story-date { color:#64748b; }
     .story-time { display:block; font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:1px; color:#94a3b8; margin-top:2px; }
     .story-card.locked .story-time { color:#475569; }
-    .story-title { font-family:'Noto Serif JP',serif; font-size:17px; font-weight:300; color:#fff5f5; flex:1; line-height:1.6; }
+    .story-title-wrap { display:flex; flex-direction:column; flex:1; }
+    .story-title { font-family:'Noto Serif JP',serif; font-size:17px; font-weight:300; color:#fff5f5; line-height:1.6; }
     .story-card.locked .story-title { color:#64748b; }
+    .story-rank { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:2px; color:#f87171; margin-top:3px; }
     .story-arrow { font-size:17px; color:#ffb3b3; flex-shrink:0; }
     .story-card.locked .story-arrow { color:#475569; }
 
@@ -1499,8 +1501,8 @@ STORYTEXT_END-->
   function timeLabel(iso) { var m = iso.match(/T(\d{2}:\d{2})/); return m ? m[1] : ''; }
 
   var timeline = [
-    { type:'story', date:'2026-07-18T12:00:00+09:00', label:'07.18', title:'閾値',    url:'https://ncode.syosetu.com/n9342lt/' },
-    { type:'story', date:'2026-07-19T23:00:00+09:00', label:'07.19', title:'出禁',    url:'https://ncode.syosetu.com/n1609mm/' },
+    { type:'story', date:'2026-07-18T12:00:00+09:00', label:'07.18', title:'閾値',    url:'https://ncode.syosetu.com/n9342lt/', rank:'7.20 小説家になろう ［日間］ホラー文芸 10位' },
+    { type:'story', date:'2026-07-19T23:00:00+09:00', label:'07.19', title:'出禁',    url:'https://ncode.syosetu.com/n1609mm/', rank:'7.20 小説家になろう ［日間］ホラー文芸 5位' },
     {
       type:'series', label:'07.20', title:'まだ、鳴っている',
       meta:'全9話 · 07.20 — 07.28 · 毎晩23:00',
@@ -1551,9 +1553,10 @@ STORYTEXT_END-->
         ? '<span class="story-tag">SWEETs限定</span>'
         : '';
       var t = timeLabel(item.date);
+      var rankHtml = (ok && item.rank) ? '<span class="story-rank">' + item.rank + '</span>' : '';
       el.innerHTML =
         '<span class="story-date">' + item.label + (t ? '<span class="story-time">' + t + '</span>' : '') + '</span>' +
-        '<span class="story-title">' + (ok ? item.title : '？？？') + '</span>' +
+        '<span class="story-title-wrap"><span class="story-title">' + (ok ? item.title : '？？？') + '</span>' + rankHtml + '</span>' +
         tag +
         '<span class="story-arrow">' + (ok ? '→' : '—') + '</span>';
       wrap.appendChild(el);
