@@ -4616,16 +4616,6 @@
       </div><!-- /post-content -->
       </div><!-- /post-card -->
 
-<div id="ss-mada" class="post-card" style="display:none;">
-        <div class="post-header">
-          <div class="post-header-left">
-            <div class="post-tag">short story series</div>
-            <div class="post-title">まだ鳴っている</div>
-            <div class="post-date">2026</div>
-          </div>
-          <a id="ss-mada-link" href="https://ncode.syosetu.com/n8678mk/" target="_blank" rel="noopener" class="read-btn" style="text-decoration:none;">読む</a>
-        </div>
-      </div>
 
       <!-- 夏のホラー特集リンク -->
       <div id="horror-link-wrap" style="display:none;margin-top:20px;">
@@ -8048,19 +8038,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         var ep = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
         if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/' + ep;
         if (epLabel) epLabel.textContent = 'ep.' + ep + ' UPDATE';
-      }
-    }
-    if (now >= mada_start) {
-      var ssMada = document.getElementById('ss-mada');
-      var ssMadaLink = document.getElementById('ss-mada-link');
-      if (ssMada) ssMada.style.display = 'block';
-      if (ssMadaLink) {
-        if (now >= mada_top) {
-          ssMadaLink.href = 'https://ncode.syosetu.com/n8678mk/';
-        } else {
-          var epS = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
-          ssMadaLink.href = 'https://ncode.syosetu.com/n8678mk/' + epS;
-        }
       }
     }
   })();
