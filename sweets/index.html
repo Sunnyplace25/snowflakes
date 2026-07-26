@@ -4990,7 +4990,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       document.getElementById('pw-input').value = '';
       // オープン期間中はパスワード不要でそのまま入れる
       var _openStart = new Date('2026-07-01T00:00:00+09:00');
-      var _openEnd   = new Date('2026-07-31T00:00:00+09:00');
+      var _openEnd   = new Date('2026-08-31T23:59:59+09:00');
       if (_now >= _openStart && _now < _openEnd) {
         // cottoncandy入力者にはボーナス用フラグを立てる
         if (lower === PASSWORD_SUMMER) {
@@ -5446,7 +5446,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     // ページロード時：保存済みなら自動入力
     document.addEventListener('DOMContentLoaded', async function() {
-      // ゲートオープンデー (2026/07/01 〜 2026/07/31 JST) はGATEを表示したまま、エンターのみで入れる
+      // ゲートオープンデー (2026/07/01 〜 2026/08/31 JST) はGATEを表示したまま、エンターのみで入れる
 
       // Supabase から復元（localStorageが空でメールが保存されている場合）
       var _savedEmail = localStorage.getItem('sf_sweets_email');
