@@ -957,16 +957,6 @@
       </div>
     </div>
 
-<div id="banner-mada-nateiru" style="display:none;margin-bottom:16px;padding:0 8px;">
-      <a id="banner-mada-nateiru-link" href="https://ncode.syosetu.com/n8678mk/" target="_blank" rel="noopener"
-        style="display:block;background:rgba(147,197,253,0.05);border:1px solid rgba(147,197,253,0.2);border-radius:16px;padding:18px 22px;text-decoration:none;transition:border-color 0.2s,background 0.2s;"
-        onmouseover="this.style.background='rgba(147,197,253,0.1)';this.style.borderColor='rgba(147,197,253,0.4)'"
-        onmouseout="this.style.background='rgba(147,197,253,0.05)';this.style.borderColor='rgba(147,197,253,0.2)'">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#93c5fd;margin-bottom:6px;">SHORT STORY SERIES · <span id="banner-mada-ep-label">UPDATE</span></p>
-        <p style="font-family:'Noto Serif JP',serif;font-size:14px;color:#f1f5f9;letter-spacing:1px;margin-bottom:2px;">まだ鳴っている</p>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#94a3b8;">小説家になろう ▶</p>
-      </a>
-    </div>
 
     <!-- Rooms section -->
     <div class="section" id="rooms-section">
@@ -8022,24 +8012,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
   (function() {
     var now = new Date();
 
-// まだ鳴っている: 2026-07-20 23:00 〜 2026-08-31
-    var mada_start = new Date('2026-07-20T23:00:00');
-    var mada_top   = new Date('2026-07-28T00:00:00'); // 07-28〜は連載トップ
-    var mada_end   = new Date('2026-08-31T23:59:59');
-    if (now >= mada_start && now <= mada_end) {
-      var banner = document.getElementById('banner-mada-nateiru');
-      if (banner) banner.style.display = 'block';
-      var linkEl  = document.getElementById('banner-mada-nateiru-link');
-      var epLabel = document.getElementById('banner-mada-ep-label');
-      if (now >= mada_top) {
-        if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/';
-        if (epLabel) epLabel.textContent = 'COMPLETE';
-      } else {
-        var ep = Math.min(8, Math.floor((now - mada_start) / 86400000) + 1);
-        if (linkEl)  linkEl.href = 'https://ncode.syosetu.com/n8678mk/' + ep;
-        if (epLabel) epLabel.textContent = 'ep.' + ep + ' UPDATE';
-      }
-    }
   })();
 </script>
 
