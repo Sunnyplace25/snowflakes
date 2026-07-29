@@ -754,6 +754,11 @@
   .itv-modal-ok{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:10px 28px;color:#cbd5e1;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;transition:all 0.2s;}
   .itv-modal-ok:hover{border-color:rgba(255,255,255,0.4);color:#f1f5f9;}
   .itv-modal-cancel{background:none;border:1px solid rgba(255,255,255,0.06);border-radius:100px;padding:10px 24px;color:#334155;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;cursor:pointer;}
+  /* ── Summer Special Episode ── */
+  .se-unlock-btn{background:none;border:1px solid;border-radius:100px;padding:5px 12px;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;}
+  .se-unlock-btn:hover{opacity:0.8;}
+  .se-read-btn{background:none;border:1px solid rgba(255,255,255,0.14);border-radius:100px;padding:6px 16px;color:#94a3b8;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;width:100%;}
+  .se-read-btn:hover{border-color:rgba(255,255,255,0.3);color:#cbd5e1;}
   </style>
 </head>
 <body>
@@ -1008,6 +1013,994 @@
       </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
+      <!-- Summer Special Episode section -->
+      <div id="se-section" style="max-width:480px;margin:48px auto 0;">
+        <div class="section-label" style="text-align:center;">summer special episode</div>
+        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;letter-spacing:3px;margin-top:-24px;margin-bottom:28px;">夏休み</p>
+
+        <!-- 3 door cards -->
+        <div style="display:flex;gap:10px;margin-bottom:0;">
+
+          <!-- Block 1: ヒナタ -->
+          <div id="se-door-1" style="flex:1;border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/hinata/room_face.webp" alt="HINATA" id="se-img-1" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter 0.4s;">
+              <div id="se-overlay-1" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
+                <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
+                  <img src="../item/drinkcoin_hinata.webp" style="width:20px;"> × 2
+                </div>
+                <button class="se-unlock-btn" style="border-color:rgba(147,197,253,0.35);color:#93c5fd;" onclick="seUnlock(1)">解放する</button>
+              </div>
+            </div>
+            <div style="padding:10px 8px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#93c5fd;margin-bottom:6px;">HINATA</p>
+              <button class="se-read-btn" id="se-read-1" style="display:none;" onclick="seToggleStory(1)">読む ▼</button>
+            </div>
+          </div>
+
+          <!-- Block 2: コウタ -->
+          <div id="se-door-2" style="flex:1;border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/kouta/room_face.webp" alt="KOUTA" id="se-img-2" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter 0.4s;">
+              <div id="se-overlay-2" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
+                <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
+                  <img src="../item/shiori_kouta.webp" style="width:20px;"> × 2
+                </div>
+                <button class="se-unlock-btn" style="border-color:rgba(252,165,165,0.35);color:#fca5a5;" onclick="seUnlock(2)">解放する</button>
+              </div>
+            </div>
+            <div style="padding:10px 8px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#fca5a5;margin-bottom:6px;">KOUTA</p>
+              <button class="se-read-btn" id="se-read-2" style="display:none;" onclick="seToggleStory(2)">読む ▼</button>
+            </div>
+          </div>
+
+          <!-- Block 3: ハヤテ -->
+          <div id="se-door-3" style="flex:1;border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/hayate/room_face.webp" alt="HAYATE" id="se-img-3" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter 0.4s;">
+              <div id="se-overlay-3" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
+                <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
+                  <img src="../item/coaster_hayate.webp" style="width:20px;"> × 2
+                </div>
+                <button class="se-unlock-btn" style="border-color:rgba(253,230,138,0.35);color:#fde68a;" onclick="seUnlock(3)">解放する</button>
+              </div>
+            </div>
+            <div style="padding:10px 8px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#fde68a;margin-bottom:6px;">HAYATE</p>
+              <button class="se-read-btn" id="se-read-3" style="display:none;" onclick="seToggleStory(3)">読む ▼</button>
+            </div>
+          </div>
+
+        </div><!-- /door cards -->
+
+        <!-- Story panel -->
+        <div id="se-story-panel" style="margin-top:20px;">
+          <div id="se-story-1" style="display:none;font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.1;white-space:pre-line;padding:20px 16px;border:1px solid rgba(147,197,253,0.15);border-radius:12px;background:rgba(147,197,253,0.03);">「海行こうぜ」
+
+　ハヤテが言った。
+
+　あまりにも唐突で、ヒナタはスマートフォンから顔を上げた。
+
+「いつ」
+
+「明日」
+
+「明日？」
+
+　コウタも予定表を開いたまま、眉を上げる。
+
+　三人のスケジュールに、ぽっかりと一日だけ空きができていた。
+
+　ライブもない。
+　打ち合わせもない。
+　取材も、録音も、移動もない。
+
+　前後の日は埋まっているのに、その日だけが不自然なくらい何もない。
+　それぞれの予定が偶然ずれて、奇跡みたいに重なった空白だった。
+
+「今年、休めないかと思ってた」
+
+　ヒナタが言う。
+
+　夏に入ってから、三人で一日を空けられたことはない。
+
+　短い移動時間に食事をしたり、仕事の合間に少し顔を合わせたりすることはあっても、朝から夜まで何もない日は久しぶりだった。
+
+「だから海」
+
+　ハヤテが即答する。
+
+「こういう時は、身体休めた方がいいんじゃない？」
+
+　コウタが言った。
+
+　もっともらしい口調だった。
+
+　けれど、予定表を閉じる手が妙に早い。
+
+「家で寝るとかさ」
+
+「コウタ、行きたくないの？」
+
+「行きたくないとは言ってない」
+
+「じゃあ行くじゃん」
+
+「ただ、疲れも溜まってるだろ。無理して出かけても」
+
+　そう言いながら、コウタはもう天気予報を確認している。
+
+　降水確率。気温。風速。
+
+　ハヤテが横から画面を覗き込んだ。
+
+「めちゃくちゃ調べてるじゃん」
+
+「行くなら必要だろ」
+
+「まだ決まってないのに？」
+
+「決まってから調べたら遅い」
+
+　ヒナタが笑った。
+
+「うずうずしてる」
+
+「してない」
+
+「してるだろ」
+
+「準備するなら早い方がいいってだけ」
+
+　コウタは天気予報を閉じ、今度はメモを開いた。
+
+「タープは俺が持ってく。テーブルと椅子は？」
+
+「俺んちにある」
+
+　ハヤテが答える。
+
+「焚き火台は？」
+
+「持ってく気なんだ」
+
+「夕方までいるなら使うだろ」
+
+「完全に行く人じゃん」
+
+「行くならって言ってるだろ」
+
+　コウタは否定しながら、必要なものを書き足していく。
+
+　炭。
+
+　薪。
+
+　着火剤。
+
+　クーラーボックス。
+
+　食材。
+
+　飲み物。
+
+「ビール」
+
+　ヒナタが言う。
+
+「運転するやつ以外な」
+
+「じゃんけん？」
+
+「今回は先に決める」
+
+「じゃんけんでいいだろ」
+
+「結局いつも俺が運転になる」
+
+「コウタじゃんけん弱いから」
+
+「じゃんけんに強い弱いあるか？」
+
+　ハヤテが立ち上がる。
+
+「じゃあ決まり。明日、海」
+
+「朝早いぞ」
+
+　コウタがすぐに言った。
+
+「え」
+
+「混む前に出た方がいいだろ。買い出しもあるし、場所も取らないと」
+
+「何時？」
+
+「七時集合」
+
+「休みの日だぞ」
+
+「だから一日使える」
+
+　さっきまで身体を休めた方がいいと言っていた人とは思えない。
+
+　ヒナタは、予定の入っていない明日を眺めた。
+
+　何もしない一日も、悪くはない。
+　昼まで寝て、音楽を聴いて、少しだけギターを触る。
+
+　たぶん、それでも休めただろう。
+
+　けれど、目の前ではハヤテがもう楽しそうに笑っている。
+　コウタは持ち物の確認を始めている。
+
+「肉、どれくらい買う？」
+
+「ハヤテがいるから多め」
+
+「俺、そんな食わないって」
+
+「動いた分だけ食うだろ」
+
+「肉ばっかり食うのヒナタだろ」
+
+「野菜はいらない」
+
+「だめ」
+
+　コウタが即答した。
+
+「じゃあ明日、七時」
+
+　ハヤテが言う。
+
+「遅刻するなよ」
+
+「それ、俺が言う台詞だろ」
+
+「コウタ、今日寝られる？」
+
+　ヒナタが聞く。
+
+「なんで」
+
+「楽しみで」
+
+「子どもじゃないんだから寝るよ」
+
+　そう答えながら、コウタは薪の残りがあったか確認し始めていた。
+
+　ぽっかりと空いた一日。
+
+　何もしないための休みだったはずなのに、気づけば予定が埋まっていく。</div>
+
+          <div id="se-story-2" style="display:none;font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.1;white-space:pre-line;padding:20px 16px;border:1px solid rgba(252,165,165,0.15);border-radius:12px;background:rgba(252,165,165,0.03);">翌朝、海へ着くと、コウタは荷物を下ろすより先に周囲を見渡した。
+
+「そのポール、こっち」
+
+　砂浜の少し奥を指さす。
+
+「風、海側から来てるから、入口は反対向きな。ハヤテ、そこ押さえて」
+
+「はいよ」
+
+「ヒナタはテーブル出して。脚、最後まで開けろよ」
+
+「分かってる」
+
+「この前、途中までしか開いてなかっただろ」
+
+「あれは地面が悪かった」
+
+「地面のせいにするな」
+
+　言いながら、コウタはクーラーボックスを日陰になる位置へ移動させた。
+
+　折り畳みの椅子。
+
+　テーブル。
+
+　タープ。
+
+　炭。
+
+　食材。
+
+　飲み物。
+
+　遊ぶための道具。
+
+　荷物は多かったが、コウタが指示を出し始めると、迷う時間がなくなった。
+
+「ハヤテ、もう少し右」
+
+「こっち？」
+
+「行きすぎ。少し戻せ」
+
+「細かいな」
+
+「傾いたら倒れるだろ」
+
+「倒れたら立てればいいじゃん」
+
+「最初から倒れないように立てるんだよ」
+
+　ハヤテは笑いながらも、言われたとおりに位置を直す。
+
+　ヒナタはテーブルを広げ、その上に紙皿とカップを並べた。
+
+「これ、どこ置く？」
+
+「紙類は奥。風で飛ぶから、ペットボトル置いといて」
+
+「なるほど」
+
+「感心するほどのことじゃない」
+
+　設営がひととおり終わると、今度は火おこしが始まった。
+
+「ハヤテ、炭出して」
+
+「全部？」
+
+「最初は半分」
+
+「ヒナタ、着火剤」
+
+「はい」
+
+「網はまだ載せるなよ」
+
+「俺、何もしてないけど」
+
+「今やろうとしてた顔だった」
+
+「顔でわかるの」
+
+　ヒナタが笑う。
+
+　コウタは焼き台の中央に着火剤を置き、その周りへ炭を組んでいく。
+
+　適当に積んでいるように見えて、隙間も高さもきちんと揃っていた。
+
+　ハヤテが横から覗き込む。
+
+「俺やる？」
+
+「触るな」
+
+「なんでだよ」
+
+「崩すから」
+
+「まだ何もしてないだろ」
+
+「去年崩した」
+
+「去年のこと覚えてるの？」
+
+「火がつくまで余計に二十分かかったからな」
+
+　ハヤテは不満そうな顔をしたが、すぐに別の仕事を探した。
+
+「じゃあ椅子出す」
+
+「もう出てる」
+
+「飲み物並べる」
+
+「冷えてるから出すな」
+
+「じゃあ何すればいいんだよ」
+
+「うちわ持って待機」
+
+「一番地味じゃん」
+
+「火がついたら一番働く」
+
+　ハヤテは素直にうちわを手に取った。
+
+　コウタがライターを近づける。
+
+　着火剤に火がつき、小さな炎が炭の間へ入り込んだ。
+
+　ぱち、と音がする。
+
+「ハヤテ」
+
+「はいはい」
+
+　ハヤテがうちわで風を送った。
+
+「強すぎ」
+
+「まだ一回しか扇いでないぞ」
+
+「灰が飛ぶ」
+
+「注文多いなあ」
+
+「ゆっくりでいい」
+
+　今度は慎重に、一定の速さで風を送る。
+
+　火は少しずつ広がり、炭の表面が白くなっていった。
+
+　ヒナタは椅子に腰を下ろした。
+
+「何座ってるんだよ」
+
+　コウタが言う。
+
+「もう俺の仕事終わっただろ」
+
+「野菜出して」
+
+「まだあるの？」
+
+「これからが本番だ」
+
+「海に来たんじゃなかったっけ」
+
+「まず食える状態にする」
+
+　ハヤテがうちわを動かしながら笑った。
+
+「完全に現場監督だな」
+
+「違う」
+
+　コウタは火の具合を確認し、何でもないように答える。
+
+「お前らに任せると、いつまでたっても始まらないからだよ」
+
+　二人は顔を見合わせた。
+
+　否定はしなかった。
+
+　炭の表面が白くなり、火が安定する。
+
+　コウタが網を載せ、少し待ってから手をかざした。
+
+「よし」
+
+　その一言を聞いた途端、ハヤテがうちわを置く。
+
+「じゃ、行ってくる」
+
+「どこに」
+
+「海」
+
+「まだ何も焼いてないだろ」
+
+「焼けるまで時間あるじゃん」
+
+「今から焼くんだよ」
+
+　ハヤテはもう波打ち際を見ていた。
+
+　少し離れたところで、誰かがビーチボールを上げている。
+
+「ちょっとだけ」
+
+「その言い方で、ちょっとだったことあるか？」
+
+　ハヤテは聞こえないふりをして、砂浜へ走り出した。
+
+「肉焼けたら呼んで！」
+
+「聞こえないところまで行くなよ！」
+
+　コウタの声に、ハヤテは振り返らず片手だけ上げた。
+
+　そのまま波打ち際まで走り、勢いを落とさず海へ入っていく。
+
+　水しぶきが上がった。
+
+　ヒナタは椅子に座ったまま、その背中を見送った。
+
+「早いな」
+
+「設営してる時から、ずっと海見てたからな」
+
+　コウタはクーラーボックスから肉を取り出した。
+
+　網の中央に置くと、すぐに脂の弾ける音がする。
+
+　ハヤテの声は、もう遠い。
+
+　どこから見つけてきたのか、さっきのビーチボールを持った人たちの中に混ざっている。
+
+「知らない人たちだよな」
+
+　ヒナタが言う。
+
+「たぶんな」
+
+「もう仲間みたいになってる」
+
+「そういうのだけは早い」
+
+　コウタはトングで肉を少しずらした。
+
+　火の強いところと弱いところを見ながら、位置を変えていく。
+
+　ヒナタはその手元を眺めた。
+
+「手伝おうか」
+
+「野菜出して」
+
+「焼く方は？」
+
+「触らなくていい」
+
+「信用ないな」
+
+「この前、全部一気に載せただろ」
+
+「効率がいいと思って」
+
+「火が通る前に網が埋まった」
+
+「結果的には食べられた」
+
+「時間かかったけどな」
+
+　ヒナタは笑いながら、袋から野菜を取り出した。
+
+「どれから？」
+
+「玉ねぎとピーマン。とうもろこしは端」
+
+「はい、店長」
+
+「店長じゃない」
+
+　コウタはそう言いながらも、並べられた野菜の位置を一つずつ直した。
+
+「楽しい？」
+
+　ヒナタが聞く。
+
+「何が」
+
+「焼くの」
+
+「嫌ならやってない」
+
+「好きなんだ」
+
+「イベントは、ちゃんとやった方が楽しいだろ」
+
+　そう言って、コウタは肉を裏返した。
+
+　きれいな焼き色がついている。
+
+　炭の状態を見て。
+
+　風の向きを見て。
+
+　焼けたものから皿へ移す。
+
+　海に入るより、走り回るより、場を整えている方がコウタには合っているらしい。
+
+　ヒナタは椅子の背にもたれた。
+
+「じゃあ俺も、ちゃんと楽しんでる」
+
+「何して」
+
+「見てる」
+
+「それだけ？」
+
+「それがいいんだよ」
+
+　海では、ハヤテがまた大きな声を上げていた。
+
+　砂浜を走り、飛んできたボールに飛びつく。
+
+　一度転んで、すぐに起き上がった。
+
+「元気だな」
+
+　ヒナタが呟く。
+
+「朝からあれだからな」
+
+　コウタが皿へ肉を移す。
+
+「そろそろ呼ぶか」
+
+「呼んでも来ないと思う」
+
+「来させる」
+
+　コウタは両手を口元に当てた。
+
+「ハヤテ！」
+
+　波の音の向こうで、ハヤテが振り返る。
+
+「肉、焼けたぞ！」
+
+　ハヤテは何かを叫び返した。
+
+　風に消えて聞こえない。
+
+「何て？」
+
+「たぶん、あとで」
+
+「戻ってこないな」
+
+　コウタは少し考えて、もう一度声を張った。
+
+「先に食うぞ！」
+
+　今度は反応が早かった。
+
+　ハヤテはビーチボールを誰かに渡し、こちらへ向かって走り出す。
+
+　ヒナタが笑った。
+
+「それで来るんだ」
+
+「分かりやすいからな」
+
+　ハヤテは全身から水を滴らせ、息を切らしながら戻ってきた。
+
+「待って、俺の分！」
+
+「近づくな」
+
+　コウタがトングを突き出す。
+
+「なんで！」
+
+「濡れてる」
+
+「海なんだから当たり前だろ！」
+
+「まず拭け」
+
+　ヒナタは足元のタオルを拾い、ハヤテへ投げた。
+
+「二人とも細かいなあ」
+
+「コウタと一緒にするなよ」
+
+「ヒナタも同じだろ」
+
+　ハヤテは笑いながら髪を拭いた。
+
+　三人で椅子に座り、ようやく箸を取る。
+
+　ヒナタの皿には、ほとんど肉しか載っていなかった。
+
+「野菜は？」
+
+　コウタが聞く。
+
+「あとで」
+
+「さっきも聞いた」
+
+「肉があるからいい」
+
+「よくないだろ」
+
+　ヒナタは返事をせず、焼きたての肉を一枚取った。
+
+　その横には、開けたばかりのビールが置いてある。
+
+　コウタがそれを見て、息を吐いた。
+
+「じゃんけん、やり直さない？」
+
+「やらない」
+
+「一回勝負って言っただろ」
+
+「一回で勝ったから飲んでる」
+
+　海へ向かう前。
+
+　帰りの運転を誰が担当するか、三人でじゃんけんをした。
+
+　最初に勝ったヒナタは、その場で運転から外れた。
+
+　最後に負けたのはコウタだった。
+
+「結局、いつも俺が運転なんだよな」
+
+「じゃんけん弱いから」
+
+「去年はじゃんけんしてないだろ」
+
+「去年はコウタが最初から運転するって言った」
+
+「一昨年もだぞ」
+
+「一昨年は俺だろ」
+
+　ハヤテが言う。
+
+「ハヤテいつも寝るだろ」
+
+「寝ないって」
+
+「その台詞も毎年聞いてる」
+
+　コウタは笑いながら、ヒナタの皿へ玉ねぎを載せた。
+
+「増えてる」
+
+「食え」
+
+「肉の下に隠して」
+
+「子どもかよ」
+
+　そう言いながら、コウタは肉を一枚重ねる。
+
+　ヒナタが仕方なさそうに箸を伸ばした。
+
+「分かる？」
+
+「何が」
+
+「玉ねぎ」
+
+「分かるよ」
+
+「じゃあ食えてるな」
+
+　ハヤテが笑った。
+
+　食事を終えると、ハヤテはまた海へ走っていった。
+
+　コウタは焼き場の前へ戻り、残った食材を片づけながら、次に焼くものを考えている。
+
+　ヒナタはビールを飲みながら、その二人を眺めていた。
+
+　同じ場所にいても、楽しみ方はまるで違う。
+
+　けれど、それでよかった。</div>
+
+          <div id="se-story-3" style="display:none;font-family:'Noto Serif JP',serif;font-size:13px;color:#cbd5e1;line-height:2.1;white-space:pre-line;padding:20px 16px;border:1px solid rgba(253,230,138,0.15);border-radius:12px;background:rgba(253,230,138,0.03);">　日が傾き始める頃、ハヤテがようやく海から戻ってきた。
+
+　肩にタオルを掛け、髪はまだ少し濡れている。
+
+「疲れた」
+
+「知ってる」
+
+「帰り寝るなよ」
+
+「寝ないって」
+
+「それも聞いた」
+
+　コウタは炭を火消し壺へ移しながら、少し離れた場所へ目を向けた。
+
+　そこには、まだ使っていない薪がまとめて置かれている。
+
+「焚き火やるんだろ」
+
+　ハヤテが聞く。
+
+「やる」
+
+　返事が早い。
+
+「絶対、それが一番楽しみだったじゃん」
+
+「せっかく持ってきたんだから、やるだろ」
+
+「薪まで自分で選んでたもんな」
+
+「燃え方が違うからな」
+
+「どれも木じゃん」
+
+「全然違う」
+
+　コウタは即答した。
+
+　焚き火台を砂の上へ出し、地面が安定する場所を探す。
+
+　少し置いては動かし、角度を変え、最後に手で押して確かめた。
+
+「そこじゃ駄目なの？」
+
+　ヒナタが聞く。
+
+「風がこっちから来てる」
+
+「さっきから変わってないだろ」
+
+「夕方は少し弱くなってる」
+
+「分かるの？」
+
+「分かる」
+
+　コウタは薪を手に取った。
+
+　太さの違うものを何本か選び、焚き火台の上へ並べていく。
+
+　下には細い枝。
+
+　その上に少し太い薪。
+
+　空気が通るように隙間を残しながら、形を整える。
+
+　ハヤテが横から覗き込んだ。
+
+「適当に積んだら駄目なの？」
+
+「駄目ではないけど、きれいに燃えない」
+
+「きれい？」
+
+「火が上に抜けるようにする」
+
+「また始まった」
+
+　ヒナタが笑う。
+
+　コウタは気にせず、一本の薪を少しずらした。
+
+「ここ詰まりすぎると、途中で煙が出る」
+
+「焚き火にも正解あるんだな」
+
+「正解っていうか、燃えやすい形がある」
+
+「キャンプの人みたい」
+
+「キャンプしてるだろ、今」
+
+　コウタが着火剤を奥へ入れる。
+
+　ライターの火が小さく揺れ、やがて細い枝へ移った。
+
+　ぱち、と音がする。
+
+　三人とも、少しだけ黙った。
+
+　炎はまだ小さい。
+
+　風に揺れながら、薪の間をゆっくり上がっていく。
+
+「ハヤテ、触るなよ」
+
+「まだ何もしてない」
+
+「崩しそうな顔してる」
+
+「また顔で決める」
+
+　ハヤテは笑いながら椅子へ座った。
+
+　ヒナタもビールを持ったまま、焚き火の近くへ椅子を寄せる。
+
+　コウタはしばらく火の様子を見ていたが、ようやく満足したのか、二人の隣へ腰を下ろした。
+
+「座るんだ」
+
+　ヒナタが言う。
+
+「俺だって座るよ」
+
+「今日ほとんど座ってないだろ」
+
+「動いてた方が楽しい」
+
+「ハヤテと同じじゃん」
+
+「種類が違う」
+
+「俺の方が健康的」
+
+「昼からずっと走ってたやつが言うな」
+
+　ハヤテは背もたれに身体を預け、大きく息を吐いた。
+
+「帰り寝るなよ」
+
+　コウタが言う。
+
+「寝ないって」
+
+「車に乗った瞬間寝るだろ」
+
+「寝ない」
+
+「去年、家の前で起こした」
+
+「疲れてたんだよ」
+
+「今日も同じだろ」
+
+　ヒナタがビールを傾けた。
+
+「じゃんけんで負けたんだから、諦めろ」
+
+　火が少し大きくなる。
+
+　乾いた薪がはぜて、赤い火の粉が一瞬だけ空へ上がった。
+
+　三人は、それを目で追った。
+
+　海はもう暗い。
+
+　昼間あれほど聞こえていた声も減り、波の音だけが近くなる。
+
+　誰も話さなくなった。
+
+　ハヤテは両手を膝の上に置き、炎を見ている。
+　ヒナタは飲みかけのビールを持ったまま、動かない。
+　コウタも薪を足さず、ただ燃えていく様子を眺めていた。
+
+　忙しくない時間は、久しぶりだった。
+
+　次の仕事。
+　次の打ち合わせ。
+　次に出す音。
+
+　戻れば、またそれぞれにやることがある。
+
+　けれど今は、何も決めなくていい。
+　何かを話さなくてもいい。
+
+　火が燃える音と、波の音だけがあればよかった。
+
+「こういう時間、最近なかったな」
+
+　ハヤテが小さく言った。
+
+「なかったかも」
+
+　ヒナタが答える。
+
+　コウタは少し考えてから、火の中へ細い薪を一本足した。
+
+「また忙しくなるからな」
+
+「言うなよ」
+
+「事実だろ」
+
+「今くらい忘れさせろ」
+
+　ハヤテが笑った。
+
+　その声も、昼間よりずっと静かだった。
+
+　炎が薪の端を包み、また小さくはぜる。
+
+　ぽっかりと空いた、たった一日の休み。
+
+　明日になれば、また三人とも動き始める。
+
+　だから今だけは、誰も急がなかった。
+
+　火が消えるまで。
+
+　波の音だけを聞いていた。</div>
+        </div><!-- /se-story-panel -->
+      </div><!-- /se-section -->
+
       <!-- Interview section -->
       <!-- Summer Interview -->
       <div id="interview-summer-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
@@ -1063,59 +2056,70 @@
         </div>
       </div><!-- /interview-summer-section -->
 
-      <!-- Spring Interview -->
-      <div id="interview-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
-        <div class="itv-section-acc" id="itv-section-acc">
-          <button class="itv-section-header" onclick="toggleItvSection()">
-            <span class="itv-section-arrow" id="itv-section-arrow">▶</span>
-            <span class="itv-section-title" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</span>
+      <!-- Archive section (Spring Interview) -->
+      <div id="archive-section" style="max-width:480px;margin:32px auto 0;">
+        <div class="itv-section-acc" id="archive-section-acc">
+          <button class="itv-section-header" onclick="toggleArchiveSection()">
+            <span class="itv-section-arrow" id="archive-section-arrow">▶</span>
+            <span class="itv-section-title" data-no-replace style="color:#475569;letter-spacing:6px;">archive</span>
           </button>
-          <div class="itv-section-body">
-            <div style="display:flex;gap:10px;padding:0 12px 16px;">
+          <div class="itv-section-body" id="archive-section-body" style="max-height:0;">
+            <!-- Spring Interview -->
+            <div id="interview-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
+              <div class="itv-section-acc" id="itv-section-acc" style="margin:12px 12px 0;">
+                <button class="itv-section-header" onclick="toggleItvSection()">
+                  <span class="itv-section-arrow" id="itv-section-arrow">▶</span>
+                  <span class="itv-section-title" data-no-replace>SWEETs ‐2026 Spring‐&nbsp;&nbsp;Special Interview</span>
+                </button>
+                <div class="itv-section-body">
+                  <div style="display:flex;gap:10px;padding:0 12px 16px;">
 
-              <!-- ハヤテ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
-                <p class="itv-acc-status" id="itv-status-hayate">LOCKED</p>
-                <div id="itv-locked-hayate">
-                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
+                    <!-- ハヤテ -->
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
+                      <p class="itv-acc-status" id="itv-status-hayate">LOCKED</p>
+                      <div id="itv-locked-hayate">
+                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+
+                    <!-- ヒナタ -->
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
+                      <p class="itv-acc-status" id="itv-status-hinata">LOCKED</p>
+                      <div id="itv-locked-hinata">
+                        <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+
+                    <!-- コウタ -->
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
+                      <p class="itv-acc-status" id="itv-status-kouta">LOCKED</p>
+                      <div id="itv-locked-kouta">
+                        <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+
+                  </div>
                 </div>
-                <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
               </div>
-
-              <!-- ヒナタ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
-                <p class="itv-acc-status" id="itv-status-hinata">LOCKED</p>
-                <div id="itv-locked-hinata">
-                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
-                </div>
-                <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
-              </div>
-
-              <!-- コウタ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
-                <p class="itv-acc-status" id="itv-status-kouta">LOCKED</p>
-                <div id="itv-locked-kouta">
-                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
-                </div>
-                <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
-              </div>
-
-            </div>
+            </div><!-- /interview-section -->
           </div>
         </div>
-      </div><!-- /interview-section -->
+      </div><!-- /archive-section -->
     </div>
 
     <!-- Under tone section -->
@@ -7981,6 +8985,78 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
     renderSummerInterviews();
   }
+
+  // ── Archive Section toggle ──
+  function toggleArchiveSection() {
+    var acc  = document.getElementById('archive-section-acc');
+    var body = document.getElementById('archive-section-body');
+    if (!acc) return;
+    var isOpen = acc.classList.toggle('open');
+    if (body) body.style.maxHeight = isOpen ? '800px' : '0';
+  }
+
+  // ── Summer Special Episode ──
+  var SE_CONFIG = {
+    1: { itemKey: 'drinkcoin_hinata', color: '#93c5fd', storageKey: 'sf_se_block_1' },
+    2: { itemKey: 'shiori_kouta',     color: '#fca5a5', storageKey: 'sf_se_block_2' },
+    3: { itemKey: 'coaster_hayate',   color: '#fde68a', storageKey: 'sf_se_block_3' }
+  };
+
+  var _seActiveBlock = 0;
+
+  function seRender() {
+    for (var i = 1; i <= 3; i++) {
+      var cfg      = SE_CONFIG[i];
+      var unlocked = localStorage.getItem(cfg.storageKey) === 'true';
+      var img      = document.getElementById('se-img-'     + i);
+      var overlay  = document.getElementById('se-overlay-' + i);
+      var readBtn  = document.getElementById('se-read-'    + i);
+      if (img)     img.style.filter     = unlocked ? 'grayscale(0)' : 'grayscale(1)';
+      if (overlay) overlay.style.display = unlocked ? 'none' : 'flex';
+      if (readBtn) readBtn.style.display = unlocked ? 'block' : 'none';
+    }
+  }
+
+  function seUnlock(blockNum) {
+    var cfg = SE_CONFIG[blockNum];
+    if (!cfg) return;
+    if (localStorage.getItem(cfg.storageKey) === 'true') return;
+    showConfirm(
+      'このブロックを解放しますか？\nアイテムを2個使用します。',
+      function() {
+        var ok = SfSnow.spendMonthlyItem(cfg.itemKey, 2);
+        if (!ok) {
+          alert('アイテムが足りません。');
+          return;
+        }
+        localStorage.setItem(cfg.storageKey, 'true');
+        seRender();
+      }
+    );
+  }
+
+  function seToggleStory(blockNum) {
+    var panel = document.getElementById('se-story-' + blockNum);
+    if (!panel) return;
+    var isVisible = panel.style.display !== 'none';
+    // close all
+    for (var i = 1; i <= 3; i++) {
+      var p = document.getElementById('se-story-' + i);
+      var b = document.getElementById('se-read-' + i);
+      if (p) p.style.display = 'none';
+      if (b) b.textContent = '読む ▼';
+    }
+    if (!isVisible) {
+      panel.style.display = 'block';
+      if (document.getElementById('se-read-' + blockNum)) {
+        document.getElementById('se-read-' + blockNum).textContent = '閉じる ▲';
+      }
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // init SE on load
+  document.addEventListener('DOMContentLoaded', function() { seRender(); });
 </script>
 
 
