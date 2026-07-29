@@ -9006,14 +9006,24 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
   function seRender() {
     for (var i = 1; i <= 3; i++) {
-      var cfg      = SE_CONFIG[i];
-      var unlocked = localStorage.getItem(cfg.storageKey) === 'true';
+      var cfg          = SE_CONFIG[i];
+      var unlocked     = localStorage.getItem(cfg.storageKey) === 'true';
+      var prevUnlocked = i === 1 || localStorage.getItem(SE_CONFIG[i - 1].storageKey) === 'true';
       var img      = document.getElementById('se-img-'     + i);
       var overlay  = document.getElementById('se-overlay-' + i);
       var readBtn  = document.getElementById('se-read-'    + i);
-      if (img)     img.style.filter     = unlocked ? 'grayscale(0)' : 'grayscale(1)';
+      if (img)     img.style.filter      = unlocked ? 'grayscale(0)' : 'grayscale(1)';
       if (overlay) overlay.style.display = unlocked ? 'none' : 'flex';
       if (readBtn) readBtn.style.display = unlocked ? 'block' : 'none';
+      // 前のブロック未解放なら解放ボタンを無効化
+      if (!unlocked && overlay) {
+        var btn = overlay.querySelector('.se-unlock-btn');
+        if (btn) {
+          btn.disabled       = !prevUnlocked;
+          btn.style.opacity  = prevUnlocked ? '1' : '0.25';
+          btn.style.cursor   = prevUnlocked ? 'pointer' : 'default';
+        }
+      }
     }
   }
 
@@ -9021,6 +9031,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     var cfg = SE_CONFIG[blockNum];
     if (!cfg) return;
     if (localStorage.getItem(cfg.storageKey) === 'true') return;
+    // 順番チェック
+    if (blockNum > 1 && localStorage.getItem(SE_CONFIG[blockNum - 1].storageKey) !== 'true') return;
     showConfirm(
       'このブロックを解放しますか？\nアイテムを2個使用します。',
       function() {
