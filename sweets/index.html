@@ -1995,6 +1995,17 @@
 
 　波の音だけを聞いていた。</div>
         </div><!-- /se-story-panel -->
+
+        <!-- 全読了リワードボックス -->
+        <div id="se-reward-box" style="margin-top:16px;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;background:rgba(255,255,255,0.02);display:flex;align-items:center;gap:14px;">
+          <img id="se-reward-img" src="../item/festival_band.webp" alt="フェスバンド" style="width:56px;height:56px;object-fit:contain;border-radius:8px;filter:grayscale(1);opacity:0.4;transition:filter 0.5s,opacity 0.5s;flex-shrink:0;">
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#475569;margin-bottom:4px;">REWARD</p>
+            <p id="se-reward-name" style="font-family:'Noto Serif JP',serif;font-size:12px;color:#475569;letter-spacing:1px;transition:color 0.5s;">フェスバンド</p>
+            <p id="se-reward-desc" style="font-family:'Noto Serif JP',serif;font-size:10px;color:#334155;margin-top:2px;letter-spacing:0.5px;transition:color 0.5s;">Episodeを全部解放してフェスに行こう！</p>
+          </div>
+        </div>
+
       </div><!-- /se-section -->
 
       <!-- Interview section -->
@@ -9011,6 +9022,14 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (img)     img.style.filter      = unlocked ? 'grayscale(0)' : 'grayscale(1)';
       if (overlay) overlay.style.display = unlocked ? 'none' : 'flex';
       if (readBtn) readBtn.style.display = unlocked ? 'block' : 'none';
+      // リワードボックス更新
+      var rewardImg  = document.getElementById('se-reward-img');
+      var rewardName = document.getElementById('se-reward-name');
+      var rewardDesc = document.getElementById('se-reward-desc');
+      var allRead    = [1,2,3].every(function(n){ return localStorage.getItem('sf_se_read_' + n) === 'true'; });
+      if (rewardImg) { rewardImg.style.filter  = allRead ? 'grayscale(0)' : 'grayscale(1)'; rewardImg.style.opacity = allRead ? '1' : '0.4'; }
+      if (rewardName){ rewardName.style.color  = allRead ? '#fde68a' : '#475569'; }
+      if (rewardDesc){ rewardDesc.style.color  = allRead ? '#94a3b8' : '#334155'; rewardDesc.textContent = allRead ? '入手済み' : 'Episodeを全部解放してフェスに行こう！'; }
       // 前のブロック未解放なら解放ボタンを無効化
       if (!unlocked && overlay) {
         var btn = overlay.querySelector('.se-unlock-btn');
