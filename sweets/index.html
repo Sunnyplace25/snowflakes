@@ -9038,6 +9038,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           return;
         }
         localStorage.setItem(cfg.storageKey, 'true');
+        if (typeof gtag !== 'undefined') gtag('event', 'se_unlock', { event_category: 'summer_episode', event_label: 'block_' + blockNum });
         seRender();
       }
     );
@@ -9060,6 +9061,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         document.getElementById('se-read-' + blockNum).textContent = '閉じる ▲';
       }
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof gtag !== 'undefined') gtag('event', 'se_read', { event_category: 'summer_episode', event_label: 'block_' + blockNum });
     }
   }
 
