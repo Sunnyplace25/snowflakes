@@ -9062,6 +9062,27 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       }
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (typeof gtag !== 'undefined') gtag('event', 'se_read', { event_category: 'summer_episode', event_label: 'block_' + blockNum });
+      // 読了フラグを記録し、3ブロック全読了でフェスバンド付与
+      localStorage.setItem('sf_se_read_' + blockNum, 'true');
+      if ([1,2,3].every(function(n){ return localStorage.getItem('sf_se_read_' + n) === 'true'; })) {
+        if (!SfSnow.isUnlocked('festival_band')) {
+          SfSnow.unlockItem('festival_band');
+          if (typeof gtag !== 'undefined') gtag('event', 'se_complete', { event_category: 'summer_episode' });
+          setTimeout(function() {
+            var pop = document.getElementById('note-item-popup');
+            if (!pop) return;
+            var imgEl   = document.getElementById('note-item-img');
+            var emojiEl = document.getElementById('note-item-emoji');
+            var nameEl  = document.getElementById('note-item-name');
+            var msgEl   = document.getElementById('note-item-msg');
+            if (imgEl)   { imgEl.src = '../item/festival_band.webp'; imgEl.style.display = 'block'; }
+            if (emojiEl) emojiEl.style.display = 'none';
+            if (nameEl)  nameEl.textContent = 'フェスバンド';
+            if (msgEl)   msgEl.textContent  = 'を手に入れた';
+            pop.classList.add('show');
+          }, 600);
+        }
+      }
     }
   }
 
