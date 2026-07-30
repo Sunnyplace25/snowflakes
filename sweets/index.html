@@ -2547,6 +2547,17 @@
                         </div>
                       </div>
 
+                      <div id="summer-rare-festivalband-wrap" style="display:flex;flex-direction:column;align-items:center;gap:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;width:100%;">
+                        <img id="summer-rare-festivalband-img" src="../item/festival_band.webp" alt="フェスバンド" style="width:140px;height:auto;object-fit:contain;filter:grayscale(1) brightness(1.6) contrast(0.5);opacity:0.4;transition:all 0.3s;">
+                        <div style="text-align:center;">
+                          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+                            <span id="summer-rare-festivalband-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;">NORTH COAST RISING 2026 フェスバンド</span>
+                            <span id="summer-rare-festivalband-check" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#7dd3fc;letter-spacing:3px;"></span>
+                          </div>
+                          <p id="summer-rare-festivalband-desc" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#334155;line-height:2;margin:0;letter-spacing:4px;">???</p>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -7457,6 +7468,28 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         summerBpDesc.textContent = '???';
         summerBpDesc.style.color = '#334155';
         summerBpDesc.style.letterSpacing = '4px';
+      }
+    }
+    // Summer フェスバンド
+    var summerFbImg   = document.getElementById('summer-rare-festivalband-img');
+    var summerFbName  = document.getElementById('summer-rare-festivalband-name');
+    var summerFbCheck = document.getElementById('summer-rare-festivalband-check');
+    var summerFbDesc  = document.getElementById('summer-rare-festivalband-desc');
+    if (summerFbImg && typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('festival_band')) {
+      summerFbImg.style.filter  = '';
+      summerFbImg.style.opacity = '0.9';
+      if (summerFbName)  summerFbName.style.color = '#e2e8f0';
+      if (summerFbCheck) summerFbCheck.textContent = '✓ 入手済み';
+      if (summerFbDesc) {
+        summerFbDesc.style.color = '#94a3b8';
+        summerFbDesc.style.letterSpacing = 'normal';
+        summerFbDesc.textContent = 'Snow flakesが出演する夏フェス、NORTH COAST RISING 2026 の入場リストバンド。';
+      }
+    } else {
+      if (summerFbDesc) {
+        summerFbDesc.textContent = '???';
+        summerFbDesc.style.color = '#334155';
+        summerFbDesc.style.letterSpacing = '4px';
       }
     }
     // 色紙 入手済みならカラーに
