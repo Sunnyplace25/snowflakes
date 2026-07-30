@@ -9093,6 +9093,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       if (typeof gtag !== 'undefined') gtag('event', 'se_read', { event_category: 'summer_episode', event_label: 'block_' + blockNum });
       // 読了フラグを記録し、3ブロック全読了でフェスバンド付与
       localStorage.setItem('sf_se_read_' + blockNum, 'true');
+      seRender();
       if ([1,2,3].every(function(n){ return localStorage.getItem('sf_se_read_' + n) === 'true'; })) {
         if (!SfSnow.isUnlocked('festival_band')) {
           SfSnow.unlockItem('festival_band');
