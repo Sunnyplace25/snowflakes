@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sf-v6';
+const CACHE_NAME = 'sf-v7';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(
