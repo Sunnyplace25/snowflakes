@@ -138,6 +138,13 @@
       transition: background 0.2s; white-space: nowrap;
     }
     .nav-gacha:hover { background: rgba(253,230,138,0.15); }
+    .nav-portfolio {
+      padding: 8px 22px; border-radius: 100px;
+      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.14);
+      color: var(--muted); font-size: 14px; text-decoration: none;
+      transition: background 0.2s, color 0.2s; white-space: nowrap;
+    }
+    .nav-portfolio:hover { background: rgba(255,255,255,0.08); color: var(--text); }
     #lang-toggle {
       position: absolute; top: 76px; right: 28px; z-index: 2;
       background: none; border: none; cursor: pointer;
@@ -589,6 +596,7 @@ function closeNewAlbumPopup() {
   </div>
   <span class="nav-label">Snow flakes</span>
   <div class="nav-right" style="flex:1;justify-content:flex-end;">
+    <a class="nav-portfolio" href="portfolio_ja.html">Portfolio</a>
     <a class="nav-gacha" href="gacha/">ガチャ</a>
     <a class="nav-sweets" href="sweets/">SWEETs</a>
     <a class="nav-app" data-sf-action="taskapp" href="https://sunnyplace25.github.io/taskpwa/" target="_blank">アプリ</a>
