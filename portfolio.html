@@ -216,13 +216,18 @@
     }
     @media (max-width: 700px) { .char-grid { grid-template-columns: 1fr; } }
     .char-card {
-      padding: 32px 24px; border-radius: 18px;
+      padding: 0; border-radius: 18px;
       background: var(--card); border: 1px solid var(--border);
       text-align: center; transition: transform 0.22s;
+      overflow: hidden;
     }
     .char-card:hover { transform: translateY(-4px); }
+    .char-img {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
+    }
+    .char-card-body { padding: 24px 20px 28px; }
     .char-color {
-      width: 48px; height: 3px; border-radius: 2px; margin: 0 auto 18px;
+      width: 48px; height: 3px; border-radius: 2px; margin: 0 auto 14px;
     }
     .char-name { font-size: 22px; color: white; margin-bottom: 6px; letter-spacing: 2px; }
     .char-role { font-size: 11px; letter-spacing: 3px; color: var(--muted); margin-bottom: 14px; font-weight: 300; }
@@ -368,7 +373,7 @@
       <div class="about-card">
         <span class="about-icon">📖</span>
         <p class="about-name">Novel</p>
-        <p class="about-desc">A completed 195-episode story following three musicians — Hinata, Kouta, and Hayate — as they navigate music, distance, and the things left unsaid. Serialized on Shōsetsuka ni Narō. Available in print (Kindle).</p>
+        <p class="about-desc">A completed story following three musicians — Hinata, Kouta, and Hayate — as they navigate music, distance, and the things left unsaid. Serialized on Shōsetsuka ni Narō. Available in print (Kindle).</p>
       </div>
       <div class="about-card">
         <span class="about-icon">🎵</span>
@@ -493,7 +498,7 @@
       <div class="concept-cards">
         <div class="concept-card">
           <span class="concept-card-label">THE STORY</span>
-          <p class="concept-card-text">Hinata, Kouta, and Hayate formed a band in high school. The novel follows their lives — not the road to success, but the small shifts, the things they couldn't say, the distance that quietly moves. 195 episodes. Complete.</p>
+          <p class="concept-card-text">Hinata, Kouta, and Hayate formed a band in high school. The novel follows their lives — not the road to success, but the small shifts, the things they couldn't say, the distance that quietly moves. Complete.</p>
         </div>
         <div class="concept-card">
           <span class="concept-card-label">THE MUSIC</span>
@@ -516,22 +521,31 @@
     <p class="sec-body">The story centers on three people in a band. Not a success story — just the time they share, and the sound that stays.</p>
     <div class="char-grid">
       <div class="char-card">
-        <div class="char-color" style="background:var(--hinata);"></div>
-        <p class="char-name">Hinata</p>
-        <p class="char-role">GUITAR &amp; VOCALS</p>
-        <p class="char-desc">"Turning toward sound without finding the words."</p>
+        <img class="char-img" src="portfolio/hinata.webp" alt="Hinata">
+        <div class="char-card-body">
+          <div class="char-color" style="background:var(--hinata);"></div>
+          <p class="char-name">Hinata</p>
+          <p class="char-role">GUITAR &amp; VOCALS</p>
+          <p class="char-desc">"Turning toward sound without finding the words."</p>
+        </div>
       </div>
       <div class="char-card">
-        <div class="char-color" style="background:var(--kouta);"></div>
-        <p class="char-name">Kouta</p>
-        <p class="char-role">BASS</p>
-        <p class="char-desc">"Catching the tremors, giving them form."</p>
+        <img class="char-img" src="portfolio/kouta.webp" alt="Kouta">
+        <div class="char-card-body">
+          <div class="char-color" style="background:var(--kouta);"></div>
+          <p class="char-name">Kouta</p>
+          <p class="char-role">BASS</p>
+          <p class="char-desc">"Catching the tremors, giving them form."</p>
+        </div>
       </div>
       <div class="char-card">
-        <div class="char-color" style="background:var(--hayate);"></div>
-        <p class="char-name">Hayate</p>
-        <p class="char-role">DRUMS</p>
-        <p class="char-desc">"Playing through the doubts, moving forward."</p>
+        <img class="char-img" src="portfolio/hayate.webp" alt="Hayate">
+        <div class="char-card-body">
+          <div class="char-color" style="background:var(--hayate);"></div>
+          <p class="char-name">Hayate</p>
+          <p class="char-role">DRUMS</p>
+          <p class="char-desc">"Playing through the doubts, moving forward."</p>
+        </div>
       </div>
     </div>
   </div>
@@ -548,7 +562,7 @@
       <p class="creator-role">NOVELIST · SONGWRITER · CROSS-MEDIA CREATOR</p>
       <p class="creator-body">
         Creator of Snow flakes — a project built around the idea that the emotions that live between people, the ones never quite put into words, can become both story and sound.<br><br>
-        The novel ran for 195 episodes on Shōsetsuka ni Narō (Japan's largest fiction platform) and is available in print through Kindle. Original music streams worldwide on Spotify, Apple Music, and all major platforms.<br><br>
+        The novel ran on Shōsetsuka ni Narō (Japan's largest fiction platform) and is available in print through Kindle. Original music streams worldwide on Spotify, Apple Music, and all major platforms.<br><br>
         Everything in Snow flakes — the writing, the music, the illustrations, the web experience — is made by one person.
       </p>
 
