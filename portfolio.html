@@ -257,6 +257,42 @@
       color: var(--muted); font-weight: 300;
     }
 
+    /* ── Licensing ── */
+    .license-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: start;
+    }
+    @media (max-width: 700px) { .license-grid { grid-template-columns: 1fr; } }
+    .license-table { width: 100%; border-collapse: collapse; }
+    .license-table tr { border-bottom: 1px solid var(--border); }
+    .license-table tr:last-child { border-bottom: none; }
+    .license-table td { padding: 16px 0; vertical-align: middle; }
+    .license-use { font-size: 14px; color: #b8c5d4; font-weight: 300; line-height: 1.5; }
+    .license-price { font-size: 15px; color: white; text-align: right; white-space: nowrap; letter-spacing: 1px; font-weight: 300; }
+    .license-note {
+      font-size: 13px; color: var(--muted); line-height: 1.9; font-weight: 300;
+      margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+    .license-prohibit {
+      padding: 28px 32px; border-radius: 16px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .license-prohibit-title {
+      font-size: 10px; letter-spacing: 5px; color: var(--muted);
+      margin-bottom: 18px; display: block; font-weight: 300;
+    }
+    .license-prohibit ul {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .license-prohibit li {
+      font-size: 13px; color: #8fa3ba; font-weight: 300; line-height: 1.6;
+      padding-left: 16px; position: relative;
+    }
+    .license-prohibit li::before {
+      content: "—"; position: absolute; left: 0; color: var(--muted);
+    }
+
     /* ── Links ── */
     .links-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -577,6 +613,49 @@
   </div>
 </section>
 
+<!-- ── Licensing ── -->
+<section class="alt" id="licensing">
+  <div class="inner">
+    <span class="sec-label">LICENSING</span>
+    <h2 class="sec-title">Use Snow flakes Music</h2>
+    <p class="sec-body">Completed original works. Each license is reviewed and granted directly by the creator.</p>
+    <div class="license-grid">
+      <div>
+        <table class="license-table">
+          <tr>
+            <td class="license-use">個人・自主制作<br><span style="font-size:12px;opacity:0.6;">Personal / Non-commercial</span></td>
+            <td class="license-price">¥3,300〜</td>
+          </tr>
+          <tr>
+            <td class="license-use">収益化コンテンツ<br><span style="font-size:12px;opacity:0.6;">YouTube / Streaming / Narration</span></td>
+            <td class="license-price">¥8,800〜</td>
+          </tr>
+          <tr>
+            <td class="license-use">事業・企業利用<br><span style="font-size:12px;opacity:0.6;">Business / Web Video</span></td>
+            <td class="license-price">¥16,500〜</td>
+          </tr>
+          <tr>
+            <td class="license-use">広告利用<br><span style="font-size:12px;opacity:0.6;">Commercial Ad / Promotion</span></td>
+            <td class="license-price">¥88,000〜</td>
+          </tr>
+        </table>
+        <p class="license-note">All licenses cover one track · one project · completed audio · non-exclusive use.<br>Use purpose, medium, period, and region will be confirmed before a formal quote is issued.</p>
+      </div>
+      <div class="license-prohibit">
+        <span class="license-prohibit-title">NOT PERMITTED</span>
+        <ul>
+          <li>Resale or redistribution of audio files</li>
+          <li>Re-registration to music distribution services</li>
+          <li>Content ID registration</li>
+          <li>Misrepresentation of authorship or rights</li>
+          <li>Use as AI training data</li>
+          <li>Unauthorized editing, remixing, or lyric changes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ── Links ── -->
 <section id="links">
   <div class="inner">
@@ -676,6 +755,7 @@
     <a href="#music">Music</a>
     <a href="#concept">Story &amp; Music</a>
     <a href="#creator">Creator</a>
+    <a href="#licensing">Licensing</a>
     <a href="#links">Links</a>
     <a href="#contact">Contact</a>
   </nav>
