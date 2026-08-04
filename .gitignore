@@ -1,2 +1,9 @@
 .vercel
 hayatecchi/rhythm/*.mp4
+
+# ─── JARVIS ───────────────────────────
+jarvis/.env
+jarvis/logs/*.log
+jarvis/drafts/pending/*
+!jarvis/drafts/pending/.gitkeep
+# ──────────────────────────────────────

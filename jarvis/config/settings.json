@@ -1,0 +1,80 @@
+{
+  "_comment": "Snow flakes JARVIS 設定ファイル。秘密情報・アクセストークンは絶対に書かないこと。",
+  "_version": "0.1.0",
+
+  "site": {
+    "name": "Snow flakes",
+    "url": "https://sunnyplace25.github.io/snowflakes/",
+    "author": "山吹ことり",
+    "repository": "https://github.com/Sunnyplace25/snowflakes.git",
+    "branch": {
+      "main": "main",
+      "work": "jarvis-development"
+    }
+  },
+
+  "git": {
+    "auto_commit": false,
+    "auto_push": false,
+    "individual_add_only": true,
+    "_note": "git add は対象ファイルを個別指定すること。git add . は使用禁止。"
+  },
+
+  "sns": {
+    "x": {
+      "enabled": false,
+      "auto_post": false,
+      "account": "@snflk_official",
+      "_note": "enabledがfalseの間はAPI接続・投稿処理をすべて行わない"
+    },
+    "instagram": {
+      "enabled": false,
+      "auto_post": false,
+      "account": "snowflakes_official",
+      "_note": "Instagram Graph APIはFacebookページとの接続確認後に設定する"
+    }
+  },
+
+  "api": {
+    "anthropic": {
+      "enabled": false,
+      "_note": "第1段階では未使用。基本動作確認後に別途承認を得て有効化する。"
+    }
+  },
+
+  "budget": {
+    "currency": "JPY",
+    "monthly_limit": 0,
+    "warn_threshold_percent": 80,
+    "auto_stop_at_limit": true,
+    "_note": "monthly_limitが0の場合は上限なし（初期設定）。SNS API料金は変動するため、使用前に必ず確認する。"
+  },
+
+  "safety": {
+    "require_approval_for_site_publish": true,
+    "require_approval_for_sns_post": true,
+    "require_approval_for_git_push": true,
+    "show_cost_estimate_before_post": true,
+    "prevent_duplicate_post": true
+  },
+
+  "exclude_from_processing": [
+    "music/kaeranai_streaming.mp3",
+    "music/kaeranai_streaming.wav",
+    "sweets/sf2026ncr_a7f3e.mp3",
+    "sweets/sf2026ncr_b2d91.mp3",
+    "sweets/sf2026ncr_c4a0f.mp3",
+    "sweets/sf2026ncr_d8e52.mp3",
+    "sweets/sf2026ncr_e1c7b.mp3",
+    "sweets/sf2026ncr_f6094.mp3",
+    "sweets/sf2026ncr_g3d28.mp3",
+    "sweets/sf2026ncr_h9b4e.mp3"
+  ],
+
+  "draft": {
+    "types": ["site_update", "sns_x", "sns_instagram", "news", "activity_report"],
+    "pending_dir": "drafts/pending",
+    "approved_dir": "drafts/approved",
+    "published_dir": "drafts/published"
+  }
+}

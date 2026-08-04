@@ -1,0 +1,14 @@
+{
+  "name": "snow-flakes-jarvis",
+  "version": "0.1.0",
+  "description": "Snow flakes JARVIS - AI運営アシスタント（第1段階）",
+  "type": "module",
+  "scripts": {
+    "draft": "node tools/generate_draft.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "山吹ことり",
+  "private": true
+}
