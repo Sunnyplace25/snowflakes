@@ -4,7 +4,12 @@
   "description": "Snow flakes JARVIS - AI運営アシスタント（第1段階）",
   "type": "module",
   "scripts": {
-    "draft": "node tools/generate_draft.js"
+    "draft":   "node tools/generate_draft.js",
+    "list":    "node tools/manage_drafts.js list",
+    "show":    "node tools/manage_drafts.js show",
+    "approve": "node tools/manage_drafts.js approve",
+    "reject":  "node tools/manage_drafts.js reject",
+    "publish": "node tools/manage_drafts.js publish"
   },
   "engines": {
     "node": ">=18.0.0"
