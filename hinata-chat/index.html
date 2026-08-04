@@ -989,11 +989,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     errEl.style.display = 'none';
 
     try {
-      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/check-sub', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/check-sub?email=' + encodeURIComponent(email));
       const data = await res.json();
       if (!data.active) {
         errEl.textContent = '応援プランへの登録が確認できませんでした。';
