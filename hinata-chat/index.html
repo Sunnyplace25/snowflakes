@@ -820,7 +820,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
 
   async function _extractAndSaveMemory(userText) {
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -989,7 +989,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     errEl.style.display = 'none';
 
     try {
-      const res = await fetch('/api/check-sub', {
+      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/check-sub', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -1146,7 +1146,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     showTyping();
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1228,7 +1228,7 @@ SNSはほぼ見る専門。投稿ゼロ。自撮りゼロ。
     showTyping();
     const email = getApiKey();
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://hinata-chat-api.sunnyplace-nico.workers.dev/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
