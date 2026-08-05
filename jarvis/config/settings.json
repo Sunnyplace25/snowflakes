@@ -1,6 +1,6 @@
 {
   "_comment": "Snow flakes JARVIS 設定ファイル。秘密情報・アクセストークンは絶対に書かないこと。",
-  "_version": "0.1.0",
+  "_version": "0.2.0",
 
   "site": {
     "name": "Snow flakes",
@@ -76,5 +76,16 @@
     "pending_dir": "drafts/pending",
     "approved_dir": "drafts/approved",
     "published_dir": "drafts/published"
+  },
+
+  "instagram": {
+    "bio_link_note": "プロフィールのリンクからご確認いただけます。",
+    "bio_link_note_en": "Check the link in bio for details."
+  },
+
+  "platform_limits": {
+    "x_warning_length": 280,
+    "instagram_warning_length": 2200,
+    "x_hashtag_recommended_max": 3
   }
 }
