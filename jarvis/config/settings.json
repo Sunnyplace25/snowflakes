@@ -1,6 +1,6 @@
 {
   "_comment": "Snow flakes JARVIS 設定ファイル。秘密情報・アクセストークンは絶対に書かないこと。",
-  "_version": "0.2.0",
+  "_version": "0.3.0",
 
   "site": {
     "name": "Snow flakes",
@@ -72,7 +72,7 @@
   ],
 
   "draft": {
-    "types": ["site_update", "sns_x", "sns_instagram", "news", "activity_report"],
+    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "news", "activity_report"],
     "pending_dir": "drafts/pending",
     "approved_dir": "drafts/approved",
     "published_dir": "drafts/published"
@@ -87,5 +87,37 @@
     "x_warning_length": 280,
     "instagram_warning_length": 2200,
     "x_hashtag_recommended_max": 3
+  },
+
+  "scheduling": {
+    "timezone": "Asia/Tokyo",
+    "allow_past_schedule": false,
+    "minimum_lead_minutes": 10,
+    "duplicate_window_minutes": 5,
+    "external_posting_enabled": false,
+    "dry_run_only": true
+  },
+
+  "platform_posting": {
+    "x": {
+      "enabled": false,
+      "provider": null
+    },
+    "instagram": {
+      "enabled": false,
+      "provider": null
+    },
+    "youtube": {
+      "enabled": false,
+      "provider": null
+    }
+  },
+
+  "youtube": {
+    "default_privacy_status": "private",
+    "default_publish_mode": "scheduled",
+    "require_made_for_kids_setting": true,
+    "_api_note": "第4段階後半では、YouTube Data API v3 のインストール済みアプリ向け OAuth 2.0 認証を採用する。具体的な認証方式は、実装時点の Google 公式仕様を確認して決定する。",
+    "_publish_at_note": "将来API接続時: content.scheduled_at → status.publishAt、同時に status.privacyStatus = 'private' を設定する。公開済み動画は予約公開の対象にしない。"
   }
 }

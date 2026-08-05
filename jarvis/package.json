@@ -4,13 +4,19 @@
   "description": "Snow flakes JARVIS - AI運営アシスタント（第1段階）",
   "type": "module",
   "scripts": {
-    "draft":     "node tools/generate_draft.js",
-    "sns-draft": "node tools/generate_sns_draft.js",
-    "list":    "node tools/manage_drafts.js list",
-    "show":    "node tools/manage_drafts.js show",
-    "approve": "node tools/manage_drafts.js approve",
-    "reject":  "node tools/manage_drafts.js reject",
-    "publish": "node tools/manage_drafts.js publish"
+    "draft":          "node tools/generate_draft.js",
+    "sns-draft":      "node tools/generate_sns_draft.js",
+    "youtube-draft":  "node tools/generate_youtube_draft.js",
+    "list":           "node tools/manage_drafts.js list",
+    "show":           "node tools/manage_drafts.js show",
+    "approve":        "node tools/manage_drafts.js approve",
+    "reject":         "node tools/manage_drafts.js reject",
+    "publish":        "node tools/manage_drafts.js publish",
+    "schedule-list":  "node tools/manage_schedule.js list",
+    "schedule-show":  "node tools/manage_schedule.js show",
+    "schedule-set":   "node tools/manage_schedule.js set",
+    "schedule-check": "node tools/preflight_check.js check",
+    "dry-run":        "node tools/preflight_check.js dry-run"
   },
   "engines": {
     "node": ">=18.0.0"
