@@ -15,7 +15,7 @@ jarvis-development
 | 第1段階 | 基盤構築（generate_draft.js, manage_drafts.js の土台） | ✅ 完了 | `59924bd` |
 | 第2段階 | ローカル下書き承認ワークフロー（manage_drafts.js 完成） | ✅ 完了 | `b50a7327` |
 | 第3段階 | SNS下書き生成（generate_sns_draft.js） | ✅ 完了 | `3553404` |
-| 第4段階前半 | 予約管理・事前確認・dry-run（X/Instagram/YouTube） | ✅ 実装完了・未commit | 未commit |
+| 第4段階前半 | 予約管理・事前確認・dry-run（X/Instagram/YouTube） | ✅ 完了 | `48cf107` |
 
 ---
 
@@ -24,7 +24,7 @@ jarvis-development
 - 第1段階: `59924bd feat(jarvis): add initial draft management foundation`
 - 第2段階: `b50a7327534cf1d0e493fb807b82dd15df941efb feat(jarvis): add local draft approval workflow`
 - 第3段階: `3553404771f3f070e15e9daf8de16a86f22359cd feat(jarvis): add SNS draft generation workflow`
-- 第4段階前半: 未commit（承認待ち）
+- 第4段階前半: `48cf107 feat(jarvis): add local scheduling and YouTube preflight workflow`
 
 ---
 
