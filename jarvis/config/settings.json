@@ -72,7 +72,7 @@
   ],
 
   "draft": {
-    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "tiktok_video", "news", "activity_report"],
+    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "tiktok_video", "note_article", "news", "activity_report"],
     "pending_dir": "drafts/pending",
     "approved_dir": "drafts/approved",
     "published_dir": "drafts/published"
@@ -114,6 +114,10 @@
     "tiktok": {
       "enabled": false,
       "provider": null
+    },
+    "note": {
+      "enabled": false,
+      "provider": null
     }
   },
 
@@ -132,5 +136,13 @@
     "require_privacy_confirmation": true,
     "caption_warning_length": 2200,
     "_api_note": "初期接続は MEDIA_UPLOAD を優先する。DIRECT_POST はアプリ審査と公開権限の確認後に別途実装する。TikTok Content Posting API の OAuth 2.0 認証方式は、実装時点の TikTok 公式仕様を確認して決定する。"
+  },
+
+  "note": {
+    "external_posting_enabled": false,
+    "minimum_body_length": 100,
+    "title_warning_length": 80,
+    "body_warning_length": 20000,
+    "_note": "note への直接投稿・API接続・OAuth 認証・ブラウザ自動化は行わない。generate_note_draft.js で下書きを生成し、export_note_draft.js でエクスポートして手動投稿する。"
   }
 }

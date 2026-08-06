@@ -17,6 +17,7 @@ jarvis-development
 | 第3段階 | SNS下書き生成（generate_sns_draft.js） | ✅ 完了 | `3553404` |
 | 第4段階前半 | 予約管理・事前確認・dry-run（X/Instagram/YouTube） | ✅ 完了 | `48cf107` |
 | 第4段階 TikTok追加 | TikTok下書き生成・予約管理・preflight追加 | ✅ 完了 | `c6847d0` |
+| 第4段階 note追加 | note記事下書き生成・エクスポート・preflight | 🔄 実装済み・未commit | - |
 
 ---
 
@@ -43,7 +44,9 @@ jarvis-development
 | `jarvis/tools/generate_youtube_draft.js` | 第4段階前半 | ✅ 新規作成済み |
 | `jarvis/tools/manage_schedule.js` | 第4段階前半 | ✅ 新規作成済み（第4段階 TikTok追加で更新） |
 | `jarvis/tools/preflight_check.js` | 第4段階前半 | ✅ 新規作成済み（第4段階 TikTok追加で更新） |
-| `jarvis/tools/generate_tiktok_draft.js` | 第4段階 TikTok追加 | 🔄 新規作成済み・未commit |
+| `jarvis/tools/generate_tiktok_draft.js` | 第4段階 TikTok追加 | ✅ 完成 |
+| `jarvis/tools/generate_note_draft.js` | 第4段階 note追加 | 🔄 新規作成済み・未commit |
+| `jarvis/tools/export_note_draft.js` | 第4段階 note追加 | 🔄 新規作成済み・未commit |
 
 ---
 
@@ -55,6 +58,8 @@ jarvis-development
 | `npm run sns-draft` | XとInstagram用SNS下書き生成 |
 | `npm run youtube-draft` | YouTube動画予約情報の下書き生成 |
 | `npm run tiktok-draft` | TikTok動画下書きの生成 |
+| `npm run note-draft` | note記事下書きの生成 |
+| `npm run note-export -- <id>` | note記事のエクスポート（MD/テキスト/JSON） |
 | `npm run schedule-list` | 投稿予定一覧表示（X/Instagram/YouTube） |
 | `npm run schedule-show -- <id>` | 投稿予定詳細表示 |
 | `npm run schedule-set -- <id>` | 投稿予定日時の設定 |
@@ -73,6 +78,7 @@ jarvis-development
 - `jarvis/tools/generate_draft.js`（既存・変更禁止）
 - `jarvis/tools/manage_drafts.js`（既存・変更禁止）
 - `jarvis/tools/generate_sns_draft.js`（既存・変更禁止）
+- `jarvis/tools/generate_tiktok_draft.js`（既存・変更禁止）
 - サイト本体の既存ファイル全般
 
 ---

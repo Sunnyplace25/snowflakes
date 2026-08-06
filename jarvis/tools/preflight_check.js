@@ -43,7 +43,7 @@ const LOG_DIR       = path.join(JARVIS_ROOT, 'logs');
 const LOG_PATH      = path.join(LOG_DIR, 'history.log');
 const SETTINGS_PATH = path.join(JARVIS_ROOT, 'config', 'settings.json');
 
-const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok'];
+const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok', 'note'];
 const VALID_ID_RE     = /^draft_\d{8}_[0-9a-f]{6}$/;
 const SCHEDULED_AT_RE = /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?)?$/;
 
@@ -111,11 +111,12 @@ function loadSettings() {
     // 設定読み込み失敗時は安全側（外部投稿無効）へ倒す
     return {
       scheduling:     { allow_past_schedule: false, minimum_lead_minutes: 10, duplicate_window_minutes: 5, external_posting_enabled: false, dry_run_only: true },
-      platform_posting: { x: { enabled: false }, instagram: { enabled: false }, youtube: { enabled: false }, tiktok: { enabled: false } },
+      platform_posting: { x: { enabled: false }, instagram: { enabled: false }, youtube: { enabled: false }, tiktok: { enabled: false }, note: { enabled: false } },
       platform_limits:  { x_warning_length: 280, instagram_warning_length: 2200, x_hashtag_recommended_max: 3 },
       instagram:      { bio_link_note: null },
       youtube:        { require_made_for_kids_setting: true },
       tiktok:         { require_aigc_setting: true, caption_warning_length: 2200, direct_post_enabled: false },
+      note:           { external_posting_enabled: false, minimum_body_length: 100, title_warning_length: 80, body_warning_length: 20000 },
       sns:            { x: { account: '@snflk_official' }, instagram: { account: 'snowflakes_official' } },
     };
   }
@@ -161,6 +162,10 @@ function runCommonChecks(draft, settings) {
     } else {
       checks.push(chk('CONTENT_PRESENT', 'OK', `caption: ${c.caption.length}文字`));
     }
+  } else if (draft.platform === 'note') {
+    // note のコンテンツ・スケジュール・外部投稿チェックは runNoteChecks で行う
+    checks.push(chk('CONTENT_PRESENT', 'OK', 'note: コンテンツチェックは runNoteChecks で実施'));
+    return checks;
   } else {
     if (!c.post_text || !c.post_text.trim()) {
       checks.push(chk('CONTENT_PRESENT', 'BLOCK', 'post_text が空です'));
@@ -527,6 +532,207 @@ function runTikTokChecks(draft, settings) {
   return checks;
 }
 
+// ── note 固有チェック ────────────────────────────────────────────
+
+function runNoteChecks(draft, settings) {
+  const checks       = [];
+  const c            = draft.content || {};
+  const noteSettings = settings.note || { external_posting_enabled: false, minimum_body_length: 100, title_warning_length: 80, body_warning_length: 20000 };
+  const sched        = settings.scheduling || {};
+
+  const VALID_ARTICLE_TYPES = [
+    '小説', '短編', '制作日記', '楽曲解説', '活動報告',
+    'イベント告知', 'お知らせ', 'コラム', '有料記事', 'その他',
+  ];
+
+  // NOTE_TYPE_CHECK
+  if (draft.type !== 'note_article') {
+    checks.push(chk('NOTE_TYPE_CHECK', 'BLOCK', `type が note_article ではありません: ${draft.type}`));
+  } else {
+    checks.push(chk('NOTE_TYPE_CHECK', 'OK', 'type=note_article'));
+  }
+
+  // NOTE_TITLE_EMPTY / NOTE_TITLE_OVER
+  if (!c.title || !c.title.trim()) {
+    checks.push(chk('NOTE_TITLE_EMPTY', 'BLOCK', 'タイトルが空です'));
+  } else {
+    checks.push(chk('NOTE_TITLE_EMPTY', 'OK', `タイトル: ${c.title.length}文字`));
+    const titleWarnLen = noteSettings.title_warning_length ?? 80;
+    if (c.title.length > titleWarnLen) {
+      checks.push(chk('NOTE_TITLE_OVER', 'WARN', `タイトルが長すぎます: ${c.title.length}文字（警告上限 ${titleWarnLen}）`));
+    }
+  }
+
+  // NOTE_BODY_EMPTY / NOTE_BODY_TOO_SHORT / NOTE_BODY_OVER
+  if (!c.body || !c.body.trim()) {
+    checks.push(chk('NOTE_BODY_EMPTY', 'BLOCK', '本文が空です'));
+  } else {
+    const minBody = noteSettings.minimum_body_length ?? 100;
+    const maxBody = noteSettings.body_warning_length ?? 20000;
+    checks.push(chk('NOTE_BODY_EMPTY', 'OK', `本文: ${c.body.length}文字`));
+    if (c.body.length < minBody) {
+      checks.push(chk('NOTE_BODY_TOO_SHORT', 'WARN', `本文が短すぎます: ${c.body.length}文字（推奨最低 ${minBody}文字）`));
+    }
+    if (c.body.length > maxBody) {
+      checks.push(chk('NOTE_BODY_OVER', 'WARN', `本文が長すぎます: ${c.body.length}文字（警告上限 ${maxBody}）`));
+    }
+  }
+
+  // NOTE_ARTICLE_TYPE_INVALID
+  if (!c.article_type || !VALID_ARTICLE_TYPES.includes(c.article_type)) {
+    checks.push(chk('NOTE_ARTICLE_TYPE_INVALID', 'BLOCK', `記事タイプが不正: "${c.article_type}"（有効値: ${VALID_ARTICLE_TYPES.join(' / ')}）`));
+  } else {
+    checks.push(chk('NOTE_ARTICLE_TYPE_INVALID', 'OK', `article_type=${c.article_type}`));
+  }
+
+  // scheduled_at（note: missing→WARN, format invalid→BLOCK, past→BLOCK, too-soon→WARN）
+  if (!c.scheduled_at) {
+    checks.push(chk('NOTE_SCHEDULED_AT_MISSING', 'WARN', 'scheduled_at が未設定です（noteへの予約登録は行いません）'));
+  } else if (!SCHEDULED_AT_RE.test(c.scheduled_at)) {
+    checks.push(chk('NOTE_SCHEDULED_AT_FORMAT', 'BLOCK', `日時形式が不正: ${c.scheduled_at}`));
+  } else {
+    const d = new Date(c.scheduled_at.replace(' ', 'T'));
+    if (isNaN(d.getTime())) {
+      checks.push(chk('NOTE_SCHEDULED_AT_FORMAT', 'BLOCK', `日時に変換できません: ${c.scheduled_at}`));
+    } else {
+      checks.push(chk('NOTE_SCHEDULED_AT_FORMAT', 'OK', `scheduled_at: ${c.scheduled_at}`));
+      const now    = Date.now();
+      const targMs = d.getTime();
+      const leadMs = (sched.minimum_lead_minutes ?? 10) * 60 * 1000;
+      if (targMs < now) {
+        checks.push(chk('NOTE_SCHEDULED_AT_PAST', 'BLOCK', '過去日時です（JARVIS内の予定として要確認）'));
+      } else if (targMs - now < leadMs) {
+        checks.push(chk('NOTE_SCHEDULED_AT_TOO_SOON', 'WARN', `予定まで ${sched.minimum_lead_minutes ?? 10} 分未満`));
+      } else {
+        checks.push(chk('NOTE_SCHEDULED_AT_TIMING', 'OK', '日時: 未来かつ十分な余裕あり'));
+      }
+    }
+  }
+
+  // NOTE_VISIBILITY_INVALID
+  if (c.visibility !== 'free' && c.visibility !== 'paid') {
+    checks.push(chk('NOTE_VISIBILITY_INVALID', 'BLOCK', `visibility が不正: "${c.visibility}"（free / paid のみ有効）`));
+  } else {
+    checks.push(chk('NOTE_VISIBILITY_INVALID', 'OK', `visibility=${c.visibility}`));
+
+    if (c.visibility === 'paid') {
+      // NOTE_PRICE_REQUIRED / NOTE_PRICE_INVALID
+      if (c.price === null || c.price === undefined) {
+        checks.push(chk('NOTE_PRICE_REQUIRED', 'BLOCK', '有料記事に価格（price）が設定されていません'));
+      } else if (typeof c.price !== 'number' || !Number.isInteger(c.price) || c.price <= 0) {
+        checks.push(chk('NOTE_PRICE_INVALID', 'BLOCK', `price が不正: ${c.price}（正の整数が必要）`));
+      } else {
+        checks.push(chk('NOTE_PRICE_INVALID', 'OK', `price=${c.price}円`));
+      }
+      // NOTE_PAID_SECTION_UNSET
+      if (!c.paid_section_marker) {
+        checks.push(chk('NOTE_PAID_SECTION_UNSET', 'WARN', '有料パートの区切りマーカーが未設定です'));
+      } else {
+        checks.push(chk('NOTE_PAID_SECTION_UNSET', 'OK', '有料区切りマーカー設定済み'));
+      }
+    } else {
+      // NOTE_FREE_PRICE_SET
+      if (c.price !== null && c.price !== undefined) {
+        checks.push(chk('NOTE_FREE_PRICE_SET', 'WARN', `無料記事に price が設定されています: ${c.price}（設定不整合の可能性）`));
+      }
+    }
+  }
+
+  // アイキャッチ（BLOCK: traversal/absolute, WARN: missing/not-found）
+  if (!c.eyecatch_path) {
+    checks.push(chk('NOTE_EYECATCH_MISSING', 'WARN', 'アイキャッチ画像パスが未設定です'));
+  } else if (c.eyecatch_path.includes('../') || c.eyecatch_path.includes('..\\')) {
+    checks.push(chk('NOTE_EYECATCH_TRAVERSAL', 'BLOCK', 'アイキャッチパスに ../ を含みます'));
+  } else if (/^[/\\]/.test(c.eyecatch_path) || /^[A-Za-z]:[/\\]/.test(c.eyecatch_path)) {
+    checks.push(chk('NOTE_EYECATCH_ABSOLUTE', 'BLOCK', 'アイキャッチパスが絶対パスです'));
+  } else {
+    const fullPath = path.resolve(REPO_ROOT, c.eyecatch_path);
+    if (!fs.existsSync(fullPath)) {
+      checks.push(chk('NOTE_EYECATCH_NOT_FOUND', 'WARN', 'アイキャッチファイルが見つかりません'));
+    } else {
+      checks.push(chk('NOTE_EYECATCH_OK', 'OK', 'アイキャッチファイル確認 OK'));
+    }
+  }
+
+  // NOTE_LEAD_EMPTY
+  if (!c.lead) {
+    checks.push(chk('NOTE_LEAD_EMPTY', 'WARN', 'リード文が未設定です'));
+  } else {
+    checks.push(chk('NOTE_LEAD_EMPTY', 'OK', `リード文: ${c.lead.length}文字`));
+  }
+
+  // NOTE_SUMMARY_EMPTY
+  if (!c.summary) {
+    checks.push(chk('NOTE_SUMMARY_EMPTY', 'WARN', 'まとめが未設定です'));
+  } else {
+    checks.push(chk('NOTE_SUMMARY_EMPTY', 'OK', `まとめ: ${c.summary.length}文字`));
+  }
+
+  // headings（WARN: not-array, empty）
+  if (!Array.isArray(c.headings)) {
+    checks.push(chk('NOTE_HEADINGS_NOT_ARRAY', 'WARN', 'headings が配列ではありません'));
+  } else if (c.headings.length === 0) {
+    checks.push(chk('NOTE_HEADINGS_EMPTY', 'WARN', '見出し構成メモが未設定です'));
+  } else {
+    checks.push(chk('NOTE_HEADINGS_OK', 'OK', `見出しメモ ${c.headings.length} 件`));
+  }
+
+  // hashtags（WARN: not-array, empty）
+  if (!Array.isArray(c.hashtags)) {
+    checks.push(chk('NOTE_HASHTAGS_NOT_ARRAY', 'WARN', 'hashtags が配列ではありません'));
+  } else if (c.hashtags.length === 0) {
+    checks.push(chk('NOTE_HASHTAGS_EMPTY', 'WARN', 'ハッシュタグが未設定です'));
+  } else {
+    checks.push(chk('NOTE_HASHTAGS_OK', 'OK', `ハッシュタグ ${c.hashtags.length} 件`));
+  }
+
+  // NOTE_MAGAZINE_UNSET
+  if (!c.magazine_name && !c.magazine_id) {
+    checks.push(chk('NOTE_MAGAZINE_UNSET', 'WARN', 'マガジン名・IDが未設定です'));
+  } else {
+    checks.push(chk('NOTE_MAGAZINE_OK', 'OK', 'マガジン設定あり'));
+  }
+
+  // NOTE_COMMENTS_UNCONFIRMED / NOTE_COMMENTS_INVALID
+  if (c.comments_enabled === null || c.comments_enabled === undefined) {
+    checks.push(chk('NOTE_COMMENTS_UNCONFIRMED', 'WARN', 'コメント設定が未確認です'));
+  } else if (typeof c.comments_enabled !== 'boolean') {
+    checks.push(chk('NOTE_COMMENTS_INVALID', 'WARN', `comments_enabled が不正な型です: ${typeof c.comments_enabled}`));
+  } else {
+    checks.push(chk('NOTE_COMMENTS_OK', 'OK', `コメント: ${c.comments_enabled ? '許可' : '禁止'}`));
+  }
+
+  // NOTE_UNPUBLISHED_UNCONFIRMED / NOTE_UNPUBLISHED_INFO_TRUE
+  if (c.contains_unpublished_information === null || c.contains_unpublished_information === undefined) {
+    checks.push(chk('NOTE_UNPUBLISHED_UNCONFIRMED', 'BLOCK', 'contains_unpublished_information が未設定です（必須）'));
+  } else if (c.contains_unpublished_information === true) {
+    checks.push(chk('NOTE_UNPUBLISHED_INFO_TRUE', 'WARN', '未公開情報を含む記事です（公開前に必ず内容を確認してください）'));
+  } else {
+    checks.push(chk('NOTE_UNPUBLISHED_OK', 'OK', '未公開情報なし'));
+  }
+
+  // NOTE_REQUIRES_FINAL_CONFIRMATION / NOTE_FINAL_CONFIRMATION_INVALID
+  if (c.requires_final_confirmation === null || c.requires_final_confirmation === undefined) {
+    checks.push(chk('NOTE_FINAL_CONFIRMATION_INVALID', 'WARN', 'requires_final_confirmation が未設定です'));
+  } else if (typeof c.requires_final_confirmation !== 'boolean') {
+    checks.push(chk('NOTE_FINAL_CONFIRMATION_INVALID', 'WARN', `requires_final_confirmation が不正な型です: ${typeof c.requires_final_confirmation}`));
+  } else if (c.requires_final_confirmation === true) {
+    checks.push(chk('NOTE_REQUIRES_FINAL_CONFIRMATION', 'WARN', '最終確認が必要です（公開前に必ず目視確認してください）'));
+  } else {
+    checks.push(chk('NOTE_FINAL_CONFIRMATION_OK', 'OK', '最終確認: 不要に設定済み'));
+  }
+
+  // NOTE_EXTERNAL_POSTING_ENABLED（安全装置）
+  if (noteSettings.external_posting_enabled === true) {
+    checks.push(chk('NOTE_EXTERNAL_POSTING_ENABLED', 'BLOCK',
+      'note外部投稿が有効になっています（settings.note.external_posting_enabled=true）安全のため無効にしてください'));
+  } else {
+    checks.push(chk('NOTE_EXTERNAL_POSTING_DISABLED', 'OK', '外部投稿: 無効（external_posting_enabled=false）'));
+  }
+
+  return checks;
+}
+
 // ── 重複候補チェック ─────────────────────────────────────────────
 
 function runDuplicateCheck(draft, settings) {
@@ -576,6 +782,7 @@ function runAllChecks(draft, settings) {
     ...(draft.platform === 'tiktok'    ? runTikTokChecks(draft, settings)    : []),
     ...(draft.platform === 'x'         ? runXChecks(draft, settings)         : []),
     ...(draft.platform === 'instagram' ? runInstagramChecks(draft, settings) : []),
+    ...(draft.platform === 'note'      ? runNoteChecks(draft, settings)      : []),
     ...runDuplicateCheck(draft, settings),
   ];
 
@@ -725,6 +932,17 @@ function cmdDryRun(id) {
       console.log(hr('─', W));
       console.log('  ⚠️  DIRECT_POST: アプリ審査・公開権限の確認が完了するまで外部投稿は無効です');
     }
+  } else if (draft.platform === 'note') {
+    console.log(`  投稿先           : note`);
+    console.log(`  記事タイプ       : ${c.article_type ?? '（未設定）'}`);
+    console.log(`  本文文字数       : ${c.body ? c.body.length : 0}文字`);
+    console.log(`  公開設定         : ${c.visibility ?? '（未設定）'}`);
+    if (c.visibility === 'paid') {
+      console.log(`  価格             : ${c.price != null ? `${c.price}円` : '（未設定）'}`);
+    }
+    console.log(`  JARVIS内の予定   : ${c.scheduled_at ?? '（未設定）'} JST`);
+    console.log(`  noteへの予約登録 : 未実行（外部API接続なし）`);
+    console.log(`  外部投稿機能     : 無効（external_posting_enabled=false）`);
   } else if (draft.platform === 'x') {
     const acct = sns.x?.account ?? '@snflk_official';
     console.log(`  投稿先           : X（${acct}）`);
@@ -757,7 +975,10 @@ function cmdDryRun(id) {
   }
 
   console.log('  ※ 実際の投稿は行われていません');
-  if (draft.platform === 'youtube') {
+  if (draft.platform === 'note') {
+    console.log('  ※ note API への接続・記事送信は行われていません');
+    console.log('  ※ OAuth 認証情報は未使用です');
+  } else if (draft.platform === 'youtube') {
     console.log('  ※ YouTube API 認証情報は未使用です');
     console.log('  ※ 動画・画像のアップロードは行われていません');
   } else if (draft.platform === 'tiktok') {

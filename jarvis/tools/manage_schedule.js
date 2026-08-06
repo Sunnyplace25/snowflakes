@@ -11,9 +11,10 @@
  * 方針:
  *   - Node.js 標準機能のみ使用（外部パッケージなし）
  *   - 外部通信・SNS投稿・YouTube API・OAuth 認証・git 操作なし
- *   - approved フォルダ内の platform=x/instagram/youtube/tiktok の下書きを対象とする
- *   - type による絞り込みは行わない（YouTube は type=youtube_video、TikTok は type=tiktok_video を確認）
+ *   - approved フォルダ内の platform=x/instagram/youtube/tiktok/note の下書きを対象とする
+ *   - type による絞り込みは行わない（YouTube は type=youtube_video、TikTok は type=tiktok_video、note は type=note_article を確認）
  *   - schedule-set は content.scheduled_at のみ更新する（本文・status 変更禁止）
+ *   - schedule-set 後は meta.preflight をリセットする（全プラットフォーム共通）
  *   - ログに投稿本文・タイトル・URL・ハッシュタグを記録しない
  *   - 設定不明時は安全側（外部投稿無効）へ倒す
  */
@@ -33,7 +34,7 @@ const LOG_PATH      = path.join(LOG_DIR, 'history.log');
 const SETTINGS_PATH = path.join(JARVIS_ROOT, 'config', 'settings.json');
 
 const TOOL_VERSION    = '0.1.0';
-const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok'];
+const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok', 'note'];
 const VALID_ID_RE     = /^draft_\d{8}_[0-9a-f]{6}$/;
 const SCHEDULED_AT_RE = /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?)?$/;
 
@@ -100,6 +101,7 @@ function isScheduleTarget(draft) {
   if (!VALID_PLATFORMS.includes(draft.platform)) return false;
   if (draft.platform === 'youtube' && draft.type !== 'youtube_video') return false;
   if (draft.platform === 'tiktok'  && draft.type !== 'tiktok_video')  return false;
+  if (draft.platform === 'note'    && draft.type !== 'note_article')   return false;
   return true;
 }
 
@@ -149,7 +151,7 @@ function safeWrite(dir, filename, data) {
 // ── コマンド: list ────────────────────────────────────────────────
 
 function cmdList() {
-  printHeader('Snow flakes JARVIS - 投稿予定一覧（X / Instagram / YouTube / TikTok）');
+  printHeader('Snow flakes JARVIS - 投稿予定一覧（X / Instagram / YouTube / TikTok / note）');
 
   if (!fs.existsSync(APPROVED_DIR)) {
     console.log('  approved フォルダが見つかりません。');
@@ -191,12 +193,15 @@ function cmdList() {
     const id   = (d.id ?? '（不明）').padEnd(27);
     const plt  = (d.platform ?? '?').padEnd(9);
 
-    // タイトル取得: YouTube は content.title、TikTok は content.caption、SNS は meta.work_title
+    // タイトル取得: YouTube/note は content.title、TikTok は content.caption、SNS は meta.work_title
     let titleRaw = '';
     if (d.platform === 'youtube') {
       titleRaw = d.content?.title ?? '（タイトルなし）';
     } else if (d.platform === 'tiktok') {
       titleRaw = d.content?.caption ?? '（キャプションなし）';
+    } else if (d.platform === 'note') {
+      const vis    = d.content?.visibility ? `[${d.content.visibility}]` : '';
+      titleRaw = `${d.content?.title ?? '（タイトルなし）'} ${vis}`.trim();
     } else {
       titleRaw = d.meta?.work_title ?? d.content?.work_name ?? '（未設定）';
     }
@@ -304,6 +309,31 @@ function cmdShow(id) {
     console.log('    DIRECT_POST: アプリ審査・公開権限の確認後に別途実装する');
     console.log('    TikTok Content Posting API の OAuth 2.0 認証方式は');
     console.log('    実装時点の TikTok 公式仕様を確認して決定する');
+  } else if (draft.platform === 'note') {
+    console.log('\n  【note 記事情報】');
+    show('タイトル', c.title);
+    show('記事タイプ', c.article_type);
+    show('公開設定', c.visibility);
+    if (c.visibility === 'paid') {
+      show('価格', c.price != null ? `${c.price}円` : null);
+      show('有料区切りマーカー', c.paid_section_marker);
+    }
+    show('リード文', c.lead ? `${c.lead.slice(0, 60)}${c.lead.length > 60 ? '...' : ''}` : null);
+    show('まとめ', c.summary ? `${c.summary.slice(0, 60)}${c.summary.length > 60 ? '...' : ''}` : null);
+    show('ハッシュタグ', c.hashtags);
+    show('アイキャッチ', c.eyecatch_path);
+    show('マガジン', c.magazine_name);
+    show('マガジンID', c.magazine_id);
+    show('コメント', c.comments_enabled === null || c.comments_enabled === undefined
+      ? null : (c.comments_enabled ? '許可' : '禁止'));
+    show('未公開情報を含む', c.contains_unpublished_information != null
+      ? String(c.contains_unpublished_information) : null);
+    show('最終確認が必要', c.requires_final_confirmation != null
+      ? String(c.requires_final_confirmation) : null);
+    console.log('\n  【予約・投稿について】');
+    console.log('    外部投稿機能: 無効（external_posting_enabled=false）');
+    console.log('    noteへの予約登録: 未実行（外部API接続なし）');
+    console.log('    将来の note API 接続については実装時点の公式仕様を確認して決定する');
   } else {
     // X / Instagram（第3段階生成のSNS下書きとの互換性を維持）
     console.log('\n  【投稿内容】');
@@ -421,8 +451,13 @@ async function cmdSet(id) {
     return;
   }
 
-  // content.scheduled_at のみ更新（それ以外のフィールドは変更しない）
-  const updated = { ...draft, content: { ...draft.content, scheduled_at: input } };
+  // content.scheduled_at を更新し、meta.preflight をリセットする（全プラットフォーム共通）
+  const resetPreflight = { last_checked_at: null, result: null, warning_count: 0, error_count: 0, checks: [] };
+  const updated = {
+    ...draft,
+    content: { ...draft.content, scheduled_at: input },
+    meta: { ...(draft.meta || {}), preflight: resetPreflight },
+  };
   const writeResult = safeWrite(APPROVED_DIR, `${id}.json`, updated);
   if (!writeResult.ok) {
     console.error(`\n[エラー] 保存に失敗しました: ${writeResult.reason}\n`);
