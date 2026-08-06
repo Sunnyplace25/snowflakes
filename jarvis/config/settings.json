@@ -1,6 +1,6 @@
 {
   "_comment": "Snow flakes JARVIS 設定ファイル。秘密情報・アクセストークンは絶対に書かないこと。",
-  "_version": "0.3.0",
+  "_version": "0.4.0",
 
   "site": {
     "name": "Snow flakes",
@@ -72,7 +72,7 @@
   ],
 
   "draft": {
-    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "news", "activity_report"],
+    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "tiktok_video", "news", "activity_report"],
     "pending_dir": "drafts/pending",
     "approved_dir": "drafts/approved",
     "published_dir": "drafts/published"
@@ -110,6 +110,10 @@
     "youtube": {
       "enabled": false,
       "provider": null
+    },
+    "tiktok": {
+      "enabled": false,
+      "provider": null
     }
   },
 
@@ -119,5 +123,14 @@
     "require_made_for_kids_setting": true,
     "_api_note": "第4段階後半では、YouTube Data API v3 のインストール済みアプリ向け OAuth 2.0 認証を採用する。具体的な認証方式は、実装時点の Google 公式仕様を確認して決定する。",
     "_publish_at_note": "将来API接続時: content.scheduled_at → status.publishAt、同時に status.privacyStatus = 'private' を設定する。公開済み動画は予約公開の対象にしない。"
+  },
+
+  "tiktok": {
+    "default_post_mode": "media_upload",
+    "direct_post_enabled": false,
+    "require_aigc_setting": true,
+    "require_privacy_confirmation": true,
+    "caption_warning_length": 2200,
+    "_api_note": "初期接続は MEDIA_UPLOAD を優先する。DIRECT_POST はアプリ審査と公開権限の確認後に別途実装する。TikTok Content Posting API の OAuth 2.0 認証方式は、実装時点の TikTok 公式仕様を確認して決定する。"
   }
 }

@@ -9,7 +9,7 @@
  *
  * 方針:
  *   - Node.js 標準機能のみ使用（外部パッケージなし）
- *   - 外部通信・SNS投稿・YouTube API・OAuth 認証・git 操作なし
+ *   - 外部通信・SNS投稿・YouTube API・TikTok API・OAuth 認証・git 操作なし
  *   - 実際の投稿は行わない（dry_run_only=true を前提とする）
  *   - ログに投稿本文・タイトル・URL・ハッシュタグを記録しない
  *   - 設定不明・不正の場合は安全側（外部投稿無効）へ倒す
@@ -43,7 +43,7 @@ const LOG_DIR       = path.join(JARVIS_ROOT, 'logs');
 const LOG_PATH      = path.join(LOG_DIR, 'history.log');
 const SETTINGS_PATH = path.join(JARVIS_ROOT, 'config', 'settings.json');
 
-const VALID_PLATFORMS = ['x', 'instagram', 'youtube'];
+const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok'];
 const VALID_ID_RE     = /^draft_\d{8}_[0-9a-f]{6}$/;
 const SCHEDULED_AT_RE = /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?)?$/;
 
@@ -111,10 +111,11 @@ function loadSettings() {
     // 設定読み込み失敗時は安全側（外部投稿無効）へ倒す
     return {
       scheduling:     { allow_past_schedule: false, minimum_lead_minutes: 10, duplicate_window_minutes: 5, external_posting_enabled: false, dry_run_only: true },
-      platform_posting: { x: { enabled: false }, instagram: { enabled: false }, youtube: { enabled: false } },
+      platform_posting: { x: { enabled: false }, instagram: { enabled: false }, youtube: { enabled: false }, tiktok: { enabled: false } },
       platform_limits:  { x_warning_length: 280, instagram_warning_length: 2200, x_hashtag_recommended_max: 3 },
       instagram:      { bio_link_note: null },
       youtube:        { require_made_for_kids_setting: true },
+      tiktok:         { require_aigc_setting: true, caption_warning_length: 2200, direct_post_enabled: false },
       sns:            { x: { account: '@snflk_official' }, instagram: { account: 'snowflakes_official' } },
     };
   }
@@ -154,6 +155,12 @@ function runCommonChecks(draft, settings) {
     } else {
       checks.push(chk('CONTENT_PRESENT', 'OK', `タイトル: ${c.title.length}文字`));
     }
+  } else if (draft.platform === 'tiktok') {
+    if (!c.caption || !c.caption.trim()) {
+      checks.push(chk('CONTENT_PRESENT', 'BLOCK', 'caption が空です'));
+    } else {
+      checks.push(chk('CONTENT_PRESENT', 'OK', `caption: ${c.caption.length}文字`));
+    }
   } else {
     if (!c.post_text || !c.post_text.trim()) {
       checks.push(chk('CONTENT_PRESENT', 'BLOCK', 'post_text が空です'));
@@ -185,13 +192,14 @@ function runCommonChecks(draft, settings) {
   const targMs = d.getTime();
   const leadMs = (sched.minimum_lead_minutes ?? 10) * 60 * 1000;
 
+  const isVideoplatform = draft.platform === 'youtube' || draft.platform === 'tiktok';
   if (targMs < now) {
-    // YouTube: 即時公開の危険 → BLOCK / SNS: WARN
-    const level = draft.platform === 'youtube' ? 'BLOCK' : 'WARN';
-    const note  = draft.platform === 'youtube' ? '（即時公開の危険があるため BLOCKED）' : '（要確認）';
+    // YouTube/TikTok: 即時公開・アップロードの危険 → BLOCK / SNS: WARN
+    const level = isVideoplatform ? 'BLOCK' : 'WARN';
+    const note  = isVideoplatform ? '（即時公開の危険があるため BLOCKED）' : '（要確認）';
     checks.push(chk('SCHEDULED_AT_PAST', level, `過去日時 ${note}`));
   } else if (targMs - now < leadMs) {
-    const level = draft.platform === 'youtube' ? 'BLOCK' : 'WARN';
+    const level = isVideoplatform ? 'BLOCK' : 'WARN';
     checks.push(chk('SCHEDULED_AT_TOO_SOON', level, `投稿まで ${sched.minimum_lead_minutes ?? 10} 分未満`));
   } else {
     checks.push(chk('SCHEDULED_AT_TIMING', 'OK', '日時: 未来かつ十分な余裕あり'));
@@ -403,6 +411,122 @@ function runYouTubeChecks(draft, settings) {
   return checks;
 }
 
+// ── TikTok 固有チェック ──────────────────────────────────────────
+
+function runTikTokChecks(draft, settings) {
+  const checks     = [];
+  const c          = draft.content || {};
+  const tkSettings = settings.tiktok || {};
+  const warnLen    = tkSettings.caption_warning_length ?? 2200;
+  const VALID_POST_MODES    = ['media_upload', 'direct_post'];
+  const VALID_PRIVACY_LEVELS = ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'FOLLOWER_OF_CREATOR', 'SELF_ONLY'];
+
+  // type 確認
+  if (draft.type !== 'tiktok_video') {
+    checks.push(chk('TK_TYPE_CHECK', 'BLOCK', `type が tiktok_video ではありません: ${draft.type}`));
+  } else {
+    checks.push(chk('TK_TYPE_CHECK', 'OK', 'type=tiktok_video'));
+  }
+
+  // 動画ファイルパス
+  if (!c.video_path || !c.video_path.trim()) {
+    checks.push(chk('TK_VIDEO_PATH_MISSING', 'BLOCK', '動画ファイルパスが未設定'));
+  } else if (c.video_path.includes('../') || c.video_path.includes('..\\')) {
+    checks.push(chk('TK_VIDEO_PATH_TRAVERSAL', 'BLOCK', '動画パスに ../ を含む'));
+  } else if (/^[/\\]/.test(c.video_path) || /^[A-Za-z]:[/\\]/.test(c.video_path)) {
+    checks.push(chk('TK_VIDEO_PATH_ABSOLUTE', 'BLOCK', '動画パスが絶対パス'));
+  } else {
+    const fullPath = path.resolve(REPO_ROOT, c.video_path);
+    if (!fs.existsSync(fullPath)) {
+      checks.push(chk('TK_VIDEO_NOT_FOUND', 'BLOCK', '動画ファイルが存在しない'));
+    } else {
+      checks.push(chk('TK_VIDEO_OK', 'OK', '動画ファイル確認 OK'));
+    }
+  }
+
+  // カバー画像
+  if (!c.cover_path || !c.cover_path.trim()) {
+    checks.push(chk('TK_COVER_MISSING', 'WARN', 'カバー画像パスが未設定'));
+  } else if (c.cover_path.includes('../') || c.cover_path.includes('..\\')) {
+    checks.push(chk('TK_COVER_TRAVERSAL', 'BLOCK', 'カバー画像パスに ../ を含む'));
+  } else if (/^[/\\]/.test(c.cover_path) || /^[A-Za-z]:[/\\]/.test(c.cover_path)) {
+    checks.push(chk('TK_COVER_ABSOLUTE', 'BLOCK', 'カバー画像パスが絶対パス'));
+  } else {
+    const fullPath = path.resolve(REPO_ROOT, c.cover_path);
+    if (!fs.existsSync(fullPath)) {
+      checks.push(chk('TK_COVER_NOT_FOUND', 'WARN', 'カバー画像ファイルが存在しない'));
+    } else {
+      checks.push(chk('TK_COVER_OK', 'OK', 'カバー画像確認 OK'));
+    }
+  }
+
+  // キャプション文字数
+  if (c.caption && c.caption.length > warnLen) {
+    checks.push(chk('TK_CAPTION_OVER', 'WARN', `キャプション文字数超過: ${c.caption.length}文字（警告上限 ${warnLen}）`));
+  }
+
+  // ハッシュタグ
+  if (!Array.isArray(c.hashtags) || c.hashtags.length === 0) {
+    checks.push(chk('TK_HASHTAGS_EMPTY', 'WARN', 'ハッシュタグが未設定'));
+  } else {
+    checks.push(chk('TK_HASHTAGS_OK', 'OK', `ハッシュタグ ${c.hashtags.length} 件`));
+  }
+
+  // post_mode
+  if (!VALID_POST_MODES.includes(c.post_mode)) {
+    checks.push(chk('TK_POST_MODE_INVALID', 'BLOCK', `post_mode が不正: "${c.post_mode}"（media_upload / direct_post のみ有効）`));
+  } else {
+    checks.push(chk('TK_POST_MODE_OK', 'OK', `post_mode=${c.post_mode}`));
+    if (c.post_mode === 'direct_post') {
+      if (tkSettings.direct_post_enabled === false) {
+        checks.push(chk('TK_DIRECT_POST_DISABLED', 'BLOCK',
+          'DIRECT_POST は無効です（settings.tiktok.direct_post_enabled=false）'));
+      }
+      checks.push(chk('TK_DIRECT_POST_WARNING', 'WARN', 'DIRECT_POST: アプリ審査・公開権限の確認が完了するまで外部投稿は無効'));
+      checks.push(chk('TK_UNREVIEWED_APP_NOTE', 'WARN', '未審査アプリでは公開範囲が制限される可能性があります'));
+      // direct_post の場合は privacy_level が必須
+      if (!c.privacy_level || !VALID_PRIVACY_LEVELS.includes(c.privacy_level)) {
+        checks.push(chk('TK_DIRECT_POST_NO_PRIVACY', 'BLOCK', `DIRECT_POST に必要な公開範囲（privacy_level）が未設定`));
+      } else {
+        checks.push(chk('TK_PRIVACY_OK', 'OK', `privacy_level=${c.privacy_level}`));
+      }
+    }
+  }
+
+  // is_aigc（必須・null は BLOCK）
+  if (c.is_aigc === null || c.is_aigc === undefined) {
+    checks.push(chk('TK_AIGC_UNSET', 'BLOCK', 'is_aigc が未設定（明示が必要）'));
+  } else {
+    checks.push(chk('TK_AIGC_OK', 'OK', `is_aigc=${c.is_aigc}`));
+  }
+
+  // コメント・デュエット・Stitch（null の場合のみ WARN）
+  if (c.disable_comment === null || c.disable_comment === undefined) {
+    checks.push(chk('TK_COMMENT_UNSET', 'WARN', 'disable_comment が未設定（要確認）'));
+  } else {
+    checks.push(chk('TK_COMMENT_OK', 'OK', `コメント: ${c.disable_comment ? '禁止' : '許可'}`));
+  }
+  if (c.disable_duet === null || c.disable_duet === undefined) {
+    checks.push(chk('TK_DUET_UNSET', 'WARN', 'disable_duet が未設定（要確認）'));
+  } else {
+    checks.push(chk('TK_DUET_OK', 'OK', `デュエット: ${c.disable_duet ? '禁止' : '許可'}`));
+  }
+  if (c.disable_stitch === null || c.disable_stitch === undefined) {
+    checks.push(chk('TK_STITCH_UNSET', 'WARN', 'disable_stitch が未設定（要確認）'));
+  } else {
+    checks.push(chk('TK_STITCH_OK', 'OK', `Stitch: ${c.disable_stitch ? '禁止' : '許可'}`));
+  }
+
+  // brand_organic_toggle（null の場合のみ WARN）
+  if (c.brand_organic_toggle === null || c.brand_organic_toggle === undefined) {
+    checks.push(chk('TK_BRAND_ORGANIC_UNSET', 'WARN', 'brand_organic_toggle が未設定（要確認）'));
+  } else {
+    checks.push(chk('TK_BRAND_ORGANIC_OK', 'OK', `brand_organic_toggle=${c.brand_organic_toggle}`));
+  }
+
+  return checks;
+}
+
 // ── 重複候補チェック ─────────────────────────────────────────────
 
 function runDuplicateCheck(draft, settings) {
@@ -448,9 +572,10 @@ function runDuplicateCheck(draft, settings) {
 function runAllChecks(draft, settings) {
   const checks = [
     ...runCommonChecks(draft, settings),
-    ...(draft.platform === 'youtube'    ? runYouTubeChecks(draft, settings)    : []),
-    ...(draft.platform === 'x'          ? runXChecks(draft, settings)          : []),
-    ...(draft.platform === 'instagram'  ? runInstagramChecks(draft, settings)  : []),
+    ...(draft.platform === 'youtube'   ? runYouTubeChecks(draft, settings)   : []),
+    ...(draft.platform === 'tiktok'    ? runTikTokChecks(draft, settings)    : []),
+    ...(draft.platform === 'x'         ? runXChecks(draft, settings)         : []),
+    ...(draft.platform === 'instagram' ? runInstagramChecks(draft, settings) : []),
     ...runDuplicateCheck(draft, settings),
   ];
 
@@ -575,6 +700,31 @@ function cmdDryRun(id) {
     console.log('    同時に status.privacyStatus = "private" を設定');
     console.log('    第4段階後半: YouTube Data API v3 インストール済みアプリ向け');
     console.log('    OAuth 2.0 認証（方式は実装時点の Google 公式仕様で決定）');
+  } else if (draft.platform === 'tiktok') {
+    const postModeLabel = c.post_mode === 'direct_post' ? 'DIRECT_POST' : 'MEDIA_UPLOAD';
+    console.log(`  投稿先           : TikTok`);
+    console.log(`  投稿方式         : ${postModeLabel}`);
+    console.log(`  動画ファイル     : ${c.video_path ?? '（未設定）'}`);
+    console.log(`  キャプション文字数: ${c.caption ? c.caption.length : 0}文字`);
+    if (c.post_mode === 'media_upload') {
+      console.log(`  アップロード準備予定 : ${c.scheduled_at ?? '（未設定）'} JST`);
+      console.log(`  ※ TikTok 側の公開日時ではなく JARVIS 内のアップロード準備予定です`);
+    } else {
+      console.log(`  TikTok 公開予定日時 : ${c.scheduled_at ?? '（未設定）'} JST`);
+    }
+    const privacyDisplay = c.privacy_level
+      ? c.privacy_level
+      : (c.post_mode === 'media_upload' ? '（TikTok アプリで設定）' : '（未設定）');
+    console.log(`  公開範囲         : ${privacyDisplay}`);
+    console.log(`  コメント         : ${c.disable_comment == null ? '（未設定）' : c.disable_comment ? '禁止' : '許可'}`);
+    console.log(`  デュエット       : ${c.disable_duet   == null ? '（未設定）' : c.disable_duet   ? '禁止' : '許可'}`);
+    console.log(`  Stitch           : ${c.disable_stitch == null ? '（未設定）' : c.disable_stitch ? '禁止' : '許可'}`);
+    console.log(`  AI生成表示       : ${c.is_aigc == null ? '（未設定）' : c.is_aigc ? 'あり' : 'なし'}`);
+    console.log(`  自己宣伝設定     : ${c.brand_organic_toggle == null ? '（未設定）' : c.brand_organic_toggle ? 'あり' : 'なし'}`);
+    if (c.post_mode === 'direct_post') {
+      console.log(hr('─', W));
+      console.log('  ⚠️  DIRECT_POST: アプリ審査・公開権限の確認が完了するまで外部投稿は無効です');
+    }
   } else if (draft.platform === 'x') {
     const acct = sns.x?.account ?? '@snflk_official';
     console.log(`  投稿先           : X（${acct}）`);
@@ -610,6 +760,9 @@ function cmdDryRun(id) {
   if (draft.platform === 'youtube') {
     console.log('  ※ YouTube API 認証情報は未使用です');
     console.log('  ※ 動画・画像のアップロードは行われていません');
+  } else if (draft.platform === 'tiktok') {
+    console.log('  ※ TikTok API への接続・動画送信は行われていません');
+    console.log('  ※ OAuth 認証情報は未使用です');
   }
   console.log(hr('═', W) + '\n');
 

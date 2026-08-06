@@ -11,8 +11,8 @@
  * 方針:
  *   - Node.js 標準機能のみ使用（外部パッケージなし）
  *   - 外部通信・SNS投稿・YouTube API・OAuth 認証・git 操作なし
- *   - approved フォルダ内の platform=x/instagram/youtube の下書きを対象とする
- *   - type による絞り込みは行わない（YouTube のみ type=youtube_video を確認）
+ *   - approved フォルダ内の platform=x/instagram/youtube/tiktok の下書きを対象とする
+ *   - type による絞り込みは行わない（YouTube は type=youtube_video、TikTok は type=tiktok_video を確認）
  *   - schedule-set は content.scheduled_at のみ更新する（本文・status 変更禁止）
  *   - ログに投稿本文・タイトル・URL・ハッシュタグを記録しない
  *   - 設定不明時は安全側（外部投稿無効）へ倒す
@@ -33,7 +33,7 @@ const LOG_PATH      = path.join(LOG_DIR, 'history.log');
 const SETTINGS_PATH = path.join(JARVIS_ROOT, 'config', 'settings.json');
 
 const TOOL_VERSION    = '0.1.0';
-const VALID_PLATFORMS = ['x', 'instagram', 'youtube'];
+const VALID_PLATFORMS = ['x', 'instagram', 'youtube', 'tiktok'];
 const VALID_ID_RE     = /^draft_\d{8}_[0-9a-f]{6}$/;
 const SCHEDULED_AT_RE = /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?)?$/;
 
@@ -91,13 +91,15 @@ function validateId(id) {
 
 // ── 対象下書き判定 ────────────────────────────────────────────────
 // type による絞り込みは行わない。
-// YouTube のみ platform=youtube かつ type=youtube_video を確認する。
+// YouTube は platform=youtube かつ type=youtube_video を確認する。
+// TikTok は platform=tiktok かつ type=tiktok_video を確認する。
 
 function isScheduleTarget(draft) {
   if (!draft)                              return false;
   if (draft.status !== 'approved')         return false;
   if (!VALID_PLATFORMS.includes(draft.platform)) return false;
   if (draft.platform === 'youtube' && draft.type !== 'youtube_video') return false;
+  if (draft.platform === 'tiktok'  && draft.type !== 'tiktok_video')  return false;
   return true;
 }
 
@@ -147,7 +149,7 @@ function safeWrite(dir, filename, data) {
 // ── コマンド: list ────────────────────────────────────────────────
 
 function cmdList() {
-  printHeader('Snow flakes JARVIS - 投稿予定一覧（X / Instagram / YouTube）');
+  printHeader('Snow flakes JARVIS - 投稿予定一覧（X / Instagram / YouTube / TikTok）');
 
   if (!fs.existsSync(APPROVED_DIR)) {
     console.log('  approved フォルダが見つかりません。');
@@ -189,10 +191,12 @@ function cmdList() {
     const id   = (d.id ?? '（不明）').padEnd(27);
     const plt  = (d.platform ?? '?').padEnd(9);
 
-    // タイトル取得: YouTube は content.title、SNS は meta.work_title → content.work_name → 省略
+    // タイトル取得: YouTube は content.title、TikTok は content.caption、SNS は meta.work_title
     let titleRaw = '';
     if (d.platform === 'youtube') {
       titleRaw = d.content?.title ?? '（タイトルなし）';
+    } else if (d.platform === 'tiktok') {
+      titleRaw = d.content?.caption ?? '（キャプションなし）';
     } else {
       titleRaw = d.meta?.work_title ?? d.content?.work_name ?? '（未設定）';
     }
@@ -278,6 +282,28 @@ function cmdShow(id) {
     console.log('    同時に status.privacyStatus = "private" を設定する');
     console.log('    第4段階後半: YouTube Data API v3 インストール済みアプリ向け');
     console.log('    OAuth 2.0 認証（方式は実装時点の Google 公式仕様で決定）');
+  } else if (draft.platform === 'tiktok') {
+    console.log('\n  【TikTok 動画情報】');
+    const capShort = c.caption ? c.caption.slice(0, 60) + (c.caption.length > 60 ? '...' : '') : null;
+    show('キャプション', capShort);
+    show('動画ファイルパス', c.video_path);
+    show('カバー画像パス', c.cover_path);
+    show('ハッシュタグ', c.hashtags);
+    show('投稿方式', c.post_mode);
+    if (c.post_mode === 'media_upload') {
+      console.log('  ※ scheduled_at は JARVIS 内のアップロード準備予定です（TikTok 側の公開日時ではありません）');
+    }
+    show('公開範囲', c.privacy_level ?? (c.post_mode === 'media_upload' ? '（TikTok アプリで設定）' : null));
+    show('コメント', c.disable_comment === null ? null : (c.disable_comment ? '禁止' : '許可'));
+    show('デュエット', c.disable_duet   === null ? null : (c.disable_duet   ? '禁止' : '許可'));
+    show('Stitch', c.disable_stitch === null ? null : (c.disable_stitch ? '禁止' : '許可'));
+    show('AI生成', c.is_aigc === null ? null : (c.is_aigc ? 'あり' : 'なし'));
+    show('自己宣伝', c.brand_organic_toggle === null ? null : (c.brand_organic_toggle ? 'あり' : 'なし'));
+    console.log('\n  【将来のAPI接続情報】');
+    console.log('    初期接続: MEDIA_UPLOAD を優先する');
+    console.log('    DIRECT_POST: アプリ審査・公開権限の確認後に別途実装する');
+    console.log('    TikTok Content Posting API の OAuth 2.0 認証方式は');
+    console.log('    実装時点の TikTok 公式仕様を確認して決定する');
   } else {
     // X / Instagram（第3段階生成のSNS下書きとの互換性を維持）
     console.log('\n  【投稿内容】');

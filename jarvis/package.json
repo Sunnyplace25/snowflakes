@@ -7,6 +7,7 @@
     "draft":          "node tools/generate_draft.js",
     "sns-draft":      "node tools/generate_sns_draft.js",
     "youtube-draft":  "node tools/generate_youtube_draft.js",
+    "tiktok-draft":   "node tools/generate_tiktok_draft.js",
     "list":           "node tools/manage_drafts.js list",
     "show":           "node tools/manage_drafts.js show",
     "approve":        "node tools/manage_drafts.js approve",
