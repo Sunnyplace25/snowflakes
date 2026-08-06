@@ -18,6 +18,7 @@ jarvis-development
 | 第4段階前半 | 予約管理・事前確認・dry-run（X/Instagram/YouTube） | ✅ 完了 | `48cf107` |
 | 第4段階 TikTok追加 | TikTok下書き生成・予約管理・preflight追加 | ✅ 完了 | `c6847d0` |
 | 第4段階 note追加 | note記事下書き生成・エクスポート・preflight | ✅ 完了 | `d5efde0` |
+| 第4段階後半 Phase 1A | YouTube OAuth秘密領域・安全設定 | 🔄 実装済み・未commit | - |
 
 ---
 

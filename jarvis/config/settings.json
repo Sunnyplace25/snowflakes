@@ -125,6 +125,11 @@
     "default_privacy_status": "private",
     "default_publish_mode": "scheduled",
     "require_made_for_kids_setting": true,
+    "upload_enabled": false,
+    "scheduling_enabled": false,
+    "oauth_enabled": false,
+    "channel_check_enabled": false,
+    "auth_timeout_seconds": 120,
     "_api_note": "第4段階後半では、YouTube Data API v3 のインストール済みアプリ向け OAuth 2.0 認証を採用する。具体的な認証方式は、実装時点の Google 公式仕様を確認して決定する。",
     "_publish_at_note": "将来API接続時: content.scheduled_at → status.publishAt、同時に status.privacyStatus = 'private' を設定する。公開済み動画は予約公開の対象にしない。"
   },

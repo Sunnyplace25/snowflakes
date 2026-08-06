@@ -6,4 +6,7 @@ jarvis/.env
 jarvis/logs/*.log
 jarvis/drafts/pending/*
 !jarvis/drafts/pending/.gitkeep
+# ─── JARVIS secrets ───────────────────
+jarvis/secrets/*
+!jarvis/secrets/.gitkeep
 # ──────────────────────────────────────
