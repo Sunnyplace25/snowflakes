@@ -25,5 +25,8 @@
     "node": ">=18.0.0"
   },
   "author": "山吹ことり",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "googleapis": "174.0.1"
+  }
 }
