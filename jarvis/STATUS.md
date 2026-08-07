@@ -22,6 +22,7 @@ jarvis-development
 | オーケストレーター C1 | タスク状態ストレージ準備（tasks/.gitkeep） | ✅ 完了 | `1871573` |
 | オーケストレーター C2 | task_manager.js / logger.js | ✅ 完了 | `b41e347` |
 | オーケストレーター C3 | safety_guard.js / budget_tracker.js | ✅ 完了 | `6bdfd4d` |
+| オーケストレーター C4 | context_builder.js | ✅ 完了 | `03a0ae4` |
 
 ---
 
@@ -37,6 +38,7 @@ jarvis-development
 - C1: `1871573 chore(jarvis): prepare orchestrator task state storage`
 - C2: `b41e347 feat(jarvis): add orchestrator task state and logging`
 - C3: `6bdfd4d feat(jarvis): add orchestrator safety and budget guards`
+- C4: `03a0ae4 feat(jarvis): add orchestrator context builder`
 
 ---
 
