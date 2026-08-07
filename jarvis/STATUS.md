@@ -19,6 +19,9 @@ jarvis-development
 | 第4段階 TikTok追加 | TikTok下書き生成・予約管理・preflight追加 | ✅ 完了 | `c6847d0` |
 | 第4段階 note追加 | note記事下書き生成・エクスポート・preflight | ✅ 完了 | `d5efde0` |
 | 第4段階後半 Phase 1A | YouTube OAuth秘密領域・安全設定 | ✅ 完了 | `11a9fdd` |
+| オーケストレーター C1 | タスク状態ストレージ準備（tasks/.gitkeep） | ✅ 完了 | `1871573` |
+| オーケストレーター C2 | task_manager.js / logger.js | ✅ 完了 | `b41e347` |
+| オーケストレーター C3 | safety_guard.js / budget_tracker.js | ✅ 完了 | `6bdfd4d` |
 
 ---
 
@@ -31,6 +34,9 @@ jarvis-development
 - 第4段階 TikTok追加: `c6847d0 feat(jarvis): add TikTok draft and preflight workflow`
 - 第4段階 note追加: `d5efde0 feat(jarvis): add local note article workflow`
 - 第4段階後半 Phase 1A: `11a9fdd feat(jarvis): prepare YouTube OAuth secrets area and settings`
+- C1: `1871573 chore(jarvis): prepare orchestrator task state storage`
+- C2: `b41e347 feat(jarvis): add orchestrator task state and logging`
+- C3: `6bdfd4d feat(jarvis): add orchestrator safety and budget guards`
 
 ---
 
