@@ -11,3 +11,6 @@ jarvis/secrets/*
 !jarvis/secrets/.gitkeep
 # ──────────────────────────────────────
 jarvis/node_modules/
+# JARVIS orchestrator task state
+jarvis/tasks/*
+!jarvis/tasks/.gitkeep
