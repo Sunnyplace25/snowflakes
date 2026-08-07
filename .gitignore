@@ -10,3 +10,4 @@ jarvis/drafts/pending/*
 jarvis/secrets/*
 !jarvis/secrets/.gitkeep
 # ──────────────────────────────────────
+jarvis/node_modules/
