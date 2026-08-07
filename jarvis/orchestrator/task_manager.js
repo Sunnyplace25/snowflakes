@@ -1,0 +1,261 @@
+/**
+ * jarvis/orchestrator/task_manager.js
+ * タスク状態管理（外部通信なし・git操作なし）
+ */
+
+import {
+  writeFileSync,
+  readFileSync,
+  renameSync,
+  existsSync,
+  readdirSync,
+  unlinkSync,
+  mkdirSync,
+} from 'fs';
+import { join, resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { randomBytes } from 'crypto';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// タスク保存ディレクトリ（jarvis/tasks/ 固定）
+const TASKS_DIR = resolve(__dirname, '..', 'tasks');
+
+// ─── 有効ステータス一覧 ───────────────────────────────────────────────────────
+export const STATUSES = Object.freeze([
+  'CREATED',
+  'PLANNING',
+  'IMPLEMENTING',
+  'TESTING',
+  'REVIEWING',
+  'REVISING',
+  'WAITING_FOR_APPROVAL',
+  'PAUSED',
+  'COMPLETED',
+  'FAILED',
+  'CANCELLED',
+]);
+
+// ─── 有効な状態遷移マップ ──────────────────────────────────────────────────────
+// ※ PAUSED は任意のアクティブ状態から遷移可能（個別チェック）
+const VALID_TRANSITIONS = Object.freeze({
+  CREATED:               ['PLANNING', 'CANCELLED'],
+  PLANNING:              ['IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
+  IMPLEMENTING:          ['TESTING', 'PAUSED', 'FAILED', 'CANCELLED'],
+  TESTING:               ['REVIEWING', 'IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
+  REVIEWING:             ['REVISING', 'WAITING_FOR_APPROVAL', 'PAUSED', 'FAILED', 'CANCELLED'],
+  REVISING:              ['IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
+  WAITING_FOR_APPROVAL:  ['COMPLETED', 'REVISING', 'CANCELLED'],
+  PAUSED:                ['PLANNING', 'IMPLEMENTING', 'TESTING', 'REVIEWING', 'REVISING', 'CANCELLED'],
+  COMPLETED:             [],
+  FAILED:                [],
+  CANCELLED:             [],
+});
+
+// ─── タスクIDパターン ─────────────────────────────────────────────────────────
+const TASK_ID_PATTERN = /^task_\d{8}_[0-9a-f]{6}$/;
+
+// ─── タスクIDの生成 ───────────────────────────────────────────────────────────
+/**
+ * task_YYYYMMDD_xxxxxx 形式のIDを生成する。
+ * 日付部分はJST（Asia/Tokyo）を使用する。
+ * @returns {string}
+ */
+export function generateTaskId() {
+  const now = new Date();
+  // JST offset = UTC+9
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const y = jst.getUTCFullYear();
+  const m = String(jst.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(jst.getUTCDate()).padStart(2, '0');
+  const hex = randomBytes(3).toString('hex'); // 6文字
+  return `task_${y}${m}${d}_${hex}`;
+}
+
+// ─── パストラバーサル防止 ─────────────────────────────────────────────────────
+/**
+ * taskId が安全かどうかを検証する。
+ * ../  絶対パス  TASK_ID_PATTERN不一致 のいずれかで拒否。
+ * @param {string} taskId
+ * @returns {string} 解決済み安全パス
+ * @throws {Error}
+ */
+function resolveTaskPath(taskId) {
+  if (typeof taskId !== 'string') {
+    throw new Error('INVALID_TASK_ID: taskId must be a string');
+  }
+  if (!TASK_ID_PATTERN.test(taskId)) {
+    throw new Error(`INVALID_TASK_ID: "${taskId}" does not match expected format`);
+  }
+  if (taskId.includes('..') || taskId.includes('/') || taskId.includes('\\')) {
+    throw new Error(`INVALID_TASK_ID: path traversal detected in "${taskId}"`);
+  }
+
+  const filePath = resolve(TASKS_DIR, taskId + '.json');
+
+  // 解決後のパスが TASKS_DIR 配下にあることを確認
+  if (!filePath.startsWith(TASKS_DIR + '\\') && !filePath.startsWith(TASKS_DIR + '/')) {
+    throw new Error(`INVALID_TASK_ID: resolved path escapes tasks directory`);
+  }
+  return filePath;
+}
+
+// ─── タスクディレクトリ保証 ──────────────────────────────────────────────────
+function ensureTasksDir() {
+  if (!existsSync(TASKS_DIR)) {
+    mkdirSync(TASKS_DIR, { recursive: true });
+  }
+}
+
+// ─── 安全な書き込み ───────────────────────────────────────────────────────────
+/**
+ * tmp → JSON.parse検証 → renameSync の3ステップで安全に保存する。
+ * @param {string} filePath
+ * @param {object} data
+ */
+function safeSave(filePath, data) {
+  const json = JSON.stringify(data, null, 2);
+
+  // JSON.parseで検証（不正なオブジェクトを書かせない）
+  JSON.parse(json);
+
+  const tmpPath = filePath + '.tmp';
+  writeFileSync(tmpPath, json, { encoding: 'utf8' });
+  renameSync(tmpPath, filePath);
+}
+
+// ─── タスク作成 ───────────────────────────────────────────────────────────────
+/**
+ * 新しいタスクを作成して保存する。
+ * @param {object} opts
+ * @param {string} opts.phase   - フェーズ識別子（例: "C3"）
+ * @param {string} [opts.model] - 使用モデル（省略可）
+ * @returns {object} 作成されたタスクオブジェクト
+ */
+export function createTask({ phase, model = null } = {}) {
+  if (!phase || typeof phase !== 'string') {
+    throw new Error('INVALID_PHASE: phase is required and must be a string');
+  }
+
+  ensureTasksDir();
+
+  const taskId = generateTaskId();
+  const now = new Date().toISOString();
+
+  const task = {
+    taskId,
+    phase,
+    model,
+    status: 'CREATED',
+    created_at: now,
+    updated_at: now,
+    history: [
+      { status: 'CREATED', at: now },
+    ],
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, task);
+
+  return { ...task };
+}
+
+// ─── タスク読み込み ───────────────────────────────────────────────────────────
+/**
+ * タスクをIDで読み込む。
+ * @param {string} taskId
+ * @returns {object} タスクオブジェクト
+ * @throws {Error} 存在しない場合
+ */
+export function loadTask(taskId) {
+  const filePath = resolveTaskPath(taskId);
+  if (!existsSync(filePath)) {
+    throw new Error(`TASK_NOT_FOUND: ${taskId}`);
+  }
+  const raw = readFileSync(filePath, { encoding: 'utf8' });
+  return JSON.parse(raw);
+}
+
+// ─── ステータス更新 ───────────────────────────────────────────────────────────
+/**
+ * タスクのステータスを更新する。
+ * 無効な遷移は拒否する。
+ * @param {string} taskId
+ * @param {string} nextStatus
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error}
+ */
+export function updateStatus(taskId, nextStatus) {
+  if (!STATUSES.includes(nextStatus)) {
+    throw new Error(`INVALID_STATUS: "${nextStatus}" is not a valid status`);
+  }
+
+  const task = loadTask(taskId);
+  const current = task.status;
+  const allowed = VALID_TRANSITIONS[current];
+
+  if (!allowed.includes(nextStatus)) {
+    throw new Error(
+      `INVALID_TRANSITION: ${current} → ${nextStatus} is not allowed`
+    );
+  }
+
+  const now = new Date().toISOString();
+  task.status = nextStatus;
+  task.updated_at = now;
+  task.history.push({ status: nextStatus, at: now });
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, task);
+
+  return { ...task };
+}
+
+// ─── タスク一覧取得 ───────────────────────────────────────────────────────────
+/**
+ * tasks/ ディレクトリ内の全タスクを返す。
+ * .gitkeep など非タスクファイルは除外する。
+ * @returns {object[]}
+ */
+export function listTasks() {
+  ensureTasksDir();
+  const files = readdirSync(TASKS_DIR);
+  const tasks = [];
+
+  for (const file of files) {
+    if (!file.endsWith('.json')) continue;
+    const taskId = file.slice(0, -5); // .json を除去
+    if (!TASK_ID_PATTERN.test(taskId)) continue;
+
+    try {
+      const task = loadTask(taskId);
+      tasks.push(task);
+    } catch {
+      // 破損ファイルはスキップ
+    }
+  }
+
+  // created_at 昇順
+  tasks.sort((a, b) => a.created_at.localeCompare(b.created_at));
+  return tasks;
+}
+
+// ─── タスク削除（テスト用）───────────────────────────────────────────────────
+/**
+ * タスクファイルを削除する。テストのクリーンアップ専用。
+ * @param {string} taskId
+ */
+export function deleteTask(taskId) {
+  const filePath = resolveTaskPath(taskId);
+  if (existsSync(filePath)) {
+    unlinkSync(filePath);
+  }
+  // .tmp が残っている場合も削除
+  const tmpPath = filePath + '.tmp';
+  if (existsSync(tmpPath)) {
+    unlinkSync(tmpPath);
+  }
+}
+
+// ─── テスト用内部エクスポート ─────────────────────────────────────────────────
+export { TASKS_DIR, VALID_TRANSITIONS, TASK_ID_PATTERN };
