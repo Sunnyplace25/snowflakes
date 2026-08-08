@@ -23,6 +23,7 @@ jarvis-development
 | オーケストレーター C2 | task_manager.js / logger.js | ✅ 完了 | `b41e347` |
 | オーケストレーター C3 | safety_guard.js / budget_tracker.js | ✅ 完了 | `6bdfd4d` |
 | オーケストレーター C4 | context_builder.js | ✅ 完了 | `03a0ae4` |
+| オーケストレーター C5 | openai_client.js | ✅ 完了 | `f394da1` |
 
 ---
 
@@ -39,6 +40,7 @@ jarvis-development
 - C2: `b41e347 feat(jarvis): add orchestrator task state and logging`
 - C3: `6bdfd4d feat(jarvis): add orchestrator safety and budget guards`
 - C4: `03a0ae4 feat(jarvis): add orchestrator context builder`
+- C5: `f394da1 feat(jarvis): add orchestrator OpenAI client`
 
 ---
 
