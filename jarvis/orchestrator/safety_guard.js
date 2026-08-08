@@ -26,7 +26,7 @@ export const DEFAULT_LIMITS = Object.freeze({
   max_changed_files:  5,
   max_diff_lines:     300,
   max_diff_size_bytes: 50000,
-  max_iterations:     1,
+  max_iterations:     3,
   max_claude_runs:    2,
   max_openai_calls:   3,
 });
@@ -76,10 +76,17 @@ const APPROVAL_PATTERNS = [
   { pattern: /\b外部サービス\s*(?:ログイン|認証|接続)\b/i, reason: '外部サービスログイン' },
   { pattern: /\bexternal\s*(?:login|auth)\b/i,  reason: '外部サービスログイン' },
   // 投稿・公開操作
-  { pattern: /\bSNS\s*投稿\b/i,                 reason: 'SNS投稿' },
+  { pattern: /\bSNS\s*投稿/i,                    reason: 'SNS投稿' },
   { pattern: /\bYouTube\s*(?:アップロード|upload)\b/i, reason: 'YouTubeアップロード' },
   { pattern: /\bTikTok\s*(?:アップロード|upload)\b/i,  reason: 'TikTokアップロード' },
   { pattern: /\b外部公開\b/i,                    reason: '外部公開' },
+  { pattern: /\b外部\s*投稿\b/i,                 reason: '外部投稿' },
+  // merge to main / main merge
+  { pattern: /\bmerge\s+(?:to\s+|into\s+)?main\b/i,   reason: 'merge to main' },
+  { pattern: /\bmain\s+(?:ブランチへの?)?merge\b/i,     reason: 'main merge' },
+  // 購入・外部サービス設定変更
+  { pattern: /\b購入\b/,                         reason: '購入操作' },
+  { pattern: /\b外部\s*サービス\s*設定\s*変更\b/i, reason: '外部サービス設定変更' },
   // 課金・本番・大量削除
   { pattern: /\b課金\s*操作\b/i,                 reason: '課金操作' },
   { pattern: /\b大量\s*削除\b/i,                 reason: '大量削除' },

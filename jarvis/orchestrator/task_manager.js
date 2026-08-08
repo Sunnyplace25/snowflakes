@@ -40,12 +40,12 @@ export const STATUSES = Object.freeze([
 // ※ PAUSED は任意のアクティブ状態から遷移可能（個別チェック）
 const VALID_TRANSITIONS = Object.freeze({
   CREATED:               ['PLANNING', 'CANCELLED'],
-  PLANNING:              ['IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
-  IMPLEMENTING:          ['TESTING', 'PAUSED', 'FAILED', 'CANCELLED'],
+  PLANNING:              ['IMPLEMENTING', 'WAITING_FOR_APPROVAL', 'PAUSED', 'FAILED', 'CANCELLED'],
+  IMPLEMENTING:          ['TESTING', 'PLANNING', 'PAUSED', 'FAILED', 'CANCELLED'],
   TESTING:               ['REVIEWING', 'IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
   REVIEWING:             ['REVISING', 'WAITING_FOR_APPROVAL', 'PAUSED', 'FAILED', 'CANCELLED'],
   REVISING:              ['IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
-  WAITING_FOR_APPROVAL:  ['COMPLETED', 'REVISING', 'CANCELLED'],
+  WAITING_FOR_APPROVAL:  ['COMPLETED', 'REVISING', 'PLANNING', 'CANCELLED'],
   PAUSED:                ['PLANNING', 'IMPLEMENTING', 'TESTING', 'REVIEWING', 'REVISING', 'CANCELLED'],
   COMPLETED:             [],
   FAILED:                [],
@@ -255,6 +255,74 @@ export function deleteTask(taskId) {
   if (existsSync(tmpPath)) {
     unlinkSync(tmpPath);
   }
+}
+
+// ─── Planning 確定（原子的保存）──────────────────────────────────────────────
+/**
+ * Planning フェーズの終了処理。
+ * plan保存・status更新・カウンタ更新を 1 回の安全な JSON 書き込みで確定する。
+ *
+ * 現在のステータスが PLANNING であることを確認してから実行する。
+ * .tmp → JSON.parse検証 → renameSync の安全書き込みを使用する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {object|null}  opts.plan                  - 保存する plan オブジェクト（失敗時は null）
+ * @param {string}       opts.nextStatus            - 'IMPLEMENTING' | 'WAITING_FOR_APPROVAL' | 'FAILED'
+ * @param {number}       opts.planningAttemptCount  - 新しい planning 試行回数（1以上の整数）
+ * @param {string|null}  opts.lastErrorSignature    - エラーシグネチャ（成功時は null）
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正の場合
+ */
+export function finalizePlanning(taskId, {
+  plan,
+  nextStatus,
+  planningAttemptCount,
+  lastErrorSignature = null,
+} = {}) {
+  const ALLOWED_NEXT_STATUSES = ['IMPLEMENTING', 'WAITING_FOR_APPROVAL', 'FAILED'];
+  if (!ALLOWED_NEXT_STATUSES.includes(nextStatus)) {
+    throw new Error(
+      `INVALID_STATUS: finalizePlanning nextStatus must be one of ${ALLOWED_NEXT_STATUSES.join(', ')}, got "${nextStatus}"`
+    );
+  }
+
+  if (
+    typeof planningAttemptCount !== 'number' ||
+    !Number.isInteger(planningAttemptCount) ||
+    planningAttemptCount < 1
+  ) {
+    throw new Error('INVALID_PLANNING_ATTEMPT_COUNT: must be a positive integer');
+  }
+
+  const task = loadTask(taskId);
+
+  if (task.status !== 'PLANNING') {
+    throw new Error(
+      `INVALID_STATE: finalizePlanning requires status PLANNING, got "${task.status}"`
+    );
+  }
+
+  const now = new Date().toISOString();
+
+  const updatedTask = {
+    ...task,
+    status:                  nextStatus,
+    updated_at:              now,
+    history:                 [...task.history, { status: nextStatus, at: now }],
+    planning_attempt_count:  planningAttemptCount,
+    last_error_signature:    lastErrorSignature ?? null,
+  };
+
+  // plan フィールドは成功時のみ上書き（失敗時は既存 plan を保持）
+  if (plan !== null && plan !== undefined) {
+    updatedTask.plan = plan;
+  }
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+
+  return { ...updatedTask };
 }
 
 // ─── テスト用内部エクスポート ─────────────────────────────────────────────────

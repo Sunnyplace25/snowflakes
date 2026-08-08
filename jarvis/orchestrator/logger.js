@@ -31,6 +31,10 @@ const ALLOWED_KEYS = new Set([
   'estimated_cost_usd',
   'error_type',
   'approval_reason',
+  'action_count',
+  'warning_count',
+  'approval_required',
+  'request_id',
 ]);
 
 // ─── 制御文字サニタイズ ───────────────────────────────────────────────────────
