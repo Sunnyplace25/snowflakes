@@ -35,6 +35,10 @@ const ALLOWED_KEYS = new Set([
   'warning_count',
   'approval_required',
   'request_id',
+  'total_write_bytes',
+  'dry_run',
+  'rollback_attempted',
+  'rollback_succeeded',
 ]);
 
 // ─── 制御文字サニタイズ ───────────────────────────────────────────────────────

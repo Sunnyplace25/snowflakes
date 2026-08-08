@@ -44,6 +44,20 @@ export const PLANNING_JSON_SCHEMA = Object.freeze({
           type:        { type: 'string' },
           path:        { type: 'string' },
           description: { type: 'string' },
+          operations: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                op:       { type: 'string' },
+                old_text: { type: 'string' },
+                new_text: { type: 'string' },
+              },
+              required: ['op', 'old_text', 'new_text'],
+              additionalProperties: false,
+            },
+          },
+          content: { type: 'string' },
         },
         required: ['type', 'path', 'description'],
         additionalProperties: false,

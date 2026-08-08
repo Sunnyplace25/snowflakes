@@ -176,6 +176,31 @@ export function classifyActionSafety(action, { allowed_files = null, allowed_dir
     return { safety: 'APPROVAL', reason: 'delete_file requires human approval' };
   }
 
+  // 5.5. edit_file ペイロード検証
+  if (type === 'edit_file') {
+    if (!Array.isArray(action.operations) || action.operations.length === 0) {
+      return { safety: 'BLOCK', reason: 'edit_file requires at least one operation in operations array' };
+    }
+    for (const op of action.operations) {
+      if (!op || typeof op !== 'object') {
+        return { safety: 'BLOCK', reason: 'each operation must be an object' };
+      }
+      if (op.op !== 'replace_exact') {
+        return { safety: 'BLOCK', reason: `operation op must be "replace_exact", got "${op.op}"` };
+      }
+      if (typeof op.old_text !== 'string' || typeof op.new_text !== 'string') {
+        return { safety: 'BLOCK', reason: 'operation requires string old_text and new_text' };
+      }
+    }
+  }
+
+  // 5.6. create_file ペイロード検証
+  if (type === 'create_file') {
+    if (typeof action.content !== 'string') {
+      return { safety: 'BLOCK', reason: 'create_file requires string content' };
+    }
+  }
+
   // 6. description の承認パターンチェック
   const descCheck = detectApprovalRequired(desc);
   if (descCheck.result === RESULT.HUMAN_APPROVAL_REQUIRED) {
