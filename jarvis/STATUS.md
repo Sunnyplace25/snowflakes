@@ -24,6 +24,7 @@ jarvis-development
 | オーケストレーター C3 | safety_guard.js / budget_tracker.js | ✅ 完了 | `6bdfd4d` |
 | オーケストレーター C4 | context_builder.js | ✅ 完了 | `03a0ae4` |
 | オーケストレーター C5 | openai_client.js | ✅ 完了 | `f394da1` |
+| オーケストレーター C6 | orchestrator.js / task_manager.js / safety_guard.js / logger.js | ✅ 完了 | `cafe250` |
 
 ---
 
@@ -41,6 +42,7 @@ jarvis-development
 - C3: `6bdfd4d feat(jarvis): add orchestrator safety and budget guards`
 - C4: `03a0ae4 feat(jarvis): add orchestrator context builder`
 - C5: `f394da1 feat(jarvis): add orchestrator OpenAI client`
+- C6: `cafe250 feat(jarvis): add orchestrator planning workflow`
 
 ---
 
