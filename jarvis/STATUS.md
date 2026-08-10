@@ -28,6 +28,7 @@ jarvis-development
 | オーケストレーター C7 | file_executor.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `8dc93b2` |
 | オーケストレーター C8 | test_runner.js / task_manager.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `a3eab19` |
 | オーケストレーター C9 | review_manager.js / task_manager.js / logger.js | ✅ 完了 | `f465c7a` |
+| Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
 
 ---
 
@@ -49,6 +50,7 @@ jarvis-development
 - C7: `8dc93b2 feat(jarvis): add safe file execution workflow`
 - C8: `a3eab19 feat(jarvis): add safe test execution workflow`
 - C9: `f465c7a feat(jarvis): add review and approval workflow`
+- Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
 
 ---
 
@@ -91,6 +93,20 @@ jarvis-development
 | `npm run approve -- <id>` | 承認（pending → approved） |
 | `npm run reject -- <id>` | 差し戻し |
 | `npm run publish -- <id>` | 公開済み記録（approved → published） |
+
+---
+
+## Integration Fix 1 テスト結果
+
+| 項目 | 結果 |
+|------|------|
+| T1–T44 | 52 assertions passed / 0 failed |
+| Planning approve | WAITING_FOR_APPROVAL → IMPLEMENTING |
+| Planning revise | WAITING_FOR_APPROVAL → PLANNING |
+| C7 run_test | DEFERRED（planから削除しない） |
+| C8 dry_run 0件 | 完全 read-only（byte-for-byte不変） |
+| OpenAI実通信 | 0件 |
+| 外部通信 | 0件 |
 
 ---
 
