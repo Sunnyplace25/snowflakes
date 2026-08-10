@@ -26,6 +26,7 @@ jarvis-development
 | オーケストレーター C5 | openai_client.js | ✅ 完了 | `f394da1` |
 | オーケストレーター C6 | orchestrator.js / task_manager.js / safety_guard.js / logger.js | ✅ 完了 | `cafe250` |
 | オーケストレーター C7 | file_executor.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `8dc93b2` |
+| オーケストレーター C8 | test_runner.js / task_manager.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `a3eab19` |
 
 ---
 
@@ -45,6 +46,7 @@ jarvis-development
 - C5: `f394da1 feat(jarvis): add orchestrator OpenAI client`
 - C6: `cafe250 feat(jarvis): add orchestrator planning workflow`
 - C7: `8dc93b2 feat(jarvis): add safe file execution workflow`
+- C8: `a3eab19 feat(jarvis): add safe test execution workflow`
 
 ---
 
