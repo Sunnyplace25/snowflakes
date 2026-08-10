@@ -323,18 +323,32 @@ async function _runTestCore(opts) {
 
   // ── Step 7: 0 件 ─────────────────────────────────────────────────────────
   if (runTestActions.length === 0) {
-    try {
-      finalizeTesting(taskId, {
-        test_results: [],
-        test_phase_note: 'no_run_test_actions',
-        nextStatus: 'REVIEWING',
-      });
-    } catch (e) {
-      return { ok: false, task_id: taskId, state: 'TESTING',
-               error: { code: TEST_RUNNER_ERRORS.INTERNAL_ERROR, message: e.message } };
+    if (!dry_run) {
+      // dry_run=false のみ finalizeTesting を呼ぶ（TESTING → REVIEWING）
+      try {
+        finalizeTesting(taskId, {
+          test_results: [],
+          test_phase_note: 'no_run_test_actions',
+          nextStatus: 'REVIEWING',
+        });
+      } catch (e) {
+        return { ok: false, task_id: taskId, state: 'TESTING',
+                 error: { code: TEST_RUNNER_ERRORS.INTERNAL_ERROR, message: e.message } };
+      }
+      logEvent({ taskId, event: 'test_phase_complete', status: 'REVIEWING', test_count: 0, dry_run: false });
+      return { ok: true, task_id: taskId, state: 'REVIEWING', dry_run: false, test_count: 0, test_results: [] };
     }
-    logEvent({ taskId, event: 'test_phase_complete', status: 'REVIEWING', test_count: 0, dry_run });
-    return { ok: true, task_id: taskId, state: 'REVIEWING', dry_run, test_count: 0, test_results: [] };
+    // dry_run=true: task JSON を一切変更しない（完全 read-only）
+    logEvent({ taskId, event: 'test_phase_complete', status: 'TESTING', test_count: 0, dry_run: true });
+    return {
+      ok:              true,
+      task_id:         taskId,
+      state:           'TESTING',
+      dry_run:         true,
+      test_count:      0,
+      planned_tests:   [],
+      test_phase_note: 'no_run_test_actions',
+    };
   }
 
   // ── Step 8: max_tests_per_phase ───────────────────────────────────────────

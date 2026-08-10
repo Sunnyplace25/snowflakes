@@ -301,13 +301,21 @@ function _executeCore(opts) {
     return { ok: false, error: EXECUTION_ERRORS.APPROVAL_REQUIRED, reason: 'plan requires human approval before execution' };
   }
 
-  // ─── 6. アクション分類（no_op以外の非対応typeはBLOCK） ──────────────────
+  // ─── 6. アクション分類 ───────────────────────────────────────────────────
+  // 実行: edit_file / create_file
+  // deferred: run_test（C8で実行・C7ではスキップ）
+  // skip: no_op
+  // BLOCK: delete_file / read_file / unknown / その他
   const executableActions = [];
+  const deferredActions   = [];  // run_test: KNOWN DEFERRED
+
   for (const action of task.plan.actions) {
     if (!action) continue;
     if (action.type === 'no_op') continue; // 明示的スキップ
     if (action.type === 'edit_file' || action.type === 'create_file') {
       executableActions.push(action);
+    } else if (action.type === 'run_test') {
+      deferredActions.push(action);  // C7では実行しない・planから削除しない
     } else {
       return {
         ok: false,
@@ -511,6 +519,7 @@ function _executeCore(opts) {
       total_write_bytes: totalWriteBytes,
       added_lines: totalAddedLines,
       removed_lines: totalRemovedLines,
+      deferred_action_count: deferredActions.length,
       actions: phase1Results.map(r => ({ type: r.type, path: r.path })),
     };
   }
@@ -636,6 +645,7 @@ function _executeCore(opts) {
     total_write_bytes: totalWriteBytes,
     added_lines: totalAddedLines,
     removed_lines: totalRemovedLines,
+    deferred_action_count: deferredActions.length,
     actions: phase1Results.map(r => ({ type: r.type, path: r.path })),
   };
 }

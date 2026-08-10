@@ -45,7 +45,7 @@ const VALID_TRANSITIONS = Object.freeze({
   TESTING:               ['REVIEWING', 'IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
   REVIEWING:             ['REVISING', 'WAITING_FOR_APPROVAL', 'PAUSED', 'FAILED', 'CANCELLED'],
   REVISING:              ['IMPLEMENTING', 'PAUSED', 'FAILED', 'CANCELLED'],
-  WAITING_FOR_APPROVAL:  ['COMPLETED', 'REVISING', 'PLANNING', 'CANCELLED'],
+  WAITING_FOR_APPROVAL:  ['COMPLETED', 'REVISING', 'PLANNING', 'IMPLEMENTING', 'CANCELLED'],
   PAUSED:                ['PLANNING', 'IMPLEMENTING', 'TESTING', 'REVIEWING', 'REVISING', 'CANCELLED'],
   COMPLETED:             [],
   FAILED:                [],
@@ -279,6 +279,7 @@ export function finalizePlanning(taskId, {
   nextStatus,
   planningAttemptCount,
   lastErrorSignature = null,
+  pending_approval = null,
 } = {}) {
   const ALLOWED_NEXT_STATUSES = ['IMPLEMENTING', 'WAITING_FOR_APPROVAL', 'FAILED'];
   if (!ALLOWED_NEXT_STATUSES.includes(nextStatus)) {
@@ -312,6 +313,7 @@ export function finalizePlanning(taskId, {
     history:                 [...task.history, { status: nextStatus, at: now }],
     planning_attempt_count:  planningAttemptCount,
     last_error_signature:    lastErrorSignature ?? null,
+    pending_approval:        pending_approval ?? null,
   };
 
   // plan フィールドは成功時のみ上書き（失敗時は既存 plan を保持）
@@ -490,6 +492,95 @@ export function finalizeReviewApproval(taskId, {
     approval_result,
     pending_approval: null,  // 承認完了後に解除
     approved_at:      now,
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+  return { ...updatedTask };
+}
+
+// ─── PlanningApproval 確定（原子的保存）─────────────────────────────────────
+/**
+ * Planning承認フェーズの終了処理。
+ * 書き込み直前に最新taskを再読み込みして status / stage / approval_id を再検証する。
+ * approval_result保存・pending_approval=null・status更新を 1 回の安全な JSON 書き込みで確定する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {string}  opts.decision     - 'approve' | 'revise'
+ * @param {string}  opts.approval_id  - pending_approval.approval_idと完全一致必須
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正・再検証失敗の場合
+ */
+export function finalizePlanningApproval(taskId, {
+  decision,
+  approval_id,
+} = {}) {
+  // パラメータ検証
+  if (decision !== 'approve' && decision !== 'revise') {
+    throw new Error(
+      `INVALID_DECISION: decision must be "approve" or "revise", got "${decision}"`
+    );
+  }
+  if (typeof approval_id !== 'string' || approval_id.trim() === '') {
+    throw new Error('INVALID_APPROVAL_ID: approval_id must be a non-empty string');
+  }
+
+  // 書き込み直前に最新taskを再読み込み（TOCTOU対策）
+  const task = loadTask(taskId);
+
+  // 再検証: status
+  if (task.status !== 'WAITING_FOR_APPROVAL') {
+    throw new Error(
+      `INVALID_STATE: finalizePlanningApproval requires status WAITING_FOR_APPROVAL, got "${task.status}"`
+    );
+  }
+
+  // 再検証: pending_approval存在
+  if (!task.pending_approval) {
+    throw new Error('INVALID_STATE: task has no pending_approval');
+  }
+
+  // 再検証: stage
+  if (task.pending_approval.stage !== 'planning') {
+    throw new Error(
+      `CONTEXT_MISMATCH: pending_approval.stage must be "planning", got "${task.pending_approval.stage}"`
+    );
+  }
+
+  // 再検証: approval_id完全一致
+  if (task.pending_approval.approval_id !== approval_id) {
+    throw new Error('APPROVAL_ID_MISMATCH: approval_id does not match pending_approval.approval_id');
+  }
+
+  // 遷移先: approve → IMPLEMENTING / revise → PLANNING
+  const nextStatus = decision === 'approve' ? 'IMPLEMENTING' : 'PLANNING';
+
+  // VALID_TRANSITIONS確認
+  const allowed = VALID_TRANSITIONS[task.status];
+  if (!allowed.includes(nextStatus)) {
+    throw new Error(
+      `INVALID_TRANSITION: ${task.status} → ${nextStatus} is not allowed`
+    );
+  }
+
+  const now = new Date().toISOString();
+
+  const approval_result = {
+    stage:       'planning',
+    decision,
+    source:      'human',
+    approval_id,
+    resolved_at: now,
+  };
+
+  const updatedTask = {
+    ...task,
+    status:           nextStatus,
+    updated_at:       now,
+    history:          [...task.history, { status: nextStatus, at: now }],
+    approval_result,
+    pending_approval: null,  // 承認完了後にクリア
   };
 
   const filePath = resolveTaskPath(taskId);

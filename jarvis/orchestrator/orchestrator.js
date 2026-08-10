@@ -8,10 +8,13 @@
  *       git 情報は呼び出し元から gitSnapshot として注入される。
  */
 
+import { randomUUID } from 'crypto';
+
 import {
   loadTask,
   updateStatus,
   finalizePlanning,
+  finalizePlanningApproval,
   TASK_ID_PATTERN,
 } from './task_manager.js';
 
@@ -556,12 +559,24 @@ export async function runPlanningTask(opts = {}) {
     planned_at:              new Date().toISOString(),
   };
 
+  // WAITING_FOR_APPROVAL へ進む場合のみ pending_approval を生成
+  // plan / pending_approval / status を同一 atomic write で保存する
+  const planningPendingApproval = finalApprovalRequired
+    ? {
+        stage:       'planning',
+        approval_id: randomUUID(),
+        reason_code: 'PLAN_REQUIRES_HUMAN_APPROVAL',
+        requested_at: new Date().toISOString(),
+      }
+    : null;
+
   try {
     finalizePlanning(taskId, {
       plan,
       nextStatus,
       planningAttemptCount: newAttemptCount,
       lastErrorSignature:   null,
+      pending_approval:     planningPendingApproval,
     });
   } catch (e) {
     return _err(
@@ -598,5 +613,141 @@ export async function runPlanningTask(opts = {}) {
       approval_actions:  actionsCheck.approval_needed,
     },
     budget: getBudgetSummary(budgetState),
+  };
+}
+
+// ─── Planning承認解決 API ─────────────────────────────────────────────────────
+/**
+ * Planning フェーズの承認待ちを解決する（OpenAI呼び出しなし）。
+ *
+ * approve: WAITING_FOR_APPROVAL → IMPLEMENTING（承認済みplanを保持）
+ * revise:  WAITING_FOR_APPROVAL → PLANNING   （planは残存・次Planning時に置換）
+ *
+ * @param {object} opts
+ * @param {string} opts.taskId             - task_YYYYMMDD_xxxxxx
+ * @param {string} opts.approval_id        - task.pending_approval.approval_id と完全一致必須
+ * @param {string} opts.decision           - 'approve' | 'revise'
+ * @param {string} opts.confirmed_by_human - 'human' 固定（intent marker）
+ * @returns {Promise<object>}
+ */
+export async function resolvePlanningApproval({
+  taskId,
+  approval_id,
+  decision,
+  confirmed_by_human,
+} = {}) {
+
+  // ── 1. human confirmation intent marker ────────────────────────────────────
+  if (confirmed_by_human !== 'human') {
+    return {
+      ok:      false,
+      task_id: taskId ?? null,
+      error:   { code: 'HUMAN_CONFIRMATION_REQUIRED', message: 'confirmed_by_human must be "human"' },
+    };
+  }
+
+  // ── 2. decision バリデーション ─────────────────────────────────────────────
+  if (decision !== 'approve' && decision !== 'revise') {
+    return {
+      ok:      false,
+      task_id: taskId ?? null,
+      error:   { code: 'INVALID_DECISION', message: 'decision must be "approve" or "revise"' },
+    };
+  }
+
+  // ── 3. taskId バリデーション ───────────────────────────────────────────────
+  if (!taskId || typeof taskId !== 'string' || !TASK_ID_PATTERN.test(taskId)) {
+    return {
+      ok:      false,
+      task_id: taskId ?? null,
+      error:   { code: 'INVALID_ARGUMENT', message: 'taskId must match pattern task_YYYYMMDD_xxxxxx' },
+    };
+  }
+
+  // ── 4. task 読み込み ───────────────────────────────────────────────────────
+  let task;
+  try {
+    task = loadTask(taskId);
+  } catch (e) {
+    return {
+      ok:      false,
+      task_id: taskId,
+      error:   { code: 'TASK_NOT_FOUND', message: e.message },
+    };
+  }
+
+  // ── 5. status 確認 ─────────────────────────────────────────────────────────
+  if (task.status !== 'WAITING_FOR_APPROVAL') {
+    return {
+      ok:      false,
+      task_id: taskId,
+      state:   task.status,
+      error:   {
+        code:    'INVALID_STATUS_FOR_APPROVAL',
+        message: `task status must be WAITING_FOR_APPROVAL, got "${task.status}"`,
+      },
+    };
+  }
+
+  // ── 6. pending_approval 存在確認 ──────────────────────────────────────────
+  if (!task.pending_approval) {
+    return {
+      ok:      false,
+      task_id: taskId,
+      state:   task.status,
+      error:   { code: 'CONTEXT_MISMATCH', message: 'task has no pending_approval' },
+    };
+  }
+
+  // ── 7. stage 確認（Planning専用 / review側との分離）──────────────────────
+  if (task.pending_approval.stage !== 'planning') {
+    return {
+      ok:      false,
+      task_id: taskId,
+      state:   task.status,
+      error:   {
+        code:    'CONTEXT_MISMATCH',
+        message: `pending_approval.stage must be "planning", got "${task.pending_approval.stage}"`,
+      },
+    };
+  }
+
+  // ── 8. approval_id 一致確認 ────────────────────────────────────────────────
+  if (typeof approval_id !== 'string' || task.pending_approval.approval_id !== approval_id) {
+    return {
+      ok:      false,
+      task_id: taskId,
+      state:   task.status,
+      error:   { code: 'APPROVAL_ID_MISMATCH', message: 'approval_id does not match pending_approval.approval_id' },
+    };
+  }
+
+  // ── 9. finalizePlanningApproval（内部でも再検証・atomic write）──────────
+  let updatedTask;
+  try {
+    updatedTask = finalizePlanningApproval(taskId, { decision, approval_id });
+  } catch (e) {
+    return {
+      ok:      false,
+      task_id: taskId,
+      state:   task.status,
+      error:   { code: 'FINALIZE_PLANNING_APPROVAL_FAILED', message: e.message },
+    };
+  }
+
+  // ── 10. ログ記録（personal情報・planは記録しない）─────────────────────────
+  logEvent({
+    taskId,
+    event:             'planning_approval',
+    status:            updatedTask.status,
+    approval_decision: decision,
+    approval_required: false,
+  });
+
+  return {
+    ok:      true,
+    task_id: taskId,
+    decision,
+    state:   updatedTask.status,
   };
 }
