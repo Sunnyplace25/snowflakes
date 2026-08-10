@@ -1753,5 +1753,69 @@ window.addEventListener('load', function() {
   draw();
 })();
 </script>
+
+<!-- 訪問ボーナスポップアップ（プロテインコーヒー × 1 / 1日1回） -->
+<style>
+  #horror-visit-popup {
+    position: fixed; inset: 0; z-index: 9100;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10,10,20,0.88); backdrop-filter: blur(14px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #horror-visit-popup.show { opacity: 1; pointer-events: auto; }
+  #horror-visit-box {
+    text-align: center;
+    transform: translateY(20px) scale(0.94);
+    transition: transform 0.5s cubic-bezier(.18,1.2,.45,1);
+  }
+  #horror-visit-popup.show #horror-visit-box { transform: none; }
+  @keyframes horrorItemFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  #horror-visit-img { animation: horrorItemFloat 3s ease-in-out infinite; display:block; margin:0 auto 28px; width:140px; }
+  @media (max-width:480px) { #horror-visit-img { width:110px; } }
+</style>
+<div id="horror-visit-popup" onclick="document.getElementById('horror-visit-popup').classList.remove('show')">
+  <div id="horror-visit-box" onclick="event.stopPropagation()">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:7px;color:#64748b;margin-bottom:32px;">Snow flakes</p>
+    <img id="horror-visit-img" src="./item/proteincoffee.webp" alt="プロテインコーヒー">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:10px;">ITEM</p>
+    <p style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;font-family:'Noto Serif JP',serif;">プロテインコーヒー × 1</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:28px;">入手しました</p>
+    <button onclick="document.getElementById('horror-visit-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:12px 36px;cursor:pointer;color:#e2e8f0;">閉じる</button>
+  </div>
+</div>
+<script>
+// 夏のホラー特集 訪問ボーナス（1日1回・最大3回）
+(function() {
+  var COUNT_KEY = 'sf_horror_visit_count_2026';
+
+  // 最大3回チェック
+  var count = parseInt(localStorage.getItem(COUNT_KEY) || '0', 10);
+  if (count >= 3) return;
+
+  // JST日付（UTC+9）
+  var jstDate = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  var dailyKey = 'sf_horror_visit_daily_' + jstDate;
+
+  // 同日取得チェック
+  if (localStorage.getItem(dailyKey) === '1') return;
+
+  // 取得処理
+  localStorage.setItem(dailyKey, '1');
+  count += 1;
+  localStorage.setItem(COUNT_KEY, String(count));
+
+  // proteincoffee +1（上書きせず加算）
+  var mItems;
+  try { mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}'); } catch(e) { mItems = {}; }
+  mItems['proteincoffee'] = (mItems['proteincoffee'] || 0) + 1;
+  localStorage.setItem('sf_monthly_items', JSON.stringify(mItems));
+
+  // 取得成功時のみポップアップ表示
+  setTimeout(function() {
+    document.getElementById('horror-visit-popup').classList.add('show');
+  }, 1200);
+})();
+</script>
 </body>
 </html>

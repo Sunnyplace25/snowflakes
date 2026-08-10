@@ -930,6 +930,10 @@
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#f87171;margin-bottom:4px;">ANOTHER · 2026.07.17</p>
               <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">夏のホラー特集バナーを追加しました。</p>
             </a>
+            <a href="#sw-notes" style="text-decoration:none;display:block;border-left:2px solid rgba(74,222,128,0.3);padding-left:12px;margin-bottom:8px;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4ade80;margin-bottom:4px;">NOTE · 2026.08.11</p>
+              <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">「夏のホラー2026」作品6種の解説をnotesに追加しました。</p>
+            </a>
             <a href="https://sunnyplace25.github.io/snowflakes/sweets/" style="text-decoration:none;display:block;border-left:2px solid rgba(74,222,128,0.3);padding-left:12px;margin-bottom:8px;">
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#4ade80;margin-bottom:4px;">NOTE · 2026.08.11</p>
               <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">「閾値」解説を追加。プロテインコーヒーで交換できます。</p>
@@ -5648,6 +5652,22 @@
         </a>
       </div>
 
+      <!-- ホラー解説6本追加記念 配布 -->
+      <div id="horror-notes-campaign" style="display:none;margin-top:12px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:1px solid rgba(239,68,68,0.22);background:rgba(239,68,68,0.04);">
+          <img src="../item/proteincoffee.webp" style="width:38px;flex-shrink:0;opacity:0.9;" alt="プロテインコーヒー">
+          <div style="flex:1;min-width:0;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:4px;">HORROR NOTES 2026</p>
+            <p style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;color:#fecaca;letter-spacing:0.05em;margin-bottom:3px;">ホラー解説6本追加記念</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#e2e8f0;">プロテインコーヒー × 3</p>
+          </div>
+          <div style="flex-shrink:0;text-align:center;">
+            <button id="horror-notes-campaign-btn" onclick="claimHorrorNotesCampaign()" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fecaca;border:1px solid rgba(239,68,68,0.38);border-radius:50px;padding:9px 16px;background:rgba(239,68,68,0.08);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.16)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'">受け取る</button>
+            <p id="horror-notes-campaign-claimed" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">受け取り済み</p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Live Archive section -->
@@ -6138,6 +6158,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
       _checkShikishiDistribution();
+      // ホラー解説6本追加記念バナー初期化
+      try { if (typeof initHorrorNotesCampaign === 'function') initHorrorNotesCampaign(); } catch(e) {}
     }
 
     var UT_STONE_ITEMS = [
@@ -6896,6 +6918,31 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           alert('プロテインコーヒーが足りません');
         }
       });
+    }
+
+    function claimHorrorNotesCampaign() {
+      if (typeof SfSnow === 'undefined') return;
+      if (SfSnow.isUnlocked('horror_notes_2026')) return;
+      SfSnow.addMItemDirect('proteincoffee', 3);
+      SfSnow.unlockItem('horror_notes_2026');
+      if (typeof renderItemRows === 'function') renderItemRows();
+      var btn = document.getElementById('horror-notes-campaign-btn');
+      var cl  = document.getElementById('horror-notes-campaign-claimed');
+      if (btn) btn.style.display = 'none';
+      if (cl)  cl.style.display  = '';
+      showItemExchangePopup('../item/proteincoffee.webp', 'プロテインコーヒー × 3', false, '入手しました');
+    }
+
+    function initHorrorNotesCampaign() {
+      var wrap = document.getElementById('horror-notes-campaign');
+      if (!wrap) return;
+      wrap.style.display = 'block';
+      if (typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('horror_notes_2026')) {
+        var btn = document.getElementById('horror-notes-campaign-btn');
+        var cl  = document.getElementById('horror-notes-campaign-claimed');
+        if (btn) btn.style.display = 'none';
+        if (cl)  cl.style.display  = '';
+      }
     }
 
     function initNotes() {
