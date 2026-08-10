@@ -376,5 +376,126 @@ export function finalizeTesting(taskId, {
   return { ...updatedTask };
 }
 
+// ─── Review 確定（原子的保存）────────────────────────────────────────────────
+/**
+ * Review フェーズの終了処理。
+ * review_result保存・status更新・review_history更新を 1 回の安全な JSON 書き込みで確定する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {object}       opts.review_result       - レビュー結果オブジェクト
+ * @param {string}       opts.next_status         - 'REVISING' | 'WAITING_FOR_APPROVAL'
+ * @param {number}       opts.new_iteration_count - 新しいiteration数（非負整数）
+ * @param {object|null}  [opts.pending_approval]  - 承認待ちコンテキスト
+ * @param {string|null}  [opts.recommended_outcome] - 推奨アウトカム
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正の場合
+ */
+export function finalizeReview(taskId, {
+  review_result,
+  next_status,
+  new_iteration_count,
+  pending_approval = null,
+  recommended_outcome = null,
+} = {}) {
+  const ALLOWED_NEXT_STATUSES = ['REVISING', 'WAITING_FOR_APPROVAL'];
+  if (!ALLOWED_NEXT_STATUSES.includes(next_status)) {
+    throw new Error(
+      `INVALID_STATUS: finalizeReview next_status must be one of ${ALLOWED_NEXT_STATUSES.join(', ')}, got "${next_status}"`
+    );
+  }
+  if (!review_result || typeof review_result !== 'object') {
+    throw new Error('INVALID_REVIEW_RESULT: review_result must be an object');
+  }
+  if (typeof new_iteration_count !== 'number' || !Number.isInteger(new_iteration_count) || new_iteration_count < 0) {
+    throw new Error('INVALID_ITERATION_COUNT: new_iteration_count must be a non-negative integer');
+  }
+
+  const task = loadTask(taskId);
+  if (task.status !== 'REVIEWING') {
+    throw new Error(
+      `INVALID_STATE: finalizeReview requires status REVIEWING, got "${task.status}"`
+    );
+  }
+
+  const now = new Date().toISOString();
+
+  // review_history更新（MAX_REVIEW_HISTORY超過時に先頭削除）
+  const MAX_REVIEW_HISTORY = 20;
+  const existingHistory = Array.isArray(task.review_history) ? task.review_history : [];
+  const newHistoryEntry = { ...review_result };
+  let updatedReviewHistory = [...existingHistory, newHistoryEntry];
+  if (updatedReviewHistory.length > MAX_REVIEW_HISTORY) {
+    updatedReviewHistory = updatedReviewHistory.slice(updatedReviewHistory.length - MAX_REVIEW_HISTORY);
+  }
+
+  const updatedTask = {
+    ...task,
+    status:                  next_status,
+    updated_at:              now,
+    history:                 [...task.history, { status: next_status, at: now }],
+    review_result,
+    review_history:          updatedReviewHistory,
+    review_iteration_count:  new_iteration_count,
+    last_reviewed_at:        now,
+    ...(pending_approval !== null ? { pending_approval } : {}),
+    ...(recommended_outcome !== null ? { recommended_outcome } : {}),
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+  return { ...updatedTask };
+}
+
+// ─── ReviewApproval 確定（原子的保存）────────────────────────────────────────
+/**
+ * Review承認フェーズの終了処理。
+ * approval_result保存・status更新を 1 回の安全な JSON 書き込みで確定する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {object}  opts.approval_result - 承認結果オブジェクト
+ * @param {string}  opts.next_status     - 'COMPLETED' | 'REVISING'
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正の場合
+ */
+export function finalizeReviewApproval(taskId, {
+  approval_result,
+  next_status,
+} = {}) {
+  const ALLOWED_NEXT_STATUSES = ['COMPLETED', 'REVISING'];
+  if (!ALLOWED_NEXT_STATUSES.includes(next_status)) {
+    throw new Error(
+      `INVALID_STATUS: finalizeReviewApproval next_status must be one of ${ALLOWED_NEXT_STATUSES.join(', ')}, got "${next_status}"`
+    );
+  }
+  if (!approval_result || typeof approval_result !== 'object') {
+    throw new Error('INVALID_APPROVAL_RESULT: approval_result must be an object');
+  }
+
+  const task = loadTask(taskId);
+  if (task.status !== 'WAITING_FOR_APPROVAL') {
+    throw new Error(
+      `INVALID_STATE: finalizeReviewApproval requires status WAITING_FOR_APPROVAL, got "${task.status}"`
+    );
+  }
+
+  const now = new Date().toISOString();
+
+  const updatedTask = {
+    ...task,
+    status:           next_status,
+    updated_at:       now,
+    history:          [...task.history, { status: next_status, at: now }],
+    approval_result,
+    pending_approval: null,  // 承認完了後に解除
+    approved_at:      now,
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+  return { ...updatedTask };
+}
+
 // ─── テスト用内部エクスポート ─────────────────────────────────────────────────
 export { TASKS_DIR, VALID_TRANSITIONS, TASK_ID_PATTERN };

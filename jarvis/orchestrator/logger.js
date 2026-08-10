@@ -43,6 +43,10 @@ const ALLOWED_KEYS = new Set([
   'test_passed_count',
   'test_failed_count',
   'test_duration_ms',
+  'review_decision',
+  'reason_code',
+  'review_iteration_count',
+  'approval_decision',
 ]);
 
 // ─── 制御文字サニタイズ ───────────────────────────────────────────────────────
