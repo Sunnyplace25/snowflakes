@@ -58,6 +58,7 @@ export const PLANNING_JSON_SCHEMA = Object.freeze({
             },
           },
           content: { type: 'string' },
+          test_id: { type: 'string' },
         },
         required: ['type', 'path', 'description'],
         additionalProperties: false,

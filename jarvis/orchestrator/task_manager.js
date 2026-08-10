@@ -325,5 +325,56 @@ export function finalizePlanning(taskId, {
   return { ...updatedTask };
 }
 
+// ─── Testing 確定（原子的保存）──────────────────────────────────────────────
+/**
+ * Testing フェーズの終了処理。
+ * test_results保存・status更新を 1 回の安全な JSON 書き込みで確定する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {object[]}     opts.test_results      - テスト結果配列
+ * @param {string|null}  opts.test_phase_note   - フェーズ注記（省略可）
+ * @param {string}       opts.nextStatus        - 'REVIEWING' | 'FAILED'
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正の場合
+ */
+export function finalizeTesting(taskId, {
+  test_results,
+  test_phase_note = null,
+  nextStatus,
+} = {}) {
+  const ALLOWED_NEXT_STATUSES = ['REVIEWING', 'FAILED'];
+  if (!ALLOWED_NEXT_STATUSES.includes(nextStatus)) {
+    throw new Error(
+      `INVALID_STATUS: finalizeTesting nextStatus must be one of ${ALLOWED_NEXT_STATUSES.join(', ')}, got "${nextStatus}"`
+    );
+  }
+  if (!Array.isArray(test_results)) {
+    throw new Error('INVALID_TEST_RESULTS: test_results must be an array');
+  }
+
+  const task = loadTask(taskId);
+  if (task.status !== 'TESTING') {
+    throw new Error(
+      `INVALID_STATE: finalizeTesting requires status TESTING, got "${task.status}"`
+    );
+  }
+
+  const now = new Date().toISOString();
+  const updatedTask = {
+    ...task,
+    status:             nextStatus,
+    updated_at:         now,
+    history:            [...task.history, { status: nextStatus, at: now }],
+    test_results:       test_results,
+    test_phase_note:    test_phase_note ?? null,
+    test_completed_at:  now,
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+  return { ...updatedTask };
+}
+
 // ─── テスト用内部エクスポート ─────────────────────────────────────────────────
 export { TASKS_DIR, VALID_TRANSITIONS, TASK_ID_PATTERN };

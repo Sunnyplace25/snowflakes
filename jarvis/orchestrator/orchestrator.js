@@ -160,6 +160,19 @@ export function classifyActionSafety(action, { allowed_files = null, allowed_dir
     return { safety: 'ALLOW', reason: 'no_op action' };
   }
 
+  // 2.5. run_test: test_id 必須・形式検証
+  if (type === 'run_test') {
+    const testId = action.test_id;
+    if (typeof testId !== 'string' || testId.trim() === '') {
+      return { safety: 'BLOCK', reason: 'run_test requires non-empty string test_id' };
+    }
+    if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(testId)) {
+      return { safety: 'BLOCK', reason: `run_test test_id "${testId}" does not match required pattern` };
+    }
+    // description/pathはcommand/args/cwdに使用しない
+    return { safety: 'ALLOW', reason: 'run_test action with valid test_id' };
+  }
+
   // 3. 空 path は BLOCK（no_op 以外）
   if (!path || typeof path !== 'string' || path.trim() === '') {
     return { safety: 'BLOCK', reason: `path is required for action type "${type}"` };

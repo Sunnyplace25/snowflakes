@@ -39,6 +39,10 @@ const ALLOWED_KEYS = new Set([
   'dry_run',
   'rollback_attempted',
   'rollback_succeeded',
+  'test_count',
+  'test_passed_count',
+  'test_failed_count',
+  'test_duration_ms',
 ]);
 
 // ─── 制御文字サニタイズ ───────────────────────────────────────────────────────
