@@ -29,7 +29,7 @@ jarvis-development
 | オーケストレーター C8 | test_runner.js / task_manager.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `a3eab19` |
 | オーケストレーター C9 | review_manager.js / task_manager.js / logger.js | ✅ 完了 | `f465c7a` |
 | Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
-| Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | 未commit |
+| Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
 
 ---
 
@@ -52,7 +52,7 @@ jarvis-development
 - C8: `a3eab19 feat(jarvis): add safe test execution workflow`
 - C9: `f465c7a feat(jarvis): add review and approval workflow`
 - Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
-- Safe REVISING Recovery: 未commit
+- Safe REVISING Recovery: `6d8264f feat(jarvis): add safe revising recovery`
 
 ---
 
