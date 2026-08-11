@@ -1563,7 +1563,7 @@ STORYTEXT_END-->
     } else if (item.type === 'series') {
       var details = document.createElement('details');
       details.className = 'series-details';
-      if (item.title === 'まだ、鳴っている') { details.open = true; }
+      if (item.title === 'まだ、鳴っている' || item.title === '音の鳴る石') { details.open = true; }
 
       var summary = document.createElement('summary');
       summary.className = 'series-row';
