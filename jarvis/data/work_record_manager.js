@@ -140,3 +140,76 @@ export function updateWorkRecord(db, id, updates) {
     db.prepare(`UPDATE work_records SET payment_status = ? WHERE id = ?`).run(payment_status, id);
   }
 }
+
+/**
+ * 仕事レコードの全フィールドを更新する（部分更新も可）。
+ * undefined のフィールドはスキップされる。null は NULL にセット。
+ *
+ * @param {import('better-sqlite3').Database} db
+ * @param {number} id
+ * @param {object} fields
+ */
+export function updateWorkRecordFull(db, id, fields = {}) {
+  const {
+    date, category, work_type, content, client,
+    income, expense, work_hours, travel_hours,
+    invoice_status, payment_status, memo,
+  } = fields;
+
+  // バリデーション
+  if (date !== undefined && date !== null) {
+    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date))
+      throw new Error('date は YYYY-MM-DD 形式で入力してください');
+  }
+  if (category       !== undefined && category       !== null) assertEnum(category,       VALID_CATEGORIES,       'category');
+  if (invoice_status !== undefined && invoice_status !== null) assertEnum(invoice_status, VALID_INVOICE_STATUSES, 'invoice_status');
+  if (payment_status !== undefined && payment_status !== null) assertEnum(payment_status, VALID_PAYMENT_STATUSES, 'payment_status');
+
+  let parsedIncome = income;
+  if (income !== undefined && income !== null) {
+    const n = parseInt(income, 10);
+    if (!Number.isFinite(n) || n < 0) throw new Error('income must be a non-negative integer');
+    parsedIncome = n;
+  }
+  let parsedExpense = expense;
+  if (expense !== undefined && expense !== null) {
+    const n = parseInt(expense, 10);
+    if (!Number.isFinite(n) || n < 0) throw new Error('expense must be a non-negative integer');
+    parsedExpense = n;
+  }
+  let parsedWorkHours = work_hours;
+  if (work_hours !== undefined && work_hours !== null) {
+    const n = parseFloat(work_hours);
+    if (!Number.isFinite(n) || n < 0) throw new Error('work_hours must be >= 0');
+    parsedWorkHours = n;
+  }
+  let parsedTravelHours = travel_hours;
+  if (travel_hours !== undefined && travel_hours !== null) {
+    const n = parseFloat(travel_hours);
+    if (!Number.isFinite(n) || n < 0) throw new Error('travel_hours must be >= 0');
+    parsedTravelHours = n;
+  }
+
+  // 更新フィールドを構築
+  const sets   = [];
+  const params = [];
+  const add = (col, val) => { sets.push(`${col} = ?`); params.push(val); };
+
+  if (date           !== undefined) add('date',           date);
+  if (category       !== undefined) add('category',       category);
+  if (work_type      !== undefined) add('work_type',      work_type);
+  if (content        !== undefined) add('content',        content);
+  if (client         !== undefined) add('client',         client);
+  if (income         !== undefined) add('income',         parsedIncome);
+  if (expense        !== undefined) add('expense',        parsedExpense);
+  if (work_hours     !== undefined) add('work_hours',     parsedWorkHours);
+  if (travel_hours   !== undefined) add('travel_hours',   parsedTravelHours);
+  if (invoice_status !== undefined) add('invoice_status', invoice_status);
+  if (payment_status !== undefined) add('payment_status', payment_status);
+  if (memo           !== undefined) add('memo',           memo);
+
+  if (sets.length === 0) return; // 更新対象なし
+
+  params.push(id);
+  db.prepare(`UPDATE work_records SET ${sets.join(', ')} WHERE id = ?`).run(...params);
+}

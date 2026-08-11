@@ -2,5 +2,9 @@
   "data_manager": {
     "args": ["tests/test_data_manager.js"],
     "cwd": "jarvis"
+  },
+  "dashboard_api": {
+    "args": ["tests/test_dashboard_api.js"],
+    "cwd": "jarvis"
   }
 }

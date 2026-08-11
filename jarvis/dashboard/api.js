@@ -1,0 +1,231 @@
+/**
+ * jarvis/dashboard/api.js
+ * REST API ハンドラ
+ *
+ * - 既存 DBモジュールをそのまま利用（ロジック重複実装なし）
+ * - 全エンドポイントでサーバ側入力検証を実施
+ * - ConflictError（完全休日への仕事登録）は 409 で返す
+ */
+
+import { addWorkRecord, getWorkRecords, updateWorkRecord, updateWorkRecordFull }
+  from '../data/work_record_manager.js';
+import { upsertDailyStatus, getDailyStatus, getFullDayOffCount }
+  from '../data/daily_status_manager.js';
+import { getMonthlySummary, getUnpaidCounts }
+  from '../data/aggregator.js';
+
+// ─── ユーティリティ ───────────────────────────────────────────────────────────
+
+function jsonRes(res, status, data) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-cache',
+  });
+  res.end(JSON.stringify(data));
+}
+
+function errRes(res, status, message) {
+  jsonRes(res, status, { ok: false, error: message });
+}
+
+/** POST ボディを JSON として読み込む（最大 64 KB） */
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 65_536) reject(new Error('Request body too large'));
+    });
+    req.on('end', () => {
+      try { resolve(body ? JSON.parse(body) : {}); }
+      catch  { reject(new Error('Invalid JSON')); }
+    });
+    req.on('error', reject);
+  });
+}
+
+/** YYYY-MM-DD の今日 */
+function todayISO() {
+  const d = new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+/** YYYY-MM の今月 */
+function currentYearMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+// ─── 入力検証ヘルパー ─────────────────────────────────────────────────────────
+
+function validateMonth(month) {
+  return typeof month === 'string' && /^\d{4}-\d{2}$/.test(month);
+}
+
+function validateDate(date) {
+  return typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date);
+}
+
+/** income / expense をパースして非負整数を保証する */
+function parseAmount(val) {
+  if (val == null) return null;
+  const n = parseInt(val, 10);
+  if (!Number.isFinite(n) || n < 0) throw new Error('金額は0以上の整数で入力してください');
+  return n;
+}
+
+/** work_hours / travel_hours をパースして非負数を保証する */
+function parseHours(val) {
+  if (val == null) return null;
+  const n = parseFloat(val);
+  if (!Number.isFinite(n) || n < 0) throw new Error('時間は0以上の数値で入力してください');
+  return n;
+}
+
+// ─── ルーター ─────────────────────────────────────────────────────────────────
+
+/**
+ * db を受け取って async リクエストハンドラを返す。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @returns {Function} (req, res, url) => void
+ */
+export function createApiHandler(db) {
+  return async function apiHandler(req, res, url) {
+    const method = req.method;
+    const path   = url.pathname;
+
+    try {
+
+      // ── GET /api/today ─────────────────────────────────────────────────────
+      if (path === '/api/today' && method === 'GET') {
+        const today = todayISO();
+        const month = currentYearMonth();
+        const works     = getWorkRecords(db, { yearMonth: month }).filter(r => r.date === today);
+        const dayStatus = getDailyStatus(db, today);
+        return jsonRes(res, 200, { ok: true, today, month, works, day_status: dayStatus });
+      }
+
+      // ── GET /api/summary?month=YYYY-MM ─────────────────────────────────────
+      if (path === '/api/summary' && method === 'GET') {
+        const month = url.searchParams.get('month') || currentYearMonth();
+        if (!validateMonth(month)) return errRes(res, 400, '月は YYYY-MM 形式で指定してください');
+        const summary    = getMonthlySummary(db, month);
+        const { uninvoiced, unpaid } = getUnpaidCounts(db);
+        const fullDayOff = getFullDayOffCount(db, { yearMonth: month });
+        return jsonRes(res, 200, { ok: true, month, summary, uninvoiced, unpaid, full_day_off: fullDayOff });
+      }
+
+      // ── GET /api/works?month=YYYY-MM ───────────────────────────────────────
+      if (path === '/api/works' && method === 'GET') {
+        const month = url.searchParams.get('month') || currentYearMonth();
+        if (!validateMonth(month)) return errRes(res, 400, '月は YYYY-MM 形式で指定してください');
+        const works = getWorkRecords(db, { yearMonth: month });
+        return jsonRes(res, 200, { ok: true, works });
+      }
+
+      // ── POST /api/work ──────────────────────────────────────────────────────
+      if (path === '/api/work' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        if (!body.date || !body.category) return errRes(res, 400, 'date と category は必須です');
+        if (!validateDate(body.date))      return errRes(res, 400, '日付は YYYY-MM-DD 形式で入力してください');
+
+        let income, expense, workHours, travelHours;
+        try {
+          income      = parseAmount(body.income);
+          expense     = parseAmount(body.expense);
+          workHours   = parseHours(body.work_hours);
+          travelHours = parseHours(body.travel_hours);
+        } catch (e) { return errRes(res, 400, e.message); }
+
+        try {
+          const { rowid, job_id } = addWorkRecord(db, {
+            date:           body.date,
+            category:       body.category,
+            work_type:      body.work_type      || null,
+            content:        body.content        || null,
+            client:         body.client         || null,
+            income,
+            expense,
+            work_hours:     workHours,
+            travel_hours:   travelHours,
+            invoice_status: body.invoice_status || '対象外',
+            payment_status: body.payment_status || '対象外',
+            memo:           body.memo           || null,
+          });
+          return jsonRes(res, 201, { ok: true, id: rowid, job_id });
+        } catch (e) {
+          const status = e.message.startsWith('ConflictError') ? 409 : 400;
+          return errRes(res, status, e.message);
+        }
+      }
+
+      // ── PUT /api/work/:id ──────────────────────────────────────────────────
+      const workMatch = path.match(/^\/api\/work\/(\d+)$/);
+      if (workMatch && method === 'PUT') {
+        const id = parseInt(workMatch[1], 10);
+        if (!id || isNaN(id)) return errRes(res, 400, '不正なIDです');
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          updateWorkRecordFull(db, id, {
+            date:           body.date,
+            category:       body.category,
+            work_type:      body.work_type,
+            content:        body.content,
+            client:         body.client,
+            income:         body.income,
+            expense:        body.expense,
+            work_hours:     body.work_hours,
+            travel_hours:   body.travel_hours,
+            invoice_status: body.invoice_status,
+            payment_status: body.payment_status,
+            memo:           body.memo,
+          });
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // ── POST /api/day ───────────────────────────────────────────────────────
+      if (path === '/api/day' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.date) return errRes(res, 400, 'date は必須です');
+        if (!validateDate(body.date)) return errRes(res, 400, '日付は YYYY-MM-DD 形式で入力してください');
+        if (typeof body.is_full_day_off !== 'boolean') {
+          return errRes(res, 400, 'is_full_day_off は true または false で指定してください');
+        }
+        try {
+          upsertDailyStatus(db, {
+            date:           body.date,
+            is_full_day_off: body.is_full_day_off,
+            memo:           body.memo || null,
+          });
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── POST /api/chat（将来実装・現在は未対応）───────────────────────────
+      if (path === '/api/chat' && method === 'POST') {
+        return jsonRes(res, 200, {
+          ok: true,
+          implemented: false,
+          message: '自然言語入力は次の開発で対応予定です。',
+        });
+      }
+
+      return errRes(res, 404, 'Not Found');
+
+    } catch (e) {
+      console.error('[API Error]', e.message);
+      return errRes(res, 500, 'Internal Server Error');
+    }
+  };
+}

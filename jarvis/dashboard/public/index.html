@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS Dashboard</title>
+  <!-- 外部 CDN・外部フォント・外部スクリプト 不使用 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ─── Header ──────────────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-logo">JARVIS</div>
+  <div class="header-date" id="header-date">—</div>
+  <nav class="month-nav">
+    <button id="prev-month" title="前の月">‹</button>
+    <span class="current-month" id="current-month">—</span>
+    <button id="next-month" title="次の月">›</button>
+  </nav>
+</header>
+
+<!-- ─── Main ────────────────────────────────────────────────────────────── -->
+<main class="main">
+
+  <!-- 月次サマリーカード（1行目：収支） -->
+  <div class="cards-primary">
+    <div class="card">
+      <div class="card-label">収入</div>
+      <div class="card-value green" id="card-income">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">経費</div>
+      <div class="card-value red" id="card-expense">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">利益</div>
+      <div class="card-value" id="card-profit">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">未請求</div>
+      <div class="card-value" id="card-uninvoiced">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">未入金</div>
+      <div class="card-value" id="card-unpaid">—</div>
+    </div>
+  </div>
+
+  <!-- 月次サマリーカード（2行目：時間・休日） -->
+  <div class="cards-secondary">
+    <div class="card">
+      <div class="card-label">総労働時間</div>
+      <div class="card-value accent" id="card-work-hours">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">総移動時間</div>
+      <div class="card-value" id="card-travel-hours">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">完全休日</div>
+      <div class="card-value" id="card-dayoff">—</div>
+    </div>
+  </div>
+
+  <!-- 今日の仕事 -->
+  <section class="section">
+    <div class="section-header">
+      <h2>今日の仕事</h2>
+    </div>
+    <div class="section-body">
+      <div id="today-works" class="loading">読み込み中...</div>
+    </div>
+  </section>
+
+  <!-- 仕事一覧 -->
+  <section class="section">
+    <div class="section-header">
+      <h2>仕事一覧</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="add-work-btn">＋ 仕事を登録</button>
+        <button class="btn btn-secondary" id="add-day-btn">＋ 休日を登録</button>
+      </div>
+    </div>
+    <div id="works-table-container" class="loading">読み込み中...</div>
+  </section>
+
+</main>
+
+<!-- ─── JARVIS 入力欄（フッター固定）────────────────────────────────────── -->
+<footer class="jarvis-footer">
+  <div class="jarvis-label">JARVISに入力</div>
+  <div class="jarvis-log" id="jarvis-log"></div>
+  <div class="jarvis-row">
+    <input type="text" id="jarvis-text"
+      placeholder="例：今日みんテレ。17時から19時半。車、駐車600円（自然言語入力は次の開発で対応予定）" />
+    <button id="jarvis-send">送信</button>
+  </div>
+</footer>
+
+<!-- ─── Modal overlay ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-overlay" hidden>
+
+  <!-- 仕事登録モーダル -->
+  <div class="modal" id="modal-work">
+    <h3>仕事を登録</h3>
+    <form id="work-form" autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="work-date">日付 *</label>
+          <input type="date" id="work-date" name="date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="work-category">カテゴリ *</label>
+          <select id="work-category" name="category" required>
+            <option value="">— 選択 —</option>
+            <option value="音声仕事">音声仕事</option>
+            <option value="Snow flakes">Snow flakes</option>
+            <option value="物販">物販</option>
+            <option value="17配信">17配信</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="work-type">種別（音声仕事）</label>
+          <select id="work-type" name="work_type">
+            <option value="">—</option>
+            <option value="ロケ">ロケ</option>
+            <option value="STUDIO">STUDIO</option>
+            <option value="中継">中継</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="work-client">発注元</label>
+          <input type="text" id="work-client" name="client" placeholder="例：オーテック">
+        </div>
+
+        <div class="form-group form-full">
+          <label for="work-content">内容</label>
+          <input type="text" id="work-content" name="content"
+            placeholder="例：UHB「みんテレ」スタジオAUD・祝日対応">
+        </div>
+
+        <div class="form-group">
+          <label for="work-income">収入（円）</label>
+          <input type="number" id="work-income" name="income" min="0" step="1" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label for="work-expense">経費（円）</label>
+          <input type="number" id="work-expense" name="expense" min="0" step="1" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label for="work-hours">労働時間（h）</label>
+          <input type="number" id="work-hours" name="work_hours" min="0" step="0.5" placeholder="0.0">
+        </div>
+
+        <div class="form-group">
+          <label for="travel-hours">移動時間（h）</label>
+          <input type="number" id="travel-hours" name="travel_hours" min="0" step="0.5" placeholder="0.0">
+        </div>
+
+        <div class="form-group">
+          <label for="work-invoice">請求ステータス</label>
+          <select id="work-invoice" name="invoice_status">
+            <option value="対象外">対象外</option>
+            <option value="未請求">未請求</option>
+            <option value="請求済">請求済</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="work-payment">入金ステータス</label>
+          <select id="work-payment" name="payment_status">
+            <option value="対象外">対象外</option>
+            <option value="未入金">未入金</option>
+            <option value="入金済">入金済</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="work-memo">メモ</label>
+          <textarea id="work-memo" name="memo" placeholder="備考・メモ"></textarea>
+        </div>
+
+      </div>
+      <div class="error-msg" id="work-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary">登録する</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 休日登録モーダル -->
+  <div class="modal" id="modal-day" hidden>
+    <h3>日次状態を登録</h3>
+    <form id="day-form" autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="day-date">日付 *</label>
+          <input type="date" id="day-date" name="date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="day-type">状態 *</label>
+          <select id="day-type" name="type" required>
+            <option value="off">完全休日</option>
+            <option value="work">勤務日</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="day-memo">メモ</label>
+          <input type="text" id="day-memo" name="memo" placeholder="例：お盆、祝日など">
+        </div>
+
+      </div>
+      <div class="error-msg" id="day-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary">登録する</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 仕事編集モーダル -->
+  <div class="modal" id="modal-edit-work" hidden>
+    <h3>仕事を編集</h3>
+    <input type="hidden" id="edit-work-id">
+    <form id="edit-work-form" autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="edit-work-date">日付 *</label>
+          <input type="date" id="edit-work-date" name="date" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-category">カテゴリ *</label>
+          <select id="edit-work-category" name="category" required>
+            <option value="">— 選択 —</option>
+            <option value="音声仕事">音声仕事</option>
+            <option value="Snow flakes">Snow flakes</option>
+            <option value="物販">物販</option>
+            <option value="17配信">17配信</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-type">種別（音声仕事）</label>
+          <select id="edit-work-type" name="work_type">
+            <option value="">—</option>
+            <option value="ロケ">ロケ</option>
+            <option value="STUDIO">STUDIO</option>
+            <option value="中継">中継</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-client">発注元</label>
+          <input type="text" id="edit-work-client" name="client" placeholder="例：オーテック">
+        </div>
+
+        <div class="form-group form-full">
+          <label for="edit-work-content">内容</label>
+          <input type="text" id="edit-work-content" name="content"
+            placeholder="例：UHB「みんテレ」スタジオAUD">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-income">収入（円）</label>
+          <input type="number" id="edit-work-income" name="income" min="0" step="1" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-expense">経費（円）</label>
+          <input type="number" id="edit-work-expense" name="expense" min="0" step="1" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-hours">労働時間（h）</label>
+          <input type="number" id="edit-work-hours" name="work_hours" min="0" step="0.5" placeholder="0.0">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-travel-hours">移動時間（h）</label>
+          <input type="number" id="edit-travel-hours" name="travel_hours" min="0" step="0.5" placeholder="0.0">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-invoice">請求ステータス</label>
+          <select id="edit-work-invoice" name="invoice_status">
+            <option value="対象外">対象外</option>
+            <option value="未請求">未請求</option>
+            <option value="請求済">請求済</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-work-payment">入金ステータス</label>
+          <select id="edit-work-payment" name="payment_status">
+            <option value="対象外">対象外</option>
+            <option value="未入金">未入金</option>
+            <option value="入金済">入金済</option>
+          </select>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="edit-work-memo">メモ</label>
+          <textarea id="edit-work-memo" name="memo" placeholder="備考・メモ"></textarea>
+        </div>
+
+      </div>
+      <div class="error-msg" id="edit-work-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary">保存する</button>
+      </div>
+    </form>
+  </div>
+
+</div><!-- /.modal-overlay -->
+
+<script src="app.js"></script>
+</body>
+</html>

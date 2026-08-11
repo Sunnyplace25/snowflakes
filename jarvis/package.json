@@ -27,7 +27,9 @@
     "task-dry-run":   "node run_task.js dry-run",
     "record-work":    "node tools/record_work.js",
     "record-day":     "node tools/record_day.js",
-    "test-data":      "node tests/test_data_manager.js"
+    "test-data":      "node tests/test_data_manager.js",
+    "test-dashboard": "node tests/test_dashboard_api.js",
+    "dashboard":      "node dashboard/server.js"
   },
   "engines": {
     "node": ">=18.0.0"
