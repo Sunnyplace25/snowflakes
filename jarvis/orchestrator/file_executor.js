@@ -298,7 +298,14 @@ function _executeCore(opts) {
 
   // ─── 5. 承認確認 ─────────────────────────────────────────────────────────
   if (task.plan.requires_human_approval === true) {
-    return { ok: false, error: EXECUTION_ERRORS.APPROVAL_REQUIRED, reason: 'plan requires human approval before execution' };
+    // planning 承認済み（resolvePlanningApproval → decision:'approve'）の場合は実行を許可する。
+    // plan フィールド自体は承認後も変更されないため、approval_result で承認済みかを確認する。
+    const alreadyApproved =
+      task.approval_result?.stage === 'planning' &&
+      task.approval_result?.decision === 'approve';
+    if (!alreadyApproved) {
+      return { ok: false, error: EXECUTION_ERRORS.APPROVAL_REQUIRED, reason: 'plan requires human approval before execution' };
+    }
   }
 
   // ─── 6. アクション分類 ───────────────────────────────────────────────────

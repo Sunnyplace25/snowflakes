@@ -313,9 +313,16 @@ async function _runTestCore(opts) {
 
   // ── Step 5: 承認確認 ──────────────────────────────────────────────────────
   if (task.plan.requires_human_approval === true && !human_approval_granted) {
-    return { ok: false, task_id: taskId, state: 'TESTING',
-             error: { code: TEST_RUNNER_ERRORS.APPROVAL_REQUIRED,
-                      message: 'plan requires human approval before test execution' } };
+    // planning 承認済み（resolvePlanningApproval → decision:'approve'）の場合は通過を許可する。
+    // plan フィールド自体は承認後も変更されないため、approval_result で承認済みかを確認する。
+    const alreadyApproved =
+      task.approval_result?.stage === 'planning' &&
+      task.approval_result?.decision === 'approve';
+    if (!alreadyApproved) {
+      return { ok: false, task_id: taskId, state: 'TESTING',
+               error: { code: TEST_RUNNER_ERRORS.APPROVAL_REQUIRED,
+                        message: 'plan requires human approval before test execution' } };
+    }
   }
 
   // ── Step 6: run_test 抽出 ─────────────────────────────────────────────────

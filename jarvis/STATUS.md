@@ -100,6 +100,37 @@ jarvis-development
 
 ---
 
+## Final Integration Test 結果
+
+| 項目 | 結果 |
+|------|------|
+| A–L 12テスト | 12 tests passed / 0 failed |
+| A: 新規タスク → planning → WAITING_FOR_APPROVAL で安全停止 | ✅ |
+| B: WAITING_FOR_APPROVAL → runner 再実行しても前進しない | ✅ |
+| C: 人間承認後 → IMPLEMENTING→TESTING→REVIEWING→WFA 自動チェーン | ✅ |
+| D: review 承認なし → COMPLETED 不可・承認後のみ COMPLETED | ✅ |
+| E: REVISING → runner 停止・requires_recovery:true | ✅ |
+| F: recoverRevising → IMPLEMENTING 再開・二重復旧防止 | ✅ |
+| G: COMPLETED/FAILED/CANCELLED → terminal:true で二重実行しない | ✅ |
+| H: PAUSED → runner が勝手に再開しない | ✅ |
+| I: planning 失敗（モックエラー）→ FAILED・JSON 破損なし | ✅ |
+| J: IMPLEMENTING を繰り返しても二重反映されない | ✅ |
+| K: runner 出力にAPIキー・シークレットが含まれない | ✅ |
+| L: 外部通信 0 件（すべてモック） | ✅ |
+| 発見・修正した不具合 | file_executor.js / test_runner.js（計2箇所） |
+| OpenAI 実通信 | 0件 |
+| 外部通信 | 0件 |
+
+### 修正内容
+
+`plan.requires_human_approval === true` のまま `finalizePlanningApproval` で承認後、
+`executeFilePlan` および `runTestPhase` が `APPROVAL_REQUIRED` で実行をブロックしていた。
+
+修正: 両モジュールで `task.approval_result?.stage === 'planning' && decision === 'approve'`
+を確認し、承認済みの場合は実行を許可するよう最小修正した。
+
+---
+
 ## Top-level Task Runner テスト結果
 
 | 項目 | 結果 |
