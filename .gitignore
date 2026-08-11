@@ -14,3 +14,6 @@ jarvis/node_modules/
 # JARVIS orchestrator task state
 jarvis/tasks/*
 !jarvis/tasks/.gitkeep
+# JARVIS 共通データ基盤 — 実データDB（個人データはgit管理しない）
+jarvis/data/*.db
+# schema.sql / *.js は Git 管理対象（除外しない）

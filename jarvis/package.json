@@ -24,7 +24,10 @@
     "task-resume":    "node run_task.js resume",
     "task-status":    "node run_task.js status",
     "task-list":      "node run_task.js list",
-    "task-dry-run":   "node run_task.js dry-run"
+    "task-dry-run":   "node run_task.js dry-run",
+    "record-work":    "node tools/record_work.js",
+    "record-day":     "node tools/record_day.js",
+    "test-data":      "node tests/test_data_manager.js"
   },
   "engines": {
     "node": ">=18.0.0"

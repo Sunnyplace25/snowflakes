@@ -10,14 +10,41 @@ import { spawn } from 'child_process';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { resolve } from 'path';
-import { existsSync } from 'fs';
-import { lstatSync } from 'fs';
+import { existsSync, lstatSync, readFileSync } from 'fs';
 import { loadTask, finalizeTesting } from './task_manager.js';
 import { logEvent } from './logger.js';
 import { REPO_ROOT } from './safety_guard.js';
 
 // ─── 本番レジストリ（常に空）─────────────────────────────────────────────────
 const TEST_REGISTRY = Object.freeze({});
+
+// ─── ファイルベースレジストリ読み込み ─────────────────────────────────────────
+/**
+ * jarvis/tests/registry.json が存在する場合はそこからレジストリを読み込む。
+ * 各エントリには command: process.execPath を自動付与する。
+ * ファイルが存在しない・パースエラー・不正な形式の場合は {} を返す（フェイルセーフ）。
+ *
+ * registry.json 形式:
+ *   {
+ *     "<test_id>": { "args": [...], "cwd": "<repoRoot相対パス>" }
+ *   }
+ */
+function _loadFileRegistry() {
+  try {
+    const registryPath = resolve(REPO_ROOT, 'jarvis', 'tests', 'registry.json');
+    if (!existsSync(registryPath)) return {};
+    const raw = JSON.parse(readFileSync(registryPath, 'utf8'));
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+    const result = {};
+    for (const [key, entry] of Object.entries(raw)) {
+      if (!entry || typeof entry !== 'object') continue;
+      result[key] = { command: process.execPath, ...entry };
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
 
 // ─── test_id パターン ─────────────────────────────────────────────────────────
 const TEST_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{0,63}$/;
@@ -273,7 +300,9 @@ async function _runTestCore(opts) {
   } = opts ?? {};
 
   const spawnFn       = injOpts.spawnFn       ?? null;
-  const testRegistry  = injOpts.testRegistry  ?? TEST_REGISTRY;
+  // _inject.testRegistry が指定された場合はそれを使用（テスト注入）。
+  // 未指定の場合は registry.json ファイルから動的に読み込む。
+  const testRegistry  = injOpts.testRegistry  ?? _loadFileRegistry();
 
   // ── Step 1: 引数検証 ──────────────────────────────────────────────────────
   if (!taskId || typeof taskId !== 'string') {
