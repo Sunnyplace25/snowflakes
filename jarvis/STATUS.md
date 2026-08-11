@@ -31,6 +31,7 @@ jarvis-development
 | Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
 | Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
 | Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | `8a33d8a` |
+| Final Integration Test | file_executor.js / test_runner.js（不具合修正） / tests/test_final_integration.js（新規） / STATUS.md | ✅ 完了 | `87cadd7` |
 
 ---
 
@@ -55,6 +56,7 @@ jarvis-development
 - Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
 - Safe REVISING Recovery: `6d8264f feat(jarvis): add safe revising recovery`
 - Top-level Task Runner: `8a33d8a feat(jarvis): add top-level task runner`
+- Final Integration Test: `87cadd7 fix(jarvis): complete final integration flow`
 
 ---
 
