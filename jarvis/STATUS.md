@@ -30,7 +30,7 @@ jarvis-development
 | オーケストレーター C9 | review_manager.js / task_manager.js / logger.js | ✅ 完了 | `f465c7a` |
 | Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
 | Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
-| Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | 未commit |
+| Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | `8a33d8a` |
 
 ---
 
@@ -54,7 +54,7 @@ jarvis-development
 - C9: `f465c7a feat(jarvis): add review and approval workflow`
 - Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
 - Safe REVISING Recovery: `6d8264f feat(jarvis): add safe revising recovery`
-- Top-level Task Runner: 未commit
+- Top-level Task Runner: `8a33d8a feat(jarvis): add top-level task runner`
 
 ---
 
