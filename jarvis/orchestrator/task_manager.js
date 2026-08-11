@@ -588,5 +588,56 @@ export function finalizePlanningApproval(taskId, {
   return { ...updatedTask };
 }
 
+// ─── RevisingRecovery 確定（原子的保存）──────────────────────────────────────
+/**
+ * REVISING状態からの安全な復旧処理。
+ * REVISING → IMPLEMENTING への遷移と復旧メタデータ記録を
+ * 1 回の安全な JSON 書き込みで確定する。
+ *
+ * @param {string} taskId
+ * @param {object} opts
+ * @param {string} opts.recovery_reason - 復旧理由（非空文字列）
+ * @returns {object} 更新後のタスクオブジェクト
+ * @throws {Error} 状態不正・パラメータ不正の場合
+ */
+export function finalizeRevisingRecovery(taskId, { recovery_reason } = {}) {
+  if (!recovery_reason || typeof recovery_reason !== 'string') {
+    throw new Error('INVALID_RECOVERY_REASON: recovery_reason must be a non-empty string');
+  }
+
+  const task = loadTask(taskId);
+  if (task.status !== 'REVISING') {
+    throw new Error(
+      `INVALID_STATE: finalizeRevisingRecovery requires status REVISING, got "${task.status}"`
+    );
+  }
+
+  // VALID_TRANSITIONS 確認（二重チェック）
+  if (!VALID_TRANSITIONS['REVISING'].includes('IMPLEMENTING')) {
+    throw new Error('INVALID_TRANSITION: REVISING → IMPLEMENTING is not in VALID_TRANSITIONS');
+  }
+
+  const now = new Date().toISOString();
+  const recoveryCount = (task.revising_recovery_count ?? 0) + 1;
+
+  const updatedTask = {
+    ...task,
+    status:                  'IMPLEMENTING',
+    updated_at:              now,
+    history:                 [...task.history, { status: 'IMPLEMENTING', at: now }],
+    revising_recovery_count: recoveryCount,
+    last_revising_recovery: {
+      recovered_at:                now,
+      recovery_reason,
+      original_review_reason_code: task.review_result?.reason_code ?? null,
+      recovery_count:              recoveryCount,
+    },
+  };
+
+  const filePath = resolveTaskPath(taskId);
+  safeSave(filePath, updatedTask);
+  return { ...updatedTask };
+}
+
 // ─── テスト用内部エクスポート ─────────────────────────────────────────────────
 export { TASKS_DIR, VALID_TRANSITIONS, TASK_ID_PATTERN };

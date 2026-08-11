@@ -29,6 +29,7 @@ jarvis-development
 | オーケストレーター C8 | test_runner.js / task_manager.js / openai_client.js / orchestrator.js / logger.js | ✅ 完了 | `a3eab19` |
 | オーケストレーター C9 | review_manager.js / task_manager.js / logger.js | ✅ 完了 | `f465c7a` |
 | Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
+| Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | 未commit |
 
 ---
 
@@ -51,6 +52,7 @@ jarvis-development
 - C8: `a3eab19 feat(jarvis): add safe test execution workflow`
 - C9: `f465c7a feat(jarvis): add review and approval workflow`
 - Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
+- Safe REVISING Recovery: 未commit
 
 ---
 
@@ -93,6 +95,23 @@ jarvis-development
 | `npm run approve -- <id>` | 承認（pending → approved） |
 | `npm run reject -- <id>` | 差し戻し |
 | `npm run publish -- <id>` | 公開済み記録（approved → published） |
+
+---
+
+## Safe REVISING Recovery テスト結果
+
+| 項目 | 結果 |
+|------|------|
+| T1–T18 | 18 tests passed / 0 failed |
+| 通常REVISING→IMPLEMENTING | ✅ |
+| REVISING停止→復旧 | ✅ |
+| 二重実行防止（WRONG_STATE） | ✅ |
+| IMPLEMENTING以外へ遷移しない | ✅ |
+| confirmed_by_human ガード | ✅ |
+| original_reason_code 保存 | ✅ |
+| 既存フロー変更なし | ✅ |
+| OpenAI実通信 | 0件 |
+| 外部通信 | 0件 |
 
 ---
 
