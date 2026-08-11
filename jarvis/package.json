@@ -19,7 +19,12 @@
     "schedule-show":  "node tools/manage_schedule.js show",
     "schedule-set":   "node tools/manage_schedule.js set",
     "schedule-check": "node tools/preflight_check.js check",
-    "dry-run":        "node tools/preflight_check.js dry-run"
+    "dry-run":        "node tools/preflight_check.js dry-run",
+    "task-start":     "node run_task.js start",
+    "task-resume":    "node run_task.js resume",
+    "task-status":    "node run_task.js status",
+    "task-list":      "node run_task.js list",
+    "task-dry-run":   "node run_task.js dry-run"
   },
   "engines": {
     "node": ">=18.0.0"

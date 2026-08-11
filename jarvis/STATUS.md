@@ -30,6 +30,7 @@ jarvis-development
 | オーケストレーター C9 | review_manager.js / task_manager.js / logger.js | ✅ 完了 | `f465c7a` |
 | Integration Fix 1 | task_manager.js / orchestrator.js / file_executor.js / test_runner.js | ✅ 完了 | `4989261` |
 | Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
+| Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | 未commit |
 
 ---
 
@@ -53,6 +54,7 @@ jarvis-development
 - C9: `f465c7a feat(jarvis): add review and approval workflow`
 - Integration Fix 1: `4989261 fix(jarvis): repair orchestrator phase integration`
 - Safe REVISING Recovery: `6d8264f feat(jarvis): add safe revising recovery`
+- Top-level Task Runner: 未commit
 
 ---
 
@@ -95,6 +97,26 @@ jarvis-development
 | `npm run approve -- <id>` | 承認（pending → approved） |
 | `npm run reject -- <id>` | 差し戻し |
 | `npm run publish -- <id>` | 公開済み記録（approved → published） |
+
+---
+
+## Top-level Task Runner テスト結果
+
+| 項目 | 結果 |
+|------|------|
+| T1–T11（T9b含む） | 11 tests passed / 0 failed |
+| taskId・phase 未指定 → INVALID_ARGUMENT | ✅ |
+| 存在しないtaskId → TASK_NOT_FOUND | ✅ |
+| TERMINAL状態（COMPLETED）→ terminal:true | ✅ |
+| STOP状態（WAITING_FOR_APPROVAL）→ 即停止 | ✅ |
+| STOP状態（REVISING）→ requires_recovery:true | ✅ |
+| 新規タスク作成 + callOpenAI モック → 承認待ち停止 | ✅ |
+| dry_run=true → 1フェーズのみ・状態変化なし | ✅ |
+| IMPLEMENTING → TESTING → REVIEWING → WAITING 自動チェーン | ✅ |
+| getTaskStatus 正常系 / TASK_NOT_FOUND | ✅ |
+| listAllTasks に作成タスクが含まれる | ✅ |
+| OpenAI実通信 | 0件 |
+| 外部通信 | 0件 |
 
 ---
 
