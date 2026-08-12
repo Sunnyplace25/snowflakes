@@ -26,5 +26,9 @@
   "revenue_writer": {
     "args": ["tests/test_revenue_writer.js"],
     "cwd": "jarvis"
+  },
+  "ai_bridge": {
+    "args": ["tests/test_ai_bridge.js"],
+    "cwd": "jarvis"
   }
 }

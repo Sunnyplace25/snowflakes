@@ -11,6 +11,9 @@ jarvis/secrets/*
 !jarvis/secrets/.gitkeep
 # ──────────────────────────────────────
 jarvis/node_modules/
+# JARVIS AI Bridge — 実行時状態（セッション・レビュー・ログ）
+jarvis/ai/runtime/*
+!jarvis/ai/runtime/.gitignore
 # JARVIS orchestrator task state
 jarvis/tasks/*
 !jarvis/tasks/.gitkeep
