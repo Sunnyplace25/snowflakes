@@ -82,31 +82,41 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_twl_primary
 -- ── Snow flakes 収益 ──────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS sf_revenue (
-  id            INTEGER PRIMARY KEY AUTOINCREMENT,
-  date          TEXT    NOT NULL,
-  month         TEXT    NOT NULL,
-  source        TEXT    NOT NULL
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  date              TEXT    NOT NULL,
+  month             TEXT    NOT NULL,           -- statement_period（Soundrop明細発行月 YYYY-MM）
+  transaction_month TEXT,                        -- 実際の再生・売上発生月（YYYY-MM）
+  source            TEXT    NOT NULL
     CHECK (source IN ('音楽配信', '広告', '電子書籍', '有料コンテンツ', 'その他')),
-  platform      TEXT,
-  work_id       INTEGER REFERENCES sf_works(id),
-  track_id      INTEGER REFERENCES sf_tracks(id),
-  content       TEXT,
-  amount        REAL    NOT NULL DEFAULT 0,
-  currency      TEXT    NOT NULL DEFAULT 'JPY',
-  amount_jpy    INTEGER NOT NULL DEFAULT 0,
-  memo          TEXT,
-  import_source TEXT    DEFAULT 'manual'
+  platform          TEXT,
+  work_id           INTEGER REFERENCES sf_works(id),
+  track_id          INTEGER REFERENCES sf_tracks(id),
+  quantity          INTEGER NOT NULL DEFAULT 0,  -- 再生数・UGC使用数の合計
+  content           TEXT,
+  amount            REAL    NOT NULL DEFAULT 0,
+  currency          TEXT    NOT NULL DEFAULT 'JPY',
+  amount_jpy        INTEGER NOT NULL DEFAULT 0,
+  memo              TEXT,
+  import_source     TEXT    DEFAULT 'manual'
     CHECK (import_source IN ('manual', 'csv', 'api')),
-  created_at    TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  created_at        TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_sf_revenue_month    ON sf_revenue(month);
-CREATE INDEX IF NOT EXISTS idx_sf_revenue_track_id ON sf_revenue(track_id);
+CREATE INDEX IF NOT EXISTS idx_sf_revenue_month            ON sf_revenue(month);
+CREATE INDEX IF NOT EXISTS idx_sf_revenue_transaction_month ON sf_revenue(transaction_month);
+CREATE INDEX IF NOT EXISTS idx_sf_revenue_track_id         ON sf_revenue(track_id);
 
--- CSV/API インポート由来の重複防止（楽曲単位：同一 month × platform × track_id）
+-- 旧インポーター（soundrop.js / metrics_writer.js）の冪等性保証
+-- transaction_month を設定しない旧パスの重複防止
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_csv_track
   ON sf_revenue(month, platform, track_id)
-  WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL;
+  WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL AND transaction_month IS NULL;
+
+-- revenue_writer.js（Phase 2）の冪等性保証
+-- 集計キー: statement_period(month) × transaction_month × platform × track_id
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_statement
+  ON sf_revenue(month, transaction_month, platform, track_id)
+  WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL AND transaction_month IS NOT NULL;
 
 -- ── GA4 日別スナップショット ──────────────────────────────────────────────────
 

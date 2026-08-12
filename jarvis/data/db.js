@@ -31,10 +31,49 @@ const SF_TRACKS_MIGRATIONS = [
   "ALTER TABLE sf_tracks ADD COLUMN memo TEXT",
 ];
 
+// sf_revenue Phase 2 migrations
+const SF_REVENUE_MIGRATIONS = [
+  "ALTER TABLE sf_revenue ADD COLUMN transaction_month TEXT",
+  "ALTER TABLE sf_revenue ADD COLUMN quantity INTEGER NOT NULL DEFAULT 0",
+];
+
 function runMigrations(db) {
+  // Phase 1.5: sf_tracks カラム追加
   for (const sql of SF_TRACKS_MIGRATIONS) {
     try { db.exec(sql); } catch (_) { /* column already exists */ }
   }
+
+  // Phase 2: sf_revenue カラム追加
+  for (const sql of SF_REVENUE_MIGRATIONS) {
+    try { db.exec(sql); } catch (_) { /* column already exists */ }
+  }
+
+  // Phase 2: インデックス追加（冪等 — 何度実行しても安全）
+  // 旧 idx_sf_revenue_csv_track は metrics_writer.js の冪等性のため維持する。
+  // schema.sql で WHERE 条件を AND transaction_month IS NULL に絞り既存 DB に再適用。
+  try { db.exec('DROP INDEX IF EXISTS idx_sf_revenue_csv_track'); } catch (_) {}
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_csv_track
+        ON sf_revenue(month, platform, track_id)
+        WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+          AND transaction_month IS NULL
+    `);
+  } catch (_) {}
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_statement
+        ON sf_revenue(month, transaction_month, platform, track_id)
+        WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+          AND transaction_month IS NOT NULL
+    `);
+  } catch (_) {}
+  try {
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_sf_revenue_transaction_month
+        ON sf_revenue(transaction_month)
+    `);
+  } catch (_) {}
 }
 
 /**

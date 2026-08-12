@@ -366,6 +366,60 @@ export function createApiHandler(db) {
         } catch (e) { return errRes(res, 400, e.message); }
       }
 
+      // ── GET /api/sf/revenue/monthly ────────────────────────────────────
+      if (path === '/api/sf/revenue/monthly' && method === 'GET') {
+        const basis   = url.searchParams.get('basis') === 'statement' ? 'statement' : 'transaction';
+        const monthCol = basis === 'statement' ? 'month' : 'transaction_month';
+        const rows = db.prepare(`
+          SELECT ${monthCol} AS month,
+                 ROUND(SUM(amount), 10) AS total_usd,
+                 SUM(quantity) AS total_quantity
+          FROM sf_revenue
+          WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+          GROUP BY ${monthCol}
+          ORDER BY ${monthCol}
+        `).all();
+        return jsonRes(res, 200, { ok: true, basis, rows });
+      }
+
+      // ── GET /api/sf/revenue/by-track ───────────────────────────────────
+      if (path === '/api/sf/revenue/by-track' && method === 'GET') {
+        const basis    = url.searchParams.get('basis') === 'statement' ? 'statement' : 'transaction';
+        const month    = url.searchParams.get('month') || null;
+        const monthCol = basis === 'statement' ? 'r.month' : 'r.transaction_month';
+        const rows = db.prepare(`
+          SELECT r.track_id,
+                 t.title,
+                 ROUND(SUM(r.amount), 10) AS total_usd,
+                 SUM(r.quantity) AS total_quantity
+          FROM sf_revenue r
+          JOIN sf_tracks t ON t.id = r.track_id
+          WHERE r.import_source IN ('csv', 'api') AND r.track_id IS NOT NULL
+            AND (? IS NULL OR ${monthCol} = ?)
+          GROUP BY r.track_id
+          ORDER BY total_usd DESC
+        `).all(month, month);
+        return jsonRes(res, 200, { ok: true, basis, month, rows });
+      }
+
+      // ── GET /api/sf/revenue/by-service ─────────────────────────────────
+      if (path === '/api/sf/revenue/by-service' && method === 'GET') {
+        const basis    = url.searchParams.get('basis') === 'statement' ? 'statement' : 'transaction';
+        const month    = url.searchParams.get('month') || null;
+        const monthCol = basis === 'statement' ? 'month' : 'transaction_month';
+        const rows = db.prepare(`
+          SELECT platform,
+                 ROUND(SUM(amount), 10) AS total_usd,
+                 SUM(quantity) AS total_quantity
+          FROM sf_revenue
+          WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+            AND (? IS NULL OR ${monthCol} = ?)
+          GROUP BY platform
+          ORDER BY total_usd DESC
+        `).all(month, month);
+        return jsonRes(res, 200, { ok: true, basis, month, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

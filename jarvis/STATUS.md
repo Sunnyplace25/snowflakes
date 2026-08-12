@@ -225,7 +225,7 @@ jarvis-development
 | Phase 1 | DB基盤（schema.sql 12テーブル追記 + sf_seed.js） | ✅ 完了（2026-08-12） |
 | Phase 1.5 | 楽曲・リリース管理基盤（13テーブル追加 + Soundrop importer + Music Library Dashboard） | ✅ 完了（2026-08-12） |
 | Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録）+ ISRC_TITLE_OVERRIDES | ✅ 完了（2026-08-12） |
-| Phase 2 | SF収益（sf_revenue_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 2 | SF収益（revenue_writer.js + API 3エンドポイント）| ✅ 完了（2026-08-12） |
 | Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 5 | 音楽3サービス（music_csv_importer / sf_music_manager / API / Dashboard） | ⏳ 未着手 |
@@ -436,6 +436,70 @@ jarvis-development
 | QZPJ32548356（override 未設定）が "Little Snow (Near)" のまま登録される | ✅ |
 | ISRC一致 re-import 時に override タイトルが適用される | ✅ |
 | override なし ISRC の手動修正タイトルが上書きされない | ✅ |
+
+---
+
+### Phase 2 完了記録（2026-08-12）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | sf_revenue に `transaction_month TEXT` / `quantity INTEGER` 追加、インデックス2本体制に移行 |
+| db.js | Phase 2 migration 追加（各 ALTER TABLE を個別 try/catch、インデックス再構築） |
+| revenue_writer.js | 新規作成（Soundrop Statement CSV → sf_revenue UPSERT） |
+| api.js | `/api/sf/revenue/monthly` / `/by-track` / `/by-service` 3エンドポイント追加 |
+| test_revenue_writer.js | 新規作成（20テスト） |
+| registry.json | revenue_writer エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 変更（sf_revenue 拡張・インデックス更新） |
+| `jarvis/data/db.js` | 変更（Phase 2 migration 追加） |
+| `jarvis/importers/revenue_writer.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | 変更（3エンドポイント追加） |
+| `jarvis/tests/test_revenue_writer.js` | 新規作成 |
+| `jarvis/tests/registry.json` | 変更（エントリ追加） |
+
+#### sf_revenue 設計
+
+| カラム | 用途 |
+|--------|------|
+| `month` | statement_period（Soundrop 明細発行月 YYYY-MM）|
+| `transaction_month` | 実際の再生・売上発生月（YYYY-MM）/ 旧パスは NULL |
+| `quantity` | 再生数・UGC使用数の集計合計 |
+| `amount` | Net Revenue in USD の集計合計（USD建て）|
+| `platform` | Service 列の値そのまま（例: `TikTok`, `Apple Music`）|
+
+#### インデックス体制
+
+| インデックス | 対象パス | 条件 |
+|-------------|----------|------|
+| `idx_sf_revenue_csv_track` | soundrop.js / metrics_writer.js（旧パス）| `transaction_month IS NULL` |
+| `idx_sf_revenue_statement` | revenue_writer.js（Phase 2）| `transaction_month IS NOT NULL` |
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/revenue/monthly` | `basis=transaction`（デフォルト）/ `statement` | 月別売上合計 |
+| `/api/sf/revenue/by-track` | `basis`, `month=YYYY-MM` | 楽曲別売上合計 |
+| `/api/sf/revenue/by-service` | `basis`, `month=YYYY-MM` | サービス別売上合計 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_revenue_writer.js（Phase 2新規） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **265 passed / 0 failed** |
 
 ---
 
