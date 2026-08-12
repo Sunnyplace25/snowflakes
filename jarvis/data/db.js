@@ -19,6 +19,24 @@ const SCHEMA_PATH = resolve(__dirname, 'schema.sql');
 /** 実データDBのデフォルトパス（テストでは使用禁止） */
 export const DEFAULT_DB_PATH = resolve(__dirname, 'business_data.db');
 
+// sf_tracks Phase 1.5 migrations
+const SF_TRACKS_MIGRATIONS = [
+  "ALTER TABLE sf_tracks ADD COLUMN status TEXT NOT NULL DEFAULT 'unknown' CHECK (status IN ('unknown','unreleased','streaming_pending','released','private'))",
+  "ALTER TABLE sf_tracks ADD COLUMN created_date TEXT",
+  "ALTER TABLE sf_tracks ADD COLUMN duration_sec INTEGER",
+  "ALTER TABLE sf_tracks ADD COLUMN isrc TEXT",
+  "ALTER TABLE sf_tracks ADD COLUMN source_service TEXT CHECK (source_service IN ('suno','daw','other'))",
+  "ALTER TABLE sf_tracks ADD COLUMN source_id TEXT",
+  "ALTER TABLE sf_tracks ADD COLUMN source_url TEXT",
+  "ALTER TABLE sf_tracks ADD COLUMN memo TEXT",
+];
+
+function runMigrations(db) {
+  for (const sql of SF_TRACKS_MIGRATIONS) {
+    try { db.exec(sql); } catch (_) { /* column already exists */ }
+  }
+}
+
 /**
  * SQLiteデータベースを開いてスキーマを適用し返す。
  *
@@ -33,6 +51,8 @@ export function createDb(dbPath = DEFAULT_DB_PATH) {
 
   const schema = readFileSync(SCHEMA_PATH, 'utf8');
   db.exec(schema);
+
+  runMigrations(db);
 
   return db;
 }

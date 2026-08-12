@@ -13,6 +13,14 @@ import { upsertDailyStatus, getDailyStatus, getFullDayOffCount }
   from '../data/daily_status_manager.js';
 import { getMonthlySummary, getUnpaidCounts }
   from '../data/aggregator.js';
+import {
+  getTracks, getTrack, upsertTrack,
+  getReleases, getRelease, upsertRelease,
+  getArtistProfiles, upsertArtistProfile,
+  getPreviews, upsertPreview,
+  getImportHistory, getUnreviewedImportRows,
+} from '../data/sf_manager.js';
+import { importFile } from '../importers/soundrop.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -219,6 +227,143 @@ export function createApiHandler(db) {
           implemented: false,
           message: '自然言語入力は次の開発で対応予定です。',
         });
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // SF API エンドポイント（Phase 1.5）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/tracks ─────────────────────────────────────────────
+      if (path === '/api/sf/tracks' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, tracks: getTracks(db) });
+      }
+
+      // ── GET /api/sf/tracks/:id ─────────────────────────────────────────
+      const sfTrackMatch = path.match(/^\/api\/sf\/tracks\/(\d+)$/);
+      if (sfTrackMatch && method === 'GET') {
+        const track = getTrack(db, parseInt(sfTrackMatch[1], 10));
+        if (!track) return errRes(res, 404, 'Track not found');
+        return jsonRes(res, 200, { ok: true, track });
+      }
+
+      // ── POST /api/sf/tracks ────────────────────────────────────────────
+      if (path === '/api/sf/tracks' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertTrack(db, body);
+          return jsonRes(res, 201, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── PUT /api/sf/tracks/:id ─────────────────────────────────────────
+      if (sfTrackMatch && method === 'PUT') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertTrack(db, { ...body, id: parseInt(sfTrackMatch[1], 10) });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── GET /api/sf/releases ───────────────────────────────────────────
+      if (path === '/api/sf/releases' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, releases: getReleases(db) });
+      }
+
+      // ── GET /api/sf/releases/:id ───────────────────────────────────────
+      const sfReleaseMatch = path.match(/^\/api\/sf\/releases\/(\d+)$/);
+      if (sfReleaseMatch && method === 'GET') {
+        const release = getRelease(db, parseInt(sfReleaseMatch[1], 10));
+        if (!release) return errRes(res, 404, 'Release not found');
+        return jsonRes(res, 200, { ok: true, release });
+      }
+
+      // ── POST /api/sf/releases ──────────────────────────────────────────
+      if (path === '/api/sf/releases' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertRelease(db, body);
+          return jsonRes(res, 201, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── PUT /api/sf/releases/:id ───────────────────────────────────────
+      if (sfReleaseMatch && method === 'PUT') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertRelease(db, { ...body, id: parseInt(sfReleaseMatch[1], 10) });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── GET /api/sf/artist-profiles ────────────────────────────────────
+      if (path === '/api/sf/artist-profiles' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, profiles: getArtistProfiles(db) });
+      }
+
+      // ── PUT /api/sf/artist-profiles/:id ───────────────────────────────
+      const sfProfileMatch = path.match(/^\/api\/sf\/artist-profiles\/(\d+)$/);
+      if (sfProfileMatch && method === 'PUT') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertArtistProfile(db, { ...body, id: parseInt(sfProfileMatch[1], 10) });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── GET /api/sf/previews ───────────────────────────────────────────
+      if (path === '/api/sf/previews' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, previews: getPreviews(db) });
+      }
+
+      // ── POST /api/sf/previews ──────────────────────────────────────────
+      if (path === '/api/sf/previews' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertPreview(db, body);
+          return jsonRes(res, 201, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── PUT /api/sf/previews/:id ───────────────────────────────────────
+      const sfPreviewMatch = path.match(/^\/api\/sf\/previews\/(\d+)$/);
+      if (sfPreviewMatch && method === 'PUT') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertPreview(db, { ...body, id: parseInt(sfPreviewMatch[1], 10) });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── GET /api/sf/imports ────────────────────────────────────────────
+      if (path === '/api/sf/imports' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, imports: getImportHistory(db) });
+      }
+
+      // ── GET /api/sf/imports/unreviewed ─────────────────────────────────
+      if (path === '/api/sf/imports/unreviewed' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, rows: getUnreviewedImportRows(db) });
+      }
+
+      // ── POST /api/sf/imports ───────────────────────────────────────────
+      if (path === '/api/sf/imports' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.file_path) return errRes(res, 400, 'file_path は必須です');
+        try {
+          const result = await importFile(db, body.file_path, {
+            distributor:   body.distributor   || 'soundrop',
+            report_period: body.report_period || null,
+            delimiter:     body.delimiter     || ',',
+          });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
       }
 
       return errRes(res, 404, 'Not Found');

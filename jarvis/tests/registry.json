@@ -10,5 +10,13 @@
   "sf_schema": {
     "args": ["tests/test_sf_schema.js"],
     "cwd": "jarvis"
+  },
+  "sf_schema_15": {
+    "args": ["tests/test_sf_schema_15.js"],
+    "cwd": "jarvis"
+  },
+  "soundrop_importer": {
+    "args": ["tests/test_soundrop_importer.js"],
+    "cwd": "jarvis"
   }
 }

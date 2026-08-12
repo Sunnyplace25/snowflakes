@@ -223,6 +223,7 @@ jarvis-development
 | Phase | 内容 | 状態 |
 |-------|------|------|
 | Phase 1 | DB基盤（schema.sql 12テーブル追記 + sf_seed.js） | ✅ 完了（2026-08-12） |
+| Phase 1.5 | 楽曲・リリース管理基盤（13テーブル追加 + Soundrop importer + Music Library Dashboard） | ✅ 完了（2026-08-12） |
 | Phase 2 | SF収益（sf_revenue_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
@@ -282,6 +283,103 @@ jarvis-development
 - 各作品の `published_at` は NULL（正確な初公開日は別途更新要）
 - 各楽曲の `release_date` は NULL（リリース日は別途更新要）
 - SWEETsゲート楽曲（SWEETs）の `track_key` は `sweets_track`（DB名）と `SWEETs`（配信名）が異なる点を注意
+
+### Phase 1.5 完了記録（2026-08-12）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | 新規13テーブル追記（Phase 1.5） |
+| db.js | `runMigrations()` 追加（sf_tracks へ8カラム ALTER TABLE） |
+| sf_manager.js | 新規作成（楽曲・リリース・プロフィール・プレビュー CRUD） |
+| soundrop.js + 周辺 | Soundrop importer 一式（csv_parser / track_matcher / metrics_writer） |
+| api.js | SF API 16エンドポイント追加 |
+| index.html | SF タブに Music Library サブタブ3枚追加 |
+| modules/sf.js | Music Library 全レンダリング関数・サブタブ切替ロジック追加 |
+| style.css | .sf-tabs / .sf-table / .sf-badge 等スタイル追加 |
+| test_sf_schema_15.js | 新規作成（71テスト） |
+| test_soundrop_importer.js | 新規作成（24テスト） |
+| registry.json | sf_schema_15 / soundrop_importer エントリ追加 |
+| imports/soundrop/.gitkeep | Soundropレポート格納ディレクトリ |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（13テーブル + インデックス） |
+| `jarvis/data/db.js` | `runMigrations()` 追加 |
+| `jarvis/data/sf_manager.js` | 新規作成 |
+| `jarvis/importers/soundrop.js` | 新規作成 |
+| `jarvis/importers/parsers/csv_parser.js` | 新規作成 |
+| `jarvis/importers/matchers/track_matcher.js` | 新規作成 |
+| `jarvis/importers/writers/metrics_writer.js` | 新規作成 |
+| `jarvis/imports/soundrop/.gitkeep` | 新規作成（ディレクトリ） |
+| `jarvis/dashboard/api.js` | SF API 16エンドポイント追記 |
+| `jarvis/dashboard/public/index.html` | SF サブタブ3枚追加 |
+| `jarvis/dashboard/public/modules/sf.js` | Music Library UI 全追加 |
+| `jarvis/dashboard/public/style.css` | SF Library スタイル追加 |
+| `jarvis/tests/test_sf_schema_15.js` | 新規作成 |
+| `jarvis/tests/test_soundrop_importer.js` | 新規作成 |
+| `jarvis/tests/registry.json` | 2エントリ追加 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_sf_schema_15.js（Phase 1.5新規） | 71 passed / 0 failed ✅ |
+| test_soundrop_importer.js（新規） | 24 passed / 0 failed ✅ |
+| test_sf_schema.js（Phase 1回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **195 passed / 0 failed** |
+
+#### Phase 1.5 テーブル一覧（計13テーブル追加、累計27テーブル）
+
+| テーブル | 用途 |
+|----------|------|
+| `sf_track_files` | 音源ファイル台帳（参照のみ） |
+| `sf_track_lyrics` | 歌詞管理（多言語・多バージョン） |
+| `sf_releases` | Single/EP/Albumマスター |
+| `sf_release_tracks` | リリース↔楽曲 M:N |
+| `sf_release_artworks` | ジャケット管理（参照のみ） |
+| `sf_credits` | クレジット（楽曲・リリース両対応） |
+| `sf_distributions` | Soundrop配信管理（リリース単位） |
+| `sf_distribution_imports` | Soundropインポートログ |
+| `sf_distribution_import_rows` | インポート生データ行 |
+| `sf_artist_profiles` | アーティストページ管理 |
+| `sf_track_releases` | 楽曲単位ストア情報 |
+| `sf_release_platforms` | リリース単位ストア情報 |
+| `sf_track_previews` | 公式サイトデモ音源管理 |
+
+#### sf_tracks 追加カラム
+
+`status` / `created_date` / `duration_sec` / `isrc` / `source_service` / `source_id` / `source_url` / `memo`
+
+#### Soundrop Importer 設計
+
+- 照合優先順位: ISRC → UPC → track_key → unmatched（needs_review=1）
+- 冪等性: INSERT OR IGNORE で重複取込安全
+- ステータス管理: pending → processing → completed / partial / failed
+- 格納先: `jarvis/imports/soundrop/`（.gitignore対象推奨）
+
+#### 未確認データ（Phase 1.5 seed 対象外）
+
+| ファイル名（推定） | 理由 |
+|----------------|------|
+| kaeranai | 正式タイトル・status未確認 |
+| natsunomoon | 正式タイトル・status未確認 |
+| shukusou | 正式タイトル・status未確認 |
+| nigaipurin | 正式タイトル・status未確認 |
+| shiroiimama | 正式タイトル・status未確認 |
+| madakokoni | 正式タイトル・status未確認 |
+| madanatteru | 正式タイトル・status未確認 |
+| iawasete | 正式タイトル・status未確認 |
+| sweets BGM系 | 正式タイトル・status未確認 |
+
+確認後は `sf_tracks` に `status='unknown'` で登録し、判明次第更新すること。
+
+---
 
 ### 注意事項
 

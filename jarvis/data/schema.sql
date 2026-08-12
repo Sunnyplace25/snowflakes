@@ -103,6 +103,11 @@ CREATE TABLE IF NOT EXISTS sf_revenue (
 CREATE INDEX IF NOT EXISTS idx_sf_revenue_month    ON sf_revenue(month);
 CREATE INDEX IF NOT EXISTS idx_sf_revenue_track_id ON sf_revenue(track_id);
 
+-- CSV/API インポート由来の重複防止（楽曲単位：同一 month × platform × track_id）
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_csv_track
+  ON sf_revenue(month, platform, track_id)
+  WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL;
+
 -- ── GA4 日別スナップショット ──────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS sf_ga_daily (
@@ -282,3 +287,248 @@ CREATE TABLE IF NOT EXISTS sf_funnel_event (
 
 CREATE INDEX IF NOT EXISTS idx_sf_funnel_date ON sf_funnel_event(date);
 CREATE INDEX IF NOT EXISTS idx_sf_funnel_type ON sf_funnel_event(event_type);
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 1.5: Snow flakes 楽曲・リリース管理基盤
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+-- ── 音源ファイル台帳 ──────────────────────────────────────────────────────────
+-- ファイル本体は参照のみ。移動・削除・リネーム・上書き禁止。
+CREATE TABLE IF NOT EXISTS sf_track_files (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id        INTEGER NOT NULL REFERENCES sf_tracks(id),
+  file_type       TEXT    NOT NULL
+    CHECK (file_type IN ('master_wav','streaming_mp3','short_mp3','instrumental','demo','other')),
+  file_path       TEXT    NOT NULL,
+  label           TEXT,
+  is_master       INTEGER NOT NULL DEFAULT 0 CHECK (is_master IN (0,1)),
+  sample_rate     INTEGER,
+  bit_depth       INTEGER,
+  bitrate         INTEGER,
+  duration_sec    REAL,
+  file_size_bytes INTEGER,
+  checksum        TEXT,
+  memo            TEXT,
+  created_at      TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(track_id, file_type, file_path)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_track_files_track ON sf_track_files(track_id);
+
+-- ── 歌詞管理 ──────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_track_lyrics (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id     INTEGER NOT NULL REFERENCES sf_tracks(id),
+  language     TEXT    NOT NULL DEFAULT 'ja',
+  version      TEXT    NOT NULL DEFAULT 'v1',
+  lyrics_text  TEXT    NOT NULL,
+  status       TEXT    NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','final')),
+  has_furigana INTEGER NOT NULL DEFAULT 0 CHECK (has_furigana IN (0,1)),
+  is_public    INTEGER NOT NULL DEFAULT 0 CHECK (is_public IN (0,1)),
+  memo         TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at   TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(track_id, language, version)
+);
+
+-- ── リリースマスター ──────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_releases (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  release_key  TEXT    NOT NULL UNIQUE,
+  title        TEXT    NOT NULL,
+  release_type TEXT    NOT NULL
+    CHECK (release_type IN ('single','ep','album','compilation')),
+  status       TEXT    NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft','scheduled','released','private')),
+  created_date TEXT,
+  release_date TEXT,
+  upc_ean      TEXT,
+  memo         TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- ── リリース ↔ 楽曲 M:N ──────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_release_tracks (
+  release_id   INTEGER NOT NULL REFERENCES sf_releases(id),
+  track_id     INTEGER NOT NULL REFERENCES sf_tracks(id),
+  track_number INTEGER,
+  disc_number  INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (release_id, track_id)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_rel_tracks_track ON sf_release_tracks(track_id);
+
+-- ── ジャケット管理 ────────────────────────────────────────────────────────────
+-- 画像本体は参照のみ。移動・削除・リネーム・上書き禁止。
+CREATE TABLE IF NOT EXISTS sf_release_artworks (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  release_id      INTEGER NOT NULL REFERENCES sf_releases(id),
+  file_path       TEXT    NOT NULL,
+  status          TEXT    NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','final')),
+  version         TEXT,
+  width           INTEGER,
+  height          INTEGER,
+  file_size_bytes INTEGER,
+  checksum        TEXT,
+  memo            TEXT,
+  created_at      TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(release_id, file_path)
+);
+
+-- ── クレジット管理（楽曲 / リリース 両対応）──────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_credits (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id   INTEGER REFERENCES sf_tracks(id),
+  release_id INTEGER REFERENCES sf_releases(id),
+  role       TEXT    NOT NULL
+    CHECK (role IN ('lyrics','composition','arrangement','vocal','guitar','bass',
+                    'drums','programming','mix','mastering','artwork','other')),
+  name       TEXT    NOT NULL,
+  memo       TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  CHECK (track_id IS NOT NULL OR release_id IS NOT NULL)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_credits_track   ON sf_credits(track_id);
+CREATE INDEX IF NOT EXISTS idx_sf_credits_release ON sf_credits(release_id);
+
+-- ── Soundrop配信管理（リリース単位）─────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_distributions (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  release_id           INTEGER NOT NULL REFERENCES sf_releases(id),
+  distributor          TEXT    NOT NULL DEFAULT 'soundrop'
+    CHECK (distributor IN ('soundrop','tunecore','distrokid','other')),
+  distributor_release_id TEXT,
+  distribution_status  TEXT    NOT NULL DEFAULT 'not_ready'
+    CHECK (distribution_status IN (
+      'not_ready','ready','submitted','reviewing',
+      'needs_changes','approved','distributed'
+    )),
+  submitted_at         TEXT,
+  approved_at          TEXT,
+  memo                 TEXT,
+  created_at           TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at           TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(release_id, distributor)
+);
+
+-- ── Soundropインポートログ ────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_distribution_imports (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  distributor     TEXT    NOT NULL DEFAULT 'soundrop',
+  source_type     TEXT    NOT NULL DEFAULT 'csv'
+    CHECK (source_type IN ('csv','xlsx','tsv','json','api','manual')),
+  file_name       TEXT,
+  file_path       TEXT,
+  report_period   TEXT,
+  row_count       INTEGER DEFAULT 0,
+  matched_count   INTEGER DEFAULT 0,
+  unmatched_count INTEGER DEFAULT 0,
+  import_status   TEXT    NOT NULL DEFAULT 'pending'
+    CHECK (import_status IN ('pending','processing','completed','failed','partial')),
+  error_log       TEXT,
+  imported_at     TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- ── Soundropインポート生データ行 ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_distribution_import_rows (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  import_id          INTEGER NOT NULL REFERENCES sf_distribution_imports(id),
+  row_index          INTEGER NOT NULL,
+  raw_data           TEXT,
+  matched_track_id   INTEGER REFERENCES sf_tracks(id),
+  matched_release_id INTEGER REFERENCES sf_releases(id),
+  match_method       TEXT
+    CHECK (match_method IN ('isrc','upc','track_key','title_fuzzy','manual','unmatched')),
+  platform           TEXT,
+  period             TEXT,
+  streams            INTEGER,
+  revenue_amount     REAL,
+  currency           TEXT,
+  needs_review       INTEGER NOT NULL DEFAULT 0 CHECK (needs_review IN (0,1)),
+  review_memo        TEXT,
+  created_at         TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_sf_import_rows_import    ON sf_distribution_import_rows(import_id);
+CREATE INDEX IF NOT EXISTS idx_sf_import_rows_track     ON sf_distribution_import_rows(matched_track_id);
+CREATE INDEX IF NOT EXISTS idx_sf_import_rows_unmatched ON sf_distribution_import_rows(needs_review);
+
+-- ── アーティストページ管理 ────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_artist_profiles (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  artist_key         TEXT    NOT NULL,
+  artist_name        TEXT    NOT NULL,
+  platform           TEXT    NOT NULL
+    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','other')),
+  platform_artist_id TEXT,
+  artist_page_url    TEXT,
+  profile_status     TEXT    NOT NULL DEFAULT 'unknown'
+    CHECK (profile_status IN ('unknown','active','pending','unclaimed','inactive')),
+  claimed            INTEGER NOT NULL DEFAULT 0 CHECK (claimed IN (0,1)),
+  last_checked_at    TEXT,
+  memo               TEXT,
+  created_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(artist_key, platform)
+);
+
+-- ── 楽曲単位のストア情報 ──────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_track_releases (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id          INTEGER NOT NULL REFERENCES sf_tracks(id),
+  platform          TEXT    NOT NULL
+    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','other')),
+  release_status    TEXT    NOT NULL DEFAULT 'unknown'
+    CHECK (release_status IN ('unknown','live','pending','not_distributed','withdrawn')),
+  platform_track_id TEXT,
+  platform_url      TEXT,
+  release_date      TEXT,
+  distributed_via   TEXT,
+  memo              TEXT,
+  created_at        TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at        TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(track_id, platform)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_track_releases_track ON sf_track_releases(track_id);
+
+-- ── リリース単位のストア情報 ──────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_release_platforms (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  release_id          INTEGER NOT NULL REFERENCES sf_releases(id),
+  platform            TEXT    NOT NULL
+    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','other')),
+  release_status      TEXT    NOT NULL DEFAULT 'unknown'
+    CHECK (release_status IN ('unknown','live','pending','not_distributed','withdrawn')),
+  platform_release_id TEXT,
+  platform_url        TEXT,
+  release_date        TEXT,
+  distributed_via     TEXT,
+  memo                TEXT,
+  created_at          TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at          TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(release_id, platform)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_release_platforms_release ON sf_release_platforms(release_id);
+
+-- ── 公式サイトデモ音源管理 ───────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS sf_track_previews (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id      INTEGER NOT NULL REFERENCES sf_tracks(id),
+  file_id       INTEGER REFERENCES sf_track_files(id),
+  preview_type  TEXT    NOT NULL
+    CHECK (preview_type IN ('demo','short','full_preview')),
+  platform      TEXT    NOT NULL DEFAULT 'official_site'
+    CHECK (platform IN ('official_site')),
+  page_path     TEXT,
+  page_url      TEXT,
+  status        TEXT    NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft','published','hidden','ended')),
+  published_at  TEXT,
+  ended_at      TEXT,
+  start_sec     REAL,
+  end_sec       REAL,
+  analytics_key TEXT UNIQUE,
+  label         TEXT,
+  memo          TEXT,
+  created_at    TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at    TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_sf_previews_track  ON sf_track_previews(track_id);
+CREATE INDEX IF NOT EXISTS idx_sf_previews_status ON sf_track_previews(status);
