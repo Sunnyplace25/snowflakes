@@ -9,6 +9,13 @@
  *      - 0件    → 新規INSERT（track_key='isrc_'+ISRC.toLowerCase()）
  *      - 2件以上 → needs_review に記録（自動確定しない）
  *
+ * タイトル補正ポリシー（ISRC_TITLE_OVERRIDES）:
+ *   - Soundrop Statement の Track Title が正式タイトルと異なる場合は
+ *     ISRC_TITLE_OVERRIDES に登録する。
+ *   - Override が設定された ISRC は INSERT / UPDATE のいずれでも補正タイトルが優先される。
+ *   - Override が設定されていない ISRC は、ISRC一致 UPDATE 時に既存 title を保護する
+ *     （Statement の Track Title で上書きしない）。
+ *
  * sf_releases 照合:
  *   - UPC一致 → スキップ（既存レコード優先）
  *   - UPC不一致 → INSERT
@@ -25,6 +32,15 @@
 'use strict';
 
 import { parseCsv } from './parsers/csv_parser.js';
+
+// ── 公式タイトル補正マップ ─────────────────────────────────────────────────────
+// Soundrop Statement の Track Title が正式タイトルと異なる場合に設定する。
+// キー: ISRC（大文字）, 値: 正式タイトル
+// 設定された ISRC は INSERT / UPDATE のいずれでも補正タイトルが優先される。
+// 空DB から再構築しても、このマップにより正式タイトルが自動的に適用される。
+export const ISRC_TITLE_OVERRIDES = {
+  'QZPJ32548359': 'Little Snow (Raw)',
+};
 
 /**
  * Soundrop Statement CSV テキストを解析し、sf_tracks / sf_releases を更新する。
@@ -95,12 +111,25 @@ export function buildCatalog(db, csvText, options = {}) {
   const stmtByTitle = db.prepare(
     "SELECT id FROM sf_tracks WHERE title = ? AND isrc IS NULL"
   );
+
+  // Step 1 用: override なし → status のみ更新（既存 title 保護）
   const stmtUpdateStatus = db.prepare(
     "UPDATE sf_tracks SET status = 'released' WHERE id = ?"
   );
+  // Step 1 用: override あり → status + title を補正タイトルで更新
+  const stmtUpdateStatusAndTitle = db.prepare(
+    "UPDATE sf_tracks SET status = 'released', title = ? WHERE id = ?"
+  );
+
+  // Step 2 用: override なし → isrc + status のみ更新
   const stmtUpdateIsrc = db.prepare(
     "UPDATE sf_tracks SET isrc = ?, status = 'released' WHERE id = ?"
   );
+  // Step 2 用: override あり → isrc + status + title を補正タイトルで更新
+  const stmtUpdateIsrcAndTitle = db.prepare(
+    "UPDATE sf_tracks SET isrc = ?, status = 'released', title = ? WHERE id = ?"
+  );
+
   const stmtInsertTrack = db.prepare(`
     INSERT OR IGNORE INTO sf_tracks (track_key, title, isrc, status)
     VALUES (?, ?, ?, 'released')
@@ -109,11 +138,18 @@ export function buildCatalog(db, csvText, options = {}) {
 
   for (const [isrc, info] of isrcMap) {
     const { title, upc } = info;
+    const overrideTitle  = ISRC_TITLE_OVERRIDES[isrc] ?? null;
 
     // Step 1: ISRC 完全一致
     const byIsrc = stmtByIsrc.get(isrc);
     if (byIsrc) {
-      stmtUpdateStatus.run(byIsrc.id);
+      if (overrideTitle) {
+        // 公式補正タイトルで title + status を更新
+        stmtUpdateStatusAndTitle.run(overrideTitle, byIsrc.id);
+      } else {
+        // override なし: status のみ更新（既存 title を保護）
+        stmtUpdateStatus.run(byIsrc.id);
+      }
       isrcToTrackId.set(isrc, byIsrc.id);
       result.tracksUpdatedByIsrc++;
       continue;
@@ -123,7 +159,12 @@ export function buildCatalog(db, csvText, options = {}) {
     const byTitle = stmtByTitle.all(title);
 
     if (byTitle.length === 1) {
-      stmtUpdateIsrc.run(isrc, byTitle[0].id);
+      if (overrideTitle) {
+        // 公式補正タイトルで isrc + status + title を更新
+        stmtUpdateIsrcAndTitle.run(isrc, overrideTitle, byTitle[0].id);
+      } else {
+        stmtUpdateIsrc.run(isrc, byTitle[0].id);
+      }
       isrcToTrackId.set(isrc, byTitle[0].id);
       result.tracksUpdatedByTitle++;
       continue;
@@ -139,8 +180,10 @@ export function buildCatalog(db, csvText, options = {}) {
     }
 
     // Step 3: 新規 INSERT
-    const trackKey = 'isrc_' + isrc.toLowerCase();
-    stmtInsertTrack.run(trackKey, title, isrc);
+    // override が設定されている場合は Statement のタイトルではなく補正タイトルを使用する
+    const insertTitle = overrideTitle ?? title;
+    const trackKey    = 'isrc_' + isrc.toLowerCase();
+    stmtInsertTrack.run(trackKey, insertTitle, isrc);
     const inserted = stmtGetByKey.get(trackKey);
     if (inserted) {
       isrcToTrackId.set(isrc, inserted.id);

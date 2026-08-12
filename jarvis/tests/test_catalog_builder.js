@@ -17,7 +17,7 @@ import assert from 'node:assert/strict';
 
 import { createDb }      from '../data/db.js';
 import { seed }          from '../data/sf_seed.js';
-import { buildCatalog }  from '../importers/catalog_builder.js';
+import { buildCatalog, ISRC_TITLE_OVERRIDES }  from '../importers/catalog_builder.js';
 
 // ─── Soundrop Statement CSV ヘルパー ─────────────────────────────────────────
 
@@ -498,6 +498,138 @@ test('再実行: releaseTracksLinked = 0（重複登録なし）', () => {
 test('再実行: distributionsLinked = 0（重複登録なし）', () => {
   assert.equal(intResult2.distributionsLinked, 0,
     `distributionsLinked=${intResult2.distributionsLinked}`);
+});
+
+// ─── 9. ISRC一致時のタイトル保護（override なし ISRC）────────────────────────
+// ISRC_TITLE_OVERRIDES に登録されていない ISRC については、
+// ユーザーが手動修正したタイトルが Statement の Track Title で上書きされないことを保証する。
+// Round Bounce（QZPJ32543034）= override 未設定の ISRC を使用。
+
+console.log('\n▶ ISRC一致時のタイトル保護（override なし ISRC）');
+
+test('ISRC一致時（override なし）: 手動修正済みタイトルがStatementのタイトルで上書きされない', () => {
+  const db = createDb(':memory:');
+  seed(db);
+
+  // Step1: catalog_builderで初回取込 → "Round Bounce" として登録
+  const csv1 = makeCsv([
+    { releaseTitle: 'Round Bounce', trackTitle: 'Round Bounce', upc: '199999597629', isrc: 'QZPJ32543034' },
+  ]);
+  buildCatalog(db, csv1);
+
+  // Step2: ユーザーが手動でタイトルを修正
+  db.prepare("UPDATE sf_tracks SET title='Round Bounce (Edit)' WHERE isrc='QZPJ32543034'").run();
+  const afterManual = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32543034'").get();
+  assert.equal(afterManual.title, 'Round Bounce (Edit)', '手動修正が反映されていない');
+
+  // Step3: 同じISRCを含むStatementを再取込（Track Title = 'Round Bounce'）
+  const csv2 = makeCsv([
+    { releaseTitle: 'Round Bounce', trackTitle: 'Round Bounce', upc: '199999597629', isrc: 'QZPJ32543034' },
+  ]);
+  buildCatalog(db, csv2);
+
+  // override なし → status のみ更新、タイトルは保護される
+  const afterReimport = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32543034'").get();
+  assert.equal(afterReimport.title, 'Round Bounce (Edit)',
+    `タイトルが上書きされた: "${afterReimport.title}"`);
+});
+
+test('ISRC一致時（override なし）: status は released に更新される（タイトルとは独立）', () => {
+  const db = createDb(':memory:');
+  seed(db);
+
+  // 初回取込
+  const csv = makeCsv([
+    { releaseTitle: 'Round Bounce', trackTitle: 'Round Bounce', upc: '199999597629', isrc: 'QZPJ32543034' },
+  ]);
+  buildCatalog(db, csv);
+
+  // 手動タイトル修正 + status を別値にリセット
+  db.prepare("UPDATE sf_tracks SET title='Round Bounce (Edit)', status='unknown' WHERE isrc='QZPJ32543034'").run();
+
+  // 再取込
+  buildCatalog(db, csv);
+
+  const track = db.prepare("SELECT title, status FROM sf_tracks WHERE isrc='QZPJ32543034'").get();
+  assert.equal(track.title,  'Round Bounce (Edit)', 'override なしなのにタイトルが上書きされた');
+  assert.equal(track.status, 'released',            'statusが更新されなかった');
+});
+
+// ─── 10. ISRC_TITLE_OVERRIDES ────────────────────────────────────────────────
+// ISRC_TITLE_OVERRIDES に登録された ISRC は INSERT / ISRC一致 UPDATE の
+// いずれのパスでも補正タイトルが優先される。
+// 空DB から再構築しても正式タイトルが自動的に適用される。
+
+console.log('\n▶ ISRC_TITLE_OVERRIDES');
+
+test('ISRC_TITLE_OVERRIDES に QZPJ32548359 が定義されている', () => {
+  assert.equal(ISRC_TITLE_OVERRIDES['QZPJ32548359'], 'Little Snow (Raw)',
+    'ISRC_TITLE_OVERRIDES の定義が正しくない');
+});
+
+test('空DB + CSV（QZPJ32548359, title="Little Snow"）→ INSERT 時に "Little Snow (Raw)" になる', () => {
+  // sf_seed.js を使わない完全な空DB
+  const db = createDb(':memory:');
+
+  const csv = makeCsv([
+    { releaseTitle: 'Early Snow', trackTitle: 'Little Snow', upc: '199999625681', isrc: 'QZPJ32548359' },
+  ]);
+  const result = buildCatalog(db, csv, { releaseTypes: { '199999625681': 'ep' } });
+
+  assert.equal(result.tracksInserted, 1, 'tracksInserted が 1 でない');
+  const track = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32548359'").get();
+  assert.equal(track?.title, 'Little Snow (Raw)',
+    `INSERT 時のタイトルが誤り: "${track?.title}"`);
+});
+
+test('ISRC一致時（override あり）: re-import で "Little Snow (Raw)" に補正される', () => {
+  const db = createDb(':memory:');
+
+  // DB に title='Little Snow' で直接 INSERT（Soundrop CSV 取込前の状態を模擬）
+  db.prepare(
+    "INSERT INTO sf_tracks (track_key, title, isrc) VALUES ('isrc_qzpj32548359', 'Little Snow', 'QZPJ32548359')"
+  ).run();
+
+  const csv = makeCsv([
+    { releaseTitle: 'Early Snow', trackTitle: 'Little Snow', upc: '199999625681', isrc: 'QZPJ32548359' },
+  ]);
+  const result = buildCatalog(db, csv, { releaseTypes: { '199999625681': 'ep' } });
+
+  assert.equal(result.tracksUpdatedByIsrc, 1, 'tracksUpdatedByIsrc が 1 でない');
+  const track = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32548359'").get();
+  assert.equal(track?.title, 'Little Snow (Raw)',
+    `ISRC一致時の補正タイトルが誤り: "${track?.title}"`);
+});
+
+test('QZPJ32548356（override 未設定）: "Little Snow (Near)" のまま登録される', () => {
+  const db = createDb(':memory:');
+
+  const csv = makeCsv([
+    { releaseTitle: 'Early Snow', trackTitle: 'Little Snow (Near)', upc: '199999625681', isrc: 'QZPJ32548356' },
+  ]);
+  buildCatalog(db, csv, { releaseTypes: { '199999625681': 'ep' } });
+
+  const track = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32548356'").get();
+  assert.equal(track?.title, 'Little Snow (Near)',
+    `override 未設定なのにタイトルが変わった: "${track?.title}"`);
+});
+
+test('QZPJ32548356 ISRC一致時: 既存タイトルがそのまま保護される', () => {
+  const db = createDb(':memory:');
+
+  // DB に "Little Snow (Near)" で登録済み
+  db.prepare(
+    "INSERT INTO sf_tracks (track_key, title, isrc) VALUES ('isrc_qzpj32548356', 'Little Snow (Near)', 'QZPJ32548356')"
+  ).run();
+
+  const csv = makeCsv([
+    { releaseTitle: 'Early Snow', trackTitle: 'Little Snow (Near)', upc: '199999625681', isrc: 'QZPJ32548356' },
+  ]);
+  buildCatalog(db, csv, { releaseTypes: { '199999625681': 'ep' } });
+
+  const track = db.prepare("SELECT title FROM sf_tracks WHERE isrc='QZPJ32548356'").get();
+  assert.equal(track?.title, 'Little Snow (Near)',
+    `override 未設定なのにタイトルが変わった: "${track?.title}"`);
 });
 
 // ─── 結果サマリー ─────────────────────────────────────────────────────────────

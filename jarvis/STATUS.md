@@ -224,7 +224,7 @@ jarvis-development
 |-------|------|------|
 | Phase 1 | DB基盤（schema.sql 12テーブル追記 + sf_seed.js） | ✅ 完了（2026-08-12） |
 | Phase 1.5 | 楽曲・リリース管理基盤（13テーブル追加 + Soundrop importer + Music Library Dashboard） | ✅ 完了（2026-08-12） |
-| Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録） | ✅ 完了（2026-08-12） |
+| Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録）+ ISRC_TITLE_OVERRIDES | ✅ 完了（2026-08-12） |
 | Phase 2 | SF収益（sf_revenue_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
@@ -371,7 +371,8 @@ jarvis-development
 | 項目 | 内容 |
 |------|------|
 | catalog_builder.js | 新規作成（Soundrop Statement CSV → sf_tracks/sf_releases 自動登録） |
-| test_catalog_builder.js | 新規作成（39テスト） |
+| ISRC_TITLE_OVERRIDES | catalog_builder.js に追加（ISRCをキーにした公式タイトル補正マップ） |
+| test_catalog_builder.js | 新規作成（46テスト）。Section 9: タイトル保護、Section 10: ISRC_TITLE_OVERRIDES |
 | registry.json | catalog_builder エントリ追加 |
 
 #### 追加・変更ファイル
@@ -385,10 +386,20 @@ jarvis-development
 #### sf_tracks 照合ロジック
 
 1. **ISRC完全一致** → 既存レコードをUPDATE（track_key/id変更なし）
+   - ISRC_TITLE_OVERRIDES あり → title + status を補正タイトルで更新
+   - ISRC_TITLE_OVERRIDES なし → status のみ更新（既存 title 保護）
 2. **ISRC不一致 → title完全一致 + isrc IS NULL**
    - 1件一致 → ISRCとstatus='released'をUPDATE（track_key/id変更なし）
    - 0件 → 新規INSERT（track_key='isrc_'+ISRC.toLowerCase()）
    - 2件以上 → needs_review に記録（自動確定しない）
+
+#### ISRC_TITLE_OVERRIDES ポリシー
+
+- Soundrop Statement の Track Title が正式タイトルと異なる場合に登録する
+- キー: ISRC（大文字）、値: 正式タイトル
+- INSERT / ISRC一致 UPDATE のいずれのパスでも補正タイトルが優先される
+- 空DBから再構築しても正式タイトルが自動的に適用される（永続設定）
+- 現在の登録: `QZPJ32548359` → `'Little Snow (Raw)'`
 
 #### sf_releases 登録ルール
 
@@ -401,13 +412,13 @@ jarvis-development
 
 | テストスイート | 結果 |
 |----------------|------|
-| test_catalog_builder.js（Phase 1.6新規） | 39 passed / 0 failed ✅ |
+| test_catalog_builder.js（Phase 1.6） | 46 passed / 0 failed ✅ |
 | test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
 | test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
 | test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
-| **合計** | **238 passed / 0 failed** |
+| **合計** | **245 passed / 0 failed** |
 
 #### 確認済み動作（3か月分Statement相当）
 
@@ -421,6 +432,10 @@ jarvis-development
 | 同じCSVを再実行しても重複しない | ✅ |
 | needs_review = 0件 | ✅ |
 | "Still "（末尾スペース）→ trim後 "Still" で正常登録 | ✅ |
+| 空DB再構築時に QZPJ32548359 が "Little Snow (Raw)" で登録される | ✅ |
+| QZPJ32548356（override 未設定）が "Little Snow (Near)" のまま登録される | ✅ |
+| ISRC一致 re-import 時に override タイトルが適用される | ✅ |
+| override なし ISRC の手動修正タイトルが上書きされない | ✅ |
 
 ---
 
