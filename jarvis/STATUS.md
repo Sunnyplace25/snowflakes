@@ -224,6 +224,7 @@ jarvis-development
 |-------|------|------|
 | Phase 1 | DB基盤（schema.sql 12テーブル追記 + sf_seed.js） | ✅ 完了（2026-08-12） |
 | Phase 1.5 | 楽曲・リリース管理基盤（13テーブル追加 + Soundrop importer + Music Library Dashboard） | ✅ 完了（2026-08-12） |
+| Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録） | ✅ 完了（2026-08-12） |
 | Phase 2 | SF収益（sf_revenue_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
@@ -362,6 +363,66 @@ jarvis-development
 - 冪等性: INSERT OR IGNORE で重複取込安全
 - ステータス管理: pending → processing → completed / partial / failed
 - 格納先: `jarvis/imports/soundrop/`（.gitignore対象推奨）
+
+### Phase 1.6 完了記録（2026-08-12）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| catalog_builder.js | 新規作成（Soundrop Statement CSV → sf_tracks/sf_releases 自動登録） |
+| test_catalog_builder.js | 新規作成（39テスト） |
+| registry.json | catalog_builder エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/importers/catalog_builder.js` | 新規作成 |
+| `jarvis/tests/test_catalog_builder.js` | 新規作成 |
+| `jarvis/tests/registry.json` | catalog_builder エントリ追加 |
+
+#### sf_tracks 照合ロジック
+
+1. **ISRC完全一致** → 既存レコードをUPDATE（track_key/id変更なし）
+2. **ISRC不一致 → title完全一致 + isrc IS NULL**
+   - 1件一致 → ISRCとstatus='released'をUPDATE（track_key/id変更なし）
+   - 0件 → 新規INSERT（track_key='isrc_'+ISRC.toLowerCase()）
+   - 2件以上 → needs_review に記録（自動確定しない）
+
+#### sf_releases 登録ルール
+
+- UPC一致 → スキップ（既存優先）
+- 1 ISRC/UPC → release_type='single' で自動登録
+- 複数ISRC/UPC + options.releaseTypes[upc]指定あり → 指定値を使用
+- 複数ISRC/UPC + 指定なし → 登録保留（needs_review）
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_catalog_builder.js（Phase 1.6新規） | 39 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **238 passed / 0 failed** |
+
+#### 確認済み動作（3か月分Statement相当）
+
+| 確認項目 | 結果 |
+|----------|------|
+| 9曲が重複なく登録される | ✅ |
+| 4リリース（3 single + 1 ep）が登録される | ✅ |
+| Little Snow / SWEETs / 置いた音 の track_key/id 維持 | ✅ |
+| sf_release_tracks 9件リンク | ✅ |
+| sf_distributions 4件（soundrop/distributed） | ✅ |
+| 同じCSVを再実行しても重複しない | ✅ |
+| needs_review = 0件 | ✅ |
+| "Still "（末尾スペース）→ trim後 "Still" で正常登録 | ✅ |
+
+---
 
 #### 未確認データ（Phase 1.5 seed 対象外）
 

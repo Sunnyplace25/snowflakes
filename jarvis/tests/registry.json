@@ -18,5 +18,9 @@
   "soundrop_importer": {
     "args": ["tests/test_soundrop_importer.js"],
     "cwd": "jarvis"
+  },
+  "catalog_builder": {
+    "args": ["tests/test_catalog_builder.js"],
+    "cwd": "jarvis"
   }
 }
