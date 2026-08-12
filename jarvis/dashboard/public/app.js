@@ -401,3 +401,69 @@ function esc(str) {
   currentMonth = localYearMonth();
   await refresh();
 })();
+
+// ─── モジュールタブ切替 ───────────────────────────────────────────────────────
+
+/**
+ * 登録済みモジュール。
+ * 将来のタブ（System 等）は MODULES にエントリを追加するだけでよい。
+ */
+const MODULES = {
+  business: {
+    activate() {
+      refresh();
+    },
+  },
+  sf: SfModule,   // modules/sf.js で定義
+};
+
+/**
+ * 指定モジュールへ切り替える。
+ * - ページ遷移・再読み込みなし（CSS hidden 付け替えのみ）
+ * - 各モジュールの activate() は必要な API を fetch 可能
+ * - URL hash でリロード後もタブ位置を保持する
+ * - 月ナビは全タブで常時表示（Business: 収支確認、SF: 公開予定・収益推移）
+ */
+function switchModule(name) {
+  if (!MODULES[name]) return;
+
+  // セクション表示切替
+  document.querySelectorAll('[id^="module-"]').forEach(el => {
+    el.hidden = (el.id !== `module-${name}`);
+  });
+
+  // タブのアクティブ状態
+  document.querySelectorAll('.module-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.module === name);
+  });
+
+  // URL hash 更新（履歴は汚さない）
+  history.replaceState(null, '', `#${name}`);
+
+  // モジュール起動
+  MODULES[name].activate();
+}
+
+// タブクリックイベント
+document.querySelectorAll('.module-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchModule(btn.dataset.module));
+});
+
+// 初期タブ：URL hash 優先、なければ business
+// ※ init() が business データをロード済みのため business の activate() は呼ばない
+(function initTabs() {
+  const hash    = location.hash.replace('#', '');
+  const initial = MODULES[hash] ? hash : 'business';
+
+  // DOM の初期状態だけセット（business は init() がロード済み）
+  document.querySelectorAll('[id^="module-"]').forEach(el => {
+    el.hidden = (el.id !== `module-${initial}`);
+  });
+  document.querySelectorAll('.module-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.module === initial);
+  });
+  history.replaceState(null, '', `#${initial}`);
+
+  // business 以外で開始する場合だけ activate を呼ぶ
+  if (initial !== 'business') MODULES[initial].activate();
+})();

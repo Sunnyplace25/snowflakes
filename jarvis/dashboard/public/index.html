@@ -12,6 +12,10 @@
 <!-- ─── Header ──────────────────────────────────────────────────────────── -->
 <header class="header">
   <div class="header-logo">JARVIS</div>
+  <nav class="module-tabs">
+    <button class="module-tab active" data-module="business">Business</button>
+    <button class="module-tab" data-module="sf">Snow flakes</button>
+  </nav>
   <div class="header-date" id="header-date">—</div>
   <nav class="month-nav">
     <button id="prev-month" title="前の月">‹</button>
@@ -20,8 +24,8 @@
   </nav>
 </header>
 
-<!-- ─── Main ────────────────────────────────────────────────────────────── -->
-<main class="main">
+<!-- ─── Main: Business ───────────────────────────────────────────────────── -->
+<main class="main" id="module-business">
 
   <!-- 月次サマリーカード（1行目：収支） -->
   <div class="cards-primary">
@@ -331,6 +335,71 @@
 
 </div><!-- /.modal-overlay -->
 
+<!-- ─── Main: Snow flakes ────────────────────────────────────────────────── -->
+<div id="module-sf" class="main" hidden>
+
+  <!-- Character Stage -->
+  <section class="sf-section">
+    <div class="sf-section-header">
+      <h2>Character Stage</h2>
+    </div>
+    <div class="sf-stage" id="sf-character-stage">
+      <div class="stage-characters">
+
+        <div class="char-slot" data-char="hinata" data-state="idle">
+          <div class="char-img-wrap">
+            <!-- 画像追加時: <img src="/sf/chars/hinata_idle.webp" alt="ヒナタ"> -->
+            <div class="char-placeholder">ヒナタ</div>
+          </div>
+          <div class="char-name">ヒナタ</div>
+        </div>
+
+        <div class="char-slot" data-char="kouta" data-state="idle">
+          <div class="char-img-wrap">
+            <!-- 画像追加時: <img src="/sf/chars/kouta_idle.webp" alt="コウタ"> -->
+            <div class="char-placeholder">コウタ</div>
+          </div>
+          <div class="char-name">コウタ</div>
+        </div>
+
+        <div class="char-slot" data-char="hayate" data-state="idle">
+          <div class="char-img-wrap">
+            <!-- 画像追加時: <img src="/sf/chars/hayate_idle.webp" alt="ハヤテ"> -->
+            <div class="char-placeholder">ハヤテ</div>
+          </div>
+          <div class="char-name">ハヤテ</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- JARVIS Status -->
+  <section class="sf-section">
+    <div class="sf-section-header">
+      <h2>JARVIS Status</h2>
+    </div>
+    <div class="sf-status-bar" id="sf-jarvis-status">
+      <span class="status-dot" id="sf-status-dot" data-state="idle"></span>
+      <span class="status-state" id="sf-status-state">idle</span>
+      <span class="status-message" id="sf-status-message">JARVIS は待機中です</span>
+    </div>
+  </section>
+
+  <!-- Snow flakes 運営情報 -->
+  <section class="sf-section" id="sf-ops">
+    <div class="sf-section-header">
+      <h2>Snow flakes 運営情報</h2>
+    </div>
+    <div class="empty-state">
+      （開発中）<br>
+      次フェーズで GA / SWEETs / サイト導線 / 音楽 / SNS を接続します
+    </div>
+  </section>
+
+</div><!-- /#module-sf -->
+
+<script src="modules/sf.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
