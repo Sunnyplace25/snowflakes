@@ -328,11 +328,11 @@ jarvis-development
 | テストスイート | 結果 |
 |----------------|------|
 | test_sf_schema_15.js（Phase 1.5新規） | 71 passed / 0 failed ✅ |
-| test_soundrop_importer.js（新規） | 24 passed / 0 failed ✅ |
+| test_soundrop_importer.js（新規） | 28 passed / 0 failed ✅ |
 | test_sf_schema.js（Phase 1回帰） | 39 passed / 0 failed ✅ |
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
-| **合計** | **195 passed / 0 failed** |
+| **合計** | **199 passed / 0 failed** |
 
 #### Phase 1.5 テーブル一覧（計13テーブル追加、累計27テーブル）
 
