@@ -184,6 +184,116 @@ jarvis-development
 
 ---
 
+---
+
+## Snow flakes Analytics + 収益・月次推移 MVP — 進捗
+
+> ブランチ: `jarvis-development`
+
+### 設計フェーズ（2026-08-12 完了）
+
+| 項目 | 内容 | 状態 |
+|------|------|------|
+| 全体設計 | GA連携・SF収益・小説PV・SNS・音楽3サービス・ファネル分析 | ✅ 設計完了 |
+| DB設計 | 14テーブル最終確定（既存2 + 新規12） | ✅ 確定 |
+| Phase一覧 | Phase 1〜9 確定 | ✅ 確定 |
+| 実装 | 未着手 | ⏳ 承認待ち |
+
+### DBテーブル一覧（最終確定）
+
+| テーブル | 区分 | 用途 |
+|----------|------|------|
+| `work_records` | 既存 | Business仕事レコード |
+| `daily_status` | 既存 | Business日次状態 |
+| `sf_works` | 新規 | 作品マスター |
+| `sf_tracks` | 新規 | 楽曲マスター |
+| `sf_track_work_links` | 新規 | 楽曲↔作品 M:N中間テーブル |
+| `sf_revenue` | 新規 | SF収益（月次サマリー） |
+| `sf_ga_daily` | 新規 | GA4日別スナップショット |
+| `sf_narou_snapshot` | 新規 | なろう月次スナップショット |
+| `sf_music_metrics` | 新規 | 音楽ストリーミング3サービス指標 |
+| `sf_content_registry` | 新規 | SNSコンテンツ台帳 |
+| `sf_social_metrics` | 新規 | SNS投稿別指標（正規化） |
+| `sf_platform_ext` | 新規 | プラットフォーム固有指標 |
+| `sf_account_daily` | 新規 | SNSアカウント日別集計 |
+| `sf_funnel_event` | 新規 | ファネル基準点イベント |
+
+### Phase一覧
+
+| Phase | 内容 | 状態 |
+|-------|------|------|
+| Phase 1 | DB基盤（schema.sql 12テーブル追記 + sf_seed.js） | ✅ 完了（2026-08-12） |
+| Phase 2 | SF収益（sf_revenue_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 5 | 音楽3サービス（music_csv_importer / sf_music_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 6 | Instagram（instagram_client / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 7 | YouTube（youtube_client OAuth2 / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
+
+### Phase 1 完了記録（2026-08-12）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | 新規12テーブル・全インデックス追記 |
+| sf_seed.js | 新規作成（作品4件・楽曲12件・リンク15件） |
+| test_sf_schema.js | 新規作成（39テスト） |
+| registry.json | sf_schema テスト追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（12テーブル + インデックス） |
+| `jarvis/data/sf_seed.js` | 新規作成 |
+| `jarvis/tests/test_sf_schema.js` | 新規作成 |
+| `jarvis/tests/registry.json` | sf_schema エントリ追加 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_sf_schema.js（Phase 1新規） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **100 passed / 0 failed** |
+
+#### 主な設計変更（前フェーズからの修正点）
+
+- `sf_tracks.primary_work_id` を廃止。代表作品は `sf_track_work_links.link_type='primary'` のみで管理
+- `sf_music_metrics.track_id` を NOT NULL FK に変更（曲名変更耐性）
+- `sf_music_metrics` の UNIQUE 制約を `(date, granularity, platform, track_id)` に変更
+- `sf_music_metrics.platform_track_id` TEXT カラム追加（配信サービス固有ID）
+- `PRAGMA foreign_keys = ON` は db.js 既存設定で対応済み（変更不要を確認）
+
+#### seed データ（初期マスター）
+
+| テーブル | レコード数 | 主な内容 |
+|----------|-----------|---------|
+| sf_works | 4 | ひとつ多い音 / Under tone / Quietly Falling / Moon Veil |
+| sf_tracks | 12 | Undertone / Spring Waltz / Aftertone / Little Snow / 音が消えるまでは / Signal / グラスの縁 / Rabbit / ハッピーエンドはいらない / 置いた音 / SWEETs / 呼吸の距離 |
+| sf_track_work_links | 15 | primary 12件 + related 3件（spring_waltz, oita_oto, sweets_track → Quietly Falling） |
+
+#### 未解決事項
+
+- 各作品の `published_at` は NULL（正確な初公開日は別途更新要）
+- 各楽曲の `release_date` は NULL（リリース日は別途更新要）
+- SWEETsゲート楽曲（SWEETs）の `track_key` は `sweets_track`（DB名）と `SWEETs`（配信名）が異なる点を注意
+
+### 注意事項
+
+- `related_work` / `related_track` TEXT参照は廃止。`work_id` / `track_id` FK参照に統一済み
+- GA認証: Service Account（`jarvis/secrets/ga_service_account.json`、.gitignore対象済）
+- YouTube認証: OAuth2（`jarvis/secrets/youtube_token.json`、.gitignore対象済）
+- TikTok / Spotify / Apple Music / Amazon Music: CSV取込ベース（将来API拡張可）
+- ファネル分析: `sf_funnel_event` を基準点として各テーブルをJOIN
+- STATUS.mdはPhase完了ごとに必ず更新すること
+
+---
+
 ## 変更禁止ファイル
 
 - `jarvis/tools/generate_draft.js`（既存・変更禁止）

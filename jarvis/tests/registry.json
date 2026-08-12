@@ -6,5 +6,9 @@
   "dashboard_api": {
     "args": ["tests/test_dashboard_api.js"],
     "cwd": "jarvis"
+  },
+  "sf_schema": {
+    "args": ["tests/test_sf_schema.js"],
+    "cwd": "jarvis"
   }
 }
