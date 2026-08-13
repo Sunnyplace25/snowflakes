@@ -228,7 +228,7 @@ jarvis-development
 | Phase 2 | SF収益（revenue_writer.js + API 3エンドポイント）| ✅ 完了（2026-08-12） |
 | Phase 3 | 小説PV・なろう（narou_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-12） |
 | Phase 4 | GA連携（ga_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-13） |
-| Phase 5 | 音楽3サービス（music_csv_importer / sf_music_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 5 | 音楽ストリーミング分析（youtube_collector / music_metrics_writer / API 3エンドポイント / テスト40件） | ✅ 完了（2026-08-13） |
 | Phase 6 | Instagram（instagram_client / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 7 | YouTube（youtube_client OAuth2 / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
@@ -619,6 +619,82 @@ jarvis-development
 - `sf_ga_event_daily` は音源デモ再生イベントの「受け口」として設計のみ。公式サイト未実装のためデータ投入は将来フェーズ。
 - GA4 API への接続・認証情報はコードに一切保存しない。
 - Property ID はコードに含まない（index.html から参照のこと）。
+
+---
+
+### Phase 5 完了記録（2026-08-13）
+
+#### 概要・調査結果
+
+主データ源の公式 API 調査（YouTube Analytics API v2 / Spotify Web API / Apple Music API / Amazon Music）に基づき、サービスごとに実装方針を決定。
+
+| サービス | 公式 Analytics API | 自動取得 | 実装方針 |
+|---|---|---|---|
+| YouTube | YouTube Analytics API v2 ✅ | ✅ 可能 | Collector（OAuth 2.0） |
+| Spotify | Web API あり・analytics エンドポイントなし / followers は Deprecated | ❌ ストリーム不可 | Soundrop CSV で後追い照合 |
+| Apple Music | Apple Music API は存在するが for Artists analytics（再生数/リスナー）の取得には使えない | ❌ | unsupported |
+| Amazon Music | 公式 API なし | ❌ | unsupported |
+
+- **リアルタイム / 日次データ** → YouTube Analytics API のみ自動取得可能
+- **収益 / ロイヤリティ** → Soundrop Statement CSV（Phase 2 管轄・分離）
+- **Spotify followers.total** は Deprecated 扱いのため補助指標としても依存しない
+- Soundrop は「後追い収益・再生照合データ」として扱い、日次リアルタイムデータと混同しない
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| music_metrics_writer.js | 新規作成（buildMusicMetrics / writeMusicMetrics / STREAMING_PLATFORM_MAP — Soundrop CSV 補完） |
+| youtube_collector.js | 新規作成（refreshAccessToken / fetchYouTubeReport / buildYouTubeVideoMetrics / writeYouTubeMetrics / collectYouTubeDaily） |
+| api.js | 3エンドポイント追加（monthly / by-track / by-platform） |
+| test_music_metrics.js | 新規作成（49テスト・8セクション） |
+| registry.json | music_metrics エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/importers/music_metrics_writer.js` | 新規作成（Soundrop CSV 補完インポーター） |
+| `jarvis/importers/youtube_collector.js` | 新規作成（YouTube Analytics API Collector） |
+| `jarvis/dashboard/api.js` | Phase 5 エンドポイント3件追記 |
+| `jarvis/tests/test_music_metrics.js` | 新規作成（40テスト） |
+| `jarvis/tests/registry.json` | music_metrics エントリ追加 |
+
+#### データ方針
+
+- **YouTube Collector**: views → streams / subscribersGained - subscribersLost → followers_delta / import_source='api' / 日次・月次両対応
+- **Soundrop CSV（補完）**: Transaction Month 基準 / 対象5サービスのみ / SUM 集計 / import_source='csv'
+- `platform='other'` は使用しない（対象外サービスはスキップのみ）
+- すべての書き込みが UPSERT・冪等（再インポートで二重加算しない）
+
+#### YouTube Collector 認証設定（環境変数・コードに保存禁止）
+
+`YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`, `YOUTUBE_CHANNEL_ID`
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/music/monthly` | `from=`, `to=`（省略時: 直近12ヶ月）, `platform=`, `track_id=` | 月別総再生数推移（月次 granularity のみ） |
+| `/api/sf/music/by-track` | `from=`, `to=`, `platform=` | 楽曲別総再生数（sf_tracks JOIN / streams 降順） |
+| `/api/sf/music/by-platform` | `from=`, `to=`, `track_id=` | サービス別総再生数（streams 降順） |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_music_metrics.js（Phase 5新規） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| **合計** | **401 passed / 0 failed** |
 
 ---
 

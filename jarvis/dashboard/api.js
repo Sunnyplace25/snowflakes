@@ -588,6 +588,90 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, days, rows });
       }
 
+      // ══════════════════════════════════════════════════════════════════════
+      // SF 音楽指標エンドポイント（Phase 5）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/music/monthly ──────────────────────────────────────────
+      // 月別総再生数推移
+      if (path === '/api/sf/music/monthly' && method === 'GET') {
+        const fromParam  = url.searchParams.get('from');
+        const toParam    = url.searchParams.get('to');
+        const platform   = url.searchParams.get('platform') || null;
+        const trackIdRaw = url.searchParams.get('track_id');
+        const trackId    = trackIdRaw ? parseInt(trackIdRaw, 10) : null;
+
+        // デフォルト: 直近12ヶ月
+        const now = new Date();
+        const defaultTo = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const prev = new Date(now);
+        prev.setMonth(prev.getMonth() - 11);
+        const defaultFrom = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`;
+
+        const fromMonth = (fromParam && validateMonth(fromParam)) ? fromParam : defaultFrom;
+        const toMonth   = (toParam   && validateMonth(toParam))   ? toParam   : defaultTo;
+
+        const rows = db.prepare(`
+          SELECT month, SUM(streams) AS streams
+          FROM sf_music_metrics
+          WHERE granularity = 'monthly'
+            AND month >= ? AND month <= ?
+            AND (? IS NULL OR platform = ?)
+            AND (? IS NULL OR track_id = ?)
+          GROUP BY month
+          ORDER BY month ASC
+        `).all(fromMonth, toMonth, platform, platform, trackId, trackId);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/music/by-track ─────────────────────────────────────────
+      // 楽曲別総再生数
+      if (path === '/api/sf/music/by-track' && method === 'GET') {
+        const fromParam = url.searchParams.get('from') || null;
+        const toParam   = url.searchParams.get('to')   || null;
+        const platform  = url.searchParams.get('platform') || null;
+
+        const fromMonth = (fromParam && validateMonth(fromParam)) ? fromParam : null;
+        const toMonth   = (toParam   && validateMonth(toParam))   ? toParam   : null;
+
+        const rows = db.prepare(`
+          SELECT m.track_id, t.title, SUM(m.streams) AS streams, ? AS platform
+          FROM sf_music_metrics m
+          JOIN sf_tracks t ON t.id = m.track_id
+          WHERE m.granularity = 'monthly'
+            AND (? IS NULL OR m.month >= ?)
+            AND (? IS NULL OR m.month <= ?)
+            AND (? IS NULL OR m.platform = ?)
+          GROUP BY m.track_id
+          ORDER BY streams DESC, m.track_id ASC
+        `).all(platform, fromMonth, fromMonth, toMonth, toMonth, platform, platform);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/music/by-platform ─────────────────────────────────────
+      // サービス別総再生数
+      if (path === '/api/sf/music/by-platform' && method === 'GET') {
+        const fromParam  = url.searchParams.get('from') || null;
+        const toParam    = url.searchParams.get('to')   || null;
+        const trackIdRaw = url.searchParams.get('track_id');
+        const trackId    = trackIdRaw ? parseInt(trackIdRaw, 10) : null;
+
+        const fromMonth = (fromParam && validateMonth(fromParam)) ? fromParam : null;
+        const toMonth   = (toParam   && validateMonth(toParam))   ? toParam   : null;
+
+        const rows = db.prepare(`
+          SELECT platform, SUM(streams) AS streams
+          FROM sf_music_metrics
+          WHERE granularity = 'monthly'
+            AND (? IS NULL OR month >= ?)
+            AND (? IS NULL OR month <= ?)
+            AND (? IS NULL OR track_id = ?)
+          GROUP BY platform
+          ORDER BY streams DESC, platform ASC
+        `).all(fromMonth, fromMonth, toMonth, toMonth, trackId, trackId);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

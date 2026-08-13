@@ -38,5 +38,9 @@
   "ga": {
     "args": ["tests/test_ga.js"],
     "cwd": "jarvis"
+  },
+  "music_metrics": {
+    "args": ["tests/test_music_metrics.js"],
+    "cwd": "jarvis"
   }
 }
