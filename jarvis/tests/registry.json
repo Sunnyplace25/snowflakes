@@ -50,5 +50,9 @@
   "youtube": {
     "args": ["tests/test_youtube.js"],
     "cwd": "jarvis"
+  },
+  "tiktok": {
+    "args": ["tests/test_tiktok.js"],
+    "cwd": "jarvis"
   }
 }

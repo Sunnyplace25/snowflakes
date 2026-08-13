@@ -101,6 +101,7 @@ const SfModule = (() => {
         else if (tabName === 'profiles') loadProfiles();
         else if (tabName === 'import') loadImports();
         else if (tabName === 'youtube') loadYouTube();
+        else if (tabName === 'tiktok') loadTikTok();
       });
     });
   }
@@ -496,6 +497,115 @@ const SfModule = (() => {
     `;
   }
 
+  // ─── TikTok Analytics タブ ────────────────────────────────────────────────
+
+  /** TikTok アカウント概要と動画トップ10を読み込む（Phase 8） */
+  async function loadTikTok() {
+    const acEl  = document.getElementById('sf-tt-account-container');
+    const vidEl = document.getElementById('sf-tt-videos-container');
+    if (acEl)  acEl.innerHTML  = '<div class="loading">読み込み中...</div>';
+    if (vidEl) vidEl.innerHTML = '<div class="loading">読み込み中...</div>';
+
+    try {
+      const [compareRes, topRes] = await Promise.all([
+        fetch('/api/sf/tiktok/account/compare?days=30').then(r => r.json()),
+        fetch('/api/sf/tiktok/videos/top?metric=views&limit=10').then(r => r.json()),
+      ]);
+
+      if (acEl)  acEl.innerHTML  = renderTikTokAccount(compareRes);
+      if (vidEl) vidEl.innerHTML = renderTikTokVideos(topRes.rows || []);
+    } catch (e) {
+      const msg = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+      if (acEl)  acEl.innerHTML  = msg;
+      if (vidEl) vidEl.innerHTML = msg;
+    }
+  }
+
+  /** TikTok アカウント比較カードを描画する */
+  function renderTikTokAccount(data) {
+    if (!data?.ok) {
+      return '<div class="empty-state">データなし — TikTok Analytics CSV をインポートしてください</div>';
+    }
+    const fmt  = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    const pct  = (a, b) => {
+      if (a == null || b == null || b === 0) return '';
+      const d = ((a - b) / b * 100).toFixed(1);
+      const sign = d >= 0 ? '+' : '';
+      return `<span style="color:${d >= 0 ? 'var(--green)' : 'var(--red)'}">${sign}${d}%</span>`;
+    };
+    const cv = data.current_reach;
+    const pv = data.previous_reach;
+    const cp = data.current_profile_visits;
+    const pp = data.previous_profile_visits;
+    const cfd = data.current_followers_delta;
+    const pfd = data.previous_followers_delta;
+
+    return `
+      <div style="padding: 12px 18px 6px; font-size: 12px; color: var(--text-muted);">
+        直近${esc(String(data.days))}日間 vs 前${esc(String(data.days))}日間
+      </div>
+      <table class="sf-table">
+        <thead>
+          <tr><th>指標</th><th>今期</th><th>前期</th><th>変化</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>総フォロワー数</td>
+              <td>${fmt(data.followers_count?.current)}</td>
+              <td>${fmt(data.followers_count?.previous)}</td>
+              <td>${pct(data.followers_count?.current, data.followers_count?.previous)}</td></tr>
+          <tr><td>純増フォロワー</td>
+              <td>${fmt(cfd)}</td><td>${fmt(pfd)}</td><td>${pct(cfd, pfd)}</td></tr>
+          <tr><td>動画再生数</td>
+              <td>${fmt(cv)}</td><td>${fmt(pv)}</td><td>${pct(cv, pv)}</td></tr>
+          <tr><td>プロフィール表示</td>
+              <td>${fmt(cp)}</td><td>${fmt(pp)}</td><td>${pct(cp, pp)}</td></tr>
+        </tbody>
+      </table>
+      <div style="padding: 4px 18px 12px; font-size: 11px; color: var(--text-muted);">
+        ※ CSV インポート方式。TikTok Analytics CSV（内部正規化フォーマット）を使用
+      </div>
+    `;
+  }
+
+  /** TikTok 動画パフォーマンステーブルを描画する */
+  function renderTikTokVideos(rows) {
+    if (!rows || rows.length === 0) {
+      return '<div class="empty-state">動画データなし — TikTok video_metrics CSV をインポートしてください</div>';
+    }
+    const fmt  = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    const fmtS = (s) => {
+      if (s == null) return '—';
+      const m = Math.floor(s / 60);
+      const sec = Math.round(s % 60);
+      return `${m}:${String(sec).padStart(2, '0')}`;
+    };
+    const fmtPct = (r) => (r == null ? '—' : `${(r * 100).toFixed(1)}%`);
+    const rowsHtml = rows.map(r => `
+      <tr>
+        <td>${r.platform_id
+          ? `<a href="https://www.tiktok.com/video/${esc(r.platform_id)}" target="_blank" rel="noopener">${esc(r.title || r.platform_id)}</a>`
+          : esc(r.title || '—')}</td>
+        <td>${esc((r.published_at || '').slice(0, 10) || '—')}</td>
+        <td class="sf-col-center">${fmt(r.views)}</td>
+        <td class="sf-col-center">${fmtS(r.avg_watch_sec)}</td>
+        <td class="sf-col-center">${fmtPct(r.completion_rate)}</td>
+        <td class="sf-col-center">${fmt(r.likes)}</td>
+        <td class="sf-col-center">${fmt(r.shares)}</td>
+      </tr>
+    `).join('');
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>タイトル</th><th>投稿日</th>
+            <th>再生数</th><th>平均視聴時間</th><th>完了率</th><th>いいね</th><th>シェア</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    `;
+  }
+
   /** Soundrop Import タブ: インポート履歴を読み込む */
   async function loadImports() {
     const el = document.getElementById('sf-import-container');
@@ -573,9 +683,10 @@ const SfModule = (() => {
   return {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
-    loadLibrary, loadProfiles, loadImports, loadYouTube,
+    loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
+    renderTikTokAccount, renderTikTokVideos,
   };
 
 })();

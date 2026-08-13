@@ -231,7 +231,7 @@ jarvis-development
 | Phase 5 | 音楽ストリーミング分析（youtube_collector / music_metrics_writer / API 3エンドポイント / テスト40件） | ✅ 完了（2026-08-13） |
 | Phase 6 | Instagram（instagram_collector / DB 3テーブル / API 4エンドポイント / テスト38件） | ✅ 完了（2026-08-13） |
 | Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 5エンドポイント / テスト62件） | ✅ 完了（2026-08-13） |
-| Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 8 | TikTok（tiktok_csv_importer / API 4エンドポイント / Dashboard / テスト88件） | ✅ 完了（2026-08-13） |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
 
 ### Phase 1 完了記録（2026-08-12）
@@ -873,6 +873,115 @@ Phase 5（youtube_collector.js）の認証ロジックを再利用し、Phase 6�
 #### 認証設定（環境変数・コードに保存禁止）
 
 Phase 5 と共用: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`, `YOUTUBE_CHANNEL_ID`
+
+---
+
+### Phase 8 完了記録（2026-08-13）
+
+#### 実装方針
+
+| 項目 | 内容 |
+|------|------|
+| データソース | JARVIS 内部正規化 TikTok Analytics CSV。API接続なし |
+| TikTok Studio 実 CSV 互換 | 実サンプル未確認のため直接互換は未保証。将来 adapter/header mapping 追加可能 |
+| スキーマ変更 | なし（既存 SNS 共通テーブルのみ利用） |
+| CSVタイプ | Type A: account_daily / Type B: video_metrics（2種類） |
+| completion_rate | 0.0〜1.0 の小数のみ受付（0〜100% 形式は拒否） |
+| video_views → reach 代替保存 | **禁止**（意味が異なる。account-level video_views は保存対象外） |
+
+#### account-level video_views の扱い
+
+`sf_account_daily` に意味の一致する列が存在しないため、Phase 8 では保存対象外。
+`video_views` を `reach` に代替保存することは禁止（意味が異なる）。
+将来、専用列または `sf_platform_ext` への保存が必要な場合はスキーマ変更を検討すること。
+
+#### 正規化 CSV canonical header
+
+**Type A: account_daily**
+
+| カラム | 必須 | 型 | 保存先（sf_account_daily） |
+|--------|------|-----|--------------------------|
+| `date` | ✅ | YYYY-MM-DD | date |
+| `followers` | — | INT >= 0 | followers |
+| `followers_delta` | — | INT（負値可） | followers_delta |
+| `reach` | — | INT >= 0 | reach（意味が一致する場合のみ） |
+| `impressions` | — | INT >= 0 | impressions |
+| `profile_visits` | — | INT >= 0 | profile_visits |
+| `link_clicks` | — | INT >= 0 | link_clicks |
+
+**Type B: video_metrics**
+
+| カラム | 必須 | 型 | 保存先 |
+|--------|------|-----|-------|
+| `video_id` | ✅ | TEXT | sf_content_registry.platform_id |
+| `snapshot_date` | ✅ | YYYY-MM-DD | sf_social_metrics.snapshot_date |
+| `title` | — | TEXT | sf_content_registry.title |
+| `published_at` | — | YYYY-MM-DD or ISO8601 | sf_content_registry.published_at |
+| `duration_sec` | — | INT >= 0 | sf_content_registry.duration_sec |
+| `views` | — | INT >= 0 | sf_social_metrics.views |
+| `likes` | — | INT >= 0 | sf_social_metrics.likes |
+| `comments` | — | INT >= 0 | sf_social_metrics.comments |
+| `shares` | — | INT >= 0 | sf_social_metrics.shares |
+| `saves` | — | INT >= 0 | sf_social_metrics.saves |
+| `watch_time_min` | — | REAL >= 0 | sf_social_metrics.watch_time_min |
+| `avg_watch_sec` | — | REAL >= 0 | sf_social_metrics.avg_watch_sec |
+| `completion_rate` | — | REAL [0.0, 1.0] | sf_social_metrics.completion_rate |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/importers/tiktok_csv_importer.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | TikTok エンドポイント4件追記 |
+| `jarvis/dashboard/public/index.html` | TikTok タブボタン + パネル追加 |
+| `jarvis/dashboard/public/modules/sf.js` | loadTikTok / renderTikTokAccount / renderTikTokVideos 追加 |
+| `jarvis/tests/test_tiktok.js` | 新規作成（88テスト） |
+| `jarvis/tests/registry.json` | tiktok エントリ追加 |
+
+#### tiktok_csv_importer.js 主要関数
+
+| 関数 | 内容 |
+|------|------|
+| `parseCSV(text)` | UTF-8 BOM / CRLF / クォートフィールド / カンマ含みタイトル対応 |
+| `detectType(headers)` | video_id → video_metrics / date → account_daily / それ以外 → unknown |
+| `validateAccountRow(row, rowNum)` | Type A バリデーション（行番号付きエラー） |
+| `validateVideoRow(row, rowNum)` | Type B バリデーション（completion_rate [0.0,1.0] 厳格検証） |
+| `buildAccountDailyRow(row)` | sf_account_daily 用オブジェクト構築（video_views 非参照） |
+| `buildVideoEntry(row)` | sf_content_registry 用オブジェクト構築 |
+| `buildVideoSnapshot(row, regId, date)` | sf_social_metrics 用（saves/watch_time_min 含む） |
+| `writeAccountDaily(db, rows)` | UPSERT + COALESCE（BEGIN/COMMIT トランザクション） |
+| `writeVideoEntry(db, entry)` | UPSERT + COALESCE / id 返却 |
+| `writeVideoMetrics(db, metrics)` | UPSERT + COALESCE（saves/watch_time_min 含む） |
+| `importTikTokCSV(db, text, opts)` | メインエントリ（Type 自動判定 → 一括インポート） |
+
+#### API エンドポイント（4件追加）
+
+| エンドポイント | 内容 |
+|----------------|------|
+| `GET /api/sf/tiktok/account/daily` | 日別指標（followers/followers_delta/reach/impressions/profile_visits/link_clicks） |
+| `GET /api/sf/tiktok/account/compare` | 現期 vs 前期比較（?days=7\|14\|30 / impressions 含む） |
+| `GET /api/sf/tiktok/videos` | 動画一覧 + 最新スナップ（saves/watch_time_min 含む / ?limit / ?offset） |
+| `GET /api/sf/tiktok/videos/top` | 上位動画（metric 許可リスト: views/likes/comments/shares/saves/watch_time_min/avg_watch_sec/completion_rate） |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_tiktok.js（Phase 8新規） | 88 passed / 0 failed ✅ |
+| test_youtube.js（回帰） | 62 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **589 passed / 0 failed** |
 
 ---
 

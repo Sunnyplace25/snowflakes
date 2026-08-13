@@ -1055,6 +1055,171 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, metric, limit, rows });
       }
 
+      // ══════════════════════════════════════════════════════════════════════
+      // SF TikTok エンドポイント（Phase 8）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/tiktok/account/daily ─────────────────────────────────
+      // 日別アカウント指標（フォロワー・リーチ等）
+      // ?from=YYYY-MM-DD  &to=YYYY-MM-DD  （デフォルト: 直近30日）
+      if (path === '/api/sf/tiktok/account/daily' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate   = (toParam   && validateDate(toParam))   ? toParam   : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT date, followers, followers_delta, reach, impressions,
+                 profile_visits, link_clicks
+          FROM sf_account_daily
+          WHERE platform = 'tiktok' AND date >= ? AND date <= ?
+          ORDER BY date ASC
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, from: fromDate, to: toDate, rows });
+      }
+
+      // ── GET /api/sf/tiktok/account/compare ───────────────────────────────
+      // 現在期間 vs 前期間 比較（フォロワー・リーチ合計）
+      // ?days=7|14|30  （デフォルト: 30）
+      if (path === '/api/sf/tiktok/account/compare' && method === 'GET') {
+        const VALID_DAYS_TT = [7, 14, 30];
+        const daysParam = parseInt(url.searchParams.get('days') || '30', 10);
+        const days = VALID_DAYS_TT.includes(daysParam) ? daysParam : 30;
+
+        const today = todayISO();
+        function subDaysTT(base, n) {
+          const d = new Date(base);
+          d.setDate(d.getDate() - n);
+          return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const currentEnd    = today;
+        const currentStart  = subDaysTT(today, days - 1);
+        const previousEnd   = subDaysTT(today, days);
+        const previousStart = subDaysTT(today, days * 2 - 1);
+
+        const [summary] = db.prepare(`
+          SELECT
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS current_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS previous_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions       ELSE 0 END) AS current_impressions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions       ELSE 0 END) AS previous_impressions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits    ELSE 0 END) AS current_profile_visits,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits    ELSE 0 END) AS previous_profile_visits,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta   ELSE 0 END) AS current_followers_delta,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta   ELSE 0 END) AS previous_followers_delta
+          FROM sf_account_daily
+          WHERE platform = 'tiktok' AND date >= ? AND date <= ?
+        `).all(
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          previousStart, currentEnd,
+        );
+
+        const [followersCurrent] = db.prepare(`
+          SELECT followers FROM sf_account_daily
+          WHERE platform = 'tiktok' AND date <= ? ORDER BY date DESC LIMIT 1
+        `).all(currentEnd);
+        const [followersPrevEnd] = db.prepare(`
+          SELECT followers FROM sf_account_daily
+          WHERE platform = 'tiktok' AND date <= ? ORDER BY date DESC LIMIT 1
+        `).all(previousEnd);
+
+        return jsonRes(res, 200, {
+          ok: true,
+          days,
+          current:  { start: currentStart,  end: currentEnd },
+          previous: { start: previousStart, end: previousEnd },
+          followers_count: {
+            current:  followersCurrent?.followers  ?? null,
+            previous: followersPrevEnd?.followers  ?? null,
+          },
+          ...summary,
+        });
+      }
+
+      // ── GET /api/sf/tiktok/videos ─────────────────────────────────────────
+      // 動画一覧＋最新スナップショット（公開日降順）
+      // ?limit=N  &offset=N
+      if (path === '/api/sf/tiktok/videos' && method === 'GET') {
+        const limitRaw  = parseInt(url.searchParams.get('limit')  || '20', 10);
+        const offsetRaw = parseInt(url.searchParams.get('offset') || '0',  10);
+        const limit  = (Number.isFinite(limitRaw)  && limitRaw  > 0 && limitRaw  <= 100) ? limitRaw  : 20;
+        const offset = (Number.isFinite(offsetRaw) && offsetRaw >= 0)                     ? offsetRaw : 0;
+
+        const rows = db.prepare(`
+          SELECT cr.platform_id, cr.title, cr.published_at, cr.duration_sec,
+                 sm.snapshot_date, sm.views, sm.likes, sm.comments, sm.shares,
+                 sm.saves, sm.watch_time_min, sm.avg_watch_sec, sm.completion_rate
+          FROM sf_content_registry cr
+          LEFT JOIN sf_social_metrics sm
+            ON sm.content_reg_id = cr.id
+           AND sm.snapshot_date = (
+                 SELECT MAX(sm2.snapshot_date)
+                 FROM sf_social_metrics sm2
+                 WHERE sm2.content_reg_id = cr.id
+               )
+          WHERE cr.platform = 'tiktok'
+          ORDER BY cr.published_at DESC NULLS LAST, cr.platform_id ASC
+          LIMIT ? OFFSET ?
+        `).all(limit, offset);
+        return jsonRes(res, 200, { ok: true, limit, offset, rows });
+      }
+
+      // ── GET /api/sf/tiktok/videos/top ────────────────────────────────────
+      // 上位動画（指標指定・最新スナップショット基準）
+      // ?metric=views|likes|comments|shares|avg_watch_sec|completion_rate
+      // ?limit=N
+      if (path === '/api/sf/tiktok/videos/top' && method === 'GET') {
+        const VALID_METRICS_TT = ['views', 'likes', 'comments', 'shares',
+                                  'saves', 'watch_time_min', 'avg_watch_sec', 'completion_rate'];
+        const metricParam = url.searchParams.get('metric');
+        if (metricParam !== null && metricParam !== '' && !VALID_METRICS_TT.includes(metricParam)) {
+          return errRes(res, 400, 'Invalid metric');
+        }
+        const metric = (metricParam && VALID_METRICS_TT.includes(metricParam)) ? metricParam : 'views';
+
+        const limitRaw = parseInt(url.searchParams.get('limit') || '10', 10);
+        const limit    = (Number.isFinite(limitRaw) && limitRaw > 0 && limitRaw <= 50) ? limitRaw : 10;
+
+        const rows = db.prepare(`
+          SELECT cr.platform_id, cr.title, cr.published_at, cr.duration_sec,
+                 sm.snapshot_date, sm.views, sm.likes, sm.comments, sm.shares,
+                 sm.saves, sm.watch_time_min, sm.avg_watch_sec, sm.completion_rate
+          FROM sf_content_registry cr
+          LEFT JOIN sf_social_metrics sm
+            ON sm.content_reg_id = cr.id
+           AND sm.snapshot_date = (
+                 SELECT MAX(sm2.snapshot_date)
+                 FROM sf_social_metrics sm2
+                 WHERE sm2.content_reg_id = cr.id
+               )
+          WHERE cr.platform = 'tiktok'
+          ORDER BY sm.${metric} DESC NULLS LAST, cr.published_at DESC
+          LIMIT ?
+        `).all(limit);
+        return jsonRes(res, 200, { ok: true, metric, limit, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {
