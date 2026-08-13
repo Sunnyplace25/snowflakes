@@ -230,7 +230,7 @@ jarvis-development
 | Phase 4 | GA連携（ga_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-13） |
 | Phase 5 | 音楽ストリーミング分析（youtube_collector / music_metrics_writer / API 3エンドポイント / テスト40件） | ✅ 完了（2026-08-13） |
 | Phase 6 | Instagram（instagram_collector / DB 3テーブル / API 4エンドポイント / テスト38件） | ✅ 完了（2026-08-13） |
-| Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 4エンドポイント / テスト48件） | ✅ 完了（2026-08-13） |
+| Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 5エンドポイント / テスト62件） | ✅ 完了（2026-08-13） |
 | Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
 
@@ -823,7 +823,7 @@ Phase 5（youtube_collector.js）の認証ロジックを再利用し、Phase 6�
 | `jarvis/dashboard/api.js` | Phase 7 エンドポイント5件追記 |
 | `jarvis/dashboard/public/index.html` | YouTube タブボタン + パネル追加 |
 | `jarvis/dashboard/public/modules/sf.js` | loadYouTube 等3関数追加 |
-| `jarvis/tests/test_youtube.js` | 新規作成（48テスト） |
+| `jarvis/tests/test_youtube.js` | 新規作成（62テスト） |
 | `jarvis/tests/registry.json` | youtube エントリ追加 |
 
 #### sf_youtube_channel_daily テーブル設計
