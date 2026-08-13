@@ -673,6 +673,208 @@ export function createApiHandler(db) {
       }
 
       // ══════════════════════════════════════════════════════════════════════
+      // SF YouTube エンドポイント（Phase 7）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/youtube/channel/daily ─────────────────────────────────
+      // 日別チャンネル指標（再生数・視聴時間・登録者変化・CTR 等）
+      // ?from=YYYY-MM-DD  &to=YYYY-MM-DD  （デフォルト: 直近30日）
+      if (path === '/api/sf/youtube/channel/daily' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate   = (toParam   && validateDate(toParam))   ? toParam   : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT date,
+                 subscribers_count, subscribers_gained, subscribers_lost,
+                 views, estimated_minutes_watched, average_view_duration_sec,
+                 impressions, ctr
+          FROM sf_youtube_channel_daily
+          WHERE date >= ? AND date <= ?
+          ORDER BY date ASC
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, from: fromDate, to: toDate, rows });
+      }
+
+      // ── GET /api/sf/youtube/channel/compare ───────────────────────────────
+      // 現在期間 vs 前期間 比較（合計値）
+      // ?days=7|14|30  （デフォルト: 30）
+      if (path === '/api/sf/youtube/channel/compare' && method === 'GET') {
+        const VALID_DAYS = [7, 14, 30];
+        const daysParam = parseInt(url.searchParams.get('days') || '30', 10);
+        const days = VALID_DAYS.includes(daysParam) ? daysParam : 30;
+
+        const today = todayISO();
+        function subDaysYT(base, n) {
+          const d = new Date(base);
+          d.setDate(d.getDate() - n);
+          return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const currentEnd    = today;
+        const currentStart  = subDaysYT(today, days - 1);
+        const previousEnd   = subDaysYT(today, days);
+        const previousStart = subDaysYT(today, days * 2 - 1);
+
+        const [summary] = db.prepare(`
+          SELECT
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views                     ELSE 0 END) AS current_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views                     ELSE 0 END) AS previous_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN estimated_minutes_watched ELSE 0 END) AS current_watch_min,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN estimated_minutes_watched ELSE 0 END) AS previous_watch_min,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN subscribers_gained        ELSE 0 END) AS current_subs_gained,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN subscribers_gained        ELSE 0 END) AS previous_subs_gained,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN subscribers_lost          ELSE 0 END) AS current_subs_lost,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN subscribers_lost          ELSE 0 END) AS previous_subs_lost,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions               ELSE 0 END) AS current_impressions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions               ELSE 0 END) AS previous_impressions
+          FROM sf_youtube_channel_daily
+          WHERE date >= ? AND date <= ?
+        `).all(
+          currentStart, currentEnd,   previousStart, previousEnd,
+          currentStart, currentEnd,   previousStart, previousEnd,
+          currentStart, currentEnd,   previousStart, previousEnd,
+          currentStart, currentEnd,   previousStart, previousEnd,
+          currentStart, currentEnd,   previousStart, previousEnd,
+          previousStart, currentEnd,
+        );
+
+        // 期間端の登録者数
+        const [subsCurrent] = db.prepare(`
+          SELECT subscribers_count FROM sf_youtube_channel_daily
+          WHERE date <= ? ORDER BY date DESC LIMIT 1
+        `).all(currentEnd);
+        const [subsPrevEnd] = db.prepare(`
+          SELECT subscribers_count FROM sf_youtube_channel_daily
+          WHERE date <= ? ORDER BY date DESC LIMIT 1
+        `).all(previousEnd);
+
+        return jsonRes(res, 200, {
+          ok: true,
+          days,
+          current:  { start: currentStart,  end: currentEnd },
+          previous: { start: previousStart, end: previousEnd },
+          subscribers_count: {
+            current:  subsCurrent?.subscribers_count ?? null,
+            previous: subsPrevEnd?.subscribers_count ?? null,
+          },
+          ...summary,
+        });
+      }
+
+      // ── GET /api/sf/youtube/videos ─────────────────────────────────────────
+      // 動画一覧 + 最新スナップショット（公開日降順）
+      // ?limit=N  &offset=N  &type=video|short
+      if (path === '/api/sf/youtube/videos' && method === 'GET') {
+        const limitRaw  = parseInt(url.searchParams.get('limit')  || '20', 10);
+        const offsetRaw = parseInt(url.searchParams.get('offset') || '0',  10);
+        const limit  = (Number.isFinite(limitRaw)  && limitRaw  > 0 && limitRaw  <= 100) ? limitRaw  : 20;
+        const offset = (Number.isFinite(offsetRaw) && offsetRaw >= 0)                    ? offsetRaw : 0;
+        const VALID_TYPES = ['video', 'short'];
+        const typeFilter  = url.searchParams.get('type') || null;
+        const contentType = VALID_TYPES.includes(typeFilter) ? typeFilter : null;
+
+        const rows = db.prepare(`
+          SELECT cr.id, cr.platform_id, cr.title, cr.content_type,
+                 cr.published_at, cr.duration_sec,
+                 sm.snapshot_date, sm.views, sm.watch_time_min, sm.avg_watch_sec,
+                 sm.likes, sm.comments, sm.shares, sm.completion_rate
+          FROM sf_content_registry cr
+          LEFT JOIN sf_social_metrics sm
+            ON sm.content_reg_id = cr.id
+           AND sm.snapshot_date = (
+                 SELECT MAX(sm2.snapshot_date)
+                 FROM sf_social_metrics sm2
+                 WHERE sm2.content_reg_id = cr.id
+               )
+          WHERE cr.platform = 'youtube'
+            AND (? IS NULL OR cr.content_type = ?)
+          ORDER BY cr.published_at DESC, cr.id DESC
+          LIMIT ? OFFSET ?
+        `).all(contentType, contentType, limit, offset);
+        return jsonRes(res, 200, { ok: true, limit, offset, rows });
+      }
+
+      // ── GET /api/sf/youtube/videos/top ────────────────────────────────────
+      // 上位動画（指標指定・最新スナップショット基準）
+      // ?metric=views|watch_time_min|likes|comments|shares  &type=video|short  &limit=N
+      if (path === '/api/sf/youtube/videos/top' && method === 'GET') {
+        const VALID_METRICS = ['views', 'watch_time_min', 'likes', 'comments', 'shares', 'avg_watch_sec'];
+        const metricParam   = url.searchParams.get('metric') || 'views';
+        const metric        = VALID_METRICS.includes(metricParam) ? metricParam : 'views';
+
+        const limitRaw    = parseInt(url.searchParams.get('limit') || '10', 10);
+        const limit       = (Number.isFinite(limitRaw) && limitRaw > 0 && limitRaw <= 50) ? limitRaw : 10;
+        const VALID_TYPES = ['video', 'short'];
+        const typeFilter  = url.searchParams.get('type') || null;
+        const contentType = VALID_TYPES.includes(typeFilter) ? typeFilter : null;
+
+        const rows = db.prepare(`
+          SELECT cr.id, cr.platform_id, cr.title, cr.content_type,
+                 cr.published_at, cr.duration_sec,
+                 sm.snapshot_date, sm.views, sm.watch_time_min, sm.avg_watch_sec,
+                 sm.likes, sm.comments, sm.shares, sm.completion_rate
+          FROM sf_content_registry cr
+          LEFT JOIN sf_social_metrics sm
+            ON sm.content_reg_id = cr.id
+           AND sm.snapshot_date = (
+                 SELECT MAX(sm2.snapshot_date)
+                 FROM sf_social_metrics sm2
+                 WHERE sm2.content_reg_id = cr.id
+               )
+          WHERE cr.platform = 'youtube'
+            AND (? IS NULL OR cr.content_type = ?)
+          ORDER BY sm.${metric} DESC NULLS LAST, cr.published_at DESC
+          LIMIT ?
+        `).all(contentType, contentType, limit);
+        return jsonRes(res, 200, { ok: true, metric, limit, rows });
+      }
+
+      // ── GET /api/sf/youtube/channel/traffic ───────────────────────────────
+      // トラフィックソース別内訳（dimensions=insightTrafficSourceType）
+      // ?from=YYYY-MM-DD  &to=YYYY-MM-DD  （デフォルト: 直近30日）
+      if (path === '/api/sf/youtube/channel/traffic' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate   = (toParam   && validateDate(toParam))   ? toParam   : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const _d = new Date(toDate);
+          _d.setDate(_d.getDate() - 29);
+          fromDate = [
+            _d.getFullYear(),
+            String(_d.getMonth() + 1).padStart(2, '0'),
+            String(_d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT source_type, SUM(views) AS views,
+                 SUM(estimated_minutes_watched) AS estimated_minutes_watched
+          FROM sf_youtube_traffic_sources
+          WHERE period_start >= ? AND period_end <= ?
+          GROUP BY source_type
+          ORDER BY views DESC NULLS LAST
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, from: fromDate, to: toDate, rows });
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
       // SF Instagram エンドポイント（Phase 6）
       // ══════════════════════════════════════════════════════════════════════
 

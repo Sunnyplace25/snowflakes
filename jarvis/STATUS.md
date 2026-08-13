@@ -230,7 +230,7 @@ jarvis-development
 | Phase 4 | GA連携（ga_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-13） |
 | Phase 5 | 音楽ストリーミング分析（youtube_collector / music_metrics_writer / API 3エンドポイント / テスト40件） | ✅ 完了（2026-08-13） |
 | Phase 6 | Instagram（instagram_collector / DB 3テーブル / API 4エンドポイント / テスト38件） | ✅ 完了（2026-08-13） |
-| Phase 7 | YouTube（youtube_client OAuth2 / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 4エンドポイント / テスト48件） | ✅ 完了（2026-08-13） |
 | Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
 
@@ -783,6 +783,96 @@ REELS のみ: `ig_reels_avg_watch_time`（avg_watch_time_ms として保存）
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
 | **合計** | **439 passed / 0 failed** |
+
+---
+
+### Phase 7 完了記録（2026-08-13）
+
+#### 概要・設計方針
+
+YouTube Analytics API v2 + YouTube Data API v3 を用いた チャンネル日次分析 + 動画パフォーマンス管理。
+Phase 5（youtube_collector.js）の認証ロジックを再利用し、Phase 6（Instagram）と対称的な構造で実装。
+
+| 設計項目 | 決定内容 |
+|---|---|
+| チャンネル日次テーブル | `sf_youtube_channel_daily`（専用新規テーブル） |
+| 動画データ | `sf_content_registry` + `sf_social_metrics` + `sf_platform_ext` を再利用 |
+| 認証 | Phase 5 の `getYouTubeConfig` / `refreshAccessToken` を re-export で共有 |
+| 取得不可指標 | estimatedUniqueViewers（video filter 不可）/ dislikes（Phase 7対象外・所有者認証済みAPIでは取得可能だが現時点では利用しない）/ リアルタイム（24-48h遅延） |
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | `sf_youtube_channel_daily` + `sf_youtube_traffic_sources` テーブル追加 |
+| db.js | Phase 7 YOUTUBE_TABLES migration 追加（2テーブル） |
+| youtube_channel_collector.js | 新規作成（Phase 5 fetchYouTubeReport/refreshAccessToken 再利用 / fetchChannelStats / fetchChannelAnalytics / fetchVideoAnalytics / fetchTrafficSources / fetchDataVideos / buildChannelSnapshots / buildTrafficSourceRows / buildVideoEntry / buildVideoSnapshot / buildVideoExtMetrics / parseDuration / writeChannelDaily / writeTrafficSources / writeVideoEntry / writeVideoDaily / writeVideoExt / collectYouTubeChannel） |
+| api.js | 5エンドポイント追加（channel/daily / channel/compare / channel/traffic / videos / videos/top） |
+| index.html | YouTube タブ追加（YouTube チャンネル概要 + 動画パフォーマンス上位10件） |
+| sf.js | loadYouTube / renderYouTubeChannel / renderYouTubeVideos 追加 |
+| test_youtube.js | 新規作成（62テスト・12セクション） |
+| registry.json | youtube エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（sf_youtube_channel_daily + sf_youtube_traffic_sources） |
+| `jarvis/data/db.js` | 変更（Phase 7 YOUTUBE_TABLES migration 追加・2テーブル） |
+| `jarvis/importers/youtube_channel_collector.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | Phase 7 エンドポイント5件追記 |
+| `jarvis/dashboard/public/index.html` | YouTube タブボタン + パネル追加 |
+| `jarvis/dashboard/public/modules/sf.js` | loadYouTube 等3関数追加 |
+| `jarvis/tests/test_youtube.js` | 新規作成（48テスト） |
+| `jarvis/tests/registry.json` | youtube エントリ追加 |
+
+#### sf_youtube_channel_daily テーブル設計
+
+| カラム | 型 | 説明 |
+|--------|----|------|
+| `date` | TEXT | 日付（UNIQUE） |
+| `subscribers_count` | INTEGER | 当日末時点の総登録者数 |
+| `subscribers_gained` | INTEGER | 新規登録者数 |
+| `subscribers_lost` | INTEGER | 登録解除数 |
+| `views` | INTEGER | 総再生数 |
+| `estimated_minutes_watched` | INTEGER | 総視聴時間（分） |
+| `average_view_duration_sec` | INTEGER | 平均視聴時間（秒） |
+| `impressions` | INTEGER | インプレッション数 |
+| `ctr` | REAL | クリック率（0.0〜1.0） |
+| `import_source` | TEXT | 'api' or 'manual' |
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/youtube/channel/daily` | `from=`, `to=`（省略時: 直近30日） | 日別チャンネル指標一覧 |
+| `/api/sf/youtube/channel/compare` | `days=7\|14\|30`（省略時: 30） | 現在期間 vs 前期間比較（views/watch_time + 登録者数） |
+| `/api/sf/youtube/channel/traffic` | `from=`, `to=`（省略時: 直近30日） | トラフィックソース別再生数・視聴時間内訳 |
+| `/api/sf/youtube/videos` | `limit=`（max 100）, `offset=`, `type=video\|short` | 動画一覧 + 最新スナップショット（公開日降順） |
+| `/api/sf/youtube/videos/top` | `metric=views\|watch_time_min\|likes\|comments\|shares\|avg_watch_sec`, `type=`, `limit=`（max 50） | 指標別トップ動画 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_youtube.js（Phase 7新規） | 62 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **501 passed / 0 failed** |
+
+#### 認証設定（環境変数・コードに保存禁止）
+
+Phase 5 と共用: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`, `YOUTUBE_CHANNEL_ID`
 
 ---
 

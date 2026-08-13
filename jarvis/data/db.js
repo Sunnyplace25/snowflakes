@@ -119,6 +119,36 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 7: YouTube チャンネル日次テーブル + トラフィックソーステーブル追加
+  const YOUTUBE_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_youtube_channel_daily (
+      id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+      date                      TEXT    NOT NULL,
+      subscribers_count         INTEGER, subscribers_gained INTEGER, subscribers_lost INTEGER,
+      views                     INTEGER, estimated_minutes_watched INTEGER,
+      average_view_duration_sec INTEGER,
+      impressions               INTEGER, ctr REAL,
+      import_source TEXT NOT NULL DEFAULT 'api' CHECK (import_source IN ('api','manual')),
+      fetched_at    TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(date)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_yt_channel_date ON sf_youtube_channel_daily(date)`,
+    `CREATE TABLE IF NOT EXISTS sf_youtube_traffic_sources (
+      id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+      period_start              TEXT    NOT NULL,
+      period_end                TEXT    NOT NULL,
+      source_type               TEXT    NOT NULL,
+      views                     INTEGER,
+      estimated_minutes_watched INTEGER,
+      fetched_at                TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(period_start, period_end, source_type)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_yt_traffic_period ON sf_youtube_traffic_sources(period_start, period_end)`,
+  ];
+  for (const sql of YOUTUBE_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

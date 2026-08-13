@@ -100,6 +100,7 @@ const SfModule = (() => {
         if (tabName === 'library') loadLibrary();
         else if (tabName === 'profiles') loadProfiles();
         else if (tabName === 'import') loadImports();
+        else if (tabName === 'youtube') loadYouTube();
       });
     });
   }
@@ -382,6 +383,119 @@ const SfModule = (() => {
     }
   }
 
+  // ─── YouTube Analytics タブ ────────────────────────────────────────────────
+
+  /** YouTube チャンネル概要と動画トップ10を読み込む（Phase 7） */
+  async function loadYouTube() {
+    const chEl  = document.getElementById('sf-yt-channel-container');
+    const vidEl = document.getElementById('sf-yt-videos-container');
+    if (chEl)  chEl.innerHTML  = '<div class="loading">読み込み中...</div>';
+    if (vidEl) vidEl.innerHTML = '<div class="loading">読み込み中...</div>';
+
+    try {
+      const [compareRes, topRes] = await Promise.all([
+        fetch('/api/sf/youtube/channel/compare?days=30').then(r => r.json()),
+        fetch('/api/sf/youtube/videos/top?metric=views&limit=10').then(r => r.json()),
+      ]);
+
+      if (chEl)  chEl.innerHTML  = renderYouTubeChannel(compareRes);
+      if (vidEl) vidEl.innerHTML = renderYouTubeVideos(topRes.rows || []);
+    } catch (e) {
+      const msg = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+      if (chEl)  chEl.innerHTML  = msg;
+      if (vidEl) vidEl.innerHTML = msg;
+    }
+  }
+
+  /** YouTube チャンネル比較カードを描画する */
+  function renderYouTubeChannel(data) {
+    if (!data?.ok) {
+      return '<div class="empty-state">データなし — 認証設定が必要か、データが未取得です</div>';
+    }
+    const fmt    = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    const fmtH   = (min) => (min == null ? '—' : `${Math.floor(min / 60).toLocaleString()}h ${min % 60}m`);
+    const pct    = (a, b) => {
+      if (a == null || b == null || b === 0) return '';
+      const d = ((a - b) / b * 100).toFixed(1);
+      const sign = d >= 0 ? '+' : '';
+      return `<span style="color:${d >= 0 ? 'var(--green)' : 'var(--red)'}">${sign}${d}%</span>`;
+    };
+    const cv = data.current_views;
+    const pv = data.previous_views;
+    const cw = data.current_watch_min;
+    const pw = data.previous_watch_min;
+    const cg = data.current_subs_gained;
+    const pg = data.previous_subs_gained;
+    const cl = data.current_subs_lost;
+    const pl = data.previous_subs_lost;
+
+    return `
+      <div style="padding: 12px 18px 6px; font-size: 12px; color: var(--text-muted);">
+        直近${esc(String(data.days))}日間 vs 前${esc(String(data.days))}日間
+      </div>
+      <table class="sf-table">
+        <thead>
+          <tr><th>指標</th><th>今期</th><th>前期</th><th>変化</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>総登録者数</td>
+              <td>${fmt(data.subscribers_count?.current)}</td>
+              <td>${fmt(data.subscribers_count?.previous)}</td>
+              <td>${pct(data.subscribers_count?.current, data.subscribers_count?.previous)}</td></tr>
+          <tr><td>再生回数</td>
+              <td>${fmt(cv)}</td><td>${fmt(pv)}</td><td>${pct(cv, pv)}</td></tr>
+          <tr><td>視聴時間</td>
+              <td>${fmtH(cw)}</td><td>${fmtH(pw)}</td><td>${pct(cw, pw)}</td></tr>
+          <tr><td>新規登録者</td>
+              <td>${fmt(cg)}</td><td>${fmt(pg)}</td><td>${pct(cg, pg)}</td></tr>
+          <tr><td>登録解除</td>
+              <td>${fmt(cl)}</td><td>${fmt(pl)}</td><td></td></tr>
+        </tbody>
+      </table>
+      <div style="padding: 4px 18px 12px; font-size: 11px; color: var(--text-muted);">
+        ※ 収益・低評価・リアルタイムデータは YouTube Analytics API の制限により取得不可
+      </div>
+    `;
+  }
+
+  /** YouTube 動画パフォーマンステーブルを描画する */
+  function renderYouTubeVideos(rows) {
+    if (!rows.length) {
+      return '<div class="empty-state">動画データなし — データ未収集または認証が必要です</div>';
+    }
+    const fmt  = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    const fmtS = (s) => {
+      if (s == null) return '—';
+      const m = Math.floor(s / 60);
+      const sec = Math.round(s % 60);
+      return `${m}:${String(sec).padStart(2, '0')}`;
+    };
+    const rowsHtml = rows.map(r => `
+      <tr>
+        <td>${r.platform_id
+          ? `<a href="https://www.youtube.com/watch?v=${esc(r.platform_id)}" target="_blank" rel="noopener">${esc(r.title || r.platform_id)}</a>`
+          : esc(r.title || '—')}</td>
+        <td>${esc(r.content_type || '—')}</td>
+        <td>${esc((r.published_at || '').slice(0, 10) || '—')}</td>
+        <td class="sf-col-center">${fmt(r.views)}</td>
+        <td class="sf-col-center">${fmtS(r.avg_watch_sec)}</td>
+        <td class="sf-col-center">${fmt(r.likes)}</td>
+        <td class="sf-col-center">${fmt(r.comments)}</td>
+      </tr>
+    `).join('');
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>タイトル</th><th>種別</th><th>投稿日</th>
+            <th>再生数</th><th>平均視聴時間</th><th>いいね</th><th>コメント</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    `;
+  }
+
   /** Soundrop Import タブ: インポート履歴を読み込む */
   async function loadImports() {
     const el = document.getElementById('sf-import-container');
@@ -459,8 +573,9 @@ const SfModule = (() => {
   return {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
-    loadLibrary, loadProfiles, loadImports,
+    loadLibrary, loadProfiles, loadImports, loadYouTube,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
+    renderYouTubeChannel, renderYouTubeVideos,
   };
 
 })();

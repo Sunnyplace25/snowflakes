@@ -629,3 +629,73 @@ CREATE TABLE IF NOT EXISTS sf_instagram_media_daily (
 );
 CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_date  ON sf_instagram_media_daily(date);
 CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_media ON sf_instagram_media_daily(instagram_media_id);
+
+-- ── YouTube チャンネル日次スナップショット（Phase 7）────────────────────────────
+-- YouTube Analytics API v2 + YouTube Data API v3
+--
+-- 取得方法:
+--   subscribers_count         → YouTube Data API v3: channels?mine=true&part=statistics
+--   subscribers_gained/lost   → Analytics API: metrics=subscribersGained,subscribersLost
+--   views                     → Analytics API: metrics=views (channel=MINE / dimensions=day)
+--   estimated_minutes_watched → Analytics API: metrics=estimatedMinutesWatched
+--   average_view_duration_sec → Analytics API: metrics=averageViewDuration（秒）
+--
+-- Phase 7 では取得しない指標（NULL 予約）:
+--   impressions / ctr         → サムネイルインプレッション・CTR。
+--                               YouTube Analytics API v2 channel reports での安定取得が
+--                               保証されない（YouTube Reporting API Reach report が必要な場合あり）。
+--                               将来 Reporting API 対応後に書き込む予定。列は NULL 予約済み。
+--   収益データ                → monetization 権限が必要
+--   ユニーク視聴者数          → video フィルタ時 estimatedUniqueViewers が unavailable
+--   低評価数 (dislikes)        → Phase 7 では取得対象外。一般公開値ではないが
+--                               動画所有者として認証されたAPIリクエストでは取得可能。
+--                               現時点の JARVIS では利用しない。
+--   リアルタイムデータ        → 24-48h のレポートラグあり
+--
+-- 動画別データは sf_content_registry (platform='youtube') + sf_social_metrics +
+-- sf_platform_ext（avg_view_percentage 等）に格納する（既存テーブル流用）。
+
+CREATE TABLE IF NOT EXISTS sf_youtube_channel_daily (
+  id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+  date                      TEXT    NOT NULL,              -- YYYY-MM-DD
+  subscribers_count         INTEGER,                       -- 総登録者数（Data API）
+  subscribers_gained        INTEGER,                       -- 期間内新規登録者数（Analytics）
+  subscribers_lost          INTEGER,                       -- 期間内登録解除数（Analytics）
+  views                     INTEGER,                       -- 期間内再生回数（Analytics）
+  estimated_minutes_watched INTEGER,                       -- 総視聴時間（分）（Analytics）
+  average_view_duration_sec INTEGER,                       -- 平均視聴時間（秒）（Analytics）
+  impressions               INTEGER,                       -- NULL 予約（Reporting API 対応後）
+  ctr                       REAL,                          -- NULL 予約（Reporting API 対応後）
+  import_source             TEXT    NOT NULL DEFAULT 'api'
+    CHECK (import_source IN ('api', 'manual')),
+  fetched_at                TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(date)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_yt_channel_date ON sf_youtube_channel_daily(date);
+
+-- ── YouTube トラフィックソース（Phase 7）────────────────────────────────────────
+-- YouTube Analytics API v2: dimensions=insightTrafficSourceType
+-- 期間集計（period_start〜period_end）でトラフィック流入元ごとの再生数・視聴時間を保存。
+--
+-- 代表的な source_type 値（API 返り値そのまま保存）:
+--   YT_SEARCH         → YouTube 検索
+--   SUGGESTED         → 関連動画
+--   EXTERNAL          → 外部リンク（Twitter/Web 等）
+--   PLAYLIST          → プレイリスト
+--   DIRECT_OR_UNKNOWN → 直接アクセス or 不明
+--   CHANNEL           → チャンネルページ
+--   NOTIFICATION      → 通知
+--   EXT_URL           → 外部 URL（Embedded 含む）
+
+CREATE TABLE IF NOT EXISTS sf_youtube_traffic_sources (
+  id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+  period_start              TEXT    NOT NULL,              -- 取得期間開始 YYYY-MM-DD
+  period_end                TEXT    NOT NULL,              -- 取得期間終了 YYYY-MM-DD
+  source_type               TEXT    NOT NULL,              -- insightTrafficSourceType の値
+  views                     INTEGER,                       -- 期間内再生数
+  estimated_minutes_watched INTEGER,                       -- 期間内総視聴時間（分）
+  fetched_at                TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(period_start, period_end, source_type)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_yt_traffic_period
+  ON sf_youtube_traffic_sources(period_start, period_end);

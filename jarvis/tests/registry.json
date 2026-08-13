@@ -46,5 +46,9 @@
   "instagram": {
     "args": ["tests/test_instagram.js"],
     "cwd": "jarvis"
+  },
+  "youtube": {
+    "args": ["tests/test_youtube.js"],
+    "cwd": "jarvis"
   }
 }
