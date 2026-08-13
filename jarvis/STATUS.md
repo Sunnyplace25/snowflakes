@@ -233,6 +233,7 @@ jarvis-development
 | Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 5エンドポイント / テスト62件） | ✅ 完了（2026-08-13） |
 | Phase 8 | TikTok（tiktok_csv_importer / API 4エンドポイント / Dashboard / テスト88件） | ✅ 完了（2026-08-13） |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ✅ 完了（2026-08-13） |
+| Phase 10 | Ops Automation（sf_sync_manager / sf_ops_runner / Task Scheduler / API / Dashboard Sync タブ） | ✅ 完了（2026-08-14） |
 
 ### Phase 1 完了記録（2026-08-12）
 
@@ -1071,6 +1072,114 @@ Phase 5 と共用: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRES
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | **合計** | **682 passed / 0 failed** |
+
+---
+
+### Phase 10 完了記録（2026-08-14）
+
+#### source 分類
+
+| Source | Mode | 取得方式 | freshness しきい値 |
+|--------|------|----------|-----------------|
+| Instagram | AUTO | collectInstagramDaily() / ENV 4変数 | 3日 |
+| YouTube | AUTO | collectYouTubeChannel() / ENV 4変数 | 3日 |
+| GA4 | MANUAL | ga_writer.js（API collector なし） | 7日 |
+| Narou | MANUAL | narou_writer.js（月次手動）| 32日 |
+| TikTok | MANUAL | CSV import（tiktok_csv_importer.js）| 14日 |
+| Soundrop | MANUAL | Statement CSV（revenue_writer.js）| 35日 |
+| Revenue | MANUAL | Statement CSV（revenue_writer.js）| 35日 |
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| sf_sync_manager.js | 新規作成（SOURCE_REGISTRY / FRESHNESS_THRESHOLDS / getSyncStatus / getSourceStatus / getAttentionItems / runAutoSync / runSourceSync / snoozeSource / notifyImportSuccess） |
+| schema.sql | sf_sync_state テーブル追加（運用状態のみ・分析データ格納なし）|
+| db.js | Phase 10 migration 追加（sf_sync_state CREATE TABLE IF NOT EXISTS）|
+| sf_ops_runner.js | 新規作成（CLI / --dry-run / --report-only / --source / --no-notify）|
+| install_sf_ops_task.ps1 | 新規作成（Windows Task Scheduler セットアップ）|
+| api.js | Sync 4エンドポイント追加（status / attention / run / run-source）|
+| index.html | Sync/Ops タブ追加（要確認バナー / AUTO / MANUAL セクション）|
+| sf.js | loadSync / renderSyncAttentionBanner / renderSyncSources 追加 |
+| test_sync.js | 新規作成（77テスト・18セクション）|
+| registry.json | sync エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（sf_sync_state テーブル）|
+| `jarvis/data/db.js` | 変更（Phase 10 migration 追加）|
+| `jarvis/data/sf_sync_manager.js` | 新規作成 |
+| `jarvis/automation/sf_ops_runner.js` | 新規作成 |
+| `jarvis/automation/install_sf_ops_task.ps1` | 新規作成 |
+| `jarvis/dashboard/api.js` | 変更（Sync 4エンドポイント追記）|
+| `jarvis/dashboard/public/index.html` | 変更（Sync/Ops タブ追加）|
+| `jarvis/dashboard/public/modules/sf.js` | 変更（Sync UI 関数追加）|
+| `jarvis/tests/test_sync.js` | 新規作成（77テスト）|
+| `jarvis/tests/registry.json` | 変更（sync エントリ追加）|
+
+#### API エンドポイント（4件追加）
+
+| エンドポイント | 内容 |
+|---|---|
+| `GET /api/sf/sync/status` | 全 source の同期状態（sources / summary）|
+| `GET /api/sf/sync/attention` | 要確認項目一覧（?all=1 でクールダウン無視）|
+| `POST /api/sf/sync/run` | 全 AUTO source 同期（dry_run=true 対応）|
+| `POST /api/sf/sync/run-source` | 指定 source 同期（AUTO only・MANUAL → 400）|
+
+#### sf_ops_runner.js 仕様
+
+- `node jarvis/automation/sf_ops_runner.js` — 通常実行（AUTO sync + attention 表示）
+- `--dry-run` — sync なし・freshness 評価のみ
+- `--report-only` — sync なし・現在状態と attention 表示のみ
+- `--source <s>` — 指定 AUTO source のみ実行
+- `--no-notify` — last_notified_at を更新しない
+
+#### Windows Task Scheduler
+
+- セットアップスクリプト: `jarvis/automation/install_sf_ops_task.ps1`
+- タスク名: `SnowflakesOpsRunner`（JARVIS 専用・他タスク不変）
+- 実行間隔: 6時間ごと + ログオン時
+- PCオフで逃した場合: `StartWhenAvailable` で次回起動時に実行
+- 今回の開発中は実際の Task Scheduler 未変更
+
+#### attention / 通知方針
+
+- 成功時は通知しない（ユーザーへの毎回成功通知なし）
+- stale / error / unconfigured のときのみ attention に出す
+- `last_notified_at` + `NOTIFY_COOLDOWN_HOURS` で重複通知を抑制
+- `snoozed_until` でスヌーズ期間中はスキップ
+- Dashboard では status は cooldown 関係なく常に確認可能
+
+#### Soundrop / Revenue 重複 attention 抑制
+
+Revenue は Soundrop Statement CSV と入力源が同一のため、
+Soundrop が stale/manual_required のとき Revenue は独立 attention を生成しない。
+`DERIVED_FROM = { revenue: 'soundrop' }` で管理。
+Soundrop が fresh で Revenue のみ stale の場合は独立 attention を許可（独立した問題として扱う）。
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_sync.js（Phase 10新規） | 81 passed / 0 failed ✅ |
+| test_funnel.js（回帰） | 93 passed / 0 failed ✅ |
+| test_tiktok.js（回帰） | 88 passed / 0 failed ✅ |
+| test_youtube.js（回帰） | 62 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **763 passed / 0 failed** |
 
 ---
 

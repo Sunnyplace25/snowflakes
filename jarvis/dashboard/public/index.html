@@ -394,6 +394,7 @@
     <button class="sf-tab" data-sf-tab="youtube">YouTube</button>
     <button class="sf-tab" data-sf-tab="tiktok">TikTok</button>
     <button class="sf-tab" data-sf-tab="funnel">Funnel</button>
+    <button class="sf-tab" data-sf-tab="sync">Sync / Ops</button>
   </nav>
 
   <!-- Music Library tab -->
@@ -500,6 +501,33 @@
     </section>
 
   </div><!-- /#sf-tab-funnel -->
+
+  <!-- Sync / Ops tab (Phase 10) -->
+  <div id="sf-tab-sync" class="sf-tab-panel" hidden>
+
+    <!-- 要確認バナー -->
+    <section class="sf-section">
+      <div id="sf-sync-attention-banner"></div>
+    </section>
+
+    <!-- AUTO sources -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>AUTO 取得</h2>
+        <button id="sf-sync-run-btn" class="sf-btn">今すぐ同期</button>
+      </div>
+      <div id="sf-sync-auto-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- MANUAL sources -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>MANUAL 取込</h2>
+      </div>
+      <div id="sf-sync-manual-container" class="loading">読み込み中...</div>
+    </section>
+
+  </div><!-- /#sf-tab-sync -->
 
 </div><!-- /#module-sf -->
 

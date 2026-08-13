@@ -103,6 +103,7 @@ const SfModule = (() => {
         else if (tabName === 'youtube') loadYouTube();
         else if (tabName === 'tiktok') loadTikTok();
         else if (tabName === 'funnel') loadFunnel();
+        else if (tabName === 'sync')   loadSync();
       });
     });
   }
@@ -953,6 +954,95 @@ const SfModule = (() => {
   // グローバル公開（onclick から呼ばれる）
   if (typeof window !== 'undefined') window.loadEventImpact = loadEventImpact;
 
+  // ─── Sync / Ops（Phase 10）────────────────────────────────────────────────
+
+  async function loadSync() {
+    setState('analyzing');
+    const bannerEl = document.getElementById('sf-sync-attention-banner');
+    const autoEl   = document.getElementById('sf-sync-auto-container');
+    const manualEl = document.getElementById('sf-sync-manual-container');
+    const runBtn   = document.getElementById('sf-sync-run-btn');
+
+    try {
+      const [statusRes, attentionRes] = await Promise.all([
+        fetch('/api/sf/sync/status'),
+        fetch('/api/sf/sync/attention'),
+      ]);
+      const statusData    = await statusRes.json();
+      const attentionData = await attentionRes.json();
+
+      renderSyncAttentionBanner(bannerEl, attentionData.items ?? []);
+      renderSyncSources(autoEl,   statusData.sources?.filter(s => s.mode === 'auto')   ?? []);
+      renderSyncSources(manualEl, statusData.sources?.filter(s => s.mode === 'manual') ?? []);
+
+      if (attentionData.count > 0) setState('notice');
+      else setState('completed');
+    } catch (e) {
+      if (bannerEl) bannerEl.innerHTML = `<div class="error-state">読み込みエラー: ${esc(e.message)}</div>`;
+      setState('notice');
+    }
+
+    if (runBtn) {
+      runBtn.onclick = async () => {
+        runBtn.disabled = true;
+        runBtn.textContent = '同期中...';
+        setState('working');
+        try {
+          const res  = await fetch('/api/sf/sync/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+          const data = await res.json();
+          loadSync();
+        } catch (_) {
+          loadSync();
+        } finally {
+          runBtn.disabled = false;
+          runBtn.textContent = '今すぐ同期';
+        }
+      };
+    }
+  }
+
+  function renderSyncAttentionBanner(el, items) {
+    if (!el) return;
+    if (items.length === 0) {
+      el.innerHTML = '<div class="sf-attention-ok">要確認なし — すべてのデータソースが正常です</div>';
+      return;
+    }
+    const rows = items.map(item => {
+      const cls = item.severity === 'error' ? 'attention-error' : item.severity === 'warning' ? 'attention-warning' : 'attention-info';
+      return `<div class="sf-attention-item ${cls}">
+        <strong>${esc(item.label)}</strong> — ${esc(item.message)}
+      </div>`;
+    }).join('');
+    el.innerHTML = `<div class="sf-attention-banner">
+      <div class="sf-attention-title">要確認 ${items.length} 件</div>
+      ${rows}
+    </div>`;
+  }
+
+  function renderSyncSources(el, sources) {
+    if (!el) return;
+    if (sources.length === 0) { el.innerHTML = ''; return; }
+    const rows = sources.map(s => {
+      const stCls = s.status === 'fresh' ? 'status-fresh' : s.status === 'stale' ? 'status-stale' : 'status-other';
+      const lastDate = s.last_data_date ?? '未取得';
+      const nextAction = s.requires_user_action
+        ? `<span class="sync-action">${esc(s.action_message ?? '確認が必要です')}</span>` : '';
+      return `<tr>
+        <td>${esc(s.label)}</td>
+        <td>${esc(lastDate)}</td>
+        <td><span class="sf-badge ${stCls}">${esc(s.status)}</span></td>
+        <td>${nextAction}</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML = `<table class="sf-table">
+      <thead><tr><th>Source</th><th>最終データ日</th><th>状態</th><th>次の対応</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  // グローバル公開
+  if (typeof window !== 'undefined') window.loadSync = loadSync;
+
   // ─── ユーティリティ ───────────────────────────────────────────────────────
 
   /** HTML エスケープ */
@@ -982,11 +1072,12 @@ const SfModule = (() => {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
-    loadFunnel, loadEventImpact,
+    loadFunnel, loadEventImpact, loadSync,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,
     renderFunnelOverview, renderEventTimeline, renderEventImpact,
+    renderSyncAttentionBanner, renderSyncSources,
   };
 
 })();

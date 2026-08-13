@@ -29,6 +29,14 @@ import {
   getWorkFunnel,
   getTrackFunnel,
 } from '../data/sf_funnel_manager.js';
+import {
+  getSyncStatus,
+  getAttentionItems,
+  runAutoSync,
+  runSourceSync,
+  AUTO_SOURCES,
+  SOURCE_REGISTRY,
+} from '../data/sf_sync_manager.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -1336,6 +1344,49 @@ export function createApiHandler(db) {
         const result = getTrackFunnel(db, trackId, opts);
         if (!result) return errRes(res, 404, 'Track not found');
         return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── Sync / Ops（Phase 10）─────────────────────────────────────────────
+
+      // GET /api/sf/sync/status — 全 source の同期状態
+      if (method === 'GET' && path === '/api/sf/sync/status') {
+        const status = getSyncStatus(db);
+        return jsonRes(res, 200, { ok: true, ...status });
+      }
+
+      // GET /api/sf/sync/attention — 今対応が必要な項目
+      if (method === 'GET' && path === '/api/sf/sync/attention') {
+        const ignoreCooldown = url.searchParams.get('all') === '1';
+        const items = getAttentionItems(db, { ignoreCooldown });
+        return jsonRes(res, 200, { ok: true, count: items.length, items });
+      }
+
+      // POST /api/sf/sync/run — 全 AUTO source を同期
+      if (method === 'POST' && path === '/api/sf/sync/run') {
+        const body = await readBody(req);
+        const dryRun = body.dry_run === true;
+        const result = await runAutoSync(db, { dryRun });
+        const statusCode = result.overall === 'failed' ? 500 : 200;
+        return jsonRes(res, statusCode, { ok: result.overall !== 'failed', ...result });
+      }
+
+      // POST /api/sf/sync/run-source — 指定 source を同期
+      if (method === 'POST' && path === '/api/sf/sync/run-source') {
+        const body = await readBody(req);
+        const source = body.source;
+        if (!source || typeof source !== 'string') {
+          return errRes(res, 400, 'source が未指定です');
+        }
+        if (!SOURCE_REGISTRY[source]) {
+          return errRes(res, 400, `不明な source: ${source}`);
+        }
+        if (!AUTO_SOURCES.includes(source)) {
+          return errRes(res, 400, `${source} は MANUAL source です。自動取得できません`);
+        }
+        const dryRun = body.dry_run === true;
+        const result = await runSourceSync(db, source, { dryRun });
+        const statusCode = result.success ? 200 : 500;
+        return jsonRes(res, statusCode, { ok: result.success, ...result });
       }
 
       return errRes(res, 404, 'Not Found');

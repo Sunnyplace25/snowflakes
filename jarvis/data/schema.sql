@@ -699,3 +699,25 @@ CREATE TABLE IF NOT EXISTS sf_youtube_traffic_sources (
 );
 CREATE INDEX IF NOT EXISTS idx_sf_yt_traffic_period
   ON sf_youtube_traffic_sources(period_start, period_end);
+
+-- ── Ops 同期状態（Phase 10）──────────────────────────────────────────────────
+-- 各データソースの自動/手動取得の運用状態を永続化する。
+-- 分析データ本体はここへコピーしない（運用状態のみ）。
+-- source of truth は各分析テーブルの MAX(date)。
+-- このテーブルは最終試行・失敗カウント・通知抑制などの運用情報だけを保持する。
+
+CREATE TABLE IF NOT EXISTS sf_sync_state (
+  source               TEXT    PRIMARY KEY,                -- source identifier (e.g. 'instagram')
+  mode                 TEXT    NOT NULL DEFAULT 'manual'
+    CHECK (mode IN ('auto', 'manual')),
+  last_attempt_at      TEXT,                               -- ISO8601
+  last_success_at      TEXT,                               -- ISO8601
+  last_data_date       TEXT,                               -- YYYY-MM-DD（取得成功時のデータ末尾日）
+  status               TEXT    NOT NULL DEFAULT 'never_synced'
+    CHECK (status IN ('fresh','stale','never_synced','unconfigured','error','manual_required')),
+  last_error           TEXT,                               -- エラーメッセージ（最新）
+  consecutive_failures INTEGER NOT NULL DEFAULT 0,
+  last_notified_at     TEXT,                               -- 通知重複抑制用
+  snoozed_until        TEXT,                               -- この日時まで通知しない
+  updated_at           TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);

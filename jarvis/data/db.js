@@ -149,6 +149,27 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 10: sf_sync_state テーブル追加（Ops 同期状態）
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sf_sync_state (
+        source               TEXT    PRIMARY KEY,
+        mode                 TEXT    NOT NULL DEFAULT 'manual'
+          CHECK (mode IN ('auto', 'manual')),
+        last_attempt_at      TEXT,
+        last_success_at      TEXT,
+        last_data_date       TEXT,
+        status               TEXT    NOT NULL DEFAULT 'never_synced'
+          CHECK (status IN ('fresh','stale','never_synced','unconfigured','error','manual_required')),
+        last_error           TEXT,
+        consecutive_failures INTEGER NOT NULL DEFAULT 0,
+        last_notified_at     TEXT,
+        snoozed_until        TEXT,
+        updated_at           TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+      )
+    `);
+  } catch (_) {}
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

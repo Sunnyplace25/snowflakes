@@ -58,5 +58,9 @@
   "funnel": {
     "args": ["tests/test_funnel.js"],
     "cwd": "jarvis"
+  },
+  "sync": {
+    "args": ["tests/test_sync.js"],
+    "cwd": "jarvis"
   }
 }
