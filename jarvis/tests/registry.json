@@ -42,5 +42,9 @@
   "music_metrics": {
     "args": ["tests/test_music_metrics.js"],
     "cwd": "jarvis"
+  },
+  "instagram": {
+    "args": ["tests/test_instagram.js"],
+    "cwd": "jarvis"
   }
 }

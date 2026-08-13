@@ -557,3 +557,75 @@ CREATE TABLE IF NOT EXISTS sf_track_previews (
 );
 CREATE INDEX IF NOT EXISTS idx_sf_previews_track  ON sf_track_previews(track_id);
 CREATE INDEX IF NOT EXISTS idx_sf_previews_status ON sf_track_previews(status);
+
+-- ── Instagram アカウント日次スナップショット（Phase 6 / 2026 API準拠）────────────
+-- 参照: Instagram API with Instagram Login / graph.instagram.com v26.0
+-- 注意: impressions は 2025-04-21 全廃のため使用しない → views を使用
+--       profile_views / website_clicks は 2024-10-02 削除 → profile_links_taps を使用
+
+CREATE TABLE IF NOT EXISTS sf_instagram_account_daily (
+  id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+  date                  TEXT    NOT NULL,            -- YYYY-MM-DD（スナップショット日）
+  followers_count       INTEGER,                     -- /me followers_count
+  follows_count         INTEGER,                     -- /me follows_count（フォロー数）
+  media_count           INTEGER,                     -- /me media_count（投稿総数）
+  reach                 INTEGER,                     -- insights reach (period=day)
+  views                 INTEGER,                     -- insights views (period=day) ← impressions後継
+  accounts_engaged      INTEGER,                     -- insights accounts_engaged (period=day)
+  total_interactions    INTEGER,                     -- insights total_interactions (period=day)
+  likes                 INTEGER,                     -- insights likes (period=day)
+  comments              INTEGER,                     -- insights comments (period=day)
+  shares                INTEGER,                     -- insights shares (period=day)
+  saves                 INTEGER,                     -- insights saves (period=day)
+  follows_and_unfollows INTEGER,                     -- insights follows_and_unfollows (period=day)
+  profile_links_taps    INTEGER,                     -- insights profile_links_taps (period=day)
+  import_source         TEXT    NOT NULL DEFAULT 'api'
+    CHECK (import_source IN ('api', 'manual')),
+  fetched_at            TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(date)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_ig_account_date ON sf_instagram_account_daily(date);
+
+-- ── Instagram メディア台帳（Phase 6）────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS sf_instagram_media (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  instagram_media_id TEXT    NOT NULL UNIQUE,        -- Instagram の media ID（文字列）
+  media_type         TEXT    NOT NULL
+    CHECK (media_type IN ('IMAGE', 'VIDEO', 'CAROUSEL_ALBUM', 'REELS')),
+  media_product_type TEXT                            -- FEED | REELS
+    CHECK (media_product_type IN ('FEED', 'REELS') OR media_product_type IS NULL),
+  published_at       TEXT,                           -- ISO 8601 投稿日時
+  caption            TEXT,
+  permalink          TEXT,
+  import_source      TEXT    NOT NULL DEFAULT 'api'
+    CHECK (import_source IN ('api', 'manual')),
+  created_at         TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_sf_ig_media_published ON sf_instagram_media(published_at);
+CREATE INDEX IF NOT EXISTS idx_sf_ig_media_type      ON sf_instagram_media(media_product_type);
+
+-- ── Instagram メディア日次スナップショット（Phase 6）────────────────────────────
+-- 直接フィールド（/media?fields=...）と insights edge（/{media-id}/insights）の両方を格納
+-- avg_watch_time_ms はリール専用（ig_reels_avg_watch_time）
+
+CREATE TABLE IF NOT EXISTS sf_instagram_media_daily (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  instagram_media_id TEXT    NOT NULL REFERENCES sf_instagram_media(instagram_media_id),
+  date               TEXT    NOT NULL,               -- スナップショット日 YYYY-MM-DD
+  like_count         INTEGER,                        -- 直接フィールド
+  comments_count     INTEGER,                        -- 直接フィールド
+  view_count         INTEGER,                        -- 直接フィールド（再生・表示数）
+  shares_count       INTEGER,                        -- 直接フィールド（2026-04追加）
+  saved_count        INTEGER,                        -- 直接フィールド（2026-04追加）
+  reposts_count      INTEGER,                        -- 直接フィールド（2026-04追加）
+  reach              INTEGER,                        -- insights edge: reach
+  profile_visits     INTEGER,                        -- insights edge: profile_visits
+  avg_watch_time_ms  INTEGER,                        -- insights edge: ig_reels_avg_watch_time（リールのみ）
+  import_source      TEXT    NOT NULL DEFAULT 'api'
+    CHECK (import_source IN ('api', 'manual')),
+  fetched_at         TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(instagram_media_id, date)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_date  ON sf_instagram_media_daily(date);
+CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_media ON sf_instagram_media_daily(instagram_media_id);

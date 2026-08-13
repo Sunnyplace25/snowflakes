@@ -75,6 +75,50 @@ function runMigrations(db) {
     `);
   } catch (_) {}
 
+  // Phase 6: Instagram 分析テーブル追加（sf_instagram_account_daily / media / media_daily）
+  // ※ schema.sql でも CREATE TABLE IF NOT EXISTS 済み。既存 DB への適用用。
+  const INSTAGRAM_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_instagram_account_daily (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      followers_count INTEGER, follows_count INTEGER, media_count INTEGER,
+      reach INTEGER, views INTEGER, accounts_engaged INTEGER, total_interactions INTEGER,
+      likes INTEGER, comments INTEGER, shares INTEGER, saves INTEGER,
+      follows_and_unfollows INTEGER, profile_links_taps INTEGER,
+      import_source TEXT NOT NULL DEFAULT 'api' CHECK (import_source IN ('api','manual')),
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(date)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_ig_account_date ON sf_instagram_account_daily(date)`,
+    `CREATE TABLE IF NOT EXISTS sf_instagram_media (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      instagram_media_id TEXT NOT NULL UNIQUE,
+      media_type TEXT NOT NULL CHECK (media_type IN ('IMAGE','VIDEO','CAROUSEL_ALBUM','REELS')),
+      media_product_type TEXT CHECK (media_product_type IN ('FEED','REELS') OR media_product_type IS NULL),
+      published_at TEXT, caption TEXT, permalink TEXT,
+      import_source TEXT NOT NULL DEFAULT 'api' CHECK (import_source IN ('api','manual')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_ig_media_published ON sf_instagram_media(published_at)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_ig_media_type ON sf_instagram_media(media_product_type)`,
+    `CREATE TABLE IF NOT EXISTS sf_instagram_media_daily (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      instagram_media_id TEXT NOT NULL REFERENCES sf_instagram_media(instagram_media_id),
+      date TEXT NOT NULL,
+      like_count INTEGER, comments_count INTEGER, view_count INTEGER,
+      shares_count INTEGER, saved_count INTEGER, reposts_count INTEGER,
+      reach INTEGER, profile_visits INTEGER, avg_watch_time_ms INTEGER,
+      import_source TEXT NOT NULL DEFAULT 'api' CHECK (import_source IN ('api','manual')),
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(instagram_media_id, date)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_date ON sf_instagram_media_daily(date)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_ig_media_daily_media ON sf_instagram_media_daily(instagram_media_id)`,
+  ];
+  for (const sql of INSTAGRAM_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

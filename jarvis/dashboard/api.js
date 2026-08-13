@@ -672,6 +672,187 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, rows });
       }
 
+      // ══════════════════════════════════════════════════════════════════════
+      // SF Instagram エンドポイント（Phase 6）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/instagram/account/daily ───────────────────────────────
+      // 日別アカウント指標（フォロワー・リーチ等）
+      // ?from=YYYY-MM-DD  &to=YYYY-MM-DD  （デフォルト: 直近30日）
+      if (path === '/api/sf/instagram/account/daily' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate   = (toParam   && validateDate(toParam))   ? toParam   : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT date,
+                 followers_count, follows_count, media_count,
+                 reach, views, accounts_engaged, total_interactions,
+                 likes, comments, shares, saves,
+                 follows_and_unfollows, profile_links_taps
+          FROM sf_instagram_account_daily
+          WHERE date >= ? AND date <= ?
+          ORDER BY date ASC
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, from: fromDate, to: toDate, rows });
+      }
+
+      // ── GET /api/sf/instagram/account/compare ─────────────────────────────
+      // 現在期間 vs 前期間 比較（日合計）
+      // ?days=7|14|30  （デフォルト: 30）
+      if (path === '/api/sf/instagram/account/compare' && method === 'GET') {
+        const VALID_DAYS = [7, 14, 30];
+        const daysParam = parseInt(url.searchParams.get('days') || '30', 10);
+        const days = VALID_DAYS.includes(daysParam) ? daysParam : 30;
+
+        const today = todayISO();
+        function subDaysIG(base, n) {
+          const d = new Date(base);
+          d.setDate(d.getDate() - n);
+          return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const currentEnd    = today;
+        const currentStart  = subDaysIG(today, days - 1);
+        const previousEnd   = subDaysIG(today, days);
+        const previousStart = subDaysIG(today, days * 2 - 1);
+
+        const [summary] = db.prepare(`
+          SELECT
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS current_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS previous_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE 0 END) AS current_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE 0 END) AS previous_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE 0 END) AS current_interactions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE 0 END) AS previous_interactions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE 0 END) AS current_follows_delta,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE 0 END) AS previous_follows_delta
+          FROM sf_instagram_account_daily
+          WHERE date >= ? AND date <= ?
+        `).all(
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          currentStart,  currentEnd,
+          previousStart, previousEnd,
+          previousStart, currentEnd,
+        );
+
+        // 期間端のフォロワー数を取得
+        const [followersCurrent] = db.prepare(`
+          SELECT followers_count FROM sf_instagram_account_daily
+          WHERE date <= ? ORDER BY date DESC LIMIT 1
+        `).all(currentEnd);
+        const [followersPrevEnd] = db.prepare(`
+          SELECT followers_count FROM sf_instagram_account_daily
+          WHERE date <= ? ORDER BY date DESC LIMIT 1
+        `).all(previousEnd);
+
+        return jsonRes(res, 200, {
+          ok: true,
+          days,
+          current:  { start: currentStart,  end: currentEnd },
+          previous: { start: previousStart, end: previousEnd },
+          followers_count: {
+            current:  followersCurrent?.followers_count  ?? null,
+            previous: followersPrevEnd?.followers_count  ?? null,
+          },
+          ...summary,
+        });
+      }
+
+      // ── GET /api/sf/instagram/media ────────────────────────────────────────
+      // メディア一覧 + 最新スナップショット（公開日降順）
+      // ?limit=N  &offset=N  &type=FEED|REELS
+      if (path === '/api/sf/instagram/media' && method === 'GET') {
+        const limitRaw  = parseInt(url.searchParams.get('limit')  || '20', 10);
+        const offsetRaw = parseInt(url.searchParams.get('offset') || '0',  10);
+        const typeFilter = url.searchParams.get('type') || null;
+        const limit  = (Number.isFinite(limitRaw)  && limitRaw  > 0 && limitRaw  <= 100) ? limitRaw  : 20;
+        const offset = (Number.isFinite(offsetRaw) && offsetRaw >= 0)                     ? offsetRaw : 0;
+
+        const VALID_TYPES = ['FEED', 'REELS'];
+        const productType = VALID_TYPES.includes(typeFilter) ? typeFilter : null;
+
+        const rows = db.prepare(`
+          SELECT m.instagram_media_id,
+                 m.media_type, m.media_product_type,
+                 m.published_at, m.caption, m.permalink,
+                 d.date        AS snapshot_date,
+                 d.like_count, d.comments_count, d.view_count,
+                 d.shares_count, d.saved_count, d.reposts_count,
+                 d.reach, d.profile_visits, d.avg_watch_time_ms
+          FROM sf_instagram_media m
+          LEFT JOIN sf_instagram_media_daily d
+            ON d.instagram_media_id = m.instagram_media_id
+           AND d.date = (
+                 SELECT MAX(d2.date)
+                 FROM sf_instagram_media_daily d2
+                 WHERE d2.instagram_media_id = m.instagram_media_id
+               )
+          WHERE (? IS NULL OR m.media_product_type = ?)
+          ORDER BY m.published_at DESC, m.instagram_media_id ASC
+          LIMIT ? OFFSET ?
+        `).all(productType, productType, limit, offset);
+        return jsonRes(res, 200, { ok: true, limit, offset, rows });
+      }
+
+      // ── GET /api/sf/instagram/media/top ───────────────────────────────────
+      // 上位投稿（指標指定・最新スナップショット基準）
+      // ?metric=view_count|reach|like_count|avg_watch_time_ms
+      // ?type=FEED|REELS  &limit=N
+      if (path === '/api/sf/instagram/media/top' && method === 'GET') {
+        const VALID_METRICS = ['view_count', 'reach', 'like_count', 'avg_watch_time_ms',
+                               'comments_count', 'shares_count', 'saved_count'];
+        const metricParam = url.searchParams.get('metric') || 'view_count';
+        const metric      = VALID_METRICS.includes(metricParam) ? metricParam : 'view_count';
+
+        const limitRaw  = parseInt(url.searchParams.get('limit') || '10', 10);
+        const limit     = (Number.isFinite(limitRaw) && limitRaw > 0 && limitRaw <= 50) ? limitRaw : 10;
+        const typeFilter = url.searchParams.get('type') || null;
+        const VALID_TYPES = ['FEED', 'REELS'];
+        const productType = VALID_TYPES.includes(typeFilter) ? typeFilter : null;
+
+        const rows = db.prepare(`
+          SELECT m.instagram_media_id,
+                 m.media_type, m.media_product_type,
+                 m.published_at, m.caption, m.permalink,
+                 d.date        AS snapshot_date,
+                 d.view_count, d.reach, d.like_count,
+                 d.comments_count, d.shares_count, d.saved_count,
+                 d.avg_watch_time_ms
+          FROM sf_instagram_media m
+          LEFT JOIN sf_instagram_media_daily d
+            ON d.instagram_media_id = m.instagram_media_id
+           AND d.date = (
+                 SELECT MAX(d2.date)
+                 FROM sf_instagram_media_daily d2
+                 WHERE d2.instagram_media_id = m.instagram_media_id
+               )
+          WHERE (? IS NULL OR m.media_product_type = ?)
+          ORDER BY d.${metric} DESC NULLS LAST, m.published_at DESC
+          LIMIT ?
+        `).all(productType, productType, limit);
+        return jsonRes(res, 200, { ok: true, metric, limit, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

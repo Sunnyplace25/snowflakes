@@ -229,7 +229,7 @@ jarvis-development
 | Phase 3 | 小説PV・なろう（narou_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-12） |
 | Phase 4 | GA連携（ga_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-13） |
 | Phase 5 | 音楽ストリーミング分析（youtube_collector / music_metrics_writer / API 3エンドポイント / テスト40件） | ✅ 完了（2026-08-13） |
-| Phase 6 | Instagram（instagram_client / social_manager / Dashboard） | ⏳ 未着手 |
+| Phase 6 | Instagram（instagram_collector / DB 3テーブル / API 4エンドポイント / テスト38件） | ✅ 完了（2026-08-13） |
 | Phase 7 | YouTube（youtube_client OAuth2 / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 8 | TikTok（tiktok_csv_importer / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
@@ -695,6 +695,94 @@ jarvis-development
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
 | **合計** | **401 passed / 0 failed** |
+
+---
+
+### Phase 6 完了記録（2026-08-13）
+
+#### 概要・調査結果
+
+Meta Instagram API with Instagram Login（v26.0）を採用。
+廃止済み指標を除外し、2026年時点で有効なフィールドのみを実装。
+
+| 廃止指標 | 廃止日 | 代替 |
+|---|---|---|
+| `impressions` | 2025-04-21 全廃 | `views` を使用 |
+| `profile_views` | 2024-10-02 削除 | `profile_links_taps` に統合 |
+| `website_clicks` | 2024-10-02 削除 | `profile_links_taps` に統合 |
+| `video_views` | 2025-01-08 削除 | — |
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | Instagram 専用3テーブル追加（sf_instagram_account_daily / media / media_daily） |
+| db.js | Phase 6 INSTAGRAM_TABLES migration 追加 |
+| instagram_collector.js | 新規作成（REQUIRED_ENV_VARS / getInstagramConfig / refreshLongLivedToken / fetchMe / fetchAccountInsights / fetchMediaList / fetchMediaInsights / buildAccountSnapshot / buildMediaEntry / buildMediaSnapshot / writeAccountDaily / writeMediaEntry / writeMediaDaily / collectInstagramDaily） |
+| api.js | 4エンドポイント追加（account/daily / account/compare / media / media/top） |
+| test_instagram.js | 新規作成（38テスト・8セクション） |
+| registry.json | instagram エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（3テーブル + インデックス5本） |
+| `jarvis/data/db.js` | 変更（Phase 6 INSTAGRAM_TABLES migration 追加） |
+| `jarvis/importers/instagram_collector.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | Phase 6 エンドポイント4件追記 |
+| `jarvis/tests/test_instagram.js` | 新規作成（38テスト） |
+| `jarvis/tests/registry.json` | instagram エントリ追加 |
+
+#### Instagram 専用テーブル設計
+
+| テーブル | 用途 | UNIQUE制約 |
+|----------|------|-----------|
+| `sf_instagram_account_daily` | アカウント日別集計（フォロワー・リーチ・インタラクション等） | `(date)` |
+| `sf_instagram_media` | 投稿台帳（IMAGE/VIDEO/CAROUSEL_ALBUM/REELS） | `instagram_media_id` |
+| `sf_instagram_media_daily` | 投稿別日別スナップショット（再生数・リーチ・avg_watch_time_ms等） | `(instagram_media_id, date)` |
+
+#### アカウント指標（2026年有効）
+
+`followers_count`, `follows_count`, `media_count`（/me 直接フィールド）
+`reach`, `views`, `accounts_engaged`, `total_interactions`, `likes`, `comments`, `shares`, `saves`, `follows_and_unfollows`, `profile_links_taps`（Insights）
+
+#### 投稿別直接フィールド（2026-04 追加分含む）
+
+`like_count`, `comments_count`, `view_count`, `shares_count`, `saved_count`, `reposts_count`
+REELS のみ: `ig_reels_avg_watch_time`（avg_watch_time_ms として保存）
+
+#### 認証設定（環境変数・コードに保存禁止）
+
+`INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET`, `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID`
+長命トークン60日・`refreshLongLivedToken()` で更新可能（実 OAuth 初回フローは NEEDS_USER）
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/instagram/account/daily` | `from=`, `to=`（省略時: 直近30日） | 日別アカウント指標一覧 |
+| `/api/sf/instagram/account/compare` | `days=7\|14\|30`（省略時: 30） | 現在期間 vs 前期間比較（reach/views/interactions/follows_delta + フォロワー数） |
+| `/api/sf/instagram/media` | `limit=`（max 100）, `offset=`, `type=FEED\|REELS` | メディア一覧 + 最新スナップショット（公開日降順） |
+| `/api/sf/instagram/media/top` | `metric=view_count\|reach\|like_count\|avg_watch_time_ms\|comments_count\|shares_count\|saved_count`, `type=FEED\|REELS`, `limit=`（max 50） | 指標別トップ投稿 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_instagram.js（Phase 6新規） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| **合計** | **439 passed / 0 failed** |
 
 ---
 
