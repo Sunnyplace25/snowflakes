@@ -159,14 +159,30 @@ export async function reviewCode(payload, {
 
       const data = await res.json();
 
-      // Responses API: output[0].content[0].text または output_text
+      // status / error チェック
+      if (data?.status && data.status !== 'completed') {
+        throw new Error(`Responses API status: ${data.status} — ${JSON.stringify(data.error ?? data.incomplete_details)}`);
+      }
+
+      // Responses API: output 配列の中から type:"message" ブロックを探す
+      // reasoning モード時は output[0] が reasoning ブロックになるため
+      // output[0] を決め打ちにせず find で取得し、見つからなければ output[0] にフォールバック
+      const messageBlock = Array.isArray(data?.output)
+        ? (data.output.find(o => o.type === 'message') ?? data.output[0])
+        : null;
+
       const outputText =
         data?.output_text ??
-        data?.output?.[0]?.content?.[0]?.text ??
+        messageBlock?.content?.[0]?.text ??
+        (typeof messageBlock?.content === 'string' ? messageBlock.content : null) ??
         null;
 
       if (!outputText) {
-        throw new Error('Responses API レスポンスから output text を取得できませんでした');
+        const debug = JSON.stringify({
+          status: data?.status,
+          outputTypes: (data?.output ?? []).map(o => o.type),
+        });
+        throw new Error(`Responses API レスポンスから output text を取得できませんでした: ${debug}`);
       }
 
       let parsed;
