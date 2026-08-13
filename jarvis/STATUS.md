@@ -232,7 +232,7 @@ jarvis-development
 | Phase 6 | Instagram（instagram_collector / DB 3テーブル / API 4エンドポイント / テスト38件） | ✅ 完了（2026-08-13） |
 | Phase 7 | YouTube（youtube_channel_collector / sf_youtube_channel_daily / API 5エンドポイント / テスト62件） | ✅ 完了（2026-08-13） |
 | Phase 8 | TikTok（tiktok_csv_importer / API 4エンドポイント / Dashboard / テスト88件） | ✅ 完了（2026-08-13） |
-| Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ⏳ 未着手 |
+| Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ✅ 完了（2026-08-13） |
 
 ### Phase 1 完了記録（2026-08-12）
 
@@ -982,6 +982,95 @@ Phase 5 と共用: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRES
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | **合計** | **589 passed / 0 failed** |
+
+---
+
+### Phase 9 完了記録（2026-08-13）
+
+#### 実装方針・設計上の制約
+
+| 制約 | 内容 |
+|------|------|
+| 個人追跡禁止 | ユーザー単位の行動トラッキングなし |
+| 異種指標合算禁止 | "total funnel users" など異種指標の合計値を生成しない |
+| 因果断定禁止 | `caused_by` / `attributed_to` フィールド使用禁止・相関のみ |
+| 月次データ日割り禁止 | Narou/Revenue の月次データを日次相当に按分しない |
+| 虚偽CVR禁止 | 異なる計測系間のコンバージョン率を生成しない |
+| 既存テーブル再利用 | 新テーブルなし・`sf_funnel_event` をそのまま利用 |
+| 読み取り専用分析 | 分析結果をDBに保存しない |
+| suggestFunnelEvents | 候補返却のみ・自動INSERTなし |
+| Character Stage | analyzing→completed→notice のみ / AIによる自動戦略提案なし |
+
+#### 4ステージファネル設計（source別・合算なし）
+
+| Stage | 名称 | source |
+|-------|------|--------|
+| Stage 1 | DISCOVERY | Instagram reach / YouTube views / TikTok reach / GA sessions |
+| Stage 2 | ENGAGEMENT | Instagram interactions / TikTok impressions / GA pageviews |
+| Stage 3 | DEEP INTEREST | Narou PV（月次） / Music streams / GA events |
+| Stage 4 | VALUE | Revenue（月次） |
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| sf_funnel_manager.js | 新規作成（VALID_EVENT_TYPES / VALID_EVENT_PLATFORMS / getFunnelEvents / createFunnelEvent / getFunnelOverview / getEventImpact / getWorkFunnel / getTrackFunnel / suggestFunnelEvents） |
+| api.js | Funnel 6エンドポイント追加 |
+| index.html | Funnel タブ追加（overview / timeline / impact 3セクション） |
+| sf.js | loadFunnel / renderFunnelOverview / renderEventTimeline / renderEventImpact / loadEventImpact 追加 |
+| test_funnel.js | 新規作成（93テスト・9セクション） |
+| registry.json | funnel エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/sf_funnel_manager.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | Phase 9 エンドポイント6件追記 |
+| `jarvis/dashboard/public/index.html` | Funnel タブ追加 |
+| `jarvis/dashboard/public/modules/sf.js` | Funnel UI 関数追加・Public API に export 追加 |
+| `jarvis/tests/test_funnel.js` | 新規作成（93テスト） |
+| `jarvis/tests/registry.json` | funnel エントリ追加 |
+
+#### API エンドポイント（6件追加）
+
+| エンドポイント | 内容 |
+|---|---|
+| `GET /api/sf/funnel/overview` | 4ステージ概要（?from=&to=） |
+| `GET /api/sf/funnel/events` | イベント一覧（?type=&platform=&work_id=&track_id=&from=&to=） |
+| `POST /api/sf/funnel/events` | イベント作成（event_type/event_date 必須） |
+| `GET /api/sf/funnel/event-impact` | イベント前後比較（?event_id=&before_days=&after_days= / 1〜90日） |
+| `GET /api/sf/funnel/work` | 作品別ファネル（?work_id=） |
+| `GET /api/sf/funnel/track` | 楽曲別ファネル（?track_id=） |
+
+#### getEventImpact 設計
+
+- `note` フィールド: `'これはイベント前後の時系列変化（temporal signal）であり、因果関係を示すものではありません'`
+- Revenue / Narou: 常に `not_comparable: true, granularity: 'monthly'`
+- Music: 月次データが存在する場合 `not_comparable: true, granularity: 'monthly'`
+- `calcChange()`: before=0 → `percent_change: null`（Infinity 未使用）
+- before/after 期間: イベント日は含まない（前: -beforeDays 〜 -1日 / 後: +1日 〜 +afterDays）
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_funnel.js（Phase 9新規） | 93 passed / 0 failed ✅ |
+| test_tiktok.js（回帰） | 88 passed / 0 failed ✅ |
+| test_youtube.js（回帰） | 62 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **682 passed / 0 failed** |
 
 ---
 

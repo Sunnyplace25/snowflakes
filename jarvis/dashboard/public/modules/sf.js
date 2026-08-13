@@ -102,6 +102,7 @@ const SfModule = (() => {
         else if (tabName === 'import') loadImports();
         else if (tabName === 'youtube') loadYouTube();
         else if (tabName === 'tiktok') loadTikTok();
+        else if (tabName === 'funnel') loadFunnel();
       });
     });
   }
@@ -655,6 +656,303 @@ const SfModule = (() => {
     }
   }
 
+  // ─── Funnel Analytics（Phase 9）──────────────────────────────────────────
+
+  /**
+   * Funnel タブを読み込む。
+   * - 読み込み中: setState('analyzing')
+   * - 完了時:    setState('completed')
+   * - データ警告: setState('notice')
+   *
+   * 因果関係を断定しない表現を使用する。
+   * 自動でサイト変更・投稿・作品変更は行わない。
+   */
+  async function loadFunnel() {
+    setState('analyzing', 'ファネルデータを分析しています...');
+
+    const overviewEl  = document.getElementById('sf-funnel-overview-container');
+    const timelineEl  = document.getElementById('sf-funnel-timeline-container');
+
+    if (overviewEl)  overviewEl.innerHTML  = '<div class="loading">読み込み中...</div>';
+    if (timelineEl)  timelineEl.innerHTML  = '<div class="loading">読み込み中...</div>';
+
+    try {
+      const [overviewRes, eventsRes] = await Promise.all([
+        fetch('/api/sf/funnel/overview').then(r => r.json()),
+        fetch('/api/sf/funnel/events').then(r => r.json()),
+      ]);
+
+      if (overviewEl) {
+        overviewEl.innerHTML = renderFunnelOverview(overviewRes.ok ? overviewRes : null);
+      }
+      if (timelineEl) {
+        timelineEl.innerHTML = renderEventTimeline(eventsRes.ok ? (eventsRes.events || []) : []);
+      }
+
+      // notice: データ欠損や警告がある場合に軽度の注意喚起
+      // 「確認した方がよい変化があります」程度に留める
+      const dq = overviewRes?.data_quality;
+      if (dq && (dq.missing_sources?.length > 0 || dq.warnings?.length > 0)) {
+        setState('notice', '確認した方がよいデータがあります');
+      } else {
+        setState('completed', '分析完了');
+      }
+
+    } catch (e) {
+      if (overviewEl) overviewEl.innerHTML = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+      if (timelineEl) timelineEl.innerHTML = '';
+      setState('idle');
+    }
+  }
+
+  /**
+   * Funnel Overview を 4 Stage カード形式でレンダリングする。
+   *
+   * !! 人数の漏斗図として描かない !!
+   *    異種データを 1 本の人数として表現しない。
+   *    source 別の指標カードを表示する。
+   *
+   * @param {object|null} data - /api/sf/funnel/overview レスポンス
+   * @returns {string} HTML
+   */
+  function renderFunnelOverview(data) {
+    if (!data) return '<div class="empty-state">データを取得できませんでした</div>';
+
+    const { stages, data_quality, from, to } = data;
+
+    const fmtNum = (v) => (v == null) ? '—' : v.toLocaleString();
+    const fmtPct = (v) => (v == null) ? '—' : `${(v * 100).toFixed(1)}%`;
+
+    const dqHtml = (() => {
+      if (!data_quality) return '';
+      const parts = [];
+      if (data_quality.missing_sources?.length > 0) {
+        parts.push(`データなし: ${data_quality.missing_sources.join(', ')}`);
+      }
+      if (data_quality.monthly_only_sources?.length > 0) {
+        parts.push(`月次のみ: ${data_quality.monthly_only_sources.join(', ')}`);
+      }
+      if (data_quality.unlinked_content_count > 0) {
+        parts.push(`未紐付けコンテンツ: ${data_quality.unlinked_content_count}件`);
+      }
+      if (data_quality.warnings?.length > 0) {
+        parts.push(...data_quality.warnings);
+      }
+      if (parts.length === 0) return '';
+      return `<div class="sf-funnel-dq">${parts.map(p => `<span>${esc(p)}</span>`).join(' / ')}</div>`;
+    })();
+
+    const d = stages?.discovery?.social ?? {};
+    const e = stages?.engagement?.social ?? {};
+
+    return `
+      <div class="sf-funnel-period">集計期間: ${esc(from ?? '—')} 〜 ${esc(to ?? '—')}</div>
+      ${dqHtml}
+      <div class="sf-funnel-stages">
+
+        <div class="sf-funnel-stage">
+          <div class="sf-funnel-stage-label">Stage 1: DISCOVERY</div>
+          <div class="sf-funnel-cards">
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">Instagram</div>
+              <div class="sf-funnel-row"><span>Reach</span><span>${fmtNum(d.instagram?.reach)}</span></div>
+              <div class="sf-funnel-row"><span>Views</span><span>${fmtNum(d.instagram?.views)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">YouTube</div>
+              <div class="sf-funnel-row"><span>Views</span><span>${fmtNum(d.youtube?.views)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">TikTok</div>
+              <div class="sf-funnel-row"><span>Reach</span><span>${fmtNum(d.tiktok?.reach)}</span></div>
+              <div class="sf-funnel-row"><span>Impressions</span><span>${fmtNum(d.tiktok?.impressions)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">サイト (GA4)</div>
+              <div class="sf-funnel-row"><span>Sessions</span><span>${fmtNum(stages?.discovery?.site?.sessions)}</span></div>
+              <div class="sf-funnel-row"><span>Users</span><span>${fmtNum(stages?.discovery?.site?.users)}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-funnel-stage">
+          <div class="sf-funnel-stage-label">Stage 2: ENGAGEMENT</div>
+          <div class="sf-funnel-cards">
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">Instagram</div>
+              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.instagram?.likes)}</span></div>
+              <div class="sf-funnel-row"><span>Comments</span><span>${fmtNum(e.instagram?.comments)}</span></div>
+              <div class="sf-funnel-row"><span>Saves</span><span>${fmtNum(e.instagram?.saves)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">YouTube</div>
+              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.youtube?.likes)}</span></div>
+              <div class="sf-funnel-row"><span>Watch time</span><span>${fmtNum(e.youtube?.watch_time_min)} min</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">TikTok</div>
+              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.tiktok?.likes)}</span></div>
+              <div class="sf-funnel-row"><span>Completion</span><span>${fmtPct(e.tiktok?.completion_rate)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">サイト (GA4)</div>
+              <div class="sf-funnel-row"><span>Page Views</span><span>${fmtNum(stages?.engagement?.site?.page_views)}</span></div>
+              <div class="sf-funnel-row"><span>Engaged Sessions</span><span>${fmtNum(stages?.engagement?.site?.engaged_sessions)}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-funnel-stage">
+          <div class="sf-funnel-stage-label">Stage 3: DEEP INTEREST</div>
+          <div class="sf-funnel-cards">
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">なろう <span class="sf-funnel-monthly">月次</span></div>
+              <div class="sf-funnel-row"><span>月間PV</span><span>${fmtNum(stages?.deep_interest?.narou?.pv_monthly)}</span></div>
+              <div class="sf-funnel-row"><span>ブックマーク</span><span>${fmtNum(stages?.deep_interest?.narou?.bookmark_count)}</span></div>
+              <div class="sf-funnel-row"><span>レビュー</span><span>${fmtNum(stages?.deep_interest?.narou?.review_count)}</span></div>
+            </div>
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">Music</div>
+              <div class="sf-funnel-row"><span>Streams</span><span>${fmtNum(stages?.deep_interest?.music?.streams)}</span></div>
+              <div class="sf-funnel-row"><span>Listeners</span><span>${fmtNum(stages?.deep_interest?.music?.listeners)}</span></div>
+              <div class="sf-funnel-row"><span>Saves</span><span>${fmtNum(stages?.deep_interest?.music?.saves)}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-funnel-stage">
+          <div class="sf-funnel-stage-label">Stage 4: VALUE</div>
+          <div class="sf-funnel-cards">
+            <div class="sf-funnel-card">
+              <div class="sf-funnel-source">収益 <span class="sf-funnel-monthly">月次</span></div>
+              <div class="sf-funnel-row"><span>収益（JPY）</span><span>${fmtNum(stages?.value?.revenue?.amount_jpy)}</span></div>
+              <div class="sf-funnel-row"><span>数量</span><span>${fmtNum(stages?.value?.revenue?.quantity)}</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+
+  /**
+   * Event Timeline をレンダリングする。
+   * @param {object[]} events
+   * @returns {string} HTML
+   */
+  function renderEventTimeline(events) {
+    if (!events || events.length === 0) {
+      return '<div class="empty-state">イベントが登録されていません</div>';
+    }
+
+    const typeLabel = {
+      novel_publish:  '小説公開',
+      novel_update:   '小説更新',
+      music_release:  '音楽リリース',
+      sns_post:       'SNS投稿',
+      sweets_update:  'SWEETs更新',
+      site_update:    'サイト更新',
+      campaign_start: 'キャンペーン開始',
+      campaign_end:   'キャンペーン終了',
+    };
+
+    const rows = events.map(ev => `
+      <tr class="sf-funnel-event-row" data-event-id="${ev.id}">
+        <td class="sf-col-date">${esc(ev.date)}</td>
+        <td>${esc(typeLabel[ev.event_type] || ev.event_type)}</td>
+        <td>${esc(ev.platform || '—')}</td>
+        <td>${esc(ev.label || '—')}</td>
+        <td>
+          <button class="sf-btn-small" onclick="loadEventImpact(${ev.id})">前後比較</button>
+        </td>
+      </tr>
+    `).join('');
+
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>日付</th><th>種別</th><th>Platform</th><th>ラベル</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  /**
+   * Event Impact を before/after テーブルでレンダリングする。
+   *
+   * 表示ルール:
+   * - データなし → —
+   * - 月次 not_comparable → 「月次データ」
+   * - percent_change null → —
+   *
+   * @param {object|null} data - /api/sf/funnel/event-impact レスポンス
+   * @returns {string} HTML
+   */
+  function renderEventImpact(data) {
+    if (!data) return '<div class="empty-state">イベントが見つかりません</div>';
+
+    const { event, event_date, before_period, after_period, note, metrics } = data;
+
+    const fmtVal = (v) => (v == null) ? '—' : v.toLocaleString();
+    const fmtChg = (m) => {
+      if (m.not_comparable) return '<td colspan="2" class="sf-funnel-monthly-note">月次データ</td>';
+      const abs = m.absolute_change != null ? `${m.absolute_change > 0 ? '+' : ''}${m.absolute_change.toLocaleString()}` : '—';
+      const pct = m.percent_change  != null ? `${m.percent_change > 0 ? '+' : ''}${m.percent_change}%` : '—';
+      return `<td>${abs}</td><td>${pct}</td>`;
+    };
+
+    const rows = (metrics || []).map(m => `
+      <tr>
+        <td class="sf-col-dim">${esc(m.source)}</td>
+        <td>${esc(m.metric)}</td>
+        <td>${fmtVal(m.before_value)}</td>
+        <td>${fmtVal(m.after_value)}</td>
+        ${fmtChg(m)}
+      </tr>
+    `).join('');
+
+    return `
+      <div class="sf-funnel-impact-header">
+        <span class="sf-funnel-event-label">${esc(event?.label || event?.event_type || '—')}</span>
+        <span class="sf-funnel-event-date">${esc(event_date)}</span>
+      </div>
+      <div class="sf-funnel-periods">
+        <span>前: ${esc(before_period?.from)} 〜 ${esc(before_period?.to)}（${before_period?.days}日間）</span>
+        <span>後: ${esc(after_period?.from)} 〜 ${esc(after_period?.to)}（${after_period?.days}日間）</span>
+      </div>
+      <div class="sf-funnel-note">${esc(note || '')}</div>
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>Source</th><th>指標</th>
+            <th>前${before_period?.days}日</th><th>後${after_period?.days}日</th>
+            <th>変化</th><th>変化率</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  /** Event Impact を読み込む（イベント選択時に呼ばれる）。 */
+  async function loadEventImpact(eventId) {
+    const impactEl = document.getElementById('sf-funnel-impact-container');
+    if (!impactEl) return;
+    impactEl.innerHTML = '<div class="loading">読み込み中...</div>';
+    try {
+      const res  = await fetch(`/api/sf/funnel/event-impact?event_id=${eventId}`).then(r => r.json());
+      impactEl.innerHTML = renderEventImpact(res.ok ? res : null);
+    } catch (e) {
+      impactEl.innerHTML = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+    }
+  }
+
+  // グローバル公開（onclick から呼ばれる）
+  if (typeof window !== 'undefined') window.loadEventImpact = loadEventImpact;
+
   // ─── ユーティリティ ───────────────────────────────────────────────────────
 
   /** HTML エスケープ */
@@ -684,9 +982,11 @@ const SfModule = (() => {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
+    loadFunnel, loadEventImpact,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,
+    renderFunnelOverview, renderEventTimeline, renderEventImpact,
   };
 
 })();

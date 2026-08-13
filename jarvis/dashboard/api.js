@@ -21,6 +21,14 @@ import {
   getImportHistory, getUnreviewedImportRows,
 } from '../data/sf_manager.js';
 import { importFile } from '../importers/soundrop.js';
+import {
+  getFunnelEvents,
+  createFunnelEvent,
+  getFunnelOverview,
+  getEventImpact,
+  getWorkFunnel,
+  getTrackFunnel,
+} from '../data/sf_funnel_manager.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -1218,6 +1226,116 @@ export function createApiHandler(db) {
           LIMIT ?
         `).all(limit);
         return jsonRes(res, 200, { ok: true, metric, limit, rows });
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // Phase 9: Funnel Analytics API
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/funnel/overview ────────────────────────────────────────
+      // ファネル 4 Stage 概要。source 別に保持。異種指標の合算なし。
+      // ?from=YYYY-MM-DD&to=YYYY-MM-DD
+      if (path === '/api/sf/funnel/overview' && method === 'GET') {
+        const fromP = url.searchParams.get('from');
+        const toP   = url.searchParams.get('to');
+        const opts  = {};
+        if (fromP && validateDate(fromP)) opts.from = fromP;
+        if (toP   && validateDate(toP))   opts.to   = toP;
+        const result = getFunnelOverview(db, opts);
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── GET /api/sf/funnel/events ──────────────────────────────────────────
+      // イベント一覧取得。不正 filter は安全に無視。
+      // ?from&to&type&platform&work_id&track_id
+      if (path === '/api/sf/funnel/events' && method === 'GET') {
+        const opts = {};
+        const fromP    = url.searchParams.get('from');
+        const toP      = url.searchParams.get('to');
+        const typeP    = url.searchParams.get('type');
+        const platP    = url.searchParams.get('platform');
+        const workIdP  = url.searchParams.get('work_id');
+        const trackIdP = url.searchParams.get('track_id');
+        if (fromP    && validateDate(fromP))                opts.from      = fromP;
+        if (toP      && validateDate(toP))                  opts.to        = toP;
+        if (typeP)                                          opts.eventType = typeP;  // manager 内で allowlist 検証
+        if (platP)                                          opts.platform  = platP;
+        if (workIdP  && /^\d+$/.test(workIdP))             opts.workId    = Number(workIdP);
+        if (trackIdP && /^\d+$/.test(trackIdP))            opts.trackId   = Number(trackIdP);
+        const events = getFunnelEvents(db, opts);
+        return jsonRes(res, 200, { ok: true, events });
+      }
+
+      // ── POST /api/sf/funnel/events ─────────────────────────────────────────
+      // イベント登録。FK 存在確認あり。allowlist 検証あり。
+      if (path === '/api/sf/funnel/events' && method === 'POST') {
+        const body   = await readBody(req);
+        const result = createFunnelEvent(db, body);
+        if (!result.ok) return errRes(res, 400, result.errors.join('; '));
+        return jsonRes(res, 201, { ok: true, id: result.id });
+      }
+
+      // ── GET /api/sf/funnel/event-impact ───────────────────────────────────
+      // イベント前後の指標変化（temporal signal・因果推論なし）。
+      // ?event_id=N&before_days=7&after_days=7
+      if (path === '/api/sf/funnel/event-impact' && method === 'GET') {
+        const eventIdRaw  = url.searchParams.get('event_id');
+        const beforeRaw   = url.searchParams.get('before_days');
+        const afterRaw    = url.searchParams.get('after_days');
+
+        const eventId = parseInt(eventIdRaw, 10);
+        if (!Number.isFinite(eventId) || eventId <= 0) {
+          return errRes(res, 400, 'event_id は正の整数が必要です');
+        }
+        const beforeDays = parseInt(beforeRaw ?? '7', 10);
+        const afterDays  = parseInt(afterRaw  ?? '7', 10);
+        if (!Number.isFinite(beforeDays) || beforeDays < 1 || beforeDays > 90) {
+          return errRes(res, 400, 'before_days は 1〜90 の整数が必要です');
+        }
+        if (!Number.isFinite(afterDays) || afterDays < 1 || afterDays > 90) {
+          return errRes(res, 400, 'after_days は 1〜90 の整数が必要です');
+        }
+        const result = getEventImpact(db, { eventId, beforeDays, afterDays });
+        if (!result) return errRes(res, 404, 'Event not found');
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── GET /api/sf/funnel/work ────────────────────────────────────────────
+      // 特定作品の横断分析。
+      // ?work_id=N&from=YYYY-MM-DD&to=YYYY-MM-DD
+      if (path === '/api/sf/funnel/work' && method === 'GET') {
+        const workIdRaw = url.searchParams.get('work_id');
+        const workId    = parseInt(workIdRaw, 10);
+        if (!Number.isFinite(workId) || workId <= 0) {
+          return errRes(res, 400, 'work_id は正の整数が必要です');
+        }
+        const fromP = url.searchParams.get('from');
+        const toP   = url.searchParams.get('to');
+        const opts  = {};
+        if (fromP && validateDate(fromP)) opts.from = fromP;
+        if (toP   && validateDate(toP))   opts.to   = toP;
+        const result = getWorkFunnel(db, workId, opts);
+        if (!result) return errRes(res, 404, 'Work not found');
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── GET /api/sf/funnel/track ───────────────────────────────────────────
+      // 特定楽曲の横断分析。
+      // ?track_id=N&from=YYYY-MM-DD&to=YYYY-MM-DD
+      if (path === '/api/sf/funnel/track' && method === 'GET') {
+        const trackIdRaw = url.searchParams.get('track_id');
+        const trackId    = parseInt(trackIdRaw, 10);
+        if (!Number.isFinite(trackId) || trackId <= 0) {
+          return errRes(res, 400, 'track_id は正の整数が必要です');
+        }
+        const fromP = url.searchParams.get('from');
+        const toP   = url.searchParams.get('to');
+        const opts  = {};
+        if (fromP && validateDate(fromP)) opts.from = fromP;
+        if (toP   && validateDate(toP))   opts.to   = toP;
+        const result = getTrackFunnel(db, trackId, opts);
+        if (!result) return errRes(res, 404, 'Track not found');
+        return jsonRes(res, 200, { ok: true, ...result });
       }
 
       return errRes(res, 404, 'Not Found');

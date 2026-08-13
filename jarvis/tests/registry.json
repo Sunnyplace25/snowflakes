@@ -54,5 +54,9 @@
   "tiktok": {
     "args": ["tests/test_tiktok.js"],
     "cwd": "jarvis"
+  },
+  "funnel": {
+    "args": ["tests/test_funnel.js"],
+    "cwd": "jarvis"
   }
 }
