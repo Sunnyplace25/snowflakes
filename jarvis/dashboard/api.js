@@ -485,6 +485,109 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, metric, rows });
       }
 
+      // ══════════════════════════════════════════════════════════════════════
+      // SF GA4 エンドポイント（Phase 4）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/ga/daily ───────────────────────────────────────────────
+      // 日別 PV・ユーザー・セッション推移
+      if (path === '/api/sf/ga/daily' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate    = (toParam && validateDate(toParam)) ? toParam : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const pagePath = url.searchParams.get('page_path') || null;
+        const rows = db.prepare(`
+          SELECT date,
+                 SUM(page_views)       AS page_views,
+                 SUM(users)            AS users,
+                 SUM(sessions)         AS sessions,
+                 SUM(engaged_sessions) AS engaged_sessions
+          FROM sf_ga_daily
+          WHERE date >= ? AND date <= ?
+            AND (? IS NULL OR page_path = ?)
+          GROUP BY date
+          ORDER BY date ASC
+        `).all(fromDate, toDate, pagePath, pagePath);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/ga/pages ───────────────────────────────────────────────
+      // ページ別 PV 集計
+      if (path === '/api/sf/ga/pages' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate    = (toParam && validateDate(toParam)) ? toParam : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT page_path,
+                 SUM(page_views) AS page_views,
+                 SUM(users)      AS users,
+                 SUM(sessions)   AS sessions
+          FROM sf_ga_daily
+          WHERE date >= ? AND date <= ?
+          GROUP BY page_path
+          ORDER BY page_views DESC, page_path ASC
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/ga/compare ─────────────────────────────────────────────
+      // ページ別比較（直近期間 vs 前期間）
+      if (path === '/api/sf/ga/compare' && method === 'GET') {
+        const VALID_DAYS = [7, 14, 30];
+        const daysParam = parseInt(url.searchParams.get('days') || '30', 10);
+        const days = VALID_DAYS.includes(daysParam) ? daysParam : 30;
+
+        const today = todayISO();
+        function subDays(base, n) {
+          const d = new Date(base);
+          d.setDate(d.getDate() - n);
+          return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const currentEnd   = today;
+        const currentStart = subDays(today, days - 1);
+        const previousEnd  = subDays(today, days);
+        const previousStart = subDays(today, days * 2 - 1);
+
+        const rows = db.prepare(`
+          SELECT page_path,
+                 SUM(CASE WHEN date >= ? AND date <= ? THEN page_views ELSE 0 END) AS current_views,
+                 SUM(CASE WHEN date >= ? AND date <= ? THEN page_views ELSE 0 END) AS previous_views
+          FROM sf_ga_daily
+          WHERE date >= ? AND date <= ?
+          GROUP BY page_path
+          ORDER BY current_views DESC, page_path ASC
+        `).all(currentStart, currentEnd, previousStart, previousEnd, previousStart, currentEnd);
+        return jsonRes(res, 200, { ok: true, days, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

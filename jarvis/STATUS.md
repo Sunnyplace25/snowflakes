@@ -227,7 +227,7 @@ jarvis-development
 | Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録）+ ISRC_TITLE_OVERRIDES | ✅ 完了（2026-08-12） |
 | Phase 2 | SF収益（revenue_writer.js + API 3エンドポイント）| ✅ 完了（2026-08-12） |
 | Phase 3 | 小説PV・なろう（narou_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-12） |
-| Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 4 | GA連携（ga_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-13） |
 | Phase 5 | 音楽3サービス（music_csv_importer / sf_music_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 6 | Instagram（instagram_client / social_manager / Dashboard） | ⏳ 未着手 |
 | Phase 7 | YouTube（youtube_client OAuth2 / social_manager / Dashboard） | ⏳ 未着手 |
@@ -563,6 +563,62 @@ jarvis-development
 | sweets BGM系 | 正式タイトル・status未確認 |
 
 確認後は `sf_tracks` に `status='unknown'` で登録し、判明次第更新すること。
+
+---
+
+### Phase 4 完了記録（2026-08-13）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | sf_ga_event_daily テーブル・インデックス2本追加（受け口） |
+| db.js | Phase 4 migration 追加（sf_ga_event_daily CREATE TABLE IF NOT EXISTS） |
+| ga_writer.js | 新規作成（writeGaDaily / writeGaEventDaily — UPSERT・COALESCE） |
+| api.js | `/api/sf/ga/daily` / `pages` / `compare` 3エンドポイント追加 |
+| test_ga.js | 新規作成（17テスト・Section 1〜3） |
+| registry.json | ga エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/data/schema.sql` | 追記（sf_ga_event_daily + インデックス2本） |
+| `jarvis/data/db.js` | 変更（Phase 4 migration 追加） |
+| `jarvis/importers/ga_writer.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | 変更（3エンドポイント追加） |
+| `jarvis/tests/test_ga.js` | 新規作成 |
+| `jarvis/tests/registry.json` | 変更（ga エントリ追加） |
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/ga/daily` | `from=`, `to=`（省略時: 直近30日）, `page_path=` | 日別 PV・ユーザー・セッション推移（date 集計） |
+| `/api/sf/ga/pages` | `from=`, `to=`（省略時: 直近30日） | ページ別 PV 集計（page_views 降順） |
+| `/api/sf/ga/compare` | `days=7\|14\|30`（デフォルト: 30） | ページ別比較（current_views / previous_views） |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_ga.js（Phase 4新規） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **352 passed / 0 failed** |
+
+#### 設計上の注意
+
+- `sf_ga_event_daily` は音源デモ再生イベントの「受け口」として設計のみ。公式サイト未実装のためデータ投入は将来フェーズ。
+- GA4 API への接続・認証情報はコードに一切保存しない。
+- Property ID はコードに含まない（index.html から参照のこと）。
 
 ---
 

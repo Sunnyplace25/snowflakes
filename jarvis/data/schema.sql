@@ -135,6 +135,21 @@ CREATE TABLE IF NOT EXISTS sf_ga_daily (
 CREATE INDEX IF NOT EXISTS idx_sf_ga_date ON sf_ga_daily(date);
 CREATE INDEX IF NOT EXISTS idx_sf_ga_page ON sf_ga_daily(page_path);
 
+-- ── GA4 イベント日別集計（音源デモ再生等の受け口）────────────────────────────
+-- 注意: 音源デモ再生イベントは公式サイト未実装。テーブルは受け口として設計のみ。
+
+CREATE TABLE IF NOT EXISTS sf_ga_event_daily (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  date       TEXT    NOT NULL,
+  event_name TEXT    NOT NULL,
+  page_path  TEXT    NOT NULL DEFAULT '/',
+  count      INTEGER NOT NULL DEFAULT 0,
+  fetched_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(date, event_name, page_path)
+);
+CREATE INDEX IF NOT EXISTS idx_sf_ga_event_date ON sf_ga_event_daily(date);
+CREATE INDEX IF NOT EXISTS idx_sf_ga_event_name ON sf_ga_event_daily(event_name);
+
 -- ── なろう 月次スナップショット ───────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS sf_narou_snapshot (

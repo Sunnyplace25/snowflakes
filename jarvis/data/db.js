@@ -74,6 +74,23 @@ function runMigrations(db) {
         ON sf_revenue(transaction_month)
     `);
   } catch (_) {}
+
+  // Phase 4: sf_ga_event_daily テーブル追加（受け口）
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sf_ga_event_daily (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        date       TEXT    NOT NULL,
+        event_name TEXT    NOT NULL,
+        page_path  TEXT    NOT NULL DEFAULT '/',
+        count      INTEGER NOT NULL DEFAULT 0,
+        fetched_at TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+        UNIQUE(date, event_name, page_path)
+      )
+    `);
+  } catch (_) {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_event_date ON sf_ga_event_daily(date)'); } catch (_) {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_event_name ON sf_ga_event_daily(event_name)'); } catch (_) {}
 }
 
 /**
