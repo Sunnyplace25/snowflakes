@@ -420,6 +420,71 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, basis, month, rows });
       }
 
+      // ── GET /api/sf/narou/summary ──────────────────────────────────────────
+      // 各 ncode の最新スナップショット1件 + sf_works JOIN
+      if (path === '/api/sf/narou/summary' && method === 'GET') {
+        const workId = url.searchParams.get('work_id') || null;
+        const rows = db.prepare(`
+          SELECT s.ncode,
+                 w.title  AS work_title,
+                 w.work_type,
+                 w.status AS work_status,
+                 s.month,
+                 s.pv_total,
+                 s.pv_monthly,
+                 s.bookmark_count,
+                 s.review_count,
+                 s.point
+          FROM sf_narou_snapshot s
+          LEFT JOIN sf_works w ON w.id = s.work_id
+          WHERE s.month = (
+            SELECT MAX(s2.month)
+            FROM sf_narou_snapshot s2
+            WHERE s2.ncode = s.ncode
+          )
+          AND (? IS NULL OR s.work_id = ?)
+          ORDER BY s.ncode ASC
+        `).all(workId, workId);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/narou/monthly ──────────────────────────────────────────
+      // 月別 PV 推移（全作品または指定 ncode）
+      if (path === '/api/sf/narou/monthly' && method === 'GET') {
+        const ncode = url.searchParams.get('ncode') || null;
+        const rows = db.prepare(`
+          SELECT month, ncode, pv_monthly, pv_total, bookmark_count, point
+          FROM sf_narou_snapshot
+          WHERE (? IS NULL OR ncode = ?)
+          ORDER BY month ASC, ncode ASC
+        `).all(ncode, ncode);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/narou/compare ──────────────────────────────────────────
+      // 作品別の最新値比較（メトリクス指定）
+      if (path === '/api/sf/narou/compare' && method === 'GET') {
+        const VALID_METRICS = ['pv_total', 'pv_monthly', 'bookmark_count', 'point', 'review_count'];
+        const metric = VALID_METRICS.includes(url.searchParams.get('metric'))
+          ? url.searchParams.get('metric')
+          : 'pv_total';
+        const rows = db.prepare(`
+          SELECT s.ncode,
+                 w.title AS work_title,
+                 s.${metric} AS value,
+                 s.month
+          FROM sf_narou_snapshot s
+          LEFT JOIN sf_works w ON w.id = s.work_id
+          WHERE s.month = (
+            SELECT MAX(s2.month)
+            FROM sf_narou_snapshot s2
+            WHERE s2.ncode = s.ncode
+          )
+          ORDER BY value DESC NULLS LAST, s.ncode ASC
+        `).all();
+        return jsonRes(res, 200, { ok: true, metric, rows });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

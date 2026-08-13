@@ -226,7 +226,7 @@ jarvis-development
 | Phase 1.5 | 楽曲・リリース管理基盤（13テーブル追加 + Soundrop importer + Music Library Dashboard） | ✅ 完了（2026-08-12） |
 | Phase 1.6 | catalog_builder.js（Soundrop Statement → sf_tracks/sf_releases 自動登録）+ ISRC_TITLE_OVERRIDES | ✅ 完了（2026-08-12） |
 | Phase 2 | SF収益（revenue_writer.js + API 3エンドポイント）| ✅ 完了（2026-08-12） |
-| Phase 3 | 小説PV・なろう（sf_narou_manager / API / Dashboard） | ⏳ 未着手 |
+| Phase 3 | 小説PV・なろう（narou_writer / API 3エンドポイント / テスト） | ✅ 完了（2026-08-12） |
 | Phase 4 | GA連携（ga_client / sf_ga_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 5 | 音楽3サービス（music_csv_importer / sf_music_manager / API / Dashboard） | ⏳ 未着手 |
 | Phase 6 | Instagram（instagram_client / social_manager / Dashboard） | ⏳ 未着手 |
@@ -500,6 +500,51 @@ jarvis-development
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | **合計** | **265 passed / 0 failed** |
+
+---
+
+### Phase 3 完了記録（2026-08-12）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| narou_writer.js | 新規作成（sf_narou_snapshot へ UPSERT・import_source='manual'） |
+| api.js | `/api/sf/narou/summary` / `monthly` / `compare` 3エンドポイント追加 |
+| test_narou.js | 新規作成（25テスト・Section 1〜3） |
+| registry.json | narou エントリ追加 |
+
+#### 追加・変更ファイル
+
+| ファイル | 変更種別 |
+|----------|---------|
+| `jarvis/importers/narou_writer.js` | 新規作成 |
+| `jarvis/dashboard/api.js` | 変更（3エンドポイント追加） |
+| `jarvis/tests/test_narou.js` | 新規作成 |
+| `jarvis/tests/registry.json` | 変更（narou エントリ追加） |
+
+#### API エンドポイント
+
+| エンドポイント | クエリパラメータ | 説明 |
+|---|---|---|
+| `/api/sf/narou/summary` | `work_id=`（省略時は全作品） | 各 ncode の最新スナップショット + sf_works JOIN |
+| `/api/sf/narou/monthly` | `ncode=`（省略時は全作品） | 月別 PV 推移（month/ncode/pv_monthly/pv_total/bookmark_count/point） |
+| `/api/sf/narou/compare` | `metric=pv_total|pv_monthly|bookmark_count|point|review_count`（デフォルト: pv_total） | 作品別最新値比較・降順 |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_narou.js（Phase 3新規） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 33 passed / 0 failed ✅ |
+| **合計** | **323 passed / 0 failed** |
 
 ---
 

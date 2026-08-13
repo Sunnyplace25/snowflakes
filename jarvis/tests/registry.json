@@ -30,5 +30,9 @@
   "ai_bridge": {
     "args": ["tests/test_ai_bridge.js"],
     "cwd": "jarvis"
+  },
+  "narou": {
+    "args": ["tests/test_narou.js"],
+    "cwd": "jarvis"
   }
 }
