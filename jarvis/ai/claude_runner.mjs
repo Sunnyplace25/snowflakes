@@ -5,6 +5,7 @@
  * - Windows 環境: claude.exe / claude.cmd / claude を安全に探索
  * - 出力形式: --output-format json → { result, session_id }
  * - セッション再利用: --resume <session_id> で継続
+ * - プロンプト渡し: stdin 経由（長大プロンプト・特殊文字対応）
  * - テスト用: options.spawnFn でモック注入可能
  *
  * Permission mode:
@@ -13,11 +14,8 @@
  * - dangerously-skip-permissions / bypassPermissions は使用禁止
  */
 
-import { execFileSync, execFile, execSync } from 'node:child_process';
-import { existsSync }             from 'node:fs';
-import { promisify }              from 'node:util';
-
-const execFileAsync = promisify(execFile);
+import { spawn, execFileSync, execSync } from 'node:child_process';
+import { existsSync }                    from 'node:fs';
 
 // 探索候補（優先順）
 const CLAUDE_CANDIDATES = [
@@ -77,7 +75,6 @@ export function findClaudeCli() {
       continue;
     }
     // コマンド名: --version で存在確認（失敗 = 未インストール）
-    // shell: true 時は args 配列ではなくコマンド文字列で呼ぶ（DeprecationWarning 回避）
     try {
       if (process.platform === 'win32') {
         execSync(`${candidate} --version`, { encoding: 'utf8', stdio: 'pipe', timeout: 5_000 });
@@ -104,18 +101,77 @@ export function resetClaudePathCache() {
 
 /**
  * Claude CLI 実行引数を組み立てる。
+ * プロンプトは stdin 経由で渡すため args には含めない。
  * テストから直接呼び出し可能。
  *
- * @param {string} prompt
+ * @param {string} _prompt  (未使用: stdin 経由のため)
  * @param {{ sessionId?: string|null }} options
  * @returns {string[]}
  */
-export function buildClaudeArgs(prompt, { sessionId = null } = {}) {
+export function buildClaudeArgs(_prompt, { sessionId = null } = {}) {
   const args = [];
   if (sessionId) args.push('--resume', sessionId);
-  args.push('-p', prompt, '--output-format', 'json');
+  // プロンプトは stdin 経由。--print のみ（長大プロンプト・特殊文字対応）
+  args.push('--print', '--output-format', 'json');
   args.push('--allowed-tools', SAFE_ALLOWED_TOOLS);
   return args;
+}
+
+/**
+ * プロンプトを stdin 経由で Claude CLI に送り、stdout を返す。
+ * Windows では cmd.exe を明示的に spawn（shell:false）することで、
+ * --allowed-tools の括弧・コンマ等を正しくエスケープする。
+ *
+ * @param {string} claudePath
+ * @param {string[]} args
+ * @param {string} prompt
+ * @param {{ cwd: string, timeout: number }} opts
+ * @returns {Promise<{ stdout: string }>}
+ */
+function spawnClaude(claudePath, args, prompt, { cwd, timeout }) {
+  // Windows: cmd.exe /d /s /c を明示的に使用（shell:false で args を安全にエスケープ）
+  // プロンプトは stdin 経由のためコマンドライン長制限に引っかからない
+  const [spawnCmd, spawnArgs] = process.platform === 'win32'
+    ? ['cmd.exe', ['/d', '/s', '/c', claudePath, ...args]]
+    : [claudePath, args];
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn(spawnCmd, spawnArgs, {
+      cwd,
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: false,  // shell:false → Node.js が args を適切にクォート
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout.on('data', chunk => { stdout += chunk.toString(); });
+    proc.stderr.on('data', chunk => { stderr += chunk.toString(); });
+
+    const timer = setTimeout(() => {
+      proc.kill('SIGTERM');
+      reject(new Error(`Claude CLI タイムアウト (${timeout}ms)`));
+    }, timeout);
+
+    // stdin エラーは無視（書き込み中に proc が終了した場合など）
+    proc.stdin.on('error', () => {});
+    proc.stdin.write(prompt, 'utf8');
+    proc.stdin.end();
+
+    proc.on('close', code => {
+      clearTimeout(timer);
+      if (code !== 0) {
+        reject(new Error(`Claude CLI 終了コード ${code}: ${stderr.slice(0, 300)}`));
+      } else {
+        resolve({ stdout });
+      }
+    });
+
+    proc.on('error', err => {
+      clearTimeout(timer);
+      reject(new Error(`Claude CLI 起動エラー: ${err.message}`));
+    });
+  });
 }
 
 /**
@@ -142,18 +198,9 @@ export async function runClaude(prompt, {
   const claudePath = findClaudeCli();
   const args       = buildClaudeArgs(prompt, { sessionId });
 
-  // .cmd ファイルは Windows でシェル経由が必要
-  const useShell = process.platform === 'win32' && claudePath.endsWith('.cmd');
-
   let stdout;
   try {
-    ({ stdout } = await execFileAsync(claudePath, args, {
-      cwd,
-      timeout,
-      encoding:  'utf8',
-      maxBuffer: 10 * 1024 * 1024, // 10 MB
-      shell:     useShell,
-    }));
+    ({ stdout } = await spawnClaude(claudePath, args, prompt, { cwd, timeout }));
   } catch (e) {
     throw new Error(`Claude CLI 実行エラー: ${e.message}`);
   }
