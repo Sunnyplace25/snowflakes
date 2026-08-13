@@ -6,6 +6,11 @@
  * - 出力形式: --output-format json → { result, session_id }
  * - セッション再利用: --resume <session_id> で継続
  * - テスト用: options.spawnFn でモック注入可能
+ *
+ * Permission mode:
+ * - --allowed-tools で安全な操作のみ自動許可
+ * - git commit / push / add / checkout / switch は許可リストに含めない
+ * - dangerously-skip-permissions / bypassPermissions は使用禁止
  */
 
 import { execFileSync, execFile, execSync } from 'node:child_process';
@@ -24,6 +29,36 @@ const CLAUDE_CANDIDATES = [
 ].filter(Boolean);
 
 let _cachedClaudePath = null;
+
+/**
+ * 自動許可するツール・コマンドの一覧。
+ * ここに含まれない操作は Claude Code が実行前に確認プロンプトを出す。
+ *
+ * 許可対象:
+ *   - ファイル読み取り・編集・新規作成（Read / Edit / Write / Glob / Grep）
+ *   - 読み取り専用 git 操作（status / diff / log / branch 参照）
+ *   - node によるテスト実行
+ *
+ * 不許可（リストに含めない）:
+ *   - git commit / git push / git add / git checkout / git switch
+ *   - ブランチ削除 / ファイル削除 / 実 DB 変更 / 外部公開
+ */
+export const SAFE_ALLOWED_TOOLS = [
+  // ファイル操作（読み取り・編集・作成）
+  'Read', 'Edit', 'Write', 'Glob', 'Grep',
+  // 読み取り専用 git 操作
+  'Bash(git status)',
+  'Bash(git diff)',
+  'Bash(git diff --stat)',
+  'Bash(git diff*)',
+  'Bash(git log*)',
+  'Bash(git branch --show-current)',
+  'Bash(git branch)',
+  'Bash(git show*)',
+  'Bash(git rev-parse*)',
+  // テスト実行
+  'Bash(node*)',
+].join(',');
 
 /**
  * 利用可能な Claude CLI パスを返す。見つからなければ throw。
@@ -68,6 +103,22 @@ export function resetClaudePathCache() {
 }
 
 /**
+ * Claude CLI 実行引数を組み立てる。
+ * テストから直接呼び出し可能。
+ *
+ * @param {string} prompt
+ * @param {{ sessionId?: string|null }} options
+ * @returns {string[]}
+ */
+export function buildClaudeArgs(prompt, { sessionId = null } = {}) {
+  const args = [];
+  if (sessionId) args.push('--resume', sessionId);
+  args.push('-p', prompt, '--output-format', 'json');
+  args.push('--allowed-tools', SAFE_ALLOWED_TOOLS);
+  return args;
+}
+
+/**
  * Claude CLI を実行し、結果を返す。
  *
  * @param {string} prompt
@@ -89,10 +140,7 @@ export async function runClaude(prompt, {
   if (spawnFn) return await spawnFn(prompt, { sessionId });
 
   const claudePath = findClaudeCli();
-  const args       = [];
-
-  if (sessionId) args.push('--resume', sessionId);
-  args.push('-p', prompt, '--output-format', 'json');
+  const args       = buildClaudeArgs(prompt, { sessionId });
 
   // .cmd ファイルは Windows でシェル経由が必要
   const useShell = process.platform === 'win32' && claudePath.endsWith('.cmd');

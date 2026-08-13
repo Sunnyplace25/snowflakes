@@ -16,6 +16,7 @@ import { fileURLToPath }    from 'node:url';
 
 import { createGuardrails, ALLOWED_BRANCH, VIOLATION_TYPES } from '../ai/guardrails.mjs';
 import { buildReviewInput, REVIEW_SCHEMA }                    from '../ai/openai_reviewer.mjs';
+import { SAFE_ALLOWED_TOOLS, buildClaudeArgs }                from '../ai/claude_runner.mjs';
 import {
   createApprovalGate,
   savePendingApproval,
@@ -589,6 +590,73 @@ test('runtime JSON ファイルが存在する', () => {
   for (const f of ['session.json', 'last_review.json', 'pending_approval.json']) {
     assert.ok(existsSync(resolve(__dirname, '../ai/runtime', f)), `${f} が存在しない`);
   }
+});
+
+// ─── 7. Permission Mode / Allowed Tools ──────────────────────────────────────
+
+console.log('\n▶ Permission Mode: 安全なツール設定');
+
+test('SAFE_ALLOWED_TOOLS に Read/Edit/Write/Glob/Grep が含まれる', () => {
+  for (const tool of ['Read', 'Edit', 'Write', 'Glob', 'Grep']) {
+    assert.ok(SAFE_ALLOWED_TOOLS.includes(tool), `${tool} が含まれない`);
+  }
+});
+
+test('SAFE_ALLOWED_TOOLS に安全な git 読み取り操作が含まれる', () => {
+  assert.ok(SAFE_ALLOWED_TOOLS.includes('git status'),            'git status 含まれない');
+  assert.ok(SAFE_ALLOWED_TOOLS.includes('git diff'),              'git diff 含まれない');
+  assert.ok(SAFE_ALLOWED_TOOLS.includes('git log'),               'git log 含まれない');
+  assert.ok(SAFE_ALLOWED_TOOLS.includes('git branch --show-current'), 'git branch --show-current 含まれない');
+});
+
+test('SAFE_ALLOWED_TOOLS に node テスト実行が含まれる', () => {
+  assert.ok(SAFE_ALLOWED_TOOLS.includes('node'), 'node 含まれない');
+});
+
+test('SAFE_ALLOWED_TOOLS に git commit が含まれない', () => {
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('git commit'), 'git commit が含まれている（危険）');
+});
+
+test('SAFE_ALLOWED_TOOLS に git push が含まれない', () => {
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('git push'), 'git push が含まれている（危険）');
+});
+
+test('SAFE_ALLOWED_TOOLS に git add が含まれない', () => {
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('git add'), 'git add が含まれている（危険）');
+});
+
+test('SAFE_ALLOWED_TOOLS に checkout / switch が含まれない', () => {
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('checkout'), 'checkout が含まれている（危険）');
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('switch'),   'switch が含まれている（危険）');
+});
+
+test('SAFE_ALLOWED_TOOLS に dangerously-skip-permissions / bypassPermissions が含まれない', () => {
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('dangerously-skip-permissions'), '危険フラグが含まれている');
+  assert.ok(!SAFE_ALLOWED_TOOLS.includes('bypassPermissions'),            '危険モードが含まれている');
+});
+
+test('buildClaudeArgs に --allowed-tools が含まれ値は SAFE_ALLOWED_TOOLS と一致する', () => {
+  const args     = buildClaudeArgs('test prompt');
+  const idx      = args.indexOf('--allowed-tools');
+  assert.ok(idx >= 0, '--allowed-tools が args に含まれない');
+  assert.equal(args[idx + 1], SAFE_ALLOWED_TOOLS, '--allowed-tools の値が SAFE_ALLOWED_TOOLS と異なる');
+});
+
+test('buildClaudeArgs に --output-format json が含まれる', () => {
+  const args = buildClaudeArgs('test prompt');
+  assert.ok(args.includes('--output-format'), '--output-format が含まれない');
+  assert.ok(args.includes('json'),            'json が含まれない');
+});
+
+test('buildClaudeArgs: sessionId あり → --resume が含まれる', () => {
+  const args = buildClaudeArgs('test', { sessionId: 'sess-abc' });
+  assert.ok(args.includes('--resume'),   '--resume が含まれない');
+  assert.ok(args.includes('sess-abc'),   'session_id が含まれない');
+});
+
+test('buildClaudeArgs: sessionId なし → --resume が含まれない', () => {
+  const args = buildClaudeArgs('test', { sessionId: null });
+  assert.ok(!args.includes('--resume'), '--resume が含まれてしまっている');
 });
 
 // ─── 結果 ─────────────────────────────────────────────────────────────────────
