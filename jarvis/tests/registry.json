@@ -62,5 +62,9 @@
   "sync": {
     "args": ["tests/test_sync.js"],
     "cwd": "jarvis"
+  },
+  "youtube_oauth_setup": {
+    "args": ["tests/test_youtube_oauth_setup.js"],
+    "cwd": "jarvis"
   }
 }
