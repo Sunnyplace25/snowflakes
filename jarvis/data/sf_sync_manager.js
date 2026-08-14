@@ -48,6 +48,7 @@ export const FRESHNESS_THRESHOLDS = {
   ga4:       7,    // 手動・日次粒度。1週間未更新でstale
   narou:     32,   // 月次スナップショット。約1か月以上でstale
   tiktok:    14,   // 手動 CSV。2週間未更新でstale
+  x:         14,   // 手動 CSV（X Analytics エクスポート）。2週間未更新でstale
   soundrop:  35,   // 月次Statement。約1か月以上でstale
   revenue:   35,   // 月次・Soundrop Statement 由来
 };
@@ -126,6 +127,17 @@ export const SOURCE_REGISTRY = {
     envVars:     [],
     collectorModule: null,
     actionMessage: 'TikTok Studio の CSV を importTikTokCSV() で取込してください',
+  },
+  x: {
+    source:      'x',
+    mode:        'manual',
+    label:       'X（旧Twitter）',
+    granularity: 'daily',
+    dataTable:   'sf_x_tweet_metrics',
+    dateCol:     'snapshot_date',
+    envVars:     [],
+    collectorModule: null,
+    actionMessage: 'X Analytics から CSV をエクスポートして importXCSV() で取込してください',
   },
   soundrop: {
     source:      'soundrop',

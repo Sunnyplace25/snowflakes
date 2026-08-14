@@ -235,6 +235,7 @@ jarvis-development
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ✅ 完了（2026-08-13） |
 | Phase 10 | Ops Automation（sf_sync_manager / sf_ops_runner / Task Scheduler / API / Dashboard Sync タブ） | ✅ 完了（2026-08-14） |
 | Phase 11 | Site Event Tracking（イベントカタログ / API 2エンドポイント / サイト計測追加 / テスト25件） | ✅ 完了（2026-08-14） |
+| Phase 12 | X Analytics（X Analytics CSV インポーター / DB 3テーブル / API 4エンドポイント / テスト79件） | ✅ 完了（2026-08-14） |
 
 ### Phase 1 完了記録（2026-08-12）
 
@@ -1267,6 +1268,132 @@ Soundrop が fresh で Revenue のみ stale の場合は独立 attention を許�
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | test_youtube_oauth_setup.js（回帰） | 39 passed / 0 failed ✅ |
 | **合計** | **827 passed / 0 failed** |
+
+---
+
+### Phase 12 完了記録（2026-08-14）
+
+#### 取得方式判定
+
+| 方式 | 判定 | 根拠 |
+|------|------|------|
+| A. X API 自動取得 | ❌ 今回は実施しない | 公式 X API での自動取得は技術的に可能（User Context 認証 / public_metrics / non_public_metrics 等）。ただし現在は API credentials / credits を設定しないため MANUAL 運用 |
+| B. X Analytics CSV エクスポート | ✅ 採用 | analytics.x.com → Post Activity Dashboard → Export Data → CSV で取得可能。制約: 最大 30 日/1 export・最大 3,000 件/CSV。TikTok と同様の手動取込方式 |
+| C. スクレイピング / 非公式 API | 禁止 | 利用規約違反のため実装しない |
+
+**取得モード: MANUAL**（公式 X API による自動取得は技術的に可能だが、現在は API credentials / credits を設定せず無料 CSV 取込を標準運用とするため）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| schema.sql | X 関連 3テーブル追加（sf_x_tweet / sf_x_tweet_metrics / sf_x_account_daily）|
+| db.js | Phase 12 migration 追加（X_TABLES）|
+| sf_x_manager.js | 新規作成（writeXTweet / writeXTweetMetrics / writeXAccountDaily / getXTweets / getXTweetsTop / getXAccountDaily / getXSummary）|
+| x_csv_importer.js | 新規作成（X Analytics CSV パーサー / バリデーター / importXCSV）|
+| sf_funnel_manager.js | VALID_EVENT_PLATFORMS に 'x' 追加 |
+| sf_sync_manager.js | SOURCE_REGISTRY に 'x'（manual）追加 / FRESHNESS_THRESHOLDS に x: 14 追加 |
+| dashboard/api.js | X 4エンドポイント追加 / sf_x_manager.js import 追加 |
+| test_sync.js | insertX ヘルパー追加 / "全 source fresh" テストに insertX 追加 |
+| test_x.js | 新規作成（79テスト・16セクション）|
+| tests/registry.json | x エントリ追加 |
+
+#### 取得可能指標（X Analytics CSV 経由）
+
+| 指標 | カラム | 備考 |
+|------|--------|------|
+| インプレッション | impressions | 表示回数 |
+| エンゲージメント合計 | engagements | X Analytics 提供値（内訳の合算ではない） |
+| リツイート | retweets | |
+| リプライ | replies | |
+| いいね | likes | |
+| URL クリック | url_clicks | |
+| プロフィールクリック | profile_clicks | |
+| 詳細展開 | detail_expands | |
+| メディア表示 | media_views | |
+| メディアエンゲージメント | media_engagements | |
+
+#### 取得不可指標
+
+| 指標 | 理由 |
+|------|------|
+| フォロワー日次推移 | X Analytics CSV 非提供。API または手動入力のみ（sf_x_account_daily で受け口確保）|
+| プロモーション指標 | 広告なしアカウントは常に 0 / 空欄 |
+| ユニークリーチ | X Analytics CSV では提供されない |
+| エンゲージメント率 | 派生値のため保存しない（都度 impressions > 0 で算出可能）|
+
+#### 指標の合算制限
+
+- `engagements`（X Analytics 提供合計値）と `likes + retweets + replies` を合算して二重エンゲージメント数を作ることは禁止
+- `engagements` カラムは X Analytics が提供した値をそのまま保持する
+
+#### ファネル接続
+
+- `sf_funnel_event.platform` に 'x' を追加（VALID_EVENT_PLATFORMS）
+- X 投稿（`sns_post`）をファネル基準点として登録可能
+- X から公式サイトへの導線は `click_x`（snow.js）として GA4 に計測済み（Phase 11 カタログに含む）
+- 「X クリック → サイト訪問が同一人物」の照合は行わない（aggregate のみ）
+
+#### DB テーブル
+
+| テーブル | 用途 | UNIQUE 制約 |
+|----------|------|------------|
+| `sf_x_tweet` | ツイート台帳（tweet_id / 投稿日時 / 本文先頭140文字 / ツイートタイプ）| tweet_id |
+| `sf_x_tweet_metrics` | ツイート別指標スナップショット（X Analytics CSV 累計値）| (tweet_id, snapshot_date) |
+| `sf_x_account_daily` | アカウント日次（フォロワー数等・手動入力）| date |
+
+#### API エンドポイント（4件追加）
+
+| エンドポイント | パラメータ | 内容 |
+|----------------|-----------|------|
+| `GET /api/sf/x/tweets` | `from=`, `to=`, `tweet_type=`, `limit=` | ツイート一覧（最新スナップショット指標付き）|
+| `GET /api/sf/x/tweets/top` | `snapshot_date=`, `limit=` | インプレッション上位ツイート |
+| `GET /api/sf/x/account/daily` | `from=`, `to=` | アカウント日次スナップショット |
+| `GET /api/sf/x/summary` | `snapshot_date=`, `from=`, `to=` | 期間集計サマリー（投稿数・指標合計・ツイートタイプ別）|
+
+#### X Analytics CSV フォーマット対応
+
+X Analytics（analytics.x.com → Post Activity Dashboard → Export Data）が出力する CSV を直接インポート可能。
+制約: 最大 30 日/1 export・最大 3,000 件/CSV（X Analytics 公式仕様）。
+文字列カラム名（小文字 trim 後で比較）→ 内部フィールド名のマッピング:
+- `tweet id` → tweet_id
+- `time` → published_at  
+- `tweet text` → text_snippet（先頭 140 文字）
+- `impressions` → impressions
+- `engagements` → engagements
+- `user profile clicks` → profile_clicks
+- 等（HEADER_MAP 参照）
+
+#### 必要 ENV
+
+`.env.example` に既存の X API vars（将来用・全てコメントアウト）:
+- `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET`, `X_BEARER_TOKEN`
+- 今回の CSV インポート方式では不要（自動 API 取得を実装した場合に必要）
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_x.js（Phase 12新規） | 79 passed / 0 failed ✅ |
+| test_sync.js（回帰・x 対応）| 81 passed / 0 failed ✅ |
+| test_site_events.js（回帰） | 25 passed / 0 failed ✅ |
+| test_funnel.js（回帰） | 93 passed / 0 failed ✅ |
+| test_tiktok.js（回帰） | 88 passed / 0 failed ✅ |
+| test_youtube.js（回帰） | 62 passed / 0 failed ✅ |
+| test_youtube_oauth_setup.js（回帰） | 39 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| **合計** | **906 passed / 0 failed** |
 
 ---
 

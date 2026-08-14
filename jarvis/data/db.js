@@ -170,6 +170,49 @@ function runMigrations(db) {
     `);
   } catch (_) {}
 
+  // Phase 12: X Analytics テーブル追加
+  const X_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_x_tweet (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tweet_id TEXT NOT NULL UNIQUE,
+      published_at TEXT,
+      text_snippet TEXT,
+      tweet_type TEXT NOT NULL DEFAULT 'tweet'
+        CHECK (tweet_type IN ('tweet','reply','retweet','quote')),
+      import_source TEXT NOT NULL DEFAULT 'csv'
+        CHECK (import_source IN ('csv','manual')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_x_tweet_published ON sf_x_tweet(published_at)`,
+    `CREATE TABLE IF NOT EXISTS sf_x_tweet_metrics (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tweet_id TEXT NOT NULL REFERENCES sf_x_tweet(tweet_id),
+      snapshot_date TEXT NOT NULL,
+      impressions INTEGER, engagements INTEGER, retweets INTEGER,
+      replies INTEGER, likes INTEGER, url_clicks INTEGER,
+      profile_clicks INTEGER, detail_expands INTEGER,
+      media_views INTEGER, media_engagements INTEGER,
+      import_source TEXT NOT NULL DEFAULT 'csv'
+        CHECK (import_source IN ('csv','manual')),
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(tweet_id, snapshot_date)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_x_metrics_date  ON sf_x_tweet_metrics(snapshot_date)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_x_metrics_tweet ON sf_x_tweet_metrics(tweet_id)`,
+    `CREATE TABLE IF NOT EXISTS sf_x_account_daily (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL UNIQUE,
+      followers_count INTEGER,
+      import_source TEXT NOT NULL DEFAULT 'manual'
+        CHECK (import_source IN ('api','csv','manual')),
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_x_account_date ON sf_x_account_daily(date)`,
+  ];
+  for (const sql of X_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

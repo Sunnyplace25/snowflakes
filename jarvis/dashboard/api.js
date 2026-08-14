@@ -37,6 +37,12 @@ import {
   AUTO_SOURCES,
   SOURCE_REGISTRY,
 } from '../data/sf_sync_manager.js';
+import {
+  getXTweets,
+  getXTweetsTop,
+  getXAccountDaily,
+  getXSummary,
+} from '../data/sf_x_manager.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -1451,6 +1457,47 @@ export function createApiHandler(db) {
           { event_name: 'click_kindle',    funnel_stage: 'VALUE',        page: 'index',              description: 'Kindle/Amazon電子書籍リンク（snow.js）', parameters: ['link_url'],    status: 'active' },
         ];
         return jsonRes(res, 200, { ok: true, events });
+      }
+
+      // ── GET /api/sf/x/tweets ──────────────────────────────────────────────────
+      // ツイート一覧（最新スナップショット指標付き）
+      if (path === '/api/sf/x/tweets' && method === 'GET') {
+        const from       = url.searchParams.get('from')       || null;
+        const to         = url.searchParams.get('to')         || null;
+        const tweet_type = url.searchParams.get('tweet_type') || null;
+        const limitParam = parseInt(url.searchParams.get('limit') ?? '100', 10);
+        const limit      = (Number.isFinite(limitParam) && limitParam > 0) ? Math.min(limitParam, 500) : 100;
+        const rows = getXTweets(db, { from, to, tweet_type, limit });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/x/tweets/top ─────────────────────────────────────────────
+      // インプレッション上位ツイート
+      if (path === '/api/sf/x/tweets/top' && method === 'GET') {
+        const snapshot_date = url.searchParams.get('snapshot_date') || null;
+        const limitParam    = parseInt(url.searchParams.get('limit') ?? '10', 10);
+        const limit         = (Number.isFinite(limitParam) && limitParam > 0) ? Math.min(limitParam, 100) : 10;
+        const rows = getXTweetsTop(db, { snapshot_date, limit });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/x/account/daily ──────────────────────────────────────────
+      // アカウント日次スナップショット（フォロワー数等）
+      if (path === '/api/sf/x/account/daily' && method === 'GET') {
+        const from = url.searchParams.get('from') || null;
+        const to   = url.searchParams.get('to')   || null;
+        const rows = getXAccountDaily(db, { from, to });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/x/summary ────────────────────────────────────────────────
+      // 期間集計サマリー（投稿数・インプレッション等。engagements は X Analytics 提供値のみ）
+      if (path === '/api/sf/x/summary' && method === 'GET') {
+        const snapshot_date = url.searchParams.get('snapshot_date') || null;
+        const from          = url.searchParams.get('from') || null;
+        const to            = url.searchParams.get('to')   || null;
+        const summary = getXSummary(db, { snapshot_date, from, to });
+        return jsonRes(res, 200, { ok: true, ...summary });
       }
 
       return errRes(res, 404, 'Not Found');

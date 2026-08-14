@@ -721,3 +721,83 @@ CREATE TABLE IF NOT EXISTS sf_sync_state (
   snoozed_until        TEXT,                               -- この日時まで通知しない
   updated_at           TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
 );
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 12: X（旧Twitter）Analytics — ツイート実績・反応記録
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- 取得方式: B（CSV エクスポート）
+--   X Analytics（analytics.twitter.com）→ Export Data → CSV
+--   ツイート別累計指標（インプレッション・エンゲージメント等）を手動取込。
+--
+-- 取得不可指標:
+--   フォロワー日次推移 → X Analytics CSV 非提供（API または手動のみ）
+--   プロモーション指標 → 広告なしアカウントは常に 0 / NULL
+--   ユニークリーチ     → X Analytics CSV では提供されない
+--
+-- 禁止事項:
+--   異なる指標の合算による「人気度」算出
+--   フォロワー個人識別・他 SNS との人物照合
+--   非公式 API・スクレイピング・セッション流用
+--
+
+-- ── X ツイート台帳（Phase 12）────────────────────────────────────────────────
+-- tweet_id: X の数値 ID（文字列として保存）
+-- text_snippet: 本文先頭 140 文字のみ（識別用・個人情報除外済）
+-- tweet_type: text prefix による推定（RT @ → retweet / @ → reply / else → tweet）
+
+CREATE TABLE IF NOT EXISTS sf_x_tweet (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  tweet_id      TEXT    NOT NULL UNIQUE,
+  published_at  TEXT,                           -- 投稿日時（ISO 8601 または YYYY-MM-DD HH:MM）
+  text_snippet  TEXT,                           -- 本文先頭 140 文字（識別用のみ）
+  tweet_type    TEXT    NOT NULL DEFAULT 'tweet'
+    CHECK (tweet_type IN ('tweet', 'reply', 'retweet', 'quote')),
+  import_source TEXT    NOT NULL DEFAULT 'csv'
+    CHECK (import_source IN ('csv', 'manual')),
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+);
+
+-- ── X ツイート別指標スナップショット（Phase 12）─────────────────────────────
+-- X Analytics CSV エクスポートからの累計指標。
+-- UNIQUE(tweet_id, snapshot_date): 同じ CSV を再インポートしても冪等。
+-- engagements: X Analytics が提供する合計エンゲージメント数（内訳の合算ではない）。
+
+CREATE TABLE IF NOT EXISTS sf_x_tweet_metrics (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  tweet_id           TEXT    NOT NULL REFERENCES sf_x_tweet(tweet_id),
+  snapshot_date      TEXT    NOT NULL,          -- エクスポート取得日 YYYY-MM-DD
+  impressions        INTEGER,                   -- インプレッション数
+  engagements        INTEGER,                   -- エンゲージメント数合計（X Analytics 提供値）
+  retweets           INTEGER,                   -- リツイート数
+  replies            INTEGER,                   -- リプライ数
+  likes              INTEGER,                   -- いいね数
+  url_clicks         INTEGER,                   -- URL クリック数
+  profile_clicks     INTEGER,                   -- プロフィールクリック数
+  detail_expands     INTEGER,                   -- 詳細展開数
+  media_views        INTEGER,                   -- メディア表示数
+  media_engagements  INTEGER,                   -- メディアエンゲージメント数
+  import_source      TEXT    NOT NULL DEFAULT 'csv'
+    CHECK (import_source IN ('csv', 'manual')),
+  fetched_at         TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  UNIQUE(tweet_id, snapshot_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_x_tweet_published  ON sf_x_tweet(published_at);
+CREATE INDEX IF NOT EXISTS idx_sf_x_metrics_date     ON sf_x_tweet_metrics(snapshot_date);
+CREATE INDEX IF NOT EXISTS idx_sf_x_metrics_tweet    ON sf_x_tweet_metrics(tweet_id);
+
+-- ── X アカウント日次スナップショット（Phase 12）─────────────────────────────
+-- フォロワー数等。CSV エクスポートでは提供されないため手動入力または将来 API 対応。
+-- import_source='csv' は将来 X Analytics が account CSV を提供した場合に備えた予約。
+
+CREATE TABLE IF NOT EXISTS sf_x_account_daily (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  date            TEXT    NOT NULL UNIQUE,      -- YYYY-MM-DD
+  followers_count INTEGER,                      -- フォロワー総数（手動入力）
+  import_source   TEXT    NOT NULL DEFAULT 'manual'
+    CHECK (import_source IN ('api', 'csv', 'manual')),
+  fetched_at      TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_x_account_date ON sf_x_account_daily(date);

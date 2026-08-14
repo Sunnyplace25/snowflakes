@@ -125,6 +125,17 @@ function insertRevenue(db, month) {
   `).run(month + '-01', month);
 }
 
+/** X ツイート指標データを挿入（sf_x_tweet + sf_x_tweet_metrics） */
+function insertX(db, snapshotDate) {
+  db.prepare(`
+    INSERT OR IGNORE INTO sf_x_tweet (tweet_id, tweet_type) VALUES ('test_sync_tweet', 'tweet')
+  `).run();
+  db.prepare(`
+    INSERT OR IGNORE INTO sf_x_tweet_metrics (tweet_id, snapshot_date, impressions)
+    VALUES ('test_sync_tweet', ?, 1000)
+  `).run(snapshotDate);
+}
+
 // ─── API テスト用サーバー ─────────────────────────────────────────────────────
 
 import { createApiHandler } from '../dashboard/api.js';
@@ -751,6 +762,7 @@ await test('no attention: 全 source fresh → 空配列', () => {
   insertNarou(db, '2026-08');     // 当月
   insertSoundrop(db, '2026-08');  // 当月
   insertRevenue(db, '2026-08');   // 当月
+  insertX(db, '2026-08-13');      // 1日前
   // AUTO sources: ENV 未設定なので unconfigured のまま（attention に出る）
   // → AUTO unconfigured は残るが MANUAL は消えることを確認
   const items = getAttentionItems(db, { ignoreCooldown: true, today });

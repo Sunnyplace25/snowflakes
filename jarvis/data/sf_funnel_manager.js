@@ -48,7 +48,7 @@ export const VALID_EVENT_TYPES = [
 /** sf_funnel_event.platform の許可値（スキーマに CHECK なし→アプリ層で検証） */
 export const VALID_EVENT_PLATFORMS = [
   'youtube', 'instagram', 'tiktok', 'spotify',
-  'apple_music', 'amazon_music', 'youtube_music', 'narou', 'site',
+  'apple_music', 'amazon_music', 'youtube_music', 'narou', 'site', 'x',
 ];
 
 // ── ヘルパー関数 ──────────────────────────────────────────────────────────────
