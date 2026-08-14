@@ -213,6 +213,85 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 13: KDP Analytics テーブル追加
+  const KDP_TABLES = [
+    `CREATE TABLE IF NOT EXISTS kdp_books (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      asin TEXT NOT NULL UNIQUE,
+      isbn TEXT, title TEXT NOT NULL, author TEXT,
+      format TEXT CHECK (format IN ('ebook','paperback','hardcover','other') OR format IS NULL),
+      memo TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_books_asin  ON kdp_books(asin)`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_books_title ON kdp_books(title)`,
+    `CREATE TABLE IF NOT EXISTS kdp_orders_daily (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL, book_id INTEGER NOT NULL REFERENCES kdp_books(id),
+      marketplace TEXT NOT NULL, paid_units INTEGER, free_units INTEGER,
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(date, book_id, marketplace)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_orders_date ON kdp_orders_daily(date)`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_orders_book ON kdp_orders_daily(book_id)`,
+    `CREATE TABLE IF NOT EXISTS kdp_kenp_daily (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL, book_id INTEGER NOT NULL REFERENCES kdp_books(id),
+      marketplace TEXT NOT NULL, kenp_read INTEGER,
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(date, book_id, marketplace)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_kenp_date ON kdp_kenp_daily(date)`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_kenp_book ON kdp_kenp_daily(book_id)`,
+    `CREATE TABLE IF NOT EXISTS kdp_royalties (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      royalty_month TEXT NOT NULL,
+      book_id INTEGER NOT NULL REFERENCES kdp_books(id),
+      marketplace TEXT NOT NULL,
+      transaction_type TEXT NOT NULL DEFAULT 'royalty'
+        CHECK (transaction_type IN ('royalty','ku_koll','refund','free','other')),
+      units_sold INTEGER, units_refunded INTEGER, net_units INTEGER,
+      royalty_amount REAL, currency TEXT NOT NULL DEFAULT 'JPY',
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(royalty_month, book_id, marketplace, transaction_type)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_royalties_month ON kdp_royalties(royalty_month)`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_royalties_book  ON kdp_royalties(book_id)`,
+    `CREATE TABLE IF NOT EXISTS kdp_payments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      payment_number TEXT NOT NULL, marketplace TEXT NOT NULL,
+      sales_period TEXT, payment_status TEXT, payment_date TEXT,
+      payment_method TEXT, net_earnings REAL, currency TEXT NOT NULL DEFAULT 'JPY',
+      fx_rate REAL, payment_amount REAL, tax_withholding REAL,
+      fetched_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(payment_number, marketplace)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_kdp_payments_date ON kdp_payments(payment_date)`,
+    `CREATE TABLE IF NOT EXISTS kdp_import_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      report_type TEXT NOT NULL
+        CHECK (report_type IN ('orders','kenp','royalties','payments')),
+      file_name TEXT, file_fingerprint TEXT, report_period TEXT,
+      row_count INTEGER DEFAULT 0, imported_count INTEGER DEFAULT 0,
+      skipped_count INTEGER DEFAULT 0, warning_count INTEGER DEFAULT 0,
+      imported_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE TABLE IF NOT EXISTS sf_kdp_book_map (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      book_id INTEGER NOT NULL UNIQUE REFERENCES kdp_books(id),
+      work_id INTEGER NOT NULL REFERENCES sf_works(id),
+      created_at TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_kdp_map_work ON sf_kdp_book_map(work_id)`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_kdp
+      ON sf_revenue(month, platform, work_id, currency)
+      WHERE platform = 'kdp' AND work_id IS NOT NULL AND track_id IS NULL`,
+  ];
+  for (const sql of KDP_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

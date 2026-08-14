@@ -125,6 +125,19 @@ function insertRevenue(db, month) {
   `).run(month + '-01', month);
 }
 
+/** KDP ロイヤリティデータを挿入（kdp_books + kdp_royalties） */
+function insertKdp(db, royaltyMonth) {
+  db.prepare(`
+    INSERT OR IGNORE INTO kdp_books (asin, title) VALUES ('B000TESTKDP', 'Test KDP Book')
+  `).run();
+  const book = db.prepare(`SELECT id FROM kdp_books WHERE asin = 'B000TESTKDP'`).get();
+  db.prepare(`
+    INSERT OR IGNORE INTO kdp_royalties
+      (royalty_month, book_id, marketplace, transaction_type, currency, royalty_amount)
+    VALUES (?, ?, 'amazon.co.jp', 'royalty', 'JPY', 500)
+  `).run(royaltyMonth, book.id);
+}
+
 /** X ツイート指標データを挿入（sf_x_tweet + sf_x_tweet_metrics） */
 function insertX(db, snapshotDate) {
   db.prepare(`
@@ -185,6 +198,8 @@ await test('SOURCE_REGISTRY に全 source が含まれる', () => {
   assert.ok(SOURCE_REGISTRY.ga4);
   assert.ok(SOURCE_REGISTRY.narou);
   assert.ok(SOURCE_REGISTRY.tiktok);
+  assert.ok(SOURCE_REGISTRY.x);
+  assert.ok(SOURCE_REGISTRY.kdp);
   assert.ok(SOURCE_REGISTRY.soundrop);
   assert.ok(SOURCE_REGISTRY.revenue);
 });
@@ -763,6 +778,7 @@ await test('no attention: 全 source fresh → 空配列', () => {
   insertSoundrop(db, '2026-08');  // 当月
   insertRevenue(db, '2026-08');   // 当月
   insertX(db, '2026-08-13');      // 1日前
+  insertKdp(db, '2026-08');       // 当月
   // AUTO sources: ENV 未設定なので unconfigured のまま（attention に出る）
   // → AUTO unconfigured は残るが MANUAL は消えることを確認
   const items = getAttentionItems(db, { ignoreCooldown: true, today });

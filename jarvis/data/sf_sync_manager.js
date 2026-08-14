@@ -49,6 +49,7 @@ export const FRESHNESS_THRESHOLDS = {
   narou:     32,   // 月次スナップショット。約1か月以上でstale
   tiktok:    14,   // 手動 CSV。2週間未更新でstale
   x:         14,   // 手動 CSV（X Analytics エクスポート）。2週間未更新でstale
+  kdp:       35,   // 月次ロイヤリティ TSV。約1か月以上でstale
   soundrop:  35,   // 月次Statement。約1か月以上でstale
   revenue:   35,   // 月次・Soundrop Statement 由来
 };
@@ -138,6 +139,17 @@ export const SOURCE_REGISTRY = {
     envVars:     [],
     collectorModule: null,
     actionMessage: 'X Analytics から CSV をエクスポートして importXCSV() で取込してください',
+  },
+  kdp: {
+    source:      'kdp',
+    mode:        'manual',
+    label:       'KDP（Kindle）',
+    granularity: 'monthly',
+    dataTable:   'kdp_royalties',
+    dateCol:     'royalty_month',
+    envVars:     [],
+    collectorModule: null,
+    actionMessage: 'KDP レポートから月次ロイヤリティ TSV をダウンロードして importKdpReport() で取込してください',
   },
   soundrop: {
     source:      'soundrop',

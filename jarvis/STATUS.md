@@ -236,6 +236,102 @@ jarvis-development
 | Phase 10 | Ops Automation（sf_sync_manager / sf_ops_runner / Task Scheduler / API / Dashboard Sync タブ） | ✅ 完了（2026-08-14） |
 | Phase 11 | Site Event Tracking（イベントカタログ / API 2エンドポイント / サイト計測追加 / テスト25件） | ✅ 完了（2026-08-14） |
 | Phase 12 | X Analytics（X Analytics CSV インポーター / DB 3テーブル / API 4エンドポイント / テスト79件） | ✅ 完了（2026-08-14） |
+| Phase 13 | KDP Analytics（KDP レポートインポーター / DB 7テーブル / API 7エンドポイント / テスト110件） | ✅ 完了（2026-08-14） |
+
+---
+
+## Phase 13 完了記録（2026-08-14）
+
+### KDP Analytics — Kindle Direct Publishing 電子書籍実績管理
+
+#### 設計方針
+
+| 項目 | 内容 |
+|------|------|
+| 取得方式 | MANUAL（公式 KDP レポート TSV/CSV エクスポートのみ。スクレイピング・非公式API禁止） |
+| テーブル命名 | `kdp_*`（ビジネス全体共通基盤 / sf_ プレフィックスなし） |
+| SF 接続方式 | `sf_kdp_book_map`（book_id → work_id の明示的マッピング） |
+| 通貨方針 | 合算禁止。JPY / USD / GBP を別レコードとして保持 |
+| 指標分離 | Orders ≠ KENP ≠ Royalty ≠ Payment（混在禁止） |
+| sf_revenue | マッピング済み本のみ書き込み（platform='kdp', source='電子書籍'） |
+| 一次識別子 | ASIN（eBook と Paperback は別 ASIN = 別レコード） |
+
+#### 新規テーブル（Phase 13）
+
+| テーブル | 用途 |
+|----------|------|
+| `kdp_books` | KDP 本台帳（ASIN UNIQUE / title / author / format） |
+| `kdp_orders_daily` | 日次注文数（有料・無料単位） |
+| `kdp_kenp_daily` | 日次 KENP 読み取りページ数（Kindle Unlimited） |
+| `kdp_royalties` | 月次ロイヤリティ（通貨別・transaction_type別） |
+| `kdp_payments` | 支払い履歴（payment_number UNIQUE per marketplace） |
+| `kdp_import_log` | インポート監査ログ |
+| `sf_kdp_book_map` | KDP 本 ↔ SF 作品マッピング（1 ASIN → 1 作品） |
+
+#### sf_revenue 新規インデックス
+
+| インデックス | 条件 |
+|-------------|------|
+| `idx_sf_revenue_kdp` | UNIQUE(month, platform, work_id, currency) WHERE platform='kdp' AND work_id IS NOT NULL AND track_id IS NULL |
+
+#### 対応レポートタイプ
+
+| report_type | CSV ヘッダー検出 | 主要カラム |
+|-------------|----------------|-----------|
+| `orders` | `units ordered (paid)` | ASIN, Date, Units Ordered (Paid/Free) |
+| `kenp` | `kenp read` | ASIN, Date, KENP Read |
+| `royalties` | `total royalties` | ASIN, Transaction Type, Total Royalties, Currency |
+| `payments` | `payment number` | Payment Number, Net Earnings, Currency |
+
+#### Transaction Type 正規化
+
+| KDP 出力値 | 内部値 |
+|-----------|-------|
+| Royalty / Purchase / Standard | `royalty` |
+| KU/KOLL / Kindle Unlimited | `ku_koll` |
+| Refund | `refund` |
+| Free / Giveaway | `free` |
+| その他 | `other` |
+
+#### 実装ファイル
+
+| ファイル | 種別 | 内容 |
+|----------|------|------|
+| `jarvis/data/schema.sql` | 追記 | kdp_* テーブル 7 個 + sf_revenue KDP インデックス |
+| `jarvis/data/db.js` | 修正 | Phase 13 KDP_TABLES 移行ブロック追加 |
+| `jarvis/data/kdp_manager.js` | 新規 | KDP データマネージャー（read/write 全関数） |
+| `jarvis/importers/kdp_report_importer.js` | 新規 | KDP レポートインポーター（TSV/CSV 4種対応） |
+| `jarvis/data/sf_sync_manager.js` | 修正 | `kdp` source 追加（manual / monthly / 35日 stale） |
+| `jarvis/dashboard/api.js` | 修正 | KDP API エンドポイント 7 個追加 |
+| `jarvis/tests/test_kdp.js` | 新規 | KDP テストスイート（110 tests / 20 sections） |
+| `jarvis/tests/registry.json` | 修正 | `kdp` エントリ追加 |
+| `jarvis/tests/test_sync.js` | 修正 | `insertKdp` 関数追加 / Section 1 に kdp 追加 |
+
+#### API エンドポイント（Phase 13 追加）
+
+| エンドポイント | 説明 | パラメータ |
+|---------------|------|-----------|
+| `GET /api/kdp/books` | 本一覧 | `sf_only=1`, `asin=...` |
+| `GET /api/kdp/orders` | 日次注文 | `from`, `to`, `book_id`, `marketplace` |
+| `GET /api/kdp/kenp` | 日次 KENP | `from`, `to`, `book_id`, `marketplace` |
+| `GET /api/kdp/royalties` | 月次ロイヤリティ | `royalty_month`, `book_id`, `marketplace`, `currency` |
+| `GET /api/kdp/payments` | 支払い履歴 | `marketplace`, `payment_status` |
+| `GET /api/kdp/summary` | KDP サマリー（全本） | `royalty_month` |
+| `GET /api/sf/kdp/summary` | KDP サマリー（SF のみ） | `royalty_month` |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|---------------|------|
+| test_kdp.js | 110 passed / 0 failed |
+| test_sync.js（Phase 13 変更後） | 81 passed / 0 failed |
+| test_x.js（回帰確認） | 79 passed / 0 failed |
+| test_funnel.js（回帰確認） | 93 passed / 0 failed |
+| test_dashboard_api.js（回帰確認） | 32 passed / 0 failed |
+
+#### 累計テスト数（Phase 13 完了時点）
+
+全テストスイート合計: **906件以上 / 0 失敗**
 
 ### Phase 1 完了記録（2026-08-12）
 

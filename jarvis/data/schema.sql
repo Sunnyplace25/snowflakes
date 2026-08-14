@@ -801,3 +801,162 @@ CREATE TABLE IF NOT EXISTS sf_x_account_daily (
 );
 
 CREATE INDEX IF NOT EXISTS idx_sf_x_account_date ON sf_x_account_daily(date);
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 13: KDP（Kindle Direct Publishing）Analytics — 電子書籍実績管理
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- 取得方式: MANUAL（公式 KDP レポート TSV/CSV エクスポート）
+--   kdp.amazon.co.jp → レポート → 各タブ → ダウンロード
+--   スクレイピング・非公式API・セッション流用は禁止。
+--
+-- テーブル命名規則: kdp_* （ビジネス全体共通基盤 / sf_ プレフィックスなし）
+-- Snow flakes 固有の接続: sf_kdp_book_map を経由
+--
+-- 重要制約:
+--   - 通貨合算禁止（JPY / USD / GBP は別レコード）
+--   - 指標の混在禁止（Orders ≠ KENP ≠ Royalty ≠ Payment）
+--   - sf_revenue への書き込みは sf_kdp_book_map 登録本のみ
+--   - ASIN が本の一次識別子（eBook と Paperback は別 ASIN = 別レコード）
+--
+
+-- ── KDP 本台帳 ────────────────────────────────────────────────────────────────
+-- ASIN PRIMARY UNIQUE。同一作品でも eBook/Paperback は別 ASIN。
+
+CREATE TABLE IF NOT EXISTS kdp_books (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  asin       TEXT    NOT NULL UNIQUE,             -- Amazon 標準識別番号（10文字英数字）
+  isbn       TEXT,                                -- ISBN-13（任意）
+  title      TEXT    NOT NULL,                    -- 書籍タイトル
+  author     TEXT,                                -- 著者名（任意）
+  format     TEXT                                 -- 'ebook' / 'paperback' / 'hardcover' / 'other'
+    CHECK (format IN ('ebook','paperback','hardcover','other') OR format IS NULL),
+  memo       TEXT,
+  created_at TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_kdp_books_asin  ON kdp_books(asin);
+CREATE INDEX IF NOT EXISTS idx_kdp_books_title ON kdp_books(title);
+
+-- ── KDP 日次注文（Orders Report）─────────────────────────────────────────────
+-- 日次注文ユニット数（有料・無料）
+-- UNIQUE(date, book_id, marketplace) で同一 CSV の再インポートが冪等
+
+CREATE TABLE IF NOT EXISTS kdp_orders_daily (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  date        TEXT    NOT NULL,                   -- YYYY-MM-DD
+  book_id     INTEGER NOT NULL REFERENCES kdp_books(id),
+  marketplace TEXT    NOT NULL,                   -- 'amazon.co.jp' など
+  paid_units  INTEGER,                            -- 有料注文数
+  free_units  INTEGER,                            -- 無料注文数（KDP Select 等）
+  fetched_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(date, book_id, marketplace)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kdp_orders_date    ON kdp_orders_daily(date);
+CREATE INDEX IF NOT EXISTS idx_kdp_orders_book    ON kdp_orders_daily(book_id);
+
+-- ── KDP 日次 KENP（KENP Report）──────────────────────────────────────────────
+-- Kindle Edition Normalized Pages（Kindle Unlimited 読み取りページ数）
+-- UNIQUE(date, book_id, marketplace) で冪等
+
+CREATE TABLE IF NOT EXISTS kdp_kenp_daily (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  date        TEXT    NOT NULL,                   -- YYYY-MM-DD
+  book_id     INTEGER NOT NULL REFERENCES kdp_books(id),
+  marketplace TEXT    NOT NULL,
+  kenp_read   INTEGER,                            -- 読み取りページ数
+  fetched_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(date, book_id, marketplace)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kdp_kenp_date ON kdp_kenp_daily(date);
+CREATE INDEX IF NOT EXISTS idx_kdp_kenp_book ON kdp_kenp_daily(book_id);
+
+-- ── KDP 月次ロイヤリティ（Royalties Report）──────────────────────────────────
+-- 月次確定ロイヤリティ。通貨別保持（合算禁止）。
+-- transaction_type: royalty / ku_koll / refund / free / other
+-- UNIQUE(royalty_month, book_id, marketplace, transaction_type) で冪等
+
+CREATE TABLE IF NOT EXISTS kdp_royalties (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  royalty_month    TEXT    NOT NULL,              -- YYYY-MM（レポート対象月）
+  book_id          INTEGER NOT NULL REFERENCES kdp_books(id),
+  marketplace      TEXT    NOT NULL,              -- 'amazon.co.jp' など
+  transaction_type TEXT    NOT NULL DEFAULT 'royalty'
+    CHECK (transaction_type IN ('royalty','ku_koll','refund','free','other')),
+  units_sold       INTEGER,                       -- 販売ユニット数
+  units_refunded   INTEGER,                       -- 返金ユニット数
+  net_units        INTEGER,                       -- 正味ユニット数
+  royalty_amount   REAL,                          -- ロイヤリティ金額（通貨別）
+  currency         TEXT    NOT NULL DEFAULT 'JPY',
+  fetched_at       TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(royalty_month, book_id, marketplace, transaction_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kdp_royalties_month ON kdp_royalties(royalty_month);
+CREATE INDEX IF NOT EXISTS idx_kdp_royalties_book  ON kdp_royalties(book_id);
+
+-- ── KDP 支払い履歴（Payments Report）────────────────────────────────────────
+-- 実際の支払いトランザクション。UNIQUE(payment_number, marketplace) で冪等。
+-- 通貨は保存するが JPY / USD の混合合算は禁止。
+
+CREATE TABLE IF NOT EXISTS kdp_payments (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  payment_number  TEXT    NOT NULL,               -- KDP 支払い識別番号
+  marketplace     TEXT    NOT NULL,
+  sales_period    TEXT,                           -- 対象販売期間（YYYY-MM 等）
+  payment_status  TEXT,                           -- 'Paid', 'Pending' など
+  payment_date    TEXT,                           -- 支払日 YYYY-MM-DD
+  payment_method  TEXT,                           -- 'Wire Transfer' など
+  net_earnings    REAL,                           -- 正味収益
+  currency        TEXT    NOT NULL DEFAULT 'JPY',
+  fx_rate         REAL,                           -- 為替レート（USD→JPY 等、任意）
+  payment_amount  REAL,                           -- 実際の支払金額
+  tax_withholding REAL,                           -- 源泉徴収額
+  fetched_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(payment_number, marketplace)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kdp_payments_date ON kdp_payments(payment_date);
+
+-- ── KDP インポートログ ────────────────────────────────────────────────────────
+-- 各レポートのインポート結果を記録する（監査用）。
+
+CREATE TABLE IF NOT EXISTS kdp_import_log (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  report_type      TEXT    NOT NULL
+    CHECK (report_type IN ('orders','kenp','royalties','payments')),
+  file_name        TEXT,
+  file_fingerprint TEXT,                          -- ファイルハッシュ（重複検出用、任意）
+  report_period    TEXT,                          -- YYYY-MM など
+  row_count        INTEGER DEFAULT 0,
+  imported_count   INTEGER DEFAULT 0,
+  skipped_count    INTEGER DEFAULT 0,
+  warning_count    INTEGER DEFAULT 0,
+  imported_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- ── Snow flakes ↔ KDP 本マッピング ──────────────────────────────────────────
+-- KDP 本（ASIN 単位）を Snow flakes 作品（sf_works）に明示的に紐付ける。
+-- UNIQUE(book_id): 1 ASIN → 最大 1 作品のみ（複数 ASIN が同一作品に対応可）。
+-- このテーブルに登録されていない本は sf_revenue に書き込まれない。
+
+CREATE TABLE IF NOT EXISTS sf_kdp_book_map (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id    INTEGER NOT NULL UNIQUE REFERENCES kdp_books(id),
+  work_id    INTEGER NOT NULL REFERENCES sf_works(id),
+  created_at TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_kdp_map_work ON sf_kdp_book_map(work_id);
+
+-- ── sf_revenue — KDP 用部分 UNIQUE インデックス ──────────────────────────────
+-- platform='kdp' の電子書籍ロイヤリティ。通貨別・作品別・月別で1行。
+-- source='電子書籍', platform='kdp', work_id NOT NULL, track_id IS NULL が対象。
+-- 通貨が異なれば別行として保持（JPY/USD 混合合算禁止）。
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_kdp
+  ON sf_revenue(month, platform, work_id, currency)
+  WHERE platform = 'kdp' AND work_id IS NOT NULL AND track_id IS NULL;

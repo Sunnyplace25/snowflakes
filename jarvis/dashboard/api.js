@@ -43,6 +43,15 @@ import {
   getXAccountDaily,
   getXSummary,
 } from '../data/sf_x_manager.js';
+import {
+  getKdpBooks,
+  getKdpOrders,
+  getKdpKenp,
+  getKdpRoyalties,
+  getKdpPayments,
+  getKdpSummary,
+  getSnowflakesKdpSummary,
+} from '../data/kdp_manager.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -1497,6 +1506,95 @@ export function createApiHandler(db) {
         const from          = url.searchParams.get('from') || null;
         const to            = url.searchParams.get('to')   || null;
         const summary = getXSummary(db, { snapshot_date, from, to });
+        return jsonRes(res, 200, { ok: true, ...summary });
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // KDP Analytics エンドポイント（Phase 13）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/kdp/books ────────────────────────────────────────────────
+      // KDP 本一覧。?sf_only=1 で Snow flakes マッピング済みのみ。
+      if (path === '/api/kdp/books' && method === 'GET') {
+        const sfOnly = url.searchParams.get('sf_only') === '1';
+        const asin   = url.searchParams.get('asin') || null;
+        const books  = getKdpBooks(db, { sf_only: sfOnly, asin });
+        return jsonRes(res, 200, { ok: true, count: books.length, books });
+      }
+
+      // ── GET /api/kdp/orders ───────────────────────────────────────────────
+      // 日次注文データ。?from=YYYY-MM-DD &to=YYYY-MM-DD &book_id=N &marketplace=...
+      if (path === '/api/kdp/orders' && method === 'GET') {
+        const from        = url.searchParams.get('from') || null;
+        const to          = url.searchParams.get('to')   || null;
+        const bookIdRaw   = url.searchParams.get('book_id');
+        const book_id     = bookIdRaw ? parseInt(bookIdRaw, 10) : null;
+        const marketplace = url.searchParams.get('marketplace') || null;
+        const rows = getKdpOrders(db, {
+          from:        (from && validateDate(from)) ? from : null,
+          to:          (to   && validateDate(to))   ? to   : null,
+          book_id:     (book_id && Number.isFinite(book_id)) ? book_id : null,
+          marketplace,
+        });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/kdp/kenp ─────────────────────────────────────────────────
+      // 日次 KENP データ。?from=YYYY-MM-DD &to=YYYY-MM-DD &book_id=N &marketplace=...
+      if (path === '/api/kdp/kenp' && method === 'GET') {
+        const from        = url.searchParams.get('from') || null;
+        const to          = url.searchParams.get('to')   || null;
+        const bookIdRaw   = url.searchParams.get('book_id');
+        const book_id     = bookIdRaw ? parseInt(bookIdRaw, 10) : null;
+        const marketplace = url.searchParams.get('marketplace') || null;
+        const rows = getKdpKenp(db, {
+          from:        (from && validateDate(from)) ? from : null,
+          to:          (to   && validateDate(to))   ? to   : null,
+          book_id:     (book_id && Number.isFinite(book_id)) ? book_id : null,
+          marketplace,
+        });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/kdp/royalties ────────────────────────────────────────────
+      // 月次ロイヤリティ。?royalty_month=YYYY-MM &book_id=N &marketplace=... &currency=...
+      if (path === '/api/kdp/royalties' && method === 'GET') {
+        const royalty_month = url.searchParams.get('royalty_month') || null;
+        const bookIdRaw     = url.searchParams.get('book_id');
+        const book_id       = bookIdRaw ? parseInt(bookIdRaw, 10) : null;
+        const marketplace   = url.searchParams.get('marketplace') || null;
+        const currency      = url.searchParams.get('currency') || null;
+        const rows = getKdpRoyalties(db, {
+          royalty_month: (royalty_month && validateMonth(royalty_month)) ? royalty_month : null,
+          book_id: (book_id && Number.isFinite(book_id)) ? book_id : null,
+          marketplace,
+          currency,
+        });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/kdp/payments ─────────────────────────────────────────────
+      // 支払い履歴。?marketplace=... &payment_status=...
+      if (path === '/api/kdp/payments' && method === 'GET') {
+        const marketplace    = url.searchParams.get('marketplace') || null;
+        const payment_status = url.searchParams.get('payment_status') || null;
+        const rows = getKdpPayments(db, { marketplace, payment_status });
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/kdp/summary ──────────────────────────────────────────────
+      // KDP 月次サマリー（全本 / 通貨別）。?royalty_month=YYYY-MM
+      if (path === '/api/kdp/summary' && method === 'GET') {
+        const royalty_month = url.searchParams.get('royalty_month') || null;
+        const summary = getKdpSummary(db, { royalty_month });
+        return jsonRes(res, 200, { ok: true, ...summary });
+      }
+
+      // ── GET /api/sf/kdp/summary ───────────────────────────────────────────
+      // Snow flakes にマッピングされた本のみの KDP サマリー。?royalty_month=YYYY-MM
+      if (path === '/api/sf/kdp/summary' && method === 'GET') {
+        const royalty_month = url.searchParams.get('royalty_month') || null;
+        const summary = getSnowflakesKdpSummary(db, { royalty_month });
         return jsonRes(res, 200, { ok: true, ...summary });
       }
 
