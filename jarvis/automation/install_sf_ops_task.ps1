@@ -42,20 +42,25 @@ if (-not (Test-Path $RunnerPath)) {
     exit 1
 }
 
+# .env ファイルパス（存在する場合のみ --env-file-if-exists で読み込む）
+$EnvFilePath = Join-Path $JarvisRoot ".env"
+
 Write-Host "============================================================"
 Write-Host " Snow flakes Ops Runner — Task Scheduler セットアップ"
 Write-Host "============================================================"
 Write-Host " タスク名 : $TaskName"
 Write-Host " Node     : $NodePath"
 Write-Host " Runner   : $RunnerPath"
+Write-Host " .env     : $EnvFilePath (存在する場合のみ読み込み)"
 Write-Host " 実行間隔 : 6時間ごと"
 Write-Host " 逃した場合: 次回起動時に実行"
 Write-Host "============================================================"
 
 # ─── Action ─────────────────────────────────────────────────
+# --env-file-if-exists: .env が存在する場合のみ ENV を読み込む（存在しなくてもエラーにならない）
 $Action = New-ScheduledTaskAction `
     -Execute    $NodePath `
-    -Argument   "`"$RunnerPath`"" `
+    -Argument   "--env-file-if-exists=`"$EnvFilePath`" `"$RunnerPath`"" `
     -WorkingDirectory $JarvisRoot
 
 # ─── Trigger: 6時間ごと + 起動時1回 ───────────────────────
