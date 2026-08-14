@@ -52,6 +52,19 @@ import {
   getKdpSummary,
   getSnowflakesKdpSummary,
 } from '../data/kdp_manager.js';
+import {
+  createArticle,
+  updateArticle,
+  setStatus,
+  recordPublished,
+  getArticle,
+  getArticles,
+  getScheduledArticles,
+  getDashboardSummary,
+  generateExport,
+  VALID_STATUSES,
+  VALID_EXPORT_FORMATS,
+} from '../data/note_manager.js';
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -1596,6 +1609,133 @@ export function createApiHandler(db) {
         const royalty_month = url.searchParams.get('royalty_month') || null;
         const summary = getSnowflakesKdpSummary(db, { royalty_month });
         return jsonRes(res, 200, { ok: true, ...summary });
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // note Workflow エンドポイント（Phase 14）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/note/dashboard ───────────────────────────────────────────
+      // status 別記事カウント
+      if (path === '/api/note/dashboard' && method === 'GET') {
+        const summary = getDashboardSummary(db);
+        return jsonRes(res, 200, { ok: true, ...summary });
+      }
+
+      // ── GET /api/note/articles ────────────────────────────────────────────
+      // 記事一覧。?status=... &article_type=... &limit=N &scheduled=1
+      if (path === '/api/note/articles' && method === 'GET') {
+        const statusParam  = url.searchParams.get('status') || null;
+        const typeParam    = url.searchParams.get('article_type') || null;
+        const limitParam   = url.searchParams.get('limit');
+        const scheduledOnly = url.searchParams.get('scheduled') === '1';
+
+        if (statusParam && !VALID_STATUSES.includes(statusParam)) {
+          return errRes(res, 400, `status が不正です: ${statusParam}`);
+        }
+
+        let articles;
+        if (scheduledOnly) {
+          articles = getScheduledArticles(db);
+        } else {
+          const limit = limitParam ? parseInt(limitParam, 10) : 100;
+          articles = getArticles(db, {
+            status:       statusParam,
+            article_type: typeParam,
+            limit,
+          });
+        }
+        return jsonRes(res, 200, { ok: true, count: articles.length, articles });
+      }
+
+      // ── POST /api/note/articles ───────────────────────────────────────────
+      // 新規記事作成
+      if (path === '/api/note/articles' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        let id;
+        try { id = createArticle(db, body); } catch (e) { return errRes(res, 400, e.message); }
+        const article = getArticle(db, id);
+        return jsonRes(res, 201, { ok: true, id, article });
+      }
+
+      // ── GET /api/note/article ─────────────────────────────────────────────
+      // 単件記事詳細。?id=N
+      if (path === '/api/note/article' && method === 'GET') {
+        const idRaw = url.searchParams.get('id');
+        const id    = parseInt(idRaw, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        const article = getArticle(db, id);
+        if (!article) return errRes(res, 404, '記事が見つかりません');
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── PATCH /api/note/article ───────────────────────────────────────────
+      // 記事更新（title/body/tags 等）。?id=N または body.id
+      if (path === '/api/note/article' && method === 'PATCH') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const idRaw = url.searchParams.get('id') ?? String(body.id ?? '');
+        const id    = parseInt(idRaw, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let article;
+        try { article = updateArticle(db, id, body); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── POST /api/note/article/status ─────────────────────────────────────
+      // status 遷移。body: { id, status }
+      if (path === '/api/note/article/status' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const id     = parseInt(body.id, 10);
+        const status = body.status;
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        if (!status) return errRes(res, 400, 'status は必須です');
+        let article;
+        try { article = setStatus(db, id, status); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── POST /api/note/article/published ─────────────────────────────────
+      // 公開済み記録（ユーザーが note に投稿した後）。body: { id, note_url, published_date }
+      if (path === '/api/note/article/published' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const id = parseInt(body.id, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let article;
+        try {
+          article = recordPublished(db, id, {
+            note_url:       body.note_url       ?? null,
+            published_date: body.published_date ?? null,
+          });
+        } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── GET /api/note/article/export ──────────────────────────────────────
+      // 投稿用コンテンツ export。?id=N&format=md|txt|json
+      if (path === '/api/note/article/export' && method === 'GET') {
+        const idRaw    = url.searchParams.get('id');
+        const format   = url.searchParams.get('format') || 'md';
+        const id       = parseInt(idRaw, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        if (!VALID_EXPORT_FORMATS.includes(format)) {
+          return errRes(res, 400, `format が不正です: ${format}`);
+        }
+        const article = getArticle(db, id);
+        if (!article) return errRes(res, 404, '記事が見つかりません');
+        let content;
+        try { content = generateExport(article, format); } catch (e) { return errRes(res, 400, e.message); }
+        const contentType = format === 'json'
+          ? 'application/json; charset=utf-8'
+          : 'text/plain; charset=utf-8';
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': 'no-cache',
+        });
+        return res.end(content);
       }
 
       return errRes(res, 404, 'Not Found');

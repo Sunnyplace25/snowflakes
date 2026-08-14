@@ -292,6 +292,36 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 14: note Workflow テーブル追加
+  const NOTE_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_note_article (
+      id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+      title              TEXT    NOT NULL,
+      internal_key       TEXT    UNIQUE,
+      article_type       TEXT,
+      status             TEXT    NOT NULL DEFAULT 'idea'
+        CHECK (status IN ('idea','draft','review','ready','scheduled','published','archived')),
+      summary            TEXT,
+      body_markdown      TEXT,
+      tags               TEXT,
+      magazine           TEXT,
+      related_work_id    INTEGER REFERENCES sf_works(id),
+      related_track_id   INTEGER REFERENCES sf_tracks(id),
+      related_release_id INTEGER REFERENCES sf_releases(id),
+      scheduled_date     TEXT,
+      published_date     TEXT,
+      note_url           TEXT,
+      created_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at         TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_note_status    ON sf_note_article(status)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_note_scheduled ON sf_note_article(scheduled_date)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_note_type      ON sf_note_article(article_type)`,
+  ];
+  for (const sql of NOTE_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
   // Phase 4: sf_ga_event_daily テーブル追加（受け口）
   try {
     db.exec(`

@@ -237,6 +237,91 @@ jarvis-development
 | Phase 11 | Site Event Tracking（イベントカタログ / API 2エンドポイント / サイト計測追加 / テスト25件） | ✅ 完了（2026-08-14） |
 | Phase 12 | X Analytics（X Analytics CSV インポーター / DB 3テーブル / API 4エンドポイント / テスト79件） | ✅ 完了（2026-08-14） |
 | Phase 13 | KDP Analytics（KDP レポートインポーター / DB 7テーブル / API 7エンドポイント / テスト110件） | ✅ 完了（2026-08-14） |
+| Phase 14 | note Workflow（記事企画・下書き・投稿管理 / DB 1テーブル / API 8エンドポイント / Export 3形式 / テスト84件） | ✅ 完了（2026-08-14） |
+
+---
+
+## Phase 14 完了記録（2026-08-14）
+
+### note Workflow — 記事企画・下書き・投稿管理
+
+#### 設計方針
+
+| 項目 | 内容 |
+|------|------|
+| 投稿方式 | MANUAL のみ。note への自動ログイン・自動投稿は一切禁止 |
+| 禁止事項 | 非公式 API / ブラウザ自動ログイン / cookie 流用 / Playwright / 認証情報保存 |
+| 記事 status | idea → draft → review → ready → scheduled → published → archived |
+| status 制約 | published 後は archived のみ許可。同一 status への更新は拒否 |
+| article_type | CHECK 制約なし（将来追加可能なオープンエンド設計） |
+| tags | JSON 配列文字列（例: '["Snow flakes","制作日記"]'） |
+| Export | MD / TXT / JSON の 3 形式。note 認証情報は含まない |
+| 公開記録 | ユーザーが note に投稿した後、note_url + published_date を手動記録 |
+| Revenue 接続余地 | sf_revenue への接続は将来対応（今回は売上推定・架空収益生成なし） |
+| 分析 | PV / スキ / 売上は公式取得手段確認後に実装。今回は投稿 workflow のみ |
+
+#### 新規テーブル（Phase 14）
+
+| テーブル | 用途 |
+|----------|------|
+| `sf_note_article` | 記事ライフサイクル管理（企画〜公開済み記録） |
+
+#### 記事 status 一覧
+
+| status | 意味 |
+|--------|------|
+| `idea` | 企画段階（デフォルト） |
+| `draft` | 下書き作成中 |
+| `review` | レビュー中 |
+| `ready` | 公開準備完了 |
+| `scheduled` | 公開予定あり |
+| `published` | 公開済み（ユーザーが手動投稿後に記録） |
+| `archived` | アーカイブ済み |
+
+#### Export 形式
+
+| 形式 | 用途 | 含まれる内容 |
+|------|------|-------------|
+| `md` | Markdown（noteへの貼り付け用） | title / summary / tags / magazine / body |
+| `txt` | プレーンテキスト | title / summary / tags / magazine / body |
+| `json` | データ連携用 | title / article_type / summary / body / tags / magazine / scheduled_date |
+
+#### 実装ファイル
+
+| ファイル | 区分 | 内容 |
+|----------|------|------|
+| `jarvis/data/schema.sql` | 更新 | sf_note_article テーブル + インデックス追加 |
+| `jarvis/data/db.js` | 更新 | NOTE_TABLES マイグレーション追加 |
+| `jarvis/data/note_manager.js` | 新規 | CRUD / status 遷移 / export / ファイル書き出し |
+| `jarvis/dashboard/api.js` | 更新 | note API 8 エンドポイント追加 |
+| `jarvis/tests/test_note.js` | 新規 | 20 sections / 84 tests |
+| `jarvis/tests/registry.json` | 更新 | note スイート追加（21 suite 体制） |
+| `.gitignore` | 更新 | jarvis/exports/note/* 追加 |
+| `jarvis/exports/note/.gitkeep` | 新規 | export ディレクトリ作成 |
+
+#### API エンドポイント（Phase 14）
+
+| エンドポイント | メソッド | 用途 |
+|---------------|----------|------|
+| `/api/note/dashboard` | GET | status 別記事カウント |
+| `/api/note/articles` | GET | 記事一覧（?status / ?article_type / ?limit / ?scheduled=1） |
+| `/api/note/articles` | POST | 新規記事作成 |
+| `/api/note/article` | GET | 単件記事詳細（?id=N） |
+| `/api/note/article` | PATCH | 記事更新（?id=N） |
+| `/api/note/article/status` | POST | status 遷移（body: {id, status}） |
+| `/api/note/article/published` | POST | 公開済み記録（body: {id, note_url, published_date}） |
+| `/api/note/article/export` | GET | export コンテンツ取得（?id=N&format=md\|txt\|json） |
+
+#### テスト結果（Phase 14）
+
+| 項目 | 結果 |
+|------|------|
+| スイート数 | 21（既存 20 + note 1） |
+| note テスト（test_note.js） | 84 passed / 0 failed |
+| 全回帰（21 スイート） | 1100 passed / 0 failed |
+| 実 note 通信 | 0 件 |
+| 実 DB 使用 | 0 件（:memory: のみ） |
+| 外部ログイン | 0 件 |
 
 ---
 

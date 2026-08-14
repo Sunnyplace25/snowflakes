@@ -960,3 +960,48 @@ CREATE INDEX IF NOT EXISTS idx_sf_kdp_map_work ON sf_kdp_book_map(work_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_revenue_kdp
   ON sf_revenue(month, platform, work_id, currency)
   WHERE platform = 'kdp' AND work_id IS NOT NULL AND track_id IS NULL;
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 14: note Workflow — 記事企画・下書き・投稿管理
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- 設計原則:
+--   - MANUAL workflow のみ。note への自動ログイン・自動投稿は一切禁止。
+--   - 認証情報・パスワード・セッション・cookie は格納しない。
+--   - 記事本文と公開 URL の管理を分離。
+--   - status が 'published' 以外の記事は公開済み扱いしない。
+--   - export は投稿用コンテンツ生成のみ。公開はユーザーが手動で行う。
+--
+-- status 遷移:
+--   idea → draft → review → ready → scheduled → published → archived
+--   published 後は archived のみ許可。
+--
+-- article_type: CHECK 制約なし（将来の追加を妨げないオープンエンド設計）
+-- tags: JSON 配列文字列（例: '["Snow flakes","制作日記"]'）
+-- note_url: ユーザーが投稿後に手動記録。JARVIS は自動投稿しない。
+--
+
+CREATE TABLE IF NOT EXISTS sf_note_article (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  title              TEXT    NOT NULL,                    -- 記事タイトル
+  internal_key       TEXT    UNIQUE,                      -- 内部スラッグ（任意・重複不可）
+  article_type       TEXT,                                -- カテゴリ（オープンエンド）
+  status             TEXT    NOT NULL DEFAULT 'idea'
+    CHECK (status IN ('idea','draft','review','ready','scheduled','published','archived')),
+  summary            TEXT,                                -- 記事概要（短文）
+  body_markdown      TEXT,                                -- 本文（Markdown）
+  tags               TEXT,                                -- JSON配列文字列
+  magazine           TEXT,                                -- マガジン名
+  related_work_id    INTEGER REFERENCES sf_works(id),     -- 関連作品
+  related_track_id   INTEGER REFERENCES sf_tracks(id),    -- 関連楽曲
+  related_release_id INTEGER REFERENCES sf_releases(id),  -- 関連リリース
+  scheduled_date     TEXT,                                -- 公開予定日 YYYY-MM-DD
+  published_date     TEXT,                                -- 実際の公開日 YYYY-MM-DD
+  note_url           TEXT,                                -- note公開URL（手動記録）
+  created_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_note_status    ON sf_note_article(status);
+CREATE INDEX IF NOT EXISTS idx_sf_note_scheduled ON sf_note_article(scheduled_date);
+CREATE INDEX IF NOT EXISTS idx_sf_note_type      ON sf_note_article(article_type);

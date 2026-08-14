@@ -78,5 +78,9 @@
   "kdp": {
     "args": ["tests/test_kdp.js"],
     "cwd": "jarvis"
+  },
+  "note": {
+    "args": ["tests/test_note.js"],
+    "cwd": "jarvis"
   }
 }

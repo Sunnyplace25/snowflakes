@@ -20,3 +20,6 @@ jarvis/tasks/*
 # JARVIS 共通データ基盤 — 実データDB（個人データはgit管理しない）
 jarvis/data/*.db
 # schema.sql / *.js は Git 管理対象（除外しない）
+# JARVIS note export — 投稿用コンテンツ（公開前コンテンツはgit管理しない）
+jarvis/exports/note/*
+!jarvis/exports/note/.gitkeep
