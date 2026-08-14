@@ -1389,6 +1389,70 @@ export function createApiHandler(db) {
         return jsonRes(res, statusCode, { ok: result.success, ...result });
       }
 
+      // ── GET /api/sf/ga/events ─────────────────────────────────────────────────
+      // イベント日別集計（sf_ga_event_daily）
+      if (path === '/api/sf/ga/events' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate    = (toParam && validateDate(toParam)) ? toParam : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const eventName = url.searchParams.get('event_name') || null;
+        const rows = db.prepare(`
+          SELECT date,
+                 event_name,
+                 SUM(count) AS count
+          FROM sf_ga_event_daily
+          WHERE date >= ? AND date <= ?
+            AND (? IS NULL OR event_name = ?)
+          GROUP BY date, event_name
+          ORDER BY date ASC, event_name ASC
+        `).all(fromDate, toDate, eventName, eventName);
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/sf/ga/events/catalog ─────────────────────────────────────────
+      // 公式サイトで計測しているイベントのカタログ（静的定義）
+      if (path === '/api/sf/ga/events/catalog' && method === 'GET') {
+        const events = [
+          // ── DISCOVERY ──────────────────────────────────────────────────────────
+          { event_name: 'click_instagram', funnel_stage: 'DISCOVERY', page: 'index / sweets',       description: 'Instagramリンク',            parameters: ['destination'], status: 'active' },
+          { event_name: 'click_youtube',   funnel_stage: 'DISCOVERY', page: 'index',                description: 'YouTubeリンク（snow.js）',    parameters: [],             status: 'active' },
+          { event_name: 'click_x',         funnel_stage: 'DISCOVERY', page: 'index',                description: 'X（旧Twitter）リンク（snow.js）', parameters: [],          status: 'active' },
+          { event_name: 'click_suno',      funnel_stage: 'DISCOVERY', page: 'index',                description: 'Sunoリンク（snow.js）',        parameters: [],             status: 'active' },
+          { event_name: 'click_sns',       funnel_stage: 'DISCOVERY', page: 'index / sweets',       description: 'SNSリンク（X・YouTube、sfGa）', parameters: ['destination'], status: 'active' },
+          // ── ENGAGEMENT ─────────────────────────────────────────────────────────
+          { event_name: 'nav_sweets',      funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'SWEETsページ遷移（sfGa）',      parameters: ['from'],               status: 'active' },
+          { event_name: 'enter_sweets',    funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'SWEETsリンク（snow.js）',       parameters: ['link_url'],           status: 'active' },
+          { event_name: 'sweets_unlock',   funnel_stage: 'ENGAGEMENT', page: 'sweets',               description: 'SWEETsゲート解錠（コード入力成功）', parameters: ['season', 'is_new_user'], status: 'active' },
+          { event_name: 'enter_summer',    funnel_stage: 'ENGAGEMENT', page: 'sweets',               description: '夏コンテンツ入場',               parameters: ['event_category'],     status: 'active' },
+          { event_name: 'nav_gacha',       funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'ガチャページ遷移',               parameters: ['from'],               status: 'active' },
+          { event_name: 'click_music',     funnel_stage: 'ENGAGEMENT', page: 'index / sweets / music', description: '音楽配信リンク（Spotify・Apple Music・Amazon Music等）', parameters: ['destination'], status: 'active' },
+          { event_name: 'click_spotify',   funnel_stage: 'ENGAGEMENT', page: 'index / music',        description: 'Spotifyリンク（snow.js / music.html）', parameters: ['destination'],  status: 'active' },
+          { event_name: 'nav_hayatecchi',  funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'ゲームLPへの遷移',               parameters: ['from'],               status: 'site_change_required' },
+          // ── DEEP_INTEREST ──────────────────────────────────────────────────────
+          { event_name: 'music_play',      funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '音源再生開始（1セッション1曲1回）', parameters: ['song_id'],           status: 'site_change_required' },
+          { event_name: 'music_play_30s',  funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '音源30秒再生通過',               parameters: ['song_id'],            status: 'active' },
+          { event_name: 'click_story',     funnel_stage: 'DEEP_INTEREST', page: 'index / sweets',    description: '小説・なろうリンク（sfGa）',      parameters: ['destination', 'url'], status: 'active' },
+          { event_name: 'click_novel',     funnel_stage: 'DEEP_INTEREST', page: 'index',             description: '小説リンク（snow.js）',           parameters: ['link_url'],           status: 'active' },
+          { event_name: 'se_read',         funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '夏エピソード読了',               parameters: ['event_label'],        status: 'active' },
+          { event_name: 'se_complete',     funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '夏エピソード全話完了',            parameters: ['event_category'],     status: 'active' },
+          // ── VALUE ──────────────────────────────────────────────────────────────
+          { event_name: 'click_kindle',    funnel_stage: 'VALUE',        page: 'index',              description: 'Kindle/Amazon電子書籍リンク（snow.js）', parameters: ['link_url'],    status: 'active' },
+        ];
+        return jsonRes(res, 200, { ok: true, events });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

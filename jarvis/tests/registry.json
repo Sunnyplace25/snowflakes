@@ -66,5 +66,9 @@
   "youtube_oauth_setup": {
     "args": ["tests/test_youtube_oauth_setup.js"],
     "cwd": "jarvis"
+  },
+  "site_events": {
+    "args": ["tests/test_site_events.js"],
+    "cwd": "jarvis"
   }
 }

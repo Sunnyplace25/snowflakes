@@ -234,6 +234,7 @@ jarvis-development
 | Phase 8 | TikTok（tiktok_csv_importer / API 4エンドポイント / Dashboard / テスト88件） | ✅ 完了（2026-08-13） |
 | Phase 9 | ファネル分析（sf_funnel_manager / API / Dashboard可視化 / Character Stage連動） | ✅ 完了（2026-08-13） |
 | Phase 10 | Ops Automation（sf_sync_manager / sf_ops_runner / Task Scheduler / API / Dashboard Sync タブ） | ✅ 完了（2026-08-14） |
+| Phase 11 | Site Event Tracking（イベントカタログ / API 2エンドポイント / サイト計測追加 / テスト25件） | ✅ 完了（2026-08-14） |
 
 ### Phase 1 完了記録（2026-08-12）
 
@@ -1180,6 +1181,92 @@ Soundrop が fresh で Revenue のみ stale の場合は独立 attention を許�
 | test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
 | test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
 | **合計** | **763 passed / 0 failed** |
+
+---
+
+### Phase 11 完了記録（2026-08-14）
+
+#### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| api.js | `GET /api/sf/ga/events`（sf_ga_event_daily 日別集計・event_name / 日付フィルタ）追加 |
+| api.js | `GET /api/sf/ga/events/catalog`（静的イベントカタログ 20件）追加 |
+| test_site_events.js | 新規作成（25テスト・5セクション） |
+| registry.json | site_events エントリ追加 |
+| sweets/index.html | music_play GA4イベント追加（play リスナー内 _playCounted ガード済み） |
+| music.html | 配信サービスリンク計測スクリプト追加（click_spotify / click_music / click_youtube） |
+| index.html | PAGE_MAP に nav_hayatecchi 追加（ゲームLPリンク計測） |
+
+#### イベントカタログ（20件）
+
+| funnel_stage | event_name | status |
+|---|---|---|
+| DISCOVERY | click_instagram / click_youtube / click_x / click_suno / click_sns | active |
+| ENGAGEMENT | nav_sweets / enter_sweets / sweets_unlock / enter_summer / nav_gacha / click_music / click_spotify / nav_hayatecchi | active / site_change_required |
+| DEEP_INTEREST | music_play / music_play_30s / click_story / click_novel / se_read / se_complete | active / site_change_required |
+| VALUE | click_kindle | active |
+
+#### サイト変更（公式サイトファイル）
+
+| ファイル | 変更内容 | main への反映要否 |
+|----------|---------|-----------------|
+| `sweets/index.html` | 音源 play リスナーに `gtag('event','music_play',{song_id})` 追加（1行） | **要** |
+| `music.html` | 配信サービス4リンク計測スクリプト追加（`click_spotify` / `click_music` / `click_youtube`） | **要** |
+| `index.html` | PAGE_MAP に `nav_hayatecchi` エントリ追加（1行） | **要** |
+
+**注意**: 上記3ファイルは jarvis-development に変更済みだが main への commit / push はユーザー承認後に実施すること。
+
+#### 既存イベントとの整理（重複なし確認）
+
+| 候補イベント | 判断 |
+|---|---|
+| sweets_open | `nav_sweets`/`enter_sweets`（ページ遷移）+ `sweets_unlock`（ゲート解錠）で既にカバー。新規不要 |
+| music_play | **新規実装**（sweets/index.html play リスナー）。`music_play_30s` と別イベント（30秒達成は別計測） |
+| outbound_spotify | `click_spotify`（snow.js）で既にカバー。music.html に追加実装済み |
+| outbound_music | Apple Music が未計測だったため music.html に `click_music {destination:'apple_music'}` 追加 |
+| novel_open | `click_novel`（snow.js）/ `click_story`（sfGa）で既にカバー。新規不要 |
+| fortune_open | サイト上に fortune 専用UIが確認できなかったため未実装 |
+| game_open | `nav_hayatecchi`（index.html PAGE_MAP）として追加。LP遷移を計測 |
+
+#### GA4 自動取得の現状 / GAP
+
+- 現状: GA4 は `ga_writer.js` 経由の **MANUAL** インポート
+- サイトで `music_play` / `music_play_30s` 等のイベントを GA4 へ送信しても、JARVIS の `sf_ga_event_daily` へは自動取得されない
+- GA4 Data API Collector（自動取得）は今回スコープ外。将来フェーズで実装予定
+
+#### 二重送信防止
+
+| イベント | 防止方法 |
+|---|---|
+| music_play | `audioEl._playCounted` フラグ（1セッション1曲1回のみ送信） |
+| music_play_30s | `_gaFired[songId]` フラグ（30秒到達後は再送しない） |
+| click_music（music.html）| 各リンクに1つの MUSIC_MAP エントリ。click バブリングで最初にマッチしたもののみ送信・return |
+| nav_hayatecchi | PAGE_MAP は1エントリ・マッチしたら return で抜ける |
+
+#### テスト結果
+
+| テストスイート | 結果 |
+|----------------|------|
+| test_site_events.js（Phase 11新規） | 25 passed / 0 failed ✅ |
+| test_sync.js（回帰） | 81 passed / 0 failed ✅ |
+| test_funnel.js（回帰） | 93 passed / 0 failed ✅ |
+| test_tiktok.js（回帰） | 88 passed / 0 failed ✅ |
+| test_youtube.js（回帰） | 62 passed / 0 failed ✅ |
+| test_instagram.js（回帰） | 38 passed / 0 failed ✅ |
+| test_music_metrics.js（回帰） | 49 passed / 0 failed ✅ |
+| test_ga.js（回帰） | 17 passed / 0 failed ✅ |
+| test_narou.js（回帰） | 25 passed / 0 failed ✅ |
+| test_revenue_writer.js（回帰） | 20 passed / 0 failed ✅ |
+| test_ai_bridge.js（回帰） | 45 passed / 0 failed ✅ |
+| test_catalog_builder.js（回帰） | 46 passed / 0 failed ✅ |
+| test_soundrop_importer.js（回帰） | 28 passed / 0 failed ✅ |
+| test_sf_schema_15.js（回帰） | 71 passed / 0 failed ✅ |
+| test_sf_schema.js（回帰） | 39 passed / 0 failed ✅ |
+| test_data_manager.js（回帰） | 29 passed / 0 failed ✅ |
+| test_dashboard_api.js（回帰） | 32 passed / 0 failed ✅ |
+| test_youtube_oauth_setup.js（回帰） | 39 passed / 0 failed ✅ |
+| **合計** | **827 passed / 0 failed** |
 
 ---
 
