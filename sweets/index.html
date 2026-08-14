@@ -8831,6 +8831,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           _seekedFlag[item.id] = false;  // 再生開始でseekフラグリセット
           if (audioEl._playCounted) return;
           audioEl._playCounted = true;
+          if (typeof gtag === 'function') gtag('event', 'music_play', { song_id: item.id });
           incPlayCount(item.id);
           var el = document.getElementById('play-count-' + item.id);
           if (el) el.textContent = getPlayCount(item.id) + '回';

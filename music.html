@@ -220,5 +220,30 @@
   }
   draw();
 </script>
+<!-- ── GA: 配信サービスリンク計測 ── -->
+<script>
+(function() {
+  function sfGa(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params);
+  }
+  var MUSIC_MAP = [
+    { pattern: /open\.spotify\.com/,  name: 'click_spotify', params: { destination: 'spotify' } },
+    { pattern: /music\.apple\.com/,   name: 'click_music',   params: { destination: 'apple_music' } },
+    { pattern: /music\.amazon/,       name: 'click_music',   params: { destination: 'amazon_music' } },
+    { pattern: /music\.youtube\.com/, name: 'click_youtube', params: { destination: 'youtube_music' } },
+  ];
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.href || '';
+    for (var i = 0; i < MUSIC_MAP.length; i++) {
+      if (MUSIC_MAP[i].pattern.test(href)) {
+        sfGa(MUSIC_MAP[i].name, Object.assign({}, MUSIC_MAP[i].params, { url: href.slice(0, 100) }));
+        return;
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>
