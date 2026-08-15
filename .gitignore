@@ -9,6 +9,8 @@ jarvis/drafts/pending/*
 # ─── JARVIS secrets ───────────────────
 jarvis/secrets/*
 !jarvis/secrets/.gitkeep
+jarvis/ga4-service-account.json
+jarvis/*-service-account.json
 # ──────────────────────────────────────
 jarvis/node_modules/
 # JARVIS AI Bridge — 実行時状態（セッション・レビュー・ログ）
