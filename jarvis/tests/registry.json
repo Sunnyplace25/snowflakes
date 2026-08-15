@@ -82,5 +82,9 @@
   "note": {
     "args": ["tests/test_note.js"],
     "cwd": "jarvis"
+  },
+  "hp_analytics": {
+    "args": ["tests/test_hp_analytics.js"],
+    "cwd": "jarvis"
   }
 }

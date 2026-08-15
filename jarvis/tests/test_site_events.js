@@ -115,12 +115,12 @@ await test('music_play_30s は funnel_stage: DEEP_INTEREST / status: active', as
   assert.equal(ev.status, 'active');
 });
 
-await test('music_play は funnel_stage: DEEP_INTEREST / status: site_change_required', async () => {
+await test('music_play は funnel_stage: DEEP_INTEREST / status: active', async () => {
   const { data } = await api('GET', '/api/sf/ga/events/catalog');
   const ev = data.events.find(e => e.event_name === 'music_play');
   assert.ok(ev, 'music_play がカタログに存在する');
   assert.equal(ev.funnel_stage, 'DEEP_INTEREST');
-  assert.equal(ev.status, 'site_change_required');
+  assert.equal(ev.status, 'active');
 });
 
 await test('sweets_unlock は funnel_stage: ENGAGEMENT', async () => {

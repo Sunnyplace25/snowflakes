@@ -98,12 +98,13 @@ const SfModule = (() => {
 
         // タブに応じたデータ読み込み
         if (tabName === 'library') loadLibrary();
-        else if (tabName === 'profiles') loadProfiles();
-        else if (tabName === 'import') loadImports();
-        else if (tabName === 'youtube') loadYouTube();
-        else if (tabName === 'tiktok') loadTikTok();
-        else if (tabName === 'funnel') loadFunnel();
-        else if (tabName === 'sync')   loadSync();
+        else if (tabName === 'profiles')     loadProfiles();
+        else if (tabName === 'import')       loadImports();
+        else if (tabName === 'youtube')      loadYouTube();
+        else if (tabName === 'tiktok')       loadTikTok();
+        else if (tabName === 'funnel')       loadFunnel();
+        else if (tabName === 'sync')         loadSync();
+        else if (tabName === 'hp-analytics') loadHpAnalytics();
       });
     });
   }
@@ -1055,6 +1056,297 @@ const SfModule = (() => {
       .replace(/"/g, '&quot;');
   }
 
+  // ─── HP Analytics（Phase 15）─────────────────────────────────────────────
+
+  /** Phase 11 計測イベントのうち HP Analytics タブで表示するもの */
+  const HP_KEY_EVENTS = [
+    { name: 'click_instagram', label: 'Instagram遷移',              stage: 'DISCOVERY' },
+    { name: 'click_youtube',   label: 'YouTube遷移',                stage: 'DISCOVERY' },
+    { name: 'click_x',        label: 'X（旧Twitter）遷移',          stage: 'DISCOVERY' },
+    { name: 'nav_sweets',     label: 'SWEETsページ遷移',            stage: 'ENGAGEMENT' },
+    { name: 'sweets_unlock',  label: 'SWEETsゲート解錠',            stage: 'ENGAGEMENT' },
+    { name: 'click_music',    label: '音楽配信リンク（Apple Music・Amazon Music等）', stage: 'ENGAGEMENT' },
+    { name: 'click_spotify',  label: 'Spotifyリンク',               stage: 'ENGAGEMENT' },
+    { name: 'nav_hayatecchi', label: 'ゲームLPへ遷移',              stage: 'ENGAGEMENT' },
+    { name: 'music_play',     label: '音源再生開始',                stage: 'DEEP_INTEREST' },
+    { name: 'music_play_30s', label: '30秒再生通過',                stage: 'DEEP_INTEREST' },
+    { name: 'click_story',    label: '小説・なろうリンク',           stage: 'DEEP_INTEREST' },
+    { name: 'click_kindle',   label: 'Kindle/Amazon電子書籍',       stage: 'VALUE' },
+  ];
+
+  /** stage 名 → CSS クラスサフィックス */
+  function stageCls(stage) {
+    const map = {
+      DISCOVERY:     'discovery',
+      ENGAGEMENT:    'engagement',
+      DEEP_INTEREST: 'deep-interest',
+      VALUE:         'value',
+    };
+    return map[stage] || 'discovery';
+  }
+
+  /** 増減バッジ HTML（前期間比） */
+  function hpDiffBadge(curr, prev) {
+    if (prev == null || prev === 0) return '';
+    const diff = curr - prev;
+    const pct  = Math.round((diff / prev) * 100);
+    const sign = diff >= 0 ? '+' : '';
+    const cls  = diff > 0 ? 'green' : (diff < 0 ? 'red' : '');
+    return `<span class="hp-diff ${cls}">${sign}${pct}%</span>`;
+  }
+
+  /** サイト概要カード */
+  function renderHpOverview(res) {
+    if (!res || !res.ok) {
+      return '<div class="empty-state">概要データを取得できませんでした</div>';
+    }
+    if (!res.has_data) {
+      return `
+        <div class="empty-state">
+          データ未取得（GA4同期が必要です）<br>
+          <span style="font-size:11px;color:var(--text-dim)">${esc(res.period?.from || '')} 〜 ${esc(res.period?.to || '')}</span>
+        </div>
+      `;
+    }
+    const c = res.current;
+    const p = res.previous;
+    const metrics = [
+      { label: 'Page Views',      key: 'page_views' },
+      { label: 'Users',           key: 'users' },
+      { label: 'Sessions',        key: 'sessions' },
+      { label: 'Engaged Sessions',key: 'engaged_sessions' },
+    ];
+    const cardsHtml = metrics.map(m => `
+      <div class="hp-stat-card">
+        <div class="hp-stat-label">${esc(m.label)}</div>
+        <div class="hp-stat-value">${Number(c[m.key]).toLocaleString()}</div>
+        ${res.has_previous_data && p ? hpDiffBadge(c[m.key], p[m.key]) : ''}
+      </div>
+    `).join('');
+    const periodLabel = `${esc(res.period.from)} 〜 ${esc(res.period.to)}（${res.days}日間）`;
+    const prevLabel   = res.has_previous_data
+      ? `<div class="hp-compare-note">前期間比: ${esc(res.previous_period.from)} 〜 ${esc(res.previous_period.to)}</div>`
+      : '';
+    return `
+      <div class="hp-period-label">${periodLabel}</div>
+      <div class="hp-stat-cards">${cardsHtml}</div>
+      ${prevLabel}
+    `;
+  }
+
+  /** 人気ページテーブル */
+  function renderHpPages(res) {
+    if (!res || !res.ok || !res.rows || res.rows.length === 0) {
+      return '<div class="empty-state">ページデータ未取得（GA4同期が必要です）</div>';
+    }
+    const rows = res.rows.slice(0, 20).map(r => `
+      <tr>
+        <td class="hp-col-path">${esc(r.page_path)}</td>
+        <td class="hp-col-num">${Number(r.page_views).toLocaleString()}</td>
+        <td class="hp-col-num">${Number(r.users).toLocaleString()}</td>
+        <td class="hp-col-num">${Number(r.sessions).toLocaleString()}</td>
+      </tr>
+    `).join('');
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>ページ</th>
+            <th class="hp-col-num">PV</th>
+            <th class="hp-col-num">ユーザー</th>
+            <th class="hp-col-num">セッション</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  /** 日別推移テーブル（ミニバーチャート付き） */
+  function renderHpDaily(res) {
+    if (!res || !res.ok || !res.rows || res.rows.length === 0) {
+      return '<div class="empty-state">日別データ未取得（GA4同期が必要です）</div>';
+    }
+    const maxPv = Math.max(...res.rows.map(r => Number(r.page_views) || 0), 1);
+    const rows = res.rows.map(r => {
+      const pv       = Number(r.page_views) || 0;
+      const users    = Number(r.users) || 0;
+      const barWidth = Math.max(Math.round((pv / maxPv) * 100), 1);
+      return `
+        <tr>
+          <td class="hp-col-date">${esc(r.date)}</td>
+          <td class="hp-col-num">${pv.toLocaleString()}</td>
+          <td class="hp-col-num">${users.toLocaleString()}</td>
+          <td class="hp-bar-cell">
+            <div class="hp-bar-wrap">
+              <div class="hp-bar" style="width:${barWidth}%"></div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th class="hp-col-date">日付</th>
+            <th class="hp-col-num">PV</th>
+            <th class="hp-col-num">ユーザー</th>
+            <th>推移（PV）</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  /**
+   * サイトイベント一覧。
+   * gaHasData=true の場合、件数0はイベント未発生（0件）。
+   * gaHasData=false の場合、未取得（GA4未同期）。
+   */
+  function renderHpEvents(eventsRes, gaHasData) {
+    if (!eventsRes || !eventsRes.ok) {
+      return '<div class="empty-state">イベントデータを取得できませんでした</div>';
+    }
+
+    // event_name 別に集計
+    const counts = {};
+    for (const r of (eventsRes.rows || [])) {
+      counts[r.event_name] = (counts[r.event_name] || 0) + Number(r.count || 0);
+    }
+    const hasEventRows = (eventsRes.rows || []).length > 0;
+
+    let note = '';
+    if (!gaHasData && !hasEventRows) {
+      note = '<div class="hp-events-note">GA4同期が必要です（データ未取得。0ではありません）。</div>';
+    }
+
+    const rows = HP_KEY_EVENTS.map(ev => {
+      let countHtml;
+      if (!gaHasData && !hasEventRows) {
+        countHtml = '<span class="hp-not-fetched">未取得</span>';
+      } else {
+        countHtml = (counts[ev.name] || 0).toLocaleString();
+      }
+      return `
+        <tr>
+          <td><span class="hp-stage-badge hp-stage-${stageCls(ev.stage)}">${esc(ev.stage)}</span></td>
+          <td class="sf-col-title">${esc(ev.name)}</td>
+          <td>${esc(ev.label)}</td>
+          <td class="hp-col-num">${countHtml}</td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      ${note}
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>イベント名</th>
+            <th>説明</th>
+            <th class="hp-col-num">30日合計</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  /** Music 導線（再生→配信サービス移動）*/
+  function renderHpMusicFunnel(eventsRes, gaHasData) {
+    if (!eventsRes || !eventsRes.ok) {
+      return '<div class="empty-state">イベントデータを取得できませんでした</div>';
+    }
+    const counts = {};
+    for (const r of (eventsRes.rows || [])) {
+      counts[r.event_name] = (counts[r.event_name] || 0) + Number(r.count || 0);
+    }
+    const hasEventRows = (eventsRes.rows || []).length > 0;
+    const synced = gaHasData || hasEventRows;
+
+    function countOf(name) {
+      if (!synced) return '<span class="hp-not-fetched">未取得</span>';
+      return (counts[name] || 0).toLocaleString();
+    }
+
+    const funnel = [
+      { icon: '▶', name: 'music_play',     label: '音源再生開始',             note: '' },
+      { icon: '⏱', name: 'music_play_30s', label: '30秒再生通過',             note: '' },
+      { icon: '→', name: 'click_music',    label: '音楽配信リンク（全体）',   note: '（Apple Music / Amazon Music / Suno 等）' },
+      { icon: '→', name: 'click_spotify',  label: 'Spotifyリンク（個別）',    note: '' },
+      { icon: '🎮', name: 'nav_hayatecchi', label: 'ゲームLPへ遷移',           note: '' },
+    ];
+
+    const rows = funnel.map(f => `
+      <div class="hp-funnel-row">
+        <span class="hp-funnel-icon">${f.icon}</span>
+        <span class="hp-funnel-label">
+          ${esc(f.label)}
+          ${f.note ? `<span class="hp-funnel-note-inline">${esc(f.note)}</span>` : ''}
+        </span>
+        <code class="hp-funnel-event">${esc(f.name)}</code>
+        <span class="hp-funnel-count">${countOf(f.name)}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="hp-music-funnel">${rows}</div>
+      <div class="hp-music-note">
+        ※ click_music / click_spotify のパラメータ（destination）は現在 DB に集計されていないため、
+        サービス別（Apple Music / Amazon Music / YouTube Music 個別）の内訳は未取得です。<br>
+        ※ 上記は単純件数集計であり、同一ユーザーのコンバージョンパスを示すものではありません。
+      </div>
+    `;
+  }
+
+  /** 流入元（現在未取得）*/
+  function renderHpSources() {
+    return `
+      <div class="hp-sources-placeholder">
+        流入元（source / medium / referrer）データは現在未取得です。<br>
+        GA4 の acquisition レポートデータは sf_ga_daily / sf_ga_event_daily に含まれていません。<br>
+        将来拡張予定（STATUS.md 参照）。
+      </div>
+    `;
+  }
+
+  /** HP Analytics タブのデータをすべて読み込む */
+  async function loadHpAnalytics() {
+    const overviewEl = document.getElementById('hp-overview-container');
+    const pagesEl    = document.getElementById('hp-pages-container');
+    const dailyEl    = document.getElementById('hp-daily-container');
+    const eventsEl   = document.getElementById('hp-events-container');
+    const musicEl    = document.getElementById('hp-music-container');
+    const sourcesEl  = document.getElementById('hp-sources-container');
+
+    if (!overviewEl) return;
+
+    let overviewRes, pagesRes, dailyRes, eventsRes;
+    try {
+      [overviewRes, pagesRes, dailyRes, eventsRes] = await Promise.all([
+        fetch('/api/sf/ga/overview?days=30').then(r => r.json()),
+        fetch('/api/sf/ga/pages').then(r => r.json()),
+        fetch('/api/sf/ga/daily').then(r => r.json()),
+        fetch('/api/sf/ga/events').then(r => r.json()),
+      ]);
+    } catch (e) {
+      if (overviewEl) overviewEl.innerHTML =
+        `<div class="empty-state">データ取得エラー: ${esc(e.message)}</div>`;
+      return;
+    }
+
+    const gaHasData = overviewRes?.has_data === true;
+
+    if (overviewEl) overviewEl.innerHTML = renderHpOverview(overviewRes);
+    if (pagesEl)    pagesEl.innerHTML    = renderHpPages(pagesRes);
+    if (dailyEl)    dailyEl.innerHTML    = renderHpDaily(dailyRes);
+    if (eventsEl)   eventsEl.innerHTML   = renderHpEvents(eventsRes, gaHasData);
+    if (musicEl)    musicEl.innerHTML    = renderHpMusicFunnel(eventsRes, gaHasData);
+    if (sourcesEl)  sourcesEl.innerHTML  = renderHpSources();
+  }
+
   // ─── モジュール起動 ────────────────────────────────────────────────────────
 
   /**
@@ -1072,12 +1364,14 @@ const SfModule = (() => {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
-    loadFunnel, loadEventImpact, loadSync,
+    loadFunnel, loadEventImpact, loadSync, loadHpAnalytics,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,
     renderFunnelOverview, renderEventTimeline, renderEventImpact,
     renderSyncAttentionBanner, renderSyncSources,
+    renderHpOverview, renderHpPages, renderHpDaily, renderHpEvents,
+    renderHpMusicFunnel, renderHpSources,
   };
 
 })();

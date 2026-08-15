@@ -395,6 +395,7 @@
     <button class="sf-tab" data-sf-tab="tiktok">TikTok</button>
     <button class="sf-tab" data-sf-tab="funnel">Funnel</button>
     <button class="sf-tab" data-sf-tab="sync">Sync / Ops</button>
+    <button class="sf-tab" data-sf-tab="hp-analytics">HP Analytics</button>
   </nav>
 
   <!-- Music Library tab -->
@@ -528,6 +529,62 @@
     </section>
 
   </div><!-- /#sf-tab-sync -->
+
+  <!-- HP Analytics tab (Phase 15) -->
+  <div id="sf-tab-hp-analytics" class="sf-tab-panel" hidden>
+
+    <!-- サイト概要 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>サイト概要（直近30日）</h2>
+        <span class="sf-note">GA4 read-only。推測値なし。</span>
+      </div>
+      <div id="hp-overview-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 人気ページ -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>人気ページ（上位20件）</h2>
+      </div>
+      <div id="hp-pages-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 日別推移 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>日別推移（直近30日）</h2>
+      </div>
+      <div id="hp-daily-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- サイトイベント -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>サイトイベント（直近30日）</h2>
+        <span class="sf-note">Phase 11 計測イベントの集計</span>
+      </div>
+      <div id="hp-events-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- Music 導線 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>Music 導線</h2>
+        <span class="sf-note">件数は単純集計です。同一ユーザーのコンバージョンではありません。</span>
+      </div>
+      <div id="hp-music-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 流入元 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>流入元</h2>
+      </div>
+      <div id="hp-sources-container"></div>
+    </section>
+
+  </div><!-- /#sf-tab-hp-analytics -->
 
 </div><!-- /#module-sf -->
 

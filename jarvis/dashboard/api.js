@@ -1455,7 +1455,7 @@ export function createApiHandler(db) {
         const events = [
           // ── DISCOVERY ──────────────────────────────────────────────────────────
           { event_name: 'click_instagram', funnel_stage: 'DISCOVERY', page: 'index / sweets',       description: 'Instagramリンク',            parameters: ['destination'], status: 'active' },
-          { event_name: 'click_youtube',   funnel_stage: 'DISCOVERY', page: 'index',                description: 'YouTubeリンク（snow.js）',    parameters: [],             status: 'active' },
+          { event_name: 'click_youtube',   funnel_stage: 'DISCOVERY', page: 'index / music',        description: 'YouTubeリンク（snow.js / music.html）', parameters: [],      status: 'active' },
           { event_name: 'click_x',         funnel_stage: 'DISCOVERY', page: 'index',                description: 'X（旧Twitter）リンク（snow.js）', parameters: [],          status: 'active' },
           { event_name: 'click_suno',      funnel_stage: 'DISCOVERY', page: 'index',                description: 'Sunoリンク（snow.js）',        parameters: [],             status: 'active' },
           { event_name: 'click_sns',       funnel_stage: 'DISCOVERY', page: 'index / sweets',       description: 'SNSリンク（X・YouTube、sfGa）', parameters: ['destination'], status: 'active' },
@@ -1465,11 +1465,11 @@ export function createApiHandler(db) {
           { event_name: 'sweets_unlock',   funnel_stage: 'ENGAGEMENT', page: 'sweets',               description: 'SWEETsゲート解錠（コード入力成功）', parameters: ['season', 'is_new_user'], status: 'active' },
           { event_name: 'enter_summer',    funnel_stage: 'ENGAGEMENT', page: 'sweets',               description: '夏コンテンツ入場',               parameters: ['event_category'],     status: 'active' },
           { event_name: 'nav_gacha',       funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'ガチャページ遷移',               parameters: ['from'],               status: 'active' },
-          { event_name: 'click_music',     funnel_stage: 'ENGAGEMENT', page: 'index / sweets / music', description: '音楽配信リンク（Spotify・Apple Music・Amazon Music等）', parameters: ['destination'], status: 'active' },
+          { event_name: 'click_music',     funnel_stage: 'ENGAGEMENT', page: 'index / sweets / music', description: '音楽配信リンク（Apple Music・Amazon Music・Suno等）', parameters: ['destination'], status: 'active' },
           { event_name: 'click_spotify',   funnel_stage: 'ENGAGEMENT', page: 'index / music',        description: 'Spotifyリンク（snow.js / music.html）', parameters: ['destination'],  status: 'active' },
-          { event_name: 'nav_hayatecchi',  funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'ゲームLPへの遷移',               parameters: ['from'],               status: 'site_change_required' },
+          { event_name: 'nav_hayatecchi',  funnel_stage: 'ENGAGEMENT', page: 'index',                description: 'ゲームLPへの遷移',               parameters: ['from'],               status: 'active' },
           // ── DEEP_INTEREST ──────────────────────────────────────────────────────
-          { event_name: 'music_play',      funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '音源再生開始（1セッション1曲1回）', parameters: ['song_id'],           status: 'site_change_required' },
+          { event_name: 'music_play',      funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '音源再生開始（1セッション1曲1回）', parameters: ['song_id'],           status: 'active' },
           { event_name: 'music_play_30s',  funnel_stage: 'DEEP_INTEREST', page: 'sweets',            description: '音源30秒再生通過',               parameters: ['song_id'],            status: 'active' },
           { event_name: 'click_story',     funnel_stage: 'DEEP_INTEREST', page: 'index / sweets',    description: '小説・なろうリンク（sfGa）',      parameters: ['destination', 'url'], status: 'active' },
           { event_name: 'click_novel',     funnel_stage: 'DEEP_INTEREST', page: 'index',             description: '小説リンク（snow.js）',           parameters: ['link_url'],           status: 'active' },
@@ -1736,6 +1736,77 @@ export function createApiHandler(db) {
           'Cache-Control': 'no-cache',
         });
         return res.end(content);
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // HP Analytics Dashboard エンドポイント（Phase 15）
+      // ══════════════════════════════════════════════════════════════════════
+
+      // ── GET /api/sf/ga/overview ───────────────────────────────────────────
+      // HP Analytics サイト概要（直近 N 日の集計 + 前期間比較）
+      // has_data=false → 期間内データなし（未取得）、current=null
+      // has_data=true  → データあり、count=0 は 0（イベント未発生）
+      if (path === '/api/sf/ga/overview' && method === 'GET') {
+        const VALID_DAYS_OV = [7, 14, 30];
+        const daysRaw = parseInt(url.searchParams.get('days') || '30', 10);
+        const days = VALID_DAYS_OV.includes(daysRaw) ? daysRaw : 30;
+
+        const today = todayISO();
+        function subDaysOv(base, n) {
+          const d = new Date(base);
+          d.setDate(d.getDate() - n);
+          return [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const currentEnd    = today;
+        const currentStart  = subDaysOv(today, days - 1);
+        const previousEnd   = subDaysOv(today, days);
+        const previousStart = subDaysOv(today, days * 2 - 1);
+
+        const currentRow = db.prepare(`
+          SELECT SUM(page_views)       AS page_views,
+                 SUM(users)            AS users,
+                 SUM(sessions)         AS sessions,
+                 SUM(engaged_sessions) AS engaged_sessions,
+                 COUNT(*)              AS row_count
+          FROM sf_ga_daily WHERE date >= ? AND date <= ?
+        `).get(currentStart, currentEnd);
+
+        const previousRow = db.prepare(`
+          SELECT SUM(page_views)       AS page_views,
+                 SUM(users)            AS users,
+                 SUM(sessions)         AS sessions,
+                 SUM(engaged_sessions) AS engaged_sessions,
+                 COUNT(*)              AS row_count
+          FROM sf_ga_daily WHERE date >= ? AND date <= ?
+        `).get(previousStart, previousEnd);
+
+        const hasCurrentData  = (currentRow?.row_count  ?? 0) > 0;
+        const hasPreviousData = (previousRow?.row_count ?? 0) > 0;
+
+        return jsonRes(res, 200, {
+          ok: true,
+          days,
+          period:          { from: currentStart,  to: currentEnd  },
+          previous_period: { from: previousStart, to: previousEnd },
+          has_data:          hasCurrentData,
+          has_previous_data: hasPreviousData,
+          current: hasCurrentData ? {
+            page_views:       currentRow.page_views       ?? 0,
+            users:            currentRow.users            ?? 0,
+            sessions:         currentRow.sessions         ?? 0,
+            engaged_sessions: currentRow.engaged_sessions ?? 0,
+          } : null,
+          previous: hasPreviousData ? {
+            page_views:       previousRow.page_views       ?? 0,
+            users:            previousRow.users            ?? 0,
+            sessions:         previousRow.sessions         ?? 0,
+            engaged_sessions: previousRow.engaged_sessions ?? 0,
+          } : null,
+        });
       }
 
       return errRes(res, 404, 'Not Found');

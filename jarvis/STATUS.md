@@ -32,6 +32,7 @@ jarvis-development
 | Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
 | Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | `8a33d8a` |
 | Final Integration Test | file_executor.js / test_runner.js（不具合修正） / tests/test_final_integration.js（新規） / STATUS.md | ✅ 完了 | `87cadd7` |
+| Phase 15 HP Analytics Dashboard | dashboard/api.js（/api/sf/ga/overview追加）/ index.html / sf.js / style.css / tests/test_hp_analytics.js | 🔄 実装・テスト完了・未commit |
 
 ---
 
@@ -183,6 +184,76 @@ jarvis-development
 | 外部通信 | 0件 |
 
 ---
+
+---
+
+## Phase 15 HP Analytics Dashboard（2026-08-15 実装完了）
+
+### 概要
+
+Phase 11 site event tracking 基盤を JARVIS Dashboard 上で確認できるようにした。
+
+### 実装内容
+
+| 項目 | 内容 |
+|------|------|
+| 利用基盤 | Phase 11 `sf_ga_daily` / `sf_ga_event_daily` / 既存 GA API |
+| 新規 API | `GET /api/sf/ga/overview` — サイト概要合計 + 前期間比較 |
+| 再利用 API | `/api/sf/ga/daily` / `/api/sf/ga/pages` / `/api/sf/ga/compare` / `/api/sf/ga/events` / `/api/sf/ga/events/catalog` |
+| Dashboard | Snow flakes タブに「HP Analytics」サブタブ追加 |
+| 画面構成 | サイト概要 / 人気ページ / 日別推移 / サイトイベント / Music導線 / 流入元 |
+| GA4 実通信 | なし（read-only。既存同期経路のみ） |
+| 推測データ | なし（0と未取得を厳密に区別） |
+
+### Dashboard で確認できる項目
+
+| セクション | 内容 |
+|------------|------|
+| サイト概要 | page views / users / sessions / engaged sessions（直近30日 + 前30日比較） |
+| 人気ページ | page_path別 PV / ユーザー / セッション（上位20件） |
+| 日別推移 | 日別 PV / ユーザー（ミニバーチャート付き） |
+| サイトイベント | Phase 11 計測12イベントの30日合計（DISCOVERY/ENGAGEMENT/DEEP_INTEREST/VALUE別） |
+| Music 導線 | music_play / music_play_30s / click_music / click_spotify / nav_hayatecchi 件数 |
+| 流入元 | 未取得（source/medium は現 DB 非格納。将来拡張ポイント） |
+
+### 対応イベント
+
+| イベント | 説明 | status |
+|----------|------|--------|
+| `music_play` | 音源再生開始 | site_change_required |
+| `music_play_30s` | 30秒再生通過 | active |
+| `click_music` | 音楽配信リンク（Spotify/Apple/Amazon等） | active |
+| `click_spotify` | Spotifyリンク（個別） | active |
+| `nav_hayatecchi` | ゲームLPへ遷移 | site_change_required |
+
+### 未取得・将来拡張
+
+- 流入元（source / medium / referrer）: `sf_ga_daily` に acquisition カラムなし → 将来拡張
+- click_music の destination 別内訳（Apple Music / Amazon Music 個別）: `sf_ga_event_daily` にパラメータ非格納 → 将来拡張
+- ストリーミングサービス別 click（YouTube Music 個別）: カタログに独立イベントなし → 推測追加しない
+
+### テスト結果
+
+| 項目 | 結果 |
+|------|------|
+| 新規スイート | test_hp_analytics.js（22スイート中22番目） |
+| テスト数 | 76 passed / 0 failed |
+| 全回帰 | 22 suites / 1176 passed / 0 failed |
+| 実 GA4 通信 | 0件 |
+| 外部 CDN 追加 | なし |
+| main 変更 | なし |
+
+### 変更ファイル
+
+| ファイル | 変更 |
+|----------|------|
+| `jarvis/dashboard/api.js` | `GET /api/sf/ga/overview` 追加（Phase 15 セクション） |
+| `jarvis/dashboard/public/index.html` | HP Analytics サブタブ + 6セクション追加 |
+| `jarvis/dashboard/public/modules/sf.js` | `loadHpAnalytics()` 他レンダー関数追加・タブハンドラ追加 |
+| `jarvis/dashboard/public/style.css` | HP Analytics 専用 CSS 追加 |
+| `jarvis/tests/test_hp_analytics.js` | 新規作成（76テスト） |
+| `jarvis/tests/registry.json` | `hp_analytics` エントリ追加 |
+| `jarvis/STATUS.md` | Phase 15 記録 |
 
 ---
 
