@@ -9,17 +9,18 @@
  * - DBファイルは public/ 配下に置かない（HTTP 経由で取得不可）
  */
 
-import { createServer }              from 'http';
-import { readFileSync, existsSync }  from 'fs';
-import { resolve, extname, dirname, sep } from 'path';
-import { fileURLToPath }             from 'url';
+import { createServer } from 'http';
+import { readFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
+import { resolve, extname, dirname, sep, basename } from 'path';
+import { fileURLToPath } from 'url';
 
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
-import { createApiHandler }          from './api.js';
+import { createApiHandler } from './api.js';
 import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_work_backfill.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
+const BACKUP_DIR = resolve(__dirname, '../backups');
 const PORT = 3000;
 const HOST = '127.0.0.1';   // localhost 限定
 
@@ -61,6 +62,16 @@ function readSmallJsonBody(req) {
   });
 }
 
+function backupBusinessDb() {
+  // WAL に残った書き込みを本体DBへ反映してからコピーする。
+  db.exec('PRAGMA wal_checkpoint(FULL)');
+  mkdirSync(BACKUP_DIR, { recursive: true });
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = resolve(BACKUP_DIR, `business_data_before_invoice_sync_${stamp}.db`);
+  copyFileSync(DEFAULT_DB_PATH, backupPath);
+  return backupPath;
+}
+
 const server = createServer(async (req, res) => {
   // ─── セキュリティヘッダー ────────────────────────────────────────────────
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -81,8 +92,9 @@ const server = createServer(async (req, res) => {
     }
 
     try {
+      const backupPath = backupBusinessDb();
       const result = syncAllInvoiceLinesToWorkRecords(db, { year });
-      return jsonRes(res, 200, result);
+      return jsonRes(res, 200, { ...result, backup: basename(backupPath) });
     } catch (e) {
       console.error('[invoice sync-work]', e.message);
       return jsonRes(res, 500, { ok: false, error: e.message });
