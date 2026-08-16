@@ -9,13 +9,14 @@
  * - DBファイルは public/ 配下に置かない（HTTP 経由で取得不可）
  */
 
-import { createServer }            from 'http';
-import { readFileSync, existsSync } from 'fs';
+import { createServer }              from 'http';
+import { readFileSync, existsSync }  from 'fs';
 import { resolve, extname, dirname, sep } from 'path';
-import { fileURLToPath }           from 'url';
+import { fileURLToPath }             from 'url';
 
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
 import { createApiHandler }          from './api.js';
+import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_manager.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
@@ -37,12 +38,56 @@ const MIME_TYPES = {
   '.svg':  'image/svg+xml',
 };
 
-const server = createServer((req, res) => {
+function jsonRes(res, status, data) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-cache',
+  });
+  res.end(JSON.stringify(data));
+}
+
+function readSmallJsonBody(req) {
+  return new Promise((resolveBody, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 65_536) reject(new Error('Request body too large'));
+    });
+    req.on('end', () => {
+      try { resolveBody(body ? JSON.parse(body) : {}); }
+      catch { reject(new Error('Invalid JSON')); }
+    });
+    req.on('error', reject);
+  });
+}
+
+const server = createServer(async (req, res) => {
   // ─── セキュリティヘッダー ────────────────────────────────────────────────
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
 
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
+
+  // ─── 既存請求書 → 仕事一覧 後追い同期 ────────────────────────────────────
+  // 大量の請求書を先に取り込んでいた場合でも、再アップロードせず同期できる。
+  if (url.pathname === '/api/invoice/sync-work' && req.method === 'POST') {
+    let body;
+    try { body = await readSmallJsonBody(req); }
+    catch (e) { return jsonRes(res, 400, { ok: false, error: e.message }); }
+
+    const year = body.year ? String(body.year) : null;
+    if (year && !/^\d{4}$/.test(year)) {
+      return jsonRes(res, 400, { ok: false, error: 'year は4桁で指定してください' });
+    }
+
+    try {
+      const result = syncAllInvoiceLinesToWorkRecords(db, { year });
+      return jsonRes(res, 200, result);
+    } catch (e) {
+      console.error('[invoice sync-work]', e.message);
+      return jsonRes(res, 500, { ok: false, error: e.message });
+    }
+  }
 
   // ─── API ルーティング ────────────────────────────────────────────────────
   if (url.pathname.startsWith('/api/')) {
