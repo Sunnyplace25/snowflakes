@@ -9,6 +9,7 @@
 
 (function () {
   const OTEC_DEFAULT = 'オーテック';
+  const OTEC_TAX_RATE = 0.10;
   const CONTENT_MONTH_LOOKBACK = 12;
   const COMMON_INCOMES = [26500, 25000, 17500, 14500, 13000];
 
@@ -18,6 +19,12 @@
 
   function formatYen(value) {
     return Number(value || 0).toLocaleString('ja-JP') + '円';
+  }
+
+  function addOtecTax(value) {
+    const base = Number(value || 0);
+    const tax = Math.round(base * OTEC_TAX_RATE);
+    return { base, tax, total: base + tax };
   }
 
   function previousMonth(ym) {
@@ -204,23 +211,28 @@
         fetchWorks(prev),
       ]);
 
-      const billingAmount = currentWorks
+      const billingBase = currentWorks
         .filter(w => isOtec(w.client))
         .reduce((sum, w) => sum + Number(w.income || 0), 0);
 
-      const paymentAmount = previousWorks
+      const paymentBase = previousWorks
         .filter(w => isOtec(w.client))
         .reduce((sum, w) => sum + Number(w.income || 0), 0);
+
+      const billing = addOtecTax(billingBase);
+      const payment = addOtecTax(paymentBase);
 
       const billingLabel = invoiceCard.closest('.card')?.querySelector('.card-label');
       const paymentLabel = paymentCard.closest('.card')?.querySelector('.card-label');
-      if (billingLabel) billingLabel.textContent = 'オーテック 当月請求額';
-      if (paymentLabel) paymentLabel.textContent = '当月入金予定（前月分）';
+      if (billingLabel) billingLabel.textContent = 'オーテック 当月請求額（税込10%）';
+      if (paymentLabel) paymentLabel.textContent = '当月入金予定（税込・前月分）';
 
-      const billingText = formatYen(billingAmount);
-      const paymentText = formatYen(paymentAmount);
+      const billingText = formatYen(billing.total);
+      const paymentText = formatYen(payment.total);
       if (invoiceCard.textContent !== billingText) invoiceCard.textContent = billingText;
       if (paymentCard.textContent !== paymentText) paymentCard.textContent = paymentText;
+      invoiceCard.title = `税抜 ${formatYen(billing.base)} + 消費税 ${formatYen(billing.tax)}`;
+      paymentCard.title = `税抜 ${formatYen(payment.base)} + 消費税 ${formatYen(payment.tax)}`;
       invoiceCard.className = 'card-value green';
       paymentCard.className = 'card-value accent';
     } catch (_) {
