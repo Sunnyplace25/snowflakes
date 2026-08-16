@@ -28,6 +28,7 @@
     "record-work": "node tools/record_work.js",
     "record-day": "node tools/record_day.js",
     "sync-invoice-work": "node tools/sync_invoice_work.js",
+    "test-invoice-work": "node tests/test_invoice_work_sync.js",
     "test-data": "node tests/test_data_manager.js",
     "test-dashboard": "node tests/test_dashboard_api.js",
     "dashboard": "node --env-file=.env dashboard/server.js"
