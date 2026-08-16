@@ -3,6 +3,8 @@
  * - Per-job invoice/payment status is hidden from the monthly workflow.
  * - Otec billing is shown as monthly totals (month-end close / next-month-end payment).
  * - Client, work-content, income, and travel-cost inputs remain directly editable with selectable suggestions.
+ * - Number input spinner buttons are hidden; typed input and datalist suggestions remain available.
+ * - Monthly work rows can be deleted after confirmation.
  * - Adds a reliable Graph shortcut to the Business tabs.
  */
 'use strict';
@@ -48,6 +50,33 @@
     const [year, month] = String(ym).split('-').map(Number);
     const d = new Date(year, month - 1 + delta, 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function setupNoNumberSpinners() {
+    if (document.getElementById('business-no-number-spinners')) return;
+    const style = document.createElement('style');
+    style.id = 'business-no-number-spinners';
+    style.textContent = `
+      #module-business input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+      #module-business input[type="number"]::-webkit-outer-spin-button,
+      #module-business input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .work-delete-btn {
+        margin-left: 6px;
+        color: #fca5a5;
+        border-color: #7f1d1d;
+      }
+      .work-delete-btn:hover {
+        background: #451a1a;
+        border-color: #991b1b;
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   function setupClientInputs() {
@@ -219,6 +248,53 @@
     }
   }
 
+  async function deleteWork(id, row) {
+    const date = row.querySelector('.col-date')?.textContent?.trim() || '';
+    const content = row.querySelector('.content-cell')?.textContent?.trim() || '';
+    const label = [date, content].filter(Boolean).join('　') || 'この仕事';
+    if (!window.confirm(`${label}\n\nこの登録を削除しますか？`)) return;
+
+    const button = row.querySelector('.work-delete-btn');
+    if (button) {
+      button.disabled = true;
+      button.textContent = '削除中';
+    }
+
+    try {
+      const response = await fetch(`/api/work/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || '削除に失敗しました');
+
+      if (typeof refresh === 'function') {
+        await refresh();
+      } else {
+        location.reload();
+      }
+    } catch (e) {
+      alert('削除に失敗しました: ' + e.message);
+      if (button) {
+        button.disabled = false;
+        button.textContent = '削除';
+      }
+    }
+  }
+
+  function addDeleteButtons() {
+    document.querySelectorAll('#works-tbody tr[data-id]').forEach(row => {
+      const cell = row.querySelector('.col-actions');
+      if (!cell || cell.querySelector('.work-delete-btn')) return;
+      const id = Number(row.dataset.id);
+      if (!Number.isInteger(id) || id <= 0) return;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-secondary btn-sm work-delete-btn';
+      button.textContent = '削除';
+      button.addEventListener('click', () => deleteWork(id, row));
+      cell.appendChild(button);
+    });
+  }
+
   function ensureGraphTab() {
     const tabs = document.getElementById('business-tabs');
     if (!tabs || tabs.querySelector('[data-business-graph]')) return;
@@ -297,17 +373,20 @@
       hidePerJobBillingStatus();
       relabelTravelCostUi();
       addCurrentContentSuggestions();
+      addDeleteButtons();
       updateMonthlyBillingCards();
     }, 80);
   }
 
   function init() {
+    setupNoNumberSpinners();
     setupClientInputs();
     setupIncomeInputs();
     setupTravelCostInputs();
     setupContentInputs();
     hidePerJobBillingStatus();
     relabelTravelCostUi();
+    addDeleteButtons();
     ensureGraphTab();
     scheduleRefresh();
 
