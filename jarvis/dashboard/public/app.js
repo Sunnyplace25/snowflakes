@@ -476,7 +476,7 @@ function switchBizTab(name) {
   bizCurrentTab = name;
 
   // panel 表示切替
-  ['monthly', 'invoice', 'analytics'].forEach(t => {
+  ['monthly', 'invoice', 'analytics', 'calendar'].forEach(t => {
     const el = document.getElementById(`biz-tab-${t}`);
     if (el) el.hidden = (t !== name);
   });
@@ -488,6 +488,7 @@ function switchBizTab(name) {
 
   if (name === 'invoice')   initInvoiceTab();
   if (name === 'analytics') initAnalyticsTab();
+  if (name === 'calendar')  initCalendarTab();
 }
 
 document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
@@ -930,3 +931,251 @@ async function loadInvLines({ year, month, category } = {}) {
     el.innerHTML = '<p style="color:#64748b;font-size:13px">読み込みエラー</p>';
   }
 }
+
+// ─── Google Calendar タブ ─────────────────────────────────────────────────────
+
+let calConnected      = false;
+let calPushPreviewData = null;   // 最後のdry-run結果キャッシュ
+
+async function initCalendarTab() {
+  await loadCalendarStatus();
+  loadCalendarSyncRuns();
+}
+
+// ── 接続状態確認 ──────────────────────────────────────────────────────────────
+
+async function loadCalendarStatus() {
+  const el = document.getElementById('cal-status-container');
+  el.className   = 'loading';
+  el.textContent = '確認中...';
+
+  try {
+    const { data } = await api('GET', '/api/calendar/status');
+
+    if (data.connected) {
+      calConnected = true;
+      el.className = '';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px">
+          <span style="color:#22c55e;font-size:16px">●</span>
+          <span style="color:#e2e8f0">接続済み</span>
+          <span style="color:#64748b">（同期済み: ${data.linkedCount ?? 0}件）</span>
+        </div>
+      `;
+      showCalPushConfig(true);
+      await loadCalendarList();
+    } else {
+      calConnected = false;
+      el.className = '';
+      const missing = (data.missingVars || []).join(', ');
+      el.innerHTML = `
+        <div style="font-size:13px;color:#f59e0b">
+          <strong>未接続</strong>
+          ${missing ? `<span style="color:#64748b;margin-left:8px">未設定: ${esc(missing)}</span>` : ''}
+          <div style="margin-top:8px;color:#64748b">${esc(data.hint || '')}</div>
+        </div>
+      `;
+      showCalPushConfig(false);
+    }
+  } catch {
+    el.className = '';
+    el.textContent = '確認エラー';
+  }
+}
+
+function showCalPushConfig(connected) {
+  document.getElementById('cal-push-config').style.display         = connected ? '' : 'none';
+  document.getElementById('cal-push-not-connected').style.display  = connected ? 'none' : '';
+}
+
+document.getElementById('cal-status-refresh-btn')
+  .addEventListener('click', loadCalendarStatus);
+
+// ── カレンダー一覧取得 ────────────────────────────────────────────────────────
+
+async function loadCalendarList() {
+  const sel = document.getElementById('cal-push-calendar');
+  // 既存オプション（先頭以外）をクリア
+  while (sel.options.length > 1) sel.remove(1);
+
+  try {
+    const { data } = await api('GET', '/api/calendar/calendars');
+    if (!data.ok) return;
+
+    data.calendars.forEach(cal => {
+      const opt = document.createElement('option');
+      opt.value = cal.id;
+      // 書き込み可能なもの優先表示
+      const role = cal.writable ? '' : '（読み取り専用）';
+      opt.textContent = `${cal.summary}${role}`;
+      if (!cal.writable) opt.disabled = true;
+      sel.appendChild(opt);
+    });
+  } catch { /* silent — status check でエラー表示済み */ }
+}
+
+// ── dry-run プレビュー ────────────────────────────────────────────────────────
+
+document.getElementById('cal-push-preview-btn').addEventListener('click', async () => {
+  const calendarId = document.getElementById('cal-push-calendar').value;
+  const year       = document.getElementById('cal-push-year').value;
+
+  if (!calendarId) {
+    document.getElementById('cal-push-status').textContent = '書き込み先カレンダーを選択してください';
+    return;
+  }
+
+  const statusEl = document.getElementById('cal-push-status');
+  const previewEl = document.getElementById('cal-push-preview-area');
+  statusEl.textContent = '解析中...';
+  previewEl.hidden = true;
+
+  try {
+    const { status, data } = await api('POST', '/api/calendar/push/preview', { calendarId, year });
+    if (status !== 200) {
+      statusEl.textContent = `エラー: ${data.error || 'プレビュー失敗'}`;
+      return;
+    }
+
+    calPushPreviewData = { calendarId, year, items: data.items };
+    statusEl.textContent = '';
+    renderCalPushPreview(data);
+    previewEl.hidden = false;
+  } catch (err) {
+    statusEl.textContent = `通信エラー: ${err.message}`;
+  }
+});
+
+function renderCalPushPreview(data) {
+  const summaryEl = document.getElementById('cal-push-preview-summary');
+  const wrapEl    = document.getElementById('cal-push-preview-table-wrap');
+  const { createCount, updateCount, skipCount, items = [] } = data;
+
+  // サマリー行
+  let parts = [];
+  if (createCount) parts.push(`新規作成: ${createCount}件`);
+  if (updateCount) parts.push(`更新: ${updateCount}件`);
+  if (skipCount)   parts.push(`スキップ: ${skipCount}件`);
+  summaryEl.innerHTML = parts.length
+    ? `<strong>${parts.join(' / ')}</strong>`
+    : '<span style="color:#64748b">対象データがありません</span>';
+
+  if (!items.length) { wrapEl.innerHTML = ''; return; }
+
+  // アクション別カラー
+  const actionLabel = { create: '新規作成', update: '更新', skip: 'スキップ' };
+  const actionColor = { create: '#22c55e',  update: '#60a5fa', skip: '#475569' };
+
+  const trs = items.map(item => {
+    const line  = item.line || {};
+    const color = actionColor[item.action] || '#94a3b8';
+    const label = actionLabel[item.action] || item.action;
+    const reason = item.reason ? ` <span style="color:#64748b">(${esc(item.reason)})</span>` : '';
+    return `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px;white-space:nowrap">${esc(line.work_date ?? '—')}</td>
+        <td style="max-width:280px">${esc(line.description ?? '—')}</td>
+        <td style="color:#64748b">${esc(line.category ?? '')}</td>
+        <td><span style="color:${color};font-size:12px">${label}</span>${reason}</td>
+      </tr>
+    `;
+  }).join('');
+
+  wrapEl.innerHTML = `
+    <table class="works-table" style="font-size:12px;min-width:500px">
+      <thead><tr><th>作業日</th><th>作業内容</th><th>カテゴリ</th><th>処理</th></tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
+// ── 実行（Google Calendar への書き込み）──────────────────────────────────────
+
+document.getElementById('cal-push-execute-btn').addEventListener('click', async () => {
+  if (!calPushPreviewData) return;
+
+  const btn      = document.getElementById('cal-push-execute-btn');
+  const statusEl = document.getElementById('cal-push-status');
+  btn.disabled   = true;
+  statusEl.textContent = 'Google Calendarへ書き込み中...';
+
+  try {
+    const { status, data } = await api('POST', '/api/calendar/push/execute', {
+      calendarId: calPushPreviewData.calendarId,
+      year:       calPushPreviewData.year,
+    });
+
+    if (status !== 200) {
+      statusEl.textContent = `エラー: ${data.error || '実行失敗'}`;
+      btn.disabled = false;
+      return;
+    }
+
+    statusEl.textContent =
+      `完了: 作成 ${data.createdCount}件 / 更新 ${data.updatedCount}件` +
+      (data.errorCount ? ` / エラー ${data.errorCount}件` : '');
+
+    calPushPreviewData = null;
+    document.getElementById('cal-push-preview-area').hidden = true;
+    loadCalendarSyncRuns();
+    // 接続状態の件数を更新
+    loadCalendarStatus();
+    btn.disabled = false;
+  } catch (err) {
+    statusEl.textContent = `通信エラー: ${err.message}`;
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('cal-push-cancel-btn').addEventListener('click', () => {
+  calPushPreviewData = null;
+  document.getElementById('cal-push-preview-area').hidden = true;
+  document.getElementById('cal-push-status').textContent = '';
+});
+
+// ── 同期履歴 ─────────────────────────────────────────────────────────────────
+
+async function loadCalendarSyncRuns() {
+  const el = document.getElementById('cal-runs-container');
+  el.className   = 'loading';
+  el.textContent = '読み込み中...';
+
+  try {
+    const { data } = await api('GET', '/api/calendar/sync-runs');
+    if (!data.ok || !data.runs?.length) {
+      el.className = '';
+      el.innerHTML = '<p style="color:#64748b;font-size:13px">同期履歴がありません</p>';
+      return;
+    }
+
+    const dirLabel = { push: 'JARVIS → Calendar', pull: 'Calendar → JARVIS' };
+    const trs = data.runs.map(r => {
+      const statusColor = r.status === 'completed' ? '#22c55e' : r.status === 'failed' ? '#ef4444' : '#f59e0b';
+      return `
+        <tr>
+          <td style="color:#94a3b8;font-size:12px;white-space:nowrap">${esc((r.started_at || '').slice(0, 16))}</td>
+          <td style="font-size:12px">${esc(dirLabel[r.direction] || r.direction)}</td>
+          <td style="color:#64748b;font-size:12px">${esc(r.year_filter || '全期間')}</td>
+          <td style="text-align:right">${r.created_count}</td>
+          <td style="text-align:right;color:#64748b">${r.updated_count}</td>
+          <td style="text-align:right;color:#64748b">${r.skipped_count}</td>
+          <td><span style="color:${statusColor};font-size:12px">${r.status}</span></td>
+        </tr>
+      `;
+    }).join('');
+
+    el.className = '';
+    el.innerHTML = `
+      <table class="works-table" style="font-size:12px">
+        <thead><tr><th>日時</th><th>方向</th><th>対象年</th><th>作成</th><th>更新</th><th>スキップ</th><th>状態</th></tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    `;
+  } catch {
+    el.className = '';
+    el.textContent = '読み込みエラー';
+  }
+}
+
+document.getElementById('cal-runs-refresh-btn')
+  .addEventListener('click', loadCalendarSyncRuns);

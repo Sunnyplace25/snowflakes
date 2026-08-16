@@ -1077,3 +1077,69 @@ CREATE TABLE IF NOT EXISTS business_invoice_lines (
 CREATE INDEX IF NOT EXISTS idx_bil_invoice   ON business_invoice_lines(invoice_id);
 CREATE INDEX IF NOT EXISTS idx_bil_work_date ON business_invoice_lines(work_date);
 CREATE INDEX IF NOT EXISTS idx_bil_category  ON business_invoice_lines(category);
+
+-- ─── Phase 18: Google Calendar 双方向同期 ──────────────────────────────────────
+--
+-- business_calendar_links      invoice_line ↔ Google Calendar イベントの紐付け
+-- business_calendar_sync_runs  同期実行履歴
+-- business_calendar_imports    Google Calendar → JARVIS 取込候補（将来用）
+--
+
+-- invoice_line ↔ Calendar イベント 1:1 リンク
+CREATE TABLE IF NOT EXISTS business_calendar_links (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  invoice_line_id     INTEGER NOT NULL REFERENCES business_invoice_lines(id),
+  google_calendar_id  TEXT    NOT NULL,
+  google_event_id     TEXT    NOT NULL,
+  sync_status         TEXT    NOT NULL DEFAULT 'synced'
+                        CHECK (sync_status IN ('synced', 'updated', 'orphaned')),
+  last_synced_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  created_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(invoice_line_id),
+  UNIQUE(google_calendar_id, google_event_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bcl_line   ON business_calendar_links(invoice_line_id);
+CREATE INDEX IF NOT EXISTS idx_bcl_event  ON business_calendar_links(google_calendar_id, google_event_id);
+
+-- 同期実行履歴
+CREATE TABLE IF NOT EXISTS business_calendar_sync_runs (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  direction     TEXT    NOT NULL CHECK (direction IN ('push', 'pull')),
+  calendar_id   TEXT,
+  year_filter   TEXT,
+  started_at    TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  finished_at   TEXT,
+  created_count INTEGER NOT NULL DEFAULT 0,
+  updated_count INTEGER NOT NULL DEFAULT 0,
+  skipped_count INTEGER NOT NULL DEFAULT 0,
+  error_count   INTEGER NOT NULL DEFAULT 0,
+  status        TEXT    NOT NULL DEFAULT 'running'
+                  CHECK (status IN ('running', 'completed', 'failed')),
+  notes         TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_bcsr_dir ON business_calendar_sync_runs(direction, started_at);
+
+-- Google Calendar → JARVIS 取込候補（将来用: 新規仕事予定の取込）
+CREATE TABLE IF NOT EXISTS business_calendar_imports (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  google_calendar_id  TEXT    NOT NULL,
+  google_event_id     TEXT    NOT NULL,
+  title               TEXT    NOT NULL,
+  start_date          TEXT,
+  end_date            TEXT,
+  start_datetime      TEXT,
+  end_datetime        TEXT,
+  is_all_day          INTEGER NOT NULL DEFAULT 0,
+  description         TEXT,
+  location            TEXT,
+  import_status       TEXT    NOT NULL DEFAULT 'pending'
+                        CHECK (import_status IN ('pending', 'imported', 'skipped')),
+  imported_line_id    INTEGER REFERENCES business_invoice_lines(id),
+  fetched_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(google_calendar_id, google_event_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bci_event  ON business_calendar_imports(google_calendar_id, google_event_id);
+CREATE INDEX IF NOT EXISTS idx_bci_status ON business_calendar_imports(import_status);

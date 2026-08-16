@@ -77,6 +77,16 @@ import {
   getAvailableYears,
 } from '../data/invoice_manager.js';
 
+// ── Google Calendar Sync ──────────────────────────────────────────────────────
+import {
+  getCalendarConfig, refreshAccessToken as refreshCalendarToken, listCalendars,
+} from '../sync/calendar_client.js';
+import { dryRunPush, executePush, dryRunPull } from '../sync/calendar_sync.js';
+import {
+  getCalendarLinks, getCalendarLinkCount,
+  insertSyncRun, completeSyncRun, getSyncRuns,
+} from '../data/calendar_manager.js';
+
 // ── Soundrop Catalog Sync ─────────────────────────────────────────────────────
 import { extractTokenFromInput, verifyToken } from '../sync/soundrop_client.mjs';
 import { runSoundropDiff, summarizeDiff }     from '../sync/soundrop_sync.mjs';
@@ -2134,6 +2144,101 @@ export function createApiHandler(db) {
       // GET /api/invoice/category-rules  — 分類ルール一覧
       if (method === 'GET' && path === '/api/invoice/category-rules') {
         return jsonRes(res, 200, { ok: true, rules: getCategoryRules() });
+      }
+
+      // ── Google Calendar 同期 API ───────────────────────────────────────────
+
+      // GET /api/calendar/status  — OAuth 接続状態確認
+      if (method === 'GET' && path === '/api/calendar/status') {
+        try {
+          const cfg = getCalendarConfig();
+          const accessToken = await refreshCalendarToken(cfg);
+          const linkedCount = getCalendarLinkCount(db);
+          return jsonRes(res, 200, { ok: true, connected: true, linkedCount });
+        } catch (e) {
+          const missing = ['GCALENDAR_CLIENT_ID', 'GCALENDAR_CLIENT_SECRET', 'GCALENDAR_REFRESH_TOKEN']
+            .filter(k => !process.env[k]);
+          return jsonRes(res, 200, {
+            ok: true, connected: false,
+            missingVars: missing,
+            hint: 'node --env-file jarvis/.env jarvis/automation/setup_google_calendar_oauth.js を実行してください',
+          });
+        }
+      }
+
+      // GET /api/calendar/calendars  — カレンダー一覧
+      if (method === 'GET' && path === '/api/calendar/calendars') {
+        const cfg = getCalendarConfig();
+        const accessToken = await refreshCalendarToken(cfg);
+        const calendars = await listCalendars(accessToken);
+        return jsonRes(res, 200, { ok: true, calendars });
+      }
+
+      // POST /api/calendar/push/preview  — JARVIS → Calendar dry-run
+      if (method === 'POST' && path === '/api/calendar/push/preview') {
+        const body = await readBody(req);
+        if (!body.calendarId) return errRes(res, 400, 'calendarId が必要です');
+        const cfg = getCalendarConfig();
+        const accessToken = await refreshCalendarToken(cfg);
+        const result = await dryRunPush(db, accessToken, {
+          calendarId: body.calendarId,
+          year:       body.year || null,
+        });
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // POST /api/calendar/push/execute  — JARVIS → Calendar 実書き込み
+      if (method === 'POST' && path === '/api/calendar/push/execute') {
+        const body = await readBody(req);
+        if (!body.calendarId) return errRes(res, 400, 'calendarId が必要です');
+        const cfg = getCalendarConfig();
+        const accessToken = await refreshCalendarToken(cfg);
+        const runId = insertSyncRun(db, {
+          direction:  'push',
+          calendarId: body.calendarId,
+          yearFilter: body.year || null,
+        });
+        const result = await executePush(db, accessToken, {
+          calendarId: body.calendarId,
+          year:       body.year || null,
+          runId,
+        });
+        completeSyncRun(db, {
+          runId,
+          createdCount: result.createdCount,
+          updatedCount: result.updatedCount,
+          skippedCount: result.skippedCount,
+          errorCount:   result.errorCount,
+          status: result.errorCount > 0 ? 'completed' : 'completed',
+        });
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // POST /api/calendar/pull/preview  — Calendar → JARVIS dry-run（将来用）
+      if (method === 'POST' && path === '/api/calendar/pull/preview') {
+        const body = await readBody(req);
+        if (!body.calendarId || !body.startDate || !body.endDate)
+          return errRes(res, 400, 'calendarId / startDate / endDate が必要です');
+        const cfg = getCalendarConfig();
+        const accessToken = await refreshCalendarToken(cfg);
+        const result = await dryRunPull(accessToken, {
+          calendarId: body.calendarId,
+          startDate:  body.startDate,
+          endDate:    body.endDate,
+        });
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // GET /api/calendar/sync-runs  — 同期履歴
+      if (method === 'GET' && path === '/api/calendar/sync-runs') {
+        const runs = getSyncRuns(db, 30);
+        return jsonRes(res, 200, { ok: true, runs });
+      }
+
+      // GET /api/calendar/links  — リンク一覧
+      if (method === 'GET' && path === '/api/calendar/links') {
+        const links = getCalendarLinks(db);
+        return jsonRes(res, 200, { ok: true, links, count: links.length });
       }
 
       return errRes(res, 404, 'Not Found');
