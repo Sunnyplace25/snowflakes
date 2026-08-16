@@ -127,14 +127,23 @@ const server = createServer(async (req, res) => {
   try {
     let content = readFileSync(filePath);
 
-    // Business のグラフ画面を既存HTMLを大きく変更せずタブから開けるようにする。
+    // Business の追加UIを index.html に注入する。
+    // 元HTMLの大規模変更を避けつつ、既存ローカル運用との互換性を保つ。
     if (relativePath === '/index.html') {
+      let html = content.toString('utf8');
+
       const marker = '<button class="sf-tab" data-biz-tab="calendar">Google Calendar</button>';
       const graphButton = '<button class="sf-tab" type="button" onclick="location.href=\'/business-graph.html\'">グラフ</button>';
-      const html = content.toString('utf8');
       if (html.includes(marker) && !html.includes('/business-graph.html')) {
-        content = Buffer.from(html.replace(marker, marker + '\n    ' + graphButton), 'utf8');
+        html = html.replace(marker, marker + '\n    ' + graphButton);
       }
+
+      const customScript = '<script src="business-custom.js"></script>';
+      if (!html.includes('business-custom.js')) {
+        html = html.replace('</body>', `${customScript}\n</body>`);
+      }
+
+      content = Buffer.from(html, 'utf8');
     }
 
     res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
