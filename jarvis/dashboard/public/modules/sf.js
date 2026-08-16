@@ -98,13 +98,14 @@ const SfModule = (() => {
 
         // タブに応じたデータ読み込み
         if (tabName === 'library') loadLibrary();
-        else if (tabName === 'profiles')     loadProfiles();
-        else if (tabName === 'import')       loadImports();
-        else if (tabName === 'youtube')      loadYouTube();
-        else if (tabName === 'tiktok')       loadTikTok();
-        else if (tabName === 'funnel')       loadFunnel();
-        else if (tabName === 'sync')         loadSync();
-        else if (tabName === 'hp-analytics') loadHpAnalytics();
+        else if (tabName === 'profiles')       loadProfiles();
+        else if (tabName === 'import')         loadImports();
+        else if (tabName === 'soundrop-stats') initSoundropStats();
+        else if (tabName === 'youtube')        loadYouTube();
+        else if (tabName === 'tiktok')         loadTikTok();
+        else if (tabName === 'funnel')         loadFunnel();
+        else if (tabName === 'sync')           loadSync();
+        else if (tabName === 'hp-analytics')   loadHpAnalytics();
       });
     });
   }
@@ -182,22 +183,124 @@ const SfModule = (() => {
 
   // ─── テーブルレンダリング ─────────────────────────────────────────────────
 
+  // ── 楽曲ソート/フィルタ状態 ──────────────────────────────────────────────
+  let _allTracks  = [];
+  let _trackSort   = 'release_date_desc';
+  let _trackFilter = 'all';
+
+  /** release_date の NULL-last 比較 */
+  function _dateCompare(a, b, dir) {
+    if (!a && !b) return 0;
+    if (!a) return 1;
+    if (!b) return -1;
+    const cmp = a < b ? -1 : a > b ? 1 : 0;
+    return dir === 'desc' ? -cmp : cmp;
+  }
+
+  /** status の表示優先順位 (released=0, upcoming=1, unreleased=2) */
+  function _statusOrder(status) {
+    return { released: 0, streaming_pending: 1, scheduled: 1, unreleased: 2, draft: 2, unknown: 2 }[status] ?? 3;
+  }
+
+  /** ソート＋フィルタを適用してトラック配列を返す */
+  function _sortAndFilterTracks(tracks, sort, filter) {
+    let result = tracks.filter(t => {
+      if (filter === 'released')  return t.status === 'released';
+      if (filter === 'upcoming')  return t.status === 'streaming_pending' || t.status === 'scheduled';
+      if (filter === 'unreleased') return ['unreleased', 'draft', 'unknown'].includes(t.status);
+      return true;
+    });
+
+    result = [...result].sort((a, b) => {
+      switch (sort) {
+        case 'release_date_desc': return _dateCompare(a.release_date, b.release_date, 'desc');
+        case 'release_date_asc':  return _dateCompare(a.release_date, b.release_date, 'asc');
+        case 'title_asc':   return a.title.localeCompare(b.title, 'ja');
+        case 'title_desc':  return b.title.localeCompare(a.title, 'ja');
+        case 'release_asc':  return (a.primary_release_title || '').localeCompare(b.primary_release_title || '', 'ja');
+        case 'release_desc': return (b.primary_release_title || '').localeCompare(a.primary_release_title || '', 'ja');
+        case 'status':        return _statusOrder(a.status) - _statusOrder(b.status);
+        case 'revenue_desc':  return (b.total_revenue  || 0) - (a.total_revenue  || 0);
+        case 'revenue_asc':   return (a.total_revenue  || 0) - (b.total_revenue  || 0);
+        case 'streams_desc':  return (b.total_streams  || 0) - (a.total_streams  || 0);
+        case 'streams_asc':   return (a.total_streams  || 0) - (b.total_streams  || 0);
+        default: return 0;
+      }
+    });
+    return result;
+  }
+
   /**
    * 楽曲一覧テーブルを生成する。
-   * 列: 曲名 | 制作日 | リリース日 | 正式状態 | HPデモ | WAV | MP3 | ISRC
-   * @param {object[]} tracks
-   * @returns {string} HTML文字列
+   * 列: 曲名 | リリース | リリース日 | 状態 | Revenue | Units | HPデモ | WAV | MP3 | ISRC
+   * @param {object[]} tracks  ソート/フィルタ済み配列
+   * @param {string}   sort    現在のソートキー
+   * @returns {string} HTML文字列（コントロールUIを含む）
    */
-  function renderTracksTable(tracks) {
-    if (!tracks || tracks.length === 0) {
-      return '<div class="empty-state">楽曲データがありません</div>';
+  function renderTracksTable(tracks, sort) {
+    const currentSort   = sort   || _trackSort;
+    const currentFilter = _trackFilter;
+    const allCount      = _allTracks.length;
+
+    // ── ソート矢印ヘルパー ──────────────────────────────────────────────────
+    function arrow(key, descKey, ascKey) {
+      if (currentSort === descKey) return '<span class="sf-sort-arrow active">↓</span>';
+      if (currentSort === ascKey)  return '<span class="sf-sort-arrow active">↑</span>';
+      return '<span class="sf-sort-arrow">↕</span>';
     }
+
+    // ── ソートコントロール ──────────────────────────────────────────────────
+    const controls = `
+      <div class="sf-track-controls">
+        <div class="sf-filter-group">
+          <button class="sf-filter-btn${currentFilter === 'all'        ? ' active' : ''}" data-sf-filter="all">All (${allCount})</button>
+          <button class="sf-filter-btn${currentFilter === 'released'   ? ' active' : ''}" data-sf-filter="released">Released</button>
+          <button class="sf-filter-btn${currentFilter === 'upcoming'   ? ' active' : ''}" data-sf-filter="upcoming">Upcoming</button>
+          <button class="sf-filter-btn${currentFilter === 'unreleased' ? ' active' : ''}" data-sf-filter="unreleased">Unreleased</button>
+        </div>
+        <div class="sf-sort-group">
+          <label class="sf-sort-label">Sort</label>
+          <select class="sf-sort-select" id="sf-track-sort-select">
+            <optgroup label="Release Date">
+              <option value="release_date_desc" ${currentSort === 'release_date_desc' ? 'selected' : ''}>Newest first</option>
+              <option value="release_date_asc"  ${currentSort === 'release_date_asc'  ? 'selected' : ''}>Oldest first</option>
+            </optgroup>
+            <optgroup label="Track Title">
+              <option value="title_asc"  ${currentSort === 'title_asc'  ? 'selected' : ''}>A → Z</option>
+              <option value="title_desc" ${currentSort === 'title_desc' ? 'selected' : ''}>Z → A</option>
+            </optgroup>
+            <optgroup label="Release">
+              <option value="release_asc"  ${currentSort === 'release_asc'  ? 'selected' : ''}>A → Z</option>
+              <option value="release_desc" ${currentSort === 'release_desc' ? 'selected' : ''}>Z → A</option>
+            </optgroup>
+            <optgroup label="Status">
+              <option value="status" ${currentSort === 'status' ? 'selected' : ''}>Released → Upcoming → Unreleased</option>
+            </optgroup>
+            <optgroup label="Revenue">
+              <option value="revenue_desc" ${currentSort === 'revenue_desc' ? 'selected' : ''}>High → Low</option>
+              <option value="revenue_asc"  ${currentSort === 'revenue_asc'  ? 'selected' : ''}>Low → High</option>
+            </optgroup>
+            <optgroup label="Units (Streams)">
+              <option value="streams_desc" ${currentSort === 'streams_desc' ? 'selected' : ''}>High → Low</option>
+              <option value="streams_asc"  ${currentSort === 'streams_asc'  ? 'selected' : ''}>Low → High</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    `;
+
+    if (!tracks || tracks.length === 0) {
+      return controls + '<div class="empty-state">該当する楽曲がありません</div>';
+    }
+
     const rows = tracks.map(t => `
       <tr>
         <td class="sf-col-title">${esc(t.title)}</td>
-        <td class="sf-col-date">${t.created_date || '—'}</td>
+        <td class="sf-col-release-title">${esc(t.primary_release_title || '—')}</td>
         <td class="sf-col-date">${t.release_date || '—'}</td>
         <td>${trackStatusBadge(t.status)}</td>
+        <td class="sf-col-num">${t.total_revenue > 0 ? '$' + Number(t.total_revenue).toFixed(2) : '—'}</td>
+        <td class="sf-col-num">${t.total_streams > 0 ? Number(t.total_streams).toLocaleString() : '—'}</td>
         <td>${previewStatusBadge(t.preview_status)}</td>
         <td class="sf-col-center">${fileCheck(t.has_wav)}</td>
         <td class="sf-col-center">${fileCheck(t.has_mp3)}</td>
@@ -205,14 +308,16 @@ const SfModule = (() => {
       </tr>
     `).join('');
 
-    return `
-      <table class="sf-table">
+    return controls + `
+      <table class="sf-table sf-table-sortable">
         <thead>
           <tr>
-            <th>曲名</th>
-            <th>制作日</th>
-            <th>リリース日</th>
-            <th>正式状態</th>
+            <th data-sf-sort-asc="title_asc" data-sf-sort-desc="title_desc" class="sf-th-sort">曲名${arrow('title', 'title_desc', 'title_asc')}</th>
+            <th data-sf-sort-asc="release_asc" data-sf-sort-desc="release_desc" class="sf-th-sort">リリース${arrow('release', 'release_desc', 'release_asc')}</th>
+            <th data-sf-sort-asc="release_date_asc" data-sf-sort-desc="release_date_desc" class="sf-th-sort">リリース日${arrow('release_date', 'release_date_desc', 'release_date_asc')}</th>
+            <th data-sf-sort-asc="status" data-sf-sort-desc="status" class="sf-th-sort">状態${currentSort === 'status' ? '<span class="sf-sort-arrow active">↓</span>' : '<span class="sf-sort-arrow">↕</span>'}</th>
+            <th data-sf-sort-asc="revenue_asc" data-sf-sort-desc="revenue_desc" class="sf-th-sort sf-col-num">Revenue${arrow('revenue', 'revenue_desc', 'revenue_asc')}</th>
+            <th data-sf-sort-asc="streams_asc" data-sf-sort-desc="streams_desc" class="sf-th-sort sf-col-num">Units${arrow('streams', 'streams_desc', 'streams_asc')}</th>
             <th>HPデモ</th>
             <th>WAV</th>
             <th>MP3</th>
@@ -354,6 +459,46 @@ const SfModule = (() => {
 
   // ─── データ取得・表示 ─────────────────────────────────────────────────────
 
+  /** 現在の sort/filter 状態でトラックテーブルを再描画する */
+  function _applyTrackDisplay() {
+    const el = document.getElementById('sf-tracks-container');
+    if (!el) return;
+    const sorted = _sortAndFilterTracks(_allTracks, _trackSort, _trackFilter);
+    el.innerHTML = renderTracksTable(sorted, _trackSort);
+    _bindTrackControls(el);
+  }
+
+  /** ソート/フィルタコントロールにイベントリスナーを付与する */
+  function _bindTrackControls(container) {
+    // フィルタボタン
+    container.querySelectorAll('[data-sf-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _trackFilter = btn.dataset.sfFilter;
+        _applyTrackDisplay();
+      });
+    });
+
+    // ソート select
+    const sel = container.querySelector('#sf-track-sort-select');
+    if (sel) {
+      sel.addEventListener('change', () => {
+        _trackSort = sel.value;
+        _applyTrackDisplay();
+      });
+    }
+
+    // テーブルヘッダークリックでソート切替
+    container.querySelectorAll('th[data-sf-sort-desc]').forEach(th => {
+      th.addEventListener('click', () => {
+        const descKey = th.dataset.sfSortDesc;
+        const ascKey  = th.dataset.sfSortAsc;
+        // 現在 desc → asc に切替、それ以外は desc へ
+        _trackSort = (_trackSort === descKey) ? ascKey : descKey;
+        _applyTrackDisplay();
+      });
+    });
+  }
+
   /** Music Library タブ: 楽曲・リリース一覧を読み込む */
   async function loadLibrary() {
     const tracksEl   = document.getElementById('sf-tracks-container');
@@ -366,7 +511,10 @@ const SfModule = (() => {
         fetch('/api/sf/tracks').then(r => r.json()),
         fetch('/api/sf/releases').then(r => r.json()),
       ]);
-      if (tracksEl)   tracksEl.innerHTML   = renderTracksTable(tracksRes.tracks || []);
+      _allTracks   = tracksRes.tracks || [];
+      _trackSort   = 'release_date_desc';
+      _trackFilter = 'all';
+      _applyTrackDisplay();
       if (releasesEl) releasesEl.innerHTML = renderReleasesTable(releasesRes.releases || []);
     } catch (e) {
       if (tracksEl)   tracksEl.innerHTML   = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
@@ -1347,6 +1495,247 @@ const SfModule = (() => {
     if (sourcesEl)  sourcesEl.innerHTML  = renderHpSources();
   }
 
+  // ─── Soundrop Stats ───────────────────────────────────────────────────────
+
+  /** パイチャート用カラーパレット */
+  const PIE_COLORS = [
+    '#58a6ff', '#3fb950', '#d29922', '#f85149', '#a371f7',
+    '#79c0ff', '#56d364', '#e3b341', '#ffa198', '#cae8ff',
+  ];
+
+  /** Platform 表示名マップ */
+  const PLATFORM_LABELS = {
+    spotify:      'Spotify',
+    apple_music:  'Apple Music',
+    amazon_music: 'Amazon Music',
+    youtube_music:'YouTube Music',
+    other:        'Other',
+  };
+
+  /**
+   * SVG パイチャートを生成する。
+   * @param {Array<{label:string, value:number, pct:number}>} slices
+   * @param {number} size - SVG の幅・高さ（px）
+   */
+  function renderPieChart(slices, size = 140) {
+    if (!slices || slices.length === 0) return '<div class="empty-state">データなし</div>';
+    const total = slices.reduce((s, x) => s + x.value, 0);
+    if (total <= 0) return '<div class="empty-state">収益データなし</div>';
+
+    const cx = size / 2, cy = size / 2, r = size / 2 - 4;
+    let startAngle = -Math.PI / 2;
+    const paths = [];
+
+    slices.forEach((s, i) => {
+      const angle = (s.value / total) * 2 * Math.PI;
+      const endAngle = startAngle + angle;
+      const largeArc = angle > Math.PI ? 1 : 0;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const color = PIE_COLORS[i % PIE_COLORS.length];
+
+      if (slices.length === 1) {
+        // 円全体
+        paths.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" />`);
+      } else {
+        paths.push(
+          `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${largeArc},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${color}" />`
+        );
+      }
+      startAngle = endAngle;
+    });
+
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="sd-pie-svg">${paths.join('')}</svg>`;
+  }
+
+  /** Services パイチャート + 凡例 */
+  function renderSdServices(rows) {
+    if (!rows || rows.length === 0) return '<div class="empty-state">データなし</div>';
+    const slices = rows.map(r => ({
+      label: PLATFORM_LABELS[r.platform] || r.platform,
+      value: r.total_usd,
+      pct:   r.pct,
+    }));
+    const legend = rows.map((r, i) => {
+      const color = PIE_COLORS[i % PIE_COLORS.length];
+      const label = PLATFORM_LABELS[r.platform] || r.platform;
+      return `
+        <div class="sd-legend-row">
+          <div class="sd-legend-dot" style="background:${color}"></div>
+          <div class="sd-legend-name" title="${esc(label)}">${esc(label)}</div>
+          <div class="sd-legend-pct">${r.pct.toFixed(1)}%</div>
+          <div class="sd-legend-usd">$${(r.total_usd || 0).toFixed(4)}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="sd-pie-wrap">
+        ${renderPieChart(slices)}
+        <div class="sd-pie-legend">${legend}</div>
+      </div>
+    `;
+  }
+
+  /** Channels パイチャート + 凡例 */
+  function renderSdChannels(rows) {
+    if (!rows || rows.length === 0) return '<div class="empty-state">データなし</div>';
+    const slices = rows.map(r => ({
+      label: r.channel || 'Unknown',
+      value: r.total_usd,
+      pct:   r.pct,
+    }));
+    const legend = rows.map((r, i) => {
+      const color = PIE_COLORS[i % PIE_COLORS.length];
+      const label = r.channel || 'Unknown';
+      return `
+        <div class="sd-legend-row">
+          <div class="sd-legend-dot" style="background:${color}"></div>
+          <div class="sd-legend-name" title="${esc(label)}">${esc(label)}</div>
+          <div class="sd-legend-pct">${r.pct.toFixed(1)}%</div>
+          <div class="sd-legend-usd">$${(r.total_usd || 0).toFixed(4)}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="sd-pie-wrap">
+        ${renderPieChart(slices)}
+        <div class="sd-pie-legend">${legend}</div>
+      </div>
+    `;
+  }
+
+  /** Tracks / Releases ランキングテーブル */
+  function renderSdRanking(rows, titleKey = 'title') {
+    if (!rows || rows.length === 0) return '<div class="empty-state">データなし</div>';
+    const maxUsd = Math.max(...rows.map(r => r.total_usd || 0), 0.0001);
+    const trs = rows.map((r, i) => {
+      const barW = Math.max(Math.round(((r.total_usd || 0) / maxUsd) * 100), 1);
+      return `
+        <tr>
+          <td class="sd-rank-num">${i + 1}</td>
+          <td class="sd-rank-title">${esc(r[titleKey] || '—')}</td>
+          <td class="sd-rank-bar-cell">
+            <div class="sd-rank-bar-wrap">
+              <div class="sd-rank-bar" style="width:${barW}%"></div>
+            </div>
+          </td>
+          <td class="sd-rank-usd">$${(r.total_usd || 0).toFixed(5)}</td>
+          <td class="sd-rank-pct">${(r.pct || 0).toFixed(1)}%</td>
+          <td class="sd-rank-qty">${(r.total_quantity || 0).toLocaleString()}</td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      <table class="sd-ranking">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>タイトル</th>
+            <th></th>
+            <th>Revenue (USD)</th>
+            <th>%</th>
+            <th>Units</th>
+          </tr>
+        </thead>
+        <tbody>${trs}</tbody>
+      </table>
+    `;
+  }
+
+  /** 月別推移バーチャート */
+  function renderSdMonthly(rows) {
+    if (!rows || rows.length === 0) return '<div class="empty-state">データなし</div>';
+    const maxUsd = Math.max(...rows.map(r => r.total_usd || 0), 0.0001);
+    const bars = rows.map(r => {
+      const h = Math.max(Math.round(((r.total_usd || 0) / maxUsd) * 78), 2);
+      const label = (r.month || '').slice(2); // YY-MM 表示
+      return `
+        <div class="sd-bar-col">
+          <div class="sd-bar-value">$${(r.total_usd || 0).toFixed(3)}</div>
+          <div class="sd-bar-wrap">
+            <div class="sd-bar" style="height:${h}px" title="${r.month}: $${(r.total_usd || 0).toFixed(5)} / ${(r.total_quantity || 0).toLocaleString()} units"></div>
+          </div>
+          <div class="sd-bar-label">${esc(label)}</div>
+        </div>
+      `;
+    }).join('');
+    return `<div class="sd-monthly-chart">${bars}</div>`;
+  }
+
+  /** Soundrop Stats タブ全体のデータ読み込み */
+  async function loadSoundropStats(statement = '') {
+    const totalsEl   = document.getElementById('sd-totals-container');
+    const monthlyEl  = document.getElementById('sd-monthly-container');
+    const servicesEl = document.getElementById('sd-services-container');
+    const channelsEl = document.getElementById('sd-channels-container');
+    const tracksEl   = document.getElementById('sd-tracks-container');
+    const releasesEl = document.getElementById('sd-releases-container');
+
+    [totalsEl, monthlyEl, servicesEl, channelsEl, tracksEl, releasesEl]
+      .filter(Boolean).forEach(el => { el.className = 'loading'; el.innerHTML = '読み込み中...'; });
+
+    const qs = statement ? `?statement=${encodeURIComponent(statement)}` : '';
+    let res;
+    try {
+      res = await fetch(`/api/sf/soundrop/stats${qs}`).then(r => r.json());
+    } catch (e) {
+      if (totalsEl) totalsEl.innerHTML = `<div class="empty-state">取得エラー: ${esc(e.message)}</div>`;
+      return;
+    }
+    if (!res.ok) {
+      if (totalsEl) totalsEl.innerHTML = `<div class="empty-state">エラー: ${esc(res.error || '不明')}</div>`;
+      return;
+    }
+
+    // ステートメント期間セレクト更新
+    const sel = document.getElementById('sd-stmt-select');
+    if (sel && res.stmtPeriods) {
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">全期間</option>';
+      res.stmtPeriods.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p; opt.textContent = p;
+        if (p === cur) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    // totals
+    if (totalsEl) {
+      totalsEl.className = '';
+      totalsEl.innerHTML = `
+        <div class="sd-totals-card">
+          <div>
+            <div class="sd-total-usd">$${(res.totals.total_usd || 0).toFixed(5)}</div>
+            <div class="sd-total-label">Net Revenue (USD)</div>
+          </div>
+          <div>
+            <div class="sd-total-units">${(res.totals.total_quantity || 0).toLocaleString()}</div>
+            <div class="sd-total-units-label">Total Units</div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (monthlyEl)  { monthlyEl.className  = ''; monthlyEl.innerHTML  = renderSdMonthly(res.monthly);   }
+    if (servicesEl) { servicesEl.className = ''; servicesEl.innerHTML = renderSdServices(res.services); }
+    if (channelsEl) { channelsEl.className = ''; channelsEl.innerHTML = renderSdChannels(res.channels); }
+    if (tracksEl)   { tracksEl.className   = ''; tracksEl.innerHTML   = renderSdRanking(res.tracks, 'title');         }
+    if (releasesEl) { releasesEl.className = ''; releasesEl.innerHTML = renderSdRanking(res.releases, 'release_title'); }
+  }
+
+  /** Soundrop Stats フィルタ初期化 */
+  function initSoundropStats() {
+    const sel = document.getElementById('sd-stmt-select');
+    if (sel && !sel.dataset.initialized) {
+      sel.dataset.initialized = '1';
+      sel.addEventListener('change', () => loadSoundropStats(sel.value));
+    }
+    loadSoundropStats(sel?.value || '');
+  }
+
   // ─── モジュール起動 ────────────────────────────────────────────────────────
 
   /**
@@ -1365,6 +1754,7 @@ const SfModule = (() => {
     setState, setStatus, setCharState, setAllCharsState,
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
     loadFunnel, loadEventImpact, loadSync, loadHpAnalytics,
+    loadSoundropStats, initSoundropStats,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,
@@ -1372,6 +1762,7 @@ const SfModule = (() => {
     renderSyncAttentionBanner, renderSyncSources,
     renderHpOverview, renderHpPages, renderHpDaily, renderHpEvents,
     renderHpMusicFunnel, renderHpSources,
+    renderSdServices, renderSdChannels, renderSdRanking, renderSdMonthly,
   };
 
 })();

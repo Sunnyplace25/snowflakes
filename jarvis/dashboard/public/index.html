@@ -391,6 +391,7 @@
     <button class="sf-tab active" data-sf-tab="library">Music Library</button>
     <button class="sf-tab" data-sf-tab="profiles">Artist Profiles</button>
     <button class="sf-tab" data-sf-tab="import">Soundrop Import</button>
+    <button class="sf-tab" data-sf-tab="soundrop-stats">Soundrop Stats</button>
     <button class="sf-tab" data-sf-tab="youtube">YouTube</button>
     <button class="sf-tab" data-sf-tab="tiktok">TikTok</button>
     <button class="sf-tab" data-sf-tab="funnel">Funnel</button>
@@ -436,6 +437,71 @@
       <div id="sf-import-container" class="loading">読み込み中...</div>
     </section>
   </div>
+
+  <!-- Soundrop Stats tab -->
+  <div id="sf-tab-soundrop-stats" class="sf-tab-panel" hidden>
+
+    <!-- フィルタバー -->
+    <div class="sd-filter-bar">
+      <label for="sd-stmt-select">ステートメント月:</label>
+      <select id="sd-stmt-select">
+        <option value="">全期間</option>
+      </select>
+    </div>
+
+    <!-- 合計サマリー -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>Total Revenue</h2>
+        <span class="sf-note">Soundrop net revenue（USD）</span>
+      </div>
+      <div id="sd-totals-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 月別収益推移 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>月別収益推移</h2>
+        <span class="sf-note">Transaction Month 基準</span>
+      </div>
+      <div id="sd-monthly-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- Services / Channels 横並び -->
+    <div class="sd-charts-row">
+      <section class="sf-section sd-chart-half">
+        <div class="sf-section-header">
+          <h2>Services</h2>
+        </div>
+        <div id="sd-services-container" class="loading">読み込み中...</div>
+      </section>
+      <section class="sf-section sd-chart-half">
+        <div class="sf-section-header">
+          <h2>Channels</h2>
+        </div>
+        <div id="sd-channels-container" class="loading">読み込み中...</div>
+      </section>
+    </div>
+
+    <!-- Tracks ランキング -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>Tracks</h2>
+        <span class="sf-note">収益ランキング</span>
+      </div>
+      <div id="sd-tracks-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- Releases ランキング -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>Releases</h2>
+        <span class="sf-note">収益ランキング</span>
+      </div>
+      <div id="sd-releases-container" class="loading">読み込み中...</div>
+    </section>
+
+  </div><!-- /#sf-tab-soundrop-stats -->
 
   <!-- YouTube Analytics tab (Phase 7) -->
   <div id="sf-tab-youtube" class="sf-tab-panel" hidden>

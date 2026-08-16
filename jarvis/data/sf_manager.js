@@ -30,7 +30,14 @@ export function getTracks(db) {
       (SELECT COUNT(*) FROM sf_track_files f
        WHERE f.track_id = t.id AND f.file_type = 'master_wav') AS has_wav,
       (SELECT COUNT(*) FROM sf_track_files f
-       WHERE f.track_id = t.id AND f.file_type = 'streaming_mp3') AS has_mp3
+       WHERE f.track_id = t.id AND f.file_type = 'streaming_mp3') AS has_mp3,
+      COALESCE((SELECT SUM(r.amount)  FROM sf_revenue       r WHERE r.track_id = t.id), 0) AS total_revenue,
+      COALESCE((SELECT SUM(m.streams) FROM sf_music_metrics m WHERE m.track_id = t.id), 0) AS total_streams,
+      (SELECT rel.title FROM sf_releases rel
+       JOIN sf_release_tracks rt ON rt.release_id = rel.id
+       WHERE rt.track_id = t.id
+       ORDER BY rel.release_date DESC
+       LIMIT 1) AS primary_release_title
     FROM sf_tracks t
     ORDER BY t.created_at DESC
   `).all();

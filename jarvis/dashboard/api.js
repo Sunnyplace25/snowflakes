@@ -1809,6 +1809,121 @@ export function createApiHandler(db) {
         });
       }
 
+      // ── GET /api/sf/soundrop/stats ─────────────────────────────────────────
+      // Soundrop Stats ダッシュボード用集計
+      // ?statement=YYYY-MM  でステートメント月フィルタ（省略=全期間）
+      if (path === '/api/sf/soundrop/stats' && method === 'GET') {
+        const stmt = url.searchParams.get('statement') || null;
+        if (stmt && !validateMonth(stmt)) return errRes(res, 400, 'statement の形式が不正です');
+
+        // ── 月フィルタ用 WHERE 句 ──
+        // sf_revenue は month = statement_period
+        // sf_distribution_import_rows は raw_data.statement_period
+        const revWhere = stmt ? 'AND r.month = ?' : '';
+        const revArgs  = stmt ? [stmt] : [];
+
+        // ── totals (全体合計) ──
+        const totalsRow = db.prepare(`
+          SELECT ROUND(SUM(amount), 8) AS total_usd,
+                 SUM(quantity) AS total_quantity
+          FROM sf_revenue r
+          WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+            ${revWhere}
+        `).get(...revArgs);
+        const totalUsd = totalsRow?.total_usd || 0;
+        const totalQty = totalsRow?.total_quantity || 0;
+
+        // ── services (プラットフォーム別) ──
+        const serviceRows = db.prepare(`
+          SELECT r.platform,
+                 ROUND(SUM(r.amount), 8) AS total_usd,
+                 SUM(r.quantity) AS total_quantity
+          FROM sf_revenue r
+          WHERE r.import_source IN ('csv', 'api') AND r.track_id IS NOT NULL
+            ${revWhere}
+          GROUP BY r.platform
+          ORDER BY total_usd DESC
+        `).all(...revArgs);
+
+        // ── channels (チャンネル別 from import_rows) ──
+        const chWhere = stmt
+          ? "AND json_extract(raw_data, '$.statement_period') = ?"
+          : '';
+        const channelRows = db.prepare(`
+          SELECT json_extract(raw_data, '$.channel') AS channel,
+                 ROUND(SUM(CAST(json_extract(raw_data, '$.revenue_usd') AS REAL)), 8) AS total_usd,
+                 SUM(CAST(json_extract(raw_data, '$.quantity') AS INTEGER)) AS total_quantity
+          FROM sf_distribution_import_rows
+          WHERE matched_track_id IS NOT NULL ${chWhere}
+          GROUP BY channel
+          ORDER BY total_usd DESC
+        `).all(...(stmt ? [stmt] : []));
+
+        // ── tracks (楽曲別) ──
+        const trackRows = db.prepare(`
+          SELECT r.track_id, t.title,
+                 ROUND(SUM(r.amount), 8) AS total_usd,
+                 SUM(r.quantity) AS total_quantity
+          FROM sf_revenue r
+          JOIN sf_tracks t ON t.id = r.track_id
+          WHERE r.import_source IN ('csv', 'api') AND r.track_id IS NOT NULL
+            ${revWhere}
+          GROUP BY r.track_id
+          ORDER BY total_usd DESC
+        `).all(...revArgs);
+
+        // ── releases (リリース別 from import_rows) ──
+        const releaseRows = db.prepare(`
+          SELECT json_extract(raw_data, '$.release_title') AS release_title,
+                 json_extract(raw_data, '$.upc') AS upc,
+                 ROUND(SUM(CAST(json_extract(raw_data, '$.revenue_usd') AS REAL)), 8) AS total_usd,
+                 SUM(CAST(json_extract(raw_data, '$.quantity') AS INTEGER)) AS total_quantity
+          FROM sf_distribution_import_rows
+          WHERE matched_track_id IS NOT NULL ${chWhere}
+          GROUP BY json_extract(raw_data, '$.upc')
+          ORDER BY total_usd DESC
+        `).all(...(stmt ? [stmt] : []));
+
+        // ── monthly trend (transaction_month 別) ──
+        const monthlyRows = db.prepare(`
+          SELECT r.transaction_month AS month,
+                 ROUND(SUM(r.amount), 8) AS total_usd,
+                 SUM(r.quantity) AS total_quantity
+          FROM sf_revenue r
+          WHERE r.import_source IN ('csv', 'api') AND r.track_id IS NOT NULL
+            AND r.transaction_month IS NOT NULL
+            ${revWhere}
+          GROUP BY r.transaction_month
+          ORDER BY r.transaction_month ASC
+        `).all(...revArgs);
+
+        // ── statement periods (フィルタ選択用) ──
+        const stmtPeriods = db.prepare(`
+          SELECT DISTINCT month AS statement_period
+          FROM sf_revenue
+          WHERE import_source IN ('csv', 'api') AND track_id IS NOT NULL
+          ORDER BY month DESC
+        `).all();
+
+        // pct 計算
+        const addPct = (rows, usdTotal) => rows.map(r => ({
+          ...r,
+          pct: usdTotal > 0 ? Math.round((r.total_usd / usdTotal) * 1000) / 10 : 0,
+        }));
+
+        return jsonRes(res, 200, {
+          ok: true,
+          statement:      stmt,
+          totals:         { total_usd: totalUsd, total_quantity: totalQty },
+          services:       addPct(serviceRows, totalUsd),
+          channels:       addPct(channelRows, totalUsd),
+          tracks:         addPct(trackRows, totalUsd),
+          releases:       addPct(releaseRows, totalUsd),
+          monthly:        monthlyRows,
+          stmtPeriods:    stmtPeriods.map(r => r.statement_period),
+        });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {

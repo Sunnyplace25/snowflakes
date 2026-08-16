@@ -1,6 +1,16 @@
 .vercel
 hayatecchi/rhythm/*.mp4
 
+# ─── 音声ファイル（配信・収録マスター／サブフォルダ含む）───────────────
+music/*.mp3
+music/*.wav
+music/**/*.mp3
+music/**/*.wav
+sweets/*.mp3
+sweets/*.wav
+sweets/**/*.mp3
+sweets/**/*.wav
+
 # ─── JARVIS ───────────────────────────
 jarvis/.env
 jarvis/logs/*.log
@@ -21,7 +31,12 @@ jarvis/tasks/*
 !jarvis/tasks/.gitkeep
 # JARVIS 共通データ基盤 — 実データDB（個人データはgit管理しない）
 jarvis/data/*.db
+jarvis/data/*.db-wal
+jarvis/data/*.db-shm
+jarvis/data/*.db.bak_*
 # schema.sql / *.js は Git 管理対象（除外しない）
+# JARVIS Soundrop インポート元CSVs（個人収益データ）
+jarvis/imports/soundrop/*.csv
 # JARVIS note export — 投稿用コンテンツ（公開前コンテンツはgit管理しない）
 jarvis/exports/note/*
 !jarvis/exports/note/.gitkeep
