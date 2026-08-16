@@ -1767,17 +1767,16 @@ function horrorNotifyScroll() {
   </div>
 
 <script>
-// ランダム背景
+// ランダム背景（一覧ページのみ）
 (function() {
   var imgs = [
-    './horror_bg.webp',   // 既存
-    './horror_bg2.webp',  // オレンジ髪女の子
-    './horror_bg3.webp',  // レコーダー写真
-    './horror_bg4.webp',  // スタジオ背面女の子
-    // './horror_bg5.webp',  // 赤髪男・ギター（既存と重複のため除外）
-    './horror_bg6.webp',  // バーテンダー女の子
-    './horror_bg7.webp',  // 茶髪男・ギター
-    './horror_bg8.webp',  // 金髪男・ドラム
+    './horror_bg.webp',
+    './horror_bg2.webp',
+    './horror_bg3.webp',
+    './horror_bg4.webp',
+    './horror_bg6.webp',
+    './horror_bg7.webp',
+    './horror_bg8.webp',
   ];
   var picked = imgs[Math.floor(Math.random() * imgs.length)];
   document.body.style.setProperty('--bg-img', 'url("' + picked + '")');
