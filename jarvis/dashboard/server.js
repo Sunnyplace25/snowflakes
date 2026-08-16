@@ -284,6 +284,11 @@ const server = createServer(async (req, res) => {
         html = html.replace('</body>', `${customScript}\n</body>`);
       }
 
+      const merchScript = '<script src="business-merch.js"></script>';
+      if (!html.includes('business-merch.js')) {
+        html = html.replace('</body>', `${merchScript}\n</body>`);
+      }
+
       content = Buffer.from(html, 'utf8');
     }
 
