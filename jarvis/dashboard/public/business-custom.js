@@ -2,13 +2,14 @@
  * Business UI adjustments
  * - Per-job invoice/payment status is hidden from the monthly workflow.
  * - Otec billing is shown as monthly totals (month-end close / next-month-end payment).
- * - Client input remains free text but offers Otec as a selectable suggestion/default.
+ * - Client and work-content inputs remain free text with selectable suggestions.
  * - Adds a reliable Graph shortcut to the Business tabs.
  */
 'use strict';
 
 (function () {
   const OTEC_DEFAULT = 'オーテック';
+  const CONTENT_MONTH_LOOKBACK = 12;
 
   function isOtec(client) {
     return String(client ?? '').includes('オーテック');
@@ -21,6 +22,12 @@
   function previousMonth(ym) {
     const [year, month] = String(ym).split('-').map(Number);
     const d = new Date(year, month - 2, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function shiftMonth(ym, delta) {
+    const [year, month] = String(ym).split('-').map(Number);
+    const d = new Date(year, month - 1 + delta, 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
@@ -53,6 +60,75 @@
         addClient.value = OTEC_DEFAULT;
       });
     }
+  }
+
+  async function setupContentInputs() {
+    let datalist = document.getElementById('content-suggestions');
+    if (!datalist) {
+      datalist = document.createElement('datalist');
+      datalist.id = 'content-suggestions';
+      document.body.appendChild(datalist);
+    }
+
+    for (const id of ['work-content', 'edit-work-content']) {
+      const input = document.getElementById(id);
+      if (!input) continue;
+      input.setAttribute('list', 'content-suggestions');
+      input.setAttribute('autocomplete', 'off');
+      input.placeholder = '過去の仕事内容から選択、または直接入力';
+      const label = document.querySelector(`label[for="${id}"]`);
+      if (label) label.textContent = '仕事内容（選択 / 直接入力）';
+    }
+
+    // 直近12か月の入力履歴から、よく使う仕事内容を候補化する。
+    // 固定リストにしないので、新しく入力した仕事内容も次回以降候補になる。
+    const baseMonth = (typeof currentMonth !== 'undefined' && /^\d{4}-\d{2}$/.test(currentMonth))
+      ? currentMonth
+      : (() => {
+          const d = new Date();
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        })();
+
+    try {
+      const months = Array.from({ length: CONTENT_MONTH_LOOKBACK }, (_, i) => shiftMonth(baseMonth, -i));
+      const rowsByMonth = await Promise.all(months.map(fetchWorks));
+      const counts = new Map();
+
+      rowsByMonth.flat().forEach(w => {
+        const value = String(w.content ?? '').trim();
+        if (!value) return;
+        counts.set(value, (counts.get(value) || 0) + 1);
+      });
+
+      const values = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ja'))
+        .slice(0, 50)
+        .map(([value]) => value);
+
+      datalist.innerHTML = '';
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        datalist.appendChild(option);
+      });
+    } catch (_) {
+      // 候補取得に失敗しても直接入力はそのまま使える。
+    }
+  }
+
+  function addCurrentContentSuggestions() {
+    const datalist = document.getElementById('content-suggestions');
+    if (!datalist || typeof currentWorks === 'undefined' || !Array.isArray(currentWorks)) return;
+
+    const existing = new Set([...datalist.options].map(o => o.value));
+    currentWorks.forEach(w => {
+      const value = String(w.content ?? '').trim();
+      if (!value || existing.has(value)) return;
+      const option = document.createElement('option');
+      option.value = value;
+      datalist.appendChild(option);
+      existing.add(value);
+    });
   }
 
   function hidePerJobBillingStatus() {
@@ -138,12 +214,14 @@
     clearTimeout(updateTimer);
     updateTimer = setTimeout(() => {
       hidePerJobBillingStatus();
+      addCurrentContentSuggestions();
       updateMonthlyBillingCards();
     }, 80);
   }
 
   function init() {
     setupClientInputs();
+    setupContentInputs();
     hidePerJobBillingStatus();
     ensureGraphTab();
     scheduleRefresh();
