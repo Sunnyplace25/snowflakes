@@ -72,6 +72,34 @@ function backupBusinessDb() {
   return backupPath;
 }
 
+function tableExists(name) {
+  return !!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name = ? LIMIT 1").get(name);
+}
+
+function deleteWorkRecord(id) {
+  const work = db.prepare('SELECT id, job_id, date, content FROM work_records WHERE id = ?').get(id);
+  if (!work) return null;
+
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    // 請求書同期から作られた仕事の場合はリンクも外して、孤児レコードを残さない。
+    // 後日「既存請求書 → 仕事一覧を同期」を再実行すると、その仕事は再作成されることがある。
+    if (work.job_id && tableExists('business_invoice_work_links')) {
+      db.prepare('DELETE FROM business_invoice_work_links WHERE job_id = ?').run(work.job_id);
+    }
+    if (work.job_id && tableExists('business_invoice_lines')) {
+      db.prepare('UPDATE business_invoice_lines SET job_id = NULL WHERE job_id = ?').run(work.job_id);
+    }
+
+    db.prepare('DELETE FROM work_records WHERE id = ?').run(id);
+    db.exec('COMMIT');
+    return work;
+  } catch (e) {
+    try { db.exec('ROLLBACK'); } catch {}
+    throw e;
+  }
+}
+
 const server = createServer(async (req, res) => {
   // ─── セキュリティヘッダー ────────────────────────────────────────────────
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -98,6 +126,25 @@ const server = createServer(async (req, res) => {
     } catch (e) {
       console.error('[invoice sync-work]', e.message);
       return jsonRes(res, 500, { ok: false, error: e.message });
+    }
+  }
+
+  // ─── 仕事削除 ────────────────────────────────────────────────────────────
+  // 月次一覧から登録ミスを削除する。削除前にUI側で確認ダイアログを出す。
+  const deleteWorkMatch = url.pathname.match(/^\/api\/work\/(\d+)$/);
+  if (deleteWorkMatch && req.method === 'DELETE') {
+    const id = Number(deleteWorkMatch[1]);
+    if (!Number.isInteger(id) || id <= 0) {
+      return jsonRes(res, 400, { ok: false, error: '不正な仕事IDです' });
+    }
+
+    try {
+      const deleted = deleteWorkRecord(id);
+      if (!deleted) return jsonRes(res, 404, { ok: false, error: '仕事が見つかりません' });
+      return jsonRes(res, 200, { ok: true, deleted });
+    } catch (e) {
+      console.error('[delete work]', e.message);
+      return jsonRes(res, 500, { ok: false, error: '削除に失敗しました' });
     }
   }
 
