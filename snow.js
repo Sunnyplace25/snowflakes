@@ -398,6 +398,143 @@
 
   document.addEventListener('DOMContentLoaded', updateUI);
 
+  /* ── Character room extra profile fields ── */
+  document.addEventListener('DOMContentLoaded', function() {
+    var path = location.pathname;
+    var cfg = null;
+
+    if (path.indexOf('/room/hayate/') !== -1) {
+      cfg = {
+        saveKey: 'sf_pf_hayate_v2',
+        candy: 'cassis',
+        candyLabel: 'カシスキャンディー',
+        candyImg: '../../item/candy_cassis.webp',
+        fields: [
+          { id: 'pf-sports', label: 'SPORTS', val: 'サッカー' },
+          { id: 'pf-item',   label: 'ITEM',   val: 'Grand Seiko SBGM221' },
+          { id: 'pf-skill',  label: 'SKILL',  val: '英会話 / 人の顔と名前を覚える' },
+        ],
+      };
+    } else if (path.indexOf('/room/kouta/') !== -1) {
+      cfg = {
+        saveKey: 'sf_pf_kouta_v2',
+        candy: 'honey',
+        candyLabel: 'ハニーレモンキャンディー',
+        candyImg: '../../item/candy_honey.webp',
+        fields: [
+          { id: 'pf-sports', label: 'SPORTS', val: 'ゴルフ' },
+          { id: 'pf-item',   label: 'ITEM',   val: 'SONY IER-M7' },
+          { id: 'pf-skill',  label: 'SKILL',  val: '文章を書く / 人の変化によく気づく' },
+        ],
+      };
+    } else if (path.indexOf('/room/hinata/') !== -1) {
+      cfg = {
+        saveKey: 'sf_pf_hinata_v2',
+        candy: 'milk',
+        candyLabel: 'ミルクキャンディー',
+        candyImg: '../../item/candy_milk.webp',
+        fields: [
+          { id: 'pf-sports', label: 'SPORTS', val: 'スキー' },
+          { id: 'pf-item',   label: 'ITEM',   val: 'VOLVO V60（Black）' },
+          { id: 'pf-skill',  label: 'SKILL',  val: '勘が鋭い / 音の違和感に気づく' },
+        ],
+      };
+    }
+
+    if (!cfg) return;
+    var list = document.querySelector('.detail-list');
+    if (!list || document.getElementById('pf-sports')) return;
+
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem(cfg.saveKey) || '[]'); } catch(e) {}
+
+    var smokeRow = null;
+    var rows = list.querySelectorAll('.detail-row');
+    for (var r = 0; r < rows.length; r++) {
+      var key = rows[r].querySelector('.detail-key');
+      if (key && key.textContent.trim() === 'SMOKE') {
+        smokeRow = rows[r];
+        break;
+      }
+    }
+
+    function saveUnlocked(id) {
+      if (saved.indexOf(id) === -1) {
+        saved.push(id);
+        localStorage.setItem(cfg.saveKey, JSON.stringify(saved));
+      }
+    }
+
+    function refreshExtraButtons() {
+      var candies = getCandies();
+      var ready = (candies[cfg.candy] || 0) >= 10;
+      cfg.fields.forEach(function(field) {
+        if (saved.indexOf(field.id) !== -1) return;
+        var el = document.getElementById(field.id);
+        if (!el) return;
+        var btn = el.querySelector('.unlock-btn');
+        if (!btn) return;
+        btn.classList.toggle('ready', ready);
+      });
+    }
+
+    function reveal(field) {
+      var el = document.getElementById(field.id);
+      if (el) el.textContent = field.val;
+    }
+
+    cfg.fields.forEach(function(field) {
+      var row = document.createElement('div');
+      row.className = 'detail-row';
+
+      var key = document.createElement('p');
+      key.className = 'detail-key';
+      key.textContent = field.label;
+
+      var val = document.createElement('p');
+      val.className = 'detail-val';
+      val.id = field.id;
+
+      if (saved.indexOf(field.id) !== -1) {
+        val.textContent = field.val;
+      } else {
+        var btn = document.createElement('button');
+        btn.className = 'unlock-btn';
+        btn.innerHTML = '<img src="' + cfg.candyImg + '" class="candy-ic">' + cfg.candyLabel + ' × 10';
+        btn.addEventListener('click', function() {
+          var candies = getCandies();
+          if ((candies[cfg.candy] || 0) < 10) {
+            if (typeof w.showAlert === 'function') w.showAlert(cfg.candyLabel + 'が足りません');
+            return;
+          }
+
+          var doUnlock = function() {
+            if (!spendCandy(cfg.candy, 10)) {
+              if (typeof w.showAlert === 'function') w.showAlert(cfg.candyLabel + 'が足りません');
+              return;
+            }
+            saveUnlocked(field.id);
+            reveal(field);
+            refreshExtraButtons();
+          };
+
+          if (typeof w.showDialog === 'function') {
+            w.showDialog(cfg.candyLabel + ' × 10', doUnlock);
+          } else {
+            doUnlock();
+          }
+        });
+        val.appendChild(btn);
+      }
+
+      row.appendChild(key);
+      row.appendChild(val);
+      list.insertBefore(row, smokeRow);
+    });
+
+    refreshExtraButtons();
+  });
+
   /* ── GA4 自動リンクトラッキング ── */
   document.addEventListener('click', function(e) {
     var a = e.target.closest('a[href]');
