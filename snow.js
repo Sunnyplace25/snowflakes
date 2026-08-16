@@ -413,6 +413,9 @@
           { id: 'pf-sports', label: 'SPORTS', val: 'サッカー' },
           { id: 'pf-item',   label: 'ITEM',   val: 'Grand Seiko SBGM221' },
           { id: 'pf-skill',  label: 'SKILL',  val: '英会話 / 人の顔と名前を覚える' },
+          { id: 'pf-music',  label: 'MUSIC',  val: 'Reggae / Rock / Pop' },
+          { id: 'pf-weak',   label: 'WEAK',   val: '虫 / お化け屋敷' },
+          { id: 'pf-drink',  label: 'DRINK',  val: '炭酸飲料' },
         ],
       };
     } else if (path.indexOf('/room/kouta/') !== -1) {
@@ -425,6 +428,9 @@
           { id: 'pf-sports', label: 'SPORTS', val: 'ゴルフ' },
           { id: 'pf-item',   label: 'ITEM',   val: 'SONY IER-M7' },
           { id: 'pf-skill',  label: 'SKILL',  val: '文章を書く / 人の変化によく気づく' },
+          { id: 'pf-music',  label: 'MUSIC',  val: 'Alternative / Jazz' },
+          { id: 'pf-weak',   label: 'WEAK',   val: '辛いもの / 熱い食べ物' },
+          { id: 'pf-drink',  label: 'DRINK',  val: 'ミルクティー' },
         ],
       };
     } else if (path.indexOf('/room/hinata/') !== -1) {
@@ -437,6 +443,9 @@
           { id: 'pf-sports', label: 'SPORTS', val: 'スキー' },
           { id: 'pf-item',   label: 'ITEM',   val: 'VOLVO V60（Black）' },
           { id: 'pf-skill',  label: 'SKILL',  val: '勘が鋭い / 音の違和感に気づく' },
+          { id: 'pf-music',  label: 'MUSIC',  val: 'Folk / Indie Rock' },
+          { id: 'pf-weak',   label: 'WEAK',   val: '高いところ / 注射' },
+          { id: 'pf-drink',  label: 'DRINK',  val: 'ブラックコーヒー' },
         ],
       };
     }
