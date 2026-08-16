@@ -44,6 +44,9 @@ jarvis/imports/invoices/*.xlsx
 jarvis/imports/invoices/*.xls
 jarvis/imports/*.xlsx
 jarvis/imports/*.xls
+# JARVIS 生成請求書（個人・取引先情報を含むためgit管理しない）
+jarvis/exports/invoices/*
+!jarvis/exports/invoices/.gitkeep
 # JARVIS Network キャプチャ（認証情報を含む可能性）
 jarvis/imports/*.har
 jarvis/imports/*.har.*
