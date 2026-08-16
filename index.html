@@ -588,6 +588,83 @@ function closeNewAlbumPopup() {
 }
 </script>
 
+<!-- NCR2026 Live Archive Popup — 2026-08-16〜08-20 JST のみ表示 -->
+<div id="ncr2026-popup"
+     role="dialog" aria-modal="true"
+     aria-label="NORTH COAST RISING 2026 Live Archive"
+     style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:16px;">
+  <div style="max-width:280px;width:100%;background:#0a1221;border:1px solid rgba(125,211,252,0.15);border-radius:20px;overflow:hidden;position:relative;max-height:calc(100vh - 32px);overflow-y:auto;box-shadow:0 0 60px rgba(125,211,252,0.1);">
+    <button onclick="closeNcr2026Popup()" aria-label="閉じる"
+            style="position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.55);border:none;color:#cbd5e1;font-size:20px;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:8px;z-index:2;">×</button>
+    <a href="/snowflakes/sweets/#north-coast-rising-2026" onclick="ncrPopupImgClick()"
+       style="display:block;text-decoration:none;">
+      <img id="ncr-poster-img" src=""
+           alt="NORTH COAST RISING 2026 Snow flakes 8.15 SAT 17:30-18:10 at HORIZON FIELD LIVE ARCHIVE NOW AVAILABLE"
+           width="600" height="1066"
+           style="width:100%;height:auto;display:block;">
+    </a>
+    <div style="padding:14px 20px 18px;text-align:center;">
+      <a href="/snowflakes/sweets/#north-coast-rising-2026" onclick="ncrPopupWatchClick()"
+         style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#7dd3fc;border:1px solid rgba(125,211,252,0.4);border-radius:100px;padding:11px 20px;text-decoration:none;">
+        WATCH ARCHIVE
+      </a>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  // 表示期間: 2026-08-16 00:00 JST 〜 2026-08-20 23:59:59 JST
+  var START = new Date('2026-08-16T00:00:00+09:00').getTime();
+  var END   = new Date('2026-08-20T23:59:59+09:00').getTime();
+  if (Date.now() < START || Date.now() > END) return;  // 期間外: 画像も読み込まない
+  if (sessionStorage.getItem('sf_ncr2026_archive_closed') === '1') return;  // 同セッション閲覧済
+  // 期間内 & 未閲覧のみ画像ロード・表示
+  var img = document.getElementById('ncr-poster-img');
+  if (img) img.src = 'sweets/ncr2026_poster.webp';
+  var el = document.getElementById('ncr2026-popup');
+  el.style.display = 'flex';
+  // GA4: 実際に表示した場合のみ送信
+  if (typeof gtag === 'function') {
+    gtag('event', 'live_archive_popup_view', {
+      campaign: 'north_coast_rising_2026', destination: 'sweets_live_archive', source: 'homepage_popup'
+    });
+  }
+  document.addEventListener('keydown', function ncrEsc(e) {
+    if (e.key === 'Escape') { closeNcr2026Popup(); document.removeEventListener('keydown', ncrEsc); }
+  });
+  el.addEventListener('click', function(e) { if (e.target === el) closeNcr2026Popup(); });
+})();
+function closeNcr2026Popup() {
+  var el = document.getElementById('ncr2026-popup');
+  if (!el || el.style.display === 'none') return;
+  el.style.display = 'none';
+  sessionStorage.setItem('sf_ncr2026_archive_closed', '1');
+  if (typeof gtag === 'function') {
+    gtag('event', 'live_archive_popup_close', {
+      campaign: 'north_coast_rising_2026', source: 'homepage_popup'
+    });
+  }
+}
+function ncrPopupImgClick() {
+  sessionStorage.setItem('sf_ncr2026_archive_closed', '1');
+  sessionStorage.setItem('sf_ncr2026_from_popup', '1');
+  if (typeof gtag === 'function') {
+    gtag('event', 'live_archive_popup_image_click', {
+      campaign: 'north_coast_rising_2026', destination: 'sweets_live_archive', source: 'homepage_popup'
+    });
+  }
+}
+function ncrPopupWatchClick() {
+  sessionStorage.setItem('sf_ncr2026_archive_closed', '1');
+  sessionStorage.setItem('sf_ncr2026_from_popup', '1');
+  if (typeof gtag === 'function') {
+    gtag('event', 'live_archive_popup_watch_click', {
+      campaign: 'north_coast_rising_2026', destination: 'sweets_live_archive', source: 'homepage_popup'
+    });
+  }
+}
+</script>
+
 <canvas id="snow"></canvas>
 
 <nav>

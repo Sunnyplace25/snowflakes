@@ -5677,7 +5677,8 @@
         </div>
 
         <!-- Summer LIVE -->
-        <div id="live-summer-pending" style="flex:1;border:1px solid rgba(125,211,252,0.45);border-radius:12px;background:rgba(125,211,252,0.04);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;min-height:120px;box-shadow:0 0 36px rgba(125,211,252,0.35),0 0 72px rgba(125,211,252,0.12),inset 0 0 28px rgba(125,211,252,0.08);">
+        <div id="live-summer-pending" style="flex:1;border:1px solid rgba(125,211,252,0.45);border-radius:12px;background:rgba(125,211,252,0.04);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;min-height:120px;box-shadow:0 0 36px rgba(125,211,252,0.35),0 0 72px rgba(125,211,252,0.12),inset 0 0 28px rgba(125,211,252,0.08);position:relative;">
+          <div id="north-coast-rising-2026" style="position:absolute;top:0;left:0;scroll-margin-top:80px;" aria-hidden="true"></div>
           <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#7dd3fc;margin-bottom:8px;">2026 SWEETs Summer LIVE</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:2px;color:#e2e8f0;margin-bottom:6px;text-align:center;line-height:1.8;">NORTH COAST RISING 2026<br>Snow flakes</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#94a3b8;letter-spacing:1px;text-align:center;line-height:2;margin-bottom:20px;">8.15 SAT　17:30－18:10<br>at HORIZON FIELD</p>
@@ -6146,6 +6147,21 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       checkUndertoneSection();
       // Live Archive section
       checkLiveArchiveSection();
+      // NCR2026 anchor scroll — live-archive-section は display:none から表示後に scroll
+      if (location.hash === '#north-coast-rising-2026') {
+        setTimeout(function() {
+          var t = document.getElementById('north-coast-rising-2026');
+          if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        if (typeof gtag === 'function') {
+          // ポップアップ経由かどうか判定（直接URLアクセスは source を付けない）
+          var fromPopup = sessionStorage.getItem('sf_ncr2026_from_popup') === '1';
+          sessionStorage.removeItem('sf_ncr2026_from_popup');
+          var gaParams = { campaign: 'north_coast_rising_2026' };
+          if (fromPopup) gaParams.source = 'homepage_popup';
+          gtag('event', 'live_archive_archive_reached', gaParams);
+        }
+      }
       // Under tone 0-5読了後 ピアス配布チェック
       _checkEarringUnlock();
       // Summer 移行時 色紙配布チェック
