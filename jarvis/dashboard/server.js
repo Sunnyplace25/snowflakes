@@ -113,8 +113,19 @@ const server = createServer(async (req, res) => {
   const contentType = MIME_TYPES[ext] ?? 'application/octet-stream';
 
   try {
-    const content = readFileSync(filePath);
-    res.writeHead(200, { 'Content-Type': contentType });
+    let content = readFileSync(filePath);
+
+    // Business のグラフ画面を既存HTMLを大きく変更せずタブから開けるようにする。
+    if (relativePath === '/index.html') {
+      const marker = '<button class="sf-tab" data-biz-tab="calendar">Google Calendar</button>';
+      const graphButton = '<button class="sf-tab" type="button" onclick="location.href=\'/business-graph.html\'">グラフ</button>';
+      const html = content.toString('utf8');
+      if (html.includes(marker) && !html.includes('/business-graph.html')) {
+        content = Buffer.from(html.replace(marker, marker + '\n    ' + graphButton), 'utf8');
+      }
+    }
+
+    res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
     res.end(content);
   } catch {
     res.writeHead(500, { 'Content-Type': 'text/plain' });
