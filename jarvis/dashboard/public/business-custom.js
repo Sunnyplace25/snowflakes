@@ -30,7 +30,7 @@
       datalist.id = 'client-suggestions';
       datalist.innerHTML = `
         <option value="オーテック"></option>
-        <option value="株式会社オーテック"></option>
+        <option value="株式会社　オーテック"></option>
       `;
       document.body.appendChild(datalist);
     }
