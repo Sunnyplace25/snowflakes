@@ -2,7 +2,7 @@
  * Business UI adjustments
  * - Per-job invoice/payment status is hidden from the monthly workflow.
  * - Otec billing is shown as monthly totals (month-end close / next-month-end payment).
- * - Client, work-content, and income inputs remain directly editable with selectable suggestions.
+ * - Client, work-content, income, and travel-cost inputs remain directly editable with selectable suggestions.
  * - Adds a reliable Graph shortcut to the Business tabs.
  */
 'use strict';
@@ -12,6 +12,7 @@
   const OTEC_TAX_RATE = 0.10;
   const CONTENT_MONTH_LOOKBACK = 12;
   const COMMON_INCOMES = [26500, 25000, 17500, 14500, 13000];
+  const COMMON_TRAVEL_COSTS = [500];
 
   function isOtec(client) {
     return String(client ?? '').includes('オーテック');
@@ -92,6 +93,41 @@
       const label = document.querySelector(`label[for="${id}"]`);
       if (label) label.textContent = '収入（選択 / 直接入力）';
     }
+  }
+
+  function setupTravelCostInputs() {
+    let datalist = document.getElementById('travel-cost-suggestions');
+    if (!datalist) {
+      datalist = document.createElement('datalist');
+      datalist.id = 'travel-cost-suggestions';
+      COMMON_TRAVEL_COSTS.forEach(value => {
+        const option = document.createElement('option');
+        option.value = String(value);
+        option.label = `${value.toLocaleString('ja-JP')}円`;
+        datalist.appendChild(option);
+      });
+      document.body.appendChild(datalist);
+    }
+
+    for (const id of ['work-expense', 'edit-work-expense']) {
+      const input = document.getElementById(id);
+      if (!input) continue;
+      input.setAttribute('list', 'travel-cost-suggestions');
+      input.setAttribute('autocomplete', 'off');
+      input.placeholder = '500円または直接入力';
+      const label = document.querySelector(`label[for="${id}"]`);
+      if (label) label.textContent = '交通費（選択 / 直接入力）';
+    }
+  }
+
+  function relabelTravelCostUi() {
+    const expenseCard = document.getElementById('card-expense');
+    const expenseCardLabel = expenseCard?.closest('.card')?.querySelector('.card-label');
+    if (expenseCardLabel) expenseCardLabel.textContent = '交通費';
+
+    document.querySelectorAll('.works-table th.col-expense').forEach(th => {
+      th.textContent = '交通費';
+    });
   }
 
   async function setupContentInputs() {
@@ -247,6 +283,7 @@
     clearTimeout(updateTimer);
     updateTimer = setTimeout(() => {
       hidePerJobBillingStatus();
+      relabelTravelCostUi();
       addCurrentContentSuggestions();
       updateMonthlyBillingCards();
     }, 80);
@@ -255,14 +292,17 @@
   function init() {
     setupClientInputs();
     setupIncomeInputs();
+    setupTravelCostInputs();
     setupContentInputs();
     hidePerJobBillingStatus();
+    relabelTravelCostUi();
     ensureGraphTab();
     scheduleRefresh();
 
     const targets = [
       document.getElementById('works-table-container'),
       document.getElementById('current-month'),
+      document.getElementById('card-expense'),
       document.getElementById('card-uninvoiced'),
       document.getElementById('card-unpaid'),
     ].filter(Boolean);
