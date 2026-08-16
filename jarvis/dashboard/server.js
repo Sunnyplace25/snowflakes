@@ -16,7 +16,7 @@ import { fileURLToPath }             from 'url';
 
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
 import { createApiHandler }          from './api.js';
-import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_manager.js';
+import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_work_backfill.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
