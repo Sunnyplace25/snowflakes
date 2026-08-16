@@ -27,6 +27,7 @@
     "task-dry-run": "node run_task.js dry-run",
     "record-work": "node tools/record_work.js",
     "record-day": "node tools/record_day.js",
+    "sync-invoice-work": "node tools/sync_invoice_work.js",
     "test-data": "node tests/test_data_manager.js",
     "test-dashboard": "node tests/test_dashboard_api.js",
     "dashboard": "node --env-file=.env dashboard/server.js"
