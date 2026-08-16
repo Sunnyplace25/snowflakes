@@ -18,7 +18,8 @@ function normalizeMatchText(value) {
   return String(value ?? '')
     .toLowerCase()
     .replace(/[\s　]/g, '')
-    .replace(/[・･,，.。:：;；/\\()（）\[\]【】「」『』_-]/g, '');
+    .replace(/[・･,，.。:：;；\\()（）\[\]【】「」『』_-]/g, '')
+    .replace(/\//g, '');
 }
 
 function isDescriptionMatch(a, b) {
