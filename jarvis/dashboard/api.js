@@ -66,6 +66,17 @@ import {
   VALID_EXPORT_FORMATS,
 } from '../data/note_manager.js';
 
+// ── Business Invoice Import ───────────────────────────────────────────────────
+import { parseExcel, computeFileHash, getCategoryRules } from '../importers/invoice_importer.js';
+import {
+  importInvoices,
+  getImportHistory as getInvoiceImportHistory,
+  getInvoiceAnalytics,
+  getAnalyticsByYear,
+  getInvoiceLines,
+  getAvailableYears,
+} from '../data/invoice_manager.js';
+
 // ── Soundrop Catalog Sync ─────────────────────────────────────────────────────
 import { extractTokenFromInput, verifyToken } from '../sync/soundrop_client.mjs';
 import { runSoundropDiff, summarizeDiff }     from '../sync/soundrop_sync.mjs';
@@ -96,13 +107,13 @@ function errRes(res, status, message) {
   jsonRes(res, status, { ok: false, error: message });
 }
 
-/** POST ボディを JSON として読み込む（最大 64 KB） */
+/** POST ボディを JSON として読み込む（最大 10 MB — Excel base64 対応） */
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
-      if (body.length > 65_536) reject(new Error('Request body too large'));
+      if (body.length > 10_485_760) reject(new Error('Request body too large'));
     });
     req.on('end', () => {
       try { resolve(body ? JSON.parse(body) : {}); }
@@ -2050,6 +2061,79 @@ export function createApiHandler(db) {
           monthly:        monthlyRows,
           stmtPeriods:    stmtPeriods.map(r => r.statement_period),
         });
+      }
+
+      // ──────────────────────────────────────────────────────────────────────
+      // Business Invoice Import API  (Phase 17)
+      // ──────────────────────────────────────────────────────────────────────
+
+      // POST /api/invoice/parse  — Excel 解析（dry-run、DB 書き込みなし）
+      if (method === 'POST' && path === '/api/invoice/parse') {
+        const body = await readBody(req);
+        if (!body.filename || !body.data_b64) return errRes(res, 400, 'filename と data_b64 が必要です');
+        const buf = Buffer.from(body.data_b64, 'base64');
+        const result = parseExcel(buf, body.filename);
+        const fileHash = computeFileHash(buf);
+
+        // 既存インポート確認（同一ハッシュ）
+        const existImport = db.prepare(
+          'SELECT id, imported_at FROM business_invoice_imports WHERE file_hash = ? LIMIT 1'
+        ).get(fileHash);
+
+        return jsonRes(res, 200, { ok: true, ...result, fileHash, existImport: existImport ?? null });
+      }
+
+      // POST /api/invoice/import  — Excel 取込確定（DB 書き込みあり）
+      if (method === 'POST' && path === '/api/invoice/import') {
+        const body = await readBody(req);
+        if (!body.filename || !body.data_b64) return errRes(res, 400, 'filename と data_b64 が必要です');
+        const buf = Buffer.from(body.data_b64, 'base64');
+        const fileHash = computeFileHash(buf);
+        const { invoices } = parseExcel(buf, body.filename);
+        const result = importInvoices(db, {
+          filename: body.filename,
+          fileHash,
+          invoices,
+          dryRun: false,
+        });
+        return jsonRes(res, 201, { ok: true, ...result });
+      }
+
+      // GET /api/invoice/imports  — インポート履歴
+      if (method === 'GET' && path === '/api/invoice/imports') {
+        const history = getInvoiceImportHistory(db);
+        return jsonRes(res, 200, { ok: true, imports: history });
+      }
+
+      // GET /api/invoice/analytics  — 全期間集計
+      if (method === 'GET' && path === '/api/invoice/analytics') {
+        const analytics = getInvoiceAnalytics(db);
+        const years     = getAvailableYears(db);
+        return jsonRes(res, 200, { ok: true, ...analytics, availableYears: years });
+      }
+
+      // GET /api/invoice/analytics/:year  — 年別集計
+      if (method === 'GET' && /^\/api\/invoice\/analytics\/\d{4}$/.test(path)) {
+        const year = path.split('/').pop();
+        const data = getAnalyticsByYear(db, year);
+        return jsonRes(res, 200, { ok: true, ...data });
+      }
+
+      // GET /api/invoice/lines  — 明細一覧
+      if (method === 'GET' && path.startsWith('/api/invoice/lines')) {
+        const qs       = new URLSearchParams(url.search);
+        const year     = qs.get('year')     || null;
+        const month    = qs.get('month')    || null;
+        const category = qs.get('category') || null;
+        const limit    = Math.min(parseInt(qs.get('limit') || '200', 10), 500);
+        const offset   = parseInt(qs.get('offset') || '0', 10);
+        const lines    = getInvoiceLines(db, { year, month, category, limit, offset });
+        return jsonRes(res, 200, { ok: true, lines });
+      }
+
+      // GET /api/invoice/category-rules  — 分類ルール一覧
+      if (method === 'GET' && path === '/api/invoice/category-rules') {
+        return jsonRes(res, 200, { ok: true, rules: getCategoryRules() });
       }
 
       return errRes(res, 404, 'Not Found');

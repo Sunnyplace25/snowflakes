@@ -1005,3 +1005,75 @@ CREATE TABLE IF NOT EXISTS sf_note_article (
 CREATE INDEX IF NOT EXISTS idx_sf_note_status    ON sf_note_article(status);
 CREATE INDEX IF NOT EXISTS idx_sf_note_scheduled ON sf_note_article(scheduled_date);
 CREATE INDEX IF NOT EXISTS idx_sf_note_type      ON sf_note_article(article_type);
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 17: Business Invoice Import — 請求書Excel取込・仕事実績分析
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- 設計原則:
+--   - 個人情報（住所・電話・メール・口座）は一切保存しない
+--   - description は元の作業内容を絶対に書き換えない
+--   - invoice_status は 'invoiced' 固定。入金済みは別管理
+--   - 同一請求書番号は1件のみ（UNIQUE(invoice_number) で重複防止）
+--   - 同一請求書の同一行は1件のみ（UNIQUE(invoice_id, source_row) で重複防止）
+--   - category は自動分類（ルールベース）。後から変更可能な構造
+--   - job_id は将来 Google Calendar 連携用（現在は NULL でよい）
+--
+
+CREATE TABLE IF NOT EXISTS business_invoice_imports (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  source_filename TEXT    NOT NULL,
+  file_hash       TEXT    NOT NULL,
+  imported_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  status          TEXT    NOT NULL DEFAULT 'completed'
+    CHECK (status IN ('completed','partial','failed')),
+  new_count       INTEGER NOT NULL DEFAULT 0,
+  dup_count       INTEGER NOT NULL DEFAULT 0,
+  skip_count      INTEGER NOT NULL DEFAULT 0,
+  warn_count      INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_bii_filename ON business_invoice_imports(source_filename);
+CREATE INDEX IF NOT EXISTS idx_bii_hash     ON business_invoice_imports(file_hash);
+
+CREATE TABLE IF NOT EXISTS business_invoices (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  import_id       INTEGER NOT NULL REFERENCES business_invoice_imports(id),
+  client_name     TEXT    NOT NULL DEFAULT '株式会社オーテック',
+  invoice_number  TEXT    NOT NULL,
+  invoice_date    TEXT,                            -- YYYY-MM-DD
+  due_date        TEXT,                            -- YYYY-MM-DD（将来拡張用）
+  subtotal        INTEGER NOT NULL DEFAULT 0,      -- 税抜合計（明細の積み上げ）
+  tax             INTEGER NOT NULL DEFAULT 0,      -- 消費税額
+  total           INTEGER NOT NULL DEFAULT 0,      -- 税込合計（Excelの請求金額）
+  source_sheet    TEXT    NOT NULL,
+  source_filename TEXT    NOT NULL,
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  -- (invoice_number, source_sheet) の組み合わせで重複防止
+  -- シート名誤記で同番号が複数存在する場合は別シートとして区別
+  UNIQUE(invoice_number, source_sheet)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bi_invoice_date ON business_invoices(invoice_date);
+CREATE INDEX IF NOT EXISTS idx_bi_client       ON business_invoices(client_name);
+CREATE INDEX IF NOT EXISTS idx_bi_import       ON business_invoices(import_id);
+
+CREATE TABLE IF NOT EXISTS business_invoice_lines (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  invoice_id      INTEGER NOT NULL REFERENCES business_invoices(id),
+  work_date       TEXT,                            -- YYYY-MM-DD（明細記載の仕事日）
+  description     TEXT    NOT NULL,                -- 元の作業内容（絶対に書き換えない）
+  quantity        REAL    NOT NULL DEFAULT 1,
+  quantity_unit   TEXT    NOT NULL DEFAULT '日',
+  unit_price      INTEGER NOT NULL DEFAULT 0,
+  amount          INTEGER NOT NULL DEFAULT 0,      -- 税抜金額
+  category        TEXT    NOT NULL DEFAULT 'その他', -- 自動分類（ルールベース・変更可）
+  job_id          TEXT,                            -- 将来 Google Calendar 紐付け用
+  source_row      INTEGER NOT NULL,                -- Excelの行番号（1始まり）
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(invoice_id, source_row)                  -- 同一請求書の同一行は1件のみ
+);
+
+CREATE INDEX IF NOT EXISTS idx_bil_invoice   ON business_invoice_lines(invoice_id);
+CREATE INDEX IF NOT EXISTS idx_bil_work_date ON business_invoice_lines(work_date);
+CREATE INDEX IF NOT EXISTS idx_bil_category  ON business_invoice_lines(category);

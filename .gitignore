@@ -39,6 +39,11 @@ jarvis/backups/*.db
 # schema.sql / *.js は Git 管理対象（除外しない）
 # JARVIS Soundrop インポート元CSVs（個人収益データ）
 jarvis/imports/soundrop/*.csv
+# JARVIS 請求書 Excel（個人・取引先情報を含むためgit管理しない）
+jarvis/imports/invoices/*.xlsx
+jarvis/imports/invoices/*.xls
+jarvis/imports/*.xlsx
+jarvis/imports/*.xls
 # JARVIS Network キャプチャ（認証情報を含む可能性）
 jarvis/imports/*.har
 jarvis/imports/*.har.*

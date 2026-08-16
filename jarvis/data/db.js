@@ -379,6 +379,63 @@ function runMigrations(db) {
     db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_tracks_soundrop_id
       ON sf_tracks(soundrop_track_id) WHERE soundrop_track_id IS NOT NULL`);
   } catch (_) {}
+
+  // Phase 17: Business Invoice Import テーブル追加
+  const INVOICE_TABLES = [
+    `CREATE TABLE IF NOT EXISTS business_invoice_imports (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      source_filename TEXT    NOT NULL,
+      file_hash       TEXT    NOT NULL,
+      imported_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      status          TEXT    NOT NULL DEFAULT 'completed'
+        CHECK (status IN ('completed','partial','failed')),
+      new_count       INTEGER NOT NULL DEFAULT 0,
+      dup_count       INTEGER NOT NULL DEFAULT 0,
+      skip_count      INTEGER NOT NULL DEFAULT 0,
+      warn_count      INTEGER NOT NULL DEFAULT 0
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_bii_filename ON business_invoice_imports(source_filename)`,
+    `CREATE INDEX IF NOT EXISTS idx_bii_hash     ON business_invoice_imports(file_hash)`,
+    `CREATE TABLE IF NOT EXISTS business_invoices (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      import_id       INTEGER NOT NULL REFERENCES business_invoice_imports(id),
+      client_name     TEXT    NOT NULL DEFAULT '株式会社オーテック',
+      invoice_number  TEXT    NOT NULL,
+      invoice_date    TEXT,
+      due_date        TEXT,
+      subtotal        INTEGER NOT NULL DEFAULT 0,
+      tax             INTEGER NOT NULL DEFAULT 0,
+      total           INTEGER NOT NULL DEFAULT 0,
+      source_sheet    TEXT    NOT NULL,
+      source_filename TEXT    NOT NULL,
+      created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(invoice_number, source_sheet)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_bi_invoice_date ON business_invoices(invoice_date)`,
+    `CREATE INDEX IF NOT EXISTS idx_bi_client       ON business_invoices(client_name)`,
+    `CREATE INDEX IF NOT EXISTS idx_bi_import       ON business_invoices(import_id)`,
+    `CREATE TABLE IF NOT EXISTS business_invoice_lines (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      invoice_id      INTEGER NOT NULL REFERENCES business_invoices(id),
+      work_date       TEXT,
+      description     TEXT    NOT NULL,
+      quantity        REAL    NOT NULL DEFAULT 1,
+      quantity_unit   TEXT    NOT NULL DEFAULT '日',
+      unit_price      INTEGER NOT NULL DEFAULT 0,
+      amount          INTEGER NOT NULL DEFAULT 0,
+      category        TEXT    NOT NULL DEFAULT 'その他',
+      job_id          TEXT,
+      source_row      INTEGER NOT NULL,
+      created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(invoice_id, source_row)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_bil_invoice   ON business_invoice_lines(invoice_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_bil_work_date ON business_invoice_lines(work_date)`,
+    `CREATE INDEX IF NOT EXISTS idx_bil_category  ON business_invoice_lines(category)`,
+  ];
+  for (const sql of INVOICE_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
 }
 
 /**

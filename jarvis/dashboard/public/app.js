@@ -467,3 +467,466 @@ document.querySelectorAll('.module-tab').forEach(btn => {
   // business 以外で開始する場合だけ activate を呼ぶ
   if (initial !== 'business') MODULES[initial].activate();
 })();
+
+// ─── Business サブタブ ────────────────────────────────────────────────────────
+
+let bizCurrentTab = 'monthly';
+
+function switchBizTab(name) {
+  bizCurrentTab = name;
+
+  // panel 表示切替
+  ['monthly', 'invoice', 'analytics'].forEach(t => {
+    const el = document.getElementById(`biz-tab-${t}`);
+    if (el) el.hidden = (t !== name);
+  });
+
+  // ボタンの active 状態
+  document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.bizTab === name);
+  });
+
+  if (name === 'invoice')   initInvoiceTab();
+  if (name === 'analytics') initAnalyticsTab();
+}
+
+document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchBizTab(btn.dataset.bizTab));
+});
+
+// ─── 請求書取込タブ ───────────────────────────────────────────────────────────
+
+let invoiceFileBuffer = null;  // base64 of current file
+let invoiceFilename   = '';
+let invoiceInitialized = false;
+
+function initInvoiceTab() {
+  loadInvoiceHistory();
+}
+
+/** ArrayBuffer → Base64（大ファイル対応・チャンク分割） */
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary  = '';
+  const CHUNK = 8192;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
+}
+
+// Dropzone
+const invoiceDropzone  = document.getElementById('invoice-dropzone');
+const invoiceFileInput = document.getElementById('invoice-file-input');
+
+invoiceDropzone.addEventListener('click', () => invoiceFileInput.click());
+
+invoiceDropzone.addEventListener('dragover', e => {
+  e.preventDefault();
+  invoiceDropzone.style.borderColor = '#60a5fa';
+});
+invoiceDropzone.addEventListener('dragleave', () => {
+  invoiceDropzone.style.borderColor = '#334155';
+});
+invoiceDropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  invoiceDropzone.style.borderColor = '#334155';
+  const file = e.dataTransfer.files[0];
+  if (file) handleInvoiceFile(file);
+});
+
+invoiceFileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) handleInvoiceFile(file);
+});
+
+function handleInvoiceFile(file) {
+  if (!file.name.toLowerCase().endsWith('.xlsx')) {
+    document.getElementById('invoice-file-info').textContent = '⚠ .xlsx ファイルのみ対応しています';
+    return;
+  }
+
+  invoiceFilename = file.name;
+  document.getElementById('invoice-file-info').textContent =
+    `選択中: ${file.name}（${(file.size / 1024).toFixed(1)} KB）`;
+  document.getElementById('invoice-already-msg').style.display = 'none';
+  document.getElementById('invoice-preview-area').hidden = true;
+  document.getElementById('invoice-import-status').textContent = '解析中...';
+
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    const b64 = arrayBufferToBase64(ev.target.result);
+    invoiceFileBuffer = b64;
+    await parseInvoiceFile(b64, file.name);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function parseInvoiceFile(b64, filename) {
+  const statusEl = document.getElementById('invoice-import-status');
+  try {
+    const { status, data } = await api('POST', '/api/invoice/parse', {
+      filename,
+      data_b64: b64,
+    });
+
+    if (status !== 200) {
+      statusEl.textContent = `エラー: ${data.error || '解析失敗'}`;
+      return;
+    }
+
+    // 既取込み警告
+    if (data.existImport) {
+      const alreadyEl = document.getElementById('invoice-already-msg');
+      alreadyEl.style.display = 'block';
+      const at = data.existImport.imported_at
+        ? `（${data.existImport.imported_at.slice(0, 16)} 取込済み）`
+        : '';
+      alreadyEl.textContent =
+        `このファイルは既に取込済みです${at}。再取込する場合はそのまま「取り込む」を押してください。`;
+    }
+
+    renderInvoicePreview(data);
+    statusEl.textContent = '';
+  } catch (err) {
+    statusEl.textContent = `通信エラー: ${err.message}`;
+  }
+}
+
+function renderInvoicePreview(data) {
+  const area    = document.getElementById('invoice-preview-area');
+  const summary = document.getElementById('invoice-preview-summary');
+  const wrap    = document.getElementById('invoice-preview-table-wrap');
+  const { invoices = [], summary: s = {} } = data;
+
+  // サマリー行
+  let parts = [`請求書: ${s.invoiceCount ?? invoices.length}件`, `明細: ${s.lineCount ?? '—'}行`];
+  if (s.skippedCount) parts.push(`スキップ: ${s.skippedCount}件`);
+  if (s.totalSubtotal != null) parts.push(`合計（税抜）: ${Number(s.totalSubtotal).toLocaleString('ja-JP')}円`);
+  summary.textContent = parts.join(' / ');
+
+  if (!invoices.length) {
+    wrap.innerHTML = '<p style="color:#64748b;font-size:13px">取込対象の請求書が見つかりませんでした</p>';
+  } else {
+    const rows = invoices.map(inv => `
+      <tr>
+        <td>${esc(inv.invoiceNumber)}</td>
+        <td>${esc(inv.sourceSheet)}</td>
+        <td style="text-align:right">${inv.lines?.length ?? 0}行</td>
+        <td style="text-align:right">${Number(inv.subtotal ?? 0).toLocaleString('ja-JP')}円</td>
+      </tr>
+    `).join('');
+    wrap.innerHTML = `
+      <table class="works-table" style="min-width:420px">
+        <thead><tr>
+          <th>請求書番号</th><th>シート名</th><th>明細行数</th><th>金額（税抜）</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  area.hidden = false;
+}
+
+// 取り込むボタン
+document.getElementById('invoice-import-btn').addEventListener('click', async () => {
+  if (!invoiceFileBuffer) return;
+
+  const btn      = document.getElementById('invoice-import-btn');
+  const statusEl = document.getElementById('invoice-import-status');
+  btn.disabled   = true;
+  statusEl.textContent = '取込中...';
+
+  try {
+    const { status, data } = await api('POST', '/api/invoice/import', {
+      filename:  invoiceFilename,
+      data_b64:  invoiceFileBuffer,
+    });
+
+    if (status !== 200 && status !== 201) {
+      statusEl.textContent = `エラー: ${data.error || '取込失敗'}`;
+      btn.disabled = false;
+      return;
+    }
+
+    statusEl.textContent =
+      `完了: 新規 ${data.newCount}件 取込${data.dupCount ? `（重複スキップ ${data.dupCount}件）` : ''}`;
+    loadInvoiceHistory();
+    setTimeout(resetInvoiceDropzone, 4000);
+  } catch (err) {
+    statusEl.textContent = `通信エラー: ${err.message}`;
+    btn.disabled = false;
+  }
+});
+
+// キャンセルボタン
+document.getElementById('invoice-cancel-btn').addEventListener('click', resetInvoiceDropzone);
+
+function resetInvoiceDropzone() {
+  invoiceFileBuffer = null;
+  invoiceFilename   = '';
+  document.getElementById('invoice-file-info').textContent     = '';
+  document.getElementById('invoice-preview-area').hidden       = true;
+  document.getElementById('invoice-already-msg').style.display = 'none';
+  document.getElementById('invoice-import-status').textContent = '';
+  document.getElementById('invoice-import-btn').disabled       = false;
+  document.getElementById('invoice-file-input').value          = '';
+}
+
+// 履歴読み込み
+async function loadInvoiceHistory() {
+  const el = document.getElementById('invoice-history-container');
+  el.className   = 'loading';
+  el.textContent = '読み込み中...';
+
+  try {
+    const { data } = await api('GET', '/api/invoice/imports');
+    if (!data.ok || !data.imports?.length) {
+      el.className = '';
+      el.innerHTML = '<p style="color:#64748b;font-size:13px">取込履歴がありません</p>';
+      return;
+    }
+
+    const rows = data.imports.map(imp => `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px">${esc((imp.imported_at || '').slice(0, 16))}</td>
+        <td>${esc(imp.source_filename)}</td>
+        <td style="text-align:right">${imp.new_count}</td>
+        <td style="text-align:right;color:#64748b">${imp.dup_count}</td>
+        <td><span class="badge badge-${imp.status === 'completed' ? 'invoiced' : 'uninvoiced'}">${imp.status}</span></td>
+      </tr>
+    `).join('');
+
+    el.className = '';
+    el.innerHTML = `
+      <table class="works-table">
+        <thead><tr><th>取込日時</th><th>ファイル名</th><th>新規</th><th>重複</th><th>状態</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  } catch {
+    el.className = '';
+    el.textContent = '読み込みエラー';
+  }
+}
+
+document.getElementById('invoice-history-refresh-btn')
+  .addEventListener('click', loadInvoiceHistory);
+
+// ─── 実績分析タブ ─────────────────────────────────────────────────────────────
+
+let invAnalyticsFull = null;   // GET /api/invoice/analytics のキャッシュ
+let invCurrentYear   = '';     // '' = 全期間
+
+async function initAnalyticsTab() {
+  // 初回のみ全期間データを取得
+  if (!invAnalyticsFull) {
+    await loadFullAnalytics();
+    populateYearSelect();
+  }
+  await renderAnalytics();
+}
+
+async function loadFullAnalytics() {
+  try {
+    const { data } = await api('GET', '/api/invoice/analytics');
+    if (data.ok) invAnalyticsFull = data;
+  } catch { /* silent */ }
+}
+
+function populateYearSelect() {
+  const sel   = document.getElementById('inv-year-select');
+  const years = invAnalyticsFull?.availableYears ?? [];
+
+  // 既存オプション（全期間以外）を削除
+  while (sel.options.length > 1) sel.remove(1);
+
+  // 降順で追加（availableYears は DESC で来る）
+  years.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value       = y;
+    opt.textContent = `${y}年`;
+    sel.appendChild(opt);
+  });
+
+  // 初期値: 最新年（years[0] が最新）
+  if (years.length > 0 && !invCurrentYear) {
+    invCurrentYear = years[0];
+  }
+  sel.value = invCurrentYear;
+}
+
+document.getElementById('inv-year-select').addEventListener('change', async e => {
+  invCurrentYear = e.target.value;
+  await renderAnalytics();
+});
+
+async function renderAnalytics() {
+  if (invCurrentYear) {
+    await renderAnalyticsByYear(invCurrentYear);
+  } else {
+    renderAnalyticsAll();
+  }
+}
+
+function renderAnalyticsAll() {
+  if (!invAnalyticsFull) {
+    setAnalyticsCards('—', '—', '—', '—');
+    return;
+  }
+
+  const { byYear = [], byMonth = [], byCategory = [] } = invAnalyticsFull;
+
+  const totalSubtotal = byYear.reduce((s, r) => s + (r.subtotal   ?? 0), 0);
+  const totalCount    = byYear.reduce((s, r) => s + (r.lineCount   ?? 0), 0);
+  const avgAmount     = totalCount > 0 ? Math.round(totalSubtotal / totalCount) : 0;
+
+  setAnalyticsCards(yen(totalSubtotal), `${totalCount}件`, yen(avgAmount), '—');
+  document.getElementById('inv-card-yoy').className = 'card-value';
+
+  renderMonthlyTable(byMonth);
+  renderCategoryTable(byCategory);
+  loadInvLines({});
+}
+
+async function renderAnalyticsByYear(year) {
+  try {
+    const { status, data } = await api('GET', `/api/invoice/analytics/${year}`);
+    if (status !== 200 || !data.ok) return;
+
+    // yoy 表示
+    let yoyText  = '—';
+    let yoyClass = 'card-value';
+    if (data.yoyRate != null) {
+      const sign = data.yoyRate >= 0 ? '+' : '';
+      yoyText  = `${sign}${data.yoyRate}%`;
+      yoyClass = 'card-value ' + (data.yoyRate >= 0 ? 'green' : 'red');
+    }
+
+    setAnalyticsCards(yen(data.subtotal), `${data.lineCount}件`, yen(data.avgAmount), yoyText);
+    document.getElementById('inv-card-yoy').className = yoyClass;
+
+    renderMonthlyTable(data.byMonth   ?? []);
+    renderCategoryTable(data.byCategory ?? []);
+    loadInvLines({ year });
+  } catch { /* silent */ }
+}
+
+function setAnalyticsCards(subtotal, count, avg, yoy) {
+  document.getElementById('inv-card-subtotal').textContent = subtotal;
+  document.getElementById('inv-card-count').textContent    = count;
+  document.getElementById('inv-card-avg').textContent      = avg;
+  document.getElementById('inv-card-yoy').textContent      = yoy;
+}
+
+function renderMonthlyTable(rows) {
+  const el = document.getElementById('inv-monthly-container');
+  if (!rows.length) {
+    el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+    return;
+  }
+
+  const max = Math.max(...rows.map(r => r.subtotal ?? 0), 1);
+  const trs = rows.map(r => {
+    const pct = Math.round(((r.subtotal ?? 0) / max) * 100);
+    return `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px">${esc(r.month)}</td>
+        <td style="text-align:right;color:#64748b">${r.line_count}件</td>
+        <td style="text-align:right">${yen(r.subtotal)}</td>
+        <td style="width:140px;padding-right:0">
+          <div style="background:#1e3a5f;border-radius:3px;height:10px">
+            <div style="background:#3b82f6;width:${pct}%;height:100%;border-radius:3px"></div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <table class="works-table">
+      <thead><tr><th>月</th><th>件数</th><th>金額（税抜）</th><th></th></tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
+function renderCategoryTable(rows) {
+  const el = document.getElementById('inv-category-container');
+  if (!rows.length) {
+    el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+    return;
+  }
+
+  const max = Math.max(...rows.map(r => r.subtotal ?? 0), 1);
+  const trs = rows.map(r => {
+    const pct = Math.round(((r.subtotal ?? 0) / max) * 100);
+    return `
+      <tr>
+        <td>${esc(r.category)}</td>
+        <td style="text-align:right;color:#64748b">${r.line_count}件</td>
+        <td style="text-align:right">${yen(r.subtotal)}</td>
+        <td style="width:140px;padding-right:0">
+          <div style="background:#1e3a5f;border-radius:3px;height:10px">
+            <div style="background:#8b5cf6;width:${pct}%;height:100%;border-radius:3px"></div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <table class="works-table">
+      <thead><tr><th>カテゴリ</th><th>件数</th><th>金額（税抜）</th><th></th></tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
+async function loadInvLines({ year, month, category } = {}) {
+  const el     = document.getElementById('inv-lines-container');
+  const noteEl = document.getElementById('inv-lines-note');
+
+  const params = new URLSearchParams();
+  if (year)     params.set('year',     year);
+  if (month)    params.set('month',    month);
+  if (category) params.set('category', category);
+  params.set('limit', '200');
+
+  try {
+    const { data } = await api('GET', `/api/invoice/lines?${params}`);
+    if (!data.ok || !data.lines?.length) {
+      noteEl.textContent = '';
+      el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+      return;
+    }
+
+    noteEl.textContent = `${data.lines.length}件`;
+
+    const trs = data.lines.map(l => `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px;white-space:nowrap">${esc(l.work_date ?? '—')}</td>
+        <td style="max-width:240px">${esc(l.description)}</td>
+        <td style="text-align:right;color:#64748b">${l.quantity}${esc(l.quantity_unit)}</td>
+        <td style="text-align:right;color:#64748b">${yen(l.unit_price)}</td>
+        <td style="text-align:right">${yen(l.amount)}</td>
+        <td style="color:#94a3b8">${esc(l.category)}</td>
+        <td style="color:#64748b;font-size:12px">${esc(l.invoice_number)}</td>
+      </tr>
+    `).join('');
+
+    el.innerHTML = `
+      <div style="overflow-x:auto">
+        <table class="works-table" style="font-size:12px;min-width:700px">
+          <thead><tr>
+            <th>作業日</th><th>作業内容</th><th>数量</th><th>単価</th><th>金額</th><th>カテゴリ</th><th>請求書</th>
+          </tr></thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>
+    `;
+  } catch {
+    el.innerHTML = '<p style="color:#64748b;font-size:13px">読み込みエラー</p>';
+  }
+}
