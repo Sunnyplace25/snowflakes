@@ -7,8 +7,8 @@
 <style>
 :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--text:#e6edf3;--sub:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--purple:#a371f7;--yellow:#d29922}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:14px}
-header{position:sticky;top:0;z-index:5;background:#0d1117eF;border-bottom:1px solid var(--line);backdrop-filter:blur(8px);padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.logo{font-weight:700;letter-spacing:.14em}.title{color:var(--sub)}.spacer{flex:1}a{color:var(--blue);text-decoration:none}select,button{background:#21262d;border:1px solid var(--line);color:var(--text);border-radius:6px;padding:7px 10px}button{cursor:pointer}main{max-width:1180px;margin:auto;padding:24px}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-bottom:18px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:8px}.card{padding:16px}.label{font-size:12px;color:var(--sub);margin-bottom:7px}.value{font-size:24px;font-weight:700}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.panel{padding:18px;margin-bottom:18px}.panel h2{font-size:15px;margin:0 0 4px}.note{font-size:12px;color:var(--sub);margin-bottom:14px}.chart-wrap{overflow-x:auto}.chart{min-width:760px;width:100%;height:320px;display:block}.gridline{stroke:#30363d;stroke-width:1}.axis-label{fill:#8b949e;font-size:11px}.bar-income{fill:#3fb950}.bar-expense{fill:#f85149}.line-profit{fill:none;stroke:#58a6ff;stroke-width:3}.dot-profit{fill:#58a6ff}.legend{display:flex;gap:18px;color:var(--sub);font-size:12px;margin:4px 0 10px}.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.cat-row{display:grid;grid-template-columns:130px 1fr 95px;gap:10px;align-items:center;margin:9px 0}.cat-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cat-track{height:12px;background:#21262d;border-radius:99px;overflow:hidden}.cat-fill{height:100%;background:var(--purple);border-radius:99px}.cat-value{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}.empty{padding:36px;text-align:center;color:var(--sub)}.status{font-size:12px;color:var(--sub)}
+header{position:sticky;top:0;z-index:5;background:#0d1117eF;border-bottom:1px solid var(--line);backdrop-filter:blur(8px);padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-weight:700;letter-spacing:.14em}.title{color:var(--sub)}.spacer{flex:1}a{color:var(--blue);text-decoration:none}select,button{background:#21262d;border:1px solid var(--line);color:var(--text);border-radius:6px;padding:7px 10px}button{cursor:pointer}button.primary{background:#238636;border-color:#2ea043}button:disabled{opacity:.55;cursor:default}main{max-width:1180px;margin:auto;padding:24px}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-bottom:18px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:8px}.card{padding:16px}.label{font-size:12px;color:var(--sub);margin-bottom:7px}.value{font-size:24px;font-weight:700}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.panel{padding:18px;margin-bottom:18px}.panel h2{font-size:15px;margin:0 0 4px}.note{font-size:12px;color:var(--sub);margin-bottom:14px}.chart-wrap{overflow-x:auto}.chart{min-width:760px;width:100%;height:320px;display:block}.gridline{stroke:#30363d;stroke-width:1}.axis-label{fill:#8b949e;font-size:11px}.bar-income{fill:#3fb950}.bar-expense{fill:#f85149}.line-profit{fill:none;stroke:#58a6ff;stroke-width:3}.dot-profit{fill:#58a6ff}.legend{display:flex;gap:18px;color:var(--sub);font-size:12px;margin:4px 0 10px}.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.cat-row{display:grid;grid-template-columns:130px 1fr 95px;gap:10px;align-items:center;margin:9px 0}.cat-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cat-track{height:12px;background:#21262d;border-radius:99px;overflow:hidden}.cat-fill{height:100%;background:var(--purple);border-radius:99px}.cat-value{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}.empty{padding:36px;text-align:center;color:var(--sub)}.status{font-size:12px;color:var(--sub)}.sync-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;padding:12px 14px;background:#161b22;border:1px solid var(--line);border-radius:8px}.sync-box strong{font-size:13px}.sync-box .status{flex:1;min-width:240px}
 @media(max-width:760px){main{padding:14px}.cards{grid-template-columns:1fr 1fr}.value{font-size:19px}.cat-row{grid-template-columns:90px 1fr 78px}}
 </style>
 </head>
@@ -21,6 +21,12 @@ header{position:sticky;top:0;z-index:5;background:#0d1117eF;border-bottom:1px so
   <a href="/">← ダッシュボード</a>
 </header>
 <main>
+  <div class="sync-box">
+    <strong>請求書の仕事を反映</strong>
+    <button id="sync-all" class="primary">既存請求書 → 仕事一覧を同期</button>
+    <span id="sync-status" class="status">手動登録済みの仕事は照合し、足りない日だけ追加します。</span>
+  </div>
+
   <div class="cards">
     <div class="card"><div class="label">年間収入</div><div id="income" class="value green">—</div></div>
     <div class="card"><div class="label">年間経費</div><div id="expense" class="value red">—</div></div>
@@ -78,6 +84,20 @@ async function load(){
  }catch(e){st.textContent='読み込みエラー: '+e.message}
 }
 
+async function syncAllInvoices(){
+ const btn=document.getElementById('sync-all'); const st=document.getElementById('sync-status');
+ btn.disabled=true; st.textContent='既存請求書を仕事一覧へ同期中...';
+ try{
+  const r=await fetch('/api/invoice/sync-work',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+  const d=await r.json();
+  if(!r.ok||!d.ok) throw new Error(d.error||'同期に失敗しました');
+  const issue=d.ambiguous||d.skipped?` / 要確認 ${Number(d.ambiguous||0)+Number(d.skipped||0)}件`:'';
+  st.textContent=`完了：新規 ${d.created}件 / 既存一致 ${d.matched}件${issue}`;
+  await load();
+ }catch(e){st.textContent='同期エラー: '+e.message}
+ finally{btn.disabled=false}
+}
+
 function renderMonthly(rows){
  const svg=document.getElementById('monthly-chart');
  const W=1000,H=320,L=58,R=18,T=18,B=42, plotW=W-L-R, plotH=H-T-B;
@@ -101,7 +121,10 @@ function renderCategories(works){
  el.innerHTML=rows.map(([name,val])=>`<div class="cat-row"><div class="cat-name" title="${esc(name)}">${esc(name)}</div><div class="cat-track"><div class="cat-fill" style="width:${Math.max(1,val/max*100)}%"></div></div><div class="cat-value">${yen(val)}</div></div>`).join('');
 }
 
-yearSel.addEventListener('change',load);document.getElementById('reload').addEventListener('click',load);load();
+yearSel.addEventListener('change',load);
+document.getElementById('reload').addEventListener('click',load);
+document.getElementById('sync-all').addEventListener('click',syncAllInvoices);
+load();
 </script>
 </body>
 </html>
