@@ -1,12 +1,13 @@
 /**
  * 請求書明細 → work_records 同期の回帰テスト。
  * 2023 明治カップの「8/2、8/3」のような複数日明細を日別に分割し、
+ * 古い取込で work_date が NULL でも請求日+説明文から復元し、
  * 手動登録済みの仕事は重複させず照合することを確認する。
  */
 
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_manager.js';
+import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_work_backfill.js';
 
 const db = new DatabaseSync(':memory:');
 
@@ -94,12 +95,13 @@ const insertLine = db.prepare(`
   INSERT INTO business_invoice_lines
     (invoice_id, work_date, description, quantity, quantity_unit,
      unit_price, amount, category, job_id, source_row)
-  VALUES (?, ?, ?, ?, '日', ?, ?, 'ゴルフ中継', NULL, ?)
+  VALUES (?, NULL, ?, ?, '日', ?, ?, 'ゴルフ中継', NULL, ?)
 `);
 
-insertLine.run(invoiceId, '2023-08-02', 'meijicup 音声技術費　8/2、８/３', 2, 25000, 50000, 17);
-insertLine.run(invoiceId, '2023-08-04', 'meijicup 音声技術費　8/4、８/5', 2, 30000, 60000, 18);
-insertLine.run(invoiceId, '2023-08-06', 'ｍeijicup 音声技術費　8/6', 1, 40000, 40000, 19);
+// 「古いパーサーで work_date が保存されなかった」状態を再現。
+insertLine.run(invoiceId, 'meijicup 音声技術費　8/2、８/３', 2, 25000, 50000, 17);
+insertLine.run(invoiceId, 'meijicup 音声技術費　8/4、８/5', 2, 30000, 60000, 18);
+insertLine.run(invoiceId, 'ｍeijicup 音声技術費　8/6', 1, 40000, 40000, 19);
 
 // 8/2 は手動入力済み、8/6 は金額未入力の手動仕事を想定。
 db.prepare(`
@@ -114,6 +116,7 @@ db.prepare(`
 `).run();
 
 const first = syncAllInvoiceLinesToWorkRecords(db, { year: '2023' });
+assert.equal(first.invoiceLines, 3);
 assert.equal(first.workParts, 5);
 assert.equal(first.matched, 2);
 assert.equal(first.created, 3);
@@ -132,6 +135,12 @@ assert.deepEqual(works.map(w => w.date), [
 assert.deepEqual(works.map(w => w.income), [25000, 25000, 30000, 30000, 40000]);
 assert.ok(works.every(w => w.invoice_status === '請求済'));
 
+// NULL だった明細日も最初の仕事日に復元される。
+assert.deepEqual(
+  db.prepare('SELECT work_date FROM business_invoice_lines ORDER BY id').all().map(r => r.work_date),
+  ['2023-08-02', '2023-08-04', '2023-08-06'],
+);
+
 // 2回目でも仕事は増えない（冪等性）。
 const second = syncAllInvoiceLinesToWorkRecords(db, { year: '2023' });
 assert.equal(second.created, 0);
@@ -139,5 +148,5 @@ assert.equal(second.matched, 5);
 assert.equal(db.prepare('SELECT COUNT(*) AS n FROM work_records').get().n, 5);
 assert.equal(db.prepare('SELECT COUNT(*) AS n FROM business_invoice_work_links').get().n, 5);
 
-console.log('✅ invoice work sync: 2023 multi-day + manual match + idempotency');
+console.log('✅ invoice work backfill: NULL dates + multi-day + manual match + idempotency');
 db.close();
