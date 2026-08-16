@@ -25,16 +25,17 @@ function ensureLinkTable(db) {
 }
 
 function toHalfWidth(value) {
-  return String(value ?? '').replace(/[０-９]/g, c =>
-    String.fromCharCode(c.charCodeAt(0) - 0xFEE0)
-  );
+  return String(value ?? '')
+    .replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+    .replace(/　/g, ' ');
 }
 
 function normalizeText(value) {
   return toHalfWidth(value)
     .toLowerCase()
-    .replace(/[\s　]/g, '')
-    .replace(/[・･,，.。:：;；\\()（）\[\]【】「」『』_\-\/／]/g, '');
+    .replace(/明治カップ|meiji\s*cup|meijiカップ/g, 'meijicup')
+    .replace(/[\s]/g, '')
+    .replace(/[・･,，.。:：;；\\()（）\[\]【】「」『』_\-\/]/g, '');
 }
 
 function textMatches(a, b) {
@@ -43,10 +44,19 @@ function textMatches(a, b) {
   return !!na && !!nb && (na === nb || na.includes(nb) || nb.includes(na));
 }
 
-function workType(category) {
+function workType(category, description = '') {
   if (category === 'スタジオ音声') return 'STUDIO';
   if (category === 'ロケ') return 'ロケ';
   if (String(category ?? '').includes('中継')) return '中継';
+
+  // 古い分類ルールで「その他」になっていた行も仕事内容から回復する。
+  const d = normalizeText(description);
+  if (
+    d.includes('meijicup') || d.includes('競馬') || d.includes('ファイターズ') ||
+    d.includes('エスコン') || d.includes('マラソン') || d.includes('レバンガ')
+  ) return '中継';
+  if (d.includes('sasaru') || d.includes('ロケ')) return 'ロケ';
+  if (d.includes('みんテレ') || d.includes('スタジオ') || d.includes('uhb') || d.includes('tvh')) return 'STUDIO';
   return null;
 }
 
@@ -153,6 +163,7 @@ function link(db, line, part, jobId) {
 
 function updateMatched(db, work, line, part) {
   updateWorkRecordFull(db, work.id, {
+    work_type: work.work_type || workType(line.category, line.description),
     income: part.amount,
     client: work.client || line.client_name || null,
     content: work.content || line.description || null,
@@ -217,7 +228,7 @@ function syncPart(db, line, part) {
     const { rowid, job_id } = addWorkRecord(db, {
       date: part.date,
       category: '音声仕事',
-      work_type: workType(line.category),
+      work_type: workType(line.category, line.description),
       content: line.description || null,
       client: line.client_name || null,
       income: part.amount,
