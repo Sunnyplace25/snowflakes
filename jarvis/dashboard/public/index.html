@@ -392,6 +392,7 @@
     <button class="sf-tab" data-sf-tab="profiles">Artist Profiles</button>
     <button class="sf-tab" data-sf-tab="import">Soundrop Import</button>
     <button class="sf-tab" data-sf-tab="soundrop-stats">Soundrop Stats</button>
+    <button class="sf-tab" data-sf-tab="soundrop-sync">Soundrop同期</button>
     <button class="sf-tab" data-sf-tab="youtube">YouTube</button>
     <button class="sf-tab" data-sf-tab="tiktok">TikTok</button>
     <button class="sf-tab" data-sf-tab="funnel">Funnel</button>
@@ -502,6 +503,43 @@
     </section>
 
   </div><!-- /#sf-tab-soundrop-stats -->
+
+  <!-- Soundrop カタログ同期 tab -->
+  <div id="sf-tab-soundrop-sync" class="sf-tab-panel" hidden>
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>Soundrop カタログ同期</h2>
+        <span class="sf-note">カタログ情報を Soundrop から取得して JARVIS DB と照合します</span>
+      </div>
+
+      <!-- URL 入力エリア -->
+      <div id="soundrop-sync-input-area" style="margin-bottom:20px">
+        <label for="soundrop-request-url"
+               style="display:block;font-size:13px;color:#94a3b8;margin-bottom:6px;font-weight:500">
+          Soundrop Request URL
+        </label>
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <input type="text" id="soundrop-request-url"
+                 placeholder="https://app-api.soundrop.com/...&Token=... をそのまま貼り付け"
+                 autocomplete="off" autocorrect="off" spellcheck="false"
+                 style="flex:1;font-family:monospace;font-size:12px;padding:8px 10px;
+                        background:#1e293b;border:1px solid #334155;border-radius:6px;
+                        color:#e2e8f0;outline:none">
+          <button id="soundrop-check-btn"
+                  style="padding:8px 16px;background:#3b82f6;color:#fff;border:none;
+                         border-radius:6px;cursor:pointer;font-size:13px;white-space:nowrap">
+            差分を確認
+          </button>
+        </div>
+        <p style="font-size:12px;color:#64748b;margin-top:6px;margin-bottom:0">
+          soundrop.com → DevTools (F12) → Network タブ → 任意のリクエストを右クリック →「リクエスト URL をコピー」
+        </p>
+      </div>
+
+      <!-- 結果エリア（JS で動的に更新） -->
+      <div id="soundrop-sync-result"></div>
+    </section>
+  </div><!-- /#sf-tab-soundrop-sync -->
 
   <!-- YouTube Analytics tab (Phase 7) -->
   <div id="sf-tab-youtube" class="sf-tab-panel" hidden>

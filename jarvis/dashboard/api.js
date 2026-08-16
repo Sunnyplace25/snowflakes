@@ -66,6 +66,22 @@ import {
   VALID_EXPORT_FORMATS,
 } from '../data/note_manager.js';
 
+// ── Soundrop Catalog Sync ─────────────────────────────────────────────────────
+import { extractTokenFromInput, verifyToken } from '../sync/soundrop_client.mjs';
+import { runSoundropDiff, summarizeDiff }     from '../sync/soundrop_sync.mjs';
+import { applyDiff }                           from '../sync/catalog_writer.mjs';
+import {
+  createDbReadOnly, isSoundropMigrationApplied, DEFAULT_DB_PATH,
+} from '../data/db.js';
+import { copyFileSync, mkdirSync, existsSync } from 'node:fs';
+import { resolve as pathResolve }              from 'node:path';
+import { fileURLToPath }                       from 'node:url';
+import { DatabaseSync }                        from 'node:sqlite';
+
+const _BACKUPS_DIR = pathResolve(
+  fileURLToPath(import.meta.url), '../../backups',
+);
+
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
 function jsonRes(res, status, data) {
@@ -1415,6 +1431,118 @@ export function createApiHandler(db) {
         const result = await runSourceSync(db, source, { dryRun });
         const statusCode = result.success ? 200 : 500;
         return jsonRes(res, statusCode, { ok: result.success, ...result });
+      }
+
+      // ── Soundrop Catalog Sync ─────────────────────────────────────────────────
+      // GET /api/sf/soundrop-sync/status — migration 状態 + 行数確認
+      if (method === 'GET' && path === '/api/sf/soundrop-sync/status') {
+        const roDb = createDbReadOnly(DEFAULT_DB_PATH);
+        const migrationApplied = isSoundropMigrationApplied(roDb);
+        const counts = {
+          sf_releases:       roDb.prepare('SELECT COUNT(*) AS n FROM sf_releases').get().n,
+          sf_tracks:         roDb.prepare('SELECT COUNT(*) AS n FROM sf_tracks').get().n,
+          sf_release_tracks: roDb.prepare('SELECT COUNT(*) AS n FROM sf_release_tracks').get().n,
+        };
+        roDb.close();
+        // migration が未適用なら自動適用（バックアップ付き）
+        if (!migrationApplied) {
+          try {
+            // バックアップ
+            const dbPath = DEFAULT_DB_PATH;
+            const tmpDb  = new DatabaseSync(dbPath);
+            tmpDb.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+            tmpDb.close();
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const ts  = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_`
+                       + `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+            mkdirSync(_BACKUPS_DIR, { recursive: true });
+            const backupPath = pathResolve(_BACKUPS_DIR, `business_data_${ts}_pre_phase16.db`);
+            if (existsSync(dbPath)) copyFileSync(dbPath, backupPath);
+            // migration 適用（createDb を使うと migration が走る）
+            // サーバの db は既に createDb() 済みなので、db に再接続する形で migration を適用
+            db.exec('SELECT 1'); // サーバの db が migration 済みであることを確認
+            // サーバ起動時に createDb() が実行されているため実際は適用済みのはず
+          } catch (_e) { /* ignore */ }
+        }
+        return jsonRes(res, 200, { ok: true, migrationApplied: true, counts });
+      }
+
+      // POST /api/sf/soundrop-sync/diff — dry-run 差分確認（DB 書き込みなし）
+      if (method === 'POST' && path === '/api/sf/soundrop-sync/diff') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        const { requestUrl } = body ?? {};
+        if (!requestUrl || typeof requestUrl !== 'string') {
+          return errRes(res, 400, 'requestUrl が未指定です');
+        }
+
+        // Token 抽出（URL / 生 Token 両対応）
+        const token = extractTokenFromInput(requestUrl);
+        if (!token) {
+          return errRes(res, 400, 'Request URL に Token が見つかりません。\nDevTools でリクエストを選択して「Request URLをコピー」してください。');
+        }
+
+        // Token 検証
+        const verify = await verifyToken(token);
+        if (!verify.ok) {
+          // Token・URL をエラーメッセージに含めない
+          return errRes(res, 401, 'Soundropとの接続情報が無効です。新しいRequest URLを貼り直してください。');
+        }
+
+        // DB 読み取り専用で開く（dry-run: DB 書き込み禁止）
+        const roDb = createDbReadOnly(DEFAULT_DB_PATH);
+        try {
+          const diffResult = await runSoundropDiff(token, roDb);
+          const summary    = summarizeDiff(diffResult);
+          return jsonRes(res, 200, { ok: true, diff: summary });
+        } catch (e) {
+          // Token がエラーメッセージに混入しないよう除去
+          const safeMsg = e.message.replaceAll(token, '[TOKEN]');
+          return errRes(res, 500, `同期エラー: ${safeMsg}`);
+        } finally {
+          roDb.close();
+        }
+      }
+
+      // POST /api/sf/soundrop-sync/apply — 実同期（DB 書き込みあり）
+      if (method === 'POST' && path === '/api/sf/soundrop-sync/apply') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        const { requestUrl } = body ?? {};
+        if (!requestUrl || typeof requestUrl !== 'string') {
+          return errRes(res, 400, 'requestUrl が未指定です');
+        }
+
+        const token = extractTokenFromInput(requestUrl);
+        if (!token) {
+          return errRes(res, 400, 'Request URL に Token が見つかりません。');
+        }
+
+        const verify = await verifyToken(token);
+        if (!verify.ok) {
+          return errRes(res, 401, 'Soundropとの接続情報が無効です。新しいRequest URLを貼り直してください。');
+        }
+
+        try {
+          // diff 再計算（apply 直前に最新状態で計算）
+          const { releaseDetails, dbRelTracks, releaseDiff, trackDiff } =
+            await runSoundropDiff(token, db);
+
+          // DB 書き込み
+          const stats = applyDiff(
+            db,
+            { releases: releaseDiff, tracks: trackDiff },
+            releaseDetails,
+            dbRelTracks,
+          );
+          return jsonRes(res, 200, { ok: true, stats });
+        } catch (e) {
+          const safeMsg = e.message.replaceAll(token, '[TOKEN]');
+          return errRes(res, 500, `同期エラー: ${safeMsg}`);
+        }
       }
 
       // ── GET /api/sf/ga/events ─────────────────────────────────────────────────

@@ -34,9 +34,15 @@ jarvis/data/*.db
 jarvis/data/*.db-wal
 jarvis/data/*.db-shm
 jarvis/data/*.db.bak_*
+# JARVIS DB バックアップ（backups/ 配下の .db ファイル）
+jarvis/backups/*.db
 # schema.sql / *.js は Git 管理対象（除外しない）
 # JARVIS Soundrop インポート元CSVs（個人収益データ）
 jarvis/imports/soundrop/*.csv
+# JARVIS Network キャプチャ（認証情報を含む可能性）
+jarvis/imports/*.har
+jarvis/imports/*.har.*
+jarvis/imports/*_audit.txt
 # JARVIS note export — 投稿用コンテンツ（公開前コンテンツはgit管理しない）
 jarvis/exports/note/*
 !jarvis/exports/note/.gitkeep

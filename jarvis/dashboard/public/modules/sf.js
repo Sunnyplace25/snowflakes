@@ -101,6 +101,7 @@ const SfModule = (() => {
         else if (tabName === 'profiles')       loadProfiles();
         else if (tabName === 'import')         loadImports();
         else if (tabName === 'soundrop-stats') initSoundropStats();
+        else if (tabName === 'soundrop-sync')  loadSoundropSync();
         else if (tabName === 'youtube')        loadYouTube();
         else if (tabName === 'tiktok')         loadTikTok();
         else if (tabName === 'funnel')         loadFunnel();
@@ -1736,6 +1737,200 @@ const SfModule = (() => {
     loadSoundropStats(sel?.value || '');
   }
 
+  // ─── Soundrop カタログ同期 ────────────────────────────────────────────────
+
+  /** diff summary から「変更あり / なし」を判定して表示を切り替えるヘルパ */
+  function _sdSyncHasChanges(diff) {
+    return diff.hasChanges;
+  }
+
+  /** diff.releases / tracks の変更詳細を HTML テーブルで返す */
+  function _renderSdSyncDiffTable(diff) {
+    const rows = [];
+
+    // Releases
+    rows.push(`<tr style="color:#94a3b8;font-size:11px"><td colspan="4">── Releases ──</td></tr>`);
+    rows.push(`<tr><td>マッチ済み</td><td>${diff.releases.matched}</td><td>-</td><td>変更なし</td></tr>`);
+    if (diff.releases.newItems.length > 0) {
+      for (const r of diff.releases.newItems) {
+        rows.push(`<tr style="color:#34d399"><td>新規</td><td colspan="2">${escHtml(r.name)}</td><td>${r.release_type} / ${r.status}</td></tr>`);
+      }
+    }
+    if (diff.releases.updatedItems.length > 0) {
+      for (const r of diff.releases.updatedItems) {
+        const chg = r.changes.map(c => `${c.field}: ${c.from ?? 'null'} → ${c.to}`).join(', ');
+        rows.push(`<tr style="color:#fbbf24"><td>更新</td><td colspan="2">${escHtml(r.title)}</td><td style="font-size:11px">${escHtml(chg)}</td></tr>`);
+      }
+    }
+    if (diff.releases.skipped > 0)   rows.push(`<tr><td>スキップ</td><td>${diff.releases.skipped}</td><td>-</td><td>ID/UPC なし</td></tr>`);
+    if (diff.releases.conflicts > 0) rows.push(`<tr style="color:#f87171"><td>競合</td><td>${diff.releases.conflicts}</td><td>-</td><td>要確認</td></tr>`);
+
+    // Tracks
+    rows.push(`<tr style="color:#94a3b8;font-size:11px"><td colspan="4">── Tracks ──</td></tr>`);
+    rows.push(`<tr><td>マッチ済み</td><td>${diff.tracks.matched}</td><td>-</td><td>変更なし</td></tr>`);
+    if (diff.tracks.newItems.length > 0) {
+      for (const t of diff.tracks.newItems) {
+        rows.push(`<tr style="color:#34d399"><td>新規</td><td colspan="2">${escHtml(t.name)}</td><td>ISRC: ${t.isrc}</td></tr>`);
+      }
+    }
+    if (diff.tracks.updatedItems.length > 0) {
+      for (const t of diff.tracks.updatedItems) {
+        const chg = t.changes.map(c => `${c.field}: ${c.from ?? 'null'} → ${c.to}`).join(', ');
+        rows.push(`<tr style="color:#fbbf24"><td>更新</td><td colspan="2">${escHtml(t.title)}</td><td style="font-size:11px">${escHtml(chg)}</td></tr>`);
+      }
+    }
+    if (diff.tracks.skipped > 0)   rows.push(`<tr><td>スキップ</td><td>${diff.tracks.skipped}</td><td>-</td><td>ID/ISRC なし</td></tr>`);
+    if (diff.tracks.conflicts > 0) rows.push(`<tr style="color:#f87171"><td>競合</td><td>${diff.tracks.conflicts}</td><td>-</td><td>要確認</td></tr>`);
+
+    // Relations
+    rows.push(`<tr style="color:#94a3b8;font-size:11px"><td colspan="4">── リレーション (Release↔Track) ──</td></tr>`);
+    rows.push(`<tr><td>DB 既存</td><td>${diff.relations.existing}</td><td>-</td><td>-</td></tr>`);
+    if (diff.relations.toAdd > 0)         rows.push(`<tr style="color:#34d399"><td>追加予定</td><td>${diff.relations.toAdd}</td><td>-</td><td>-</td></tr>`);
+    if (diff.relations.toUpdateOrder > 0) rows.push(`<tr style="color:#fbbf24"><td>順序更新</td><td>${diff.relations.toUpdateOrder}</td><td>-</td><td>-</td></tr>`);
+
+    return `<table class="sf-table" style="width:100%;font-size:13px">
+      <thead><tr><th>種別</th><th>件数</th><th>-</th><th>詳細</th></tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table>`;
+  }
+
+  function escHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /**
+   * Soundrop 同期タブ — メイン関数
+   * 初回タブ開時・タブ再選択時に呼ばれる。
+   * DB 書き込みは「同期する」ボタン押下時のみ。
+   */
+  async function loadSoundropSync() {
+    const urlInput  = document.getElementById('soundrop-request-url');
+    const checkBtn  = document.getElementById('soundrop-check-btn');
+    const resultDiv = document.getElementById('soundrop-sync-result');
+    if (!checkBtn) return;
+
+    // 二重初期化防止
+    if (checkBtn.dataset.sdSyncInit === '1') return;
+    checkBtn.dataset.sdSyncInit = '1';
+
+    checkBtn.addEventListener('click', async () => {
+      const requestUrl = urlInput.value.trim();
+      if (!requestUrl) {
+        resultDiv.innerHTML = '<p style="color:#f87171;font-size:13px">Request URL を入力してください。</p>';
+        return;
+      }
+
+      // 差分取得中
+      checkBtn.disabled = true;
+      checkBtn.textContent = '取得中...';
+      resultDiv.innerHTML = '<p style="color:#94a3b8;font-size:13px">⏳ Soundrop に接続して差分を取得しています（数秒かかります）...</p>';
+
+      try {
+        const res  = await fetch('/api/sf/soundrop-sync/diff', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ requestUrl }),
+        });
+        const data = await res.json();
+
+        if (!data.ok) {
+          resultDiv.innerHTML = `<p style="color:#f87171;font-size:13px">⚠ ${escHtml(data.error || 'エラーが発生しました')}</p>`;
+          checkBtn.disabled = false;
+          checkBtn.textContent = '差分を確認';
+          return;
+        }
+
+        const diff = data.diff;
+        const hasChanges = _sdSyncHasChanges(diff);
+
+        // 結果表示
+        let html = '';
+        if (!hasChanges) {
+          html = `<div style="padding:16px;background:#1e293b;border-radius:8px;border:1px solid #334155">
+            <p style="color:#34d399;font-size:14px;font-weight:600;margin:0">
+              ✔ SoundropとJARVISは同期済みです
+            </p>
+            <p style="color:#64748b;font-size:12px;margin:6px 0 0">
+              Release: ${diff.releases.matched}件一致 / Track: ${diff.tracks.matched}件一致
+            </p>
+          </div>`;
+        } else {
+          html = `<div style="margin-bottom:12px">
+            <p style="color:#fbbf24;font-size:13px;font-weight:600;margin:0 0 8px">
+              差分が見つかりました — 内容を確認してください
+            </p>
+            ${_renderSdSyncDiffTable(diff)}
+          </div>
+          <div style="margin-top:12px">
+            <button id="soundrop-apply-btn"
+                    style="padding:10px 24px;background:#ef4444;color:#fff;border:none;
+                           border-radius:6px;cursor:pointer;font-size:14px;font-weight:600">
+              同期する
+            </button>
+            <span style="font-size:12px;color:#64748b;margin-left:12px">
+              ※ このボタンを押すと実 DB が更新されます
+            </span>
+          </div>`;
+        }
+        resultDiv.innerHTML = html;
+        checkBtn.disabled = false;
+        checkBtn.textContent = '差分を再確認';
+
+        // 「同期する」ボタンのハンドラ
+        const applyBtn = document.getElementById('soundrop-apply-btn');
+        if (applyBtn) {
+          applyBtn.addEventListener('click', async () => {
+            if (!confirm('Soundrop の差分を JARVIS DB に適用しますか？')) return;
+
+            applyBtn.disabled = true;
+            applyBtn.textContent = '同期中...';
+            resultDiv.querySelector('span')?.remove();
+
+            try {
+              const applyRes  = await fetch('/api/sf/soundrop-sync/apply', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ requestUrl }),
+              });
+              const applyData = await applyRes.json();
+
+              if (!applyData.ok) {
+                resultDiv.insertAdjacentHTML('beforeend',
+                  `<p style="color:#f87171;font-size:13px;margin-top:8px">⚠ ${escHtml(applyData.error || '同期エラー')}</p>`);
+                applyBtn.disabled = false;
+                applyBtn.textContent = '同期する';
+                return;
+              }
+
+              const s = applyData.stats;
+              resultDiv.innerHTML = `<div style="padding:16px;background:#1e293b;border-radius:8px;border:1px solid #334155">
+                <p style="color:#34d399;font-size:14px;font-weight:600;margin:0 0 8px">✔ 同期完了</p>
+                <table style="font-size:12px;color:#94a3b8;border-collapse:collapse">
+                  <tr><td style="padding:2px 12px 2px 0">リリース更新</td><td>${s.releasesUpdated}件</td></tr>
+                  <tr><td style="padding:2px 12px 2px 0">リリース新規</td><td>${s.releasesInserted}件</td></tr>
+                  <tr><td style="padding:2px 12px 2px 0">トラック更新</td><td>${s.tracksUpdated}件</td></tr>
+                  <tr><td style="padding:2px 12px 2px 0">トラック新規</td><td>${s.tracksInserted}件</td></tr>
+                  <tr><td style="padding:2px 12px 2px 0">リレーション追加</td><td>${s.relationsAdded}件</td></tr>
+                  <tr><td style="padding:2px 12px 2px 0">順序更新</td><td>${s.relationsOrderUpdated}件</td></tr>
+                </table>
+              </div>`;
+            } catch (_e) {
+              resultDiv.insertAdjacentHTML('beforeend',
+                '<p style="color:#f87171;font-size:13px;margin-top:8px">⚠ 通信エラー</p>');
+              applyBtn.disabled = false;
+              applyBtn.textContent = '同期する';
+            }
+          });
+        }
+
+      } catch (_e) {
+        resultDiv.innerHTML = '<p style="color:#f87171;font-size:13px">⚠ 通信エラー。ネットワーク接続を確認してください。</p>';
+        checkBtn.disabled = false;
+        checkBtn.textContent = '差分を確認';
+      }
+    });
+  }
+
   // ─── モジュール起動 ────────────────────────────────────────────────────────
 
   /**
@@ -1754,7 +1949,7 @@ const SfModule = (() => {
     setState, setStatus, setCharState, setAllCharsState,
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
     loadFunnel, loadEventImpact, loadSync, loadHpAnalytics,
-    loadSoundropStats, initSoundropStats,
+    loadSoundropStats, initSoundropStats, loadSoundropSync,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,

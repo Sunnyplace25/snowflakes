@@ -338,6 +338,47 @@ function runMigrations(db) {
   } catch (_) {}
   try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_event_date ON sf_ga_event_daily(date)'); } catch (_) {}
   try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_event_name ON sf_ga_event_daily(event_name)'); } catch (_) {}
+
+  // Phase 16: Soundrop Catalog Sync — sf_releases / sf_tracks / sf_release_tracks カラム追加
+  // 既存レコードの id / status / title は一切変更しない。soundrop_* カラムのみ追加。
+  const SOUNDROP_CATALOG_MIGRATIONS = [
+    // sf_releases: Soundrop 識別子・同期メタデータ
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_release_id       INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_status           TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_artwork_file_id  TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_artwork_filename TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_label_name       TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_copyright_p      TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_copyright_c      TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_language_id      INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_primary_style_id   INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_secondary_style_id INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_sale_start_date  TEXT',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_is_locked        INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_is_canceled      INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_is_draft         INTEGER',
+    'ALTER TABLE sf_releases ADD COLUMN soundrop_synced_at        TEXT',
+    // sf_tracks: Soundrop 識別子
+    'ALTER TABLE sf_tracks ADD COLUMN soundrop_track_id        INTEGER',
+    'ALTER TABLE sf_tracks ADD COLUMN soundrop_is_locked       INTEGER',
+    'ALTER TABLE sf_tracks ADD COLUMN soundrop_is_fully_locked INTEGER',
+    'ALTER TABLE sf_tracks ADD COLUMN soundrop_is_canceled     INTEGER',
+    'ALTER TABLE sf_tracks ADD COLUMN soundrop_synced_at       TEXT',
+    // sf_release_tracks: Soundrop 配列順
+    'ALTER TABLE sf_release_tracks ADD COLUMN soundrop_source_order INTEGER',
+  ];
+  for (const sql of SOUNDROP_CATALOG_MIGRATIONS) {
+    try { db.exec(sql); } catch (_) { /* column already exists */ }
+  }
+  // Partial unique index: NULL は除外するため既存 NULL 行が複数あっても安全
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_releases_soundrop_id
+      ON sf_releases(soundrop_release_id) WHERE soundrop_release_id IS NOT NULL`);
+  } catch (_) {}
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sf_tracks_soundrop_id
+      ON sf_tracks(soundrop_track_id) WHERE soundrop_track_id IS NOT NULL`);
+  } catch (_) {}
 }
 
 /**
@@ -358,4 +399,30 @@ export function createDb(dbPath = DEFAULT_DB_PATH) {
   runMigrations(db);
 
   return db;
+}
+
+/**
+ * DB を読み取り専用モードで開く（dry-run 専用）。
+ * Migration は実行しない。PRAGMA query_only = ON でスキーマ・行の変更を禁止する。
+ * 使用前に isSoundropMigrationApplied() でカラム存在を確認すること。
+ *
+ * @param {string} [dbPath]
+ * @returns {import('node:sqlite').DatabaseSync}
+ */
+export function createDbReadOnly(dbPath = DEFAULT_DB_PATH) {
+  const db = new DatabaseSync(dbPath);
+  db.exec('PRAGMA query_only = ON');
+  return db;
+}
+
+/**
+ * Phase 16 Soundrop Catalog Sync migration が適用済みか確認する。
+ * soundrop_release_id カラムの存在を PRAGMA table_info で確認する（読み取りのみ）。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @returns {boolean}
+ */
+export function isSoundropMigrationApplied(db) {
+  const cols = db.prepare('PRAGMA table_info(sf_releases)').all();
+  return cols.some(c => c.name === 'soundrop_release_id');
 }
