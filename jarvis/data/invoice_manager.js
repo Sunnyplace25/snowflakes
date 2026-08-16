@@ -7,7 +7,159 @@
  *   - dry-run (dryRun=true) ではDBを書き換えない
  *   - 重複検出: invoice_number UNIQUE + (invoice_id, source_row) UNIQUE
  *   - 再インポート時: 新規/重複/スキップをカウントして返す
+ *   - 本番取込時は請求明細を work_records に自動反映する
  */
+
+import { addWorkRecord, updateWorkRecordFull } from './work_record_manager.js';
+
+// ─── 請求明細 → 仕事一覧 自動反映 ───────────────────────────────────────────
+
+function normalizeMatchText(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/[\s　]/g, '')
+    .replace(/[・･,，.。:：;；/\\()（）\[\]【】「」『』_-]/g, '');
+}
+
+function isDescriptionMatch(a, b) {
+  const na = normalizeMatchText(a);
+  const nb = normalizeMatchText(b);
+  if (!na || !nb) return false;
+  return na === nb || na.includes(nb) || nb.includes(na);
+}
+
+function invoiceCategoryToWorkType(category) {
+  if (category === 'スタジオ音声') return 'STUDIO';
+  if (category === 'ロケ') return 'ロケ';
+  if (String(category ?? '').includes('中継')) return '中継';
+  return null;
+}
+
+function emptyWorkSyncSummary() {
+  return { created: 0, matched: 0, skipped: 0, ambiguous: 0 };
+}
+
+function countWorkSync(summary, result) {
+  if (result.status === 'created') summary.created++;
+  else if (result.status === 'matched') summary.matched++;
+  else if (result.status === 'ambiguous') summary.ambiguous++;
+  else summary.skipped++;
+}
+
+/**
+ * 1請求明細を work_records と照合し、自動反映する。
+ *
+ * 照合順:
+ *  1. 同日・同額が1件なら既存仕事にリンク
+ *  2. 同日・仕事内容が一致するものが1件なら既存仕事にリンクし、請求額を確定値として反映
+ *  3. 候補が複数なら自動決定せず保留
+ *  4. 候補がなければ新規仕事を作成
+ *
+ * 既存仕事にリンクする場合、経費・労働時間など請求書に存在しない情報は変更しない。
+ */
+function syncInvoiceLineToWorkRecord(db, line, invoice) {
+  if (!line?.id || !line.work_date || line.amount == null) {
+    return { status: 'skipped', reason: '日付または金額なし' };
+  }
+
+  // 既にリンク済みなら二重反映しない。
+  if (line.job_id) {
+    const linked = db.prepare('SELECT id FROM work_records WHERE job_id = ?').get(line.job_id);
+    if (linked) return { status: 'matched', jobId: line.job_id, alreadyLinked: true };
+  }
+
+  // 別の請求明細にリンク済みの仕事は候補から除外。
+  const candidates = db.prepare(`
+    SELECT w.*
+    FROM work_records w
+    WHERE w.date = ?
+      AND w.category = '音声仕事'
+      AND NOT EXISTS (
+        SELECT 1
+        FROM business_invoice_lines l2
+        WHERE l2.job_id = w.job_id
+          AND l2.id <> ?
+      )
+    ORDER BY w.id
+  `).all(line.work_date, line.id);
+
+  const amount = Math.round(Number(line.amount));
+  const exactAmount = candidates.filter(w => Number(w.income) === amount);
+
+  let match = null;
+  if (exactAmount.length === 1) {
+    match = exactAmount[0];
+  } else if (exactAmount.length > 1) {
+    const textMatched = exactAmount.filter(w => isDescriptionMatch(w.content, line.description));
+    if (textMatched.length === 1) match = textMatched[0];
+    else return { status: 'ambiguous', reason: '同日・同額の候補が複数' };
+  } else {
+    const textMatched = candidates.filter(w => isDescriptionMatch(w.content, line.description));
+    if (textMatched.length === 1) match = textMatched[0];
+    else if (textMatched.length > 1) {
+      return { status: 'ambiguous', reason: '同日・同内容の候補が複数' };
+    }
+  }
+
+  if (match) {
+    // 請求額を確定値として収入へ反映。既存の経費・労働時間等は保持する。
+    updateWorkRecordFull(db, match.id, {
+      income: amount,
+      client: match.client || invoice.client_name || null,
+      content: match.content || line.description || null,
+      invoice_status: '請求済',
+      payment_status: match.payment_status === '入金済' ? '入金済' : '未入金',
+    });
+    db.prepare('UPDATE business_invoice_lines SET job_id = ? WHERE id = ?')
+      .run(match.job_id, line.id);
+    return { status: 'matched', jobId: match.job_id, workId: match.id };
+  }
+
+  try {
+    const { rowid, job_id } = addWorkRecord(db, {
+      date: line.work_date,
+      category: '音声仕事',
+      work_type: invoiceCategoryToWorkType(line.category),
+      content: line.description || null,
+      client: invoice.client_name || null,
+      income: amount,
+      expense: null,
+      work_hours: null,
+      travel_hours: null,
+      invoice_status: '請求済',
+      payment_status: '未入金',
+      memo: invoice.invoice_number
+        ? `請求書 ${invoice.invoice_number} から自動反映`
+        : '請求書から自動反映',
+    });
+    db.prepare('UPDATE business_invoice_lines SET job_id = ? WHERE id = ?')
+      .run(job_id, line.id);
+    return { status: 'created', jobId: job_id, workId: rowid };
+  } catch (e) {
+    // 完全休日など、JARVIS側の整合性ルールに触れる場合は請求書取込自体を失敗させず保留。
+    return { status: 'skipped', reason: e.message };
+  }
+}
+
+function syncInvoiceIdToWorkRecords(db, invoiceId, workSync) {
+  const invoice = db.prepare(`
+    SELECT id, client_name, invoice_number
+    FROM business_invoices
+    WHERE id = ?
+  `).get(invoiceId);
+  if (!invoice) return;
+
+  const lines = db.prepare(`
+    SELECT id, work_date, description, amount, category, job_id
+    FROM business_invoice_lines
+    WHERE invoice_id = ?
+    ORDER BY id
+  `).all(invoiceId);
+
+  for (const line of lines) {
+    countWorkSync(workSync, syncInvoiceLineToWorkRecord(db, line, invoice));
+  }
+}
 
 // ─── インポート実行 ────────────────────────────────────────────────────────────
 /**
@@ -19,7 +171,7 @@
  * @param {string}  opts.fileHash   - SHA-256ハッシュ
  * @param {Array}   opts.invoices   - parseExcel() の invoices
  * @param {boolean} [opts.dryRun=false] - true なら DB を書き換えない
- * @returns {{ newCount, dupCount, skipCount, warnCount, importId, invoiceResults }}
+ * @returns {{ newCount, dupCount, skipCount, warnCount, importId, invoiceResults, workSync }}
  */
 export function importInvoices(db, { filename, fileHash, invoices, dryRun = false }) {
   let newCount  = 0;
@@ -27,6 +179,7 @@ export function importInvoices(db, { filename, fileHash, invoices, dryRun = fals
   let skipCount = 0;
   let warnCount = 0;
   const invoiceResults = [];
+  const workSync = emptyWorkSyncSummary();
 
   // ─ dry-run は DB 操作なしで件数だけ計算
   if (dryRun) {
@@ -48,7 +201,7 @@ export function importInvoices(db, { filename, fileHash, invoices, dryRun = fals
         lineCount: inv.lines.length,
       });
     }
-    return { newCount, dupCount, skipCount, warnCount, importId: null, invoiceResults };
+    return { newCount, dupCount, skipCount, warnCount, importId: null, invoiceResults, workSync };
   }
 
   // ─ 本番インポート（手動トランザクション）
@@ -72,6 +225,8 @@ export function importInvoices(db, { filename, fileHash, invoices, dryRun = fals
 
       if (existInv) {
         dupCount++;
+        // 既に請求書自体が取込済みでも、未リンク明細を仕事一覧へ反映できる。
+        syncInvoiceIdToWorkRecords(db, existInv.id, workSync);
         invoiceResults.push({
           invoiceNumber: inv.invoiceNumber,
           status: 'duplicate',
@@ -132,6 +287,9 @@ export function importInvoices(db, { filename, fileHash, invoices, dryRun = fals
         }
       }
 
+      // 新規請求書の全明細を仕事一覧へ反映。
+      syncInvoiceIdToWorkRecords(db, invoiceId, workSync);
+
       newCount++;
       warnCount += (inv.lines.length - lineNew - lineDup > 0) ? 1 : 0;
       invoiceResults.push({
@@ -156,7 +314,7 @@ export function importInvoices(db, { filename, fileHash, invoices, dryRun = fals
     throw e;
   }
 
-  return { newCount, dupCount, skipCount, warnCount, importId, invoiceResults };
+  return { newCount, dupCount, skipCount, warnCount, importId, invoiceResults, workSync };
 }
 
 // ─── インポート履歴一覧 ───────────────────────────────────────────────────────
