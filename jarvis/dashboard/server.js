@@ -17,6 +17,18 @@ import { fileURLToPath } from 'url';
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
 import { createApiHandler } from './api.js';
 import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_work_backfill.js';
+import {
+  getNurseryShifts,
+  upsertNurseryShift,
+  updateNurseryShift,
+  deleteNurseryShift,
+} from '../data/nursery_shift_manager.js';
+import {
+  getInvoiceTemplateStatus,
+  saveInvoiceTemplate,
+  buildInvoicePreview,
+  generateInvoiceWorkbook,
+} from '../data/invoice_generator.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
@@ -47,12 +59,12 @@ function jsonRes(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
-function readSmallJsonBody(req) {
+function readJsonBody(req, maxBytes = 10_485_760) {
   return new Promise((resolveBody, reject) => {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
-      if (body.length > 65_536) reject(new Error('Request body too large'));
+      if (body.length > maxBytes) reject(new Error('Request body too large'));
     });
     req.on('end', () => {
       try { resolveBody(body ? JSON.parse(body) : {}); }
@@ -108,10 +120,9 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
 
   // ─── 既存請求書 → 仕事一覧 後追い同期 ────────────────────────────────────
-  // 大量の請求書を先に取り込んでいた場合でも、再アップロードせず同期できる。
   if (url.pathname === '/api/invoice/sync-work' && req.method === 'POST') {
     let body;
-    try { body = await readSmallJsonBody(req); }
+    try { body = await readJsonBody(req); }
     catch (e) { return jsonRes(res, 400, { ok: false, error: e.message }); }
 
     const year = body.year ? String(body.year) : null;
@@ -130,7 +141,6 @@ const server = createServer(async (req, res) => {
   }
 
   // ─── 仕事削除 ────────────────────────────────────────────────────────────
-  // 月次一覧から登録ミスを削除する。削除前にUI側で確認ダイアログを出す。
   const deleteWorkMatch = url.pathname.match(/^\/api\/work\/(\d+)$/);
   if (deleteWorkMatch && req.method === 'DELETE') {
     const id = Number(deleteWorkMatch[1]);
@@ -145,6 +155,91 @@ const server = createServer(async (req, res) => {
     } catch (e) {
       console.error('[delete work]', e.message);
       return jsonRes(res, 500, { ok: false, error: '削除に失敗しました' });
+    }
+  }
+
+  // ─── 保育園シフト ────────────────────────────────────────────────────────
+  if (url.pathname === '/api/nursery-shifts' && req.method === 'GET') {
+    const month = url.searchParams.get('month') || null;
+    try {
+      const shifts = getNurseryShifts(db, { month });
+      return jsonRes(res, 200, { ok: true, shifts });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/nursery-shift' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      const shift = upsertNurseryShift(db, body);
+      return jsonRes(res, 201, { ok: true, shift });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  const nurseryMatch = url.pathname.match(/^\/api\/nursery-shift\/(\d+)$/);
+  if (nurseryMatch && req.method === 'PUT') {
+    try {
+      const body = await readJsonBody(req);
+      const shift = updateNurseryShift(db, Number(nurseryMatch[1]), body);
+      if (!shift) return jsonRes(res, 404, { ok: false, error: 'シフトが見つかりません' });
+      return jsonRes(res, 200, { ok: true, shift });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (nurseryMatch && req.method === 'DELETE') {
+    try {
+      const shift = deleteNurseryShift(db, Number(nurseryMatch[1]));
+      if (!shift) return jsonRes(res, 404, { ok: false, error: 'シフトが見つかりません' });
+      return jsonRes(res, 200, { ok: true, deleted: shift });
+    } catch (e) {
+      return jsonRes(res, 500, { ok: false, error: e.message });
+    }
+  }
+
+  // ─── 請求書テンプレート・生成 ────────────────────────────────────────────
+  if (url.pathname === '/api/invoice/template-status' && req.method === 'GET') {
+    return jsonRes(res, 200, { ok: true, ...getInvoiceTemplateStatus() });
+  }
+
+  if (url.pathname === '/api/invoice/template' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      if (!body.data_b64) return jsonRes(res, 400, { ok: false, error: 'Excelファイルが必要です' });
+      const result = saveInvoiceTemplate(Buffer.from(body.data_b64, 'base64'));
+      return jsonRes(res, 200, { ok: true, ...result });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/invoice/generate-preview' && req.method === 'GET') {
+    try {
+      const month = url.searchParams.get('month');
+      const preview = buildInvoicePreview(db, month);
+      return jsonRes(res, 200, { ok: true, ...preview });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/invoice/generate' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      const result = generateInvoiceWorkbook(db, body);
+      res.writeHead(200, {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(result.filename)}`,
+        'Content-Length': result.buffer.length,
+        'Cache-Control': 'no-cache',
+      });
+      return res.end(result.buffer);
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
     }
   }
 
@@ -175,7 +270,6 @@ const server = createServer(async (req, res) => {
     let content = readFileSync(filePath);
 
     // Business の追加UIを index.html に注入する。
-    // 元HTMLの大規模変更を避けつつ、既存ローカル運用との互換性を保つ。
     if (relativePath === '/index.html') {
       let html = content.toString('utf8');
 
