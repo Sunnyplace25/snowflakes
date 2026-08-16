@@ -10,6 +10,7 @@
 (function () {
   const OTEC_DEFAULT = 'オーテック';
   const OTEC_TAX_RATE = 0.10;
+  const OTEC_WITHHOLD_RATE = 0.1021;
   const CONTENT_MONTH_LOOKBACK = 12;
   const COMMON_INCOMES = [26500, 25000, 17500, 14500, 13000];
   const COMMON_TRAVEL_COSTS = [500];
@@ -26,6 +27,15 @@
     const base = Number(value || 0);
     const tax = Math.round(base * OTEC_TAX_RATE);
     return { base, tax, total: base + tax };
+  }
+
+  function calcWithholding(baseValue) {
+    const base = Number(baseValue || 0);
+    if (base <= 0) return 0;
+    // 報酬と消費税を明確に分けた請求を前提に、源泉は税抜報酬額に対して計算。
+    // 100万円以下: 10.21%、100万円超: 超過分20.42% + 102,100円。1円未満切捨て。
+    if (base <= 1_000_000) return Math.floor(base * OTEC_WITHHOLD_RATE);
+    return Math.floor((base - 1_000_000) * 0.2042 + 102_100);
   }
 
   function previousMonth(ym) {
@@ -257,18 +267,20 @@
 
       const billing = addOtecTax(billingBase);
       const payment = addOtecTax(paymentBase);
+      const withholding = calcWithholding(paymentBase);
+      const paymentNet = payment.total - withholding;
 
       const billingLabel = invoiceCard.closest('.card')?.querySelector('.card-label');
       const paymentLabel = paymentCard.closest('.card')?.querySelector('.card-label');
       if (billingLabel) billingLabel.textContent = 'オーテック 当月請求額（税込10%）';
-      if (paymentLabel) paymentLabel.textContent = '当月入金予定（税込・前月分）';
+      if (paymentLabel) paymentLabel.textContent = '当月入金予定（源泉控除後・前月分）';
 
       const billingText = formatYen(billing.total);
-      const paymentText = formatYen(payment.total);
+      const paymentText = formatYen(paymentNet);
       if (invoiceCard.textContent !== billingText) invoiceCard.textContent = billingText;
       if (paymentCard.textContent !== paymentText) paymentCard.textContent = paymentText;
       invoiceCard.title = `税抜 ${formatYen(billing.base)} + 消費税 ${formatYen(billing.tax)}`;
-      paymentCard.title = `税抜 ${formatYen(payment.base)} + 消費税 ${formatYen(payment.tax)}`;
+      paymentCard.title = `税抜 ${formatYen(payment.base)} + 消費税 ${formatYen(payment.tax)} - 源泉徴収 ${formatYen(withholding)}`;
       invoiceCard.className = 'card-value green';
       paymentCard.className = 'card-value accent';
     } catch (_) {
