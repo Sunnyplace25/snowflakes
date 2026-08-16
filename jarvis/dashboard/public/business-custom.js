@@ -2,7 +2,7 @@
  * Business UI adjustments
  * - Per-job invoice/payment status is hidden from the monthly workflow.
  * - Otec billing is shown as monthly totals (month-end close / next-month-end payment).
- * - Client and work-content inputs remain free text with selectable suggestions.
+ * - Client, work-content, and income inputs remain directly editable with selectable suggestions.
  * - Adds a reliable Graph shortcut to the Business tabs.
  */
 'use strict';
@@ -10,6 +10,7 @@
 (function () {
   const OTEC_DEFAULT = 'オーテック';
   const CONTENT_MONTH_LOOKBACK = 12;
+  const COMMON_INCOMES = [26500, 25000, 17500, 14500, 13000];
 
   function isOtec(client) {
     return String(client ?? '').includes('オーテック');
@@ -56,9 +57,33 @@
     const addClient = document.getElementById('work-client');
     if (addButton && addClient) {
       addButton.addEventListener('click', () => {
-        // 新規登録はほぼオーテックのため毎回初期値を入れる。別会社はそのまま上書き可能。
         addClient.value = OTEC_DEFAULT;
       });
+    }
+  }
+
+  function setupIncomeInputs() {
+    let datalist = document.getElementById('income-suggestions');
+    if (!datalist) {
+      datalist = document.createElement('datalist');
+      datalist.id = 'income-suggestions';
+      COMMON_INCOMES.forEach(value => {
+        const option = document.createElement('option');
+        option.value = String(value);
+        option.label = `${value.toLocaleString('ja-JP')}円`;
+        datalist.appendChild(option);
+      });
+      document.body.appendChild(datalist);
+    }
+
+    for (const id of ['work-income', 'edit-work-income']) {
+      const input = document.getElementById(id);
+      if (!input) continue;
+      input.setAttribute('list', 'income-suggestions');
+      input.setAttribute('autocomplete', 'off');
+      input.placeholder = '候補から選択、または直接入力';
+      const label = document.querySelector(`label[for="${id}"]`);
+      if (label) label.textContent = '収入（選択 / 直接入力）';
     }
   }
 
@@ -80,8 +105,6 @@
       if (label) label.textContent = '仕事内容（選択 / 直接入力）';
     }
 
-    // 直近12か月の入力履歴から、よく使う仕事内容を候補化する。
-    // 固定リストにしないので、新しく入力した仕事内容も次回以降候補になる。
     const baseMonth = (typeof currentMonth !== 'undefined' && /^\d{4}-\d{2}$/.test(currentMonth))
       ? currentMonth
       : (() => {
@@ -132,12 +155,10 @@
   }
 
   function hidePerJobBillingStatus() {
-    // 仕事一覧の「請求 / 入金」列は月単位管理へ移行したため非表示。
     document.querySelectorAll('.works-table .col-status').forEach(el => {
       el.style.display = 'none';
     });
 
-    // 登録・編集モーダルの個別ステータスも非表示。DB互換のため項目自体は残す。
     for (const id of ['work-invoice', 'work-payment', 'edit-work-invoice', 'edit-work-payment']) {
       const el = document.getElementById(id);
       const group = el?.closest('.form-group');
@@ -221,6 +242,7 @@
 
   function init() {
     setupClientInputs();
+    setupIncomeInputs();
     setupContentInputs();
     hidePerJobBillingStatus();
     ensureGraphTab();
