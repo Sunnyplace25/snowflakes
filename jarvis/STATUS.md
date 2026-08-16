@@ -1,5 +1,12 @@
 # Snow flakes JARVIS - 進捗管理
 
+## 現在地
+
+**最新到達点：Phase 16 Soundrop Catalog Auto Sync 完了**
+commit: `5f85052` / branch: `jarvis-development`
+
+---
+
 ## 現在のブランチ
 
 ```
@@ -32,7 +39,10 @@ jarvis-development
 | Safe REVISING Recovery | recovery_manager.js（新規） / task_manager.js / tests/test_recovery.js | ✅ 完了 | `6d8264f` |
 | Top-level Task Runner | orchestrator/task_runner.js（新規） / run_task.js（新規） / tests/test_task_runner.js（新規） / package.json | ✅ 完了 | `8a33d8a` |
 | Final Integration Test | file_executor.js / test_runner.js（不具合修正） / tests/test_final_integration.js（新規） / STATUS.md | ✅ 完了 | `87cadd7` |
-| Phase 15 HP Analytics Dashboard | dashboard/api.js（/api/sf/ga/overview追加）/ index.html / sf.js / style.css / tests/test_hp_analytics.js | 🔄 実装・テスト完了・未commit |
+| Phase 15 HP Analytics Dashboard | dashboard/api.js（/api/sf/ga/overview追加）/ index.html / sf.js / style.css / tests/test_hp_analytics.js | ✅ 完了 | `7f6f374` |
+| GA4 Data Sync | GA4 Data APIからのデータ取得・JARVIS DB同期 | ✅ 完了 | `1ceeb09` |
+| Soundrop Stats / Track Catalog | Soundrop統計表示・トラックカタログツール | ✅ 完了 | `f4b2756` |
+| Phase 16 Soundrop Catalog Auto Sync | Soundrop catalog DB migration / API取得 / normalizer / diff / writer / sync / CLI / Dashboard同期タブ / dry-run / apply / バックアップ / 22 tests | ✅ 完了 | `5f85052` |
 
 ---
 
@@ -58,6 +68,10 @@ jarvis-development
 - Safe REVISING Recovery: `6d8264f feat(jarvis): add safe revising recovery`
 - Top-level Task Runner: `8a33d8a feat(jarvis): add top-level task runner`
 - Final Integration Test: `87cadd7 fix(jarvis): complete final integration flow`
+- Phase 15 HP Analytics Dashboard: `7f6f374 feat(jarvis): add Phase 15 HP Analytics Dashboard + fix Phase 11 event catalog`
+- GA4 Data Sync: `1ceeb09 feat: add GA4 data sync`
+- Soundrop Stats / Track Catalog: `f4b2756 feat: add Soundrop stats and track catalog tools`
+- Phase 16 Soundrop Catalog Auto Sync: `5f85052 feat: add Soundrop catalog auto sync`
 
 ---
 
@@ -309,6 +323,10 @@ Phase 11 site event tracking 基盤を JARVIS Dashboard 上で確認できるよ
 | Phase 12 | X Analytics（X Analytics CSV インポーター / DB 3テーブル / API 4エンドポイント / テスト79件） | ✅ 完了（2026-08-14） |
 | Phase 13 | KDP Analytics（KDP レポートインポーター / DB 7テーブル / API 7エンドポイント / テスト110件） | ✅ 完了（2026-08-14） |
 | Phase 14 | note Workflow（記事企画・下書き・投稿管理 / DB 1テーブル / API 8エンドポイント / Export 3形式 / テスト84件） | ✅ 完了（2026-08-14） |
+| Phase 15 | HP Analytics Dashboard（GA4概要API / Dashboard HPタブ / テスト76件）| ✅ 完了（2026-08-15） |
+| GA4 Data Sync | GA4 Data APIからのデータ取得・JARVIS DB同期 | ✅ 完了 |
+| Soundrop Stats / Track Catalog | Soundrop統計表示・トラックカタログツール | ✅ 完了 |
+| Phase 16 | Soundrop Catalog Auto Sync（DB migration / API取得 / normalizer / diff / writer / CLI / Dashboard同期タブ / dry-run / apply / バックアップ / 22 tests） | ✅ 完了（2026-08-16） |
 
 ---
 
