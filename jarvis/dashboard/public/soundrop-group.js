@@ -7,6 +7,97 @@
     { tab: 'soundrop-sync', label: 'カタログ同期' },
   ];
 
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const value = String(reader.result || '');
+        resolve(value.includes(',') ? value.split(',').pop() : value);
+      };
+      reader.onerror = () => reject(reader.error || new Error('ファイルを読み込めませんでした'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function addUploadUi(panel, refreshImport) {
+    if (!panel || document.getElementById('soundrop-upload-card')) return;
+
+    const card = document.createElement('section');
+    card.id = 'soundrop-upload-card';
+    card.className = 'sf-section';
+    card.innerHTML = `
+      <div class="sf-section-header">
+        <h2>Soundrop 明細を取り込む</h2>
+        <span class="sf-note">Soundropからダウンロードした CSV / TSV をそのまま選択</span>
+      </div>
+      <div class="soundrop-upload-box" id="soundrop-upload-box">
+        <div class="soundrop-upload-title">CSVファイルを選択</div>
+        <div class="soundrop-upload-note">クリックして Soundrop の明細ファイルを選んでください</div>
+        <input id="soundrop-upload-input" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+      </div>
+      <div class="soundrop-upload-row">
+        <label>ステートメント月（任意）
+          <input id="soundrop-report-period" type="month">
+        </label>
+        <button id="soundrop-import-btn" class="sf-btn" type="button" disabled>取り込む</button>
+        <span id="soundrop-upload-status"></span>
+      </div>
+    `;
+
+    const firstSection = panel.querySelector('.sf-section');
+    if (firstSection) firstSection.before(card);
+    else panel.appendChild(card);
+
+    const box = card.querySelector('#soundrop-upload-box');
+    const input = card.querySelector('#soundrop-upload-input');
+    const button = card.querySelector('#soundrop-import-btn');
+    const status = card.querySelector('#soundrop-upload-status');
+    let selectedFile = null;
+
+    box.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => {
+      selectedFile = input.files?.[0] || null;
+      button.disabled = !selectedFile;
+      if (selectedFile) {
+        box.querySelector('.soundrop-upload-title').textContent = selectedFile.name;
+        box.querySelector('.soundrop-upload-note').textContent = `${(selectedFile.size / 1024).toFixed(1)} KB`;
+        status.textContent = '';
+      }
+    });
+
+    button.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      button.disabled = true;
+      status.textContent = '取り込み中...';
+      status.className = '';
+
+      try {
+        const data_b64 = await fileToBase64(selectedFile);
+        const reportPeriod = card.querySelector('#soundrop-report-period').value || null;
+        const res = await fetch('/api/soundrop/import-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file_name: selectedFile.name,
+            data_b64,
+            report_period: reportPeriod,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || '取り込みに失敗しました');
+
+        status.textContent = `完了：${data.rowCount}行 / マッチ ${data.matchedCount} / 未マッチ ${data.unmatchedCount}`;
+        status.className = 'soundrop-upload-ok';
+        refreshImport();
+      } catch (e) {
+        status.textContent = `エラー：${e.message}`;
+        status.className = 'soundrop-upload-error';
+      } finally {
+        button.disabled = !selectedFile;
+      }
+    });
+  }
+
   function init() {
     const module = document.getElementById('module-sf');
     if (!module || document.getElementById('sf-soundrop-group-tab')) return;
@@ -63,6 +154,36 @@
         border-color:#3b82f6;
         background:#1d4ed8;
       }
+      .soundrop-upload-box {
+        border:2px dashed #334155;
+        border-radius:8px;
+        padding:26px;
+        text-align:center;
+        cursor:pointer;
+        background:#0f172a;
+        transition:border-color .2s;
+      }
+      .soundrop-upload-box:hover { border-color:#3b82f6; }
+      .soundrop-upload-title { color:#e2e8f0; font-size:14px; font-weight:600; }
+      .soundrop-upload-note { color:#64748b; font-size:12px; margin-top:6px; }
+      .soundrop-upload-row {
+        display:flex;
+        gap:12px;
+        align-items:end;
+        flex-wrap:wrap;
+        margin-top:14px;
+      }
+      .soundrop-upload-row label { color:#94a3b8; font-size:12px; display:grid; gap:5px; }
+      .soundrop-upload-row input[type="month"] {
+        background:#1e293b;
+        border:1px solid #334155;
+        color:#e2e8f0;
+        border-radius:5px;
+        padding:7px 9px;
+      }
+      #soundrop-upload-status { color:#94a3b8; font-size:12px; padding-bottom:7px; }
+      #soundrop-upload-status.soundrop-upload-ok { color:#22c55e; }
+      #soundrop-upload-status.soundrop-upload-error { color:#ef4444; }
     `;
     document.head.appendChild(style);
 
@@ -92,20 +213,19 @@
     function openSub(tab) {
       const target = originals.get(tab);
       if (!target) return;
-
-      // 既存の SfModule のタブ処理をそのまま利用し、データ読込も従来どおり実行する。
       target.btn.click();
       target.btn.classList.remove('active');
       parent.classList.add('active');
       setSubActive(tab);
     }
 
+    addUploadUi(originals.get('import').panel, () => openSub('import'));
+
     parent.addEventListener('click', () => {
       const visible = ITEMS.find(item => !originals.get(item.tab).panel.hidden);
       openSub(visible?.tab || 'import');
     });
 
-    // 既存の3タブのどれかが外部処理から開かれた場合も、親タブ表示を同期する。
     originals.forEach(({ btn }, tab) => {
       btn.addEventListener('click', () => {
         queueMicrotask(() => {
