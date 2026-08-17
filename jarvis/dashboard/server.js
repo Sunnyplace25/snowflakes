@@ -10,12 +10,13 @@
  */
 
 import { createServer } from 'http';
-import { readFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
 import { resolve, extname, dirname, sep, basename } from 'path';
 import { fileURLToPath } from 'url';
 
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
 import { createApiHandler } from './api.js';
+import { importFile as importSoundropFile } from '../importers/soundrop.js';
 import { syncAllInvoiceLinesToWorkRecords } from '../data/invoice_work_backfill.js';
 import {
   getNurseryShifts,
@@ -37,6 +38,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
 const BACKUP_DIR = resolve(__dirname, '../backups');
+const SOUNDROP_IMPORT_DIR = resolve(__dirname, '../imports/soundrop');
 const PORT = 3000;
 const HOST = '127.0.0.1';
 
@@ -116,6 +118,42 @@ const server = createServer(async (req, res) => {
   res.setHeader('X-Frame-Options', 'DENY');
 
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
+
+  if (url.pathname === '/api/soundrop/import-upload' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req, 14_000_000);
+      if (!body.data_b64 || !body.file_name) {
+        return jsonRes(res, 400, { ok: false, error: 'Soundrop CSVファイルが必要です' });
+      }
+
+      const originalName = basename(String(body.file_name));
+      const extension = extname(originalName).toLowerCase();
+      if (!['.csv', '.tsv'].includes(extension)) {
+        return jsonRes(res, 400, { ok: false, error: 'CSV または TSV ファイルを選択してください' });
+      }
+
+      const safeName = originalName.replace(/[^0-9A-Za-z._-]/g, '_');
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      mkdirSync(SOUNDROP_IMPORT_DIR, { recursive: true });
+      const savedPath = resolve(SOUNDROP_IMPORT_DIR, `${stamp}_${safeName}`);
+      writeFileSync(savedPath, Buffer.from(body.data_b64, 'base64'));
+
+      const result = await importSoundropFile(db, savedPath, {
+        distributor: 'soundrop',
+        report_period: body.report_period || null,
+        delimiter: extension === '.tsv' ? '\t' : ',',
+      });
+
+      return jsonRes(res, 200, {
+        ok: true,
+        file_name: originalName,
+        ...result,
+      });
+    } catch (e) {
+      console.error('[soundrop import-upload]', e.message);
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
 
   if (url.pathname === '/api/invoice/sync-work' && req.method === 'POST') {
     let body;
