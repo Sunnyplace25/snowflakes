@@ -1,6 +1,7 @@
 /**
  * 保育園 給与明細入力。
  * 過去月は日々のシフトを再入力せず、給与明細の月次実績をそのまま保存できる。
+ * PDFはAIで読み取り、項目へ反映後にユーザー確認で保存する。
  */
 'use strict';
 
@@ -17,6 +18,22 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
+  function setField(id, value) {
+    if (value == null || value === '') return;
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunk = 8192;
+    for (let i = 0; i < bytes.length; i += chunk) {
+      binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+    }
+    return btoa(binary);
+  }
+
   function ensureUi() {
     const panel = document.getElementById('biz-tab-nursery');
     if (!panel || document.getElementById('nursery-payslip-section')) return;
@@ -27,10 +44,14 @@
     section.innerHTML = `
       <div class="section-header">
         <h2>給与明細</h2>
-        <span class="sf-note">過去月はシフト入力なしで実績を保存</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-secondary" id="payslip-pdf-btn">PDFを取り込む</button>
+          <input type="file" id="payslip-pdf-file" accept="application/pdf,.pdf" hidden>
+          <span class="sf-note">過去月はシフト入力なしで実績を保存</span>
+        </div>
       </div>
       <div class="business-muted-note" style="margin-bottom:12px">
-        給与明細に書いてある数字をそのまま入れればOKです。全部埋めなくても、分かる項目だけ保存できます。
+        PDFを選ぶと明細の数字を読み取って下の欄へ入れます。内容を確認してから「この月の明細を保存」を押してください。
       </div>
       <div class="business-form-inline" style="align-items:end">
         <div class="form-group"><label for="payslip-month">対象月</label><input id="payslip-month" type="month"></div>
@@ -46,7 +67,7 @@
         <div class="form-group"><label for="payslip-deductions">控除合計</label><input id="payslip-deductions" type="number" min="0" step="1"></div>
         <button class="btn btn-primary" id="payslip-save">この月の明細を保存</button>
       </div>
-      <div class="form-group" style="margin-top:10px"><label for="payslip-memo">メモ</label><input id="payslip-memo" type="text" placeholder="例：給与明細から入力"></div>
+      <div class="form-group" style="margin-top:10px"><label for="payslip-memo">メモ</label><input id="payslip-memo" type="text" placeholder="例：給与明細PDFから入力"></div>
       <div id="payslip-status" class="business-muted-note" style="margin-top:8px"></div>
       <div id="payslip-history" style="margin-top:16px"></div>`;
 
@@ -57,8 +78,46 @@
     document.getElementById('payslip-month').value = monthValue();
     document.getElementById('payslip-month').addEventListener('change', loadSelectedMonth);
     document.getElementById('payslip-save').addEventListener('click', savePayslip);
+    document.getElementById('payslip-pdf-btn').addEventListener('click', () => document.getElementById('payslip-pdf-file').click());
+    document.getElementById('payslip-pdf-file').addEventListener('change', importPdf);
     loadSelectedMonth();
     loadHistory();
+  }
+
+  async function importPdf(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const status = document.getElementById('payslip-status');
+    const button = document.getElementById('payslip-pdf-btn');
+    button.disabled = true;
+    status.textContent = 'PDFを読み取り中...';
+    try {
+      const buffer = await file.arrayBuffer();
+      const response = await fetch('/api/nursery-payslip/import-pdf', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ filename:file.name, data_b64:arrayBufferToBase64(buffer) }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'PDFの読取に失敗しました');
+      const p = data.payslip || {};
+      setField('payslip-month', p.month);
+      setField('payslip-hourly', p.hourly_rate);
+      setField('payslip-hours', p.worked_hours);
+      setField('payslip-leave-used', p.paid_leave_used);
+      setField('payslip-leave-balance', p.paid_leave_balance);
+      setField('payslip-gross', p.gross_pay);
+      setField('payslip-net', p.net_pay);
+      setField('payslip-transport', p.transport_pay);
+      setField('payslip-deductions', p.deductions);
+      setField('payslip-memo', p.memo || `PDF取込: ${file.name}`);
+      status.textContent = 'PDFから読み取りました。数字を確認してから保存してください。';
+    } catch (e) {
+      status.textContent = 'PDF読取エラー: ' + e.message;
+    } finally {
+      button.disabled = false;
+      event.target.value = '';
+    }
   }
 
   async function loadSelectedMonth() {
