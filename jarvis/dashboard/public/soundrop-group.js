@@ -2,8 +2,8 @@
   'use strict';
 
   const ITEMS = [
-    { tab: 'import', label: '明細取込' },
     { tab: 'soundrop-stats', label: '収益・統計' },
+    { tab: 'import', label: '明細取込' },
     { tab: 'soundrop-sync', label: 'カタログ同期' },
   ];
 
@@ -223,7 +223,7 @@
 
     parent.addEventListener('click', () => {
       const visible = ITEMS.find(item => !originals.get(item.tab).panel.hidden);
-      openSub(visible?.tab || 'import');
+      openSub(visible?.tab || 'soundrop-stats');
     });
 
     originals.forEach(({ btn }, tab) => {
