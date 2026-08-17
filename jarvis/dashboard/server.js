@@ -195,7 +195,6 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // ─── 保育園 給与明細 ────────────────────────────────────────────────────
   if (url.pathname === '/api/nursery-payslips' && req.method === 'GET') {
     const month = url.searchParams.get('month') || null;
     try {
@@ -301,6 +300,11 @@ const server = createServer(async (req, res) => {
       const nurseryScript = '<script src="business-nursery-tab.js"></script>';
       if (!html.includes('business-nursery-tab.js')) {
         html = html.replace('</body>', `${nurseryScript}\n</body>`);
+      }
+
+      const nurseryPayslipScript = '<script src="business-nursery-payslip.js"></script>';
+      if (!html.includes('business-nursery-payslip.js')) {
+        html = html.replace('</body>', `${nurseryPayslipScript}\n</body>`);
       }
 
       const merchScript = '<script src="business-merch.js"></script>';
