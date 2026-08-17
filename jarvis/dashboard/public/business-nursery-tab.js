@@ -4,6 +4,7 @@
  * - 日付から曜日を自動表示
  * - 曜日テンプレート + 1か月分の一括入力
  * - 手動変更を未保存表示し、固定ボタンから一括保存
+ * - 一括入力を基本導線にするため単独の「シフトを登録」ボタンは表示しない
  */
 'use strict';
 
@@ -18,7 +19,7 @@
   ];
 
   const esc = value => String(value ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
 
   function monthValue() {
     if (typeof currentMonth !== 'undefined' && /^\d{4}-\d{2}$/.test(currentMonth)) return currentMonth;
@@ -54,6 +55,10 @@
       if (PRESETS.some(p => p.value === key)) return key;
     }
     return '';
+  }
+
+  function removeSingleRegisterButton() {
+    document.getElementById('add-nursery-shift-btn')?.remove();
   }
 
   function ensureStyles() {
@@ -100,6 +105,7 @@
 
     const section = document.getElementById('nursery-shift-section');
     if (section && section.parentNode !== panel) panel.appendChild(section);
+    removeSingleRegisterButton();
 
     if (!button.dataset.bound) {
       button.dataset.bound = '1';
@@ -108,6 +114,7 @@
         panel.hidden = false;
         document.querySelectorAll('#business-tabs .sf-tab').forEach(b => b.classList.remove('active'));
         button.classList.add('active');
+        removeSingleRegisterButton();
         renderBulkPanel();
         formatNurseryDates();
       });
@@ -290,9 +297,13 @@
     ensureStyles();
     ensureTabAndPanel();
     ensureBulkUi();
+    removeSingleRegisterButton();
     formatNurseryDates();
     const container = document.getElementById('nursery-shift-container');
-    if (container) new MutationObserver(formatNurseryDates).observe(container, { childList:true, subtree:true });
+    if (container) new MutationObserver(() => {
+      removeSingleRegisterButton();
+      formatNurseryDates();
+    }).observe(container, { childList:true, subtree:true });
     ['prev-month','next-month'].forEach(id => document.getElementById(id)?.addEventListener('click', () => setTimeout(renderBulkPanel, 80)));
   }
 
