@@ -210,13 +210,34 @@
       });
     }
 
+    function showPanelImmediately(tab) {
+      const target = originals.get(tab);
+      if (!target) return;
+
+      module.querySelectorAll('.sf-tab-panel').forEach(panel => {
+        panel.hidden = true;
+      });
+      target.panel.hidden = false;
+
+      topNav.querySelectorAll('.sf-tab').forEach(b => b.classList.remove('active'));
+      parent.classList.add('active');
+      setSubActive(tab);
+    }
+
     function openSub(tab) {
       const target = originals.get(tab);
       if (!target) return;
-      target.btn.click();
-      target.btn.classList.remove('active');
-      parent.classList.add('active');
-      setSubActive(tab);
+
+      // まず画面だけ即時切替。重いデータ取得は描画後に既存処理へ渡す。
+      showPanelImmediately(tab);
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          target.btn.click();
+          target.btn.classList.remove('active');
+          parent.classList.add('active');
+          setSubActive(tab);
+        }, 0);
+      });
     }
 
     addUploadUi(originals.get('import').panel, () => openSub('import'));
