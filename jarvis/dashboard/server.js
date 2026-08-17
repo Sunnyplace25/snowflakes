@@ -324,6 +324,11 @@ const server = createServer(async (req, res) => {
         html = html.replace('</body>', `${merchScript}\n</body>`);
       }
 
+      const soundropGroupScript = '<script src="soundrop-group.js"></script>';
+      if (!html.includes('soundrop-group.js')) {
+        html = html.replace('</body>', `${soundropGroupScript}\n</body>`);
+      }
+
       content = Buffer.from(html, 'utf8');
     }
 
