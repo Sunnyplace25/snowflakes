@@ -280,6 +280,11 @@ const server = createServer(async (req, res) => {
         html = html.replace('</body>', `${customScript}\n</body>`);
       }
 
+      const nurseryScript = '<script src="business-nursery-tab.js"></script>';
+      if (!html.includes('business-nursery-tab.js')) {
+        html = html.replace('</body>', `${nurseryScript}\n</body>`);
+      }
+
       const merchScript = '<script src="business-merch.js"></script>';
       if (!html.includes('business-merch.js')) {
         html = html.replace('</body>', `${merchScript}\n</body>`);
