@@ -3,6 +3,12 @@
  *
  * ユーザーが設定した既存 Excel テンプレートを使い、月次のオーテック仕事から
  * 請求書 .xlsx を作成する。テンプレート・生成物は git 管理しない。
+ *
+ * 2026 オーテック実テンプレート基準：
+ * - ★請求書マスター を優先
+ * - 明細は 17〜36 行（最大20件）
+ * - 日付 B / 内容 C / 数量 H / 単位 I / 単価 J / 金額 L
+ * - 小計 L38 / 消費税 L39 / 合計 L40 / 支払期限 D46
  */
 'use strict';
 
@@ -18,6 +24,7 @@ const JARVIS_DIR = resolve(__dirname, '..');
 const TEMPLATE_DIR = resolve(JARVIS_DIR, 'imports', 'invoices');
 const TEMPLATE_PATH = resolve(TEMPLATE_DIR, 'invoice_template.xlsx');
 const EXPORT_DIR = resolve(JARVIS_DIR, 'exports', 'invoices');
+const MAX_ROWS = 20;
 
 function ensureGenerationTable(db) {
   db.exec(`
@@ -62,55 +69,56 @@ function monthDay(isoDate) {
 }
 
 function invoiceDescription(work) {
-  const content = String(work.content ?? '').trim() || String(work.work_type ?? '').trim() || '音声技術費';
-  const md = monthDay(work.date);
-  const hasDate = /\d{1,2}\s*[\/／]\s*\d{1,2}/.test(content);
-  return hasDate ? content : `${content}　${md}`;
+  return String(work.content ?? '').trim()
+    || String(work.work_type ?? '').trim()
+    || '音声業務';
 }
 
-function nextInvoiceNumber(db, month) {
-  ensureGenerationTable(db);
-  const year = month.slice(0, 4);
-  let maxSeq = 0;
-  const numbers = [];
-
-  try {
-    numbers.push(...db.prepare(`
-      SELECT invoice_number FROM business_invoices
-      WHERE invoice_number LIKE ?
-    `).all(`${year}%`).map(r => r.invoice_number));
-  } catch (_) {}
-
-  numbers.push(...db.prepare(`
-    SELECT invoice_number FROM business_generated_invoices
-    WHERE invoice_number LIKE ?
-  `).all(`${year}%`).map(r => r.invoice_number));
-
-  for (const value of numbers) {
-    const m = String(value ?? '').match(/-(\d+)$/);
-    if (m) maxSeq = Math.max(maxSeq, Number(m[1]) || 0);
+function quantityAndUnit(work) {
+  const hours = Number(work.work_hours || work.hours || 0);
+  if (Number.isFinite(hours) && hours > 0) {
+    return { quantity: hours, unit: '時間' };
   }
-  return `${month.replace('-', '')}-${String(maxSeq + 1).padStart(3, '0')}`;
+  return { quantity: 1, unit: '日' };
+}
+
+function defaultInvoiceNumber(month) {
+  const [year, mon] = month.split('-');
+  return `${year}‐${mon}`;
+}
+
+function selectTemplateSheetName(workbook) {
+  if (workbook.SheetNames.includes('★請求書マスター')) return '★請求書マスター';
+  const master = workbook.SheetNames.find(name => name.includes('請求書') && name.includes('マスター'));
+  if (master) return master;
+  return workbook.SheetNames.find(name => name.includes('請求書')) || null;
 }
 
 export function getInvoiceTemplateStatus() {
+  let sourceSheet = null;
+  if (existsSync(TEMPLATE_PATH)) {
+    try {
+      const wb = XLSX.read(readFileSync(TEMPLATE_PATH), { type: 'buffer', cellStyles: true, cellDates: true });
+      sourceSheet = selectTemplateSheetName(wb);
+    } catch (_) {}
+  }
   return {
     configured: existsSync(TEMPLATE_PATH),
     path: TEMPLATE_PATH,
     filename: existsSync(TEMPLATE_PATH) ? basename(TEMPLATE_PATH) : null,
+    sourceSheet,
   };
 }
 
 export function saveInvoiceTemplate(buffer) {
   if (!Buffer.isBuffer(buffer) || buffer.length === 0) throw new Error('テンプレートが空です');
-  // 読める Excel かを先に確認する。
   const wb = XLSX.read(buffer, { type: 'buffer', cellStyles: true, cellDates: true });
-  const invoiceSheets = wb.SheetNames.filter(name => name.includes('請求書'));
-  if (invoiceSheets.length === 0) throw new Error('「請求書」シートが見つかりません');
+  const sourceSheet = selectTemplateSheetName(wb);
+  if (!sourceSheet) throw new Error('「請求書」シートが見つかりません');
 
   mkdirSync(TEMPLATE_DIR, { recursive: true });
   writeFileSync(TEMPLATE_PATH, buffer);
-  return { ...getInvoiceTemplateStatus(), sourceSheet: invoiceSheets[0] };
+  return { ...getInvoiceTemplateStatus(), sourceSheet };
 }
 
 export function buildInvoicePreview(db, month) {
@@ -123,16 +131,20 @@ export function buildInvoicePreview(db, month) {
     ORDER BY date, id
   `).all(`${month}%`).filter(w => isOtec(w.client) && Number(w.income || 0) > 0);
 
-  const rows = works.map((work, index) => ({
-    no: index + 1,
-    work_id: work.id,
-    date: work.date,
-    description: invoiceDescription(work),
-    quantity: 1,
-    unit: '日',
-    unit_price: Number(work.income || 0),
-    amount: Number(work.income || 0),
-  }));
+  const rows = works.map((work, index) => {
+    const qu = quantityAndUnit(work);
+    return {
+      no: index + 1,
+      work_id: work.id,
+      date: work.date,
+      date_label: monthDay(work.date),
+      description: invoiceDescription(work),
+      quantity: qu.quantity,
+      unit: qu.unit,
+      unit_price: Number(work.income || 0),
+      amount: Number(work.income || 0),
+    };
+  });
 
   const subtotal = rows.reduce((sum, row) => sum + row.amount, 0);
   const tax = Math.round(subtotal * 0.10);
@@ -148,7 +160,7 @@ export function buildInvoicePreview(db, month) {
   return {
     month,
     client: '株式会社　オーテック',
-    invoice_number: prior?.invoice_number || nextInvoiceNumber(db, month),
+    invoice_number: prior?.invoice_number || defaultInvoiceNumber(month),
     invoice_date: prior?.invoice_date || lastDayOfMonth(month, 0),
     due_date: prior?.due_date || lastDayOfMonth(month, 1),
     rows,
@@ -156,7 +168,7 @@ export function buildInvoicePreview(db, month) {
     tax,
     total,
     tax_rate: 10,
-    max_rows: 24,
+    max_rows: MAX_ROWS,
     template: getInvoiceTemplateStatus(),
   };
 }
@@ -187,6 +199,16 @@ function asLocalDate(iso) {
   return new Date(y, m - 1, d, 12, 0, 0);
 }
 
+function monthMemo(month) {
+  const [y, m] = month.split('-').map(Number);
+  return `${y}年${m}月分としてご請求申し上げます。`;
+}
+
+function displayInvoiceNumber(number) {
+  const value = String(number || '').trim();
+  return /^No[.．]?/i.test(value) ? value : `No.${value}`;
+}
+
 export function generateInvoiceWorkbook(db, {
   month,
   invoice_number = null,
@@ -213,39 +235,39 @@ export function generateInvoiceWorkbook(db, {
   const workbook = XLSX.read(templateBuffer, {
     type: 'buffer', cellStyles: true, cellNF: true, cellDates: true,
   });
-  const sourceName = workbook.SheetNames.find(name => name.includes('請求書'));
+  const sourceName = selectTemplateSheetName(workbook);
   if (!sourceName) throw new Error('テンプレートに請求書シートがありません');
   const sheet = workbook.Sheets[sourceName];
 
-  // 過去請求書の値・式を消す。書式は残す。
-  for (let row = 17; row <= 40; row++) {
-    for (const col of ['B','C','D','E','F','G','H','I','J','K','L','M']) {
-      clearCellValue(sheet, `${col}${row}`);
-    }
+  // 実テンプレートの明細欄だけを初期化。書式・結合セルは残す。
+  for (let row = 17; row <= 36; row++) {
+    setCellValue(sheet, `A${row}`, row - 16);
+    for (const col of ['B','C','H','I','J','L']) clearCellValue(sheet, `${col}${row}`);
   }
 
-  setCellValue(sheet, 'M2', number);
-  setCellValue(sheet, 'M3', asLocalDate(issueDate));
-  setCellValue(sheet, 'B5', '株式会社　オーテック');
-  setCellValue(sheet, 'E11', preview.total);
+  setCellValue(sheet, 'L2', displayInvoiceNumber(number));
+  setCellValue(sheet, 'L3', asLocalDate(issueDate));
+  setCellValue(sheet, 'A5', '株式会社　オーテック');
+  setCellValue(sheet, 'D11', preview.total);
 
   preview.rows.forEach((item, idx) => {
     const row = 17 + idx;
-    setCellValue(sheet, `B${row}`, item.no);
+    setCellValue(sheet, `A${row}`, item.no);
+    setCellValue(sheet, `B${row}`, item.date_label);
     setCellValue(sheet, `C${row}`, item.description);
-    setCellValue(sheet, `I${row}`, item.quantity);
-    setCellValue(sheet, `J${row}`, item.unit);
-    setCellValue(sheet, `K${row}`, item.unit_price);
-    setCellValue(sheet, `M${row}`, item.amount);
+    setCellValue(sheet, `H${row}`, item.quantity);
+    setCellValue(sheet, `I${row}`, item.unit);
+    setCellValue(sheet, `J${row}`, item.unit_price);
+    setCellValue(sheet, `L${row}`, item.amount);
   });
 
-  setCellValue(sheet, 'M42', preview.subtotal);
-  setCellValue(sheet, 'L43', 10);
-  setCellValue(sheet, 'M43', preview.tax);
-  setCellValue(sheet, 'M44', preview.total);
-  setCellValue(sheet, 'E51', asLocalDate(paymentDue));
+  setCellValue(sheet, 'L38', preview.subtotal);
+  setCellValue(sheet, 'K39', 10);
+  setCellValue(sheet, 'L39', preview.tax);
+  setCellValue(sheet, 'L40', preview.total);
+  setCellValue(sheet, 'C43', monthMemo(month));
+  setCellValue(sheet, 'D46', asLocalDate(paymentDue));
 
-  // 送付用ファイルに過去請求書や見積書等を混ぜない。
   const outputSheetName = `${month.replace('-', '')} 請求書`;
   workbook.SheetNames = [outputSheetName];
   workbook.Sheets = { [outputSheetName]: sheet };
