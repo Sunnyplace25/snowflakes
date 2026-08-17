@@ -1,5 +1,5 @@
 /**
- * 保育園シフト管理。
+ * 保育園シフト・給与明細管理。
  * 音声仕事などによる変更履歴を、収入用の work_records と分離して保持する。
  */
 'use strict';
@@ -30,6 +30,27 @@ export function ensureNurseryShiftTable(db) {
   `);
 }
 
+export function ensureNurseryPayslipTable(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS business_nursery_payslips (
+      id             INTEGER PRIMARY KEY AUTOINCREMENT,
+      month          TEXT NOT NULL UNIQUE,
+      hourly_rate    INTEGER,
+      worked_hours   REAL,
+      paid_leave_used REAL,
+      paid_leave_balance REAL,
+      gross_pay      INTEGER,
+      net_pay        INTEGER,
+      transport_pay  INTEGER,
+      deductions     INTEGER,
+      memo           TEXT,
+      created_at     TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at     TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_bnp_month ON business_nursery_payslips(month);
+  `);
+}
+
 function normalizeTime(value) {
   if (value == null || value === '') return null;
   const text = String(value).trim();
@@ -43,6 +64,19 @@ function validateDate(date) {
   if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     throw new Error('日付は YYYY-MM-DD 形式で入力してください');
   }
+}
+
+function validateMonth(month) {
+  if (typeof month !== 'string' || !/^\d{4}-\d{2}$/.test(month)) {
+    throw new Error('月は YYYY-MM 形式で入力してください');
+  }
+}
+
+function nullableNumber(value, { integer = false } = {}) {
+  if (value == null || value === '') return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) throw new Error('数値は0以上で入力してください');
+  return integer ? Math.round(n) : n;
 }
 
 function normalizePayload(payload = {}) {
@@ -64,6 +98,22 @@ function normalizePayload(payload = {}) {
     changed_end: normalizeTime(payload.changed_end),
     status,
     change_reason: changeReason,
+    memo: payload.memo == null || payload.memo === '' ? null : String(payload.memo).trim(),
+  };
+}
+
+function normalizePayslip(payload = {}) {
+  validateMonth(payload.month);
+  return {
+    month: payload.month,
+    hourly_rate: nullableNumber(payload.hourly_rate, { integer: true }),
+    worked_hours: nullableNumber(payload.worked_hours),
+    paid_leave_used: nullableNumber(payload.paid_leave_used),
+    paid_leave_balance: nullableNumber(payload.paid_leave_balance),
+    gross_pay: nullableNumber(payload.gross_pay, { integer: true }),
+    net_pay: nullableNumber(payload.net_pay, { integer: true }),
+    transport_pay: nullableNumber(payload.transport_pay, { integer: true }),
+    deductions: nullableNumber(payload.deductions, { integer: true }),
     memo: payload.memo == null || payload.memo === '' ? null : String(payload.memo).trim(),
   };
 }
@@ -126,5 +176,49 @@ export function deleteNurseryShift(db, id) {
   const current = db.prepare('SELECT * FROM business_nursery_shifts WHERE id = ?').get(id);
   if (!current) return null;
   db.prepare('DELETE FROM business_nursery_shifts WHERE id = ?').run(id);
+  return current;
+}
+
+export function getNurseryPayslips(db, { month = null } = {}) {
+  ensureNurseryPayslipTable(db);
+  if (month) {
+    validateMonth(month);
+    const row = db.prepare('SELECT * FROM business_nursery_payslips WHERE month = ?').get(month);
+    return row ? [row] : [];
+  }
+  return db.prepare('SELECT * FROM business_nursery_payslips ORDER BY month DESC').all();
+}
+
+export function upsertNurseryPayslip(db, payload) {
+  ensureNurseryPayslipTable(db);
+  const p = normalizePayslip(payload);
+  db.prepare(`
+    INSERT INTO business_nursery_payslips
+      (month, hourly_rate, worked_hours, paid_leave_used, paid_leave_balance, gross_pay, net_pay, transport_pay, deductions, memo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(month) DO UPDATE SET
+      hourly_rate = excluded.hourly_rate,
+      worked_hours = excluded.worked_hours,
+      paid_leave_used = excluded.paid_leave_used,
+      paid_leave_balance = excluded.paid_leave_balance,
+      gross_pay = excluded.gross_pay,
+      net_pay = excluded.net_pay,
+      transport_pay = excluded.transport_pay,
+      deductions = excluded.deductions,
+      memo = excluded.memo,
+      updated_at = datetime('now','localtime')
+  `).run(
+    p.month, p.hourly_rate, p.worked_hours, p.paid_leave_used, p.paid_leave_balance,
+    p.gross_pay, p.net_pay, p.transport_pay, p.deductions, p.memo,
+  );
+  return db.prepare('SELECT * FROM business_nursery_payslips WHERE month = ?').get(p.month);
+}
+
+export function deleteNurseryPayslip(db, month) {
+  ensureNurseryPayslipTable(db);
+  validateMonth(month);
+  const current = db.prepare('SELECT * FROM business_nursery_payslips WHERE month = ?').get(month);
+  if (!current) return null;
+  db.prepare('DELETE FROM business_nursery_payslips WHERE month = ?').run(month);
   return current;
 }
