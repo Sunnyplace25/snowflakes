@@ -5,6 +5,7 @@
  * - 曜日テンプレート + 1か月分の一括入力
  * - 手動変更を未保存表示し、固定ボタンから一括保存
  * - 一括入力を基本導線にするため単独の「シフトを登録」ボタンは表示しない
+ * - 時給 / 有給残 / 月の勤務時間 / 給与目安を表示
  */
 'use strict';
 
@@ -17,6 +18,7 @@
     { value: '休み', label: '休み' },
     { value: '有給', label: '有給' },
   ];
+  const SETTINGS_KEY = 'jarvis:nursery-pay-settings';
 
   const esc = value => String(value ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');
@@ -59,6 +61,121 @@
 
   function removeSingleRegisterButton() {
     document.getElementById('add-nursery-shift-btn')?.remove();
+  }
+
+  function loadPaySettings() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      return {
+        hourlyRate: Number(saved.hourlyRate || 0),
+        paidLeaveBalance: Number(saved.paidLeaveBalance || 0),
+        paidLeaveHours: Number(saved.paidLeaveHours || 0),
+      };
+    } catch (_) {
+      return { hourlyRate: 0, paidLeaveBalance: 0, paidLeaveHours: 0 };
+    }
+  }
+
+  function savePaySettings() {
+    const settings = {
+      hourlyRate: Number(document.getElementById('nursery-hourly-rate')?.value || 0),
+      paidLeaveBalance: Number(document.getElementById('nursery-paid-leave-balance')?.value || 0),
+      paidLeaveHours: Number(document.getElementById('nursery-paid-leave-hours')?.value || 0),
+    };
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    refreshPaySummary();
+  }
+
+  function timeToMinutes(value) {
+    if (!/^\d{2}:\d{2}$/.test(String(value || ''))) return null;
+    const [h, m] = value.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function shiftHours(shift) {
+    if (!shift || shift.status === '休み' || shift.status === '有給') return 0;
+    const start = shift.status === '変更' && shift.changed_start ? shift.changed_start : shift.original_start;
+    const end = shift.status === '変更' && shift.changed_end ? shift.changed_end : shift.original_end;
+    const s = timeToMinutes(start);
+    const e = timeToMinutes(end);
+    if (s == null || e == null || e <= s) return 0;
+    return (e - s) / 60;
+  }
+
+  async function fetchNurseryShifts(month = null) {
+    const suffix = month ? `?month=${encodeURIComponent(month)}` : '';
+    const response = await fetch(`/api/nursery-shifts${suffix}`);
+    const data = await response.json();
+    if (!response.ok || !data.ok) throw new Error(data.error || 'シフト読込に失敗しました');
+    return data.shifts || [];
+  }
+
+  async function refreshPaySummary() {
+    const hoursEl = document.getElementById('nursery-month-hours');
+    const payEl = document.getElementById('nursery-month-pay');
+    const leaveUsedEl = document.getElementById('nursery-leave-used');
+    if (!hoursEl || !payEl || !leaveUsedEl) return;
+
+    try {
+      const shifts = await fetchNurseryShifts(monthValue());
+      const settings = loadPaySettings();
+      const workHours = shifts.reduce((sum, shift) => sum + shiftHours(shift), 0);
+      const leaveUsed = shifts.filter(s => s.status === '有給').length;
+      const paidLeaveHours = leaveUsed * settings.paidLeaveHours;
+      const paidHours = workHours + paidLeaveHours;
+      const pay = Math.round(paidHours * settings.hourlyRate);
+
+      hoursEl.textContent = `${workHours.toFixed(1)}h`;
+      leaveUsedEl.textContent = `${leaveUsed}日`;
+      payEl.textContent = settings.hourlyRate ? `${pay.toLocaleString('ja-JP')}円` : '時給未設定';
+      payEl.title = settings.paidLeaveHours > 0
+        ? `実働 ${workHours.toFixed(1)}h + 有給換算 ${paidLeaveHours.toFixed(1)}h`
+        : `実働 ${workHours.toFixed(1)}h（有給分は未換算）`;
+    } catch (_) {
+      hoursEl.textContent = '—';
+      leaveUsedEl.textContent = '—';
+      payEl.textContent = '—';
+    }
+  }
+
+  function ensurePaySummaryUi() {
+    const panel = ensureTabAndPanel();
+    if (!panel || document.getElementById('nursery-pay-summary')) return;
+    const settings = loadPaySettings();
+    const section = document.createElement('section');
+    section.className = 'section';
+    section.id = 'nursery-pay-summary';
+    section.innerHTML = `
+      <div class="section-header"><h2>勤務・給与</h2></div>
+      <div class="cards-secondary" style="margin-bottom:14px">
+        <div class="card"><div class="card-label">今月の実働時間</div><div class="card-value accent" id="nursery-month-hours">—</div></div>
+        <div class="card"><div class="card-label">今月の有給</div><div class="card-value" id="nursery-leave-used">—</div></div>
+        <div class="card"><div class="card-label">給与目安</div><div class="card-value green" id="nursery-month-pay">—</div></div>
+      </div>
+      <div class="business-form-inline">
+        <div class="form-group">
+          <label for="nursery-hourly-rate">時給（円）</label>
+          <input type="number" id="nursery-hourly-rate" min="0" step="1" value="${settings.hourlyRate || ''}" placeholder="例：1300">
+        </div>
+        <div class="form-group">
+          <label for="nursery-paid-leave-balance">有給残（日）</label>
+          <input type="number" id="nursery-paid-leave-balance" min="0" step="0.5" value="${settings.paidLeaveBalance || ''}" placeholder="例：18">
+        </div>
+        <div class="form-group">
+          <label for="nursery-paid-leave-hours">有給1日分（h）</label>
+          <input type="number" id="nursery-paid-leave-hours" min="0" step="0.5" value="${settings.paidLeaveHours || ''}" placeholder="未設定なら給与計算から除外">
+        </div>
+      </div>
+      <div class="business-muted-note" style="margin-top:8px">時給・有給残はこのブラウザに保存します。有給の給与も含めたい場合だけ「有給1日分」の時間を設定してください。</div>`;
+
+    const bulk = document.getElementById('nursery-bulk-section');
+    if (bulk) bulk.insertAdjacentElement('afterend', section);
+    else panel.insertBefore(section, panel.firstChild);
+
+    ['nursery-hourly-rate','nursery-paid-leave-balance','nursery-paid-leave-hours'].forEach(id => {
+      document.getElementById(id)?.addEventListener('change', savePaySettings);
+    });
+    refreshPaySummary();
   }
 
   function ensureStyles() {
@@ -117,6 +234,7 @@
         removeSingleRegisterButton();
         renderBulkPanel();
         formatNurseryDates();
+        refreshPaySummary();
       });
     }
 
@@ -196,11 +314,7 @@
       </label>`).join('');
 
     let existing = [];
-    try {
-      const response = await fetch(`/api/nursery-shifts?month=${encodeURIComponent(ym)}`);
-      const data = await response.json();
-      if (response.ok && data.ok) existing = data.shifts || [];
-    } catch (_) {}
+    try { existing = await fetchNurseryShifts(ym); } catch (_) {}
     const byDate = new Map(existing.map(s => [s.date, s]));
 
     const rows = monthDates(ym).map(date => {
@@ -280,6 +394,7 @@
         if (marker) marker.textContent = '';
       });
       updateDirtyUi();
+      await refreshPaySummary();
       setTimeout(() => location.reload(), 350);
     }
   }
@@ -297,14 +412,19 @@
     ensureStyles();
     ensureTabAndPanel();
     ensureBulkUi();
+    ensurePaySummaryUi();
     removeSingleRegisterButton();
     formatNurseryDates();
     const container = document.getElementById('nursery-shift-container');
     if (container) new MutationObserver(() => {
       removeSingleRegisterButton();
       formatNurseryDates();
+      refreshPaySummary();
     }).observe(container, { childList:true, subtree:true });
-    ['prev-month','next-month'].forEach(id => document.getElementById(id)?.addEventListener('click', () => setTimeout(renderBulkPanel, 80)));
+    ['prev-month','next-month'].forEach(id => document.getElementById(id)?.addEventListener('click', () => setTimeout(() => {
+      renderBulkPanel();
+      refreshPaySummary();
+    }, 80)));
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once:true });
