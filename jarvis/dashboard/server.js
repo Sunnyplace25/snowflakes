@@ -26,6 +26,7 @@ import {
   upsertNurseryPayslip,
   deleteNurseryPayslip,
 } from '../data/nursery_shift_manager.js';
+import { readNurseryPayslipPdf } from '../data/nursery_payslip_pdf.js';
 import {
   getInvoiceTemplateStatus,
   saveInvoiceTemplate,
@@ -211,6 +212,17 @@ const server = createServer(async (req, res) => {
       const payslip = upsertNurseryPayslip(db, body);
       return jsonRes(res, 200, { ok: true, payslip });
     } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/nursery-payslip/import-pdf' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req, 18_000_000);
+      const payslip = await readNurseryPayslipPdf(body);
+      return jsonRes(res, 200, { ok: true, payslip });
+    } catch (e) {
+      console.error('[nursery payslip pdf]', e.message);
       return jsonRes(res, 400, { ok: false, error: e.message });
     }
   }
