@@ -7,133 +7,36 @@
 <style>
 :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--text:#e6edf3;--sub:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--purple:#a371f7;--yellow:#d29922}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;font-size:14px}
-header{position:sticky;top:0;z-index:5;background:#0d1117eF;border-bottom:1px solid var(--line);backdrop-filter:blur(8px);padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{font-weight:700;letter-spacing:.14em}.title{color:var(--sub)}.spacer{flex:1}a{color:var(--blue);text-decoration:none}select,button{background:#21262d;border:1px solid var(--line);color:var(--text);border-radius:6px;padding:7px 10px}button{cursor:pointer}button.primary{background:#238636;border-color:#2ea043}button:disabled{opacity:.55;cursor:default}main{max-width:1180px;margin:auto;padding:24px}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-bottom:18px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:8px}.card{padding:16px}.label{font-size:12px;color:var(--sub);margin-bottom:7px}.value{font-size:24px;font-weight:700}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.panel{padding:18px;margin-bottom:18px}.panel h2{font-size:15px;margin:0 0 4px}.note{font-size:12px;color:var(--sub);margin-bottom:14px}.chart-wrap{overflow-x:auto}.chart{min-width:760px;width:100%;height:320px;display:block}.gridline{stroke:#30363d;stroke-width:1}.axis-label{fill:#8b949e;font-size:11px}.bar-income{fill:#3fb950}.bar-expense{fill:#f85149}.line-profit{fill:none;stroke:#58a6ff;stroke-width:3}.dot-profit{fill:#58a6ff}.legend{display:flex;gap:18px;color:var(--sub);font-size:12px;margin:4px 0 10px}.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.cat-row{display:grid;grid-template-columns:130px 1fr 95px;gap:10px;align-items:center;margin:9px 0}.cat-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cat-track{height:12px;background:#21262d;border-radius:99px;overflow:hidden}.cat-fill{height:100%;background:var(--purple);border-radius:99px}.cat-value{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}.empty{padding:36px;text-align:center;color:var(--sub)}.status{font-size:12px;color:var(--sub)}.sync-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;padding:12px 14px;background:#161b22;border:1px solid var(--line);border-radius:8px}.sync-box strong{font-size:13px}.sync-box .status{flex:1;min-width:240px}.issues{display:none;margin:-8px 0 18px;padding:12px 14px;border:1px solid #6e5b20;border-radius:8px;background:#1c180c;color:#d29922;font-size:12px}.issues ul{margin:8px 0 0 18px;padding:0}.issues li{margin:4px 0;color:#c9b66f}
-@media(max-width:760px){main{padding:14px}.cards{grid-template-columns:1fr 1fr}.value{font-size:19px}.cat-row{grid-template-columns:90px 1fr 78px}}
+header{position:sticky;top:0;z-index:5;background:#0d1117eF;border-bottom:1px solid var(--line);backdrop-filter:blur(8px);padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.logo{font-weight:700;letter-spacing:.14em}.title{color:var(--sub)}.spacer{flex:1}a{color:var(--blue);text-decoration:none}select,button{background:#21262d;border:1px solid var(--line);color:var(--text);border-radius:6px;padding:7px 10px}button{cursor:pointer}button.primary{background:#238636;border-color:#2ea043}button:disabled{opacity:.55;cursor:default}main{max-width:1180px;margin:auto;padding:24px}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-bottom:18px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:8px}.card{padding:16px}.label{font-size:12px;color:var(--sub);margin-bottom:7px}.value{font-size:24px;font-weight:700}.green{color:var(--green)}.red{color:var(--red)}.blue{color:var(--blue)}.panel{padding:18px;margin-bottom:18px}.panel h2{font-size:15px;margin:0 0 4px}.note{font-size:12px;color:var(--sub);margin-bottom:14px}.chart-wrap{overflow-x:auto}.chart{min-width:760px;width:100%;height:320px;display:block}.gridline{stroke:#30363d;stroke-width:1}.axis-label{fill:#8b949e;font-size:11px}.bar-income{fill:#3fb950}.bar-expense{fill:#f85149}.line-profit{fill:none;stroke:#58a6ff;stroke-width:3}.dot-profit{fill:#58a6ff}.legend{display:flex;gap:18px;color:var(--sub);font-size:12px;margin:4px 0 10px}.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}.cat-row{display:grid;grid-template-columns:130px 1fr 95px;gap:10px;align-items:center;margin:9px 0}.cat-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cat-track{height:12px;background:#21262d;border-radius:99px;overflow:hidden}.cat-fill{height:100%;background:var(--purple);border-radius:99px}.cat-value{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}.empty{padding:36px;text-align:center;color:var(--sub)}.status{font-size:12px;color:var(--sub)}.sync-box{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;padding:12px 14px;background:#161b22;border:1px solid var(--line);border-radius:8px}.sync-box strong{font-size:13px}.sync-box .status{flex:1;min-width:240px}.issues{display:none;margin:-8px 0 18px;padding:12px 14px;border:1px solid #6e5b20;border-radius:8px;background:#1c180c;color:#d29922;font-size:12px}.issues ul{margin:8px 0 0 18px;padding:0}.issues li{margin:4px 0;color:#c9b66f}@media(max-width:760px){main{padding:14px}.cards{grid-template-columns:1fr 1fr}.value{font-size:19px}.cat-row{grid-template-columns:90px 1fr 78px}}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">JARVIS</div><div class="title">Business Graph</div>
-  <div class="spacer"></div>
-  <label>年 <select id="year"></select></label>
-  <button id="reload">更新</button>
-  <a href="/">← ダッシュボード</a>
-</header>
+<header><div class="logo">JARVIS</div><div class="title">Business 統計グラフ</div><div class="spacer"></div><label>年 <select id="year"></select></label><button id="reload">更新</button><a href="/">← ダッシュボード</a></header>
 <main>
-  <div class="sync-box">
-    <strong>請求書の仕事を反映</strong>
-    <button id="sync-all" class="primary">既存請求書 → 仕事一覧を同期</button>
-    <span id="sync-status" class="status">手動登録済みの仕事は照合し、足りない日だけ追加します。実行前にDBを自動バックアップします。</span>
-  </div>
+  <div class="sync-box"><strong>請求書の仕事を反映</strong><button id="sync-all" class="primary">既存請求書 → 仕事一覧を同期</button><span id="sync-status" class="status">手動登録済みの仕事は照合し、足りない日だけ追加します。実行前にDBを自動バックアップします。</span></div>
   <div id="sync-issues" class="issues"></div>
-
+  <div class="note" style="margin:0 0 14px">音声仕事・物販など、Businessに登録した全カテゴリをここで統合して集計します。</div>
   <div class="cards">
-    <div class="card"><div class="label">年間収入</div><div id="income" class="value green">—</div></div>
-    <div class="card"><div class="label">年間経費</div><div id="expense" class="value red">—</div></div>
-    <div class="card"><div class="label">年間利益</div><div id="profit" class="value blue">—</div></div>
-    <div class="card"><div class="label">仕事件数</div><div id="count" class="value">—</div></div>
+    <div class="card"><div class="label">年間総収入（全カテゴリ）</div><div id="income" class="value green">—</div></div>
+    <div class="card"><div class="label">年間総経費（全カテゴリ）</div><div id="expense" class="value red">—</div></div>
+    <div class="card"><div class="label">年間総利益（全カテゴリ）</div><div id="profit" class="value blue">—</div></div>
+    <div class="card"><div class="label">登録件数</div><div id="count" class="value">—</div></div>
   </div>
-
-  <section class="panel">
-    <h2>月別 収入・経費・利益</h2>
-    <div class="note">月次の仕事一覧（手動登録 + 請求書から同期した仕事）を集計</div>
-    <div class="legend"><span><i class="key" style="background:#3fb950"></i>収入</span><span><i class="key" style="background:#f85149"></i>経費</span><span><i class="key" style="background:#58a6ff"></i>利益</span></div>
-    <div class="chart-wrap"><svg id="monthly-chart" class="chart" viewBox="0 0 1000 320" role="img" aria-label="月別収支グラフ"></svg></div>
-  </section>
-
-  <section class="panel">
-    <h2>カテゴリ別 年間収入</h2>
-    <div class="note">どの仕事から収入が来ているかを比較</div>
-    <div id="category-chart"></div>
-  </section>
+  <section class="panel"><h2>月別 全体収支</h2><div class="note">音声仕事・物販などを合算した月別の収入・経費・利益</div><div class="legend"><span><i class="key" style="background:#3fb950"></i>収入</span><span><i class="key" style="background:#f85149"></i>経費</span><span><i class="key" style="background:#58a6ff"></i>利益</span></div><div class="chart-wrap"><svg id="monthly-chart" class="chart" viewBox="0 0 1000 320" role="img" aria-label="月別収支グラフ"></svg></div></section>
+  <section class="panel"><h2>カテゴリ別 年間収入</h2><div class="note">音声仕事・物販など、収入源ごとの内訳</div><div id="category-chart"></div></section>
   <div id="status" class="status"></div>
 </main>
 <script>
 'use strict';
 const yen=n=>Number(n||0).toLocaleString('ja-JP')+'円';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const yearSel=document.getElementById('year');
-const now=new Date().getFullYear();
-for(let y=now;y>=2020;y--){const o=document.createElement('option');o.value=y;o.textContent=y+'年';yearSel.appendChild(o)}
-yearSel.value=String(now);
-
-async function getMonth(year,month){
- const ym=`${year}-${String(month).padStart(2,'0')}`;
- const r=await fetch(`/api/works?month=${ym}`); const d=await r.json();
- return d.ok?(d.works||[]):[];
-}
-
-async function load(){
- const year=Number(yearSel.value); const st=document.getElementById('status');
- st.textContent='集計中...';
- try{
-  const months=await Promise.all(Array.from({length:12},(_,i)=>getMonth(year,i+1)));
-  const monthly=months.map((works,i)=>({
-    month:i+1, works,
-    income:works.reduce((s,w)=>s+Number(w.income||0),0),
-    expense:works.reduce((s,w)=>s+Number(w.expense||0),0),
-  })).map(r=>({...r,profit:r.income-r.expense}));
-  const all=months.flat();
-  const income=monthly.reduce((s,r)=>s+r.income,0), expense=monthly.reduce((s,r)=>s+r.expense,0);
-  document.getElementById('income').textContent=yen(income);
-  document.getElementById('expense').textContent=yen(expense);
-  document.getElementById('profit').textContent=yen(income-expense);
-  document.getElementById('count').textContent=all.length+'件';
-  renderMonthly(monthly); renderCategories(all);
-  st.textContent=`${year}年 / ${all.length}件を表示`;
- }catch(e){st.textContent='読み込みエラー: '+e.message}
-}
-
-async function syncAllInvoices(){
- const btn=document.getElementById('sync-all');
- const st=document.getElementById('sync-status');
- const issueEl=document.getElementById('sync-issues');
- btn.disabled=true; issueEl.style.display='none'; issueEl.innerHTML='';
- st.textContent='バックアップを作成して、既存請求書を仕事一覧へ同期中...';
- try{
-  const r=await fetch('/api/invoice/sync-work',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-  const d=await r.json();
-  if(!r.ok||!d.ok) throw new Error(d.error||'同期に失敗しました');
-  const issueCount=Number(d.ambiguous||0)+Number(d.skipped||0);
-  st.textContent=`完了：新規 ${d.created}件 / 既存一致 ${d.matched}件 / 要確認 ${issueCount}件${d.backup?` / backup: ${d.backup}`:''}`;
-  const issues=(d.details||[]).filter(x=>x.status==='ambiguous'||x.status==='skipped').slice(0,30);
-  if(issues.length){
-    issueEl.innerHTML='<strong>自動で決めなかった項目</strong><ul>'+issues.map(x=>`<li>${esc(x.workDate||'日付不明')}　${esc(x.description||'')} — ${esc(x.reason||x.status)}</li>`).join('')+'</ul>';
-    issueEl.style.display='block';
-  }
-  await load();
- }catch(e){st.textContent='同期エラー: '+e.message}
- finally{btn.disabled=false}
-}
-
-function renderMonthly(rows){
- const svg=document.getElementById('monthly-chart');
- const W=1000,H=320,L=58,R=18,T=18,B=42, plotW=W-L-R, plotH=H-T-B;
- const max=Math.max(1,...rows.flatMap(r=>[r.income,r.expense,Math.max(0,r.profit)]));
- const nice=Math.ceil(max/50000)*50000||50000;
- const y=v=>T+plotH-(Math.max(0,v)/nice)*plotH;
- let s='';
- for(let i=0;i<=4;i++){const val=nice*i/4, yy=y(val);s+=`<line class="gridline" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="axis-label" x="${L-8}" y="${yy+4}" text-anchor="end">${Math.round(val/10000)}万</text>`}
- const step=plotW/12, bw=Math.min(23,step*.28); const pts=[];
- rows.forEach((r,i)=>{const cx=L+step*(i+.5);const yi=y(r.income),ye=y(r.expense);s+=`<rect class="bar-income" x="${cx-bw-2}" y="${yi}" width="${bw}" height="${T+plotH-yi}" rx="2"><title>${r.month}月 収入 ${yen(r.income)}</title></rect>`;s+=`<rect class="bar-expense" x="${cx+2}" y="${ye}" width="${bw}" height="${T+plotH-ye}" rx="2"><title>${r.month}月 経費 ${yen(r.expense)}</title></rect>`;s+=`<text class="axis-label" x="${cx}" y="${H-18}" text-anchor="middle">${r.month}月</text>`;pts.push([cx,y(Math.max(0,r.profit)),r])});
- s+=`<polyline class="line-profit" points="${pts.map(p=>p[0]+','+p[1]).join(' ')}"/>`;
- pts.forEach(([xv,yv,r])=>s+=`<circle class="dot-profit" cx="${xv}" cy="${yv}" r="4"><title>${r.month}月 利益 ${yen(r.profit)}</title></circle>`);
- svg.innerHTML=s;
-}
-
-function renderCategories(works){
- const map=new Map();works.forEach(w=>{const k=w.category||'未設定';map.set(k,(map.get(k)||0)+Number(w.income||0))});
- const rows=[...map.entries()].sort((a,b)=>b[1]-a[1]); const el=document.getElementById('category-chart');
- if(!rows.length){el.innerHTML='<div class="empty">この年の仕事データはありません</div>';return}
- const max=Math.max(...rows.map(r=>r[1]),1);
- el.innerHTML=rows.map(([name,val])=>`<div class="cat-row"><div class="cat-name" title="${esc(name)}">${esc(name)}</div><div class="cat-track"><div class="cat-fill" style="width:${Math.max(1,val/max*100)}%"></div></div><div class="cat-value">${yen(val)}</div></div>`).join('');
-}
-
-yearSel.addEventListener('change',load);
-document.getElementById('reload').addEventListener('click',load);
-document.getElementById('sync-all').addEventListener('click',syncAllInvoices);
-load();
+const yearSel=document.getElementById('year');const now=new Date().getFullYear();for(let y=now;y>=2020;y--){const o=document.createElement('option');o.value=y;o.textContent=y+'年';yearSel.appendChild(o)}yearSel.value=String(now);
+async function getMonth(year,month){const ym=`${year}-${String(month).padStart(2,'0')}`;const r=await fetch(`/api/works?month=${ym}`);const d=await r.json();return d.ok?(d.works||[]):[]}
+async function load(){const year=Number(yearSel.value),st=document.getElementById('status');st.textContent='集計中...';try{const months=await Promise.all(Array.from({length:12},(_,i)=>getMonth(year,i+1)));const monthly=months.map((works,i)=>({month:i+1,works,income:works.reduce((s,w)=>s+Number(w.income||0),0),expense:works.reduce((s,w)=>s+Number(w.expense||0),0)})).map(r=>({...r,profit:r.income-r.expense}));const all=months.flat();const income=monthly.reduce((s,r)=>s+r.income,0),expense=monthly.reduce((s,r)=>s+r.expense,0);document.getElementById('income').textContent=yen(income);document.getElementById('expense').textContent=yen(expense);document.getElementById('profit').textContent=yen(income-expense);document.getElementById('count').textContent=all.length+'件';renderMonthly(monthly);renderCategories(all);st.textContent=`${year}年 / 全カテゴリ ${all.length}件を表示`}catch(e){st.textContent='読み込みエラー: '+e.message}}
+async function syncAllInvoices(){const btn=document.getElementById('sync-all'),st=document.getElementById('sync-status'),issueEl=document.getElementById('sync-issues');btn.disabled=true;issueEl.style.display='none';issueEl.innerHTML='';st.textContent='バックアップを作成して、既存請求書を仕事一覧へ同期中...';try{const r=await fetch('/api/invoice/sync-work',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'同期に失敗しました');const issueCount=Number(d.ambiguous||0)+Number(d.skipped||0);st.textContent=`完了：新規 ${d.created}件 / 既存一致 ${d.matched}件 / 要確認 ${issueCount}件${d.backup?` / backup: ${d.backup}`:''}`;const issues=(d.details||[]).filter(x=>x.status==='ambiguous'||x.status==='skipped').slice(0,30);if(issues.length){issueEl.innerHTML='<strong>自動で決めなかった項目</strong><ul>'+issues.map(x=>`<li>${esc(x.workDate||'日付不明')}　${esc(x.description||'')} — ${esc(x.reason||x.status)}</li>`).join('')+'</ul>';issueEl.style.display='block'}await load()}catch(e){st.textContent='同期エラー: '+e.message}finally{btn.disabled=false}}
+function renderMonthly(rows){const svg=document.getElementById('monthly-chart'),W=1000,H=320,L=58,R=18,T=18,B=42,plotW=W-L-R,plotH=H-T-B;const max=Math.max(1,...rows.flatMap(r=>[r.income,r.expense,Math.max(0,r.profit)]));const nice=Math.ceil(max/50000)*50000||50000;const y=v=>T+plotH-(Math.max(0,v)/nice)*plotH;let s='';for(let i=0;i<=4;i++){const val=nice*i/4,yy=y(val);s+=`<line class="gridline" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="axis-label" x="${L-8}" y="${yy+4}" text-anchor="end">${Math.round(val/10000)}万</text>`}const step=plotW/12,bw=Math.min(23,step*.28),pts=[];rows.forEach((r,i)=>{const cx=L+step*(i+.5),yi=y(r.income),ye=y(r.expense);s+=`<rect class="bar-income" x="${cx-bw-2}" y="${yi}" width="${bw}" height="${T+plotH-yi}" rx="2"><title>${r.month}月 収入 ${yen(r.income)}</title></rect>`;s+=`<rect class="bar-expense" x="${cx+2}" y="${ye}" width="${bw}" height="${T+plotH-ye}" rx="2"><title>${r.month}月 経費 ${yen(r.expense)}</title></rect>`;s+=`<text class="axis-label" x="${cx}" y="${H-18}" text-anchor="middle">${r.month}月</text>`;pts.push([cx,y(Math.max(0,r.profit)),r])});s+=`<polyline class="line-profit" points="${pts.map(p=>p[0]+','+p[1]).join(' ')}"/>`;pts.forEach(([xv,yv,r])=>s+=`<circle class="dot-profit" cx="${xv}" cy="${yv}" r="4"><title>${r.month}月 利益 ${yen(r.profit)}</title></circle>`);svg.innerHTML=s}
+function renderCategories(works){const map=new Map();works.forEach(w=>{const k=w.category||'未設定';map.set(k,(map.get(k)||0)+Number(w.income||0))});const rows=[...map.entries()].sort((a,b)=>b[1]-a[1]),el=document.getElementById('category-chart');if(!rows.length){el.innerHTML='<div class="empty">この年のデータはありません</div>';return}const max=Math.max(...rows.map(r=>r[1]),1);el.innerHTML=rows.map(([name,val])=>`<div class="cat-row"><div class="cat-name" title="${esc(name)}">${esc(name)}</div><div class="cat-track"><div class="cat-fill" style="width:${Math.max(1,val/max*100)}%"></div></div><div class="cat-value">${yen(val)}</div></div>`).join('')}
+yearSel.addEventListener('change',load);document.getElementById('reload').addEventListener('click',load);document.getElementById('sync-all').addEventListener('click',syncAllInvoices);load();
 </script>
 </body>
 </html>
