@@ -273,12 +273,8 @@ const server = createServer(async (req, res) => {
     if (relativePath === '/index.html') {
       let html = content.toString('utf8');
 
-      const marker = '<button class="sf-tab" data-biz-tab="calendar">Google Calendar</button>';
-      const graphButton = '<button class="sf-tab" type="button" onclick="location.href=\'/business-graph.html\'">グラフ</button>';
-      if (html.includes(marker) && !html.includes('/business-graph.html')) {
-        html = html.replace(marker, marker + '\n    ' + graphButton);
-      }
-
+      // グラフタブは business-custom.js 側だけで追加する。
+      // サーバ側でも追加すると同じタブが2個表示されるため、ここでは注入しない。
       const customScript = '<script src="business-custom.js"></script>';
       if (!html.includes('business-custom.js')) {
         html = html.replace('</body>', `${customScript}\n</body>`);
