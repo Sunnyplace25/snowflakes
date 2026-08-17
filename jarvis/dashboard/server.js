@@ -22,6 +22,9 @@ import {
   upsertNurseryShift,
   updateNurseryShift,
   deleteNurseryShift,
+  getNurseryPayslips,
+  upsertNurseryPayslip,
+  deleteNurseryPayslip,
 } from '../data/nursery_shift_manager.js';
 import {
   getInvoiceTemplateStatus,
@@ -34,13 +37,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
 const BACKUP_DIR = resolve(__dirname, '../backups');
 const PORT = 3000;
-const HOST = '127.0.0.1';   // localhost 限定
+const HOST = '127.0.0.1';
 
-// DB 接続（起動時に 1 回だけ）
 const db = createDb(DEFAULT_DB_PATH);
 const apiHandler = createApiHandler(db);
 
-// MIME types（外部フォント・CDN 不使用）
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css':  'text/css; charset=utf-8',
@@ -75,7 +76,6 @@ function readJsonBody(req, maxBytes = 10_485_760) {
 }
 
 function backupBusinessDb() {
-  // WAL に残った書き込みを本体DBへ反映してからコピーする。
   db.exec('PRAGMA wal_checkpoint(FULL)');
   mkdirSync(BACKUP_DIR, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -94,8 +94,6 @@ function deleteWorkRecord(id) {
 
   db.exec('BEGIN IMMEDIATE');
   try {
-    // 請求書同期から作られた仕事の場合はリンクも外して、孤児レコードを残さない。
-    // 後日「既存請求書 → 仕事一覧を同期」を再実行すると、その仕事は再作成されることがある。
     if (work.job_id && tableExists('business_invoice_work_links')) {
       db.prepare('DELETE FROM business_invoice_work_links WHERE job_id = ?').run(work.job_id);
     }
@@ -113,13 +111,11 @@ function deleteWorkRecord(id) {
 }
 
 const server = createServer(async (req, res) => {
-  // ─── セキュリティヘッダー ────────────────────────────────────────────────
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
 
   const url = new URL(req.url, `http://${HOST}:${PORT}`);
 
-  // ─── 既存請求書 → 仕事一覧 後追い同期 ────────────────────────────────────
   if (url.pathname === '/api/invoice/sync-work' && req.method === 'POST') {
     let body;
     try { body = await readJsonBody(req); }
@@ -140,7 +136,6 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // ─── 仕事削除 ────────────────────────────────────────────────────────────
   const deleteWorkMatch = url.pathname.match(/^\/api\/work\/(\d+)$/);
   if (deleteWorkMatch && req.method === 'DELETE') {
     const id = Number(deleteWorkMatch[1]);
@@ -158,7 +153,6 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // ─── 保育園シフト ────────────────────────────────────────────────────────
   if (url.pathname === '/api/nursery-shifts' && req.method === 'GET') {
     const month = url.searchParams.get('month') || null;
     try {
@@ -201,7 +195,38 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // ─── 請求書テンプレート・生成 ────────────────────────────────────────────
+  // ─── 保育園 給与明細 ────────────────────────────────────────────────────
+  if (url.pathname === '/api/nursery-payslips' && req.method === 'GET') {
+    const month = url.searchParams.get('month') || null;
+    try {
+      const payslips = getNurseryPayslips(db, { month });
+      return jsonRes(res, 200, { ok: true, payslips });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/nursery-payslip' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      const payslip = upsertNurseryPayslip(db, body);
+      return jsonRes(res, 200, { ok: true, payslip });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  const payslipMatch = url.pathname.match(/^\/api\/nursery-payslip\/(\d{4}-\d{2})$/);
+  if (payslipMatch && req.method === 'DELETE') {
+    try {
+      const payslip = deleteNurseryPayslip(db, payslipMatch[1]);
+      if (!payslip) return jsonRes(res, 404, { ok: false, error: '給与明細が見つかりません' });
+      return jsonRes(res, 200, { ok: true, deleted: payslip });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
   if (url.pathname === '/api/invoice/template-status' && req.method === 'GET') {
     return jsonRes(res, 200, { ok: true, ...getInvoiceTemplateStatus() });
   }
@@ -243,15 +268,11 @@ const server = createServer(async (req, res) => {
     }
   }
 
-  // ─── API ルーティング ────────────────────────────────────────────────────
   if (url.pathname.startsWith('/api/')) {
     return apiHandler(req, res, url);
   }
 
-  // ─── 静的ファイル配信 ─────────────────────────────────────────────────────
   let relativePath = url.pathname === '/' ? '/index.html' : url.pathname;
-
-  // パストラバーサル防止
   const filePath = resolve(PUBLIC_DIR, '.' + relativePath);
   if (!filePath.startsWith(PUBLIC_DIR + sep) && filePath !== PUBLIC_DIR) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
@@ -269,12 +290,9 @@ const server = createServer(async (req, res) => {
   try {
     let content = readFileSync(filePath);
 
-    // Business の追加UIを index.html に注入する。
     if (relativePath === '/index.html') {
       let html = content.toString('utf8');
 
-      // グラフタブは business-custom.js 側だけで追加する。
-      // サーバ側でも追加すると同じタブが2個表示されるため、ここでは注入しない。
       const customScript = '<script src="business-custom.js"></script>';
       if (!html.includes('business-custom.js')) {
         html = html.replace('</body>', `${customScript}\n</body>`);
@@ -306,7 +324,6 @@ server.listen(PORT, HOST, () => {
   console.log('終了するには Ctrl+C を押してください');
 });
 
-// ─── グレースフルシャットダウン ──────────────────────────────────────────────
 process.on('SIGINT', () => {
   console.log('\nシャットダウン中...');
   server.close(() => {
