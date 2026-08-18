@@ -218,14 +218,26 @@
     const nursery = document.getElementById('business-nursery-tab-btn');
     const calendar = tabs.querySelector('[data-biz-tab="calendar"]');
     const invoice = tabs.querySelector('[data-biz-tab="invoice"]');
-    tabs.querySelector('[data-business-graph]')?.remove();
 
-    if (analytics) analytics.textContent = '実績分析（グラフ）';
+    let graph = tabs.querySelector('[data-business-graph]');
+    if (!graph) {
+      graph = document.createElement('button');
+      graph.type = 'button';
+      graph.className = 'sf-tab';
+      graph.dataset.businessGraph = '1';
+      graph.textContent = 'グラフ';
+      graph.addEventListener('click', () => { location.href = '/business-graph.html'; });
+    }
+
+    if (analytics) analytics.textContent = '実績分析';
     if (monthly) monthly.textContent = '音声';
     if (nursery) nursery.textContent = 'パート（保育園）';
     if (calendar) calendar.textContent = 'Googleカレンダー';
     if (invoice) invoice.textContent = '請求書';
-    [analytics, monthly, merch, nursery, calendar, invoice].filter(Boolean).forEach(button => tabs.appendChild(button));
+    [analytics, graph, monthly, merch, nursery, calendar, invoice].filter(Boolean).forEach(button => tabs.appendChild(button));
+
+    const embeddedGraph = document.getElementById('business-analytics-graph');
+    if (embeddedGraph) embeddedGraph.style.display = 'none';
   }
 
   function makeWorkListScrollable() {
