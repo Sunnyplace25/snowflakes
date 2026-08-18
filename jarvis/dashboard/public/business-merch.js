@@ -7,7 +7,7 @@
   let filterBusy = false;
 
   const yen = v => Number(v || 0).toLocaleString('ja-JP') + '円';
-  const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
 
   function todayISO() {
     const d = new Date();
@@ -200,4 +200,65 @@
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+
+// business-nursery-payslip.js のタブ並べ替え監視が自身のDOM変更を再検知し続けないよう、
+// 初期配置後にナビ要素だけ差し替えて監視対象を切り離す。ボタン自体は移動するため既存イベントは保持する。
+(function () {
+  function stabilizeBusinessTabs() {
+    const oldTabs = document.getElementById('business-tabs');
+    if (!oldTabs || oldTabs.dataset.stableNav === '1') return;
+
+    const tabs = oldTabs.cloneNode(false);
+    tabs.dataset.stableNav = '1';
+    while (oldTabs.firstChild) tabs.appendChild(oldTabs.firstChild);
+    oldTabs.replaceWith(tabs);
+
+    const analytics = tabs.querySelector('[data-biz-tab="analytics"]');
+    const monthly = tabs.querySelector('[data-biz-tab="monthly"]');
+    const merch = document.getElementById('business-merch-tab');
+    const nursery = document.getElementById('business-nursery-tab-btn');
+    const calendar = tabs.querySelector('[data-biz-tab="calendar"]');
+    const invoice = tabs.querySelector('[data-biz-tab="invoice"]');
+    tabs.querySelector('[data-business-graph]')?.remove();
+
+    if (analytics) analytics.textContent = '実績分析（グラフ）';
+    if (monthly) monthly.textContent = '音声';
+    if (nursery) nursery.textContent = 'パート（保育園）';
+    if (calendar) calendar.textContent = 'Googleカレンダー';
+    if (invoice) invoice.textContent = '請求書';
+    [analytics, monthly, merch, nursery, calendar, invoice].filter(Boolean).forEach(button => tabs.appendChild(button));
+  }
+
+  function makeWorkListScrollable() {
+    if (document.getElementById('business-work-scroll-style')) return;
+    const style = document.createElement('style');
+    style.id = 'business-work-scroll-style';
+    style.textContent = `
+      #works-table-container {
+        max-height: min(48vh, 520px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+      }
+      #works-table-container .works-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #111827;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function apply() {
+    stabilizeBusinessTabs();
+    makeWorkListScrollable();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(apply, 650), { once:true });
+  } else {
+    setTimeout(apply, 650);
+  }
 })();
