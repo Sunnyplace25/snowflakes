@@ -1,7 +1,8 @@
 /**
  * 保育園 給与明細入力 + 保育園タブの折りたたみ表示。
  * - 上部は勤務・給与サマリーを常時表示
- * - シフト / 給与明細は必要な時だけ開く
+ * - シフトを給与明細より上に表示
+ * - シフト / 給与明細 / 保存済み明細は必要な時だけ開く
  * - 給与明細履歴は年別表示（デフォルト今年）
  * - PDF単体 / 複数一括取込に対応
  */
@@ -91,44 +92,79 @@
     };
   }
 
+  function placeShiftSectionsAbovePayslip() {
+    const actions = document.getElementById('nursery-compact-actions');
+    if (!actions) return;
+    let anchor = actions;
+    const bulk = document.getElementById('nursery-bulk-section');
+    const list = document.getElementById('nursery-shift-section');
+    if (bulk) {
+      anchor.insertAdjacentElement('afterend', bulk);
+      anchor = bulk;
+    }
+    if (list) {
+      anchor.insertAdjacentElement('afterend', list);
+      anchor = list;
+    }
+    const payslip = document.getElementById('nursery-payslip-section');
+    if (payslip) anchor.insertAdjacentElement('afterend', payslip);
+  }
+
   function ensureCompactActions() {
     const panel = document.getElementById('biz-tab-nursery');
     const summary = document.getElementById('nursery-pay-summary');
-    if (!panel || document.getElementById('nursery-compact-actions')) return;
+    if (!panel) return;
 
-    const actions = document.createElement('section');
-    actions.id = 'nursery-compact-actions';
-    actions.className = 'section';
-    actions.innerHTML = `
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button type="button" class="btn btn-secondary" id="nursery-shifts-master-toggle">シフトを見る</button>
-        <button type="button" class="btn btn-secondary" id="nursery-payslips-master-toggle">給与明細を見る</button>
-      </div>`;
-
-    if (summary) summary.insertAdjacentElement('afterend', actions);
-    else panel.insertBefore(actions, panel.firstChild);
+    let actions = document.getElementById('nursery-compact-actions');
+    if (!actions) {
+      actions = document.createElement('section');
+      actions.id = 'nursery-compact-actions';
+      actions.className = 'section';
+      actions.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button type="button" class="btn btn-secondary" id="nursery-shifts-master-toggle">シフトを見る</button>
+          <button type="button" class="btn btn-secondary" id="nursery-payslips-master-toggle">給与明細を見る</button>
+        </div>`;
+      if (summary) summary.insertAdjacentElement('afterend', actions);
+      else panel.insertBefore(actions, panel.firstChild);
+    }
 
     const shiftBulk = document.getElementById('nursery-bulk-section');
     const shiftList = document.getElementById('nursery-shift-section');
-    if (shiftBulk) shiftBulk.hidden = true;
-    if (shiftList) shiftList.hidden = true;
+    if (shiftBulk && !shiftBulk.dataset.masterInitialized) {
+      shiftBulk.hidden = true;
+      shiftBulk.dataset.masterInitialized = '1';
+    }
+    if (shiftList && !shiftList.dataset.masterInitialized) {
+      shiftList.hidden = true;
+      shiftList.dataset.masterInitialized = '1';
+    }
 
-    document.getElementById('nursery-shifts-master-toggle').addEventListener('click', () => {
-      const bulk = document.getElementById('nursery-bulk-section');
-      const list = document.getElementById('nursery-shift-section');
-      const opening = Boolean((bulk && bulk.hidden) || (list && list.hidden));
-      if (bulk) bulk.hidden = !opening;
-      if (list) list.hidden = !opening;
-      document.getElementById('nursery-shifts-master-toggle').textContent = opening ? 'シフトを閉じる' : 'シフトを見る';
-    });
+    const shiftButton = document.getElementById('nursery-shifts-master-toggle');
+    if (shiftButton && !shiftButton.dataset.bound) {
+      shiftButton.dataset.bound = '1';
+      shiftButton.addEventListener('click', () => {
+        const bulk = document.getElementById('nursery-bulk-section');
+        const list = document.getElementById('nursery-shift-section');
+        const opening = Boolean((bulk && bulk.hidden) || (list && list.hidden));
+        if (bulk) bulk.hidden = !opening;
+        if (list) list.hidden = !opening;
+        shiftButton.textContent = opening ? 'シフトを閉じる' : 'シフトを見る';
+      });
+    }
 
-    document.getElementById('nursery-payslips-master-toggle').addEventListener('click', () => {
-      const section = document.getElementById('nursery-payslip-section');
-      if (!section) return;
-      section.hidden = !section.hidden;
-      document.getElementById('nursery-payslips-master-toggle').textContent = section.hidden ? '給与明細を見る' : '給与明細を閉じる';
-      if (!section.hidden) loadHistory();
-    });
+    const payslipButton = document.getElementById('nursery-payslips-master-toggle');
+    if (payslipButton && !payslipButton.dataset.bound) {
+      payslipButton.dataset.bound = '1';
+      payslipButton.addEventListener('click', () => {
+        const section = document.getElementById('nursery-payslip-section');
+        if (!section) return;
+        section.hidden = !section.hidden;
+        payslipButton.textContent = section.hidden ? '給与明細を見る' : '給与明細を閉じる';
+      });
+    }
+
+    placeShiftSectionsAbovePayslip();
   }
 
   function ensureUi() {
@@ -169,21 +205,28 @@
       </div>
       <div class="form-group" style="margin-top:10px"><label for="payslip-memo">メモ</label><input id="payslip-memo" type="text" placeholder="例：給与明細PDFから入力"></div>
       <div id="payslip-status" class="business-muted-note" style="margin-top:8px"></div>
-      <div id="payslip-history" style="margin-top:16px"></div>`;
+      <div style="margin-top:16px">
+        <button type="button" class="btn btn-secondary" id="payslip-history-toggle">保存済み明細を見る</button>
+      </div>
+      <div id="payslip-history" hidden style="margin-top:12px"></div>`;
 
-    const actions = document.getElementById('nursery-compact-actions');
-    const summary = document.getElementById('nursery-pay-summary');
-    if (actions) actions.insertAdjacentElement('afterend', section);
-    else if (summary) summary.insertAdjacentElement('afterend', section);
-    else panel.appendChild(section);
+    panel.appendChild(section);
 
     document.getElementById('payslip-month').value = monthValue();
     document.getElementById('payslip-month').addEventListener('change', loadSelectedMonth);
     document.getElementById('payslip-save').addEventListener('click', savePayslip);
     document.getElementById('payslip-pdf-btn').addEventListener('click', () => document.getElementById('payslip-pdf-file').click());
     document.getElementById('payslip-pdf-file').addEventListener('change', importPdf);
+    document.getElementById('payslip-history-toggle').addEventListener('click', async () => {
+      const history = document.getElementById('payslip-history');
+      const button = document.getElementById('payslip-history-toggle');
+      history.hidden = !history.hidden;
+      button.textContent = history.hidden ? '保存済み明細を見る' : '保存済み明細を閉じる';
+      if (!history.hidden) await loadHistory();
+    });
     loadSelectedMonth();
     ensureCompactActions();
+    placeShiftSectionsAbovePayslip();
   }
 
   async function parsePdfFile(file) {
@@ -307,7 +350,8 @@
         batchPayslips = [];
         renderBatch([]);
       }
-      await loadHistory();
+      const history = document.getElementById('payslip-history');
+      if (history && !history.hidden) await loadHistory();
     } finally {
       button.disabled = false;
     }
@@ -357,7 +401,8 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || '保存失敗');
       status.textContent = `${month} の給与明細を保存しました。`;
-      await loadHistory();
+      const history = document.getElementById('payslip-history');
+      if (history && !history.hidden) await loadHistory();
     } catch (e) {
       status.textContent = '保存エラー: ' + e.message;
     } finally {
@@ -431,6 +476,7 @@
   function init() {
     ensureUi();
     ensureCompactActions();
+    placeShiftSectionsAbovePayslip();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once:true });
