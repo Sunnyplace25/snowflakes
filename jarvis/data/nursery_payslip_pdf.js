@@ -39,23 +39,39 @@ function firstNumber(text, patterns) {
   return null;
 }
 
-function parseTargetMonth(text) {
+function parseFilenamePayDate(filename) {
+  // 給与明細ファイル名末尾の YYYYMMDD を支給日として使う。
+  // 例: ..._給与明細_20250214.pdf
+  const matches = [...String(filename || '').matchAll(/(20\d{2})(\d{2})(\d{2})/g)];
+  if (!matches.length) return null;
+  const m = matches[matches.length - 1];
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  return { year, month, day };
+}
+
+function parseTargetMonth(text, filename = '') {
+  // PDF本文は pdf2json の抽出順によって年が取り違うことがあるため、
+  // ファイル名に YYYYMMDD がある場合は、その支給年・支給月を最優先する。
+  const filenamePay = parseFilenamePayDate(filename);
+
   // 例: 2025(令和07)年08月15日支給分 / 2026(令和08)年08月14日支給分
-  // 和暦表記が西暦と月の間に入っても拾えるようにする。
   const pay = text.match(/(20\d{2})[\s\S]{0,24}?年?\s*(\d{1,2})月\s*\d{1,2}日?\s*支給/);
   const period = text.match(/対象期間[\s:：]*?(\d{1,2})月\s*0?1日[\s\S]{0,30}?(\d{1,2})月\s*\d{1,2}日/);
-  if (!pay && !period) return null;
 
-  // 支給日の年を最優先。支給日パターンが取れない古い明細でも、
-  // 文書中の西暦を拾い、現在年に勝手に置き換えない。
   const documentYear = text.match(/(20\d{2})\s*(?:\([^)]*\))?\s*年/);
-  const payYear = pay ? Number(pay[1]) : (documentYear ? Number(documentYear[1]) : null);
-  const payMonth = pay ? Number(pay[2]) : null;
-  const targetMonth = period ? Number(period[1]) : payMonth;
+  const payYear = filenamePay?.year ?? (pay ? Number(pay[1]) : (documentYear ? Number(documentYear[1]) : null));
+  const payMonth = filenamePay?.month ?? (pay ? Number(pay[2]) : null);
+
+  // 対象期間の月が取れればそれを使う。取れない場合は通常の給与明細として支給月の前月。
+  let targetMonth = period ? Number(period[1]) : null;
+  if (!targetMonth && payMonth) targetMonth = payMonth === 1 ? 12 : payMonth - 1;
   if (!targetMonth || !payYear) return null;
 
   let year = payYear;
-  // 12月勤務 → 翌1月支給のような年またぎだけ前年へ戻す。
+  // 12月勤務 → 翌1月支給など、対象月が支給月より後なら前年。
   if (payMonth && targetMonth > payMonth) year -= 1;
   return `${year}-${String(targetMonth).padStart(2, '0')}`;
 }
@@ -129,7 +145,7 @@ export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
   }
 
   const result = {
-    month: parseTargetMonth(text),
+    month: parseTargetMonth(text, filename),
     hourly_rate: hourlyRate,
     worked_hours: workedHours,
     paid_leave_used: paidLeaveUsed,
