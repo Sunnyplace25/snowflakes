@@ -1,7 +1,7 @@
 /**
  * 保育園 給与明細入力。
  * 過去月は日々のシフトを再入力せず、給与明細の月次実績をそのまま保存できる。
- * PDFはAIで読み取り、項目へ反映後にユーザー確認で保存する。
+ * PDFはローカル読取APIで解析し、単体または複数月を確認後に保存する。
  */
 'use strict';
 
@@ -11,6 +11,7 @@
     const value = document.getElementById(id)?.value;
     return value === '' || value == null ? null : Number(value);
   };
+  let batchPayslips = [];
 
   function monthValue() {
     if (typeof currentMonth !== 'undefined' && /^\d{4}-\d{2}$/.test(currentMonth)) return currentMonth;
@@ -34,6 +35,21 @@
     return btoa(binary);
   }
 
+  function payslipBody(p) {
+    return {
+      month: p.month,
+      hourly_rate: p.hourly_rate ?? null,
+      worked_hours: p.worked_hours ?? null,
+      paid_leave_used: p.paid_leave_used ?? null,
+      paid_leave_balance: p.paid_leave_balance ?? null,
+      gross_pay: p.gross_pay ?? null,
+      net_pay: p.net_pay ?? null,
+      transport_pay: p.transport_pay ?? null,
+      deductions: p.deductions ?? null,
+      memo: p.memo || null,
+    };
+  }
+
   function ensureUi() {
     const panel = document.getElementById('biz-tab-nursery');
     if (!panel || document.getElementById('nursery-payslip-section')) return;
@@ -46,13 +62,14 @@
         <h2>給与明細</h2>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-secondary" id="payslip-pdf-btn">PDFを取り込む</button>
-          <input type="file" id="payslip-pdf-file" accept="application/pdf,.pdf" hidden>
-          <span class="sf-note">過去月はシフト入力なしで実績を保存</span>
+          <input type="file" id="payslip-pdf-file" accept="application/pdf,.pdf" multiple hidden>
+          <span class="sf-note">複数PDFをまとめて選択できます</span>
         </div>
       </div>
       <div class="business-muted-note" style="margin-bottom:12px">
-        PDFを選ぶと明細の数字を読み取って下の欄へ入れます。内容を確認してから「この月の明細を保存」を押してください。
+        1枚だけなら下の欄へ反映します。複数枚なら月ごとに一覧化し、確認後にまとめて保存できます。
       </div>
+      <div id="payslip-batch" style="display:none;margin-bottom:16px"></div>
       <div class="business-form-inline" style="align-items:end">
         <div class="form-group"><label for="payslip-month">対象月</label><input id="payslip-month" type="month"></div>
         <div class="form-group"><label for="payslip-hourly">時給</label><input id="payslip-hourly" type="number" min="0" step="1"></div>
@@ -84,39 +101,144 @@
     loadHistory();
   }
 
+  async function parsePdfFile(file) {
+    const buffer = await file.arrayBuffer();
+    const response = await fetch('/api/nursery-payslip/import-pdf', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ filename:file.name, data_b64:arrayBufferToBase64(buffer) }),
+    });
+    const data = await response.json();
+    if (!response.ok || !data.ok) throw new Error(data.error || 'PDFの読取に失敗しました');
+    return { ...(data.payslip || {}), _filename: file.name };
+  }
+
   async function importPdf(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
     const status = document.getElementById('payslip-status');
     const button = document.getElementById('payslip-pdf-btn');
     button.disabled = true;
-    status.textContent = 'PDFを読み取り中...';
+    status.textContent = `${files.length}件のPDFを読み取り中...`;
     try {
-      const buffer = await file.arrayBuffer();
-      const response = await fetch('/api/nursery-payslip/import-pdf', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ filename:file.name, data_b64:arrayBufferToBase64(buffer) }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error(data.error || 'PDFの読取に失敗しました');
-      const p = data.payslip || {};
-      setField('payslip-month', p.month);
-      setField('payslip-hourly', p.hourly_rate);
-      setField('payslip-hours', p.worked_hours);
-      setField('payslip-leave-used', p.paid_leave_used);
-      setField('payslip-leave-balance', p.paid_leave_balance);
-      setField('payslip-gross', p.gross_pay);
-      setField('payslip-net', p.net_pay);
-      setField('payslip-transport', p.transport_pay);
-      setField('payslip-deductions', p.deductions);
-      setField('payslip-memo', p.memo || `PDF取込: ${file.name}`);
-      status.textContent = 'PDFから読み取りました。数字を確認してから保存してください。';
+      const results = [];
+      const errors = [];
+      for (let i = 0; i < files.length; i++) {
+        status.textContent = `PDFを読み取り中... ${i + 1}/${files.length}`;
+        try {
+          results.push(await parsePdfFile(files[i]));
+        } catch (e) {
+          errors.push(`${files[i].name}: ${e.message}`);
+        }
+      }
+
+      if (!results.length) throw new Error(errors.join(' / ') || 'PDFの読取に失敗しました');
+
+      if (files.length === 1 && results.length === 1) {
+        const p = results[0];
+        setField('payslip-month', p.month);
+        setField('payslip-hourly', p.hourly_rate);
+        setField('payslip-hours', p.worked_hours);
+        setField('payslip-leave-used', p.paid_leave_used);
+        setField('payslip-leave-balance', p.paid_leave_balance);
+        setField('payslip-gross', p.gross_pay);
+        setField('payslip-net', p.net_pay);
+        setField('payslip-transport', p.transport_pay);
+        setField('payslip-deductions', p.deductions);
+        setField('payslip-memo', p.memo || `PDF取込: ${p._filename}`);
+        status.textContent = 'PDFから読み取りました。数字を確認してから保存してください。';
+        renderBatch([]);
+      } else {
+        batchPayslips = results
+          .map(p => ({ ...p, memo: p.memo || `PDF取込: ${p._filename}` }))
+          .sort((a, b) => String(a.month || '').localeCompare(String(b.month || '')));
+        renderBatch(batchPayslips);
+        const suffix = errors.length ? `（${errors.length}件は読取失敗）` : '';
+        status.textContent = `${batchPayslips.length}件を読み取りました${suffix}。一覧を確認して「まとめて保存」を押してください。`;
+      }
     } catch (e) {
       status.textContent = 'PDF読取エラー: ' + e.message;
     } finally {
       button.disabled = false;
       event.target.value = '';
+    }
+  }
+
+  function renderBatch(rows) {
+    const el = document.getElementById('payslip-batch');
+    if (!el) return;
+    if (!rows.length) {
+      el.style.display = 'none';
+      el.innerHTML = '';
+      return;
+    }
+    const counts = rows.reduce((m, r) => {
+      if (r.month) m[r.month] = (m[r.month] || 0) + 1;
+      return m;
+    }, {});
+    el.style.display = '';
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        <strong>まとめて取り込み ${rows.length}件</strong>
+        <button class="btn btn-primary" id="payslip-batch-save">まとめて保存</button>
+      </div>
+      <table class="works-table">
+        <thead><tr><th>対象月</th><th>勤務時間</th><th>総支給</th><th>手取り</th><th>ファイル</th><th>確認</th></tr></thead>
+        <tbody>${rows.map((r, i) => {
+          const duplicate = r.month && counts[r.month] > 1;
+          const missing = !r.month;
+          const note = missing ? '対象月不明' : duplicate ? '同じ月が複数' : 'OK';
+          return `<tr>
+            <td>${r.month || '—'}</td>
+            <td>${r.worked_hours == null ? '—' : Number(r.worked_hours).toFixed(2).replace(/\.00$/,'') + 'h'}</td>
+            <td>${yen(r.gross_pay)}</td>
+            <td>${yen(r.net_pay)}</td>
+            <td>${r._filename || '—'}</td>
+            <td>${note}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>`;
+    document.getElementById('payslip-batch-save')?.addEventListener('click', saveBatchPayslips);
+  }
+
+  async function saveBatchPayslips() {
+    if (!batchPayslips.length) return;
+    const status = document.getElementById('payslip-status');
+    const button = document.getElementById('payslip-batch-save');
+    const validRows = batchPayslips.filter(r => /^\d{4}-\d{2}$/.test(r.month || ''));
+    if (!validRows.length) {
+      status.textContent = '保存できる対象月がありません。';
+      return;
+    }
+    button.disabled = true;
+    const errors = [];
+    let saved = 0;
+    try {
+      for (let i = 0; i < validRows.length; i++) {
+        status.textContent = `まとめて保存中... ${i + 1}/${validRows.length}`;
+        try {
+          const response = await fetch('/api/nursery-payslip', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payslipBody(validRows[i])),
+          });
+          const data = await response.json();
+          if (!response.ok || !data.ok) throw new Error(data.error || '保存失敗');
+          saved++;
+        } catch (e) {
+          errors.push(`${validRows[i].month}: ${e.message}`);
+        }
+      }
+      status.textContent = errors.length
+        ? `${saved}件保存しました。${errors.length}件は保存できませんでした。`
+        : `${saved}件の給与明細をまとめて保存しました。`;
+      if (!errors.length) {
+        batchPayslips = [];
+        renderBatch([]);
+      }
+      await loadHistory();
+    } finally {
+      button.disabled = false;
     }
   }
 
