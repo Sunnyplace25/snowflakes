@@ -31,6 +31,29 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
+  function normalizePayslip(payslip, filename = '') {
+    const p = { ...(payslip || {}), _filename: filename || payslip?._filename || '' };
+    const filenameMonth = monthFromPayslipFilename(p._filename);
+    if (filenameMonth) p.month = filenameMonth;
+
+    const net = p.net_pay == null ? null : Number(p.net_pay);
+    const deductions = p.deductions == null ? null : Number(p.deductions);
+    const gross = p.gross_pay == null ? null : Number(p.gross_pay);
+
+    // PDF抽出順の影響で交通費などを総支給として拾う場合がある。
+    // 手取りと控除が取れていれば、総支給 = 手取り + 控除 で画面側でも確定する。
+    if (Number.isFinite(net) && Number.isFinite(deductions)) {
+      const calculatedGross = net + deductions;
+      if (!Number.isFinite(gross) || gross <= net || Math.abs(gross - calculatedGross) > 1) {
+        p.gross_pay = calculatedGross;
+      }
+    } else if (Number.isFinite(gross) && Number.isFinite(net) && gross <= net) {
+      p.gross_pay = null;
+    }
+
+    return p;
+  }
+
   function setField(id, value) {
     if (value == null || value === '') return;
     const el = document.getElementById(id);
@@ -122,10 +145,7 @@
     });
     const data = await response.json();
     if (!response.ok || !data.ok) throw new Error(data.error || 'PDFの読取に失敗しました');
-    const payslip = { ...(data.payslip || {}), _filename: file.name };
-    const filenameMonth = monthFromPayslipFilename(file.name);
-    if (filenameMonth) payslip.month = filenameMonth;
-    return payslip;
+    return normalizePayslip(data.payslip || {}, file.name);
   }
 
   async function importPdf(event) {
@@ -165,7 +185,7 @@
         renderBatch([]);
       } else {
         batchPayslips = results
-          .map(p => ({ ...p, memo: p.memo || `PDF取込: ${p._filename}` }))
+          .map(p => normalizePayslip({ ...p, memo: p.memo || `PDF取込: ${p._filename}` }, p._filename))
           .sort((a, b) => String(a.month || '').localeCompare(String(b.month || '')));
         renderBatch(batchPayslips);
         const suffix = errors.length ? `（${errors.length}件は読取失敗）` : '';
@@ -199,10 +219,11 @@
       </div>
       <table class="works-table">
         <thead><tr><th>対象月</th><th>勤務時間</th><th>総支給</th><th>手取り</th><th>ファイル</th><th>確認</th></tr></thead>
-        <tbody>${rows.map((r, i) => {
+        <tbody>${rows.map(r => {
           const duplicate = r.month && counts[r.month] > 1;
           const missing = !r.month;
-          const note = missing ? '対象月不明' : duplicate ? '同じ月が複数' : 'OK';
+          const invalidGross = r.net_pay != null && (r.gross_pay == null || Number(r.gross_pay) <= Number(r.net_pay));
+          const note = missing ? '対象月不明' : duplicate ? '同じ月が複数' : invalidGross ? '総支給要確認' : 'OK';
           return `<tr>
             <td>${r.month || '—'}</td>
             <td>${r.worked_hours == null ? '—' : Number(r.worked_hours).toFixed(2).replace(/\.00$/,'') + 'h'}</td>
@@ -305,11 +326,13 @@
     status.textContent = '保存中...';
     try {
       const response = await fetch('/api/nursery-payslip', {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(body),
       });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || '保存失敗');
-      status.textContent = `${month.replace('-', '年')}月の給与明細を保存しました。`;
+      status.textContent = `${month} の給与明細を保存しました。`;
       await loadHistory();
     } catch (e) {
       status.textContent = '保存エラー: ' + e.message;
@@ -327,34 +350,50 @@
       if (!response.ok || !data.ok) throw new Error(data.error || '読込失敗');
       const rows = data.payslips || [];
       if (!rows.length) {
-        el.innerHTML = '<div class="empty-state">給与明細の登録はまだありません</div>';
+        el.innerHTML = '<div class="business-muted-note">保存済みの給与明細はありません。</div>';
         return;
       }
-      el.innerHTML = `<table class="works-table">
-        <thead><tr><th>月</th><th>勤務時間</th><th>有給残</th><th>総支給</th><th>手取り</th><th></th></tr></thead>
-        <tbody>${rows.map(r => `<tr>
-          <td>${r.month}</td>
-          <td>${r.worked_hours == null ? '—' : Number(r.worked_hours).toFixed(2).replace(/\.00$/,'') + 'h'}</td>
-          <td>${r.paid_leave_balance == null ? '—' : r.paid_leave_balance + '日'}</td>
-          <td>${yen(r.gross_pay)}</td><td>${yen(r.net_pay)}</td>
-          <td style="text-align:right"><button class="btn btn-secondary btn-sm" data-payslip-month="${r.month}">表示</button></td>
-        </tr>`).join('')}</tbody></table>`;
-      el.querySelectorAll('[data-payslip-month]').forEach(btn => btn.addEventListener('click', () => {
-        document.getElementById('payslip-month').value = btn.dataset.payslipMonth;
-        loadSelectedMonth();
-      }));
+      el.innerHTML = `
+        <table class="works-table">
+          <thead><tr><th>対象月</th><th>勤務時間</th><th>総支給</th><th>手取り</th><th>有給使用</th><th>有給残</th><th></th></tr></thead>
+          <tbody>${rows.map(r => `<tr>
+            <td>${r.month}</td>
+            <td>${r.worked_hours == null ? '—' : Number(r.worked_hours).toFixed(2).replace(/\.00$/,'') + 'h'}</td>
+            <td>${yen(r.gross_pay)}</td>
+            <td>${yen(r.net_pay)}</td>
+            <td>${r.paid_leave_used == null ? '—' : r.paid_leave_used + '日'}</td>
+            <td>${r.paid_leave_balance == null ? '—' : r.paid_leave_balance + '日'}</td>
+            <td><button class="btn btn-secondary btn-sm payslip-delete" data-month="${r.month}">削除</button></td>
+          </tr>`).join('')}</tbody>
+        </table>`;
+      el.querySelectorAll('.payslip-delete').forEach(button => {
+        button.addEventListener('click', () => deletePayslip(button.dataset.month));
+      });
     } catch (e) {
-      el.textContent = '給与明細一覧の読込エラー: ' + e.message;
+      el.innerHTML = `<div class="business-muted-note">給与明細の履歴を読み込めませんでした: ${e.message}</div>`;
+    }
+  }
+
+  async function deletePayslip(month) {
+    if (!window.confirm(`${month} の給与明細を削除しますか？`)) return;
+    try {
+      const response = await fetch(`/api/nursery-payslip/${encodeURIComponent(month)}`, { method:'DELETE' });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || '削除失敗');
+      await loadHistory();
+      if (document.getElementById('payslip-month')?.value === month) await loadSelectedMonth();
+    } catch (e) {
+      document.getElementById('payslip-status').textContent = '削除エラー: ' + e.message;
     }
   }
 
   function init() {
     ensureUi();
-    const observer = new MutationObserver(ensureUi);
-    const business = document.getElementById('module-business');
-    if (business) observer.observe(business, {childList:true, subtree:true});
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
-  else init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once:true });
+  } else {
+    init();
+  }
 })();
