@@ -40,16 +40,22 @@ function firstNumber(text, patterns) {
 }
 
 function parseTargetMonth(text) {
-  const pay = text.match(/(20\d{2})[^\d]{0,8}(\d{1,2})月\s*(?:\d{1,2}日)?支給/);
+  // 例: 2025(令和07)年08月15日支給分 / 2026(令和08)年08月14日支給分
+  // 和暦表記が西暦と月の間に入っても拾えるようにする。
+  const pay = text.match(/(20\d{2})[\s\S]{0,24}?年?\s*(\d{1,2})月\s*\d{1,2}日?\s*支給/);
   const period = text.match(/対象期間[\s:：]*?(\d{1,2})月\s*0?1日[\s\S]{0,30}?(\d{1,2})月\s*\d{1,2}日/);
   if (!pay && !period) return null;
 
-  const payYear = pay ? Number(pay[1]) : new Date().getFullYear();
+  // 支給日の年を最優先。支給日パターンが取れない古い明細でも、
+  // 文書中の西暦を拾い、現在年に勝手に置き換えない。
+  const documentYear = text.match(/(20\d{2})\s*(?:\([^)]*\))?\s*年/);
+  const payYear = pay ? Number(pay[1]) : (documentYear ? Number(documentYear[1]) : null);
   const payMonth = pay ? Number(pay[2]) : null;
   const targetMonth = period ? Number(period[1]) : payMonth;
-  if (!targetMonth) return null;
+  if (!targetMonth || !payYear) return null;
 
   let year = payYear;
+  // 12月勤務 → 翌1月支給のような年またぎだけ前年へ戻す。
   if (payMonth && targetMonth > payMonth) year -= 1;
   return `${year}-${String(targetMonth).padStart(2, '0')}`;
 }
