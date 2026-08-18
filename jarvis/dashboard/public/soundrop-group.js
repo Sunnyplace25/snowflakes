@@ -98,7 +98,41 @@
     });
   }
 
+  function setupBusinessFastSwitch() {
+    const button = document.querySelector('.module-tab[data-module="business"]');
+    const business = document.getElementById('module-business');
+    if (!button || !business || button.dataset.fastSwitchBound === '1') return;
+
+    button.dataset.fastSwitchBound = '1';
+    let lastRefreshAt = Date.now();
+
+    button.addEventListener('click', event => {
+      // app.js の従来ハンドラより先に捕まえ、重い refresh() を切替前に走らせない。
+      event.stopImmediatePropagation();
+
+      document.querySelectorAll('[id^="module-"]').forEach(el => {
+        el.hidden = (el.id !== 'module-business');
+      });
+      document.querySelectorAll('.module-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.module === 'business');
+      });
+      history.replaceState(null, '', '#business');
+
+      // 画面は即表示。データが古い時だけ、描画後にバックグラウンド更新する。
+      const now = Date.now();
+      if (now - lastRefreshAt < 30_000 || typeof window.refresh !== 'function') return;
+      lastRefreshAt = now;
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          Promise.resolve(window.refresh()).catch(() => {});
+        }, 0);
+      });
+    }, true);
+  }
+
   function init() {
+    setupBusinessFastSwitch();
+
     const module = document.getElementById('module-sf');
     if (!module || document.getElementById('sf-soundrop-group-tab')) return;
 
