@@ -202,8 +202,6 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 
-// business-nursery-payslip.js のタブ並べ替え監視が自身のDOM変更を再検知し続けないよう、
-// 初期配置後にナビ要素だけ差し替えて監視対象を切り離す。ボタン自体は移動するため既存イベントは保持する。
 (function () {
   function stabilizeBusinessTabs() {
     const oldTabs = document.getElementById('business-tabs');
@@ -240,12 +238,26 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        scrollbar-color: #475569 transparent;
       }
+      #works-table-container::-webkit-scrollbar { width: 8px; }
+      #works-table-container::-webkit-scrollbar-track { background: transparent; }
+      #works-table-container::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 999px;
+        border: 2px solid #0f172a;
+      }
+      #works-table-container::-webkit-scrollbar-thumb:hover { background: #64748b; }
       #works-table-container .works-table thead th {
         position: sticky;
         top: 0;
-        z-index: 2;
-        background: #111827;
+        z-index: 5;
+        background-color: #0f172a !important;
+        background-image: none !important;
+        opacity: 1 !important;
+        border-bottom: 1px solid #334155;
+        box-shadow: 0 1px 0 #334155;
       }
     `;
     document.head.appendChild(style);
