@@ -3,7 +3,7 @@
  * jarvis/automation/sf_ops_runner.js
  * Snow flakes Ops Runner（Phase 10）
  *
- * JARVIS Dashboard を開かなくても AUTO source の同期と
+ * JARVIS Dashboard を開かなくても GA4 と AUTO source の同期、
  * freshness 評価・attention 生成を実行するための CLI ランナー。
  *
  * 使用方法:
@@ -13,20 +13,17 @@
  *   node jarvis/automation/sf_ops_runner.js --source instagram
  *
  * オプション:
- *   --dry-run      AUTO sync を実行せず freshness だけ評価して終了
+ *   --dry-run      同期を実行せず freshness だけ評価して終了
  *   --report-only  sync せず attention 一覧だけ表示して終了
  *   --source <s>   指定 source のみ実行（AUTO source のみ有効）
  *   --no-notify    last_notified_at を更新しない（クールダウンを消費しない）
- *
- * 出力:
- *   通常: attention がある場合のみ内容を表示（成功ログは最小限）
- *   エラー: stderr に出力
  *
  * 環境変数:
  *   SF_DB_PATH — DB パスを上書きする場合に設定（省略時は data/business_data.db）
  */
 
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
+import { syncGa4 } from '../importers/ga4_collector.js';
 import {
   getSyncStatus,
   getAttentionItems,
@@ -35,19 +32,14 @@ import {
   AUTO_SOURCES,
   MANUAL_SOURCES,
 } from '../data/sf_sync_manager.js';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const JARVIS_ROOT = resolve(__dirname, '..');
 
 // ─── 引数パース ──────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const isDryRun    = args.includes('--dry-run');
+const isDryRun     = args.includes('--dry-run');
 const isReportOnly = args.includes('--report-only');
-const noNotify    = args.includes('--no-notify');
-const sourceIdx   = args.indexOf('--source');
+const noNotify     = args.includes('--no-notify');
+const sourceIdx    = args.indexOf('--source');
 const targetSource = sourceIdx >= 0 ? args[sourceIdx + 1] : null;
 
 // ─── DB 接続 ─────────────────────────────────────────────────────────────────
@@ -59,6 +51,24 @@ try {
 } catch (err) {
   console.error(`[sf_ops_runner] DB 接続失敗: ${err.message}`);
   process.exit(1);
+}
+
+async function runGa4DailySync() {
+  if (!process.env.GA4_PROPERTY_ID) {
+    console.log('[sf_ops_runner] GA4: 未設定のためスキップ');
+    return { success: false, skipped: true };
+  }
+
+  try {
+    // 毎朝の更新でも直近90日を再取得して、遅延確定したGA4値も上書き反映する。
+    const result = await syncGa4(db, {});
+    console.log(`  ✓ ga4: 成功 (${result.startDate} ～ ${result.endDate}, daily ${result.daily.written}件 / events ${result.events.written}件)`);
+    return { success: true, result };
+  } catch (err) {
+    // GA4だけ失敗しても YouTube / Instagram 等の同期は続行する。
+    console.error(`  ✗ ga4: 失敗 — ${err.message}`);
+    return { success: false, error: err.message };
+  }
 }
 
 // ─── メイン処理 ──────────────────────────────────────────────────────────────
@@ -87,6 +97,13 @@ async function main() {
     }
     db.close?.();
     return;
+  }
+
+  // 通常の日次実行では GA4 も同じタイミングで更新する。
+  // --source 指定時は従来どおり指定 source だけを実行する。
+  if (!isDryRun && !targetSource) {
+    console.log('[sf_ops_runner] GA4 を同期します');
+    await runGa4DailySync();
   }
 
   // AUTO sync 実行
