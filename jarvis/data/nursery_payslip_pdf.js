@@ -40,8 +40,6 @@ function firstNumber(text, patterns) {
 }
 
 function parseFilenamePayDate(filename) {
-  // 給与明細ファイル名末尾の YYYYMMDD を支給日として使う。
-  // 例: ..._給与明細_20250214.pdf
   const matches = [...String(filename || '').matchAll(/(20\d{2})(\d{2})(\d{2})/g)];
   if (!matches.length) return null;
   const m = matches[matches.length - 1];
@@ -53,25 +51,16 @@ function parseFilenamePayDate(filename) {
 }
 
 function parseTargetMonth(text, filename = '') {
-  // PDF本文は pdf2json の抽出順によって年が取り違うことがあるため、
-  // ファイル名に YYYYMMDD がある場合は、その支給年・支給月を最優先する。
   const filenamePay = parseFilenamePayDate(filename);
-
-  // 例: 2025(令和07)年08月15日支給分 / 2026(令和08)年08月14日支給分
   const pay = text.match(/(20\d{2})[\s\S]{0,24}?年?\s*(\d{1,2})月\s*\d{1,2}日?\s*支給/);
   const period = text.match(/対象期間[\s:：]*?(\d{1,2})月\s*0?1日[\s\S]{0,30}?(\d{1,2})月\s*\d{1,2}日/);
-
   const documentYear = text.match(/(20\d{2})\s*(?:\([^)]*\))?\s*年/);
   const payYear = filenamePay?.year ?? (pay ? Number(pay[1]) : (documentYear ? Number(documentYear[1]) : null));
   const payMonth = filenamePay?.month ?? (pay ? Number(pay[2]) : null);
-
-  // 対象期間の月が取れればそれを使う。取れない場合は通常の給与明細として支給月の前月。
   let targetMonth = period ? Number(period[1]) : null;
   if (!targetMonth && payMonth) targetMonth = payMonth === 1 ? 12 : payMonth - 1;
   if (!targetMonth || !payYear) return null;
-
   let year = payYear;
-  // 12月勤務 → 翌1月支給など、対象月が支給月より後なら前年。
   if (payMonth && targetMonth > payMonth) year -= 1;
   return `${year}-${String(targetMonth).padStart(2, '0')}`;
 }
@@ -136,12 +125,18 @@ export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
   const taxablePay = firstNumber(text, [/課税支給額\s*([\d,]+)/]);
   const nonTaxablePay = firstNumber(text, [/非課税支給額\s*([\d,]+)/]);
 
-  let grossPay = firstNumber(text, [
-    /支給合計\s*([\d,]+)/,
-    /総支給額\s*([\d,]+)/,
-  ]);
-  if (grossPay == null && taxablePay != null && nonTaxablePay != null) {
+  // PDFの列順によって「支給合計」の直後に交通費を誤取得する場合があるため、
+  // 差引支給額と控除合計が取れている場合は、その合計を総支給額として最優先する。
+  let grossPay = null;
+  if (netPay != null && deductions != null) {
+    grossPay = netPay + deductions;
+  } else if (taxablePay != null && nonTaxablePay != null) {
     grossPay = taxablePay + nonTaxablePay;
+  } else {
+    grossPay = firstNumber(text, [
+      /総支給額\s*[:：]?\s*([\d,]+)/,
+      /支給合計\s*[:：]?\s*([\d,]+)/,
+    ]);
   }
 
   const result = {
