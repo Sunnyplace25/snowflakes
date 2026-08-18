@@ -43,11 +43,20 @@ export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY が未設定です。JARVISの .env を確認してください');
 
-  const prompt = `日本の給与明細PDFから、次の項目だけを読み取ってJSONのみ返してください。
-不明な項目は null。推測で埋めないでください。
-month は給与の対象月を YYYY-MM で返してください。支給日ではなく対象月を優先してください。
-worked_hours は実働・勤務時間の合計（時間）。paid_leave_used / paid_leave_balance は日数。
-金額は円の整数にしてください。
+  const prompt = `日本の給与明細PDFを読み取り、下記JSONだけを返してください。
+この明細ではラベル名を優先して読み取ってください。推測で埋めず、不明なものだけ null にしてください。
+
+重要:
+- month: 「対象期間」の月。支給日ではありません。例: 対象期間が 07月01日〜07月31日、支給日が8月14日なら 2026-07。
+- hourly_rate: 「基本給(時給)＠」の値。支給欄の「時間給」の総額ではありません。
+- worked_hours: 勤怠欄の「勤務時間」。
+- paid_leave_used: 勤怠欄の「有休日数」。
+- paid_leave_balance: 勤怠欄の「有休残」。
+- gross_pay: 支給欄の「合計」。
+- net_pay: 「差引支給額」。
+- transport_pay: 支給欄の「通勤手当（非）」または通勤手当。
+- deductions: 控除欄の「合計」または「社会保険料等合計」。
+- 金額は円の整数、時間・日数は数値。
 
 {
   "month": "YYYY-MM or null",
