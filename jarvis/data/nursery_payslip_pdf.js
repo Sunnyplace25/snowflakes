@@ -120,23 +120,43 @@ export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
   const deductions = firstNumber(text, [
     /社会保険料等合計\s*([\d,]+)/,
     /控除(?:額)?合計\s*([\d,]+)/,
+    /控除合計額\s*([\d,]+)/,
+    /控除額計\s*([\d,]+)/,
+    /控除計\s*([\d,]+)/,
   ]);
 
-  const taxablePay = firstNumber(text, [/課税支給額\s*([\d,]+)/]);
-  const nonTaxablePay = firstNumber(text, [/非課税支給額\s*([\d,]+)/]);
+  const taxablePay = firstNumber(text, [
+    /課税支給額\s*([\d,]+)/,
+    /課税支給(?:合計|計)?\s*([\d,]+)/,
+  ]);
+  const nonTaxablePay = firstNumber(text, [
+    /非課税支給額\s*([\d,]+)/,
+    /非課税支給(?:合計|計)?\s*([\d,]+)/,
+  ]);
+  const hourlyPayAmount = firstNumber(text, [
+    /時間給\s*([\d,]+)/,
+    /時給支給\s*([\d,]+)/,
+  ]);
 
-  // PDFの列順によって「支給合計」の直後に交通費を誤取得する場合があるため、
-  // 差引支給額と控除合計が取れている場合は、その合計を総支給額として最優先する。
   let grossPay = null;
-  if (netPay != null && deductions != null) {
+  if (netPay != null && deductions != null && deductions > 0) {
     grossPay = netPay + deductions;
-  } else if (taxablePay != null && nonTaxablePay != null) {
+  }
+  if (grossPay == null && taxablePay != null && nonTaxablePay != null) {
     grossPay = taxablePay + nonTaxablePay;
-  } else {
-    grossPay = firstNumber(text, [
+  }
+  if (grossPay == null && hourlyPayAmount != null) {
+    grossPay = hourlyPayAmount + (transportPay || 0);
+  }
+  if (grossPay == null) {
+    const extractedGross = firstNumber(text, [
       /総支給額\s*[:：]?\s*([\d,]+)/,
       /支給合計\s*[:：]?\s*([\d,]+)/,
     ]);
+    // 総支給が手取り以下なら、交通費など別欄を誤取得している可能性が高いので採用しない。
+    if (extractedGross != null && (netPay == null || extractedGross >= netPay)) {
+      grossPay = extractedGross;
+    }
   }
 
   const result = {
