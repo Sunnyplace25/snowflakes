@@ -19,6 +19,18 @@
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
+  function monthFromPayslipFilename(filename) {
+    const matches = [...String(filename || '').matchAll(/(20\d{2})(\d{2})(\d{2})/g)];
+    if (!matches.length) return null;
+    const m = matches[matches.length - 1];
+    const year = Number(m[1]);
+    const payMonth = Number(m[2]);
+    const day = Number(m[3]);
+    if (payMonth < 1 || payMonth > 12 || day < 1 || day > 31) return null;
+    const d = new Date(year, payMonth - 2, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
   function setField(id, value) {
     if (value == null || value === '') return;
     const el = document.getElementById(id);
@@ -110,7 +122,10 @@
     });
     const data = await response.json();
     if (!response.ok || !data.ok) throw new Error(data.error || 'PDFの読取に失敗しました');
-    return { ...(data.payslip || {}), _filename: file.name };
+    const payslip = { ...(data.payslip || {}), _filename: file.name };
+    const filenameMonth = monthFromPayslipFilename(file.name);
+    if (filenameMonth) payslip.month = filenameMonth;
+    return payslip;
   }
 
   async function importPdf(event) {
