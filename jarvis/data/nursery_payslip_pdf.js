@@ -5,7 +5,7 @@
  */
 'use strict';
 
-import { PDFParser } from 'pdf2json';
+import PDFParser from 'pdf2json';
 
 function nullableNumber(value) {
   if (value == null || value === '') return null;
