@@ -482,3 +482,80 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once:true });
   else init();
 })();
+
+// Business navigation: combine analytics + graph and keep a stable tab order.
+(function () {
+  let arranging = false;
+
+  function ensureAnalyticsGraph() {
+    const panel = document.getElementById('biz-tab-analytics');
+    if (!panel || document.getElementById('business-analytics-graph')) return;
+
+    const section = document.createElement('section');
+    section.className = 'section';
+    section.id = 'business-analytics-graph';
+    section.innerHTML = `
+      <div class="section-header"><h2>全体グラフ</h2></div>
+      <div class="business-muted-note" style="margin-bottom:10px">音声・物販・パート（保育園）の実績をまとめて表示します。</div>
+      <iframe id="business-analytics-graph-frame" src="/business-graph.html" title="Business 統計グラフ" style="width:100%;height:980px;border:0;border-radius:8px;background:#0d1117"></iframe>`;
+    panel.appendChild(section);
+
+    const frame = document.getElementById('business-analytics-graph-frame');
+    frame?.addEventListener('load', () => {
+      try {
+        const doc = frame.contentDocument;
+        const header = doc?.querySelector('header');
+        const main = doc?.querySelector('main');
+        if (header) header.style.display = 'none';
+        if (main) {
+          main.style.maxWidth = 'none';
+          main.style.padding = '12px 0 0';
+        }
+        const syncBox = doc?.querySelector('.sync-box');
+        const issues = doc?.querySelector('#sync-issues');
+        if (syncBox) syncBox.style.display = 'none';
+        if (issues) issues.style.display = 'none';
+      } catch (_) {}
+    });
+  }
+
+  function arrangeBusinessTabs() {
+    if (arranging) return;
+    const tabs = document.getElementById('business-tabs');
+    if (!tabs) return;
+    arranging = true;
+    try {
+      const analytics = tabs.querySelector('[data-biz-tab="analytics"]');
+      const monthly = tabs.querySelector('[data-biz-tab="monthly"]');
+      const merch = document.getElementById('business-merch-tab');
+      const nursery = document.getElementById('business-nursery-tab-btn');
+      const calendar = tabs.querySelector('[data-biz-tab="calendar"]');
+      const invoice = tabs.querySelector('[data-biz-tab="invoice"]');
+      const oldGraph = tabs.querySelector('[data-business-graph]');
+
+      if (analytics) analytics.textContent = '実績分析（グラフ）';
+      if (monthly) monthly.textContent = '音声';
+      if (nursery) nursery.textContent = 'パート（保育園）';
+      if (calendar) calendar.textContent = 'Googleカレンダー';
+      if (invoice) invoice.textContent = '請求書';
+      oldGraph?.remove();
+
+      [analytics, monthly, merch, nursery, calendar, invoice].filter(Boolean).forEach(button => tabs.appendChild(button));
+      ensureAnalyticsGraph();
+    } finally {
+      arranging = false;
+    }
+  }
+
+  function initBusinessNav() {
+    arrangeBusinessTabs();
+    const tabs = document.getElementById('business-tabs');
+    if (!tabs) return;
+    new MutationObserver(() => setTimeout(arrangeBusinessTabs, 0)).observe(tabs, { childList:true });
+    setTimeout(arrangeBusinessTabs, 120);
+    setTimeout(arrangeBusinessTabs, 500);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initBusinessNav, { once:true });
+  else initBusinessNav();
+})();
