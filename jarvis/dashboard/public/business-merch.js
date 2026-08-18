@@ -203,14 +203,36 @@
 })();
 
 (function () {
-  function stabilizeBusinessTabs() {
-    const oldTabs = document.getElementById('business-tabs');
-    if (!oldTabs || oldTabs.dataset.stableNav === '1') return;
+  function ensureGraphLink(tabs) {
+    let graph = tabs.querySelector('[data-business-graph]');
+    if (graph && graph.tagName !== 'A') {
+      graph.remove();
+      graph = null;
+    }
+    if (!graph) {
+      graph = document.createElement('a');
+      graph.className = 'sf-tab';
+      graph.dataset.businessGraph = '1';
+      graph.href = '/business-graph.html';
+      graph.textContent = 'グラフ';
+      graph.style.textDecoration = 'none';
+      graph.style.display = 'inline-flex';
+      graph.style.alignItems = 'center';
+    }
+    return graph;
+  }
 
-    const tabs = oldTabs.cloneNode(false);
-    tabs.dataset.stableNav = '1';
-    while (oldTabs.firstChild) tabs.appendChild(oldTabs.firstChild);
-    oldTabs.replaceWith(tabs);
+  function stabilizeBusinessTabs() {
+    let tabs = document.getElementById('business-tabs');
+    if (!tabs) return;
+
+    if (tabs.dataset.stableNav !== '1') {
+      const oldTabs = tabs;
+      tabs = oldTabs.cloneNode(false);
+      tabs.dataset.stableNav = '1';
+      while (oldTabs.firstChild) tabs.appendChild(oldTabs.firstChild);
+      oldTabs.replaceWith(tabs);
+    }
 
     const analytics = tabs.querySelector('[data-biz-tab="analytics"]');
     const monthly = tabs.querySelector('[data-biz-tab="monthly"]');
@@ -218,23 +240,17 @@
     const nursery = document.getElementById('business-nursery-tab-btn');
     const calendar = tabs.querySelector('[data-biz-tab="calendar"]');
     const invoice = tabs.querySelector('[data-biz-tab="invoice"]');
-
-    let graph = tabs.querySelector('[data-business-graph]');
-    if (!graph) {
-      graph = document.createElement('button');
-      graph.type = 'button';
-      graph.className = 'sf-tab';
-      graph.dataset.businessGraph = '1';
-      graph.textContent = 'グラフ';
-      graph.addEventListener('click', () => { location.href = '/business-graph.html'; });
-    }
+    const graph = ensureGraphLink(tabs);
 
     if (analytics) analytics.textContent = '実績分析';
     if (monthly) monthly.textContent = '音声';
     if (nursery) nursery.textContent = 'パート（保育園）';
     if (calendar) calendar.textContent = 'Googleカレンダー';
     if (invoice) invoice.textContent = '請求書';
-    [analytics, graph, monthly, merch, nursery, calendar, invoice].filter(Boolean).forEach(button => tabs.appendChild(button));
+
+    [analytics, graph, monthly, merch, nursery, calendar, invoice]
+      .filter(Boolean)
+      .forEach(item => tabs.appendChild(item));
 
     const embeddedGraph = document.getElementById('business-analytics-graph');
     if (embeddedGraph) embeddedGraph.style.display = 'none';
