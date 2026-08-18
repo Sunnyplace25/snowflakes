@@ -73,6 +73,27 @@ function compact(text) {
     .replace(/\n+/g, '\n');
 }
 
+/**
+ * この給与明細では、PDF抽出結果に
+ *   119,100 26,103
+ * のように「総支給 / 控除合計」が同じ行で並ぶ。
+ * ラベルとの位置関係が崩れても、総支給 - 控除 = 手取り が一致する組を探せば確定できる。
+ */
+function findGrossAndDeductionsPair(text, netPay) {
+  if (netPay == null) return null;
+  const re = /(^|\n)\s*([\d,]{4,})\s+([\d,]{1,})\s*(?=\n|$)/g;
+  let match;
+  while ((match = re.exec(text)) !== null) {
+    const gross = nullableNumber(match[2]);
+    const deductions = nullableNumber(match[3]);
+    if (gross == null || deductions == null) continue;
+    if (gross > netPay && gross - deductions === netPay) {
+      return { gross, deductions };
+    }
+  }
+  return null;
+}
+
 export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
   if (!data_b64 || typeof data_b64 !== 'string') throw new Error('PDFファイルが必要です');
 
@@ -117,46 +138,35 @@ export async function readNurseryPayslipPdf({ data_b64, filename = '' } = {}) {
     /通勤手当[^\n\d]{0,12}([\d,]+)/,
   ]);
 
-  const deductions = firstNumber(text, [
+  let deductions = firstNumber(text, [
     /社会保険料等合計\s*([\d,]+)/,
     /控除(?:額)?合計\s*([\d,]+)/,
-    /控除合計額\s*([\d,]+)/,
-    /控除額計\s*([\d,]+)/,
-    /控除計\s*([\d,]+)/,
+    /控除合計\s*[:：]?\s*([\d,]+)/,
   ]);
 
-  const taxablePay = firstNumber(text, [
-    /課税支給額\s*([\d,]+)/,
-    /課税支給(?:合計|計)?\s*([\d,]+)/,
-  ]);
-  const nonTaxablePay = firstNumber(text, [
-    /非課税支給額\s*([\d,]+)/,
-    /非課税支給(?:合計|計)?\s*([\d,]+)/,
-  ]);
-  const hourlyPayAmount = firstNumber(text, [
-    /時間給\s*([\d,]+)/,
-    /時給支給\s*([\d,]+)/,
-  ]);
+  const taxablePay = firstNumber(text, [/課税支給額\s*([\d,]+)/]);
+  const nonTaxablePay = firstNumber(text, [/非課税支給額\s*([\d,]+)/]);
 
-  let grossPay = null;
-  if (netPay != null && deductions != null && deductions > 0) {
+  const pair = findGrossAndDeductionsPair(text, netPay);
+  if (pair) deductions = pair.deductions;
+
+  let grossPay = pair?.gross ?? null;
+  if (grossPay == null && netPay != null && deductions != null) {
     grossPay = netPay + deductions;
   }
   if (grossPay == null && taxablePay != null && nonTaxablePay != null) {
     grossPay = taxablePay + nonTaxablePay;
   }
-  if (grossPay == null && hourlyPayAmount != null) {
-    grossPay = hourlyPayAmount + (transportPay || 0);
-  }
   if (grossPay == null) {
-    const extractedGross = firstNumber(text, [
+    grossPay = firstNumber(text, [
       /総支給額\s*[:：]?\s*([\d,]+)/,
       /支給合計\s*[:：]?\s*([\d,]+)/,
     ]);
-    // 総支給が手取り以下なら、交通費など別欄を誤取得している可能性が高いので採用しない。
-    if (extractedGross != null && (netPay == null || extractedGross >= netPay)) {
-      grossPay = extractedGross;
-    }
+  }
+
+  // 総支給が手取り以下なら交通費等の誤読なので保存対象にしない。
+  if (grossPay != null && netPay != null && grossPay <= netPay) {
+    grossPay = null;
   }
 
   const result = {
