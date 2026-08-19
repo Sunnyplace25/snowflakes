@@ -298,6 +298,14 @@
       padding: 8px 22px 6px;
     }
     .ep-list-wrap { padding-left: 8px; }
+
+    /* 新作短篇フィーチャードカード */
+    .featured-new-title {
+      animation: glowPulse 3.5s ease-in-out infinite alternate;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .featured-new-title { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -313,6 +321,16 @@
     <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     SHARE
   </button>
+
+  <!-- 新作短篇 Under tone -->
+  <a href="https://ncode.syosetu.com/n1628mq/" target="_blank" rel="noopener" class="story-card" style="margin-bottom:28px;border-color:rgba(239,68,68,0.32);background:rgba(239,68,68,0.05);">
+    <span class="story-date">08.20<span class="story-time">23:00</span></span>
+    <span class="story-title-wrap">
+      <span class="story-title featured-new-title">Under tone</span>
+      <span class="story-rank">短篇 · 新作</span>
+    </span>
+    <span class="story-arrow">→</span>
+  </a>
 
   <div id="story-timeline"></div>
 <!--STORYTEXT_START
@@ -1563,7 +1581,7 @@ STORYTEXT_END-->
     } else if (item.type === 'series') {
       var details = document.createElement('details');
       details.className = 'series-details';
-      if (item.title === 'まだ、鳴っている') { details.open = true; }
+
 
       var summary = document.createElement('summary');
       summary.className = 'series-row';
@@ -1605,6 +1623,7 @@ STORYTEXT_END-->
 <div style="max-width:480px;margin:56px auto 0;padding:0 20px;">
   <a href="./room/undertone/" style="display:block;text-decoration:none;border-radius:12px;padding:20px 24px;background:rgba(239,68,68,0.03);border:1px solid rgba(239,68,68,0.18);transition:all 0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.07)';this.style.borderColor='rgba(239,68,68,0.35)'" onmouseout="this.style.background='rgba(239,68,68,0.03)';this.style.borderColor='rgba(239,68,68,0.18)'">
     <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:6px;color:#7f1d1d;margin-bottom:6px;">EXTRA</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:9px;letter-spacing:3px;color:#b91c1c;margin-bottom:8px;">ノベルゲーム</p>
     <p style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:300;color:#fca5a5;letter-spacing:0.08em;margin:0;">Under tone</p>
   </a>
 </div>
