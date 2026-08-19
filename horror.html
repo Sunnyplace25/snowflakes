@@ -299,54 +299,6 @@
     }
     .ep-list-wrap { padding-left: 8px; }
 
-    /* 通知バー */
-    #horror-notify-bar {
-      display: none;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 100;
-      background: rgba(12,0,0,0.93);
-      border-top: 1px solid rgba(239,68,68,0.28);
-      padding: 13px 20px 16px;
-      cursor: pointer;
-      text-align: center;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      animation: notifySlideUp 0.5s ease;
-    }
-    @keyframes notifySlideUp {
-      from { transform: translateY(100%); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-    .notify-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: #f87171;
-      display: block;
-    }
-    .notify-ja {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 13px;
-      font-weight: 300;
-      color: #fca5a5;
-      display: block;
-      margin-top: 4px;
-    }
-    .notify-arrow {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: #64748b;
-      display: block;
-      margin-top: 6px;
-      animation: notifyPulse 1.8s ease-in-out infinite;
-    }
-    @keyframes notifyPulse {
-      0%, 100% { opacity: 0.35; }
-      50%       { opacity: 1; }
-    }
-
     /* 炙り出しアニメーション */
     @keyframes titleReveal {
       0%   { opacity: 0;    filter: blur(12px); color: #1e293b; }
@@ -411,12 +363,6 @@
   </script>
 
   <div id="story-timeline"></div>
-
-  <div id="horror-notify-bar" role="button" tabindex="0" aria-label="新しいサイト限定ストーリーが公開されました" onclick="horrorNotifyScroll()" onkeydown="if(event.key==='Enter'||event.key===' ')horrorNotifyScroll()">
-    <span class="notify-en">SITE LIMITED STORY UPDATED</span>
-    <span class="notify-ja">新しい話が公開されました</span>
-    <span class="notify-arrow">↓ TAP TO READ ↓</span>
-  </div>
 <!--STORYTEXT_START
 　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
 
@@ -1642,10 +1588,6 @@ STORYTEXT_END-->
   ];
 
   var wrap = document.getElementById('story-timeline');
-  var OBOETOKUWA_DATE = new Date('2026-08-17T23:00:00+09:00');
-  var _isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  var _isPreview = _isLocal && new URLSearchParams(location.search).get('preview') === '1';
-  var isOboetokuwaLive = now >= OBOETOKUWA_DATE || _isPreview;
 
   timeline.forEach(function(item) {
     if (item.type === 'story' || item.type === 'web') {
@@ -1706,82 +1648,14 @@ STORYTEXT_END-->
     }
   });
 
-  // ── 通知バー ─────────────────────────────────────────────────────────────
-  if (isOboetokuwaLive) {
-    var notifyBar = document.getElementById('horror-notify-bar');
-    if (notifyBar) notifyBar.style.display = 'block';
-
-    // preview モード: カードは locked のまま（？？？表示）
-    // 通知クリック時に horrorNotifyScroll() で炙り出しを発火
-    window._horrorRevealMode = _isPreview; // preview なら炙り出しあり
-  }
-
 })();
 </script>
 
-<script>
-function horrorNotifyScroll() {
-  var bar  = document.getElementById('horror-notify-bar');
-  var card = document.getElementById('card-oboetokuwa');
-
-  // 通知バーをフェードアウト
-  if (bar) {
-    bar.style.animation = 'none';
-    bar.style.transition = 'opacity 0.3s, transform 0.3s';
-    bar.style.opacity = '0';
-    bar.style.transform = 'translateY(100%)';
-    setTimeout(function() { bar.style.display = 'none'; }, 320);
-  }
-
-  if (!card) return;
-
-  var titleEl = card.querySelector('.story-title');
-  var needsReveal = window._horrorRevealMode;
-
-  // 炙り出しモードのとき: スクロール前に ？？？ にリセット
-  if (needsReveal && titleEl) {
-    titleEl.classList.remove('reveal-anim');
-    titleEl.textContent = '？？？';
-    titleEl.style.color = '#64748b';
-    titleEl.style.filter = '';
-  }
-
-  // カードへスムーズスクロール
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-  // スクロール完了後（900ms）に炙り出し開始
-  if (needsReveal && titleEl) {
-    setTimeout(function() {
-      // アニメーションをリセットして再適用
-      titleEl.style.color = '';
-      titleEl.style.filter = '';
-      titleEl.textContent = '覚えとくわ';
-      void titleEl.offsetWidth; // reflow
-      titleEl.classList.add('reveal-anim');
-
-      // preview モード: 炙り出し後にカードをクリック可能にする
-      if (card.tagName === 'DIV') {
-        setTimeout(function() {
-          card.classList.remove('locked');
-          card.style.pointerEvents = 'auto';
-          card.style.cursor = 'pointer';
-          var arrow = card.querySelector('.story-arrow');
-          if (arrow) arrow.textContent = '→';
-          card.onclick = function() {
-            location.href = './horror_oboetokuwa.html?preview=1';
-          };
-        }, 2100); // アニメーション（2.0s）完了後
-      }
-    }, 900);
-  }
-}
-</script>
-
 <div style="max-width:480px;margin:56px auto 0;padding:0 20px;">
-  <a href="./room/undertone/" style="display:block;text-decoration:none;border-radius:12px;padding:20px 24px;background:rgba(239,68,68,0.03);border:1px solid rgba(239,68,68,0.18);transition:all 0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.07)';this.style.borderColor='rgba(239,68,68,0.35)'" onmouseout="this.style.background='rgba(239,68,68,0.03)';this.style.borderColor='rgba(239,68,68,0.18)'">
-    <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:6px;color:#7f1d1d;margin-bottom:6px;">EXTRA</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:9px;letter-spacing:3px;color:#b91c1c;margin-bottom:8px;">ノベルゲーム</p>
-    <p style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:300;color:#fca5a5;letter-spacing:0.08em;margin:0;">Under tone</p>
+  <a href="./room/undertone/" style="display:block;text-decoration:none;border-radius:12px;padding:20px 24px;background:rgba(167,139,250,0.03);border:1px solid rgba(167,139,250,0.22);transition:all 0.3s;" onmouseover="this.style.background='rgba(167,139,250,0.08)';this.style.borderColor='rgba(167,139,250,0.45)'" onmouseout="this.style.background='rgba(167,139,250,0.03)';this.style.borderColor='rgba(167,139,250,0.22)'">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:6px;color:#5b21b6;margin-bottom:6px;">EXTRA</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:9px;letter-spacing:3px;color:#7c3aed;margin-bottom:8px;">ノベルゲーム</p>
+    <p style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:300;color:#c4b5fd;letter-spacing:0.08em;margin:0;">Under tone</p>
   </a>
 </div>
 
