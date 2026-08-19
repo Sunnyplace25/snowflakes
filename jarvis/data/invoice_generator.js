@@ -259,6 +259,7 @@ export function generateInvoiceWorkbook(db, {
     month,
     invoice_number: number,
     invoice_date:   issueDate,
+    due_date:       paymentDue,
     client:         preview.client,
     tax_rate:       10,
     memo:           monthMemo(month),

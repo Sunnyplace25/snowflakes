@@ -484,6 +484,12 @@ def generate(data):
     if data.get('invoice_date'):
         set_date(sheet_root, 'L3', data['invoice_date'])
 
+    # D46: 支払期限（シリアル値）
+    # テンプレートの =EOMONTH(L3,0) 数式を確定値で上書き。
+    # ユーザーが生成画面で変更した場合もこちらの値が優先される。
+    if data.get('due_date'):
+        set_date(sheet_root, 'D46', data['due_date'])
+
     # A5: 請求先
     if data.get('client'):
         set_inline_string(sheet_root, 'A5', data['client'])

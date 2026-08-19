@@ -13,6 +13,45 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-08-19 — 請求書生成：支払期限 D46 書き込み漏れ修正
+
+### 目的
+`generateInvoiceWorkbook()` が確定した `due_date` を DB に保存していたが、
+Python スクリプトへの受け渡しと D46 への書き込みが未実装だった。
+ユーザーが生成画面で支払期限を変更した場合、画面・DB と Excel の期限が食い違う状態を修正。
+
+### 変更ファイル
+- `data/invoice_generator.js`
+- `data/generate_invoice_py.py`
+
+### 実装内容
+
+**invoice_generator.js — pyInput に due_date を追加**
+- `generateInvoiceWorkbook()` の `pyInput` に `due_date: paymentDue` を追加
+- これにより確定済み支払期限が Python へ確実に渡される
+
+**generate_invoice_py.py — D46 に支払期限を書き込む**
+- `# D46: 支払期限` ブロックを追加（L3 請求日の直後）
+- `set_date(sheet_root, 'D46', data['due_date'])` で日付シリアル値を書き込む
+- `set_number()` が `<f>` タグも削除するため、テンプレートの `=EOMONTH(L3,0)` 数式を完全に上書き
+- `due_date` がない場合は何も書かない（テンプレートの数式がフォールバックとして残る）
+
+### 確認結果（XML 検証 2ケース）
+
+| ケース | L3（請求日） | D46（支払期限） | D46 の型 |
+|---|---|---|---|
+| デフォルト（翌月末） | 2026-08-01 (serial=46235) | **2026-08-31** (serial=46265) | 数値（数式なし）|
+| 手動変更（翌々月末） | 2026-08-01 (serial=46235) | **2026-09-30** (serial=46295) | 数値（数式なし）|
+
+両ケースともテンプレートの `=EOMONTH(L3,0)` 数式が確定値に置き換わり、formula フィールドが存在しないことを確認 ✓
+
+### 未確認 / 残課題
+- なし
+
+### commit SHA：未採番（commit 前）
+
+---
+
 ## 2026-08-19 — 請求書生成：日付デフォルト修正・明細 I 列スタイル統一
 
 ### 目的
