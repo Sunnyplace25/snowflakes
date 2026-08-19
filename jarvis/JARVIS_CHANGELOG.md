@@ -156,7 +156,7 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 ### 未確認 / 残課題
 - PDF 実ファイルの最終印刷確認（実機プリンタ）は未実施
 
-### commit SHA：未採番（commit 前）
+### commit SHA：8c7f1c4
 
 ---
 
