@@ -18,6 +18,7 @@ import {
 } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const JARVIS_DIR = resolve(__dirname, '..');
@@ -25,6 +26,7 @@ const TEMPLATE_DIR = resolve(JARVIS_DIR, 'imports', 'invoices');
 const TEMPLATE_PATH = resolve(TEMPLATE_DIR, 'invoice_template.xlsx');
 const EXPORT_DIR = resolve(JARVIS_DIR, 'exports', 'invoices');
 const MAX_ROWS = 20;
+const PY_SCRIPT = resolve(__dirname, 'generate_invoice_py.py');
 
 function ensureGenerationTable(db) {
   db.exec(`
@@ -57,6 +59,19 @@ function lastDayOfMonth(month, delta = 0) {
   const [y, m] = month.split('-').map(Number);
   const d = new Date(y, m + delta, 0);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function firstDayOfMonth(month) {
+  validateMonth(month);
+  const [y, m] = month.split('-');
+  return `${y}-${m}-01`;
+}
+
+function firstDayOfNextMonth(month) {
+  validateMonth(month);
+  const [y, m] = month.split('-').map(Number);
+  const d = new Date(y, m, 1); // m は 1-indexed なので new Date(y, m, 1) = 翌月1日
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
 }
 
 function isOtec(client) {
@@ -161,7 +176,7 @@ export function buildInvoicePreview(db, month) {
     month,
     client: '株式会社　オーテック',
     invoice_number: prior?.invoice_number || defaultInvoiceNumber(month),
-    invoice_date: prior?.invoice_date || lastDayOfMonth(month, 0),
+    invoice_date: prior?.invoice_date || firstDayOfNextMonth(month),
     due_date: prior?.due_date || lastDayOfMonth(month, 1),
     rows,
     subtotal,
@@ -231,56 +246,54 @@ export function generateInvoiceWorkbook(db, {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(issueDate)) throw new Error('請求日は YYYY-MM-DD 形式で指定してください');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(paymentDue)) throw new Error('支払期限は YYYY-MM-DD 形式で指定してください');
 
-  const templateBuffer = readFileSync(TEMPLATE_PATH);
-  const workbook = XLSX.read(templateBuffer, {
-    type: 'buffer', cellStyles: true, cellNF: true, cellDates: true,
-  });
-  const sourceName = selectTemplateSheetName(workbook);
-  if (!sourceName) throw new Error('テンプレートに請求書シートがありません');
-  const sheet = workbook.Sheets[sourceName];
-
-  // 実テンプレートの明細欄だけを初期化。書式・結合セルは残す。
-  for (let row = 17; row <= 36; row++) {
-    setCellValue(sheet, `A${row}`, row - 16);
-    for (const col of ['B','C','H','I','J','L']) clearCellValue(sheet, `${col}${row}`);
-  }
-
-  setCellValue(sheet, 'L2', displayInvoiceNumber(number));
-  setCellValue(sheet, 'L3', asLocalDate(issueDate));
-  setCellValue(sheet, 'A5', '株式会社　オーテック');
-  setCellValue(sheet, 'D11', preview.total);
-
-  preview.rows.forEach((item, idx) => {
-    const row = 17 + idx;
-    setCellValue(sheet, `A${row}`, item.no);
-    setCellValue(sheet, `B${row}`, item.date_label);
-    setCellValue(sheet, `C${row}`, item.description);
-    setCellValue(sheet, `H${row}`, item.quantity);
-    setCellValue(sheet, `I${row}`, item.unit);
-    setCellValue(sheet, `J${row}`, item.unit_price);
-    setCellValue(sheet, `L${row}`, item.amount);
-  });
-
-  setCellValue(sheet, 'L38', preview.subtotal);
-  setCellValue(sheet, 'K39', 10);
-  setCellValue(sheet, 'L39', preview.tax);
-  setCellValue(sheet, 'L40', preview.total);
-  setCellValue(sheet, 'C43', monthMemo(month));
-  setCellValue(sheet, 'D46', asLocalDate(paymentDue));
-
-  const outputSheetName = `${month.replace('-', '')} 請求書`;
-  workbook.SheetNames = [outputSheetName];
-  workbook.Sheets = { [outputSheetName]: sheet };
-
-  const buffer = XLSX.write(workbook, {
-    type: 'buffer', bookType: 'xlsx', cellStyles: true,
-  });
-
   mkdirSync(EXPORT_DIR, { recursive: true });
   const safeNumber = number.replace(/[^0-9A-Za-z_-]/g, '_');
   const filename = `請求書_${safeNumber}.xlsx`;
   const outputPath = resolve(EXPORT_DIR, filename);
-  writeFileSync(outputPath, buffer);
+
+  // Python スクリプトでテンプレートをコピーして値だけ差し替える。
+  // openpyxl を使用するため画像・書式・結合セル等が完全保持される。
+  const pyInput = JSON.stringify({
+    template_path: TEMPLATE_PATH,
+    output_path:   outputPath,
+    month,
+    invoice_number: number,
+    invoice_date:   issueDate,
+    client:         preview.client,
+    tax_rate:       10,
+    memo:           monthMemo(month),
+    rows:           preview.rows.map(r => ({
+      no:          r.no,
+      date_label:  r.date_label,
+      description: r.description,
+      quantity:    r.quantity,
+      unit:        r.unit,
+      unit_price:  r.unit_price,
+      amount:      r.amount,
+    })),
+  });
+
+  let pyOut;
+  try {
+    pyOut = execFileSync('python', [PY_SCRIPT, '--json', pyInput], {
+      encoding: 'utf8',
+      timeout:  30_000,
+    });
+  } catch (err) {
+    throw new Error(`請求書生成（Python）失敗: ${err.stderr || err.message}`);
+  }
+
+  let pyResult;
+  try {
+    pyResult = JSON.parse(pyOut.trim());
+  } catch {
+    throw new Error(`請求書生成スクリプトの出力が不正です: ${pyOut}`);
+  }
+  if (!pyResult.ok) {
+    throw new Error(`請求書生成エラー: ${pyResult.error}`);
+  }
+
+  const buffer = readFileSync(outputPath);
 
   ensureGenerationTable(db);
   db.prepare(`
