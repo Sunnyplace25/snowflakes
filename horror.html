@@ -299,6 +299,65 @@
     }
     .ep-list-wrap { padding-left: 8px; }
 
+    /* 通知バー */
+    #horror-notify-bar {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(12,0,0,0.93);
+      border-top: 1px solid rgba(239,68,68,0.28);
+      padding: 13px 20px 16px;
+      cursor: pointer;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: notifySlideUp 0.5s ease;
+    }
+    @keyframes notifySlideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .notify-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #f87171;
+      display: block;
+    }
+    .notify-ja {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: #fca5a5;
+      display: block;
+      margin-top: 4px;
+    }
+    .notify-arrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #64748b;
+      display: block;
+      margin-top: 6px;
+      animation: notifyPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes notifyPulse {
+      0%, 100% { opacity: 0.35; }
+      50%       { opacity: 1; }
+    }
+
+    /* 炙り出しアニメーション */
+    @keyframes titleReveal {
+      0%   { opacity: 0;    filter: blur(12px); color: #1e293b; }
+      30%  { opacity: 0.15; filter: blur(8px);  color: #475569; }
+      65%  { opacity: 0.5;  filter: blur(3px);  color: #94a3b8; }
+      100% { opacity: 1;    filter: blur(0);    color: #fff5f5; }
+    }
+    .story-title.reveal-anim {
+      animation: titleReveal 2.0s ease forwards;
+    }
+
     /* 新作短篇フィーチャードカード */
     .featured-new-title {
       animation: glowPulse 3.5s ease-in-out infinite alternate;
@@ -322,17 +381,42 @@
     SHARE
   </button>
 
-  <!-- 新作短篇 Under tone -->
-  <a href="https://ncode.syosetu.com/n1628mq/" target="_blank" rel="noopener" class="story-card" style="margin-bottom:28px;border-color:rgba(239,68,68,0.32);background:rgba(239,68,68,0.05);">
-    <span class="story-date">08.20<span class="story-time">23:00</span></span>
-    <span class="story-title-wrap">
-      <span class="story-title featured-new-title">Under tone</span>
-      <span class="story-rank">短篇 · 新作</span>
-    </span>
-    <span class="story-arrow">→</span>
-  </a>
+  <!-- 新作短篇 Under tone（時刻制御） -->
+  <div id="ut-story-card-wrap" style="margin-bottom:28px;"></div>
+  <script>
+  (function() {
+    var UT_AVAIL = new Date('2026-08-20T23:00:00+09:00');
+    function renderUTCard() {
+      var wrap = document.getElementById('ut-story-card-wrap');
+      if (!wrap) return;
+      var ok = new Date() >= UT_AVAIL;
+      if (ok) {
+        wrap.innerHTML =
+          '<a href="https://ncode.syosetu.com/n1628mq/" target="_blank" rel="noopener" class="story-card" style="border-color:rgba(239,68,68,0.32);background:rgba(239,68,68,0.05);">' +
+          '<span class="story-date">08.20<span class="story-time">23:00</span></span>' +
+          '<span class="story-title-wrap"><span class="story-title featured-new-title">Under tone</span><span class="story-rank">短篇 · 新作</span></span>' +
+          '<span class="story-arrow">→</span></a>';
+      } else {
+        wrap.innerHTML =
+          '<div class="story-card locked">' +
+          '<span class="story-date">08.20<span class="story-time">23:00</span></span>' +
+          '<span class="story-title-wrap"><span class="story-title">？？？</span></span>' +
+          '<span class="story-arrow">—</span></div>';
+        var msUntil = UT_AVAIL - new Date();
+        setTimeout(function() { renderUTCard(); }, Math.min(msUntil + 1000, 2147483647));
+      }
+    }
+    renderUTCard();
+  })();
+  </script>
 
   <div id="story-timeline"></div>
+
+  <div id="horror-notify-bar" role="button" tabindex="0" aria-label="新しいサイト限定ストーリーが公開されました" onclick="horrorNotifyScroll()" onkeydown="if(event.key==='Enter'||event.key===' ')horrorNotifyScroll()">
+    <span class="notify-en">SITE LIMITED STORY UPDATED</span>
+    <span class="notify-ja">新しい話が公開されました</span>
+    <span class="notify-arrow">↓ TAP TO READ ↓</span>
+  </div>
 <!--STORYTEXT_START
 　搬入口のシャッターが上がる音は、いつも必要以上に大きい。
 
@@ -1554,15 +1638,21 @@ STORYTEXT_END-->
         { ep:7, date:'2026-08-16T23:00:00+09:00', label:'08.16', title:'終章　残響' },
       ]
     },
+    { type:'web', date:'2026-08-17T23:00:00+09:00', label:'08.17', title:'覚えとくわ', url:'./horror_oboetokuwa.html', id:'card-oboetokuwa' },
   ];
 
   var wrap = document.getElementById('story-timeline');
+  var OBOETOKUWA_DATE = new Date('2026-08-17T23:00:00+09:00');
+  var _isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var _isPreview = _isLocal && new URLSearchParams(location.search).get('preview') === '1';
+  var isOboetokuwaLive = now >= OBOETOKUWA_DATE || _isPreview;
 
   timeline.forEach(function(item) {
     if (item.type === 'story' || item.type === 'web') {
       var ok = avail(item.date);
       var el = document.createElement(ok ? 'a' : 'div');
       el.className = 'story-card' + (ok ? '' : ' locked');
+      if (item.id) el.id = item.id;
       if (ok) {
         el.href = item.url;
         if (item.type === 'story') { el.target = '_blank'; el.rel = 'noopener'; }
@@ -1581,8 +1671,6 @@ STORYTEXT_END-->
     } else if (item.type === 'series') {
       var details = document.createElement('details');
       details.className = 'series-details';
-
-
       var summary = document.createElement('summary');
       summary.className = 'series-row';
       summary.innerHTML =
@@ -1617,7 +1705,76 @@ STORYTEXT_END-->
       wrap.appendChild(details);
     }
   });
+
+  // ── 通知バー ─────────────────────────────────────────────────────────────
+  if (isOboetokuwaLive) {
+    var notifyBar = document.getElementById('horror-notify-bar');
+    if (notifyBar) notifyBar.style.display = 'block';
+
+    // preview モード: カードは locked のまま（？？？表示）
+    // 通知クリック時に horrorNotifyScroll() で炙り出しを発火
+    window._horrorRevealMode = _isPreview; // preview なら炙り出しあり
+  }
+
 })();
+</script>
+
+<script>
+function horrorNotifyScroll() {
+  var bar  = document.getElementById('horror-notify-bar');
+  var card = document.getElementById('card-oboetokuwa');
+
+  // 通知バーをフェードアウト
+  if (bar) {
+    bar.style.animation = 'none';
+    bar.style.transition = 'opacity 0.3s, transform 0.3s';
+    bar.style.opacity = '0';
+    bar.style.transform = 'translateY(100%)';
+    setTimeout(function() { bar.style.display = 'none'; }, 320);
+  }
+
+  if (!card) return;
+
+  var titleEl = card.querySelector('.story-title');
+  var needsReveal = window._horrorRevealMode;
+
+  // 炙り出しモードのとき: スクロール前に ？？？ にリセット
+  if (needsReveal && titleEl) {
+    titleEl.classList.remove('reveal-anim');
+    titleEl.textContent = '？？？';
+    titleEl.style.color = '#64748b';
+    titleEl.style.filter = '';
+  }
+
+  // カードへスムーズスクロール
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // スクロール完了後（900ms）に炙り出し開始
+  if (needsReveal && titleEl) {
+    setTimeout(function() {
+      // アニメーションをリセットして再適用
+      titleEl.style.color = '';
+      titleEl.style.filter = '';
+      titleEl.textContent = '覚えとくわ';
+      void titleEl.offsetWidth; // reflow
+      titleEl.classList.add('reveal-anim');
+
+      // preview モード: 炙り出し後にカードをクリック可能にする
+      if (card.tagName === 'DIV') {
+        setTimeout(function() {
+          card.classList.remove('locked');
+          card.style.pointerEvents = 'auto';
+          card.style.cursor = 'pointer';
+          var arrow = card.querySelector('.story-arrow');
+          if (arrow) arrow.textContent = '→';
+          card.onclick = function() {
+            location.href = './horror_oboetokuwa.html?preview=1';
+          };
+        }, 2100); // アニメーション（2.0s）完了後
+      }
+    }, 900);
+  }
+}
 </script>
 
 <div style="max-width:480px;margin:56px auto 0;padding:0 20px;">
@@ -1646,17 +1803,16 @@ STORYTEXT_END-->
   </div>
 
 <script>
-// ランダム背景
+// ランダム背景（一覧ページのみ）
 (function() {
   var imgs = [
-    './horror_bg.webp',   // 既存
-    './horror_bg2.webp',  // オレンジ髪女の子
-    './horror_bg3.webp',  // レコーダー写真
-    './horror_bg4.webp',  // スタジオ背面女の子
-    // './horror_bg5.webp',  // 赤髪男・ギター（既存と重複のため除外）
-    './horror_bg6.webp',  // バーテンダー女の子
-    './horror_bg7.webp',  // 茶髪男・ギター
-    './horror_bg8.webp',  // 金髪男・ドラム
+    './horror_bg.webp',
+    './horror_bg2.webp',
+    './horror_bg3.webp',
+    './horror_bg4.webp',
+    './horror_bg6.webp',
+    './horror_bg7.webp',
+    './horror_bg8.webp',
   ];
   var picked = imgs[Math.floor(Math.random() * imgs.length)];
   document.body.style.setProperty('--bg-img', 'url("' + picked + '")');
@@ -1771,6 +1927,70 @@ window.addEventListener('load', function() {
     requestAnimationFrame(draw);
   }
   draw();
+})();
+</script>
+
+<!-- 訪問ボーナスポップアップ（プロテインコーヒー × 1 / 1日1回） -->
+<style>
+  #horror-visit-popup {
+    position: fixed; inset: 0; z-index: 9100;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10,10,20,0.88); backdrop-filter: blur(14px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #horror-visit-popup.show { opacity: 1; pointer-events: auto; }
+  #horror-visit-box {
+    text-align: center;
+    transform: translateY(20px) scale(0.94);
+    transition: transform 0.5s cubic-bezier(.18,1.2,.45,1);
+  }
+  #horror-visit-popup.show #horror-visit-box { transform: none; }
+  @keyframes horrorItemFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  #horror-visit-img { animation: horrorItemFloat 3s ease-in-out infinite; display:block; margin:0 auto 28px; width:140px; }
+  @media (max-width:480px) { #horror-visit-img { width:110px; } }
+</style>
+<div id="horror-visit-popup" onclick="document.getElementById('horror-visit-popup').classList.remove('show')">
+  <div id="horror-visit-box" onclick="event.stopPropagation()">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:7px;color:#64748b;margin-bottom:32px;">Snow flakes</p>
+    <img id="horror-visit-img" src="./item/proteincoffee.webp" alt="プロテインコーヒー">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:10px;">ITEM</p>
+    <p style="font-size:clamp(16px,4vw,22px);font-weight:300;letter-spacing:3px;color:rgba(255,255,255,0.9);margin-bottom:6px;font-family:'Noto Serif JP',serif;">プロテインコーヒー × 1</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;color:#94a3b8;margin-bottom:28px;">入手しました</p>
+    <button onclick="document.getElementById('horror-visit-popup').classList.remove('show')" style="font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:12px 36px;cursor:pointer;color:#e2e8f0;">閉じる</button>
+  </div>
+</div>
+<script>
+// 夏のホラー特集 訪問ボーナス（1日1回・最大3回）
+(function() {
+  var COUNT_KEY = 'sf_horror_visit_count_2026';
+
+  // 最大3回チェック
+  var count = parseInt(localStorage.getItem(COUNT_KEY) || '0', 10);
+  if (count >= 3) return;
+
+  // JST日付（UTC+9）
+  var jstDate = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  var dailyKey = 'sf_horror_visit_daily_' + jstDate;
+
+  // 同日取得チェック
+  if (localStorage.getItem(dailyKey) === '1') return;
+
+  // 取得処理
+  localStorage.setItem(dailyKey, '1');
+  count += 1;
+  localStorage.setItem(COUNT_KEY, String(count));
+
+  // proteincoffee +1（上書きせず加算）
+  var mItems;
+  try { mItems = JSON.parse(localStorage.getItem('sf_monthly_items') || '{}'); } catch(e) { mItems = {}; }
+  mItems['proteincoffee'] = (mItems['proteincoffee'] || 0) + 1;
+  localStorage.setItem('sf_monthly_items', JSON.stringify(mItems));
+
+  // 取得成功時のみポップアップ表示
+  setTimeout(function() {
+    document.getElementById('horror-visit-popup').classList.add('show');
+  }, 1200);
 })();
 </script>
 </body>
