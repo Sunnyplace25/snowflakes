@@ -1615,8 +1615,9 @@ STORYTEXT_END-->
       details.className = 'series-details';
       var summary = document.createElement('summary');
       summary.className = 'series-row';
+      var st = item.eps && item.eps.length ? timeLabel(item.eps[0].date) : '';
       summary.innerHTML =
-        '<span class="story-date">' + item.label + '</span>' +
+        '<span class="story-date">' + item.label + (st ? '<span class="story-time">' + st + '</span>' : '') + '</span>' +
         '<span class="story-title">' + item.title + '</span>' +
         '<span class="story-tag tag-series">連載</span>' +
         '<span class="series-arrow">▶</span>';
