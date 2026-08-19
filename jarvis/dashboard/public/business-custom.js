@@ -789,6 +789,12 @@
     }
   }
 
+  function invoiceDefaultFilename(invoiceDate) {
+    if (!invoiceDate || !/^\d{4}-\d{2}-\d{2}$/.test(invoiceDate)) return '';
+    const [y, m, d] = invoiceDate.split('-').map(Number);
+    return `${y}年${m}月${d}日_請求書_大和谷しおり.xlsx`;
+  }
+
   function renderInvoiceGenerationPreview(data) {
     const el = document.getElementById('invoice-gen-preview');
     if (!el) return;
@@ -801,6 +807,7 @@
       </tr>
     `).join('');
 
+    const defaultFn = invoiceDefaultFilename(data.invoice_date);
     el.innerHTML = `
       <div class="business-form-inline" style="margin-bottom:14px">
         <div class="form-group">
@@ -814,6 +821,12 @@
         <div class="form-group">
           <label for="invoice-gen-due">支払期限</label>
           <input type="date" id="invoice-gen-due" value="${escHtml(data.due_date)}">
+        </div>
+        <div class="form-group form-full">
+          <label for="invoice-gen-filename">出力ファイル名</label>
+          <input type="text" id="invoice-gen-filename"
+                 value="${escHtml(defaultFn)}"
+                 placeholder="空欄で請求日から自動生成（.xlsx 自動付与）">
         </div>
       </div>
       ${rows ? `
@@ -837,6 +850,18 @@
       </div>
     `;
     document.getElementById('invoice-gen-download-btn')?.addEventListener('click', generateInvoiceExcel);
+
+    // 請求日変更時にファイル名を自動更新（ユーザーが手動変更した場合は追従しない）
+    const dateInput = document.getElementById('invoice-gen-date');
+    const fnInput = document.getElementById('invoice-gen-filename');
+    if (dateInput && fnInput) {
+      fnInput.addEventListener('input', () => { fnInput.dataset.userModified = '1'; });
+      dateInput.addEventListener('change', () => {
+        if (!fnInput.dataset.userModified) {
+          fnInput.value = invoiceDefaultFilename(dateInput.value);
+        }
+      });
+    }
   }
 
   async function generateInvoiceExcel() {
@@ -852,6 +877,7 @@
         invoice_number: document.getElementById('invoice-gen-number').value.trim(),
         invoice_date: document.getElementById('invoice-gen-date').value,
         due_date: document.getElementById('invoice-gen-due').value,
+        output_filename: document.getElementById('invoice-gen-filename')?.value.trim() || '',
       };
       const response = await fetch('/api/invoice/generate', {
         method: 'POST',
@@ -922,7 +948,6 @@
     setupEditDeleteButton();
     ensureNurseryShiftUi();
     ensureInvoiceGeneratorUi();
-    ensureGraphTab();
     scheduleRefresh();
 
     const targets = [

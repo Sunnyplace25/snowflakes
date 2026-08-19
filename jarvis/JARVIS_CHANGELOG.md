@@ -13,6 +13,307 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-08-19 — 請求書：出力ファイル名を生成画面で指定可能に
+
+### 目的
+生成画面で保存ファイル名を指定できるようにする。
+デフォルト名は請求日を使って `YYYY年M月D日_請求書_大和谷しおり.xlsx` 形式で自動生成。
+請求書番号は DB 管理のまま変更なし。
+
+### 変更ファイル
+- `data/invoice_generator.js`
+- `dashboard/public/business-custom.js`
+
+### 実装内容
+
+**invoice_generator.js**
+- `defaultOutputFilename(issueDate)` 関数追加：`YYYY-MM-DD → YYYY年M月D日_請求書_大和谷しおり.xlsx`
+- `sanitizeFilename(name)` 関数追加：Windows 禁止文字 `\ / : * ? " < > |` を除去
+- `generateInvoiceWorkbook()` に `output_filename` パラメータ追加
+  - 指定あり: サニタイズ後 `.xlsx` 自動付与、出力パスに使用
+  - 指定なし（空文字/null）: `defaultOutputFilename(issueDate)` を使用
+  - 旧デフォルト `請求書_${safeNumber}.xlsx` は廃止
+
+**business-custom.js**
+- `invoiceDefaultFilename(invoiceDate)` ヘルパー追加（JS側デフォルト名生成）
+- `renderInvoiceGenerationPreview()` のプレビューフォームに「出力ファイル名」入力欄追加
+  - デフォルト値: 請求日から自動計算
+  - 請求日変更時: ファイル名未手動編集なら自動更新（`data-user-modified` フラグで追跡）
+  - 手動編集後: 請求日変更に追従しない
+- `generateInvoiceExcel()` のリクエスト body に `output_filename` 追加
+
+### 確認結果
+- デフォルト名テスト `2026-09-01` → `2026年9月1日_請求書_大和谷しおり.xlsx` ✓
+- ファイル生成・ダウンロード: server.js は `body` を `generateInvoiceWorkbook` に直渡しのため追加変更なし ✓
+- invoice_number DB 管理は変更なし ✓
+
+### 未確認 / 残課題
+- ブラウザ UI での目視確認（ユーザーに依頼）
+
+### commit SHA：未採番（commit 前）
+
+---
+
+## 2026-08-20 — 請求書25行対応：全機能完成・スタイル完全正規化（最終確認済み）
+
+### 目的
+請求書明細の最大25行対応（テンプレート20行 → 生成時5行動的拡張）を完成させ、
+実ファイル目視確認で発見された視覚不具合をすべて修正。
+テスト・機械監査・印刷プレビューまで完了。
+
+### 変更ファイル
+- `data/generate_invoice_py.py`（メイン生成スクリプト）
+- `data/invoice_generator.js`（Node.js ラッパー）
+- `dashboard/public/business-custom.js`（生成UI）
+
+---
+
+### 実装済み機能（全体まとめ）
+
+**明細行数対応**
+- 最大25件まで対応（テンプレート基準20件 → コピー側に5行動的挿入）
+- 26件以上は `ValueError` でエラー終了
+- 20件以下は従来レイアウト完全維持
+- 拡張時の行シフト・数式参照・マージセル・CF sqref を自動更新
+
+**数式・集計セルの参照位置修正**
+- `D11`（合計金額表示）の参照先を拡張後の `L41` に自動更新
+- 小計・消費税・合計セルの参照が拡張後も正しく動作
+- 支払期限（`D46`）: 手動指定値を Excel シリアル値で上書き反映
+
+**出力ファイル名指定**
+- 生成画面に「出力ファイル名」入力欄を追加
+- デフォルト: `YYYY年M月D日_請求書_大和谷しおり.xlsx`（請求日から自動生成）
+- 請求日変更時: 未手動編集ならファイル名を自動追従
+- 手動編集後は追従しない（`data-user-modified` フラグ）
+- Windows 禁止文字を自動サニタイズ・`.xlsx` 自動付与
+
+**原本テンプレート保護**
+- `shutil.copy2()` → tmp ファイル差し替え方式により原本を一切変更しない
+
+---
+
+### 視覚不具合修正（今回最終対応）
+
+| # | 不具合 | 根本原因 | 修正 |
+|---|---|---|---|
+| 1 | B29/C29 赤文字（13件目） | テンプレート row 29 に `xf[165/166]`（font FFFF0000）が混入 | `fix_sheet_layout()` に `BC_STYLE_MAP` 追加、全明細スキャンで自動正規化 |
+| 2 | I32 Calibri 残存（16件目） | テンプレート I32 が `xf[168]`（Calibri 11pt）で I_STYLE_MAP 対象外 | `I_STYLE_MAP` に `'168': '111'` 追加 |
+| 3 | H列 配置ずれ | `rewrite_styles_xml()` で誤って center を付与 | 変更を削除、元の right を維持（H右寄せ/I左寄せ） |
+| 4 | 20件目に不要な下罫線 | Step 2 で D/E/F セル（borderId=60, bottom:thin）が残留 | `expand_detail_rows()` Step 2 で D/E/F セルを明示的に削除 |
+| 5 | 25件目 I41 が青背景 | 奇数最終行に偶数用 `xf[188]`（fillId=4 青）を使用 | `rewrite_styles_xml()` で fillId=0 の clone を追加（→ xf[386]）、奇数最終行に使用 |
+| 6 | CF sqref が行36 止まり | テンプレート CF が `...:36` 固定 | `expand_detail_rows()` Step 5 で末端行を new_last に自動拡張 |
+| 7 | I列 Meiryo 統一 | 行 25 以降テンプレートが Calibri 切替、`I_STYLE_MAP` 未対応の xf が複数存在 | `I_STYLE_MAP: {'160':'153', '164':'111', '168':'111', '175':'188'}` で全件正規化 |
+
+---
+
+### 機械監査結果（A17:M41 全セル）
+
+| 確認項目 | 結果 |
+|---|---|
+| 赤文字 | なし ✓ |
+| Calibri 残存 | なし ✓ |
+| H17:H41 alignment | 全件 h=right ✓ |
+| I17:I41 font | 全件 Meiryo 13pt / 黒 / h=left ✓ |
+| I列 奇数行 fill | None（白）✓ |
+| I列 偶数行 fill | FFD9E2F3（青）✓ |
+| row36 bottom border | 全セル none ✓（20件目に不要線なし）|
+| row41 bottom border | 全セル thin ✓（25件目のみ最終行線）|
+| I41 fill | None（白）✓ |
+
+---
+
+### テスト結果
+
+| テストケース | 結果 |
+|---|---|
+| 20件生成 | PASS ✓ |
+| 21件生成 | PASS ✓ |
+| 25件生成 | PASS ✓ |
+| 26件エラー | PASS ✓（正常エラー）|
+
+---
+
+### ユーザー目視確認済み（2026-08-20）
+
+- 請求書明細 最大25行表示 ✓
+- 26件以上はエラー ✓
+- 青白の交互背景 ✓
+- 13件目の赤文字修正 ✓
+- 20件目の不要な下罫線修正 ✓
+- 数量・単位の配置（H右寄せ / I左寄せ）✓
+- I列 Meiryo 13pt / 黒文字統一 ✓
+- 25件目の単位セル背景（白）✓
+- D11 / 小計 / 消費税 / 合計の参照位置 ✓
+- 支払期限の手動指定値を Excel に反映 ✓
+- 出力ファイル名指定 UI ✓
+- デフォルト名 `YYYY年M月D日_請求書_大和谷しおり.xlsx` ✓
+- 原本テンプレート変更なし ✓
+- 印刷プレビュー ✓
+- Excel 最終目視確認 ✓
+- テスト用 xlsx は削除済み ✓
+
+### 未確認 / 残課題
+- PDF 実ファイルの最終印刷確認（実機プリンタ）は未実施
+
+### commit SHA：未採番（commit 前）
+
+---
+
+## 2026-08-19 — 請求書25行：CF sqref 拡張・青白縞・赤テキスト修正
+
+### 目的
+新規追加行（37〜41）が、既存明細の青／白の交互縞模様を引き継いでいない問題と
+一部セルで文字が赤く表示される問題を修正する。
+
+**根本原因**
+テンプレートの条件付き書式（CF）sqref が `A28:G36 H17:H36 I28:I36 J17:M36` で
+行36 で終端しており、動的挿入した行37〜41 が CF 適用範囲外だった。
+赤テキストは CF 未適用によるレンダリング差異（theme/numFmt/dxf には `[Red]` なし）。
+
+### 変更ファイル
+- `data/generate_invoice_py.py`
+
+### 実装内容
+
+**expand_detail_rows() に Step 5 追加**
+```python
+# Step 5: CF sqref を新規行まで拡張
+for cf_el in sheet_root.findall(f'{{{NS}}}conditionalFormatting'):
+    old_sqref = cf_el.get('sqref', '')
+    def _extend_range(m, _end=DETAIL_ROW_END, _new=new_last):
+        if int(m.group(3)) == _end:
+            return f'{m.group(1)}:{m.group(2)}{_new}'
+        return m.group(0)
+    new_sqref = re.sub(r'([A-Z]+\d+):([A-Z]+)(\d+)', _extend_range, old_sqref)
+    if new_sqref != old_sqref:
+        cf_el.set('sqref', new_sqref)
+```
+
+sqref 末端行（DETAIL_ROW_END=36）を new_last に更新。
+- 20件（拡張なし）: sqref 変更なし（36のまま）
+- 21件（+1行）: `...:36` → `...:37`
+- 25件（+5行）: `...:36` → `...:41`
+
+### 確認結果（全6ケース PASS）
+
+| ケース | CF sqref 末端 | 正否 |
+|---|---|---|
+| 20件 | 36 | ✓ |
+| 21件 | 37 | ✓ |
+| 25件 | 41 | ✓ |
+| 26件（エラー） | — | ✓ |
+| 25件・日本語長業務名 | 41 | ✓ |
+| 20件・ファイル名指定 | 36 | ✓ |
+
+### テンプレート保護確認
+- 生成前後で `invoice_template.xlsx` の mtime 変化なし ✓
+- `shutil.copy2()` → `tmp_path` 差し替え方式により完全保護 ✓
+
+### PDF確認
+- 自動スクリーンショット方式は安全に動作しないため手動確認を依頼
+- 生成済みファイル: `exports/invoices/test_25ken.xlsx`（25件）等
+
+### 未確認 / 残課題
+- Excel 実機での目視確認（青白縞・赤テキスト解消の最終確認）
+- PDF 印刷プレビューでのレイアウト確認
+
+### commit SHA：未採番（commit 前）
+
+---
+
+## 2026-08-19 — 請求書明細：最大25行対応（コピー側5行動的拡張）
+
+### 目的
+請求書明細をテンプレート基準の最大20件から最大25件まで対応できるよう拡張。
+テンプレートファイル自体は変更せず、生成コピー側のみに5行を動的挿入する。
+
+### 変更ファイル
+- `data/generate_invoice_py.py`
+- `data/invoice_generator.js`
+
+### 実装内容
+
+**定数拡張（generate_invoice_py.py）**
+- `MAX_ROWS = 25`（旧 20）
+- `MAX_ROWS_BASE = 20`（テンプレートの実明細行数）
+- `EXPAND_DELTA = 5`、`SHIFT_FROM_ROW = 37`
+
+**スタイル定数**
+- `LAST_ROW_TO_INTERIOR`：行36の最終行スタイル（169/170/171/173/174/175/176）→ 内部行スタイルへのマッピング
+- `NEW_ROW_ODD_STYLES`：item 21/23（奇数）の新規行スタイル（I=160→153に正規化）
+- `NEW_ROW_EVEN_STYLES`：item 22/24（偶数）の新規行スタイル（I=164→111に正規化）
+- `NEW_ROW_LAST_STYLES`：item 25（最終行）のスタイル（I=188：Meiryo 13pt + borderId=62 + fillId=4）
+
+**ヘルパー関数**
+- `_update_formula_refs(formula, delta, shift_from, old_end)`：行挿入後に数式内セル参照を更新
+  - `row == old_end (36)` → `new_end (41)` へ拡張（SUM範囲末端対応）
+  - `row >= shift_from (37)` → `+delta` シフト
+- `_update_merge_ref(ref, delta, shift_from)`：マージセル参照のシフト
+- `expand_detail_rows(sheet_root, extra)`：本体
+  1. 行37以降を `+extra` シフト（r属性・セルref・数式参照を一括更新）
+  2. **行37未満の数式で shifted 範囲（≥37）を参照するものも更新**
+     → 例: D11=`"L40"`（合計表示）→ 25行展開後は `"L45"` に修正。L40が明細行になるバグを防ぐ
+  3. 行36を内部行スタイルに変換（LAST_ROW_TO_INTERIOR）
+  4. 新規行37〜(36+extra)を挿入（奇数/偶数/最終の3パターン）
+  5. マージセル更新（既存シフト + 新規C:G・J:K・L:Mを追加）
+  6. `new_last` を返す（Python 3.14 は Element にカスタム属性付与不可のため戻り値方式）
+
+**fix_sheet_layout() 更新**
+- 引数 `effective_end=None` を追加
+- I列スタイル正規化マップを拡張：`{'160': '153', '164': '111', '175': '188'}`
+  - `175`（Calibri 11pt）→ `188`（Meiryo 13pt / borderId=62 / fillId=4 は同一）
+  - 既存テンプレートの行36の I 列（20行以下の最終行）も含め全行 Meiryo 13pt に統一
+- I列スタイル正規化の対象範囲を `DETAIL_ROW_END` から `effective_end` に拡大
+  → 新規行37〜41も Meiryo 13pt に統一
+
+**generate() 更新**
+- `extra = max(0, len(rows) - MAX_ROWS_BASE)` を計算
+- `extra > 0` のとき `expand_detail_rows(sheet_root, extra)` を呼び出し
+- 戻り値 `effective_detail_end` を `fix_sheet_layout(sheet_root, effective_end=...)` に渡す
+- ヘッダーセル（L3請求日・D46支払期限・K39消費税率等）は拡張前に書き込む
+  → 拡張時に行番号と共にシフトされるため正しい位置（例：D51）に到達する
+
+**invoice_generator.js**
+- `MAX_ROWS = 25`（旧 20）
+
+### 確認結果（4ケーステスト）
+
+| ケース | 結果 | 詳細 |
+|---|---|---|
+| 20件（拡張なし） | **PASS** | SUM(L17:M36)@L38、D46=46295 ✓ |
+| 21件（+1行拡張） | **PASS** | SUM(L17:M37)@L39、D47=46295 ✓ |
+| 25件（+5行拡張） | **PASS** | SUM(L17:M41)@L43、D51=46295 ✓ |
+| 26件（エラー期待） | **PASS** | `明細が25行を超えています（26件）` ✓ |
+
+**スタイル検証（25件）**
+- 新規行37（item 21, 奇数）：I=153（Meiryo 13pt） ✓
+- 新規行38（item 22, 偶数）：I=111（Meiryo 13pt+fill） ✓
+- 新規行39（item 23, 奇数）：I=153 ✓
+- 新規行40（item 24, 偶数）：I=111 ✓
+- 新規行41（item 25, 最終）：**I=188**（Meiryo 13pt + borderId=62 + fillId=4） ✓
+- 行高 ht=18.75 全行統一 ✓
+
+**追加検証（25件・総合）**
+- I36: s=111（行36が内部行化後 Meiryo 13pt に統一） ✓
+- D11: `L45`（合計参照が拡張後に正しくシフト更新） ✓
+- 合計数式: `SUM(L17:M41)@L43` / `INT(L43*K44/100)@L44` / `L43+L44@L45` ✓
+- drawing 保持: image1.png / image2.png（2枚） ✓
+- マージ行37〜41: C:G / J:K / L:M 各5行 計15マージ ✓
+- 境界罫線 row41→42: 行41 下罫線（s169/188/176）→ 行42 セパレータ（s177/187/189）✓
+- print area: テンプレート未定義 → Excel デフォルト印刷範囲で対応 ✓
+
+**目視確認用ファイル（再生成済み）**
+- `exports/invoices/test_25row_visual.xlsx`（25件・2026-08月）
+
+### 未確認 / 残課題
+- Excel を開いての目視確認（ユーザーに依頼）
+- 21〜24件の中間件数での印刷プレビュー確認
+
+### commit SHA：未採番（commit 前）
+
+---
+
 ## 2026-08-19 — 請求書生成：支払期限 D46 書き込み漏れ修正
 
 ### 目的

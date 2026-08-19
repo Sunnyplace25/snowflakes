@@ -25,7 +25,7 @@ const JARVIS_DIR = resolve(__dirname, '..');
 const TEMPLATE_DIR = resolve(JARVIS_DIR, 'imports', 'invoices');
 const TEMPLATE_PATH = resolve(TEMPLATE_DIR, 'invoice_template.xlsx');
 const EXPORT_DIR = resolve(JARVIS_DIR, 'exports', 'invoices');
-const MAX_ROWS = 20;
+const MAX_ROWS = 25;
 const PY_SCRIPT = resolve(__dirname, 'generate_invoice_py.py');
 
 function ensureGenerationTable(db) {
@@ -100,6 +100,17 @@ function quantityAndUnit(work) {
 function defaultInvoiceNumber(month) {
   const [year, mon] = month.split('-');
   return `${year}‐${mon}`;
+}
+
+function defaultOutputFilename(issueDate) {
+  // YYYY-MM-DD → "YYYY年M月D日_請求書_大和谷しおり.xlsx"
+  const [y, m, d] = String(issueDate).split('-').map(Number);
+  return `${y}年${m}月${d}日_請求書_大和谷しおり.xlsx`;
+}
+
+function sanitizeFilename(name) {
+  // Windows 禁止文字 \ / : * ? " < > | を除去し、先頭末尾の空白と末尾ピリオドを除去
+  return String(name).replace(/[\\/:*?"<>|]/g, '').replace(/\.+$/, '').trim();
 }
 
 function selectTemplateSheetName(workbook) {
@@ -229,6 +240,7 @@ export function generateInvoiceWorkbook(db, {
   invoice_number = null,
   invoice_date = null,
   due_date = null,
+  output_filename = null,
 } = {}) {
   const preview = buildInvoicePreview(db, month);
   if (!preview.template.configured) {
@@ -247,8 +259,16 @@ export function generateInvoiceWorkbook(db, {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(paymentDue)) throw new Error('支払期限は YYYY-MM-DD 形式で指定してください');
 
   mkdirSync(EXPORT_DIR, { recursive: true });
-  const safeNumber = number.replace(/[^0-9A-Za-z_-]/g, '_');
-  const filename = `請求書_${safeNumber}.xlsx`;
+
+  let filename;
+  if (output_filename && String(output_filename).trim()) {
+    let fn = sanitizeFilename(String(output_filename).trim());
+    if (!fn) fn = defaultOutputFilename(issueDate).replace(/\.xlsx$/i, '');
+    if (!fn.toLowerCase().endsWith('.xlsx')) fn += '.xlsx';
+    filename = fn;
+  } else {
+    filename = defaultOutputFilename(issueDate);
+  }
   const outputPath = resolve(EXPORT_DIR, filename);
 
   // Python スクリプトでテンプレートをコピーして値だけ差し替える。

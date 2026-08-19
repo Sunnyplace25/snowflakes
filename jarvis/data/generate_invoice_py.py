@@ -30,7 +30,7 @@ JSON 入力形式:
 }
 """
 
-import sys, json, os, shutil, zipfile, re, argparse, datetime
+import sys, json, os, shutil, zipfile, re, argparse, datetime, copy
 import xml.etree.ElementTree as ET
 
 # ─── Excel 名前空間 ────────────────────────────────────────────────────────────
@@ -44,10 +44,48 @@ ET.register_namespace('r',   RNS)
 ET.register_namespace('mc',  'http://schemas.openxmlformats.org/markup-compatibility/2006')
 ET.register_namespace('x14ac','http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac')
 
-MASTER_SHEET = '★請求書マスター'
-DETAIL_ROW_START = 17
-DETAIL_ROW_END   = 36
-MAX_ROWS         = DETAIL_ROW_END - DETAIL_ROW_START + 1
+MASTER_SHEET      = '★請求書マスター'
+DETAIL_ROW_START  = 17
+DETAIL_ROW_END    = 36          # テンプレートの最終明細行（基準）
+MAX_ROWS_BASE     = DETAIL_ROW_END - DETAIL_ROW_START + 1  # 20
+MAX_ROWS          = 25          # 最大許容件数（5行拡張後）
+EXPAND_DELTA      = MAX_ROWS - MAX_ROWS_BASE                # 5
+SHIFT_FROM_ROW    = DETAIL_ROW_END + 1                      # 37（拡張時にシフト開始する行）
+
+# ── 行拡張時スタイル定義 ───────────────────────────────────────────────────────
+# 行36 の「最終行スタイル」→「内部スタイル」変換マップ（拡張時に行36を内部行化）
+# item 20 は偶数 → 偶数行スタイル（I=164 → fix_sheet_layout で 111 に正規化）
+LAST_ROW_TO_INTERIOR = {
+    '169': '87',   # A
+    '170': '149',  # B
+    '171': '150',  # C
+    # 172 (D,E,F) は C:G マージ内部で非表示 → そのまま
+    '173': '126',  # G, K, M
+    '174': '151',  # H
+    '175': '164',  # I → fix_sheet_layout で 111（偶数）に正規化
+    '176': '130',  # J, L
+}
+
+# 新規内部行スタイル（テンプレート行 34/35 から採用）
+# 奇数行（item 21, 23）: rows 33/35 パターン — I=160 → 153 に正規化
+NEW_ROW_ODD_STYLES = {
+    'A': '87', 'B': '149', 'C': '150',
+    'G': '126', 'H': '151', 'I': '160',
+    'J': '130', 'K': '126', 'L': '130', 'M': '126',
+}
+# 偶数行（item 22, 24）: rows 34 パターン — I=164 → 111 に正規化
+NEW_ROW_EVEN_STYLES = {
+    'A': '87', 'B': '149', 'C': '150',
+    'G': '126', 'H': '151', 'I': '164',
+    'J': '130', 'K': '126', 'L': '130', 'M': '126',
+}
+# 最終行（item 25）: 行 36 と同一スタイル（I=188 Meiryo 13pt + 下ボーダー付き）
+# I列のみ 175（Calibri 11pt）→ 188（Meiryo 13pt / borderId=62 / fillId=4 共通）に変更
+# fix_sheet_layout の I_STYLE_MAP でも 175→188 に正規化されるため二重で安全
+NEW_ROW_LAST_STYLES = {
+    'A': '169', 'B': '170', 'C': '171', 'D': '172', 'E': '172', 'F': '172',
+    'G': '173', 'H': '174', 'I': '188', 'J': '176', 'K': '173', 'L': '176', 'M': '173',
+}
 
 # 差し替える列（アルファベット → フィールド名）
 DETAIL_COLS = {
@@ -312,19 +350,22 @@ def rewrite_content_types(ct_xml_bytes, keep_sheet_path, keep_drawing_path):
 def rewrite_styles_xml(styles_bytes):
     """
     styles.xml を最小限変更（テンプレートは変更しない、生成ファイルのみ適用）：
-    - xf[199] (I39 消費税相当額) alignment に shrinkToFit="1" 追加
-      → I39:J39 のマージ幅に「消費税相当額」が収まりきらないため自動縮小
+    - xf[199]: shrinkToFit="1" 追加（I39 消費税相当額）
+    - 末尾に新規 xf 追加: xf[188] の clone, fillId="0"（I列 奇数最終行用）
+
+    H列（xf[151]/xf[174]）のアラインメントは元の right のまま維持する。
+    H=右寄せ / I=左寄せ で「1日」がひとまとまりに見える自然な配置を保つ。
 
     ※ xf[26] (A5 請求先名) は原本に shrinkToFit なし → 追加しない
     ※ xf[52] (I9 発行者名)  は narrow 列からオーバーフロー表示前提 → 追加しない
        （shrinkToFit を入れると I列=6.86幅に17ptの文字が4pt以下まで縮小される）
     """
     root = ET.fromstring(styles_bytes)
-
-    # xf[199] の alignment に shrinkToFit を追加
     xfs = root.find(f'{{{NS}}}cellXfs')
     if xfs is not None:
         xf_list = list(xfs)
+
+        # xf[199] の alignment に shrinkToFit を追加
         idx = 199
         if idx < len(xf_list):
             xf = xf_list[idx]
@@ -334,11 +375,20 @@ def rewrite_styles_xml(styles_bytes):
             al.set('shrinkToFit', '1')
             xf.set('applyAlignment', '1')
 
+        # xf[188] の clone を末尾追加: fillId="0"（奇数最終行 I列用）
+        src_idx = 188
+        if src_idx < len(xf_list):
+            new_xf = copy.deepcopy(xf_list[src_idx])
+            new_xf.set('fillId', '0')
+            new_xf.set('applyFill', '1')
+            xfs.append(new_xf)
+            xfs.set('count', str(len(list(xfs))))
+
     return (b"<?xml version='1.0' encoding='UTF-8' standalone='yes'?>\n"
             + ET.tostring(root, encoding='unicode').encode('utf-8'))
 
 
-def fix_sheet_layout(sheet_root):
+def fix_sheet_layout(sheet_root, effective_end=None):
     """
     シート XML にレイアウト調整を適用する（テンプレートは変更しない）：
     1. J列（col 10）の幅を 8.71 → 10.5 に拡張
@@ -400,22 +450,219 @@ def fix_sheet_layout(sheet_root):
                 row_el.set('customHeight', '1')
                 break
 
-    # 3. 明細 I 列（単位）のスタイルを統一
-    #    テンプレートは行 25 以降で I 列が xf[160]/[164]（Calibri 11pt）に切り替わる。
-    #    値書き込み時にこのスタイルを継承すると 1〜8 件目（Meiryo 13pt）と見た目が異なるため
-    #    160 → 153（奇数行・Meiryo 13pt・fillなし）
-    #    164 → 111（偶数行・Meiryo 13pt・fill あり）に正規化する。
-    I_STYLE_MAP = {'160': '153', '164': '111'}
+    if effective_end is None:
+        effective_end = DETAIL_ROW_END
+
+    # 3. 明細セルのスタイル正規化（テンプレート起因の異常スタイルを修正）
+    #
+    # 3a. I 列（単位）: Meiryo 13pt に統一
+    #     テンプレートは行 25 以降で I 列が xf[160]/[164]（Calibri 11pt）に切り替わる。
+    #     また row 32 は xf[168]（Calibri 11pt / blue fill）が残存する。
+    #     拡張後の新規行（37〜40）も同様に対象に含める。
+    #     160 → 153（奇数行・Meiryo 13pt・fill なし）
+    #     164 → 111（偶数行・Meiryo 13pt・fill あり）
+    #     168 → 111（偶数行・Calibri 残存を Meiryo 13pt に修正）
+    #     175 → 188（最終行・Meiryo 13pt + 下ボーダー）
+    I_STYLE_MAP = {'160': '153', '164': '111', '168': '111', '175': '188'}
     if sd is not None:
         for row_el in sd:
             rn = int(row_el.get('r', 0))
-            if DETAIL_ROW_START <= rn <= DETAIL_ROW_END:
+            if DETAIL_ROW_START <= rn <= effective_end:
                 for c in row_el:
                     ref = c.get('r', '')
                     if ref.startswith('I') and ref[1:] == str(rn):
                         cur_s = c.get('s', '')
                         if cur_s in I_STYLE_MAP:
                             c.set('s', I_STYLE_MAP[cur_s])
+
+    # 3b. B/C 列: テンプレート row 29（13件目）に赤文字スタイルが混入している
+    #     xf[165]（B 赤 Meiryo 11pt）→ xf[149]（B 通常奇数）
+    #     xf[166]（C 赤 Meiryo 11pt）→ xf[150]（C 通常奇数）
+    BC_STYLE_MAP = {'165': '149', '166': '150'}
+    if sd is not None:
+        for row_el in sd:
+            rn = int(row_el.get('r', 0))
+            if DETAIL_ROW_START <= rn <= effective_end:
+                for c in row_el:
+                    ref = c.get('r', '')
+                    col_m = re.match(r'^([A-Z]+)', ref)
+                    if col_m and col_m.group(1) in ('B', 'C'):
+                        cur_s = c.get('s', '')
+                        if cur_s in BC_STYLE_MAP:
+                            c.set('s', BC_STYLE_MAP[cur_s])
+
+
+def _update_formula_refs(formula, delta, shift_from, old_end):
+    """
+    数式内のセル参照を行挿入後に更新する。
+    - row >= shift_from のセル参照を +delta
+    - old_end（旧最終明細行=36）への参照は new_end（41）へ拡張
+    """
+    new_end = old_end + delta
+
+    def repl(m):
+        col = m.group(1)
+        row = int(m.group(2))
+        if row == old_end:
+            # SUM 範囲末端（M36 等）→ 新末端（M41）
+            return f'{col}{new_end}'
+        elif row >= shift_from:
+            return f'{col}{row + delta}'
+        return m.group(0)
+
+    return re.sub(r'([A-Z]+)(\d+)', repl, formula)
+
+
+def _update_merge_ref(ref, delta, shift_from):
+    """マージセル参照（例 'A38:G38'）をシフト後に更新する。"""
+    if ':' not in ref:
+        return ref
+    start, end = ref.split(':')
+
+    def shift(cell):
+        m = re.match(r'^([A-Z]+)(\d+)$', cell)
+        if m and int(m.group(2)) >= shift_from:
+            return f"{m.group(1)}{int(m.group(2)) + delta}"
+        return cell
+
+    return f"{shift(start)}:{shift(end)}"
+
+
+def expand_detail_rows(sheet_root, extra, i_odd_last_xf=None):
+    """
+    明細行を extra 行（1〜5）拡張する。items > 20 のとき generate() から呼ばれる。
+
+    処理内容：
+    1. 行 37 以降を +extra シフト（r 属性・セル ref・数式参照を更新）
+    2. 行 36 を「最終行スタイル」→「内部偶数スタイル」に変換
+       （D/E/F セルは下罫線を持つ borderId=60 を除去するため削除）
+    3. 新規行 37〜(36+extra) を挿入（内部行スタイル or 最終行スタイル）
+    4. マージセルの更新（シフト + 新規追加）
+
+    i_odd_last_xf: styles.xml に追加した「奇数最終行 I列用」xf のインデックス。
+                   最終 item が奇数のとき I 列のスタイルをこれに上書きする。
+    """
+    sd = sheet_root.find(f'{{{NS}}}sheetData')
+    new_last = DETAIL_ROW_END + extra   # 例: extra=5 → new_last=41
+
+    # ── Step 1a: 行 37+ をシフト（r 属性・セル ref・数式参照を更新）──────────
+    for row_el in list(sd):
+        rn = int(row_el.get('r', 0))
+        if rn >= SHIFT_FROM_ROW:
+            new_rn = rn + extra
+            row_el.set('r', str(new_rn))
+            for c in row_el:
+                old_ref = c.get('r', '')
+                m = re.match(r'^([A-Z]+)(\d+)$', old_ref)
+                if m:
+                    c.set('r', f"{m.group(1)}{new_rn}")
+                # 数式参照を更新
+                f_el = c.find(f'{{{NS}}}f')
+                if f_el is not None and f_el.text:
+                    f_el.text = _update_formula_refs(
+                        f_el.text, extra, SHIFT_FROM_ROW, DETAIL_ROW_END
+                    )
+
+    # ── Step 1b: 行 37 未満にある数式で shifted 範囲を参照するものも更新 ──────
+    # 例: D11="L40"（合計金額表示）→ 拡張後は L40 が明細行になるため L45 へ更新が必要
+    for row_el in list(sd):
+        rn = int(row_el.get('r', 0))
+        if rn < SHIFT_FROM_ROW:
+            for c in row_el:
+                f_el = c.find(f'{{{NS}}}f')
+                if f_el is not None and f_el.text:
+                    new_text = _update_formula_refs(
+                        f_el.text, extra, SHIFT_FROM_ROW, DETAIL_ROW_END
+                    )
+                    if new_text != f_el.text:
+                        f_el.text = new_text
+
+    # ── Step 2: 行 36 を内部スタイルに変換 ──────────────────────────────────
+    # D/E/F セル (s=172, borderId=60) は bottom:thin を持つため、
+    # 明細途中行として残すと 20件目の下に不要な区切り線が表示される（Issue 2）。
+    # 内部行の 34/35 行目にこれらのセルは存在しないので、削除して揃える。
+    for row_el in sd:
+        if row_el.get('r') == str(DETAIL_ROW_END):
+            cells_to_remove = []
+            for c in row_el:
+                cur_s = c.get('s', '')
+                if cur_s in LAST_ROW_TO_INTERIOR:
+                    c.set('s', LAST_ROW_TO_INTERIOR[cur_s])
+                else:
+                    col_m = re.match(r'^([A-Z]+)', c.get('r', ''))
+                    if col_m and col_m.group(1) in ('D', 'E', 'F') and cur_s == '172':
+                        cells_to_remove.append(c)
+            for c in cells_to_remove:
+                row_el.remove(c)
+            break
+
+    # ── Step 3: 新規行を挿入 ──────────────────────────────────────────────────
+    for offset in range(extra):
+        new_rn   = SHIFT_FROM_ROW + offset          # 37, 38, 39, 40, 41
+        item_no  = MAX_ROWS_BASE + 1 + offset        # 21, 22, 23, 24, 25
+        is_last  = (offset == extra - 1)
+        is_even  = (item_no % 2 == 0)
+
+        if is_last:
+            styles = NEW_ROW_LAST_STYLES.copy()
+            # 奇数最終行の I 列は白背景用の新規 xf を使用（Issue 4）
+            if not is_even and i_odd_last_xf is not None:
+                styles['I'] = str(i_odd_last_xf)
+            cols   = list('ABCDEFGHIJKLM')
+        elif is_even:
+            styles = NEW_ROW_EVEN_STYLES
+            cols   = ['A', 'B', 'C', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
+        else:
+            styles = NEW_ROW_ODD_STYLES
+            cols   = ['A', 'B', 'C', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
+
+        row_el = ET.Element(f'{{{NS}}}row',
+                            {'r': str(new_rn), 'ht': '18.75', 'customHeight': '1'})
+        for col in cols:
+            s = styles.get(col, '')
+            if s:
+                ET.SubElement(row_el, f'{{{NS}}}c', {'r': f'{col}{new_rn}', 's': s})
+        sd.append(row_el)
+
+    # 行番号順にソート
+    all_rows = sorted(list(sd), key=lambda el: int(el.get('r', 0)))
+    for el in list(sd):
+        sd.remove(el)
+    for el in all_rows:
+        sd.append(el)
+
+    # ── Step 4: マージセル更新 ───────────────────────────────────────────────
+    mc_el = sheet_root.find(f'{{{NS}}}mergeCells')
+    if mc_el is not None:
+        for m_el in list(mc_el):
+            old_ref = m_el.get('ref', '')
+            new_ref = _update_merge_ref(old_ref, extra, SHIFT_FROM_ROW)
+            if new_ref != old_ref:
+                m_el.set('ref', new_ref)
+        # 新規明細行のマージを追加（C:G・J:K・L:M）
+        for rn in range(SHIFT_FROM_ROW, new_last + 1):
+            for merge_def in [f'C{rn}:G{rn}', f'J{rn}:K{rn}', f'L{rn}:M{rn}']:
+                ET.SubElement(mc_el, f'{{{NS}}}mergeCell', {'ref': merge_def})
+        mc_el.set('count', str(len(list(mc_el))))
+
+    # ── Step 5: 条件付き書式（CF）sqref を新規行まで拡張 ─────────────────────
+    # テンプレート CF sqref: "A28:G36 H17:H36 I28:I36 J17:M36"
+    #   formula: MOD(ROW(),2)=0 / dxfId=0（偶数行=青 fill FFD9E2F3）
+    # 36（=DETAIL_ROW_END）で終わる各範囲の末端を new_last に更新する。
+    for cf_el in sheet_root.findall(f'{{{NS}}}conditionalFormatting'):
+        old_sqref = cf_el.get('sqref', '')
+
+        def _extend_range(m, _end=DETAIL_ROW_END, _new=new_last):
+            end_row = int(m.group(3))
+            if end_row == _end:
+                return f'{m.group(1)}:{m.group(2)}{_new}'
+            return m.group(0)
+
+        new_sqref = re.sub(r'([A-Z]+\d+):([A-Z]+)(\d+)', _extend_range, old_sqref)
+        if new_sqref != old_sqref:
+            cf_el.set('sqref', new_sqref)
+
+    return new_last
 
 
 def should_exclude(filename, sheet_path, sheet_rels_path,
@@ -470,6 +717,12 @@ def generate(data):
         sheet_rels_path = f'{sheet_dir}/_rels/{sheet_file}.rels'
 
         ws_xml_bytes = z.read(sheet_path)
+        styles_bytes_orig = z.read('xl/styles.xml')
+
+    # 奇数最終行 I列用 xf のインデックスを事前計算（rewrite_styles_xml が末尾追加するため）
+    _styles_tmp = ET.fromstring(styles_bytes_orig)
+    _xfs_tmp    = _styles_tmp.find(f'{{{NS}}}cellXfs')
+    i_odd_last_xf = len(list(_xfs_tmp)) if _xfs_tmp is not None else None
 
     # ── XML を解析してセル値を書き込む ────────────────────────────────────
     sheet_root = ET.fromstring(ws_xml_bytes)
@@ -500,6 +753,12 @@ def generate(data):
     # C43: 備考
     if data.get('memo'):
         set_inline_string(sheet_root, 'C43', data['memo'])
+
+    # 明細行拡張（21〜25件時のみ：コピー側に5行挿入）
+    extra = max(0, len(rows) - MAX_ROWS_BASE)
+    effective_detail_end = DETAIL_ROW_END
+    if extra > 0:
+        effective_detail_end = expand_detail_rows(sheet_root, extra, i_odd_last_xf)
 
     # 明細行クリア（17〜36）
     for row in range(DETAIL_ROW_START, DETAIL_ROW_END + 1):
@@ -536,7 +795,7 @@ def generate(data):
                 set_number(sheet_root, ref, num_val)
 
     # ── レイアウト調整（列幅・行高）────────────────────────────────────
-    fix_sheet_layout(sheet_root)
+    fix_sheet_layout(sheet_root, effective_end=effective_detail_end)
 
     # ── 修正済みシート XML をバイト列に変換 ──────────────────────────────
     new_ws_xml = (b"<?xml version='1.0' encoding='UTF-8' standalone='yes'?>\n"
