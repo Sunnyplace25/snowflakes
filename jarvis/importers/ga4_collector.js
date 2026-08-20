@@ -13,7 +13,7 @@
  */
 
 import { google }          from 'googleapis';
-import { writeGaDaily, writeGaEventDaily } from './ga_writer.js';
+import { writeGaDaily, writeGaEventDaily, writeGaSources } from './ga_writer.js';
 
 export const REQUIRED_ENV_VARS = [
   'GA4_PROPERTY_ID',
@@ -124,6 +124,52 @@ export async function fetchGaEventDaily({ analyticsdata, propertyId, startDate, 
 }
 
 /**
+ * GA4 から日別流入元指標を取得する。
+ *
+ * @param {{ analyticsdata: object, propertyId: string, startDate: string, endDate: string }} opts
+ * @returns {Promise<Array<{ date, sessionSource, sessionMedium, sessions, users, pageViews, engagedSessions }>>}
+ */
+export async function fetchGaSources({ analyticsdata, propertyId, startDate, endDate }) {
+  const res = await analyticsdata.properties.runReport({
+    property: `properties/${propertyId}`,
+    requestBody: {
+      dateRanges: [{ startDate, endDate }],
+      dimensions: [
+        { name: 'date' },
+        { name: 'sessionSource' },
+        { name: 'sessionMedium' },
+      ],
+      metrics: [
+        { name: 'sessions' },
+        { name: 'totalUsers' },
+        { name: 'screenPageViews' },
+        { name: 'engagedSessions' },
+      ],
+      orderBys: [{ dimension: { dimensionName: 'date' } }],
+      limit: 10000,
+    },
+  });
+
+  const rows = res.data.rows ?? [];
+  return rows.map(r => {
+    const rawDate = r.dimensionValues[0].value;
+    const date = `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`;
+    // GA4 が空文字を返す場合は "(not set)" に正規化する
+    const src = r.dimensionValues[1].value || '(not set)';
+    const med = r.dimensionValues[2].value || '(not set)';
+    return {
+      date,
+      sessionSource:    src,
+      sessionMedium:    med,
+      sessions:         parseInt(r.metricValues[0].value, 10),
+      users:            parseInt(r.metricValues[1].value, 10),
+      pageViews:        parseInt(r.metricValues[2].value, 10),
+      engagedSessions:  parseInt(r.metricValues[3].value, 10),
+    };
+  });
+}
+
+/**
  * GA4 からデータを取得して DB に書き込むメイン関数。
  *
  * @param {import('node:sqlite').DatabaseSync} db
@@ -151,10 +197,15 @@ export async function syncGa4(db, { startDate, endDate } = {}) {
   const eventRows = await fetchGaEventDaily({ analyticsdata, propertyId, startDate: from, endDate: to });
   const eventResult = writeGaEventDaily(db, eventRows);
 
+  // 流入元日別集計
+  const sourceRows = await fetchGaSources({ analyticsdata, propertyId, startDate: from, endDate: to });
+  const sourceResult = writeGaSources(db, sourceRows);
+
   return {
     startDate:  from,
     endDate:    to,
     daily:      { fetched: dailyRows.length,  ...dailyResult },
     events:     { fetched: eventRows.length,  ...eventResult },
+    sources:    { fetched: sourceRows.length, ...sourceResult },
   };
 }

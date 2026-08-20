@@ -1450,15 +1450,52 @@ const SfModule = (() => {
     `;
   }
 
-  /** 流入元（現在未取得）*/
-  function renderHpSources() {
+  /** 流入元（sessionSource / sessionMedium 別） */
+  function renderHpSources(data) {
+    if (!data || !data.rows || data.rows.length === 0) {
+      return `<div class="empty-state">流入元データなし</div>`;
+    }
+
+    const SOURCE_LABELS = {
+      '(direct)': 'Direct',
+      'google':   'Google',
+      'instagram.com': 'Instagram',
+      'twitter.com':   'Twitter',
+      'l.instagram.com': 'Instagram (l)',
+      't.co': 'Twitter (t.co)',
+    };
+
+    const rows = data.rows.slice(0, 15).map(r => {
+      const srcLabel = SOURCE_LABELS[r.session_source] ?? esc(r.session_source);
+      const medLabel = esc(r.session_medium);
+      return `
+        <tr>
+          <td>${srcLabel}</td>
+          <td><span style="color:var(--text-muted);font-size:.85em;">${medLabel}</span></td>
+          <td style="text-align:right;">${(r.sessions ?? 0).toLocaleString()}</td>
+          <td style="text-align:right;">${(r.users ?? 0).toLocaleString()}</td>
+          <td style="text-align:right;">${(r.page_views ?? 0).toLocaleString()}</td>
+        </tr>`;
+    }).join('');
+
     return `
-      <div class="hp-sources-placeholder">
-        流入元（source / medium / referrer）データは現在未取得です。<br>
-        GA4 の acquisition レポートデータは sf_ga_daily / sf_ga_event_daily に含まれていません。<br>
-        将来拡張予定（STATUS.md 参照）。
-      </div>
-    `;
+      <div style="overflow-x:auto;">
+        <table class="sf-table" style="width:100%;font-size:.9em;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Source</th>
+              <th style="text-align:left;">Medium</th>
+              <th style="text-align:right;">Sessions</th>
+              <th style="text-align:right;">Users</th>
+              <th style="text-align:right;">PV</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="margin:.5rem 0 0;font-size:.78em;color:var(--text-muted);">
+          期間: ${esc(data.from)} 〜 ${esc(data.to)}（上位15件）
+        </p>
+      </div>`;
   }
 
   /** HP Analytics タブのデータをすべて読み込む */
@@ -1472,13 +1509,14 @@ const SfModule = (() => {
 
     if (!overviewEl) return;
 
-    let overviewRes, pagesRes, dailyRes, eventsRes;
+    let overviewRes, pagesRes, dailyRes, eventsRes, sourcesRes;
     try {
-      [overviewRes, pagesRes, dailyRes, eventsRes] = await Promise.all([
+      [overviewRes, pagesRes, dailyRes, eventsRes, sourcesRes] = await Promise.all([
         fetch('/api/sf/ga/overview?days=30').then(r => r.json()),
         fetch('/api/sf/ga/pages').then(r => r.json()),
         fetch('/api/sf/ga/daily').then(r => r.json()),
         fetch('/api/sf/ga/events').then(r => r.json()),
+        fetch('/api/sf/ga/sources').then(r => r.json()),
       ]);
     } catch (e) {
       if (overviewEl) overviewEl.innerHTML =
@@ -1493,7 +1531,7 @@ const SfModule = (() => {
     if (dailyEl)    dailyEl.innerHTML    = renderHpDaily(dailyRes);
     if (eventsEl)   eventsEl.innerHTML   = renderHpEvents(eventsRes, gaHasData);
     if (musicEl)    musicEl.innerHTML    = renderHpMusicFunnel(eventsRes, gaHasData);
-    if (sourcesEl)  sourcesEl.innerHTML  = renderHpSources();
+    if (sourcesEl)  sourcesEl.innerHTML  = renderHpSources(sourcesRes);
   }
 
   // ─── Soundrop Stats ───────────────────────────────────────────────────────

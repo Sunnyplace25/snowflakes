@@ -669,6 +669,39 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, days, rows });
       }
 
+      // ── GET /api/sf/ga/sources ─────────────────────────────────────────────
+      // 流入元別集計（sessionSource / sessionMedium 別、Phase 19）
+      if (path === '/api/sf/ga/sources' && method === 'GET') {
+        const toParam   = url.searchParams.get('to');
+        const fromParam = url.searchParams.get('from');
+        const toDate    = (toParam && validateDate(toParam)) ? toParam : todayISO();
+        let fromDate;
+        if (fromParam && validateDate(fromParam)) {
+          fromDate = fromParam;
+        } else {
+          const d = new Date(toDate);
+          d.setDate(d.getDate() - 29);
+          fromDate = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0'),
+          ].join('-');
+        }
+        const rows = db.prepare(`
+          SELECT session_source,
+                 session_medium,
+                 SUM(sessions)         AS sessions,
+                 SUM(users)            AS users,
+                 SUM(page_views)       AS page_views,
+                 SUM(engaged_sessions) AS engaged_sessions
+          FROM sf_ga_sources
+          WHERE date >= ? AND date <= ?
+          GROUP BY session_source, session_medium
+          ORDER BY sessions DESC, session_source ASC, session_medium ASC
+        `).all(fromDate, toDate);
+        return jsonRes(res, 200, { ok: true, from: fromDate, to: toDate, rows });
+      }
+
       // ══════════════════════════════════════════════════════════════════════
       // SF 音楽指標エンドポイント（Phase 5）
       // ══════════════════════════════════════════════════════════════════════

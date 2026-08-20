@@ -437,6 +437,26 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 19: GA4 流入元スナップショットテーブル追加（sf_ga_sources）
+  try {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sf_ga_sources (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        date             TEXT    NOT NULL,
+        session_source   TEXT    NOT NULL,
+        session_medium   TEXT    NOT NULL,
+        sessions         INTEGER DEFAULT 0,
+        users            INTEGER DEFAULT 0,
+        page_views       INTEGER DEFAULT 0,
+        engaged_sessions INTEGER DEFAULT 0,
+        fetched_at       TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+        UNIQUE(date, session_source, session_medium)
+      )
+    `);
+  } catch (_) {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_sources_date ON sf_ga_sources(date)'); } catch (_) {}
+  try { db.exec('CREATE INDEX IF NOT EXISTS idx_sf_ga_sources_source ON sf_ga_sources(session_source, session_medium)'); } catch (_) {}
+
   // Phase 18: Google Calendar 双方向同期テーブル追加
   const CALENDAR_TABLES = [
     `CREATE TABLE IF NOT EXISTS business_calendar_links (

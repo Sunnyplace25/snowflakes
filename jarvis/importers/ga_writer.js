@@ -68,6 +68,69 @@ export function writeGaDaily(db, rows) {
 }
 
 /**
+ * GA4 流入元日別指標を sf_ga_sources へ UPSERT する。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {Array<{
+ *   date:              string,  // YYYY-MM-DD（必須）
+ *   sessionSource:     string,  // 非空文字（必須）
+ *   sessionMedium:     string,  // 非空文字（必須）
+ *   sessions?:         number|null,
+ *   users?:            number|null,
+ *   pageViews?:        number|null,
+ *   engagedSessions?:  number|null,
+ * }>} rows
+ * @returns {{ written: number, errors: Array<{ row: object, reason: string }> }}
+ */
+export function writeGaSources(db, rows) {
+  const stmt = db.prepare(`
+    INSERT INTO sf_ga_sources
+      (date, session_source, session_medium, sessions, users, page_views, engaged_sessions, fetched_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))
+    ON CONFLICT(date, session_source, session_medium) DO UPDATE SET
+      sessions         = COALESCE(excluded.sessions,         sessions),
+      users            = COALESCE(excluded.users,            users),
+      page_views       = COALESCE(excluded.page_views,       page_views),
+      engaged_sessions = COALESCE(excluded.engaged_sessions, engaged_sessions),
+      fetched_at       = excluded.fetched_at
+  `);
+
+  const result = { written: 0, errors: [] };
+
+  for (const row of rows) {
+    if (!row.date || !/^\d{4}-\d{2}-\d{2}$/.test(row.date)) {
+      result.errors.push({ row, reason: `date が不正: "${row.date}" (YYYY-MM-DD 形式が必要)` });
+      continue;
+    }
+    if (!row.sessionSource || typeof row.sessionSource !== 'string' || !row.sessionSource.trim()) {
+      result.errors.push({ row, reason: 'sessionSource が未指定または空文字' });
+      continue;
+    }
+    if (!row.sessionMedium || typeof row.sessionMedium !== 'string' || !row.sessionMedium.trim()) {
+      result.errors.push({ row, reason: 'sessionMedium が未指定または空文字' });
+      continue;
+    }
+
+    try {
+      stmt.run(
+        row.date,
+        row.sessionSource,
+        row.sessionMedium,
+        row.sessions        ?? null,
+        row.users           ?? null,
+        row.pageViews       ?? null,
+        row.engagedSessions ?? null,
+      );
+      result.written++;
+    } catch (e) {
+      result.errors.push({ row, reason: e.message });
+    }
+  }
+
+  return result;
+}
+
+/**
  * GA4 イベント日別集計を sf_ga_event_daily へ UPSERT する。
  *
  * @param {import('node:sqlite').DatabaseSync} db

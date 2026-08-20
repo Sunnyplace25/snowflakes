@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'http';
 import { createDb }         from '../data/db.js';
 import { createApiHandler } from '../dashboard/api.js';
-import { writeGaDaily, writeGaEventDaily } from '../importers/ga_writer.js';
+import { writeGaDaily, writeGaEventDaily, writeGaSources } from '../importers/ga_writer.js';
 
 // ─── セットアップ ─────────────────────────────────────────────────────────────
 const db = createDb(':memory:');
@@ -304,6 +304,123 @@ await test('GET /api/sf/ga/compare?days=999 → デフォルト30にフォール
   assert.equal(status, 200);
   assert.equal(data.ok, true);
   assert.equal(data.days, 30, '不正な days は 30 にフォールバック');
+});
+
+// ─── Section 4: writeGaSources / /api/sf/ga/sources テスト ──────────────────
+console.log('\n▶ Section 4: writeGaSources / /api/sf/ga/sources');
+
+await test('writeGaSources: 正常書き込みで written=1, errors=[]', async () => {
+  const result = writeGaSources(db, [
+    { date: '2026-05-01', sessionSource: 'google', sessionMedium: 'organic',
+      sessions: 50, users: 40, pageViews: 100, engagedSessions: 30 },
+  ]);
+  assert.equal(result.written, 1);
+  assert.equal(result.errors.length, 0);
+  const row = db.prepare(
+    `SELECT sessions, page_views FROM sf_ga_sources WHERE date = ? AND session_source = ? AND session_medium = ?`
+  ).get('2026-05-01', 'google', 'organic');
+  assert.ok(row, 'DB に行が存在する');
+  assert.equal(row.sessions, 50);
+  assert.equal(row.page_views, 100);
+});
+
+await test('writeGaSources: UPSERT 冪等性（2回書いても rows 数は1件・値が更新される）', async () => {
+  writeGaSources(db, [{ date: '2026-05-02', sessionSource: '(direct)', sessionMedium: '(none)', sessions: 10, users: 8, pageViews: 20 }]);
+  writeGaSources(db, [{ date: '2026-05-02', sessionSource: '(direct)', sessionMedium: '(none)', sessions: 15, users: 12, pageViews: 30 }]);
+  const count = db.prepare(
+    `SELECT COUNT(*) AS c FROM sf_ga_sources WHERE date = ? AND session_source = ? AND session_medium = ?`
+  ).get('2026-05-02', '(direct)', '(none)').c;
+  assert.equal(count, 1, '重複行は作られない');
+  const row = db.prepare(
+    `SELECT sessions FROM sf_ga_sources WHERE date = ? AND session_source = ? AND session_medium = ?`
+  ).get('2026-05-02', '(direct)', '(none)');
+  assert.equal(row.sessions, 15, '2回目の値で更新される');
+});
+
+await test('writeGaSources: 複数行（source × medium の組み合わせ）一括書き込み', async () => {
+  const result = writeGaSources(db, [
+    { date: '2026-05-03', sessionSource: 'google',        sessionMedium: 'organic',  sessions: 30, users: 25, pageViews: 60 },
+    { date: '2026-05-03', sessionSource: 'instagram.com', sessionMedium: 'referral', sessions: 12, users: 10, pageViews: 25 },
+    { date: '2026-05-03', sessionSource: '(direct)',      sessionMedium: '(none)',   sessions:  8, users:  7, pageViews: 15 },
+  ]);
+  assert.equal(result.written, 3);
+  assert.equal(result.errors.length, 0);
+});
+
+await test('writeGaSources: date 不正 → errors 配列に追加、DB には書かない', async () => {
+  const before = db.prepare(`SELECT COUNT(*) AS c FROM sf_ga_sources`).get().c;
+  const result = writeGaSources(db, [
+    { date: '20260504', sessionSource: 'google', sessionMedium: 'organic', sessions: 5 },
+  ]);
+  const after = db.prepare(`SELECT COUNT(*) AS c FROM sf_ga_sources`).get().c;
+  assert.equal(result.written, 0);
+  assert.equal(result.errors.length, 1);
+  assert.ok(result.errors[0].reason.includes('date'));
+  assert.equal(before, after, 'DB 行数が増えていない');
+});
+
+await test('writeGaSources: sessionSource 空文字 → errors 配列に追加', async () => {
+  const result = writeGaSources(db, [
+    { date: '2026-05-05', sessionSource: '  ', sessionMedium: 'organic', sessions: 5 },
+  ]);
+  assert.equal(result.written, 0);
+  assert.equal(result.errors.length, 1);
+  assert.ok(result.errors[0].reason.includes('sessionSource'));
+});
+
+await test('writeGaSources: sessionMedium 空文字 → errors 配列に追加', async () => {
+  const result = writeGaSources(db, [
+    { date: '2026-05-05', sessionSource: 'google', sessionMedium: '', sessions: 5 },
+  ]);
+  assert.equal(result.written, 0);
+  assert.equal(result.errors.length, 1);
+  assert.ok(result.errors[0].reason.includes('sessionMedium'));
+});
+
+await test('writeGaSources: NULL 値は COALESCE で既存値を保持', async () => {
+  writeGaSources(db, [{ date: '2026-05-06', sessionSource: 'google', sessionMedium: 'cpc', sessions: 20, users: 15, pageViews: 40, engagedSessions: 12 }]);
+  writeGaSources(db, [{ date: '2026-05-06', sessionSource: 'google', sessionMedium: 'cpc', pageViews: 50 }]);
+  const row = db.prepare(
+    `SELECT sessions, users, page_views, engaged_sessions FROM sf_ga_sources WHERE date = ? AND session_source = ? AND session_medium = ?`
+  ).get('2026-05-06', 'google', 'cpc');
+  assert.equal(row.sessions, 20, '既存の sessions が保持される');
+  assert.equal(row.users, 15, '既存の users が保持される');
+  assert.equal(row.page_views, 50, 'pageViews は新しい値に更新される');
+  assert.equal(row.engaged_sessions, 12, '既存の engaged_sessions が保持される');
+});
+
+await test('GET /api/sf/ga/sources → 200 / ok:true / rows 配列', async () => {
+  const { status, data } = await api('GET', '/api/sf/ga/sources?from=2026-05-01&to=2026-05-06');
+  assert.equal(status, 200);
+  assert.equal(data.ok, true);
+  assert.ok(Array.isArray(data.rows), 'rows は配列');
+  assert.ok(data.rows.length >= 1, '1件以上のデータがある');
+  assert.ok('session_source'   in data.rows[0], 'session_source が含まれる');
+  assert.ok('session_medium'   in data.rows[0], 'session_medium が含まれる');
+  assert.ok('sessions'         in data.rows[0], 'sessions が含まれる');
+  assert.ok('users'            in data.rows[0], 'users が含まれる');
+  assert.ok('page_views'       in data.rows[0], 'page_views が含まれる');
+  assert.ok('engaged_sessions' in data.rows[0], 'engaged_sessions が含まれる');
+});
+
+await test('GET /api/sf/ga/sources → sessions 降順', async () => {
+  const { data } = await api('GET', '/api/sf/ga/sources?from=2026-05-01&to=2026-05-06');
+  for (let i = 1; i < data.rows.length; i++) {
+    assert.ok(data.rows[i - 1].sessions >= data.rows[i].sessions, 'sessions 降順');
+  }
+});
+
+await test('GET /api/sf/ga/sources → from/to が返却される', async () => {
+  const { data } = await api('GET', '/api/sf/ga/sources?from=2026-05-01&to=2026-05-06');
+  assert.equal(data.from, '2026-05-01');
+  assert.equal(data.to,   '2026-05-06');
+});
+
+await test('GET /api/sf/ga/sources → from/to 省略時はデフォルト30日（200が返る）', async () => {
+  const { status, data } = await api('GET', '/api/sf/ga/sources');
+  assert.equal(status, 200);
+  assert.equal(data.ok, true);
+  assert.ok(Array.isArray(data.rows));
 });
 
 // ─── 終了処理 ─────────────────────────────────────────────────────────────────
