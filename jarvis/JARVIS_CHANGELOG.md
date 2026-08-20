@@ -54,6 +54,46 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-08-20 — GA4 本番接続・Windows Task Scheduler 自動実行登録
+
+### 目的
+GA4 Data API の本番接続を完了し、毎日自動でデータを JARVIS DB へ同期する
+SnowflakesOpsRunner タスクを Windows Task Scheduler に登録する。
+
+### 変更ファイル
+- `STATUS.md`（本ドキュメント）
+- `JARVIS_CHANGELOG.md`（本ドキュメント）
+- ※コード変更なし（Task Scheduler 設定はシステム側）
+
+### 実装内容
+
+**GA4 本番接続**
+- Property ID: 535639087 でサービスアカウント認証成功
+- 取得期間: 2026-05-22 〜 2026-08-20
+- sf_ga_daily: 598件取得・書込
+- sf_ga_events: 2424件取得・書込
+- HP Analytics ダッシュボードにて実データ表示確認済み
+
+**Windows Task Scheduler 登録**
+- タスク名: SnowflakesOpsRunner
+- スケジュール: 毎日 06:00 / StartWhenAvailable
+- 実行ユーザー: Sunny
+- 実行コマンド: `node.exe --env-file-if-exists="...\jarvis\.env" sf_ops_runner.js`
+- `.env` 読み込み: `--env-file-if-exists` フラグで設定済み
+- GA4_PROPERTY_ID 読み込み確認済み
+
+### 確認結果
+- sf_ops_runner.js 手動実行: GA4 ✓ / YouTube ✓ / Instagram ✗（unconfigured・既存の状態）
+- 次回自動実行: 2026/08/21 06:00
+
+### 未確認 / 残課題
+- Instagram 連携は別タスクで対応予定
+- 秘密鍵・.env は Git 管理対象外のまま
+
+### commit SHA：未採番（commit 前）
+
+---
+
 ## 2026-08-20 — 請求書25行対応：全機能完成・スタイル完全正規化（最終確認済み）
 
 ### 目的
