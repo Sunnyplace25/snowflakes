@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「正しい距離より、触れている方がいい」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root {
+      --hinata: #93c5fd;
+      --kouta:  #fca5a5;
+      --hayate: #fde68a;
+      --bg:     #0c1220;
+      --text:   #e2e8f0;
+      --muted:  #cbd5e1;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --sweets: #f9a8d4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+
+    #snow {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events:none; opacity:0.3; z-index:0;
+    }
+
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 40px;
+      background:rgba(12,18,32,0.88); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+
+    #locked-view {
+      min-height:60vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:16px; text-align:center;
+    }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn {
+      margin-top:16px; padding:10px 36px; border-radius:100px;
+      background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3);
+      color:var(--sweets); font-family:'Cormorant Garamond',serif;
+      font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none;
+      transition:background 0.2s;
+    }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+
+    #content-view { display:none; }
+
+    .note-eyebrow {
+      font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px;
+      color:var(--muted); margin-bottom:10px;
+    }
+    .note-title {
+      font-family:'Noto Serif JP',serif; font-size:clamp(16px,3.5vw,22px);
+      font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px;
+    }
+    .note-sub {
+      font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78);
+      font-weight:300; line-height:1.8; margin-bottom:36px;
+    }
+
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading {
+      font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px;
+      color:var(--hinata); line-height:2.0; margin:22px 0 0; font-weight:400;
+    }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+
+    .related-link {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 20px; background:var(--card); border:1px solid var(--border);
+      border-radius:14px; text-decoration:none; margin-top:40px;
+      transition:background 0.2s, border-color 0.2s;
+    }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+
+    .note-index-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom {
+      display:block; text-align:center; margin-top:48px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .nav-label { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「正しい距離より、触れている方がいい」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+
+  <div id="content-view" style="display:none;">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「正しい距離より、触れている方がいい」解説</h1>
+    <p class="note-sub">― 夢の中で見えた、届く距離の話 ―</p>
+
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+
+    <a class="related-link" href="https://ncode.syosetu.com/n0498ly/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.06.30 / 短篇</p>
+        <p class="related-title">正しい距離より、触れているほうがいい</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+
+<script>
+  var NOTE_ID = 'note_kyori_1';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    var sections = [
+      { heading: null, body: '「正しい距離より、触れている方がいい」は、Snow flakes本編の外側にある、夢の中の一篇です。\n\n舞踏会。\n玉座。\n黒髪の姫。\n金髪の王子。\n整えられた庭。\n\n現実とは違う場所で、ヒナタは「正しい距離」を見ます。\n\nそれは綺麗で、間違っていなくて、誰にも乱されていない距離です。\nけれどヒナタには、そこに小さな違和感が残る。\n\nちゃんとしている。\nでも、遠い。\n\nこの話は、その違和感を追いかけていく物語です。' },
+      { heading: '夢の中でも、ヒナタはヒナタのまま', body: 'ヒナタは、夢の中で陛下になっています。\n\nけれど、立場が変わっても、ヒナタ自身はほとんど変わりません。\n\n礼儀や順序を理解して動くのではなく、\n見たものに対して、まっすぐ反応する。\n\n「ちゃんとしてる」\n「でも遠い」\n「触れてない」\n\n言葉は少ない。\nけれど、核心だけは外さない。\n\n夢の中の世界は、すべてが整っています。\n音楽も、人の動きも、立ち位置も、距離も。\n\nその中でヒナタだけが、整っているものの中にある違和感を見つけてしまいます。' },
+      { heading: 'ハヤテ王子の正しい距離', body: '夢の中のハヤテは、金髪の王子として現れます。\n\n姿勢も、言葉も、手の取り方も、すべてが整っている。\n\n相手を乱さない。\n踏み込みすぎない。\n場を壊さない。\n\nそれは、間違っていない距離です。\n\nハヤテの距離は、優しくて、正しい。\n誰かを傷つけないための距離でもあります。\n\nだからヒナタは、最初に「ちゃんとしてる」と感じます。\n\nけれど、ちゃんとしているからこそ、届かないものがある。\n\nここで描いているのは、ハヤテの距離が間違っているということではありません。\n正しいからこそ遠くなるものがある、ということです。' },
+      { heading: 'リトルスノーという名前', body: '黒髪の姫は、リトルスノーと呼ばれます。\n\nヒナタはその名前を聞いて、すぐに「合ってる」と言います。\n理由を説明できるわけではありません。\n\nけれどヒナタにとって、名前は理屈より先に届くものです。\n\n黒髪。\n静かな立ち方。\n雪のような名前。\n\nその名前が合っていると思った瞬間、ヒナタの中で彼女の輪郭が少しだけはっきりします。\n\nだから、見続けてしまう。\nただ綺麗だからではなく、その距離が本当に彼女に届いているのかを、気にしてしまう。\n\nリトルスノーという呼び名は、夢の中で彼女の輪郭を決めるものでもあります。\n\nそこから、物語が少しずつ動き始めます。' },
+      { heading: '「あの距離で、いいの」', body: '庭でヒナタは、リトルスノーに問いかけます。\n\n「嫌じゃないの」\n「あの距離で、いいの」\n\nこれは、答えを迫る言葉ではありません。\n\nヒナタが気にしているのは、距離です。\n\n正しい距離。\n綺麗な距離。\n誰にも責められない距離。\n\nその距離の中で、本当に息ができるのか。\n本当に届いているのか。\n\nヒナタは、それを確かめようとしています。\n\nだからこれは、誰かを選ぶ話ではなく、\n「届く距離とは何か」を見る話です。' },
+      { heading: '「触れてない」', body: 'お茶会の場面で、ヒナタははっきり言います。\n\n「ちゃんとしてるけど」\n「触れてない」\n\nこの言葉が、物語の中心です。\n\nハヤテの所作は正しい。\nリトルスノーとの距離も美しい。\nけれどヒナタには、そこに「触れていない」感覚がある。\n\nここでいう「触れる」は、単に手に触れることではありません。\n\n相手の呼吸に届くこと。\n揺れに気づくこと。\n断れる余地を残すこと。\n正しさより先に、その人自身へ届くこと。\n\nだからヒナタは、同じ形をなぞるのではなく、同じ距離へ向かおうとします。' },
+      { heading: '「嫌なら、断ってもいい」', body: 'ヒナタがリトルスノーの手を取った時、その距離は近いです。\n\n手順としては綺麗ではない。\n王子の所作のように整ってもいない。\n\nけれど同時に、ヒナタはこう言います。\n\n「嫌なら、断ってもいい」\n\nこの一言で、ヒナタの距離はただの踏み込みではなくなります。\n\n近い。\nけれど、相手が拒める余地は残している。\n\nそれは、正しい礼儀とは違う形の配慮です。\n\nハヤテの距離は、乱さないための距離。\nヒナタの距離は、届くための距離。\n\nどちらが正しいかを決める話ではありません。\nただ、その違いがリトルスノーの中に残ってしまう。\n\nだから彼女は、あとで「ずるい」と呟きます。' },
+      { heading: 'ハヤテが見抜かれるもの', body: 'この話の中で、ハヤテは誰よりも正しく立っています。\n\n王子として、相手を乱さず、場を崩さず、綺麗に距離を保っている。\n\nだからこそ、ヒナタの「触れてない」という言葉は刺さります。\n\nそれは否定ではなく、見抜かれた感覚に近い。\n\nハヤテ自身も、自分の距離が遠かったことに気づく。\nけれど、それでも崩れない。\n\n「面白い」と呟くハヤテには、余裕と、悔しさと、少しの興味が混ざっています。\n\nここで変わるのは、誰かの答えではありません。\n三人それぞれの「距離の取り方」です。' },
+      { heading: 'コウタは距離を整理する', body: '夢の中のコウタは、参謀役として現れます。\n\nヒナタが感覚で見つけたものを、コウタは言葉にしようとする。\n\nただし、全部を説明するわけではありません。\n\nコウタは、ヒナタが何に触れようとしているのかを見ています。\n\nハヤテとリトルスノーの間にある、正しい距離。\nそこへヒナタが無自覚に触れていく。\n\nコウタはそれを止めない。\nむしろ、少し面白がっている。\n\nそれは、ヒナタがまた何かの核心に触れ始めたことを見ているからです。' },
+      { heading: '現実に戻る', body: '最後にヒナタは、スタジオで目を覚まします。\n\nアンプの唸り。\nドラムのチェック音。\nスティックの跳ね返り。\n\n舞踏会の音は消えて、いつものSnow flakesの音が戻ってくる。\n\nそこでヒナタは、現実のハヤテを見る。\n夢の中の王子ではない、いつものハヤテ。\n\n夢の距離感を少しだけ引きずったまま、ヒナタはハヤテの手に触れてしまう。\n\nそれは、夢の続きを現実に持ち込んだような行動です。\nけれど同時に、夢が現実へ戻っていくための合図でもあります。\n\n「王子じゃないな」\n「夢でよかった」\n\nその言葉で、重くなりすぎた夢は、いつもの三人の空気へ戻っていきます。' },
+      { heading: '正しい距離より、触れている方がいい', body: 'この話に出てくる「正しい距離」は、悪いものではありません。\n\n相手を守るための距離。\n踏み込みすぎないための距離。\n場を壊さないための距離。\n\nそれは必要なものです。\n\nけれど、正しい距離だけでは届かないこともある。\n\n触れないまま守ること。\n触れてしまうことで届くこと。\n\nそのどちらも、簡単には否定できません。\n\nヒナタは、正しさより先に「届いているか」を見てしまう。\nハヤテは、届きすぎないように正しさを保つ。\nリトルスノーは、その二つの距離の違いに気づいてしまう。\nコウタは、それが変わっていく瞬間を見ている。\n\n正しいのに遠いもの。\n不器用なのに届いてしまうもの。\n触れないことで守られるもの。\n触れることで変わってしまうもの。\n\n夢から覚めたあとも、\nその感覚だけが、少しだけ音の中に残っています。' },
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">■ ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.2,
+        drift: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + f.opacity + ')';
+        ctx.fill();
+        f.y += f.speed;
+        f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+
+</body>
+</html>

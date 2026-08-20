@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「半分のまま」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root {
+      --hinata: #93c5fd;
+      --kouta:  #fca5a5;
+      --hayate: #fde68a;
+      --bg:     #0c1220;
+      --text:   #e2e8f0;
+      --muted:  #cbd5e1;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --sweets: #f9a8d4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+
+    #snow {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events:none; opacity:0.3; z-index:0;
+    }
+
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 40px;
+      background:rgba(12,18,32,0.88); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+
+    #locked-view {
+      min-height:60vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:16px; text-align:center;
+    }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn {
+      margin-top:16px; padding:10px 36px; border-radius:100px;
+      background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3);
+      color:var(--sweets); font-family:'Cormorant Garamond',serif;
+      font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none;
+      transition:background 0.2s;
+    }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+
+    #content-view { display:none; }
+
+    .note-eyebrow {
+      font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px;
+      color:var(--muted); margin-bottom:10px;
+    }
+    .note-title {
+      font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px);
+      font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px;
+    }
+    .note-sub {
+      font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78);
+      font-weight:300; line-height:1.8; margin-bottom:36px;
+    }
+
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading {
+      font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px;
+      color:var(--hinata); line-height:2.0; margin:22px 0 0; font-weight:400;
+    }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+
+    .related-link {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 20px; background:var(--card); border:1px solid var(--border);
+      border-radius:14px; text-decoration:none; margin-top:40px;
+      transition:background 0.2s, border-color 0.2s;
+    }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+
+    .note-index-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom {
+      display:block; text-align:center; margin-top:48px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .nav-label { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「半分のまま」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+
+  <div id="content-view" style="display:none;">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「半分のまま」解説</h1>
+    <p class="note-sub">― "選びきれないまま続いていく距離"を描いた物語 ―</p>
+
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+
+    <a class="related-link" href="https://ncode.syosetu.com/n0327lw/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.04.09 / 短編</p>
+        <p class="related-title">半分のまま</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+
+<script>
+  var NOTE_ID = 'note_hinata_2';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    var sections = [
+      { heading: null, body: '『半分のまま』は、『整えない音』のあとにある短編です。\n\nヒナタと小雪の距離は、確かに近づいている。\nでも、まだ越えていない。\n\n完成でも、告白でも、恋人でもない。\n\nだからタイトルは、「半分のまま」。' },
+      { heading: '「整えない音」のあと', body: '『整えない音』以降、ヒナタの音は少し変わっています。\n\n以前より、逃げなくなっている。\n\n余白をごまかさず、迷いをごまかさず、そのまま整えていく。\n\n小雪は、その変化に気づいている。\n\n音は前に進んでいる。\nでも、関係はまだ、名前のないまま止まっている。\n\n近い。\n安心もある。\n信頼もある。\n\nそれでも、ヒナタは「選ぶ」という行為をしない。\n\nだからこの物語は、恋愛が進展する話ではなく、\n\n"進めないまま揺れ続けている時間"\n\nを描いた短編になっています。' },
+      { heading: '雨の夜と「何も起きない時間」', body: '雨の夜の場面では、大きな出来事は起きません。\n\n狭い傘。\n濡れる肩。\n洗濯機の音。\n湯気。\n雨音。\n\nただ、同じ空気の中にいる。\n\n『半分のまま』では、何かを起こすことより、\n"同じ温度を共有できるか"\nが大切にされています。\n\nヒナタは、誰かを守ることはできる。\n整えることもできる。\n\nでも、自分から踏み込むことが苦手です。\n\nだから、越えない。\nでも、逃げてもいない。\n\nその曖昧さが、この短編全体の空気になっています。' },
+      { heading: 'ヒナタの"ズレ"', body: '合コンのシーンで描かれているのは、ヒナタの"ズレ"です。\n\n会話はできる。\n空気も壊さない。\n成立はしている。\n\nでも、どこか噛み合わない。\n\nSnow flakesの中でだけ成立する呼吸が、外側ではうまく鳴らない。\n\nだからヒナタは、誰かを選ばない。\n\nというより、\n"選ばないことで、形を壊さないようにしている"。\n\nハヤテとコウタは、それを分かっている。\n\nだからチュロスの場面も、\n「半分でいい」\nという空気のまま終わる。\n\n完成させることより、今の距離を崩さないことを、三人とも無意識に選んでいます。' },
+      { heading: '「ずっと、必要ないまま？」', body: '終盤、小雪はヒナタに問いかけます。\n\n「ずっと、必要ないまま？」\n\nヒナタは、"必要性"で動く人です。\n\n必要だから整える。\n必要だから守る。\n必要だから残る。\n\nでも、感情は、必要だけでは動かない。\n\n小雪は、そこに静かに触れている。\n\n責めているわけではない。\n\nただ、\n"そのままでいる理由"\nを確かめようとしている。\n\nヒナタは答えません。\n\n答えられない。\n\nでも、そのあと『Little Snow』の音が、ほんの少しだけ変わる。\n\n守るためだけだった音が、少しだけ、誰かへ向こうとする。\n\nSnow flakesでは、感情は言葉より先に、音へ滲みます。\n\nだからこの変化も、恋愛の結果というより、\n\n"触れられたことで、音の輪郭が変わっていく"\n\nという形で描かれています。' },
+      { heading: '「輪郭、はっきりしましたよね」', body: 'ラストでスタッフが口にする、\n\n「輪郭、はっきりしましたよね」\n\nという言葉。\n\nそれは曲の話であり、同時に、ヒナタ自身の話でもあります。\n\nまだ完成していない。\nまだ半分。\n\nでも、半分だからこそ、今しか鳴らない音がある。\n\n『半分のまま』は、進まない物語ではありません。\n\n急いで答えを出さない物語です。\n\n越えない。\n決めきらない。\nでも、確かに揺れている。\n\nその途中の温度を、静かに残した短編になっています。' },
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">■ ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.2,
+        drift: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + f.opacity + ')';
+        ctx.fill();
+        f.y += f.speed;
+        f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+
+</body>
+</html>

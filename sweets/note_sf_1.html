@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「白い音」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root {
+      --hinata: #93c5fd;
+      --kouta:  #fca5a5;
+      --hayate: #fde68a;
+      --bg:     #0c1220;
+      --text:   #e2e8f0;
+      --muted:  #cbd5e1;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --sweets: #f9a8d4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+
+    #snow {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events:none; opacity:0.3; z-index:0;
+    }
+
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 40px;
+      background:rgba(12,18,32,0.88); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+
+    #locked-view {
+      min-height:60vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:16px; text-align:center;
+    }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn {
+      margin-top:16px; padding:10px 36px; border-radius:100px;
+      background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3);
+      color:var(--sweets); font-family:'Cormorant Garamond',serif;
+      font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none;
+      transition:background 0.2s;
+    }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+
+    #content-view { display:none; }
+
+    .note-eyebrow {
+      font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px;
+      color:var(--muted); margin-bottom:10px;
+    }
+    .note-title {
+      font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px);
+      font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px;
+    }
+    .note-sub {
+      font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78);
+      font-weight:300; line-height:1.8; margin-bottom:36px;
+    }
+
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading {
+      font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px;
+      color:var(--hinata); line-height:2.0; margin:22px 0 0; font-weight:400;
+    }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+
+    .related-link {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 20px; background:var(--card); border:1px solid var(--border);
+      border-radius:14px; text-decoration:none; margin-top:40px;
+      transition:background 0.2s, border-color 0.2s;
+    }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+
+    .note-index-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom {
+      display:block; text-align:center; margin-top:48px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s;
+    }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .nav-label { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「白い音」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+
+  <div id="content-view" style="display:none;">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「白い音」解説</h1>
+    <p class="note-sub">― Snow flakesという"三人の音"が重なり始める前夜 ―</p>
+
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+
+    <a class="related-link" href="https://ncode.syosetu.com/n0679lx/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.04.30 / 短編</p>
+        <p class="related-title">白い音</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+
+<script>
+  var NOTE_ID = 'note_sf_1';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    var sections = [
+      { heading: null, body: '『白い音』は、\nSnow flakesが始まる前の時間を描いた短編です。\n\n大学に入り、\n三人はそれぞれ違う生活を過ごしている。\n\n同じ場所にはいる。\n\nでも、\nまだ今の形ではない。\n\nヒナタが、\n今よりもっと途中にいた頃。\n\nそして、\n音が誰かへ届く前の時間を描いています。\n\nこの物語は、\n大学時代のヒナタと、静かな時間を過ごしていた女性の視点で描かれています。' },
+      { heading: '少しずつズレ始める時間', body: '高校卒業後、\nSnow flakesの三人は同じ大学へ内部進学します。\n\nただ、\n選んだ学部はそれぞれ違う。\n\n同じキャンパスにはいる。\n\nでも、\n頻繁に連絡を取り合っているわけでもない。\n\n授業。\n交友関係。\n生活リズム。\n\nそれぞれ別の時間を過ごしている。\n\n『白い音』で描かれているのは、\n\nそんな、\nまた音が重なっていく前の時間です。' },
+      { heading: '「まだ途中」のヒナタ', body: 'ヒナタは、\nまだ途中の音を鳴らしている。\n\n大学の木陰。\nベンチ。\n途中の曲。\n\n完成した音ではなく、\nまだ形になりきらない音。\n\nSnow flakesのヒナタは、\n最初から完成された存在ではありません。\n\nずっと、\n「まだ途中」の人。\n\nだから彼女は、\n技術や言葉より先に、\n"ペースが合う"ことへ惹かれていきます。\n\n会話は多くない。\n沈黙も多い。\n\nでも、\n疲れない。\n\nその静かな距離感の中で、\n二人の時間は少しずつ重なっていく。\n\nそして、\n駅までの帰り道。\n\n理由もなく伸ばした手を、\nヒナタがゆっくり受け取る。\n\n『白い音』は、\n大きな告白の物語ではありません。\n\n少しずつ距離が近づいて、\n気づけば始まっていた。\n\nそんな関係を描いた物語です。' },
+      { heading: '少しずつ、遠くを見るようになる', body: 'ヒナタは少しずつ変わっていきます。\n\n最初は、\n隣でギターを鳴らしていた。\n\nでも、\n音を探し始めてから、\n視線が遠くなる。\n\nベンチでギターを弾いていても、\nもう彼女を見ていない。\n\n音の向こうを見ている。\n\n彼女は、\nそれをちゃんと理解している。\n\n怒っているわけではない。\n嫌いになったわけでもない。\n\nただ、\n"音でいっぱいになっている"\nことが分かってしまう。\n\nだから、\n\n「ヒナタは私より音の方が大事なんだね」\n\nという言葉になる。\n\nこれは責める言葉ではありません。\n\n確認です。\n\nそしてヒナタは、\n否定できない。\n\n誰かを傷つけたいわけじゃない。\n\nでも、\n音を選んでしまう。' },
+      { heading: '三人の音が重なり始める', body: 'ライブシーンでは、\n一人で鳴っていたヒナタの音へ、\nハヤテのドラムが突然重なります。\n\nその瞬間、\n音が少しだけ広がる。\n\n彼女はそこで思います。\n\n「ああ。行ってしまった。」\n\nこれは、\n恋愛の終わりではありません。\n\nヒナタが、\n自分のいる場所を見つけた瞬間です。\n\nそのあと、\n少し遅れてコウタが現れます。\n\nまだ音を鳴らしていない。\n\nただ、\nそこへ来る。\n\nヒナタとハヤテのいる場所へ、\nごく自然に加わる。\n\n気づけば、\n三人が並んでいる。\n\nあとから振り返ると、\nSnow flakesはこういう形で始まっていたのかもしれない。\n\n誰かが決めたわけでもなく、\n\n別々だった音が、\n少しずつ重なっていった先に。' },
+      { heading: '『Little Snow』 Raw → Near', body: 'そして数年後、\n彼女は偶然、ライブハウスで\nSnow flakesを見る。\n\nここで演奏されるのが、\n『Little Snow』。\n\n『Little Snow』は、\n最初は"Raw"として存在していました。\n\nまだ剥き出しで、\n整理されていなくて、\n感情の輪郭も荒い音。\n\n『整えない音』で描かれるのは、\nまさにその状態です。\n\n整えることもできる。\nもっと安全な形へ直すこともできる。\n\nそれでもヒナタは、\n触れなかった。\n\n整えた瞬間、\nその夜の揺れが、\n別のものになってしまう気がしたから。\n\nだからRaw版の『Little Snow』は、\n"自分の中だけで鳴っている音"でした。\n\nでも、\n『白い音』終盤のライブでは、\nその曲が"Near"へ変わっている。\n\nNear。\n\n近い音。\n\nただ感情を吐き出すだけではなく、\n誰かの近くへ置こうとする音。\n\nそれは、\nヒナタ自身の変化でもあります。\n\n一人の音だったものが、\n三人の音になり、\nそして誰かへ届く音へ変わっていく。\n\nその変化が、\n『白い音』の終盤にも少しだけ見えているのかもしれません。' },
+      { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n\u3000きっと\n\u3000ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n\u3000ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">■ ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.2,
+        drift: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + f.opacity + ')';
+        ctx.fill();
+        f.y += f.speed;
+        f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random() * canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+
+</body>
+</html>
