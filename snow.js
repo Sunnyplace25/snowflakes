@@ -168,6 +168,19 @@
     document.head.appendChild(s);
   })();
 
+  // Under tone 短篇バナー: 2026-08-20 23:00〜08-31 は常時表示
+  (function forceUndertoneStoryBanner() {
+    var start = new Date('2026-08-20T23:00:00+09:00');
+    var end   = new Date('2026-08-31T23:59:59+09:00');
+    var now   = new Date();
+    if (now < start || now > end) return;
+    localStorage.removeItem('sf_undertone_story_v1_seen');
+    var s = document.createElement('style');
+    s.id = 'sf-ut-story-force-visible';
+    s.textContent = '#banner-ut-story{display:block!important;}';
+    document.head.appendChild(s);
+  })();
+
   /* ── Monthly item system ── */
   var KEY_MONTH = 'sf_month_';
   function thisMonth() {
