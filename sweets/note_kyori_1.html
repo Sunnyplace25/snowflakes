@@ -80,7 +80,7 @@
     .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
     .body-wrap p.section-heading {
       font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px;
-      color:var(--hinata); line-height:2.0; margin:22px 0 0; font-weight:400;
+      color:var(--kouta); line-height:2.0; margin:22px 0 0; font-weight:400;
     }
     .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
 
@@ -108,9 +108,63 @@
     }
     .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
 
+    /* item icon area */
+    .item-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      margin-bottom:28px; padding:8px 14px;
+      background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px;
+    }
+    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
+    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
+
+    /* ── ITEM POPUP ── */
+    #item-popup {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    #item-popup.show { display:flex; }
+    .item-popup-card {
+      background:#0f1825; border:1px solid rgba(252,165,165,0.2);
+      border-radius:18px; padding:36px 32px; max-width:320px; width:90%;
+      text-align:center; position:relative;
+    }
+    .item-popup-label { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--kouta); margin-bottom:16px; }
+    .item-popup-img { width:72px; height:72px; object-fit:cover; border-radius:12px; margin:0 auto 16px; display:block; box-shadow:0 0 30px rgba(252,165,165,0.2); }
+    .item-popup-name { font-family:'Noto Serif JP',serif; font-size:16px; color:var(--text); font-weight:300; margin-bottom:6px; }
+    .item-popup-msg { font-size:12px; color:var(--muted); letter-spacing:1px; margin-bottom:20px; }
+    .item-popup-close {
+      padding:8px 32px; border-radius:100px; background:rgba(252,165,165,0.08);
+      border:1px solid var(--kouta); color:var(--kouta);
+      font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px;
+      cursor:pointer; transition:background 0.2s;
+    }
+    .item-popup-close:hover { background:rgba(252,165,165,0.15); }
+
+    /* ── CHARA POPUP ── */
+    #chara-popup {
+      position:fixed; bottom:24px; right:20px; z-index:9999;
+      display:flex; align-items:flex-end; gap:10px;
+      opacity:0; transform:translateY(24px);
+      transition:opacity 0.6s ease, transform 0.6s ease;
+      pointer-events:none;
+    }
+    #chara-popup.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+    #chara-bubble {
+      background:rgba(10,18,34,0.93); border:1px solid rgba(255,255,255,0.15);
+      border-radius:20px 20px 4px 20px; padding:26px 28px 22px;
+      max-width:320px; backdrop-filter:blur(14px); position:relative;
+    }
+    #chara-name { font-size:12px; letter-spacing:4px; font-family:'Cormorant Garamond',serif; margin-bottom:11px; }
+    #chara-img img { width:300px; display:block; }
+
     @media(max-width:600px) {
       nav { padding:14px 20px; }
       .nav-label { display:none; }
+      #chara-popup { bottom:12px; right:10px; gap:8px; }
+      #chara-bubble { max-width:200px !important; padding:16px 18px 14px !important; }
+      #chara-name { font-size:10px !important; }
+      #chara-img img { width:170px !important; }
     }
   </style>
 </head>
@@ -136,6 +190,11 @@
     <h1 class="note-title">「正しい距離より、触れている方がいい」解説</h1>
     <p class="note-sub">― 夢の中で見えた、届く距離の話 ―</p>
 
+    <div class="item-badge" id="item-badge" style="display:none;">
+      <img id="item-badge-img" src="../item/spinel_book.png" alt="赤い石が嵌め込まれた古書">
+      <span id="item-badge-label">アイテムあり</span>
+    </div>
+
     <div class="divider"></div>
     <div class="body-wrap" id="note-body"></div>
 
@@ -153,8 +212,50 @@
   </div>
 </main>
 
+<!-- ITEM POPUP -->
+<div id="item-popup">
+  <div class="item-popup-card">
+    <p class="item-popup-label" id="popup-label">ITEM GET</p>
+    <img class="item-popup-img" id="popup-img" src="../item/spinel_book.png" alt="">
+    <p class="item-popup-name" id="popup-name">赤い石が嵌め込まれた古書</p>
+    <p class="item-popup-msg" id="popup-msg">を入手しました</p>
+    <button class="item-popup-close" onclick="closeItemPopup()">閉じる</button>
+  </div>
+</div>
+
+<!-- CHARA POPUP -->
+<div id="chara-popup">
+  <div id="chara-bubble">
+    <p id="chara-name"></p>
+  </div>
+  <div id="chara-img"><img id="chara-face" src="" alt=""></div>
+</div>
+
 <script>
-  var NOTE_ID = 'note_kyori_1';
+  var NOTE_ID    = 'note_kyori_1';
+  var ITEM_ID    = 'spinel_book';
+  var SCROLL_KEY = 'sf_note_scroll_' + ITEM_ID;
+
+  var _charaPending = false;
+  var _rewardFired  = false;
+
+  function closeItemPopup() {
+    document.getElementById('item-popup').classList.remove('show');
+    if (!_charaPending) return;
+    _charaPending = false;
+    setTimeout(function() { _showCharaPopup(); }, 350);
+  }
+
+  function _showCharaPopup() {
+    var popup  = document.getElementById('chara-popup');
+    var nameEl = document.getElementById('chara-name');
+    var faceEl = document.getElementById('chara-face');
+    nameEl.style.color = '#fca5a5';
+    nameEl.textContent = 'KOUTA';
+    faceEl.src = '../plofile/chibi_kouta.webp';
+    popup.classList.add('show');
+    setTimeout(function() { popup.classList.remove('show'); }, 3000);
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
     if (typeof SfSnow === 'undefined') return;
@@ -167,6 +268,23 @@
 
     document.getElementById('locked-view').style.display = 'none';
     document.getElementById('content-view').style.display = 'block';
+
+    // アイテムバッジ
+    var badge      = document.getElementById('item-badge');
+    var badgeImg   = document.getElementById('item-badge-img');
+    var badgeLabel = document.getElementById('item-badge-label');
+    var itemGot    = SfSnow.isUnlocked(ITEM_ID);
+    badge.style.display = 'inline-flex';
+    if (itemGot) {
+      badgeImg.style.filter  = 'none';
+      badgeImg.style.opacity = '0.85';
+      badgeLabel.textContent = '赤い石が嵌め込まれた古書';
+      badgeLabel.style.color = '#fca5a5';
+    } else {
+      badgeImg.style.filter  = 'grayscale(1)';
+      badgeImg.style.opacity = '0.45';
+      badgeLabel.textContent = 'アイテムあり';
+    }
 
     var sections = [
       { heading: null, body: '「正しい距離より、触れている方がいい」は、Snow flakes本編の外側にある、夢の中の一篇です。\n\n舞踏会。\n玉座。\n黒髪の姫。\n金髪の王子。\n整えられた庭。\n\n現実とは違う場所で、ヒナタは「正しい距離」を見ます。\n\nそれは綺麗で、間違っていなくて、誰にも乱されていない距離です。\nけれどヒナタには、そこに小さな違和感が残る。\n\nちゃんとしている。\nでも、遠い。\n\nこの話は、その違和感を追いかけていく物語です。' },
@@ -195,6 +313,36 @@
       html += '<p class="section-spacer">\u3000</p>';
     });
     bodyEl.innerHTML = html;
+
+    // スクロール読了でアイテム付与 / 再読了でポップアップのみ
+    var alreadyScrolled = !!localStorage.getItem(SCROLL_KEY);
+    var sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel && !alreadyScrolled) {
+      var obs = new IntersectionObserver(function(entries) {
+        if (!entries[0].isIntersecting) return;
+        if (_rewardFired) return;
+        _rewardFired = true;
+        obs.disconnect();
+        localStorage.setItem(SCROLL_KEY, '1');
+        var alreadyGot = SfSnow.isUnlocked(ITEM_ID);
+        if (!alreadyGot) {
+          SfSnow.unlockItem(ITEM_ID);
+          badgeImg.style.filter  = 'none';
+          badgeImg.style.opacity = '0.85';
+          badgeLabel.textContent = '赤い石が嵌め込まれた古書';
+          badgeLabel.style.color = '#fca5a5';
+          document.getElementById('popup-msg').textContent = 'を入手しました';
+        } else {
+          document.getElementById('popup-msg').textContent = 'は入手済みです';
+        }
+        _charaPending = true;
+        setTimeout(function() {
+          document.getElementById('popup-label').style.color = '#fca5a5';
+          document.getElementById('item-popup').classList.add('show');
+        }, 1000);
+      }, { threshold: 1.0 });
+      obs.observe(sentinel);
+    }
   });
 
   (function() {
