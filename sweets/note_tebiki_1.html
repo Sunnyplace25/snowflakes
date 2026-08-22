@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「手引き」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「手引き」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「手引き」解説</h1>
+    <p class="note-sub">― 三人を知ることが、三人へ近づく方法に変わってしまった ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://sunnyplace25.github.io/snowflakes/horror_tebiki.html" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.08.04 / 短編</p>
+        <p class="related-title">手引き</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_tebiki_1';
+  var SECTIONS = [
+        { heading: null, body: '『手引き』は、Snow flakesの周囲で続いていた不審な出来事を、三人が振り返るところから始まります。\n\nコウタへ必要以上に触れようとした女性。関係者のふりをして、楽屋へ入り込んだ女性。コウタへ執拗に絡み、ヒナタが止めに入ることを楽しんでいた男性。\n\n性別も年齢も違う。やったことも違う。同じ人物ではない。それまで警察やスタッフも、事件同士につながりはないと考えていました。\n\nけれどハヤテだけが、「なんか、やり方が似てない？」と気づきます。\n\n『手引き』で明らかになるのは、同じ人が繰り返していたことではありません。違う人たちが、同じ「やり方」を知っていたことです。' },
+        { heading: '「犯人が同じ」ではない', body: '普通、似た事件が続けば、同じ人物ではないか、誰かが指示しているのではないか、と考えます。けれど『手引き』は、そこから少しずれています。\n\n三人へ近づいた人たちは、それぞれ別の人間です。目的も、行動も、距離の詰め方も違う。それなのに、どこを狙えば三人がどう反応するかという部分だけが似ている。\n\nつながっていたのは、人ではありません。情報でした。' },
+        { heading: '「Snow flakes近接記録」', body: '見つかるのは、Snow flakesについて情報を共有する非公開グループ。参加者は32人。\n\nそこには、ライブの感想や楽曲の話だけではなく、「コウタさんへ覚えてもらう方法」「ヒナタさんに直接話しかける方法」「関係者エリアへ入る方法」といった情報まで書かれています。\n\nファン同士の情報交換に見えて、実際に共有されているのは、どうすれば三人との距離を縮められるか。どうすれば警戒されずに近づけるか。どうすれば、相手から反応を引き出せるか。という「接触方法」です。' },
+        { heading: '三人の性格が「攻略法」になる', body: '一番怖いのは、書かれている内容が完全な嘘ではないことです。三人をよく観察していれば、確かに分かることばかり。\n\nハヤテは、知らない人にも比較的自然に返事をする。困っている人や、手伝おうとする人を最初から疑わない。だから、まずハヤテへ声をかける、という方法が成立する。\n\nヒナタは、自分のことだけなら流すことがある。けれど、コウタやハヤテに何かあれば入ってくる。だから、ヒナタ本人へ直接近づかなくてもいい。コウタへ失礼なことを言えば、ヒナタの方から会話へ入ってくる。『四人目』の男が使った方法そのものです。\n\nそしてコウタは、嫌でも、その場を壊したくなくて強く拒絶しないことがある。だから、「嫌だと言われていない」という形を利用して、少しずつ距離を詰めることができる。『出禁』で繰り返された接触です。\n\n三人にとっては、ただの性格です。でも外側から観察する人間には、「こうすれば動く」という情報になってしまいます。' },
+        { heading: '『関係者』も「手順」だった', body: '楽屋へ入り込んだ女性も、ただ大胆だったわけではありません。搬入の時間。人の出入りが多い場所。黒っぽい服。首から下げた透明なカードケース。忙しい現場では、「そこにいるから関係者だろう」という判断が起きやすい。\n\nさらに彼女は、三人の好みまで知っていました。ヒナタには常温の水。コウタには冷たすぎないもの。自然に手伝い、自然に楽屋へ入り、自然に「知っている人」の位置へ入っていく。\n\n『関係者』だけを読むと、一人の女性が三人をよく調べていた話に見えます。けれど『手引き』を読むと、その知識すら、彼女一人で集めたとは限らなくなる。ここで『関係者』の怖さまで、後から変わります。' },
+        { heading: '『四人目』の意味も変わる', body: '『四人目』の男は、コウタへ話しかければ、ヒナタが来る、と学習していました。一度試す。ヒナタが入る。次はもう少し強く言う。もっと長く話せる。そして最後には、「コウタさんに話しかけると、必ず来てくれるから」と明かします。\n\n『四人目』だけなら、一人の男が観察して見つけた方法にも見えます。でも『手引き』まで読むと、この「方法」そのものが、共有できる情報だと分かる。男自身がグループから知ったのか。自分で見つけて書き込んだのか。そこまでは断定されません。\n\nだから余計に怖い。誰が教えたのかより、もう「方法」として存在していることの方が問題だからです。' },
+        { heading: '「知られている」の意味', body: 'Snow flakesは、人前に立つバンドです。ライブをする。物販をする。話す。笑う。三人で行動する。当然、見られます。\n\n長く見ているファンなら、ヒナタはこういう時に動く、コウタはこういう時に黙る、ハヤテはこういう人へ先に返事をする、ということも分かってくる。それ自体は、珍しいことではありません。\n\nけれど『手引き』では、「知っている」が、「利用できる」へ変わります。人を理解することと、人を操作すること。その境界を越えた瞬間です。' },
+        { heading: '好きだから知りたい、の先', body: '好きな人のことを知りたい。どんなものが好きか知りたい。ライブでどこを見るか知りたい。そういう感情そのものは、おかしなものではありません。\n\n問題なのは、知った情報を使って、本人が望んでいない距離まで入ろうとすることです。常温の水が好き。強く拒絶しない。仲間を庇う。人の手伝いを断りにくい。それらは、本人が誰かへ渡した「許可」ではありません。\n\n『手引き』では、普通なら人物の魅力として語られるような特徴が、接触するための弱点として書き換えられてしまいます。' },
+        { heading: '32人', body: '非公開グループの参加者は32人。この数字が怖いのは、32人全員が事件を起こしているからではありません。\n\n読むだけの人もいるかもしれない。興味本位で入っているだけの人もいるかもしれない。実際に何かをしたのは、その中のごく一部かもしれない。\n\nでも、誰が読むだけで、誰が試すのかは分からない。情報は、一度共有されれば止められません。一人を出禁にしても。一人を警察へ相談しても。「方法」を知っている別の誰かが残る。\n\nここで恐怖の対象が、特定の一人から、見えない複数へ変わります。' },
+        { heading: '「手引き」というタイトル', body: '手引きとは本来、何かをするときの方法を、分かりやすくまとめたものです。順番。注意点。コツ。失敗しない方法。\n\nそれがこの作品では、人へ近づく方法として使われます。誰から話しかける。何を言う。どのタイミングなら入れる。どこまでなら拒絶されない。どうすれば別のメンバーが出てくる。\n\n一つひとつは、人を傷つける直接的な命令ではありません。だからこそ不気味です。人間関係そのものが、手順書になっている。' },
+        { heading: '三人の関係まで利用される', body: '『四人目』では、ヒナタがコウタを守ろうとすることが利用されました。『出禁』では、コウタが強く拒絶しないことが利用されました。『関係者』では、三人が現場スタッフを信頼して動くことが利用されました。\n\nつまり狙われているのは、三人それぞれの弱点だけではありません。三人の間にある関係も含まれています。誰が誰を守る。誰が止める。誰が先に気づく。\n\n三人にとって長い時間をかけてできた関係が、外から見る人には、「次にどう動くか予測できる仕組み」になってしまう。ここが『手引き』の一番嫌なところです。' },
+        { heading: '事件は終わっているのに、終わらない', body: 'それまでの事件には、一応の区切りがあります。出禁になる。退場させられる。警察やスタッフが対応する。\n\nでも『手引き』が見つかったことで、その人を止めれば終わり、ではなくなります。問題は、もう特定の人物だけではない。やり方を知っている人間が、ほかにもいるかもしれない。\n\nしかも、まだ何もしていない人を、事前に見つけることはできません。だから三人は、「次は誰か」を知ることができない。' },
+        { heading: '「近くにいる」', body: '『手引き』の最後に残る怖さは、グループそのものではありません。書き込みの向こうにいる人たちが、画面の中だけにいるとは限らないことです。\n\nライブへ来ているかもしれない。物販の列にいるかもしれない。スタッフの近くにいるかもしれない。何もせず、ただ三人を見ているだけかもしれない。\n\nそして、誰に声をかけるか。誰がどう反応するか。次はどの方法を使うか。それを観察している人物は、今もすぐ近くにいるかもしれない。' },
+        { heading: '『手引き』が描いているもの', body: '『関係者』では、知らない人が、「知っている人」の顔で内側へ入ってきました。『四人目』では、コウタへの攻撃が、ヒナタへ近づくための方法だったと分かりました。そして『手引き』では、それらが特別な一人だけの発想ではなく、共有できる「方法」になっていたことが明らかになります。\n\n怖いのは、三人を知らない人ではありません。三人のことを、よく知っている人。さらに、知っていることを、自分のために使おうとする人。\n\nSnow flakesの三人は、今日も同じようにライブをします。同じように話し。同じように互いを守り。同じように音を鳴らす。けれど一度「手引き」を知ってしまえば、その何気ない行動のすべてが、誰かに観察され、次の接触方法として記録されているかもしれない。そう見えてしまいます。\n\nそれが、『手引き』です。' },
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

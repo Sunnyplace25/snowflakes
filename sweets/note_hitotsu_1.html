@@ -117,14 +117,16 @@
     <img class="item-popup-img" src="../item/pendant_hinata.webp" alt="青い石のネックレス">
     <p class="item-popup-name">青い石のネックレス</p>
     <p class="item-popup-chara">HINATA</p>
+    <p class="item-popup-msg" id="popup-msg" style="font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:20px;">を入手しました</p>
     <button class="item-popup-btn" id="popup-btn" onclick="closeHitoItemPopup()">── 受け取る ──</button>
     <a class="item-popup-link" href="../sweets/">SWEETs へ →</a>
   </div>
 </div>
 
 <script>
-  var NOTE_ID = 'note_hitotsu_1';
-  var NOTES_KEY = 'sf_sweets_notes_unlocked';
+  var NOTE_ID   = 'note_hitotsu_1';
+  var NOTES_KEY  = 'sf_sweets_notes_unlocked';
+  var REWARD_KEY = 'sf_note_reward_note_hitotsu_1';
 
   function _isUnlocked() {
     if (typeof SfSnow === 'undefined') return false;
@@ -137,7 +139,7 @@
     sessionStorage.setItem('sf_hito_left', Date.now().toString());
   }
 
-  // タブに戻ったとき 2 分以上経過していれば pendant_hinata を付与
+  // タブに戻ったとき 2 分以上経過していれば報酬ポップアップを表示
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState !== 'visible') return;
     if (!sessionStorage.getItem('sf_hito_reading')) return;
@@ -146,14 +148,20 @@
     var leftAt = parseInt(sessionStorage.getItem('sf_hito_left') || '0', 10);
     sessionStorage.removeItem('sf_hito_left');
     if (Date.now() - leftAt < 120000) return;
-    var popup = document.getElementById('item-popup');
+    var popup   = document.getElementById('item-popup');
     if (!popup) return;
-    if (SfSnow.isUnlocked('pendant_hinata')) {
-      // 入手済み：ラベルを変更して表示
-      var eyebrow = document.getElementById('popup-eyebrow');
-      var btn = document.getElementById('popup-btn');
+    var eyebrow = document.getElementById('popup-eyebrow');
+    var msg     = document.getElementById('popup-msg');
+    var btn     = document.getElementById('popup-btn');
+    var alreadyClaimed = localStorage.getItem(REWARD_KEY) === '1';
+    if (alreadyClaimed) {
+      // 再読：入手済み表示
       if (eyebrow) { eyebrow.textContent = 'ITEM'; eyebrow.style.color = '#64748b'; }
-      if (btn) { btn.textContent = '── 閉じる ──'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(148,163,184,0.3)'; btn.style.background = 'rgba(148,163,184,0.06)'; }
+      if (msg)     { msg.textContent = '青い石のネックレスは入手済みです'; }
+      if (btn)     { btn.textContent = '── 閉じる ──'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(148,163,184,0.3)'; btn.style.background = 'rgba(148,163,184,0.06)'; }
+    } else {
+      // 初回：入手表示
+      if (msg) { msg.textContent = '青い石のネックレスを入手しました'; }
     }
     popup.classList.add('show');
   });
@@ -162,8 +170,10 @@
     var popup = document.getElementById('item-popup');
     if (popup) popup.classList.remove('show');
     if (typeof SfSnow === 'undefined') return;
-    if (!SfSnow.isUnlocked('pendant_hinata')) {
+    if (localStorage.getItem(REWARD_KEY) !== '1') {
+      // 初回：pendant_hinata を付与・フラグ記録（所持済みでも付与する）
       SfSnow.unlockItem('pendant_hinata');
+      localStorage.setItem(REWARD_KEY, '1');
       // バッジを入手済みに更新
       var badgeImg   = document.getElementById('item-badge-img');
       var badgeLabel = document.getElementById('item-badge-label');
@@ -182,13 +192,13 @@
     document.getElementById('locked-view').style.display = 'none';
     document.getElementById('content-view').style.display = 'block';
 
-    // バッジ表示
+    // バッジ表示（読了報酬フラグで判定）
     var badge      = document.getElementById('item-badge');
     var badgeImg   = document.getElementById('item-badge-img');
     var badgeLabel = document.getElementById('item-badge-label');
-    var itemGot    = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('pendant_hinata');
+    var rewardGot  = localStorage.getItem(REWARD_KEY) === '1';
     badge.style.display = 'inline-flex';
-    if (itemGot) {
+    if (rewardGot) {
       badgeImg.style.filter  = 'none';
       badgeImg.style.opacity = '0.85';
       badgeLabel.textContent = '青い石のネックレス';

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「四人目」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「四人目」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「四人目」解説</h1>
+    <p class="note-sub">― コウタを見ていた男は、最初からコウタを見ていなかった ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://sunnyplace25.github.io/snowflakes/horror_yoninnme.html" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.08.02 / 短編</p>
+        <p class="related-title">四人目</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_yoninnme_1';
+  var SECTIONS = [
+        { heading: null, body: '「四人目」は、Snow flakesのライブへ繰り返し現れる、一人の男性客を描いた物語です。\n\nいつもコウタの正面。歓声を上げることもなく、ベースを弾く手元を見つめている。演奏のわずかなズレを指摘し、無断で録音までし、物販のたびにコウタへ言葉を向ける。\n\n最初は、「コウタに異常な執着を持つ客」のように見えます。けれど最後に、それまで見えていたものの意味が完全に反転します。' },
+        { heading: '「いつもコウタの前にいた」', body: '男は毎回、コウタの正面に立っています。二曲目が走った。四曲目の入りが遅れた。ヒナタの音を抑えすぎている。細かく演奏を観察し、コウタへ指摘を続ける。\n\nだから三人も、読者も、男が見ているのはコウタだと思う。けれど本当は違います。コウタは、目的ではありません。入口でした。' },
+        { heading: '「庇うんですね」', body: '男がコウタへ失礼な言葉を向けるたび、ヒナタが会話へ入ります。「それ、わざわざ今言うこと？」「感想なら、普通に伝えて」そして録音を持ち出した男に、「お前に指導されるために弾いてるわけじゃない」と告げる。\n\n男は、その反応を見ています。そして、「庇うんですね」「いつも」と言う。\n\nここで男が観察しているのは、もうコウタの演奏だけではありません。誰に何を言えば、ヒナタが反応するのか。どこまで言えば、ヒナタがこちらを見るのか。三人の関係そのものを、確かめています。' },
+        { heading: '指摘は「感想」ではなかった', body: '男の言葉は、一見すると音楽への細かな感想です。走っていた。入りが遅れた。もっと合わせられる。声も穏やかで、露骨に攻撃的ではありません。\n\nだから一つひとつだけなら、「熱心な客」で説明することもできます。けれど男にとって重要なのは、その指摘が正しいかどうかではありません。コウタへ何かを言う。ヒナタが入ってくる。その反応を得る。男は、それを繰り返していました。' },
+        { heading: '「もっとちゃんと聴きます」', body: '最初の物販で、男は言います。「次は、もっとちゃんと聴きます」\n\nこの言葉も、結末を知ってから読むと意味が変わります。彼が「聴いていた」のは、ベースだけではありません。コウタがどう返すのか。ヒナタがどこで口を挟むのか。ハヤテがいつ会話を切るのか。三人の反応まで含めて、観察していた。\n\n音を聴くことが、いつの間にか、人間を分析することへ変わっています。' },
+        { heading: 'ヒナタへ近づいていく', body: 'あるライブから、男の姿が少し変わります。黒いシャツ。短くなった髪。ヒナタが以前つけていたものに似た、銀色のネックレス。\n\nそしてコウタが位置をずらしたとき、初めて分かります。男の目は、コウタを追わない。その肩の向こうにいる、ヒナタを追う。\n\nここで、「コウタを見ている男」という最初の印象に、初めてひびが入ります。' },
+        { heading: '「あなたがいなくなったら」', body: '物販で男は、コウタへ尋ねます。「あなたがいなくなったら、ベースは誰が弾くんですか」そして、「俺なら、もっとヒナタさんに合わせられます」と言う。\n\n男にとってコウタは、ヒナタと音を鳴らしている人ではなく、自分が入りたい場所にいる人。だから彼は、コウタの演奏を細かく聴きながら、「なぜ、この人がヒナタの隣にいるのか」を見続けていたとも読めます。' },
+        { heading: '「やっと、ちゃんと俺を見てくれた」', body: 'この物語の中心になる言葉です。ヒナタが怒り、「お前に何が分かる」と言った瞬間。男は嬉しそうに笑います。「やっと、ちゃんと俺を見てくれた」\n\n彼が欲しかったのは、好意ではありません。優しくされる必要もない。怒られてもいい。睨まれてもいい。ただ、ヒナタの視線が自分へ向くこと。自分に対して、直接言葉を返してもらうこと。それが目的でした。' },
+        { heading: '「コウタさんに話しかけると、必ず来てくれるから」', body: '男は、自分がやっていたことを明かします。コウタに話しかける。失礼なことを言う。ヒナタが間へ入る。次は、もう少し強く刺激する。すると、もっと長くヒナタと話せる。そして、「次は、もっと怒らせたらいいと思ってました」とまで言う。\n\n偶然繰り返していたのではありません。一度得た反応を覚え、次の行動へ使っていた。コウタは、ヒナタを呼ぶための手段にされていました。' },
+        { heading: '初めて、コウタを見る', body: '男が連れていかれる直前。初めて、コウタと真正面から目が合います。そこには、好意もない。憎しみもない。ただの道具を見る目しかない。\n\nここで、物語の最初から続いていた「コウタを見ている男」という構図が完全に壊れます。あれほど見つめられていたのに、男は一度も、コウタ本人を見ていなかった。' },
+        { heading: 'ヒナタの「守る」が利用される', body: '男が利用したのは、コウタだけではありません。ヒナタの性格も利用しています。コウタが黙っている。相手が一線を越える。すると、ヒナタが入る。男はその流れを覚えます。\n\nだから事件のあと、ヒナタは、「……俺が、毎回入ったから」と考えてしまう。自分が向けた言葉。視線。怒り。その全部が、相手の欲しかったものだったからです。\n\nけれどコウタは、「あいつが勝手に使っただけだ」と否定します。ヒナタが友人を守ろうとしたことが、間違っていたわけではありません。その行動を観察し、意図的に利用した側がいる。その違いは、この話では重要なところです。' },
+        { heading: '「合わせる」という言葉', body: 'この物語では、音楽の言葉が何度も使われます。走る。入りが遅れる。抑える。合わせる。本来は、三人が演奏するための言葉です。\n\nけれど男は、「俺なら、もっとヒナタさんに合わせられます」と言う。ここで「合わせる」は、演奏だけの話ではなくなります。自分はヒナタを理解している。自分の方がヒナタに合う。だから、自分がその場所にいてもいい。そんな一方的な思い込みまで、音楽の言葉の中へ入り込んでいます。\n\n音を細かく聴けることと、その人を理解していることは、同じではありません。' },
+        { heading: '「四人目」とは', body: 'Snow flakesは、三人です。ヒナタ。コウタ。ハヤテ。男は、その三人の外側から観察しています。誰が誰を守るのか。誰が黙るのか。何を言えば、誰が動くのか。そして、三人だけで成立している関係の中へ、自分の場所を作ろうとする。\n\nだから「四人目」は、新しいメンバーという意味ではありません。三人しかいない場所へ、勝手に自分の席があると思っている存在。その不自然な一人を指すタイトルです。' },
+        { heading: '「四人目」が描いているもの', body: 'この作品に、幽霊は出てきません。けれど、知らない人に見られているというだけでもありません。自分たちの関係まで見られている。誰を刺激すれば、誰が動くのか。どんな言葉を使えば、視線を向けてもらえるのか。そこまで覚えられている。\n\n「四人目」で怖いのは、知らない人が近づいてきたことではなく、知らない人の方が、こちらの行動を知っていることです。\n\n男は、ずっとコウタの前にいました。けれど、最初から最後まで、見ていたのはその向こう側でした。' },
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

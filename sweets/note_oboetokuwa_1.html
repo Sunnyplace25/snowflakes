@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「覚えとくわ」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「覚えとくわ」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「覚えとくわ」解説</h1>
+    <p class="note-sub">― 「昔から知っている」が崩れるまで。記憶と観察の境界にある物語 ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://sunnyplace25.github.io/snowflakes/horror_oboetokuwa.html" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.08.17 / 短編</p>
+        <p class="related-title">覚えとくわ</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_oboetokuwa_1';
+  var SECTIONS = [
+        { heading: null, body: '「覚えとくわ」は、Snow flakesの三人ではなく、彼らを長い間「見ていた側」から描いた物語です。\n\n非公開のグループチャット。\n\n参加者、三十二人。\n\nそこで共有されているのは、Snow flakesの情報だけではありません。\n\nヒナタはどういう時に黙るのか。\n\nコウタはどこまでなら拒絶しないのか。\n\nハヤテは何に気づき、どう動くのか。\n\n一見すると、熱心なファンによる観察。\n\nけれど少しずつ、その境界は変わっていきます。\n\n中心にいる「彼」は、何度もこう思っています。\n\n自分は、他のファンとは違う。\n\nなぜなら。\n\n「昔から知っている」から。' },
+        { heading: '彼は、嘘をついているわけではない', body: 'この物語で怖いのは、彼が最初から大きな嘘をついているわけではないことです。\n\n彼は本当に、Snow flakesになる前の三人を見ています。\n\n高校時代。\n\n放課後の音楽室。\n\nまだ荒く、まとまりきっていなかった三人の音。\n\nそこで彼は、\n\n「暗いけど、いいな」\n\nと言います。\n\nそして、\n\n「覚えとくわ」\n\nと口にする。\n\n彼は、その日のことを本当に覚えています。\n\nだから、\n\n「昔から知っている」\n\nという言葉も、彼の中では嘘ではありません。\n\n問題は、\n\n「知っている」\n\nという言葉の意味が、少しずつ変わっていったことです。' },
+        { heading: '一度の記憶が、「自分だけは分かっている」に変わる', body: '高校時代、彼と三人の間に深い交流があったわけではありません。\n\n名前を聞かれた記憶もない。\n\nその後、まともに話した記憶もない。\n\nそれでも彼には、\n\nSnow flakesになる前から知っていた。\n\nという事実があります。\n\nその小さな事実が、年月の中で特別な意味を持ち始めます。\n\n最近知ったファンとは違う。\n\n自分は昔から見ている。\n\nだから三人のことが分かる。\n\nだから、他の人より正しく判断できる。\n\nいつの間にか、\n\n「昔から知っている」\n\nが、\n\n「自分だけは本当の三人を知っている」\n\nへ変わっていきます。\n\nここが、彼が境界を越えていく最初の場所です。' },
+        { heading: '観察する側でいる', body: '彼には、自分なりのルールがあります。\n\n本人へ直接接触しない。\n\n顔を覚えられない。\n\n記録する側でいる。\n\nだから彼自身は、自分を危険なファンだと思っていません。\n\nむしろ逆です。\n\n会いに行く人。\n\n話しかける人。\n\n触れようとする人。\n\n認知されようとする人。\n\nそういう人たちとは違うと思っている。\n\n自分はただ見ているだけ。\n\n間違っている人がいたら、正しいやり方を教えるだけ。\n\nけれど、その「教える」が少しずつ変化します。\n\n「こうすると反応する」\n\n「この人なら警戒されにくい」\n\n「次はこうした方がいい」\n\nそしてついには、\n\n自分は近づかないまま、他人を動かすようになります。\n\n距離を置いていることが、安全の証明ではなくなっていくのです。' },
+        { heading: '「ハヤテなら、きっと気づく」', body: '彼が特に執着しているのが、ハヤテです。\n\n彼の中には、高校時代のハヤテの記憶があります。\n\n自分が言葉を間違えても、笑わなかった。\n\n訂正して恥をかかせることもしなかった。\n\n言いたかった部分だけを拾って、残りを流した。\n\nその経験が、彼の中で大きくなっています。\n\n「困っている人間を見ると、自分から動く」\n\n「失敗した相手を責めない」\n\n「場が悪くなる前に、自分が動く」\n\n彼はそれを、ハヤテという人間の「法則」のように記録していきます。\n\nそして、その法則が今も正しいか確かめるため、\n\n三十代の女性に協力を頼みます。\n\nハヤテが通る場所で、\n\n何もせず、\n\n少し困っているように見せる。\n\n彼の予想は、\n\nハヤテ自身が近づいてくることでした。' },
+        { heading: 'ハヤテは、近づかなかった', body: '実際にハヤテは、その女性に気づきます。\n\nけれど、自分から声をかけません。\n\n近くにいたスタッフへ何かを伝え、\n\nそのまま立ち去ります。\n\nその後、スタッフが女性へ声をかける。\n\n彼の予想は、\n\n半分だけ当たっています。\n\nハヤテは気づいた。\n\nでも、\n\n自分で全部を処理しなかった。\n\n必要な人へ伝えて、その後は任せた。\n\n彼が知っていると思っていたハヤテと、\n\n今そこにいるハヤテには、少し違いがあったのです。' },
+        { heading: '「分からない」を認められない', body: 'ここから、彼の危うさがはっきりしていきます。\n\nノートに、\n\n「周囲を確認している可能性」\n\nと書く。\n\nけれど「可能性」という言葉が気に入らない。\n\n分からないという意味だから。\n\nだから線を引いて、\n\n「周囲を見る」\n\nと書き直します。\n\n分からないものを、\n\n分からないまま置けない。\n\n仮説だったものを、事実へ変える。\n\n自分の記憶に合わないものがあれば、\n\n観察を増やす。\n\n情報を増やす。\n\n確認する。\n\nそして、また分類する。\n\n彼にとって観察は、\n\n相手を知るためのものではなく、\n\n自分が正しいことを確認するためのものになっていきます。' },
+        { heading: '「ハヤテならどうするか」', body: '彼のノートには、\n\n「ハヤテならどうするか」\n\nという言葉があります。\n\nその下には、\n\n「先に考える」\n\n「その通りになるか確認する」\n\nと書かれている。\n\nここには、彼の矛盾がそのまま出ています。\n\n高校時代。\n\n彼が憧れたハヤテは、\n\n誰かの失敗を分類する人ではありませんでした。\n\n間違いを見つけても、\n\n必要以上に触れない。\n\n相手が恥をかかないところだけ拾う。\n\n残りは流す。\n\n彼は、そんな人間になりたいと思った。\n\nでも実際に自分がやっていたのは、\n\n人を観察し、\n\n分類し、\n\n使えるかどうかを判断し、\n\n理解できない人間を「理解不足」と書くことでした。\n\n「ハヤテならどうするか」を考え続けた結果、\n\n一番ハヤテから遠いことをしていた。\n\nそこに、彼自身が初めて気づき始めます。' },
+        { heading: '怪異がないのに怖い', body: '『覚えとくわ』には、分かりやすい幽霊や怪異は登場しません。\n\nそれでも、これまでのホラー作品と同じくらい不穏です。\n\n理由は、\n\n「観察されていること」\n\nそのものが怪異のように描かれているからです。\n\n本人たちの知らないところで。\n\n写真を見られ。\n\n行動を記録され。\n\n反応を予測され。\n\n誰かが実際に動かされる。\n\nそして中心にいる本人は、\n\n「危害を加えろとは言っていない」\n\n「触れとは言っていない」\n\n「ただ情報を共有しただけ」\n\nと考えている。\n\n悪意がないことと、\n\n安全であることは同じではない。\n\nこの物語の恐怖は、そこにあります。' },
+        { heading: '三十二人が減っていく', body: 'やがてSnow flakesの運営側にも、非公開グループの存在が伝わります。\n\nメンバーへの接触を誘導する情報が共有されている。\n\n今後の接触を控えること。\n\n必要であれば関係各所とも連携する。\n\nその連絡をきっかけに、\n\n三十二人いたメンバーが次々に抜けていきます。\n\n彼は最初、それを止めようとします。\n\n「待って」\n\n「今抜けないで」\n\n「落ち着いて」\n\nでも、誰も止まらない。\n\nそこで彼は初めて、\n\n原因を書こうとします。\n\n運営へ伝えた人間なのか。\n\n抜けた人間なのか。\n\nけれど違う。\n\n怖いと思った人は、\n\nただ怖いと言っただけ。\n\n原因を誰か一人へ押しつけられなくなった時、\n\nようやく彼は自分のやってきたことを見ることになります。' },
+        { heading: '「昔から知っている」の正体', body: '物語の最後。\n\n彼は初めて、\n\n誰かの報告でも、\n\n写真でも、\n\n動画でもなく、\n\n自分自身でハヤテを見に行きます。\n\nそして声をかけます。\n\n「高校、一緒だったんだけど」\n\nハヤテは覚えていない。\n\n音楽室の話をしても、\n\nまだ曖昧。\n\nそこで彼が、\n\n「アイスブレークスって、間違えて呼んだ」\n\nと伝える。\n\nハヤテはようやく思い出します。\n\nでも。\n\n覚えていたのは、\n\n「そういうことを言った人」がいたこと。\n\n顔までは覚えていない。\n\nここで、\n\n彼が長い間守ってきた\n\n「昔から知っている」\n\nという関係が崩れます。\n\n彼はハヤテを覚えていた。\n\nハヤテも、出来事は覚えていた。\n\nでも、\n\n二人が互いを覚えていたわけではなかった。' },
+        { heading: 'ハヤテは、最後までハヤテだった', body: 'それでもハヤテは、\n\n彼を突き放しません。\n\n「あの頃、聴いてくれてたなら、ありがとう」\n\nそう言って終わります。\n\n高校時代と同じです。\n\n覚えていないことを誤魔化さない。\n\nでも、相手を傷つける必要もない。\n\n拾えるところだけ拾う。\n\n余計なところには踏み込まない。\n\n彼が長い間、\n\n「自分だけが知っている」\n\nと思っていたハヤテ像。\n\nそのすべてが正しかったわけではありません。\n\nでも、\n\nこの部分だけは間違っていなかった。\n\nそこが、この物語の救いでもあります。' },
+        { heading: '「覚えとくわ」の意味が変わる', body: '高校時代。\n\n彼の「覚えとくわ」は、\n\n面白い音を見つけた時の軽い言葉でした。\n\nその後、\n\n本当に彼は覚え続けました。\n\n三人のことを。\n\nハヤテのことを。\n\nあの日の音を。\n\nそしていつの間にか、\n\n「覚えていること」が、\n\n「知っていること」に変わった。\n\n「知っていること」が、\n\n「分かっていること」に変わった。\n\nさらに、\n\n「分かっていること」が、\n\n「自分の方が正しい」\n\nへ変わっていった。\n\nだから最後の、\n\n「……覚えとくわ」\n\nは、最初とはまったく違います。\n\n今度、彼が覚えておこうとするのは、\n\n自分が特別だったという記憶ではありません。\n\nハヤテは、自分を覚えていなかったこと。\n\n自分が知っていたのは、\n\nハヤテの全部ではなかったこと。\n\n長い間「分かっている」と思っていたものにも、\n\n自分の想像が混ざっていたこと。\n\nそれを、\n\n今度こそ忘れないための言葉です。' },
+        { heading: '「覚えとくわ」とは', body: 'この作品は、\n\n「ファンと有名人の距離」の話であると同時に、\n\n「記憶は、関係ではない」という物語です。\n\n同じ場所にいた。\n\n話したことがある。\n\n昔から見ていた。\n\n覚えている。\n\nそれだけでは、\n\n相手との間に同じ関係が存在しているとは限らない。\n\n人は、自分の記憶の中では、\n\n何年でも誰かと一緒にいられます。\n\nでも相手の時間は、\n\n自分とは別に進んでいる。\n\n『覚えとくわ』で最後に壊れるのは、\n\n彼とハヤテの関係ではありません。\n\n最初から、\n\n彼が思っていたような関係は存在していなかった。\n\n壊れたのは、\n\n「自分だけは違う」\n\nという彼の認識です。\n\nそれでも。\n\n最後に彼は、新しいアカウントを作りません。\n\n画面を閉じます。\n\nそして、\n\n「覚えとくわ」\n\nと呟く。\n\n忘れないために。\n\n今度は、\n\n相手のことではなく。\n\n自分が間違えた距離を。\n\nそこからやり直すために。' }
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

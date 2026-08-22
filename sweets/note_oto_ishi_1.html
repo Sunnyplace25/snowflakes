@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「音の鳴る石」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#cbd5e1; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「音の鳴る石」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「音の鳴る石」解説</h1>
+    <p class="note-sub">― 『ひとつ多い音』『Under tone』『まだ、鳴っている』を繋ぐ、石に残った音の物語 ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://ncode.syosetu.com/n5455ml/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.08.10 / 連載</p>
+        <p class="related-title">音の鳴る石</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_oto_ishi_1';
+  var SECTIONS = [
+        { heading: null, body: '「音の鳴る石」は、Snow flakesの周囲で起きていた怪異を、三人とは別の場所から辿っていく物語です。\n\n始まりは、編集部に届いた匿名の封筒。\n\n中に入っていたのは、三枚の写真。\n\nスモーキークォーツのリング。\n\n片方だけのシトリンのピアス。\n\n細長いカイヤナイトのネックレス。\n\nそして、ひとつの文章。\n\n「石は音を覚える。\n持ち主がいなくなっても、音だけは残る。\nまだ、鳴っている。」\n\n一見すると、Snow flakesとは何の関係もない怪談です。\n\nけれど調べていくうちに、三つの石は、これまで三人のそばにあったものへと繋がっていきます。' },
+        { heading: '三つの石', body: 'この三つは、偶然選ばれた石ではありません。\n\nカイヤナイトはヒナタ。\n\nスモーキークォーツはコウタ。\n\nシトリンはハヤテ。\n\nそれぞれ、『Under tone』で三人が手にした石です。\n\nヒナタは、青いカイヤナイトのネックレス。\n\nコウタは、黒く見えるスモーキークォーツのリング。\n\nハヤテは、黄色いシトリンのピアス。\n\n『Under tone』だけを読んでいると、それらは三人が不思議な店で受け取ったアイテムに見えます。\n\nけれど『音の鳴る石』では、その石が別の場所からもう一度現れる。\n\nそこで初めて、\n\n「あの石は、あの店の中だけで完結していなかった」\n\nということが分かります。' },
+        { heading: '「石は音を覚える」', body: 'この作品でいう「音」は、録音された音声だけを意味しているわけではありません。\n\n誰かがいた時間。\n\nそこで交わされた言葉。\n\n残された感情。\n\n選んだこと。\n\n選ばなかったこと。\n\nそうしたものまで含めて、「音」として残っている。\n\n人がいなくなれば、普通ならその場の音は消えます。\n\n会話も終わる。\n\n演奏も終わる。\n\n足音も途切れる。\n\nけれど、この世界では完全には消えない。\n\n何かに残る。\n\n場所に残る。\n\n人に残る。\n\nそして、石にも残る。\n\n「石が音を覚える」という言葉は、このシリーズで繰り返されてきた怪異を、初めてひとつの形にした言葉でもあります。' },
+        { heading: '『ひとつ多い音』から続いていたもの', body: '『ひとつ多い音』では、\n\n本来ないはずの音が、ひとつだけ多い。\n\n足音が合わない。\n\n音が遅れてついてくる。\n\n三人で鳴らしているはずなのに、数えると何かがおかしい。\n\nそんな「説明できない一音」が描かれていました。\n\nあの時点では、その音が何なのかは分かりません。\n\nただ、\n\n消えずに残っているものがある。\n\nということだけが示されています。\n\n『音の鳴る石』まで読むと、その「ひとつ多い音」は、どこからともなく生まれたものではなく、\n\n誰かが置いていった音なのかもしれない。\n\nという別の見方ができるようになります。' },
+        { heading: 'Under toneは、何を置いている店なのか', body: 'Under toneの店主は、\n\n「ひとつ多い音を置いている」\n\nと話します。\n\nそして店には、\n\n「置いていった音を返しています」\n\nという言葉がある。\n\n最初は意味の分からない、不気味な古物店の言葉です。\n\nけれど『音の鳴る石』まで繋げると、その意味が少し変わります。\n\nUnder toneに並んでいるものは、単なる古物ではない。\n\n誰かが置いていったもの。\n\nそこに残ってしまったもの。\n\nまだ終わっていないもの。\n\nそれを「音」という形で抱えた品物が集まっている。\n\nだから三人が石を選んだというより、\n\nそれぞれに残っているものと、石が結びついた。\n\nそう考えることもできます。' },
+        { heading: 'なぜ三人に違う石なのか', body: '三人の石は、それぞれの性質とも対応しています。\n\nヒナタのカイヤナイトは、深い青。\n\n静かな夜や、内側へ向かう感覚。\n\n何よりヒナタは、三人の中で最も自然に「音が聞こえる」と言える人物です。\n\n説明するより先に、聞こえてしまう。\n\nだからUnder toneでも、石の方へ迷わず近づいていきます。\n\nコウタのスモーキークォーツは、煙のように曖昧な色。\n\n見えているのに、はっきりしない。\n\nコウタ自身も、怪異を最も警戒しながら、最も細かく違和感を拾ってしまう人物です。\n\n『ひとつ多い音』から続く「それで、よかったの？」という問いも、コウタのそばに残り続けています。\n\nハヤテのシトリンは、淡い黄色。\n\n三人の中では最も外側へ開いている石です。\n\nハヤテは怪異を怪異として怖がるより先に、相手との距離を縮めてしまう。\n\nUnder toneという場所に対しても、最も早く「普通に接する」ことができた人物でした。\n\n三つの石は、怪異のためだけの小道具ではなく、\n\n三人それぞれの「音の拾い方」の違いでもあります。' },
+        { heading: '「まだ、鳴っている」', body: '匿名の文章の最後にある、\n\n「まだ、鳴っている。」\n\nこれはもちろん、短編『まだ、鳴っている』へ繋がる言葉です。\n\n『まだ、鳴っている』で描かれたのは、\n\n音が終わったあとにも、何かが残ること。\n\n演奏が終わっても。\n\n人がいなくなっても。\n\nその場所では、音だけが続いている。\n\n『音の鳴る石』では、その現象が「場所」から「物」へ移ります。\n\n場所が覚えているのではない。\n\n石そのものが覚えている。\n\nそうなると、怪異はその場に置いて帰ることができなくなります。\n\n持ち歩ける。\n\n誰かに渡せる。\n\n別の場所へ移せる。\n\nそして、持ち主が変わっても残り続ける。\n\nここで、このシリーズの怪異は少しだけ広がります。' },
+        { heading: 'Snow flakesの外から見た怪異', body: 'これまでの作品では、違和感の中心にはSnow flakesの三人がいました。\n\nだから読者にも、\n\n三人だから起きているのか。\n\nヒナタが何かを拾っているからなのか。\n\nコウタが気にしすぎているだけなのか。\n\nという逃げ道がありました。\n\nけれど『音の鳴る石』では、三人の知らない場所から物語が始まります。\n\n匿名の封筒。\n\n三枚の写真。\n\n残された住所。\n\nSnow flakesを知らない場所でも、同じ怪異が存在している。\n\nつまり、\n\n三人が怪異を作っているわけではない。\n\n三人は、もともと存在していた何かに触れているだけ。\n\nここで、これまで内側だけにあった違和感が、初めて外の世界から確認されます。' },
+        { heading: '三つの物語がひとつになる', body: '『ひとつ多い音』では、\n\n「ないはずの音」が聞こえた。\n\n『Under tone』では、\n\n「置いていった音」が存在する場所が現れた。\n\n『まだ、鳴っている』では、\n\n「終わったはずの音」が残り続けた。\n\nそして『音の鳴る石』では、\n\nその音を「覚えているもの」が現れます。\n\n別々の怪談に見えていたものが、\n\n音は、完全には消えない。\n\nというひとつのルールで繋がっていく。\n\nただし、その音が誰のものなのか。\n\nなぜ残るのか。\n\n誰が封筒を送ったのか。\n\nそしてUnder toneが、本当はどこまで関わっているのか。\n\nすべてには答えません。\n\n分かるのは、\n\n三人が一度触れた音が、\n\n三人の知らないところでも、\n\nまだ続いているということだけです。' },
+        { heading: '「音の鳴る石」とは', body: 'タイトルにある「音の鳴る石」は、\n\n音を出す不思議な石、というだけの意味ではありません。\n\n誰かが残したものを、\n\n消さずに持ち続けている石。\n\n人が忘れても。\n\n場所を離れても。\n\n持ち主が変わっても。\n\nそこにあった音だけは残る。\n\nそして誰かが触れた時、\n\nもう一度、鳴る。\n\n『ひとつ多い音』で始まった小さな違和感は、\n\n『Under tone』で形を持ち、\n\n『まだ、鳴っている』で残響となり、\n\n『音の鳴る石』で、\n\n「消えなかったもの」として、もう一度こちら側へ戻ってきます。\n\nだからこの物語の怖さは、\n\n石から音が聞こえることではありません。\n\n一度残った音は、\n\n本当に消えることがあるのか。\n\nその答えが、\n\n最後まで分からないことにあります。' }
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

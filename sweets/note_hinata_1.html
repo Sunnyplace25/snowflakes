@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>「白い音」解説 | Snow flakes SWEETs</title>
+  <title>「整えない音」解説 | Snow flakes SWEETs</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -26,6 +26,7 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
 
+    /* ── SNOW CANVAS ── */
     #snow {
       position:fixed; top:0; left:0; width:100%; height:100%;
       pointer-events:none; opacity:0.3; z-index:0;
@@ -44,6 +45,7 @@
 
     main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
 
+    /* ── LOCKED ── */
     #locked-view {
       min-height:60vh; display:flex; flex-direction:column;
       align-items:center; justify-content:center; gap:16px; text-align:center;
@@ -60,6 +62,7 @@
     }
     .back-btn:hover { background:rgba(249,168,212,0.12); }
 
+    /* ── CONTENT ── */
     #content-view { display:none; }
 
     .note-eyebrow {
@@ -75,6 +78,15 @@
       font-weight:300; line-height:1.8; margin-bottom:36px;
     }
 
+    /* item icon area */
+    .item-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      margin-bottom:28px; padding:8px 14px;
+      background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px;
+    }
+    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
+    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
+
     .divider { height:1px; background:var(--border); margin:32px 0; }
 
     .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
@@ -84,6 +96,7 @@
     }
     .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
 
+    /* related link */
     .related-link {
       display:flex; align-items:center; justify-content:space-between;
       padding:16px 20px; background:var(--card); border:1px solid var(--border);
@@ -94,28 +107,6 @@
     .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
     .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
     .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
-
-    .note-index-back {
-      display:inline-flex; align-items:center; gap:6px;
-      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
-      color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s;
-    }
-    .note-index-back:hover { color:rgba(147,197,253,0.9); }
-    .note-index-back-bottom {
-      display:block; text-align:center; margin-top:48px;
-      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
-      color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s;
-    }
-    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
-
-    /* item icon area */
-    .item-badge {
-      display:inline-flex; align-items:center; gap:8px;
-      margin-bottom:28px; padding:8px 14px;
-      background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px;
-    }
-    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
-    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
 
     /* ── ITEM POPUP ── */
     #item-popup {
@@ -159,6 +150,22 @@
     #chara-line { font-size:19px; color:#e2e8f0; font-family:'Noto Serif JP',serif; font-weight:300; line-height:2.2; margin:0; }
     #chara-img img { width:300px; display:block; }
 
+    /* ── NOTE INDEX BACK LINK ── */
+    .note-index-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.55); text-decoration:none;
+      transition:color 0.2s;
+    }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom {
+      display:block; text-align:center; margin-top:48px;
+      font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px;
+      color:rgba(147,197,253,0.45); text-decoration:none;
+      transition:color 0.2s;
+    }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
     @media(max-width:600px) {
       nav { padding:14px 20px; }
       .nav-label { display:none; }
@@ -180,36 +187,40 @@
 </nav>
 
 <main>
+  <!-- LOCKED VIEW -->
   <div id="locked-view">
     <p class="locked-eyebrow">NOTE</p>
-    <p class="locked-title">「白い音」解説</p>
+    <p class="locked-title">「整えない音」解説</p>
     <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
     <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
   </div>
 
+  <!-- CONTENT VIEW -->
   <div id="content-view" style="display:none;">
     <p class="note-eyebrow">NOTE</p>
-    <h1 class="note-title">「白い音」解説</h1>
-    <p class="note-sub">― Snow flakesという"三人の音"が重なり始める前夜 ―</p>
+    <h1 class="note-title">「整えない音」解説</h1>
+    <p class="note-sub">― "整える側"だったヒナタが、揺れたまま前へ出るまでの物語 ―</p>
 
     <div class="item-badge" id="item-badge" style="display:none;">
-      <img id="item-badge-img" src="../item/white_pick_hinata.webp" alt="白いピック">
+      <img id="item-badge-img" src="../item/usb_hinata.webp" alt="Little Snow（Law）USBメモリ">
       <span id="item-badge-label">アイテムあり</span>
     </div>
 
     <div class="divider"></div>
     <div class="body-wrap" id="note-body"></div>
 
-    <a class="related-link" href="https://ncode.syosetu.com/n0679lx/" target="_blank" rel="noopener">
+    <!-- related -->
+    <a class="related-link" href="https://ncode.syosetu.com/n0082lu/" target="_blank" rel="noopener">
       <div>
-        <p class="related-meta">2026.04.30 / 短編</p>
-        <p class="related-title">白い音</p>
+        <p class="related-meta">2026.03.28 / 短編</p>
+        <p class="related-title">整えない音</p>
       </div>
       <span class="related-arrow">読む →</span>
     </a>
 
     <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
 
+    <!-- scroll sentinel for reward -->
     <div id="scroll-sentinel" style="height:1px;"></div>
   </div>
 </main>
@@ -218,12 +229,13 @@
 <div id="item-popup">
   <div class="item-popup-card">
     <p class="item-popup-label" id="popup-label">ITEM GET</p>
-    <img class="item-popup-img" id="popup-img" src="../item/white_pick_hinata.webp" alt="">
-    <p class="item-popup-name" id="popup-name">白いピック</p>
+    <img class="item-popup-img" id="popup-img" src="../item/usb_hinata.webp" alt="">
+    <p class="item-popup-name" id="popup-name">Little Snow（Law）USBメモリ</p>
     <p class="item-popup-msg" id="popup-msg">を入手しました</p>
     <button class="item-popup-close" onclick="closeItemPopup()">閉じる</button>
   </div>
 </div>
+
 
 <!-- CHARA POPUP -->
 <div id="chara-popup">
@@ -235,30 +247,30 @@
 </div>
 
 <script>
-  var NOTE_ID    = 'note_sf_1';
-  var ITEM_ID    = 'white_pick_hinata';
+  var NOTE_ID   = 'note_hinata_1';
+  var ITEM_ID   = 'usb_hinata';
   var SCROLL_KEY  = 'sf_note_scroll_' + ITEM_ID;
   var REWARD_KEY  = 'sf_note_reward_' + NOTE_ID;
 
-  var _charaPending = false;
-  var _rewardFired  = false;
+  var _koyukiPending = false;
+  var _rewardFired   = false; // ページ内で1回のみ発火（メモリフラグ）
 
   function closeItemPopup() {
     document.getElementById('item-popup').classList.remove('show');
-    if (!_charaPending) return;
-    _charaPending = false;
-    setTimeout(function() { _showCharaPopup(); }, 350);
+    if (!_koyukiPending) return;
+    _koyukiPending = false;
+    setTimeout(function() { _showKoyukiPopup(); }, 350);
   }
 
-  function _showCharaPopup() {
-    var popup  = document.getElementById('chara-popup');
-    var nameEl = document.getElementById('chara-name');
-    var lineEl = document.getElementById('chara-line');
-    var faceEl = document.getElementById('chara-face');
+  function _showKoyukiPopup() {
+    var popup   = document.getElementById('chara-popup');
+    var nameEl  = document.getElementById('chara-name');
+    var lineEl  = document.getElementById('chara-line');
+    var faceEl  = document.getElementById('chara-face');
     nameEl.style.color = '#93c5fd';
-    nameEl.textContent = 'HINATA';
-    lineEl.textContent = '……すぐ無くす';
-    faceEl.src = '../plofile/chibi_hinata.webp';
+    nameEl.textContent = 'KOYUKI';
+    lineEl.textContent = '……ほどけたよ';
+    faceEl.src = '../plofile/chibi_koyuki.webp';
     popup.classList.add('show');
     setTimeout(function() { popup.classList.remove('show'); }, 3000);
   }
@@ -266,7 +278,8 @@
   document.addEventListener('DOMContentLoaded', function() {
     if (typeof SfSnow === 'undefined') return;
 
-    if (!SfSnow.isUnlocked(NOTE_ID)) {
+    var unlocked = SfSnow.isUnlocked(NOTE_ID);
+    if (!unlocked) {
       document.getElementById('locked-view').style.display = '';
       document.getElementById('content-view').style.display = 'none';
       return;
@@ -284,7 +297,7 @@
     if (itemGot) {
       badgeImg.style.filter  = 'none';
       badgeImg.style.opacity = '0.85';
-      badgeLabel.textContent = '白いピック';
+      badgeLabel.textContent = 'Little Snow（Law）USBメモリ';
       badgeLabel.style.color = '#93c5fd';
     } else {
       badgeImg.style.filter  = 'grayscale(1)';
@@ -292,14 +305,16 @@
       badgeLabel.textContent = 'アイテムあり';
     }
 
+    // 本文レンダリング
     var sections = [
-      { heading: null, body: '『白い音』は、\nSnow flakesが始まる前の時間を描いた短編です。\n\n大学に入り、\n三人はそれぞれ違う生活を過ごしている。\n\n同じ場所にはいる。\n\nでも、\nまだ今の形ではない。\n\nヒナタが、\n今よりもっと途中にいた頃。\n\nそして、\n音が誰かへ届く前の時間を描いています。\n\nこの物語は、\n大学時代のヒナタと、静かな時間を過ごしていた女性の視点で描かれています。' },
-      { heading: '少しずつズレ始める時間', body: '高校卒業後、\nSnow flakesの三人は同じ大学へ内部進学します。\n\nただ、\n選んだ学部はそれぞれ違う。\n\n同じキャンパスにはいる。\n\nでも、\n頻繁に連絡を取り合っているわけでもない。\n\n授業。\n交友関係。\n生活リズム。\n\nそれぞれ別の時間を過ごしている。\n\n『白い音』で描かれているのは、\n\nそんな、\nまた音が重なっていく前の時間です。' },
-      { heading: '「まだ途中」のヒナタ', body: 'ヒナタは、\nまだ途中の音を鳴らしている。\n\n大学の木陰。\nベンチ。\n途中の曲。\n\n完成した音ではなく、\nまだ形になりきらない音。\n\nSnow flakesのヒナタは、\n最初から完成された存在ではありません。\n\nずっと、\n「まだ途中」の人。\n\nだから彼女は、\n技術や言葉より先に、\n"ペースが合う"ことへ惹かれていきます。\n\n会話は多くない。\n沈黙も多い。\n\nでも、\n疲れない。\n\nその静かな距離感の中で、\n二人の時間は少しずつ重なっていく。\n\nそして、\n駅までの帰り道。\n\n理由もなく伸ばした手を、\nヒナタがゆっくり受け取る。\n\n『白い音』は、\n大きな告白の物語ではありません。\n\n少しずつ距離が近づいて、\n気づけば始まっていた。\n\nそんな関係を描いた物語です。' },
-      { heading: '少しずつ、遠くを見るようになる', body: 'ヒナタは少しずつ変わっていきます。\n\n最初は、\n隣でギターを鳴らしていた。\n\nでも、\n音を探し始めてから、\n視線が遠くなる。\n\nベンチでギターを弾いていても、\nもう彼女を見ていない。\n\n音の向こうを見ている。\n\n彼女は、\nそれをちゃんと理解している。\n\n怒っているわけではない。\n嫌いになったわけでもない。\n\nただ、\n"音でいっぱいになっている"\nことが分かってしまう。\n\nだから、\n\n「ヒナタは私より音の方が大事なんだね」\n\nという言葉になる。\n\nこれは責める言葉ではありません。\n\n確認です。\n\nそしてヒナタは、\n否定できない。\n\n誰かを傷つけたいわけじゃない。\n\nでも、\n音を選んでしまう。' },
-      { heading: '三人の音が重なり始める', body: 'ライブシーンでは、\n一人で鳴っていたヒナタの音へ、\nハヤテのドラムが突然重なります。\n\nその瞬間、\n音が少しだけ広がる。\n\n彼女はそこで思います。\n\n「ああ。行ってしまった。」\n\nこれは、\n恋愛の終わりではありません。\n\nヒナタが、\n自分のいる場所を見つけた瞬間です。\n\nそのあと、\n少し遅れてコウタが現れます。\n\nまだ音を鳴らしていない。\n\nただ、\nそこへ来る。\n\nヒナタとハヤテのいる場所へ、\nごく自然に加わる。\n\n気づけば、\n三人が並んでいる。\n\nあとから振り返ると、\nSnow flakesはこういう形で始まっていたのかもしれない。\n\n誰かが決めたわけでもなく、\n\n別々だった音が、\n少しずつ重なっていった先に。' },
-      { heading: '『Little Snow』 Raw → Near', body: 'そして数年後、\n彼女は偶然、ライブハウスで\nSnow flakesを見る。\n\nここで演奏されるのが、\n『Little Snow』。\n\n『Little Snow』は、\n最初は"Raw"として存在していました。\n\nまだ剥き出しで、\n整理されていなくて、\n感情の輪郭も荒い音。\n\n『整えない音』で描かれるのは、\nまさにその状態です。\n\n整えることもできる。\nもっと安全な形へ直すこともできる。\n\nそれでもヒナタは、\n触れなかった。\n\n整えた瞬間、\nその夜の揺れが、\n別のものになってしまう気がしたから。\n\nだからRaw版の『Little Snow』は、\n"自分の中だけで鳴っている音"でした。\n\nでも、\n『白い音』終盤のライブでは、\nその曲が"Near"へ変わっている。\n\nNear。\n\n近い音。\n\nただ感情を吐き出すだけではなく、\n誰かの近くへ置こうとする音。\n\nそれは、\nヒナタ自身の変化でもあります。\n\n一人の音だったものが、\n三人の音になり、\nそして誰かへ届く音へ変わっていく。\n\nその変化が、\n『白い音』の終盤にも少しだけ見えているのかもしれません。' },
-      { heading: '「私じゃ、きっとほどけない」', body: 'ラストの、\n\n「私じゃ、\n\u3000きっと\n\u3000ほどけない。」\n\nという一文。\n\nこれは諦めではありません。\n\n"今の自分では届かない"\n\nという理解です。\n\nだから彼女は、\n奪おうとしない。\n\nただ、\n\n「あの白い音が\n\u3000ヒナタを幸せにしますように」\n\nと願う。\n\n『白い音』は、\n誰かを失う物語ではありません。\n\n音へ向かっていく人を、\nそれでも好きだった記憶の物語です。\n\nそして同時に、\n\nあとから振り返ったとき、\nSnow flakesという"三人の音"が、\n静かに始まっていたことに気づく物語でもあります。' },
+      { heading: null, body: '「整えない音」は、Snow flakesの中でもかなり核心に近い位置にある短編です。\n\n読まなくても、本編は成立する。\nけれど読むことで、\nヒナタという人物の"怖さ"と"弱さ"の両方が見えてきます。\n\nこの物語で描かれているのは、\n単純な"音楽を頑張る話"ではありません。\n\n"整えることで生きてきたヒナタが、\n整えないまま誰かに差し出すことを覚える話"\n\nです。' },
+      { heading: 'ヒナタは「整える側」の人間だった', body: '物語前半では、\n仕事をするヒナタの姿が描かれます。\n\n会議室。\n工程表。\n止まりかけた流れ。\n\nヒナタは感情で押すのではなく、\n全体を見て、\n詰まりを見つけ、\n順番を変え、\n流れを整えていく。\n\nそれは仕事だけではありません。\n\nバンドでも同じです。\n\n誰かの焦りをほどき、\n足りない場所へ音を置き、\n崩れない形へ導く。\n\nヒナタは、\n「壊れないための人」として生きています。\n\nでも、\n整えれば整えるほど、\n自分自身は揺れなくなっていく。\n\n"役に立つ自分"でいる限り必要とされる。\nだから断れない。\nだから整える。\nだから安全な場所に立つ。\n\nその代わり、\n"自分の歌"は少しずつ遠ざかっていく。\n\nここが、\nこの物語の一番痛い部分です。' },
+      { heading: '「整えない」という選択', body: 'その反転として描かれるのが、\n深夜のスタジオで録られる『Little Snow』です。\n\n息が揺れる。\n音程も完璧じゃない。\nもっと良くできる。\n\nそれでも、\nヒナタは触れない。\n\nノイズを消さない。\n揺れを削らない。\n安全な形へ直さない。\n\nなぜなら、\n整えた瞬間に、\nこの夜の感情が"別のもの"になってしまうから。\n\nこの作品における「整えない」は、\n未熟という意味ではありません。\n\n"嘘をつかない"\n\nという意味に近い感覚です。\n\nだから『Little Snow』は、\n完成した曲というより、\n\n"その夜にしか存在できなかった音"\n\nとして描かれています。' },
+      { heading: 'ヒナタは感情を直接言葉にできない', body: 'ヒナタは、\n感情をまっすぐ言葉にすることが苦手です。\n\nだから、\n「好きだ」と言えない代わりに、\n景色や空気や余韻を置いていく。\n\n駅裏の坂。\n夜更けの窓。\n吐く息の白さ。\n\nSnow flakes全体に流れている、\n"説明しすぎない表現"の原点でもあります。\n\nこの短編では、\nヒナタが「歌詞を書く理由」に近いものも、\nかなり色濃く出ています。' },
+      { heading: '「仕事として頼みたい」', body: '小雪へUSBを渡す場面。\n\nここは恋愛的な告白というより、\n「整えないままの自分を差し出す」\n最初の行為として描いています。\n\nしかもヒナタは、\nそれを"甘え"にはしたくない。\n\nだから、\n「仕事として頼みたい」\nと言う。\n\n評価も、\n責任も、\n対価も含めて、\n"歌う側の自分"を選んでほしい。\n\nここが、\nこの物語の大きな転換点です。\n\n"好きだから聴いてほしい"ではなく、\n"歌う人として受け取ってほしい"。\n\nそれがヒナタの不器用さでもあります。' },
+      { heading: '「整える側」に固定されていく怖さ', body: '後半では、\n「整える能力」が現実を動かし始めます。\n\n音の仕事が増える。\n必要とされる。\n収入になる。\n\nでも、\n評価されているのは\n"歌うヒナタ"ではなく、\n"整えるヒナタ"。\n\nその現実に、\nわずかな怖さが生まれる。\n\n整える側にいれば安全です。\n\n失敗は目立たない。\n役にも立てる。\n生活もできる。\n\nでも、\n前に立てば揺れる。\n\n評価は割れる。\n責任は自分へ返ってくる。\n\nだからヒナタは、\n整える側に固定される前に、\n"揺れたまま前に立つ"ことを選びます。' },
+      { heading: '「続けるために、やめた」', body: '最後の\n「続けるために、やめた」\nという言葉。\n\nこれは単なる退職ではありません。\n\n安定を捨てた話でもなく、\n夢を追う綺麗な決意表明でもない。\n\n"整えるだけの人生"をやめ、\n揺れたまま音を鳴らす側へ進む選択。\n\nだから『整えない音』は、\nヒナタにとっての\n"始まり直し"の物語です。' },
+      { heading: '「整えない音」とは', body: 'このタイトルが示しているのは、\n単なる未完成ではありません。\n\n揺れたまま。\n未完成のまま。\n言い切れないまま。\n\nそれでも、\n誰かへ差し出された音。\n\n整えないことでしか残らない感情。\n\nそれが、\n『整えない音』です。' }
     ];
 
     var bodyEl = document.getElementById('note-body');
@@ -329,16 +344,18 @@
         localStorage.setItem(REWARD_KEY, '1');
         var alreadyGot = SfSnow.isUnlocked(ITEM_ID);
         if (!alreadyGot) {
+          // 初回読了：アイテム付与 → 「を入手しました」
           SfSnow.unlockItem(ITEM_ID);
           badgeImg.style.filter  = 'none';
           badgeImg.style.opacity = '0.85';
-          badgeLabel.textContent = '白いピック';
+          badgeLabel.textContent = 'Little Snow（Law）USBメモリ';
           badgeLabel.style.color = '#93c5fd';
           document.getElementById('popup-msg').textContent = 'を入手しました';
         } else {
+          // 再読了：付与しない → 「は入手済みです」
           document.getElementById('popup-msg').textContent = 'は入手済みです';
         }
-        _charaPending = true;
+        _koyukiPending = true;
         setTimeout(function() {
           document.getElementById('popup-label').style.color = '#93c5fd';
           document.getElementById('item-popup').classList.add('show');
@@ -348,6 +365,7 @@
     }
   });
 
+// ── SNOW CANVAS ──
   (function() {
     var canvas = document.getElementById('snow');
     if (!canvas) return;
@@ -376,8 +394,8 @@
         f.y += f.speed;
         f.x += f.drift;
         if (f.y > canvas.height) { f.y = -5; f.x = Math.random() * canvas.width; }
-        if (f.x > canvas.width) f.x = 0;
-        if (f.x < 0) f.x = canvas.width;
+        if (f.x > canvas.width)  f.x = 0;
+        if (f.x < 0)             f.x = canvas.width;
       });
       requestAnimationFrame(drawSnow);
     }

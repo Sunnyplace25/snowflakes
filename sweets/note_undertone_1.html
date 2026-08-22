@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「Under tone（完全版）」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#c4b5fd; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「Under tone（完全版）」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「Under tone（完全版）」解説</h1>
+    <p class="note-sub">― 「置いていった音を返しています」　三人が、置いてきたものにもう一度触れる物語 ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://ncode.syosetu.com/n1628mq/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.08.20 / 短篇</p>
+        <p class="related-title">Under tone</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_undertone_1';
+  var SECTIONS = [
+        { heading: null, body: '「Under tone」は、『ひとつ多い音』から続く物語です。\n\nライブを終えたSnow flakesの三人が、路地裏で見つける小さな古物店。\n\n地図にあるのかも分からない。\n\n前に来た時と、少し場所が違う気もする。\n\n店内には、石、古い鍵、レコード、カセットテープ、パズル。\n\n何に使うのか分からないものが並んでいる。\n\nそして入口には、こんな言葉が書かれています。\n\n「置いていった音を返しています」\n\nUnder toneは、怪異の正体を説明してくれる場所ではありません。\n\nむしろ反対です。\n\n三人がそれまで説明しないまま置いてきたものを、もう一度目の前へ置く場所です。' },
+        { heading: '『ひとつ多い音』の、その先', body: '『ひとつ多い音』では、\n\n本来三人分しかないはずの足音が、ひとつ多い。\n\n音が少し遅れてついてくる。\n\n三人の演奏が、異様なほど揃っていく。\n\nそんな「数えると合わない音」が描かれていました。\n\nUnder toneは、その音の正体を答える物語ではありません。\n\nここで初めて出てくるのは、\n\n「その音をどうするのか」\n\nという問題です。\n\n気づかなかったことにするのか。\n\n意味を与えるのか。\n\n持って帰るのか。\n\n置いていくのか。\n\nもう一度、触れるのか。\n\nだからUnder toneでは、怪異そのものよりも「選ぶこと」が何度も描かれます。' },
+        { heading: '「置いていった音を返しています」', body: 'この言葉は、Under tone全体を表しています。\n\nここでいう「音」は、音声だけではありません。\n\n昔言えなかったこと。\n\n終わったと思っていた出来事。\n\n選ばなかった道。\n\n誰かに対して残っている感情。\n\n自分でも名前をつけていなかった後悔。\n\nそういうものまで、この作品では「音」として扱われています。\n\nUnder toneは、それを消してくれる場所ではありません。\n\n答えを出してくれる場所でもない。\n\nただ、\n\n「まだ、ここにある」\n\nと本人の前へ戻してくる。\n\n返されたあとにどうするかは、その人自身に委ねられます。' },
+        { heading: '店主・ナギは何者なのか', body: '店には、ナギと呼ばれる店主がいます。\n\nけれど、三人には同じ姿に見えていません。\n\nそれどころかコウタは、\n\n子ども。\n\n見たことのない楽器を鳴らす男。\n\n本を読んでいる女性。\n\n父親と同じくらいの、煙草の匂いがする男。\n\nそれぞれを別人だと思っています。\n\nけれど終盤、ハヤテは言います。\n\n「最初から一人しかいないだろ」\n\n全部、ナギだった。\n\nここで初めて、読者にもはっきり分かります。\n\n変わっているのはナギなのか。\n\n見ている側なのか。\n\nそれすら、完全には説明されません。\n\nただナギは、その人の中に残っているものに近い形で現れる。\n\n鏡のように本人を映すのではなく、\n\n「置いてきたもの」に触れやすい姿になる。\n\nだから、三人が同じナギを見ていないこと自体が、それぞれの内側を表しています。' },
+        { heading: 'ハヤテが見ている「子ども」', body: 'ハヤテにとって、ナギは子どもに見えます。\n\nそこに重なっているのが、幼い頃に出会った朔の記憶です。\n\nハヤテは昔、朔と一緒に小さなコンサートを作りました。\n\n当時は、自分も同じ子どもだった。\n\n音楽が好きで。\n\n一緒に何かをやることが、ただ楽しかった。\n\nけれど大人になってから振り返ると、見え方が変わる。\n\nあの頃の朔は、自分とはまったく違うものを背負っていた。\n\n自分はもっと何かできたのではないか。\n\nそういう思いだけが、あとから残っている。\n\n久しぶりに朔と会い、「感謝している」と言われても、\n\nハヤテは素直に受け取れません。\n\n「何もしてやってなんか、ないのにな」\n\nそれに対してナギは、\n\n「そいつが納得してるなら、それでいい」\n\nと返します。\n\nハヤテが返してもらったのは、過去をやり直す機会ではありません。\n\n「あの時、自分が足りなかったのではないか」という、今の自分が勝手に付け足した後悔を、少しだけ置き直す時間です。' },
+        { heading: 'ヒナタが拾う「まだ名前のない音」', body: 'ヒナタは、三人の中で最も自然にUnder toneへ馴染んでいきます。\n\n音があれば聞く。\n\n面白ければ鳴らす。\n\n説明されなくても、必要なら持って帰る。\n\nナギとも、言葉より先に音で関係を作っていきます。\n\n二人が店で鳴らし始めたフレーズは、最初は誰の曲でもありません。\n\nどちらが先に出した音なのかも、だんだん分からなくなる。\n\nそこへヒナタは自然に、\n\n「ドラムとベースも入れて」\n\nと言います。\n\nそして、\n\n「これ、もう俺たちの曲だろ」\n\nと続ける。\n\nここは、ヒナタという人物をかなり象徴しています。\n\n一人で音を作ることはできる。\n\n実際、一人の仕事も増えている。\n\nでも、自然に思い浮かぶ完成形には、コウタのベースとハヤテのドラムがある。\n\n誰かと作り始めた音ですら、\n\nヒナタの中では最終的に「三人の音」へ向かっていく。\n\nUnder toneは、ヒナタに何かを教える場所というより、\n\n本人が無意識に選んでいるものを見せる場所になっています。' },
+        { heading: 'カセットテープとUSB', body: 'ヒナタ編には、古いカセットテープが登場します。\n\n中に何が入っているのか分からない。\n\n誰が録音したのかも分からない。\n\n聞こうとしても、なかなか聞けない。\n\nそして最後にヒナタは、そのカセットを持ち帰ります。\n\n代わりに店へ置いていくのが、\n\nUnder toneで生まれた曲を、三人で完成させた音が入ったUSBです。\n\n聞けない音を、ひとつ持ち帰る。\n\n今鳴っている音を、ひとつ置いていく。\n\nここで初めて、\n\n「置いていった音を返しています」\n\nという店の仕組みに、ヒナタ自身も参加します。\n\nUnder toneは一方的に何かを返す場所ではありません。\n\n受け取った人もまた、何かを置いていく。\n\nだから店には、音が増えていきます。' },
+        { heading: '同じ場所にいるのに、同じものを見ていない', body: '完全版で重要なのは、\n\n三人が一緒にUnder toneへ来ても、同じものを見ているわけではないことです。\n\nヒナタには自然に見えるものを、コウタは警戒する。\n\nハヤテが普通に話している相手を、コウタは別人だと思っている。\n\n同じ店。\n\n同じ棚。\n\n同じ店主。\n\nそれでも、受け取っているものは違う。\n\nこれはSnow flakesというバンドそのものにも重なります。\n\n三人はずっと一緒に音を鳴らしている。\n\nでも、同じ音を同じ意味で聞いているわけではない。\n\nだからズレる。\n\nそして、ズレているからこそ三人である。\n\n『ひとつ多い音』では「揃いすぎること」が恐怖でした。\n\nUnder toneでは、その逆に、\n\n違って見えていること。\n\n違って聞こえていること。\n\nそれを無理にひとつへ揃えないことが、少しずつ肯定されていきます。' },
+        { heading: 'コウタだけが、何度も問い直される', body: '完全版の中心にいるのは、やはりコウタです。\n\n『ひとつ多い音』から続いて、\n\n「それで、よかったの？」\n\nという声が何度もコウタへ戻ってきます。\n\nコウタはずっと、\n\n自分の選択は正しかったのか。\n\n自分はここにいていいのか。\n\nもっと別の選択があったのではないか。\n\nそういうことを考える人物です。\n\nそして音楽でも、\n\n空いている場所を見つけて埋める。\n\n誰かが前へ出れば、自分は引く。\n\n邪魔になると思えば、自分のフレーズを消す。\n\nそれを「自分の役割」だと思ってきました。\n\nけれどUnder toneで、その考え方そのものを突かれます。\n\n「空いてるところを埋めたんじゃなくて」\n\n「本当は、自分がそこに入るのをやめただけじゃないの」\n\nこの言葉に、コウタは初めて本気で怒ります。\n\n「俺の音を、勝手に触るな！」\n\nここは、コウタにとって非常に大きな場面です。\n\nいつもなら飲み込む。\n\n言いすぎたと思えば引く。\n\n場が収まるところまで、自分を戻す。\n\nでもこの時だけは、それをしない。\n\n怒ったことまでなかったことにしたら、\n\nまた「空いている場所」へ自分を戻すことになるから。\n\nコウタが初めて、\n\n自分の音を守るために声を出した瞬間です。' },
+        { heading: '完成しないパズル', body: 'コウタの前には、何度もパズルが現れます。\n\n解き方は分かる。\n\n最後の一つが入る場所も分かる。\n\nそこへ入れれば完成する。\n\nでも、完成させると形が少し変わる。\n\n綺麗に揃っていたものが、わずかに歪む。\n\nそれでも、その歪んだ形の方が本当の形に見える。\n\nこのパズルは、コウタ自身です。\n\n彼はずっと、\n\n空いている場所を見つける。\n\nそこへ必要なものを入れる。\n\n崩れない形を作る。\n\nそうやって生きてきた。\n\nだから最後の一つも、\n\n「入る場所が分かるなら入れる」\n\nはずでした。\n\nけれど最後に、コウタは入れません。\n\n最後の一つを、パズルの横へ置きます。\n\n完成していない。\n\nでも、失敗でもない。\n\nただ、そこに置いてある。\n\nそれでいい、と完全に思えたわけでもない。\n\nそれでも、\n\n今すぐ無理にどこかへ入れなくていい。\n\nその選択ができた。\n\nUnder toneがコウタへ返したものは「正解」ではなく、\n\n正解を今すぐ決めなくてもいいという余白でした。' },
+        { heading: '「それで、よかったの？」への答え', body: '物語の最後。\n\nコウタは、もう一度あの問いを考えます。\n\n別の道を選んでいたら。\n\n違う音を選んでいたら。\n\n今ここにいたかは分からない。\n\n正しかったのかも分からない。\n\nそして、たぶんこれからも分からない。\n\nそこで初めて、コウタの答えが変わります。\n\n「それでよかったんじゃなくて」\n\n「ここがよかったんだなって」\n\nこれは、\n\n「自分の選択は正しかった」\n\nという答えではありません。\n\n正しかったから三人でいるのではない。\n\n結果的に正解だったからSnow flakesを続けているのでもない。\n\nここにいたいから、いる。\n\nこの三人がよかったから、ここを選んでいる。\n\n『ひとつ多い音』からずっと続いていた問いに対して、\n\nようやくコウタ自身の言葉で返した答えです。' },
+        { heading: 'なぜ三人でナギの好物が違うのか', body: 'ラスト近くには、少し可笑しいやり取りがあります。\n\nヒナタは、\n\n「あいつ、ビール好きだから」\n\nと言う。\n\nハヤテは、\n\n「ビール？　チョコだろ」\n\nと言う。\n\nコウタは、\n\n「クッキーじゃなくて？」\n\nと思っている。\n\n全員、同じナギの話をしています。\n\nそれなのに、全員違う。\n\nここにもUnder toneの仕組みがそのまま残っています。\n\n誰かを理解するということは、\n\n全員が同じ人物像を持つことではない。\n\n三人とも違うナギを見て。\n\n違う時間を過ごして。\n\n違うものを受け取った。\n\nそれでも、相手は一人だった。\n\nこれはSnow flakesにも重なります。\n\n三人が見ているSnow flakesは、たぶん少しずつ違う。\n\nそれでも、同じ場所へ帰ってくる。' },
+        { heading: 'Under toneとは', body: 'Under toneは、\n\n怪異を解決する物語ではありません。\n\n過去を変える物語でもない。\n\n置いてきたものを拾い直し、\n\n必要なら持って帰り、\n\n今は持てないなら、そこへ置いておく。\n\nそんな場所の物語です。\n\n『ひとつ多い音』で生まれた違和感。\n\nハヤテが残していた過去。\n\nヒナタが拾い続ける音。\n\nコウタが答えを出せないまま抱えていた選択。\n\nそれらがUnder toneというひとつの店に集まり、\n\nそれぞれ別の形で返されていきます。\n\nだから、この店は物語の「答え」が置いてある場所ではありません。\n\nむしろ、\n\n答えをひとつに決めなくてもいい場所です。' },
+        { heading: '完全版を読んだあと', body: 'Under toneを読まなくても、Snow flakes本編は成立します。\n\n三人は出会い。\n\nバンドを続け。\n\n悩みながら、それぞれ選んでいく。\n\nそれだけで物語は進みます。\n\nでもUnder toneを読んだあとに本編へ戻ると、\n\n少しだけ見え方が変わります。\n\nコウタがなぜ「揃いすぎる音」を怖がるのか。\n\nハヤテがなぜ人との距離を自然に縮めるのか。\n\nヒナタがなぜ、一人で作れるのに三人の音へ戻ってくるのか。\n\nそれまで何気なく見えていた選択の下に、\n\nもうひとつの音が聞こえるようになる。\n\nそれが、Under toneです。\n\n表に鳴っている音の下に、\n\nずっと残っていた音。\n\n言葉にならなかったもの。\n\n選ばなかったもの。\n\n終わったと思っていたもの。\n\nそれらは消えたわけではありません。\n\nただ、そこにある。\n\nそして必要になった時。\n\nもう一度、触れることができる。\n\n店はまだ、路地の奥にあります。\n\n答えをもらうためではなく。\n\n何かを返してもらうためでもなく。\n\nただ、三人がもう一度そこへ行ける場所として。\n\n最後まで。\n\nUnder toneは、そこに残り続けます。' }
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

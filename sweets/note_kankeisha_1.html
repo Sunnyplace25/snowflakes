@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「関係者」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「関係者」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「関係者」解説</h1>
+    <p class="note-sub">― 「知っている人」に見えることが、一番怖い ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://sunnyplace25.github.io/snowflakes/horror_kankei.html" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.07.30 / 短編</p>
+        <p class="related-title">関係者</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_kankeisha_1';
+  var SECTIONS = [
+        { heading: null, body: '「関係者」は、Snow flakesの三人がライブハウスで出会った、ひとりの女性を描いた短編です。\n\n幽霊も、説明のつかない現象も出てきません。そこにいるのは、生きている人間です。\n\nけれど。誰も知らない人間が、誰にも止められず、当たり前のように三人のすぐそばまで入ってくる。\n\nこの作品の恐怖は、「知らない人が侵入したこと」だけではありません。「知っている人だと思わせること」にあります。' },
+        { heading: '「関係者」に見える', body: '黒い服。首から下げたカードケース。慣れた動き。機材を運ぶ手つき。\n\n女性は、何か特別なことをしてライブハウスへ侵入したわけではありません。誰かが扉を開ければ押さえる。荷物を持っていれば手伝う。呼ばれれば自然に返事をする。それだけです。\n\n会場側はSnow flakesのスタッフだと思い、Snow flakes側は会場のスタッフだと思った。その認識の隙間に、彼女は入り込みます。\n\nだからタイトルは「侵入者」ではなく、「関係者」。彼女自身がそう名乗ったわけでもないのに、周囲が勝手に彼女を「こちら側の人間」にしてしまったからです。' },
+        { heading: '知りすぎている', body: 'ヒナタには常温の水。コウタには、冷たすぎない水。ハヤテのスティックケースを置く場所も、三人の名前も知っている。\n\nひとつひとつなら、不自然ではありません。スタッフなら知っていてもおかしくない。以前の会場で見たのかもしれない。誰かから聞いたのかもしれない。\n\nけれど、それが少しずつ積み重なっていく。「どうして知っているんだろう」そう思ったときには、すでに彼女は楽屋の中にいます。\n\nこの作品では、「知っている」ということそのものが、入場証の代わりになっています。' },
+        { heading: 'コウタが最初に境界線を引く', body: '三人の中で、女性に対して最初にはっきりと拒否を示すのはコウタです。\n\n機材へ手を伸ばされたとき、「それは自分で持ちます」上着を触られたときも、「それ、触らなくて大丈夫です」と伝えています。\n\nコウタは最初から彼女を怪しんでいたわけではありません。ただ、自分の物へ他人が不用意に触れることを好まない。それは小さな境界線です。\n\nだからこそ彼女は、その境界線を越えた証拠として、コウタの私物をひとつ持っていきます。' },
+        { heading: '盗まれたイヤホン', body: '盗まれたのは、財布でもスマートフォンでもありません。イヤホンです。\n\nコウタが移動中にも使っている、有線IEMの「SONY IER-M7」。IEMは「In-Ear Monitor」の略で、ライブでは演奏者が自分や他のメンバーの音を確認するためにも使われるイヤモニです。\n\nコウタが好むのは、低音を派手に鳴らすものではなく、ベースの音程や各楽器の位置が分かりやすく、高域が強すぎない、落ち着いた音。音楽を聴くための物であり、同時に、音を確認するための仕事道具でもあります。\n\nだから、彼にとっては毎日のように耳へ入れるもの。非常に身体に近い私物です。' },
+        { heading: 'なぜ、イヤホンだったのか', body: '女性は、高価なものだから選んだわけではありません。財布も、鍵も、スマートフォンも残しています。持っていったのは、コウタが耳に入れていたもの。\n\nここが、この盗難の一番気味の悪いところです。欲しかった理由は、「高価だから」ではなく、「コウタが使っていた物だから」だったのかもしれない。\n\nそして女性は、それをSNSへ投稿します。さらに、三人が来るはずだったホテルの部屋へ、きれいに巻いて置いていく。\n\n盗んだのに、持ち続けない。売らない。壊さない。まるで、「あなたの物を、私は持っている」「あなたが来る場所も知っている」そう伝えるためだけに持ち出したようにも見えます。' },
+        { heading: 'IEMという小道具', body: 'イヤホンではなく、IEMであることにも少し意味があります。\n\nIEMは、演奏者にとって外の音を遮り、必要な音を耳の中へ届けるものです。ステージ上でコウタが聴くのは、ヒナタの声、ギター、ハヤテのドラム、自分のベース。つまり、Snow flakesの三人の音。\n\nその音を聴くための道具を、Snow flakesの外側にいるはずの女性が持っていく。「音」をテーマにした夏の物語の中では、これもひとつの小さな侵入になっています。\n\n彼女は楽屋へ入っただけではない。コウタがいつも耳の中へ入れているものまで、自分の側へ持ち出してしまった。' },
+        { heading: '「何も聞かずに知っていた」', body: 'この作品の中心にあるのは、この感覚です。\n\n名前を知っている。好みを知っている。持ち物を知っている。予定を知っている。泊まるホテルを知っている。\n\n情報が増えるほど、その人は「知らない人」に見えなくなる。けれど本当は、三人は彼女の名前すら知らない。知っているのは、彼女の方だけです。\n\nその情報量の非対称さが、この作品の怖さになっています。' },
+        { heading: '進行表', body: '女性がもうひとつ持ち出したのが、進行表です。そこには、出番や撤収時間だけではなく、翌日の移動予定や宿泊先まで書かれていました。\n\nイヤホンが「コウタ個人への接近」だとすれば、進行表は「三人のこれからへの接近」です。今持っているものと、これから行く場所。女性は、その両方を持っていきます。\n\nそのため三人はホテルを変更します。けれど女性は、変更前のホテルで待っている。ここで初めて、「もし予定を変えていなかったら」という、起きなかった出来事が読者の中に生まれます。\n\n彼女が何をするつもりだったのかは、最後まで分かりません。' },
+        { heading: '怪異ではない', body: '夏のSnow flakesには、説明のつかない音や現象を扱った作品もあります。でも「関係者」には、超常的な存在は必要ありません。\n\n人は、制服を着ている、パスを下げている、仕事を知っている、名前を知っている、それだけで、相手を「関係者」だと思ってしまう。そして一度そう認識すると、その人が近くにいることを疑わなくなる。\n\nこの作品で一番怖いのは、女性が特殊な侵入方法を知っていたことではありません。誰も彼女を止めなかったことです。' },
+        { heading: '「関係者」とは', body: 'このタイトルが指しているのは、本当のスタッフではありません。「関係者に見える人」。\n\nそしてもうひとつ。Snow flakesのことを知りすぎて、本人の中ではすでに自分も彼らの「関係者」になっている人。\n\n三人から見れば、知らない人。彼女から見れば、ずっと知っている人たち。その距離の認識が一致していない。\n\n「関係者」は、そのずれが楽屋の扉を越えてしまった物語です。' },
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

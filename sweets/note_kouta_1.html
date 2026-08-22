@@ -233,7 +233,8 @@
 <script>
   var NOTE_ID   = 'note_kouta_1';
   var ITEM_ID   = 'item_kouta_zippo';
-  var SCROLL_KEY = 'sf_note_scroll_' + ITEM_ID;
+  var SCROLL_KEY  = 'sf_note_scroll_' + ITEM_ID;
+  var REWARD_KEY  = 'sf_note_reward_' + NOTE_ID;
 
   var _koutaPending = false;
   var _rewardFired  = false;
@@ -313,6 +314,7 @@
         if (_rewardFired) return;
         _rewardFired = true;
         localStorage.setItem(SCROLL_KEY, '1');
+        localStorage.setItem(REWARD_KEY, '1');
         var alreadyGot = SfSnow.isUnlocked(ITEM_ID);
         if (!alreadyGot) {
           SfSnow.unlockItem(ITEM_ID);

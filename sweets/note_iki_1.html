@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「閾値」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「閾値」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「閾値」解説</h1>
+    <p class="note-sub">― 聞こえなかったものが、聞こえる側へ ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://ncode.syosetu.com/n9342lt/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.07.18 / 短編</p>
+        <p class="related-title">閾値</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_iki_1';
+  var SECTIONS = [
+        { heading: null, body: '「閾値」は、音響技術者の女性を主人公にした短編です。\n\n波形。スペクトラム。基準トーン。規定値。\n\n彼女にとって音は、測定し、確認し、制御できるものでした。だから最初の言葉は、「越えなければ、音ではない。」\n\nけれど物語が進むにつれて、その前提そのものが崩れていきます。' },
+        { heading: '「閾値」とは', body: '閾値とは、ある変化が起きる境目のことです。\n\nこの作品では最初、「ここを越えたら音として扱う」「越えなければ問題ではない」という、音を判断するための境界として登場します。\n\n主人公はその境界を信じています。\n\n波形に出ない。スペクトラムも変わらない。規定値も守られている。ならば、そこには何もない。\n\nそのはずでした。' },
+        { heading: '0:42', body: '異変が起きるのは、無音部分の0:42付近。\n\n音が鳴るわけではありません。波形も動かない。ただ、空気が内側へ寄る。喉の奥が冷える。ヘッドホンの奥で、圧がわずかに変わる。\n\n最初は偶然に見えます。\n\nけれど、違うスタジオ。違うマイク。違う素材。それでも同じ場所で起きる。\n\n音響技術者である彼女にとって、「再現できる」ということは、無視しにくい事実になっていきます。' },
+        { heading: '数値は正しい', body: '主人公は、感覚より数値を信じる人です。\n\n高校時代、音楽を演奏することには馴染めなかった。人の気分で揺れるテンポや強弱より、決めた位置で止まるフェーダー。測定できるノイズ。確認できる位相。そういうものの方が、彼女には信頼できた。\n\nだから怖いのは、機材が壊れることではありません。\n\n機材が正常なのに、自分だけが何かを感じていることです。\n\n数値が間違っているなら直せる。でも、数値が正しいまま、自分の感覚だけが変わってしまったら。\n\n直す場所がありません。' },
+        { heading: '「何もない」', body: '彼女は、自分以外の人にも確認してもらいます。けれど返ってくるのは、「何もない」という答え。\n\n本当に聞こえていない。嘘でも、気づいていないふりでもない。\n\nそのことに、彼女は少し安心します。そして同時に、少し怖くなる。\n\nもし全員に聞こえているなら、それは外側にあるものかもしれない。でも、自分にしか分からないなら。\n\n変わったのは、外側ではなく自分なのかもしれない。' },
+        { heading: '「音が越えたのではない」', body: '最後に彼女は、外界から音を遮断した無音室で確認します。\n\n波形は完全な直線。規定値も正常。それでも0:42で、同じ感覚がある。\n\nそこで、彼女は理解します。\n\n「音が越えたのではない。\n　私が越えたのだ。」\n\nこの一文が、タイトル「閾値」の本当の意味です。\n\n何かが大きくなって、彼女に届くようになったのではない。彼女自身が、今まで感じなくてよかった領域へ踏み込んでしまった。\n\n境界線の向こう側へ移ったのは、音ではなく、人間の方でした。' },
+        { heading: '「慣れただけ」', body: 'その後も、彼女の生活は普通に続きます。\n\n仕事もできる。判断も正確。ノイズも処理できる。0:42も、以前ほど怖くはありません。\n\nけれど、消えたわけではない。\n\n「慣れただけ」。\n\nここは、この作品の静かな怖さのひとつです。\n\n怪異を倒したわけでもない。原因を突き止めたわけでもない。ただ、異常のある世界で生活することに、人間の方が適応してしまった。' },
+        { heading: '最後の波形', body: '物語の最後。\n\nずっと平らだったタイムラインの直線が、わずかに揺れます。\n\nけれど、規定値内。自動処理の対象外。誰も気づかない。\n\nそして最後まで、「規定値は、守られている。」\n\n数値の上では、何も起きていません。けれど最初と最後では、この言葉の意味が変わっています。\n\n冒頭では、規定値を越えなければ安全だった。最後では、規定値を越えなくても、何かは存在できる。\n\n測定できないことと、存在しないことは同じではない。\n\nその可能性だけが残ります。' },
+        { heading: '「閾値」が描いているもの', body: '「閾値」は、聞こえてはいけない音を聞く話ではありません。\n\nもっと正確には、「今まで認識できなかったものを、認識できる側へ移ってしまう話」です。\n\n一度知覚してしまえば、知らなかった頃には戻れない。\n\nだから主人公は、最後まで正常です。仕事もできる。数値も読める。生活も続いている。\n\nただ、世界の中にあるものが、以前よりひとつだけ多く見えている。\n\nそれだけです。' },
+        { heading: '夏の音の入口', body: '夏のSnow flakesで描かれる「音」は、必ずしも聞こえるものだけではありません。\n\n波形に出ないもの。消えたはずの音。数えると合わない音。誰かにだけ聞こえる音。\n\n「閾値」は、その夏の最初に置かれた境界線です。\n\n越えなければ、音ではない。\n\nでは、越えたのが音ではなく、聞いている人の方だったら。\n\nそこから、この夏の「音」の物語が始まります。' },
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

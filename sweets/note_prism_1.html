@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第1章完結に寄せて｜プリズム | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; --prism:#c4b5fd; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:28px; }
+    .item-badge { display:inline-flex; align-items:center; gap:8px; margin-bottom:28px; padding:8px 14px; background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px; }
+    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
+    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#c4b5fd; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    #item-popup {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    #item-popup.show { display:flex; }
+    .item-popup-card {
+      background:#0f1825; border:1px solid rgba(196,181,253,0.2);
+      border-radius:18px; padding:36px 32px; max-width:320px; width:90%;
+      text-align:center; position:relative;
+    }
+    .item-popup-label { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--prism); margin-bottom:16px; }
+    .item-popup-img { width:72px; height:72px; object-fit:cover; border-radius:12px; margin:0 auto 16px; display:block; box-shadow:0 0 30px rgba(196,181,253,0.2); }
+    .item-popup-name { font-family:'Noto Serif JP',serif; font-size:16px; color:var(--text); font-weight:300; margin-bottom:6px; }
+    .item-popup-msg { font-size:12px; color:var(--muted); letter-spacing:1px; margin-bottom:20px; }
+    .item-popup-close {
+      padding:8px 32px; border-radius:100px; background:rgba(196,181,253,0.08);
+      border:1px solid var(--prism); color:var(--prism);
+      font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px;
+      cursor:pointer; transition:background 0.2s;
+    }
+    .item-popup-close:hover { background:rgba(196,181,253,0.15); }
+
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">第1章完結に寄せて｜プリズム</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">第1章完結に寄せて｜プリズム</h1>
+    <p class="note-sub">― 三人の時間を、少し立体的に ―</p>
+    <div class="item-badge" id="item-badge" style="display:none;">
+      <img id="item-badge-img" src="../item/loupe.webp" alt="ルーペ">
+      <span id="item-badge-label">アイテムあり</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+
+<div id="item-popup">
+  <div class="item-popup-card">
+    <p class="item-popup-label" id="popup-label">ITEM GET</p>
+    <img class="item-popup-img" src="../item/loupe.webp" alt="ルーペ">
+    <p class="item-popup-name">ルーペ</p>
+    <p class="item-popup-msg" id="popup-msg">を入手しました</p>
+    <button class="item-popup-close" id="popup-close-btn" onclick="closeItemPopup()">閉じる</button>
+  </div>
+</div>
+
+<script>
+  var NOTE_ID    = 'note_prism_1';
+  var MITEM_KEY  = 'loupe';
+  var REWARD_KEY = 'sf_note_reward_note_prism_1';
+
+  var _rewardFired = false;
+
+  function closeItemPopup() {
+    document.getElementById('item-popup').classList.remove('show');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    var badge      = document.getElementById('item-badge');
+    var badgeImg   = document.getElementById('item-badge-img');
+    var badgeLabel = document.getElementById('item-badge-label');
+    var loupeCount = (SfSnow.getMonthlyItems()[MITEM_KEY] || 0);
+    badge.style.display = 'inline-flex';
+    if (loupeCount > 0) {
+      badgeImg.style.filter  = 'none';
+      badgeImg.style.opacity = '0.85';
+      badgeLabel.textContent = 'ルーペ';
+      badgeLabel.style.color = '#c4b5fd';
+    } else {
+      badgeImg.style.filter  = 'grayscale(1)';
+      badgeImg.style.opacity = '0.45';
+      badgeLabel.textContent = 'アイテムあり';
+    }
+
+    var sections = [
+      { heading: null, body: 'Snow flakesは、余白の多い物語です。\n\n散文に近い形で進み、\n地の文は多くありません。\n\nすべてを説明するのではなく、\n言葉にならなかった感情や、\n誰かの視線の端に残ったものを、\n読み手の中でそっと受け取ってもらえるように書いています。\n\n高校時代に出会った、\nヒナタ、コウタ、ハヤテの三人。\n\n偶然集まった音楽室で、\n音を合わせるところから、物語は始まります。\n\n本編は、主にヒナタの目線で進んでいきます。\n\nだから、光が当たるのは、\n自然とヒナタになる。\n\n迷いながらも前へ進むヒナタのそばで、\nコウタは多くを語らないまま、必要なものを選び続け、\nハヤテは明るさの奥に、自分の役割を静かに抱えています。\n\n同じ場所にいて、\n同じ音を鳴らしていても、\n三人が見ていた景色は、きっと少しずつ違っています。\n\n光の当たり方が変われば、\n浮かび上がる色も変わる。\n\nヒナタから見えていたSnow flakes。\nコウタから見えていたSnow flakes。\nハヤテから見えていたSnow flakes。\n\nそのどれもが、\n同じ時間の中にありました。\n\nSnow flakesは、\n三人で音を鳴らす話です。\n\nでも同時に、\n三人それぞれが、自分の人生を選んでいく話でもあります。\n\n背中合わせに立つ三人は、\n同じ場所にいながら、\nそれぞれ違う方向を見ていました。\n\n誰かと一緒にいることで、\n自分の輪郭が見えてくること。\n\n言葉にできなかった想いが、\n時間をかけて、音や記憶に変わっていくこと。\n\nそして、\n離れなかったものだけが、\n最後に静かに残ること。\n\nこれから少しずつ置いていく短篇や、\n続いていく物語の断片を集めながら、\n三人が歩いてきた時間を、\n別の角度からも見ていただけたら嬉しいです。\n\n第一章を読んでくださった皆さま、\n本当にありがとうございます。\n\n今後とも、Snow flakesをよろしくお願いいたします。' }
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+
+    // スクロール読了でルーペ付与
+    var sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel && 'IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          obs.disconnect();
+          if (_rewardFired) return;
+          _rewardFired = true;
+          setTimeout(function() {
+            var alreadyClaimed = !!localStorage.getItem(REWARD_KEY);
+            if (!alreadyClaimed) {
+              // 初回読了：付与 + フラグ保存
+              localStorage.setItem(REWARD_KEY, '1');
+              SfSnow.addMItemDirect(MITEM_KEY, 1);
+              badgeImg.style.filter  = 'none';
+              badgeImg.style.opacity = '0.85';
+              badgeLabel.textContent = 'ルーペ';
+              badgeLabel.style.color = '#c4b5fd';
+              document.getElementById('popup-msg').textContent = 'を入手しました';
+              document.getElementById('popup-label').style.color = '#c4b5fd';
+              document.getElementById('popup-close-btn').style.color       = '#c4b5fd';
+              document.getElementById('popup-close-btn').style.borderColor = '#c4b5fd';
+              document.getElementById('popup-close-btn').style.background  = 'rgba(196,181,253,0.08)';
+            } else {
+              // 再読了：付与しない
+              document.getElementById('popup-msg').textContent = 'は入手済みです';
+              document.getElementById('popup-label').style.color = '#94a3b8';
+              document.getElementById('popup-close-btn').style.color       = '#e2e8f0';
+              document.getElementById('popup-close-btn').style.borderColor = 'rgba(255,255,255,0.2)';
+              document.getElementById('popup-close-btn').style.background  = 'rgba(255,255,255,0.05)';
+            }
+            document.getElementById('item-popup').classList.add('show');
+          }, 1000);
+        });
+      }, { threshold: 1.0 });
+      obs.observe(sentinel);
+    }
+  });
+
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

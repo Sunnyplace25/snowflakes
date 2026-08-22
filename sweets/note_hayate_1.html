@@ -233,7 +233,8 @@
 <script>
   var NOTE_ID   = 'note_hayate_1';
   var ITEM_ID   = 'wristband_hayate';
-  var SCROLL_KEY = 'sf_note_scroll_' + ITEM_ID;
+  var SCROLL_KEY  = 'sf_note_scroll_' + ITEM_ID;
+  var REWARD_KEY  = 'sf_note_reward_' + NOTE_ID;
 
   var _hayatePending = false;
   var _rewardFired   = false;
@@ -316,6 +317,7 @@
         _rewardFired = true;
         obs.disconnect();
         localStorage.setItem(SCROLL_KEY, '1');
+        localStorage.setItem(REWARD_KEY, '1');
         var alreadyGot = SfSnow.isUnlocked(ITEM_ID);
         if (!alreadyGot) {
           SfSnow.unlockItem(ITEM_ID);

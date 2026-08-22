@@ -698,16 +698,14 @@
       transition:color 0.2s;
     }
     .exch-close-btn:hover { color:#cbd5e1; }
-  /* ── Notes 3D Carousel ── */
-  .nc-card{position:relative;flex-shrink:0;width:200px;height:116px;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
   .mc-card{position:relative;flex-shrink:0;width:200px;height:116px;border-radius:14px;padding:14px 16px;background:rgba(8,13,24,0.95);border:1px solid rgba(147,197,253,0.12);box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:border-color 0.4s,box-shadow 0.4s;will-change:box-shadow,border-color;-webkit-font-smoothing:antialiased;}
-  .nc-card.nc-active,.mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
-  .nc-card.nc-red,.mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
-  .nc-card.nc-red.nc-active,.mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
-  .nc-card.nc-green,.mc-card.nc-green{border-color:rgba(74,222,128,0.35);animation:item-glow-green 2.5s ease-in-out infinite;}
-  .nc-card.nc-green.nc-active,.mc-card.nc-green.nc-active{border-color:rgba(74,222,128,0.65);box-shadow:0 0 30px rgba(74,222,128,0.2);animation:item-glow-green 2.5s ease-in-out infinite;}
-  .nc-card.nc-purple,.mc-card.nc-purple{border-color:rgba(196,181,253,0.35);animation:item-glow-purple 2.5s ease-in-out infinite;}
-  .nc-card.nc-purple.nc-active,.mc-card.nc-purple.nc-active{border-color:rgba(196,181,253,0.65);box-shadow:0 0 30px rgba(196,181,253,0.2);animation:item-glow-purple 2.5s ease-in-out infinite;}
+  .mc-card.nc-active{border-color:rgba(147,197,253,0.38);box-shadow:0 0 40px rgba(147,197,253,0.09);}
+  .mc-card.nc-red{border-color:rgba(252,165,165,0.35);animation:red-pulse 2s ease-in-out infinite;}
+  .mc-card.nc-red.nc-active{border-color:rgba(252,165,165,0.65);box-shadow:0 0 30px rgba(252,165,165,0.25);animation:red-pulse 2s ease-in-out infinite;}
+  .mc-card.nc-green{border-color:rgba(74,222,128,0.35);animation:item-glow-green 2.5s ease-in-out infinite;}
+  .mc-card.nc-green.nc-active{border-color:rgba(74,222,128,0.65);box-shadow:0 0 30px rgba(74,222,128,0.2);animation:item-glow-green 2.5s ease-in-out infinite;}
+  .mc-card.nc-purple{border-color:rgba(196,181,253,0.35);animation:item-glow-purple 2.5s ease-in-out infinite;}
+  .mc-card.nc-purple.nc-active{border-color:rgba(196,181,253,0.65);box-shadow:0 0 30px rgba(196,181,253,0.2);animation:item-glow-purple 2.5s ease-in-out infinite;}
   .read-btn.green-hover:hover{background:rgba(74,222,128,0.18);}
   .nc-tag{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#334155;display:flex;align-items:center;gap:8px;}
   .nc-new{font-size:9px;letter-spacing:2px;color:#fde68a;border:1px solid rgba(253,230,138,0.35);border-radius:100px;padding:2px 7px;}
@@ -5758,155 +5756,7 @@
       <!-- ── NOTE INDEX ── -->
       <div id="notes-index-wrap" style="margin-top:8px;margin-bottom:4px;"></div>
 
-      <!-- ── ナビ（非表示・ロジック保持） ── -->
-      <div id="notes-carousel-outer" style="display:none;">
-        <div id="notes-scene" style="display:none;"><div id="notes-drum"></div></div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:4px;">
-          <button class="nc-arrow" onclick="notesCarouselRotate(-1)">‹</button>
-          <div id="notes-dots" style="display:flex;gap:8px;align-items:center;"></div>
-          <button class="nc-arrow" onclick="notesCarouselRotate(1)">›</button>
-        </div>
-      </div>
-
-      <!-- 選択中ノートのコンテンツ -->
-      <div id="notes-content-area" style="margin-top:20px;"></div>
-
-      <!-- 静的ノートの元データ（非表示参照用） -->
-      <div id="notes-static-card-src" style="display:none;">
-      <div class="post-card" style="position:relative;">
-        <img id="static-note-ring-icon" src="../item/ring_kouta.webp" title="???" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:0.22;filter:grayscale(1);z-index:1;pointer-events:none;">
-        <div class="post-header">
-          <div class="post-header-left">
-            <div class="post-tag">note</div>
-            <div class="post-title">「ひとつ多い音」解説</div>
-            <div class="post-date">― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―</div>
-          </div>
-          <button class="read-btn" id="notes-btn" onclick="notesExchange()">交換する</button>
-        </div>
-        <div class="post-content" id="notes-body">
-        <div class="divider"></div>
-        <div class="post-body">「ひとつ多い音」は、Snow flakes本編の外側にある短編です。
-読まなくても、本編は成立する。
-けれど読むことで、Snow flakesというバンドそのものの見え方が、少しだけ変わります。
-
-
-<span style="color:#fca5a5">■ 小さな違和感から始まる</span>
-
-最初に起きる異変は、どれも説明できる程度のものです。
-・水面が遅れて揺れる
-・足音が半拍ずれる
-・音があとから追いついてくる
-・数えようとすると合わない
-
-どれも、「気のせい」で済ませられる。
-だからコウタは、何度も"見ない"ことを選びます。
-意味を与えた瞬間、戻れなくなる気がするから。
-
-この作品の恐怖は、"何かが現れること"ではなく、「認識してしまうこと」にあります。
-
-
-<span style="color:#fca5a5">■ コウタだけが気づいてしまう</span>
-
-ヒナタは、最初から少しだけ"分かっている"。
-ハヤテは、違和感を深く拾わない。
-その中でコウタだけが、ズレを見つけてしまう。
-
-だからこの作品は、コウタ視点で進む必要がある。
-読者もコウタと同じ速度で、少しずつ現実感を失っていく。
-「夢だったはずのもの」が、起きている時間にも残り始める。
-その感覚が、静かに侵食していきます。
-
-
-<span style="color:#fca5a5">■ 「気にした時点で、そっちに寄る」</span>
-
-ヒナタのこの言葉が、物語全体の核です。
-
-ヒナタは、怪異を起こす存在ではありません。
-ただ、"向こう側の音"を拾えてしまう。
-だから演奏シーンでは、音を「作っている」というより、"すでに置かれていた音をなぞっている"ように見える。
-ヒナタは、音に近づいているというより、音の方に呼ばれている。
-
-
-<span style="color:#fca5a5">■ 「選ばなかった方」</span>
-
-商店街で差し出される二枚のカード。
-ここで重要なのは、どちらを選ぶかではありません。「選ぶ」という行為そのものです。
-
-選んだ瞬間、"選ばなかった可能性"から切り離される。
-そしてコウタは、選ばなかったつもりのまま、少しずつ"そちら側"へ寄っていく。
-
-黒い石。リング。揃いすぎる音。
-全部、"あとから遅れて成立する"。
-この作品では、選択すら、少し遅れてやって来ます。
-
-
-<span style="color:#fca5a5">■ 揃いすぎる音</span>
-
-Snow flakesの音は本来、少しだけ揺れている音でした。
-未完成で、余白があって、人のズレが残る音。
-けれどこの物語では、少しずつ"余白"が消えていく。
-
-・足音
-・拍手
-・呼吸
-・演奏
-・観客
-
-全部が揃い始める。
-それは上達ではない。
-"整いすぎること"そのものが恐怖として描かれています。
-
-
-<span style="color:#fca5a5">■ 「それで、よかったの？」</span>
-
-ショーケースのガラス越しに現れる、黒い髪の"もう一人"。
-
-この存在は、単純な幽霊ではありません。
-・選ばなかった方
-・戻らなかった可能性
-・もう一つの音
-・揃いきった側
-そういったものの象徴です。
-
-そしてその存在だけが、コウタに問いかける。
-「それで、よかったの？」
-
-これは、現実へ戻るかどうかの問いではありません。
-気づかないふりをしたまま、半歩だけ遅れた場所に立ち続けるのか。
-その確認です。
-
-
-<span style="color:#fca5a5">■ スノーフレークス編へ繋がるもの</span>
-
-この短編のあとに続くのが、スノーフレークス編です。
-そこでは、ヒナタが音を"整え始める"。
-ズレを減らし、余白を埋め、完成度を上げていく。
-
-コウタは、そこに強い違和感を持つ。
-未読なら、それは単なる音楽性の衝突に見えます。
-でも「ひとつ多い音」を読んでいると、意味が変わる。
-
-コウタは、"揃いすぎること"の怖さを、すでに知ってしまっている。
-だから彼の違和感は、音楽理論ではなく、もっと本能的な恐怖に近い。
-
-一方ヒナタは、悪意なく、自然に、"音を揃えてしまう側"へ近づいていく。
-その結果、Snow flakesというバンドそのものに、「本当に三人だけで鳴らしている音なのか？」という、静かな不穏さが生まれていきます。
-
-
-<span style="color:#fca5a5">■ 「ひとつ多い音」とは</span>
-
-この作品のタイトルが示しているのは、単純な怪異ではありません。
-
-三人の音の中に、ほんの少しだけ混ざる、説明できない厚み。
-増えているわけではない。
-減っているわけでもない。
-でも、数えると合わない。
-
-それは最後まで、はっきりとは説明されません。
-ただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。</div>
-        </div><!-- /post-content -->
-      </div><!-- /post-card -->
-      </div><!-- /notes-static-card-src -->
+      <!-- 旧カルーセル・静的ノートデータ 削除済み -->
 
     </div>
 
@@ -5914,18 +5764,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     <!-- 色紙 拡大表示 -->
     <div id="shikishi-lightbox" onclick="closeShikishiLightbox()" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:24px;">
       <img src="../item/shikishi_hinata.webp" alt="Snow flakes 色紙" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:12px;box-shadow:0 0 60px rgba(249,168,212,0.15);">
-    </div>
-
-    <!-- 短篇読了アイテム解放ポップアップ -->
-    <div id="hito-item-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
-      <div style="background:rgba(13,21,38,0.99);border:1px solid rgba(196,181,253,0.2);border-radius:20px;padding:36px 28px;max-width:300px;width:100%;text-align:center;">
-        <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#475569;margin-bottom:24px;">NEW ITEM</p>
-        <img src="../item/pendant_hinata.webp" alt="青い石のネックレス" style="width:96px;height:96px;object-fit:cover;border-radius:14px;margin:0 auto 20px;display:block;box-shadow:0 0 40px rgba(196,181,253,0.2);">
-        <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#e2e8f0;margin-bottom:6px;letter-spacing:1px;">青い石のネックレス</p>
-        <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#64748b;margin-bottom:28px;">HINATA</p>
-        <button onclick="closeHitoItemPopup()" style="width:100%;background:rgba(196,181,253,0.08);border:1px solid rgba(196,181,253,0.28);border-radius:50px;padding:13px;color:#c4b5fd;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;cursor:pointer;margin-bottom:10px;transition:background 0.2s;" onmouseover="this.style.background='rgba(196,181,253,0.16)'" onmouseout="this.style.background='rgba(196,181,253,0.08)'">── 受け取る ──</button>
-        <a href="../sweets/" style="display:block;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;text-decoration:none;padding:8px;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">SWEETs へ →</a>
-      </div>
     </div>
 
     <footer>
@@ -6549,8 +6387,7 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     function unlockNotes() {
       localStorage.setItem(NOTES_KEY, 'true');
       if (typeof renderItemRows === 'function') renderItemRows();
-      initNotesItem();
-      initNotesCarousel();
+      renderNoteIndex();
     }
 
     // ── NOTE読了アイテム 汎用定義 ──
@@ -6744,50 +6581,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     };
     var _noteItemPendingChara = null;
 
-    // スクロール読了でアイテムを付与する（毎回ポップアップ表示）
-    function attachScrollItemTrigger(el, itemId) {
-      if (!el) return;
-      if (el.dataset.sfItemTrigger === itemId) return; // 二重登録防止
-      el.dataset.sfItemTrigger = itemId;
-      var scrollKey = 'sf_note_scroll_' + itemId;
-      var _itemTimer = null;
-      el.addEventListener('scroll', function handler() {
-        var atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 28;
-        if (atBottom && !_itemTimer) {
-          _itemTimer = setTimeout(function() {
-            el.removeEventListener('scroll', handler);
-            delete el.dataset.sfItemTrigger;
-            var alreadyScrolled = !!localStorage.getItem(scrollKey);
-            if (!alreadyScrolled) {
-              localStorage.setItem(scrollKey, '1');
-              SfSnow.unlockItem(itemId);
-              if (typeof renderItemRows === 'function') renderItemRows();
-              if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
-              showNoteItemGet(itemId);
-              if (!(NOTE_ITEM_DATA[itemId] && NOTE_ITEM_DATA[itemId].showOnEveryRead)) {
-                setTimeout(function() { attachScrollItemTrigger(el, itemId); }, 600);
-              }
-            } else {
-              var _niD = NOTE_ITEM_DATA[itemId];
-              if (_niD && _niD.showOnEveryRead) {
-                // 毎回1回だけ表示（日次制限なし・再登録なし）
-                showNoteItemGetAgain(itemId);
-              } else {
-                var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
-                if (!localStorage.getItem(againKey)) {
-                  localStorage.setItem(againKey, '1');
-                  showNoteItemGetAgain(itemId);
-                }
-              }
-            }
-          }, 10000); // 最下部到達から10秒後
-        } else if (!atBottom && _itemTimer) {
-          // スクロールが戻ったらタイマーリセット
-          clearTimeout(_itemTimer);
-          _itemTimer = null;
-        }
-      });
-    }
 
     function showNoteItemGet(id) {
       var d = NOTE_ITEM_DATA[id];
@@ -6893,12 +6686,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
         popup.classList.add('show');
         setTimeout(function() { popup.classList.remove('show'); }, 3000);
       }, 350);
-    }
-
-    // ── 静的NOTEカード(notes-body)のスクロール登録 ──
-    function initNotesItem() {
-      var el = document.getElementById('notes-body');
-      if (el) attachScrollItemTrigger(el, 'ring_kouta');
     }
 
     // ── 交換系アイテムポップアップ（キャラポップアップなし・入手済み対応） ──
@@ -7613,24 +7400,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     })();
   });
 
-  // ── ひとつ多い音 読了アイテム ────────────────────────
-  window.onReadHito = function() {
-    sessionStorage.setItem('sf_hito_reading', '1');
-    sessionStorage.setItem('sf_hito_left', Date.now().toString());
-  };
-
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState !== 'visible') return;
-    if (!sessionStorage.getItem('sf_hito_reading')) return;
-    if (SfSnow.isUnlocked('pendant_hinata')) return;
-    sessionStorage.removeItem('sf_hito_reading');
-    var leftAt = parseInt(sessionStorage.getItem('sf_hito_left') || '0', 10);
-    sessionStorage.removeItem('sf_hito_left');
-    if (Date.now() - leftAt < 120000) return;
-    var popup = document.getElementById('hito-item-popup');
-    if (popup) popup.style.display = 'flex';
-  });
-
   window.openShikishiLightbox = function() {
     var lb = document.getElementById('shikishi-lightbox');
     if (lb) { lb.style.display = 'flex'; }
@@ -7640,24 +7409,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     if (lb) { lb.style.display = 'none'; }
   };
 
-  window.closeHitoItemPopup = function() {
-    var popup = document.getElementById('hito-item-popup');
-    if (popup) popup.style.display = 'none';
-    SfSnow.unlockItem('pendant_hinata');
-    if (typeof renderItemRows === 'function') renderItemRows();
-    if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
-    // story-pendant-icon を入手済みに更新
-    var icon = document.getElementById('story-pendant-icon');
-    if (icon) { icon.style.opacity = '0.9'; icon.style.filter = 'none'; }
-    // ノートカード内の関連リンクを入手済み状態に更新
-    var relLink = document.getElementById('nc-related-item-link');
-    if (relLink) { relLink.style.animation = 'none'; relLink.style.borderColor = 'rgba(255,255,255,0.07)'; }
-    var relIcon = document.getElementById('nc-related-item-icon');
-    if (relIcon) { relIcon.style.opacity = '1'; relIcon.style.filter = 'none'; }
-    var relBadge = document.getElementById('nc-related-item-badge');
-    if (relBadge) relBadge.remove();
-  };
-  // ────────────────────────────────────────────────────
 </script>
 
 <!-- ── EXCHANGE system ── -->
@@ -8281,9 +8032,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     });
   }
 
-  // ── Notes 3D カルーセル ──────────────────────────────────────
-  var _nc = { idx: 0, items: [], N: 0, step: 90, r: 180 };
-
   // ── NOTE INDEX 定義 ──────────────────────────────────────────
   var NOTE_INDEX_GROUPS = [
     {
@@ -8341,12 +8089,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     }
   ];
 
-  var NOTE_ORDER_IDS = (function() {
-    var ids = [];
-    NOTE_INDEX_GROUPS.forEach(function(g) { g.items.forEach(function(e) { ids.push(e.id); }); });
-    return ids;
-  })();
-
   var NOTE_TAG_COLORS = {
     'CHARACTER':'#fde68a','BAND':'#c4b5fd','CHAPTER':'#6ee7b7',
     'HORROR':'#fca5a5','CONNECTED':'#93c5fd','DEEP':'#818cf8'
@@ -8370,15 +8112,15 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
 
     // 読了報酬 入手済み判定マップ（noteId → boolean）
     var _noteRewardGot = {
-      'note_hinata_1':   SfSnow.isUnlocked('usb_hinata'),
-      'note_hinata_2':   SfSnow.isUnlocked('umbrella_hinata'),
-      'note_sf_1':       SfSnow.isUnlocked('white_pick_hinata'),
-      'note_kyori_1':    SfSnow.isUnlocked('spinel_book'),
-      'note_kouta_1':    SfSnow.isUnlocked('item_kouta_zippo'),
-      'note_hayate_1':   SfSnow.isUnlocked('wristband_hayate'),
+      'note_hinata_1':   !!localStorage.getItem('sf_note_reward_note_hinata_1'),
+      'note_hinata_2':   !!localStorage.getItem('sf_note_reward_note_hinata_2'),
+      'note_sf_1':       !!localStorage.getItem('sf_note_reward_note_sf_1'),
+      'note_kyori_1':    !!localStorage.getItem('sf_note_reward_note_kyori_1'),
+      'note_kouta_1':    !!localStorage.getItem('sf_note_reward_note_kouta_1'),
+      'note_hayate_1':   !!localStorage.getItem('sf_note_reward_note_hayate_1'),
       'note_prism_1':    !!localStorage.getItem('sf_note_reward_note_prism_1'),
-      'note_moonveil_1': SfSnow.isUnlocked('pocket_watch'),
-      'note_hitotsu_1':  SfSnow.isUnlocked('pendant_hinata')
+      'note_moonveil_1': !!localStorage.getItem('sf_note_reward_note_moonveil_1'),
+      'note_hitotsu_1':  !!localStorage.getItem('sf_note_reward_note_hitotsu_1')
     };
 
     var num = 0;
@@ -8460,24 +8202,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
           return;
         }
         // ─────────────────────────────────────────────────────────
-
-        // note_hitotsu_1 の報酬アイコン（pendant_hinata）
-        var _ftItemSrc = entry.id === 'note_hitotsu_1' ? '../item/pendant_hinata.webp' : '';
-        var _ftGot = _noteRewardGot[entry.id];
-        var _ftItemHtml = _ftItemSrc
-          ? '<div style="position:absolute;top:8px;right:8px;width:18px;height:18px;"><img src="' + _ftItemSrc + '" style="width:100%;height:100%;object-fit:contain;display:block;' + (_ftGot ? 'opacity:1;' : 'opacity:0.4;filter:grayscale(1);') + '"></div>'
-          : '';
-        var _ftRowStyle = _ftItemSrc ? 'padding-right:30px;' : '';
-        html += '<div class="ni-row" style="' + _ftRowStyle + '" onclick="noteIndexSelect(\'' + entry.id + '\')">'
-          + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:0.5px;color:' + numColor + ';flex-shrink:0;margin-top:2px;opacity:0.7;">' + numStr + '</span>'
-          + '<div style="min-width:0;flex:1;">'
-          + '<p style="font-family:\'Noto Serif JP\',serif;font-size:15px;color:#e2e8f0;line-height:1.65;margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + it.title + '</p>'
-          + '<div style="display:flex;align-items:center;gap:6px;">'
-          + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:' + tagColor + ';">' + entry.tag + '</span>'
-          + (!unlocked ? '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:#94a3b8;">LOCKED</span>' : '')
-          + '</div></div>'
-          + _ftItemHtml
-          + '</div>';
       });
       html += '</div>';
     });
@@ -8507,387 +8231,8 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
       window.location.href = noteId + '.html';
     });
   };
-  // ─────────────────────────────────────────────────────────────
 
-  window.noteIndexSelect = function(id) {
-    var idx = -1;
-    for (var i = 0; i < _nc.items.length; i++) {
-      if (_nc.items[i].id === id) { idx = i; break; }
-    }
-    if (idx === -1) return;
-    _ncSelect(idx);
-
-    var area = document.getElementById('notes-content-area');
-    if (!area) return;
-
-    // レンダリング後にスクロール
-    requestAnimationFrame(function() {
-      area.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      // スクロール開始後にカードを一瞬強調（outline はグロウと干渉しない）
-      setTimeout(function() {
-        var card = area.querySelector('.post-card');
-        if (!card) return;
-        card.style.outline = '2px solid rgba(147,197,253,0.5)';
-        card.style.outlineOffset = '3px';
-        setTimeout(function() {
-          card.style.transition = 'outline-color 0.7s ease';
-          card.style.outline = '2px solid rgba(147,197,253,0)';
-          setTimeout(function() {
-            card.style.outline = '';
-            card.style.outlineOffset = '';
-            card.style.transition = '';
-          }, 750);
-        }, 250);
-      }, 180);
-    });
-  };
-
-  var NOTE_PUB_DATES = {
-    'note_prism_1': new Date('2026-06-17T21:00:00+09:00'),
-    'note_kouta_1': new Date('2026-06-14T12:00:00+09:00'),
-    'note_hayate_1': new Date('2026-07-04T12:00:00+09:00')
-  };
-
-  function _ncBuildItems() {
-    var staticItem = { id:'note_hitotsu_1', title:'「ひとつ多い音」解説', sub:'― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―', isStatic:true, isNew:true, cost:{ item:'proteincoffee', amount:1 }, related:{ url:'https://ncode.syosetu.com/n0964mc/', title:'ひとつ多い音', date:'2026.05.15', type:'短編', onclick:'onReadHito()', itemKey:'pendant_hinata', itemImg:'../item/pendant_hinata.webp', itemColor:'#93c5fd' } };
-    var catalog = {};
-    EXCHANGE_CATALOG.forEach(function(it) { if (it.type === 'note') catalog[it.id] = it; });
-    var arr = [];
-    NOTE_ORDER_IDS.forEach(function(id) {
-      if (id === 'note_hitotsu_1') { arr.push(staticItem); return; }
-      var it = catalog[id];
-      if (!it || !it.sections || !it.sections.length) return;
-      var pub = NOTE_PUB_DATES[it.id];
-      if (pub && Date.now() < pub.getTime()) return; // 公開前は非表示
-      arr.push(it);
-    });
-    return arr;
-  }
-
-  function _ncIsUnlocked(item) {
-    if (item.isStatic) return !!(localStorage.getItem(NOTES_KEY) === 'true' || SfSnow.isUnlocked(item.id));
-    return SfSnow.isUnlocked(item.id);
-  }
-
-  function initNotesCarousel() {
-    var items = _ncBuildItems();
-    var prevId = _nc.items[_nc.idx] ? _nc.items[_nc.idx].id : null;
-    _nc.items = items;
-    _nc.N = items.length;
-    var _ncDisplayN = Math.max(_nc.N, 6);
-    _nc.step = 360 / _ncDisplayN;
-    var _ncIsMobile = window.innerWidth <= 600;
-    var _ncBase = _ncIsMobile ? 60 : 80;
-    var _ncMin  = _ncIsMobile ? 85 : 110;
-    _nc.r = Math.max(_ncMin, Math.round(_ncBase / Math.tan(Math.PI / _ncDisplayN) + 20));
-    // 現在表示中のカードを維持
-    if (prevId) {
-      for (var pi = 0; pi < items.length; pi++) { if (items[pi].id === prevId) { _nc.idx = pi; break; } }
-    }
-    if (_nc.idx >= _nc.N) _nc.idx = 0;
-
-    var drum = document.getElementById('notes-drum');
-    var dots = document.getElementById('notes-dots');
-    if (!drum) return;
-    drum.innerHTML = ''; if (dots) dots.innerHTML = '';
-
-    items.forEach(function(item, i) {
-      var unlocked = _ncIsUnlocked(item);
-      var _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
-      if (!_nck && item.isStatic) _nck = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
-      var _nckD = _nck ? NOTE_ITEM_DATA[_nck] : null;
-      var _nkHasItem = _nck && !(_nckD && _nckD.monthly) && !SfSnow.isUnlocked(_nck);
-      var _nkChara = _nck ? (_nck.indexOf('kouta') !== -1 ? 'kouta' : _nck.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
-      var _nkColor = _nkChara === 'kouta' ? '#fca5a5' : _nkChara === 'hinata' ? '#93c5fd' : '#fde68a';
-      var c = document.createElement('div');
-      c.className = 'nc-card' + (item.glowColor === 'green' ? ' nc-green' : item.glowColor === 'purple' ? ' nc-purple' : '');
-      c.dataset.idx = i;
-      c.style.transform = 'none';
-      c.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-      var _nkItemIcon = (_nckD && _nckD.img)
-        ? '<div style="pointer-events:none;position:absolute;top:10px;right:10px;display:flex;gap:4px;align-items:center;"><span style="font-family:\'Cormorant Garamond\',serif;font-size:7px;letter-spacing:2px;color:#334155;margin-right:1px;">item</span><img src="' + _nckD.img + '" alt="" style="width:16px;height:16px;object-fit:contain;opacity:0.4;border-radius:2px;"></div>'
-        : '';
-      c.innerHTML = _nkItemIcon +
-        '<div class="nc-tag">note'
-        + (!unlocked ? '<span class="nc-new" style="color:#e2e8f0;border-color:rgba(226,232,240,0.3);">NEW</span>' : '')
-        + (_nkHasItem ? '<span class="nc-new" style="color:' + _nkColor + ';">アイテムあり</span>' : '') + '</div>' +
-        '<div class="nc-title">' + item.title + '</div>' +
-        '<div class="nc-status">' + (unlocked ? '読む ›' : 'プロテインコーヒー × 1') + '</div>';
-      drum.appendChild(c);
-      if (dots) {
-        var d = document.createElement('div');
-        d.className = 'nc-dot' + (i === 0 ? ' active' : '');
-        d.onclick = (function(ii) { return function() { _ncSelect(ii); }; })(i);
-        dots.appendChild(d);
-      }
-    });
-    _ncUpdate();
-    _ncShowContent(_nc.idx);
-    _ncResetAuto();
-
-    // タッチスワイプ
-    var scene = document.getElementById('notes-scene');
-    if (scene && !scene._swipeInit) {
-      scene._swipeInit = true;
-      var sx = 0;
-      scene.addEventListener('touchstart', function(e) { sx = e.touches[0].clientX; }, { passive: true });
-      scene.addEventListener('touchend', function(e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) notesCarouselRotate(dx < 0 ? 1 : -1); });
-    }
-  }
-
-  var _ncAutoTimer = null;
-  function _ncIsReading() {
-    return !!document.querySelector('#nc-content-body.open');
-  }
-  function _ncResetAuto() {
-    // 自動ローテーション無効（NOTE INDEXによる手動選択に統一）
-    if (_ncAutoTimer) { clearInterval(_ncAutoTimer); _ncAutoTimer = null; }
-  }
-
-  window.notesCarouselRotate = function(dir) {
-    _nc.idx = (_nc.idx + dir + _nc.N) % _nc.N;
-    _ncUpdate(); _ncShowContent(_nc.idx);
-    _ncResetAuto();
-  };
-
-  function _ncSelect(i) { _nc.idx = i; _ncUpdate(); _ncShowContent(i); }
-
-  function _ncUpdate() {
-    var drum = document.getElementById('notes-drum');
-    if (!drum) return;
-    var scene = document.getElementById('notes-scene');
-    var sceneW = scene ? scene.offsetWidth : 480;
-    var offset = Math.round(sceneW / 2 - 100 - _nc.idx * 212);
-    drum.style.transform = 'translateX(' + offset + 'px)';
-    drum.querySelectorAll('.nc-card').forEach(function(c) { c.classList.toggle('nc-active', parseInt(c.dataset.idx) === _nc.idx); });
-    document.querySelectorAll('#notes-dots .nc-dot').forEach(function(d, i) { d.classList.toggle('active', i === _nc.idx); });
-  }
-
-  function _ncShowContent(idx) {
-    var area = document.getElementById('notes-content-area');
-    if (!area) return;
-    var item = _nc.items[idx]; if (!item) return;
-    var unlocked = _ncIsUnlocked(item);
-    var noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === item.id; });
-    if (!noteItemKey && item.isStatic) noteItemKey = Object.keys(NOTE_ITEM_DATA).find(function(k) { return NOTE_ITEM_DATA[k].noteCardId === null; });
-    var noteItemD = noteItemKey ? NOTE_ITEM_DATA[noteItemKey] : null;
-    var noteItemOk = noteItemD
-      ? (noteItemD.monthly
-          ? SfSnow.isUnlocked(item.id)
-          : SfSnow.isUnlocked(noteItemKey))
-      : false;
-    var iconRight = '10px';
-
-    var isHitotsu = item.id === 'note_hitotsu_1';
-    var hasNoteItem = noteItemD && !noteItemD.monthly && !noteItemOk;
-    var _nc_chara = noteItemD ? (noteItemKey.indexOf('kouta') !== -1 ? 'kouta' : noteItemKey.indexOf('hinata') !== -1 ? 'hinata' : 'hayate') : '';
-    var _nc_col   = _nc_chara === 'kouta' ? ['#fca5a5','rgba(252,165,165,0.4)'] : _nc_chara === 'hinata' ? ['#93c5fd','rgba(147,197,253,0.4)'] : ['#fde68a','rgba(253,230,138,0.4)'];
-    var glowStyle = isHitotsu ? 'animation:red-pulse 2s ease-in-out infinite;' : (item.glowColor === 'green' ? 'animation:item-glow-green 2.5s ease-in-out infinite;' : (item.glowColor === 'purple' ? 'animation:item-glow-purple 2.5s ease-in-out infinite;' : (hasNoteItem ? 'animation:item-glow-' + _nc_chara + ' 2.5s ease-in-out infinite;' : '')));
-    var html = '<div class="post-card" style="position:relative;' + glowStyle + '">';
-    if (noteItemD) { iconRight = '36px'; html += '<img src="' + noteItemD.img + '" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;opacity:' + (noteItemOk ? '0.82' : '0.22') + ';filter:' + (noteItemOk ? 'none' : 'grayscale(1)') + ';z-index:1;pointer-events:none;" title="' + (noteItemOk ? noteItemD.name : '???') + '">'; }
-    if (hasNoteItem) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:' + _nc_col[0] + ';border:1px solid ' + _nc_col[1] + ';border-radius:100px;padding:3px 10px;">アイテムあり</span>';
-    if (item.isNew && !unlocked) html += '<span style="position:absolute;top:12px;right:' + iconRight + ';font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#f9a8d4;border:1px solid rgba(249,168,212,0.35);border-radius:100px;padding:3px 10px;">NEW</span>';
-    html += '<div class="post-header"><div class="post-header-left"><div class="post-tag">note</div><div class="post-title">' + item.title + '</div>';
-    if (item.sub) html += '<div class="post-date">' + item.sub + '</div>';
-    html += '</div>';
-    var _ncBtnClass = 'read-btn' + (item.glowColor === 'green' ? ' green-hover' : '');
-    if (unlocked) {
-      html += '<button class="' + _ncBtnClass + '" id="nc-read-btn" onclick="ncToggleContent(this)">読む</button>';
-    } else if (item.isStatic) {
-      html += '<button class="' + _ncBtnClass + '" onclick="notesExchange()">交換する</button>';
-    } else {
-      html += '<button class="' + _ncBtnClass + '" onclick="doUnlockNote(\'' + item.id + '\')">交換する</button>';
-    }
-    html += '</div>';
-    if (unlocked) {
-      var bodyHtml = '';
-      if (item.isStatic) {
-        var srcEl = document.getElementById('notes-body');
-        bodyHtml = srcEl ? srcEl.innerHTML : '';
-      } else {
-        bodyHtml = '<div class="divider"></div><div class="post-body">';
-        item.sections.forEach(function(sec) {
-          var _headingColor = item.headingColor || '#93c5fd';
-          if (sec.heading) { bodyHtml += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:14px;letter-spacing:2px;color:' + _headingColor + ';line-height:2.0;margin:22px 0 0;">■ ' + sec.heading + '</p><p style="font-size:14px;color:#cbd5e1;line-height:2.0;font-weight:300;margin-bottom:0;">\u3000</p>'; }
-          var _bc = sec.dim ? '#475569' : '#cbd5e1';
-          sec.body.split('\n').forEach(function(line) { bodyHtml += '<p style="font-size:14px;color:' + _bc + ';line-height:2.0;font-weight:300;margin-bottom:0;">' + (line === '' ? '\u3000' : line) + '</p>'; });
-          bodyHtml += '<p style="font-size:14px;color:#cbd5e1;line-height:2.0;font-weight:300;margin-bottom:0;">\u3000</p>';
-        });
-        bodyHtml += '</div>';
-      }
-      html += '<div class="post-content" id="nc-content-body">' + bodyHtml + '</div>';
-    }
-    html += '</div>';
-    // 関連作品リンク
-    if (item.related) {
-      var rel = item.related;
-      var relItemOk = rel.itemKey ? SfSnow.isUnlocked(rel.itemKey) : true;
-      var relGlowAnim = (!relItemOk && rel.itemKey) ? 'item-glow-hinata 2.4s ease-in-out infinite' : 'none';
-      var relBorderColor = (!relItemOk && rel.itemKey) ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.07)';
-      var relLinkId = rel.itemKey ? ' id="nc-related-item-link"' : '';
-      var relIconId = rel.itemImg ? ' id="nc-related-item-icon"' : '';
-      var relBadgeHtml = (!relItemOk && rel.itemKey) ? '<span id="nc-related-item-badge" style="font-size:9px;letter-spacing:1.5px;padding:2px 8px;border-radius:20px;background:rgba(147,197,253,0.12);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);white-space:nowrap;">アイテムあり</span>' : '';
-      html += '<a href="' + rel.url + '" target="_blank"' + relLinkId + (rel.onclick ? ' onclick="' + rel.onclick + '"' : '') + ' style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:rgba(255,255,255,0.03);border:1px solid ' + relBorderColor + ';border-radius:14px;text-decoration:none;transition:background 0.2s,border-color 0.2s;margin-top:10px;position:relative;animation:' + relGlowAnim + ';" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">'
-        + '<div style="display:flex;align-items:center;gap:12px;">'
-        + (rel.itemImg ? '<img src="' + rel.itemImg + '"' + relIconId + ' style="width:28px;height:28px;border-radius:6px;object-fit:cover;' + (relItemOk ? '' : 'opacity:0.35;filter:grayscale(1);') + 'flex-shrink:0;">' : '')
-        + '<div><p style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:3px;color:#475569;margin-bottom:5px;">' + rel.date + ' / ' + rel.type + '</p>'
-        + '<p style="font-family:\'Noto Serif JP\',serif;font-size:15px;color:#e2e8f0;font-weight:300;">' + rel.title + '</p></div>'
-        + '</div>'
-        + '<div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:16px;">'
-        + relBadgeHtml
-        + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:3px;color:#64748b;">読む →</span>'
-        + '</div>'
-        + '</a>';
-    }
-    area.innerHTML = html;
-
-    if (unlocked && noteItemKey) {
-      var bodyEl = document.getElementById('nc-content-body');
-      if (bodyEl) attachScrollItemTrigger(bodyEl, noteItemKey);
-    }
-  }
-
-  window.ncToggleContent = function(btn) {
-    var el = document.getElementById('nc-content-body');
-    if (!el) return;
-    var open = el.classList.toggle('open');
-    btn.textContent = open ? '閉じる' : '読む';
-    // 開いた直後にスクロール不要なコンテンツでもアイテムトリガーを発火させる
-    if (open && el.dataset.sfItemTrigger) {
-      setTimeout(function() {
-        var noScroll = el.scrollHeight <= el.clientHeight + 28;
-        if (noScroll) {
-          // スクロール不要ならすぐに読了とみなして3秒後に付与
-          var itemId = el.dataset.sfItemTrigger;
-          var scrollKey = 'sf_note_scroll_' + itemId;
-          if (itemId) {
-            setTimeout(function() {
-              delete el.dataset.sfItemTrigger;
-              var alreadyScrolled = !!localStorage.getItem(scrollKey);
-              if (!alreadyScrolled) {
-                localStorage.setItem(scrollKey, '1');
-                SfSnow.unlockItem(itemId);
-                if (typeof renderItemRows === 'function') renderItemRows();
-                if (typeof renderUndertoneStones === 'function') renderUndertoneStones();
-                showNoteItemGet(itemId);
-              } else {
-                var againKey = 'sf_note_again_' + itemId + '_' + new Date().toLocaleDateString('ja-JP');
-                if (!localStorage.getItem(againKey)) {
-                  localStorage.setItem(againKey, '1');
-                  showNoteItemGetAgain(itemId);
-                }
-              }
-            }, 3000);
-          }
-        } else {
-          el.dispatchEvent(new Event('scroll'));
-        }
-      }, 200);
-    }
-  };
-  // ─────────────────────────────────────────────────────────────
-
-  function scrollToNotes(id) {
-    var idx = 0;
-    for (var i = 0; i < _nc.items.length; i++) {
-      if (_nc.items[i].id === id) { idx = i; break; }
-    }
-    _ncSelect(idx);
-    var area = document.getElementById('notes-content-area');
-    if (area) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function() {
-      var btn = document.getElementById('nc-read-btn');
-      var body = document.getElementById('nc-content-body');
-      if (btn && body && !body.classList.contains('open')) {
-        body.classList.add('open');
-        btn.textContent = '閉じる';
-      }
-    }, 300);
-  }
-
-  function renderNotes() {
-    initNotesCarousel();
-    renderNoteIndex();
-  }
-
-  function toggleNoteCard(id, btn) {
-    var el = document.getElementById('notes-card-' + id);
-    if (!el) return;
-    var isOpen = el.classList.toggle('open');
-    btn.textContent = isOpen ? '閉じる' : '読む';
-    if (isOpen) {
-      // アイテム付きNOTEならスクロール読了を登録
-      var itemId = Object.keys(NOTE_ITEM_DATA).find(function(k) {
-        return NOTE_ITEM_DATA[k].noteCardId === id;
-      });
-      if (itemId) attachScrollItemTrigger(el, itemId);
-    }
-  }
-
-  function doUnlockNote(id) {
-    var item = EXCHANGE_CATALOG.find(function(c) { return c.id === id; });
-    if (!item || item.type !== 'note') return;
-    showConfirm('交換しますか？', function() {
-    if (!SfSnow.spendMonthlyItem(item.cost.item, item.cost.amount)) {
-      alert('プロテインコーヒーが足りません');
-      return;
-    }
-    var alreadyHad = SfSnow.isUnlocked(id);
-    SfSnow.unlockItem(id);
-    if (item.reward) {
-      if (item.rewardOnScroll) {
-        // スクロール最下部到達で発火
-        var _rKey = item.reward;
-        var _rHad = SfSnow.isUnlocked(_rKey);
-        setTimeout(function() {
-          var bodyEl = document.getElementById('nc-content-body');
-          if (!bodyEl) return;
-          var sentinel = document.createElement('div');
-          sentinel.style.height = '1px';
-          bodyEl.appendChild(sentinel);
-          var _obs = new IntersectionObserver(function(entries) {
-            if (!entries[0].isIntersecting) return;
-            _obs.disconnect();
-            if (sentinel.parentNode) sentinel.parentNode.removeChild(sentinel);
-            if (!_rHad) {
-              SfSnow.unlockItem(_rKey);
-              if (typeof renderItemRows === 'function') renderItemRows();
-              showNoteItemGet(_rKey);
-            } else {
-              showNoteItemGetAgain(_rKey);
-            }
-          }, { threshold: 1.0 });
-          _obs.observe(sentinel);
-        }, 600);
-      } else if (!SfSnow.isUnlocked(item.reward)) {
-        SfSnow.unlockItem(item.reward);
-        if (typeof renderItemRows === 'function') renderItemRows();
-        var _rd = item.rewardDelay || 10000;
-        setTimeout(function() { showNoteItemGet(item.reward); }, _rd);
-      } else {
-        var _rd2 = item.rewardDelay || 10000;
-        setTimeout(function() { showNoteItemGetAgain(item.reward); }, _rd2);
-      }
-    }
-    if (item.rewardMItem) {
-      var _mKey = item.rewardMItem;
-      var _rdm = item.rewardDelay || 10000;
-      var _curCnt = (SfSnow.getMonthlyItems()[_mKey] || 0);
-      SfSnow.addMItemDirect(_mKey, 1);
-      if (typeof renderItemRows === 'function') renderItemRows();
-      if (_curCnt === 0) {
-        // 初回のみアイテム入手演出
-        setTimeout(function() { showNoteItemGet(_mKey); }, _rdm);
-      } else {
-        setTimeout(function() { showNoteItemGetAgain(_mKey); }, _rdm);
-      }
-    }
-    renderNotes(); // → initNotesCarousel()
-    setTimeout(function() { scrollToNotes(id); }, 100);
-    showItemExchangePopup('☕', 'プロテインコーヒー', alreadyHad, 'を飲みました');
-    }); /* showConfirm callback end */
-  }
+  function renderNotes() { renderNoteIndex(); }
 
   /* ── Music listen tracker (30s real playback, anti-seek) ── */
   var _listenTracker = {};
@@ -9847,11 +9192,6 @@ Snow flakesの音は本来、少しだけ揺れている音でした。
     .mc-card .nc-status { font-size:9px !important; }
     #music-drum { width:172px !important; height:96px !important; }
     #music-scene { height:116px !important; }
-    .nc-card { width:172px !important; height:96px !important; padding:10px 12px !important; }
-    .nc-card .nc-title { font-size:11px !important; line-height:1.4 !important; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-    .nc-card .nc-status { font-size:9px !important; }
-    #notes-drum { width:172px !important; height:96px !important; }
-    #notes-scene { height:116px !important; }
   }
 </style>
 <div id="sf-player" style="

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「出禁」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:36px; }
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#f87171; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+    @media(max-width:600px) { nav { padding:14px 20px; } .nav-label { display:none; } }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「出禁」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「出禁」解説</h1>
+    <p class="note-sub">― 「嫌だ」と言わなかったことは、「触れていい」という意味ではない ―</p>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://ncode.syosetu.com/n1609mm/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026.07.19 / 短編</p>
+        <p class="related-title">出禁</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+<script>
+  var NOTE_ID = 'note_deki_1';
+  var SECTIONS = [
+        { heading: null, body: '「出禁」は、Snow flakesのコウタへ繰り返し接触する女性と、その行為が少しずつ境界線を越えていく物語です。\n\n最初から、明確な事件が起きるわけではありません。\n\n物販で手が触れる。写真撮影で背中に手を置かれる。差し入れを渡すときに手首をつかまれる。袖をつままれる。\n\nどれも、一度だけなら説明できる。混んでいたから。写真を撮るため。物を渡すため。服に何かついていたから。\n\nだからコウタも、最初は「その程度のこと」として処理します。\n\nこの作品の怖さは、「どこからが嫌だったのか」その境界が、本人にすらすぐには分からないところから始まります。' },
+        { heading: '「偶然」で説明できる接触', body: '女性がコウタへ触れるたび、そこには理由があります。\n\n手が重なったのは、CDを受け取るため。背中へ触れたのは、写真の位置を調整するため。手首をつかんだのは、差し入れを渡すため。袖をつまんだのは、ごみを取るため。\n\n全部に説明がつく。全部が、「そんなつもりではなかった」と言えてしまう。\n\nそして女性自身も、最後までその説明を崩しません。すべてが偶然で。すべてが親切で。すべてが誤解だった。\n\nだからこそ、コウタは自分の感覚の方を疑い始めます。' },
+        { heading: '「そこまでって、どこまで」', body: 'ヒナタとハヤテが、女性が毎回コウタにだけ触れていることに気づきます。手。腕。背中。手首。並べて初めて、それが一度の偶然ではないことが見えてくる。\n\n二人はスタッフへ伝えようとします。けれどコウタは、「まだ、そこまでじゃない」と答える。\n\nヒナタはそこで、「そこまでって、どこまで」と聞きます。\n\nこの問いには、明確な答えがありません。もっと強く触られたら？待ち伏せされたら？家まで来たら？抱きつかれたら？\n\n何か決定的なことが起きるまで、嫌だと言ってはいけないのか。コウタ自身にも、その線が引けなくなっています。' },
+        { heading: '「触られるのが嫌です」', body: 'この物語の中で、コウタが初めてはっきり自分の意思を伝える言葉です。\n\n「触られるのが嫌です」\n\n女性はそこで、「でも、何も言わなかった」「前は嫌がってなかった」と返します。\n\nコウタの答えは、「言わなかっただけです」。そして、「今、言ってます」です。\n\nここが「出禁」の大きな核のひとつです。過去に拒否しなかったことは、未来の接触への許可にはならない。一度受け入れたことがあっても、次も受け入れなければならないわけではない。\n\n相手が「嫌がっていない」と判断することと、本人が「触れていい」と思っていることは、まったく別のことです。' },
+        { heading: '「コウタさんは、そんなこと言わない」', body: '女性は、コウタ本人から拒絶されても、その言葉を受け入れません。\n\n「誰かに言わされてるんですか？」「コウタさんは、こんな言い方しません」\n\n彼女の中には、すでに「自分の知っているコウタ」が存在しています。ライブで見てきた。物販で話してきた。何度も会ってきた。だから、自分はコウタを知っている。\n\nそして、現実のコウタが自分の想像と違う言葉を言えば、「これは本当のコウタではない」と解釈する。本人の言葉より、自分が作った人物像の方を信じてしまう。\n\nこの瞬間、彼女が見ているのはもうコウタ本人ではありません。' },
+        { heading: '「押し返さなかった」', body: '出入り禁止になる決定的な場面で、女性はコウタへ強く抱きつきます。しかしコウタは、押し返すことも、声を出すこともできません。身体が動かない。\n\nその反応を見て女性は、「嫌じゃなかったですよね」「本当に嫌なら、避けるはずだから」「押し返さなかった」と言います。\n\nけれど、動かなかったことと、受け入れたことは同じではありません。コウタは、「何もしなかった」のではなく、「何もできなかった」。\n\nハヤテは、その違いを言葉にします。「動けなかっただけだ」\n\nこの一言によって、女性が作った解釈と、コウタが自分に向けていた責任の両方が否定されます。' },
+        { heading: '「男だし」', body: '抱きつかれたあと、コウタは自分を責めます。\n\n「触られたくらいで」「男だし」「押し返せたし」「嫌ならもっと早く言えた」\n\nここでコウタ自身が、女性とほとんど同じ論理を自分へ向けています。押し返さなかった。早く言わなかった。逃げなかった。だから、自分にも責任があったのではないか。\n\nそれに対してハヤテは、「それ、あの女と同じこと言ってる」と指摘します。「押し返さなかったから嫌じゃない」そう言われたばかりなのに、今度はコウタ自身が、同じ理由で自分を責めている。\n\n「出禁」は女性の異常さだけを描く話ではなく、被害を受けた側が、どうして自分まで自分を責めてしまうのか。そこまで描いた物語でもあります。' },
+        { heading: 'ヒナタとハヤテ', body: 'この話では、二人のコウタへの接し方にも違いがあります。\n\nヒナタは、境界線を外側から守ろうとする人です。「来るな」「離せ」「次からは俺らが気づいた時点で止める」コウタが言えなくても、自分が止める。かなり強引ですが、ヒナタなりの守り方です。\n\n一方ハヤテは、コウタ自身の中で起きていることを言葉にします。「動けなかっただけだ」そして、「大丈夫じゃなくても、戻ろう」\n\nコウタが「大丈夫」と言ったことを否定するのではなく、大丈夫ではない状態のままでも一緒に戻れるようにする。\n\nこの二人の役割の違いが、その後のコウタの回復にもつながっていきます。' },
+        { heading: '「出禁」になれば終わるはずだった', body: '女性は、Snow flakesのすべての関連公演で出入り禁止になります。会場へ入れなくなる。物販にも来られない。もう近づけない。\n\nコウタも、それで終わると思おうとします。\n\nけれど、「出禁」は会場の中でしか機能しません。電車。駅。スタジオ。自宅。女性は、ライブハウスの外にも存在しています。\n\n出入り禁止とは、扉の内側へ入れないというだけ。人と人との境界線を守るものではありません。' },
+        { heading: '身体が覚えている', body: '出禁になったあと、電車の中で誰かに触れられたコウタは、相手の顔を確認できません。それでも、「あの触り方だった」と分かります。\n\n何度も同じ触れ方をされたため、頭より先に身体が覚えてしまっている。\n\nそして、女性が実際に触れたのか、別の人だったのか分からない瞬間にも、恐怖は起きます。\n\nここから怖さの中心は、女性そのものだけではなくなります。人混み。背後に立つ人。知らない手。通知音。普通だったものまで、女性と結びつき始めます。' },
+        { heading: '「すぐに私だと分かってくれて嬉しかった」', body: '電車で触れたあと、女性はコウタの自宅前へ贈り物を置きます。カードには、「電車で驚かせてごめんなさい」。そして、「でも、すぐに私だと分かってくれて嬉しかったです」と書かれている。\n\nコウタにとって、「あの触り方だった」と身体が覚えてしまったことは恐怖です。けれど女性にとっては、自分だけの触れ方を、コウタが覚えてくれた。それが「特別な関係」の証明に変換されてしまう。\n\n同じ出来事を、二人がまったく逆の意味で受け取っています。' },
+        { heading: '追跡機器', body: '物語の後半で、コウタのベースケースから小さな追跡機器が見つかります。さらに、普段使っていたバッグからも、同じような機器が見つかる。\n\nそこで初めて、スタジオ。駅。自宅。地方のライブ会場。女性がどうしてコウタの居場所を知っていたのか、ひとつの答えが出ます。\n\n偶然ではなかった。SNSの写真だけを調べたわけでもなかった。コウタ自身が毎日持ち歩く物を使って、ずっと居場所を追われていた。\n\nベースケースだけではなく、普段使いのバッグにも仕掛けられていたことで、「音楽をしているコウタ」だけではなく、日常を生きているコウタまで追われていたことが分かります。' },
+        { heading: 'あかりへの接近', body: '女性の視線は、やがてコウタ本人だけではなく、コウタの近くにいる人へ向かいます。あかりの大学。働いていた店。地下鉄。コウタと歩いているところ。\n\nしかも、物販で接触が始まるより前から撮影していたことが分かる。\n\n女性にとって、あかりは本当の目的ではありません。あかりへ近づけば、コウタが動く。コウタが来る。だから利用する。\n\n実際、女性は警察に見つかったとき、「コウタさんを待っています」と答えます。自分がそこにいることを知れば、コウタは必ず来る。そう信じています。\n\nここでも、女性はコウタ本人の意思ではなく、「コウタならこうする」という自分の中のコウタを見ています。' },
+        { heading: '「出禁」というタイトル', body: '「出禁」は、一見すると女性がライブ会場から出入り禁止になることを指しています。\n\nでも、この物語では、もっと大きな意味を持っています。誰を、自分の近くへ入れていいのか。どこまで近づかれていいのか。どこに触れていいのか。その境界を決めるのは誰なのか。\n\n女性は、コウタが明確に拒絶するまで、自分は境界線の内側にいると思っていた。拒絶されたあとでさえ、「本当のコウタは嫌がっていない」と考え続けた。\n\nだから本当に必要だった「出禁」は、会場から女性を追い出すことだけではなく、コウタ自身が、自分の境界線を決めてもいいと知ることだったのかもしれません。' },
+        { heading: '元には戻らない', body: '事件が終わっても、コウタはすぐには元に戻りません。人混みでは身体が固まる。背後に人が立つと振り返る。知らない通知に反応する。電車へ乗れない日もある。\n\n物語はそれを、「もう大丈夫になった」とは描きません。\n\n代わりにコウタは、「今日は電車、無理かもしれない」「後ろに立たないで」「触る前に言って」と言うようになります。\n\nそして二人は、理由を求めず、言われたら止まる。\n\nコウタが変わったのは、怖くなくなったことではありません。怖いことを、隠さなくなったことです。' },
+        { heading: '「知っている手」', body: '次のライブ。ステージへ出る前に、三人はいつものように手を重ねます。\n\n一瞬ためらったコウタへ、ハヤテは「やめる？」と聞く。コウタは、自分から手を重ねます。ヒナタの手も、その上に重なる。\n\nその手は、離してほしいと言えば離れる。触れていいか分からなければ待つ。自分の言葉が届く相手の手。\n\n女性の手と、ヒナタやハヤテの手。違いは、触れ方そのものではありません。コウタの意思が、そこに存在できるかどうかです。' },
+        { heading: '「出禁」が描いているもの', body: 'この物語で怖いのは、知らない女性に追いかけられることだけではありません。\n\n「嫌だ」と言うには、嫌だと言えるほど大きな理由が必要なのか。拒絶しなかったことは、同意になるのか。動けなかったことは、受け入れたことになるのか。相手が親切のつもりなら、我慢しなければならないのか。\n\nそうした小さな迷いが積み重なって、境界線が少しずつ曖昧になっていく。\n\nけれど最後にコウタが取り戻していくのは、「平気な自分」ではありません。嫌なものを嫌だと言うこと。今日は無理だと言うこと。触らないでほしいと言うこと。そして、その言葉を聞いてくれる相手を信じること。\n\n「出禁」は、誰かを遠ざける物語であると同時に、自分の身体と、自分の生活の境界線を、もう一度自分の手に戻していく物語です。' },
+      ];
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    SECTIONS.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">　</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '　' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">　</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>

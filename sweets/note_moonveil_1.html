@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「Moon Veil」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; --moon:#c4b5fd; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:28px; }
+
+    .item-badge { display:inline-flex; align-items:center; gap:8px; margin-bottom:28px; padding:8px 14px; background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px; }
+    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
+    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
+
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#c4b5fd; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    #item-popup {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    #item-popup.show { display:flex; }
+    .item-popup-card { background:#0f1825; border:1px solid rgba(196,181,253,0.2); border-radius:18px; padding:36px 32px; max-width:320px; width:90%; text-align:center; }
+    .item-popup-label { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--moon); margin-bottom:16px; }
+    .item-popup-img { width:72px; height:72px; object-fit:cover; border-radius:12px; margin:0 auto 16px; display:block; box-shadow:0 0 30px rgba(196,181,253,0.2); }
+    .item-popup-name { font-family:'Noto Serif JP',serif; font-size:16px; color:var(--text); font-weight:300; margin-bottom:6px; }
+    .item-popup-msg { font-size:12px; color:var(--muted); letter-spacing:1px; margin-bottom:20px; }
+    .item-popup-close { padding:8px 32px; border-radius:100px; background:rgba(196,181,253,0.08); border:1px solid var(--moon); color:var(--moon); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; transition:background 0.2s; }
+    .item-popup-close:hover { background:rgba(196,181,253,0.15); }
+
+    #chara-popup {
+      position:fixed; bottom:24px; right:20px; z-index:9999;
+      display:flex; align-items:flex-end; gap:10px;
+      opacity:0; transform:translateY(24px);
+      transition:opacity 0.4s ease, transform 0.4s ease;
+      pointer-events:none;
+    }
+    #chara-popup.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+    #chara-bubble {
+      background:rgba(15,24,37,0.92); border:1px solid rgba(196,181,253,0.3);
+      border-radius:14px; padding:12px 16px; max-width:220px;
+    }
+    #chara-name { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:4px; color:#c4b5fd; margin-bottom:6px; display:block; }
+    #chara-line { font-family:'Noto Serif JP',serif; font-size:13px; color:var(--text); font-weight:300; line-height:1.7; display:block; }
+    #chara-img img { width:90px; object-fit:contain; display:block; }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .nav-label { display:none; }
+      #chara-popup { bottom:12px; right:10px; gap:8px; }
+      #chara-img img { width:70px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「Moon Veil」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「Moon Veil」解説</h1>
+    <p class="note-sub">― 終わりが決まっていたから、触れられた音の物語 ―</p>
+    <div class="item-badge" id="item-badge" style="display:none;">
+      <img id="item-badge-img" src="../item/pocket_watch.webp" alt="止まった懐中時計">
+      <span id="item-badge-label">アイテムあり</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" href="https://ncode.syosetu.com/n9832lr/" target="_blank" rel="noopener">
+      <div>
+        <p class="related-meta">2026 / 短篇</p>
+        <p class="related-title">Moon Veil</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
+  </div>
+</main>
+
+<div id="item-popup">
+  <div class="item-popup-card">
+    <p class="item-popup-label" id="popup-label">ITEM GET</p>
+    <img class="item-popup-img" src="../item/pocket_watch.webp" alt="止まった懐中時計">
+    <p class="item-popup-name">止まった懐中時計</p>
+    <p class="item-popup-msg" id="popup-msg">を入手しました</p>
+    <button class="item-popup-close" id="popup-close-btn" onclick="closeItemPopup()">閉じる</button>
+  </div>
+</div>
+
+<div id="chara-popup">
+  <div id="chara-bubble">
+    <span id="chara-name">SAKU</span>
+    <span id="chara-line">一年分の時間を、俺に預けてほしい</span>
+  </div>
+  <div id="chara-img"><img src="../plofile/chibi_saku.webp" alt="SAKU"></div>
+</div>
+
+<script>
+  var NOTE_ID    = 'note_moonveil_1';
+  var ITEM_ID    = 'pocket_watch';
+  var REWARD_KEY = 'sf_note_reward_' + NOTE_ID;
+
+  var _rewardFired  = false;
+  var _sakuPending  = false;
+
+  function closeItemPopup() {
+    document.getElementById('item-popup').classList.remove('show');
+    if (!_sakuPending) return;
+    _sakuPending = false;
+    setTimeout(function() { _showSakuPopup(); }, 350);
+  }
+
+  function _showSakuPopup() {
+    var popup = document.getElementById('chara-popup');
+    popup.classList.add('show');
+    setTimeout(function() { popup.classList.remove('show'); }, 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof SfSnow === 'undefined') return;
+
+    if (!SfSnow.isUnlocked(NOTE_ID)) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    var badge      = document.getElementById('item-badge');
+    var badgeImg   = document.getElementById('item-badge-img');
+    var badgeLabel = document.getElementById('item-badge-label');
+    var itemGot    = SfSnow.isUnlocked(ITEM_ID);
+    badge.style.display = 'inline-flex';
+    if (itemGot) {
+      badgeImg.style.filter  = 'none';
+      badgeImg.style.opacity = '0.85';
+      badgeLabel.textContent = '止まった懐中時計';
+      badgeLabel.style.color = '#c4b5fd';
+    } else {
+      badgeImg.style.filter  = 'grayscale(1)';
+      badgeImg.style.opacity = '0.45';
+      badgeLabel.textContent = 'アイテムあり';
+    }
+
+    var sections = [
+      { heading: null, body: '「Moon Veil」は、Snow flakes本編と並行して進む、朔と宵子、みちるを中心とした物語です。\n\n顔を出さない音楽ユニット。\n偶然広がった歌声。\n最初から決められていた、一年間という活動期限。\n\nけれど、この作品が描いているのは、音楽で成功するまでの物語ではありません。\n\n終わりと分かっている時間の中で、\n一度は諦めたものに触れ、\n誰かと声を重ね、\n最後に自分の進む場所を選ぶまでの物語です。' },
+      { heading: 'レールの上を歩く朔', body: '物語の冒頭で、朔は病院の検査技師として働いています。\n\n決められた操作。\n決められた時間。\n必要な断面だけを残し、次へ進む。\n\n仕事は正確で、迷いがない。\nけれど、その生き方は、朔自身の人生とも重なっています。\n\n家の立場。\n病院の将来。\n父親から求められる役割。\nみちるとの婚約。\n\n朔の前には、最初から進むべき道が用意されていました。\n\n朔は、それを強く拒絶しているわけではありません。\n外れたところで、行き先が変わるとは思っていない。\n\nだから、抗わない。\n感情を消しているのではなく、崩れないように整えている。\n\n朔の静けさは、何も望んでいない人の静けさではありません。\n\n望んでも変わらないと知っている人の静けさです。' },
+      { heading: '中庭に残っていた歌', body: '朔が夜勤中に中庭で歌っていたのは、誰かに聞かせるためではありません。\n\n頭の中で音を確かめ、\nずれていれば戻し、\n合っていれば、短く声を出す。\n\n歌うというより、\n失った自分の位置を確かめるための動作に近いものです。\n\nその声を見つけるのが、宵子でした。\n\n宵子は、子どもの頃に病院の中庭で開かれた小さなコンサートで、朔の歌を聞いています。\n\n朔は歌った側。\n宵子は、それを客席から聞いていた側。\n\n二人は互いの名前を知らないまま、\n同じ音の記憶を持ち続けていました。\n\n再会した二人を繋いだのは、新しく生まれた感情だけではありません。\n\nずっと終わらないまま残っていた、過去の音でした。' },
+      { heading: '「一年だけ」という期限', body: '朔は父親に、「一年だけ、時間をください」と告げます。\n\nこれは自由を得るための言葉ではありません。\n\n一年後には、家が決めた道へ戻る。\nその前提で与えられた猶予です。\n\n朔自身も、それを自由ではなく「期限」だと理解しています。\n\nだからこそ、歌える。\n\n永遠に続ける覚悟は持てなくても、\n終わりが決まっているなら触れてもいい。\n\nこれは朔が、自分に与えた言い訳でもあります。\n\n宵子に対しても、最初から伝えます。\n\n続ける約束はしない。\n期限は延ばさない。\n一年だけ、一緒に音をやりたい。\n\n「一年分の時間を、俺に預けてほしい」\n\n一見すると誠実な条件です。\nけれど同時に、朔が先に逃げ道を作っている言葉でもあります。\n\n続かないことを約束してからでなければ、\n始めることができない。\n\nMoon Veilは、その矛盾から始まったユニットです。' },
+      { heading: '重なりすぎる二人の声', body: '朔と宵子の声は、自然に重なります。\n\n息を吸う位置。\n声を入れるタイミング。\n音を引く瞬間。\n\n二人は無理に合わせているわけではありません。\nそれでも、最初から知っていたように音が並ぶ。\n\nどちらが主旋律なのか。\nどちらが相手に合わせているのか。\n\n聴いている側にも、分からない。\n\nこの「合いすぎる声」が、Moon Veilの魅力であり、同時に危うさでもあります。\n\n声は近い。\nけれど、二人の未来は重なっていない。\n\n音の中では迷わず並べるのに、\n音が終わると、互いに踏み込むことができない。\n\n肩が触れそうで、触れない。\n一歩前に出かけて、止まる。\n引き止めない。\n追いかけない。\n\n二人の関係は、最後まで「触れなかったこと」によって保たれています。' },
+      { heading: '宵子は、選ばれなかっただけではない', body: '宵子は、朔にとって一度失った音を取り戻させた人です。\n\n宵子がいなければ、\n朔はもう一度、人と声を重ねることはなかったかもしれません。\n\n一方で宵子も、朔の中に永遠を求めていたわけではありません。\n\n活動が一年だけだと聞いて、少し安心してしまう。\n終わりが決まっているから、踏み込める。\n\n宵子にもまた、逃げ道が必要でした。\n\nだから、二人の関係は一方的ではありません。\n\n朔だけが曖昧だったのでも、\n宵子だけが待たされたのでもない。\n\n二人とも終わりを知りながら、\n一年間だけ同じ場所に立つことを選んだ。\n\n最後に宵子が理解するのは、\n自分がいた場所が間違っていたわけではない、ということです。\n\nただ、朔がこれから進む場所は、\nそこではなかった。\n\n宵子と過ごした時間は消えません。\n選ばれなかったからといって、存在しなかったことにもなりません。' },
+      { heading: 'みちるは「待っていた人」ではない', body: 'みちるは、朔と宵子を引き離すための人物ではありません。\n\n彼女は最初から、\n朔の家族も、病院も、将来も、音楽も、\nすべてを見た上で自分の位置を選んでいます。\n\n感情をぶつけない。\n宵子を責めない。\n朔の活動を止めようともしない。\n\nけれど、何もしていないわけではありません。\n\n父親から渡された資料を拾わない。\n朔を庇う言葉も口にしない。\nそれでも、止める側には立たない。\n\nみちるは、朔が自分で戻ってくるまで待っていたのではなく、\nその間も静かに選び続けていました。\n\n終盤、駅前に現れたみちるの立ち方は、\n「誰かを待つ人」ではありません。\n\nそこにいることが、最初から決まっている人の立ち方です。\n\nそして朔も、迷わず彼女の隣に立つ。\n\nそれは、父親に敷かれたレールへ戻されたというだけではありません。\n\n一年間、自分の意志で音に触れたあとに、\n朔が改めて選び直した場所です。' },
+      { heading: '朔、宵子、みちるという名前', body: 'この物語では、三人の名前にも月の時間が重ねられています。\n\n「朔」は、新月。\n\n月が見えなくなる日です。\n光を失ったのではなく、そこにあるのに見えない。\n\n朔自身も同じです。\n\n音楽を失ったように見えて、\n本当は消えていない。\nただ、表から見えない場所に置かれていました。\n\n「みちる」は、満ちる月。\n\n朔と対になる存在です。\n\n欠けている朔を埋めるというより、\n朔が自分で選んだものを、現実の形として完成させる側に立っています。\n\nそして「宵子」の宵は、\n昼が終わり、夜が始まるまでの時間です。\n\n明るさが完全に消えたわけでもなく、\n夜になりきったわけでもない。\n\n宵子は、朔を新月から満月へ運ぶ人ではありません。\n\nその途中にある時間。\n朔が一度だけ、隠していた光に触れるための夜です。' },
+      { heading: 'ヴェール一枚分の距離', body: 'Moon Veilというタイトルを象徴するのが、\n終盤に描かれる「ヴェール一枚分の距離」です。\n\n朔と宵子は、最後まで触れません。\n\nけれど、遠く離れていたわけでもない。\n\n声は重なった。\n呼吸も揃った。\n互いの体温が分かるところまで近づいた。\n\nただ、その間には、\n薄い布のようなものが一枚だけ残っている。\n\n見えなくするほど厚くはない。\n触れられるほど近くもない。\n\n物語の最後、宵子が見上げる月にも、\n薄いヴェールがかかっています。\n\n月の輪郭は分かる。\n光も、確かに届いている。\n\n宵子にとって朔との時間も、同じです。\n\n手には入らなかった。\n未来には続かなかった。\n\nそれでも、確かに存在していた。\n\nヴェールは月を消すものではありません。\n見え方を少しだけ変えるものです。' },
+      { heading: 'Snow flakes本編へ繋がるもの', body: 'Moon Veilで広がった歌声の動画は、音楽業界を動かします。\n\nその動きはMoon Veilだけでは終わらず、\n同じ時期に活動していたSnow flakesにも届いていきます。\n\nMoon Veilが注目されたことで、\nSnow flakesの音も外へ押し出され、\nバンドのデビューへ繋がっていく。\n\n一方で、宵子と朔の再会は、\n宵子と距離を縮めていたコウタの物語にも影響します。\n\nコウタは何も奪われたわけではありません。\nけれど、選ばれなかった可能性を抱えたまま、\n次の「うさぎ編」へ進んでいく。\n\nまた、子どもの頃の中庭コンサートには、\nハヤテも関わっています。\n\n朔の歌。\n宵子の記憶。\nハヤテのリズム。\n\nそれぞれ別の場所に残っていた音が、\n大人になってからSnow flakesとMoon Veilを静かに繋いでいます。' },
+      { heading: 'Snow flakesとMoon Veilの違い', body: 'Snow flakesは、終わりを決めない物語です。\n\n完成しなくても、\n揺れていても、\n三人で続けることを選び続ける。\n\n対してMoon Veilは、\n最初から終わりを決めたことで始まる物語です。\n\nSnow flakesは、合わない部分を残しながら続いていく。\n\nMoon Veilは、声があまりにも自然に重なるのに、続かない。\n\nこの二つは、正反対のようでいて、\nどちらも「音が残る」という同じ場所に辿り着きます。\n\n続いた音だけが、本物なのではない。\n\n終わった音も、\n触れなかった感情も、\n誰かの中に残っている限り、なかったことにはならない。' },
+      { heading: '「Moon Veil」とは', body: 'Moon Veilは、\n朔と宵子が結ばれる物語ではありません。\n\n朔とみちるの婚約を肯定するためだけの物語でもありません。\n\n一度は諦めた音に、\n期限をつけて触れた人。\n\nその音を受け取り、\n返した人。\n\n何も奪わず、\nそれでも自分の場所を選び続けた人。\n\n三人が、それぞれの場所へ進むまでの物語です。\n\n朔と宵子は、触れなかった。\n\nけれど、触れなかったからこそ、\n音だけは壊れずに残った。\n\n月に薄いヴェールがかかっても、\nその向こうに月があることは分かる。\n\n光も、確かに届いている。\n\nそれで十分だった。\n\n生活は続いていく。\n\n触れなかったものも、\n触れなかったままで、\nちゃんと、そこにあったと知りながら。' },
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+
+    // スクロール読了でpocket_watch付与（showOnEveryRead：毎回ポップアップ表示）
+    var sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel && 'IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function(entries) {
+        if (!entries[0].isIntersecting) return;
+        if (_rewardFired) return;
+        _rewardFired = true;
+        obs.disconnect();
+        localStorage.setItem(REWARD_KEY, '1');
+        var alreadyGot = SfSnow.isUnlocked(ITEM_ID);
+        if (!alreadyGot) {
+          // 初回：付与
+          SfSnow.unlockItem(ITEM_ID);
+          badgeImg.style.filter  = 'none';
+          badgeImg.style.opacity = '0.85';
+          badgeLabel.textContent = '止まった懐中時計';
+          badgeLabel.style.color = '#c4b5fd';
+          document.getElementById('popup-msg').textContent = 'を入手しました';
+          document.getElementById('popup-label').style.color = '#c4b5fd';
+          document.getElementById('popup-close-btn').style.color       = '#c4b5fd';
+          document.getElementById('popup-close-btn').style.borderColor = '#c4b5fd';
+          document.getElementById('popup-close-btn').style.background  = 'rgba(196,181,253,0.08)';
+        } else {
+          // 再読了：付与しない・毎回表示
+          document.getElementById('popup-msg').textContent = 'は入手済みです';
+          document.getElementById('popup-label').style.color = '#94a3b8';
+          document.getElementById('popup-close-btn').style.color       = '#e2e8f0';
+          document.getElementById('popup-close-btn').style.borderColor = 'rgba(255,255,255,0.2)';
+          document.getElementById('popup-close-btn').style.background  = 'rgba(255,255,255,0.05)';
+        }
+        _sakuPending = true;
+        setTimeout(function() {
+          document.getElementById('item-popup').classList.add('show');
+        }, 1000);
+      }, { threshold: 1.0 });
+      obs.observe(sentinel);
+    }
+  });
+
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>
