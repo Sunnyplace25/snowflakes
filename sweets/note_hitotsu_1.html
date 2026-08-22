@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「ひとつ多い音」解説 | Snow flakes SWEETs</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DZDSHRWLQF');</script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <script src="../snow.js"></script>
+  <style>
+    :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'Noto Serif JP',serif; font-weight:300; min-height:100vh; }
+    #snow { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; opacity:0.3; z-index:0; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:rgba(12,18,32,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+    .nav-back { font-size:14px; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--text); }
+    .nav-label { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:5px; color:var(--muted); }
+    main { max-width:660px; margin:0 auto; padding:110px 24px 80px; position:relative; z-index:1; }
+
+    #locked-view { min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; }
+    .locked-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); }
+    .locked-title { font-family:'Noto Serif JP',serif; font-size:18px; color:var(--muted); font-weight:300; line-height:1.7; }
+    .locked-msg { font-size:13px; color:#64748b; line-height:1.9; margin-top:8px; }
+    .back-btn { margin-top:16px; padding:10px 36px; border-radius:100px; background:rgba(249,168,212,0.06); border:1px solid rgba(249,168,212,0.3); color:var(--sweets); font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:4px; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+    .back-btn:hover { background:rgba(249,168,212,0.12); }
+
+    #content-view { display:none; }
+    .note-eyebrow { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:5px; color:var(--muted); margin-bottom:10px; }
+    .note-title { font-family:'Noto Serif JP',serif; font-size:clamp(18px,4vw,24px); font-weight:300; color:var(--text); line-height:1.6; margin-bottom:10px; }
+    .note-sub { font-family:'Noto Serif JP',serif; font-size:13px; color:rgba(203,213,225,0.78); font-weight:300; line-height:1.8; margin-bottom:28px; }
+
+    .item-badge { display:inline-flex; align-items:center; gap:8px; margin-bottom:28px; padding:8px 14px; background:var(--card); border:1px solid rgba(148,163,184,0.28); border-radius:100px; }
+    .item-badge img { width:20px; height:20px; object-fit:cover; border-radius:3px; }
+    .item-badge span { font-family:'Cormorant Garamond',serif; font-size:9px; letter-spacing:3px; color:rgba(226,232,240,0.82); }
+
+    .divider { height:1px; background:var(--border); margin:32px 0; }
+    .body-wrap p { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+    .body-wrap p.section-heading { font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:2px; color:#cbd5e1; line-height:2.0; margin:22px 0 0; font-weight:400; }
+    .section-spacer { font-size:14px; color:#cbd5e1; line-height:2.0; font-weight:300; margin-bottom:0; }
+
+    .related-link { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:14px; text-decoration:none; margin-top:40px; transition:background 0.2s, border-color 0.2s; }
+    .related-link:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.13); }
+    .related-meta { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:3px; color:#475569; margin-bottom:5px; }
+    .related-title { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--text); font-weight:300; }
+    .related-arrow { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:3px; color:#64748b; flex-shrink:0; }
+
+    .note-index-back { display:inline-flex; align-items:center; gap:6px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.55); text-decoration:none; transition:color 0.2s; }
+    .note-index-back:hover { color:rgba(147,197,253,0.9); }
+    .note-index-back-bottom { display:block; text-align:center; margin-top:48px; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:rgba(147,197,253,0.45); text-decoration:none; transition:color 0.2s; }
+    .note-index-back-bottom:hover { color:rgba(147,197,253,0.8); }
+
+    #item-popup {
+      display:none; position:fixed; inset:0; z-index:700;
+      background:rgba(8,13,24,0.88); backdrop-filter:blur(14px);
+      align-items:center; justify-content:center; padding:24px;
+    }
+    #item-popup.show { display:flex; }
+    .item-popup-card { background:rgba(13,21,38,0.99); border:1px solid rgba(196,181,253,0.2); border-radius:20px; padding:36px 28px; max-width:300px; width:100%; text-align:center; }
+    .item-popup-eyebrow { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:6px; color:#475569; margin-bottom:24px; }
+    .item-popup-img { width:96px; height:96px; object-fit:cover; border-radius:14px; margin:0 auto 20px; display:block; box-shadow:0 0 40px rgba(196,181,253,0.2); }
+    .item-popup-name { font-family:'Noto Serif JP',serif; font-size:15px; color:#e2e8f0; margin-bottom:6px; letter-spacing:1px; }
+    .item-popup-chara { font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:#64748b; margin-bottom:28px; }
+    .item-popup-btn { width:100%; background:rgba(196,181,253,0.08); border:1px solid rgba(196,181,253,0.28); border-radius:50px; padding:13px; color:#c4b5fd; font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:4px; cursor:pointer; margin-bottom:10px; transition:background 0.2s; }
+    .item-popup-btn:hover { background:rgba(196,181,253,0.16); }
+    .item-popup-link { display:block; font-family:'Cormorant Garamond',serif; font-size:11px; letter-spacing:3px; color:#475569; text-decoration:none; padding:8px; transition:color 0.2s; }
+    .item-popup-link:hover { color:#94a3b8; }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .nav-label { display:none; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav>
+  <a class="nav-back note-index-back" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  <span class="nav-label">NOTE</span>
+</nav>
+<main>
+  <div id="locked-view">
+    <p class="locked-eyebrow">NOTE</p>
+    <p class="locked-title">「ひとつ多い音」解説</p>
+    <p class="locked-msg">SWEETs ROOMでプロテインコーヒー ×1 と交換すると読めます。</p>
+    <a class="back-btn" href="./index.html#sw-notes">SWEETs ROOMへ</a>
+  </div>
+  <div id="content-view">
+    <p class="note-eyebrow">NOTE</p>
+    <h1 class="note-title">「ひとつ多い音」解説</h1>
+    <p class="note-sub">― うさぎ編とスノーフレークス編を繋ぐ、"もう一つの音"の物語 ―</p>
+    <div class="item-badge" id="item-badge" style="display:none;">
+      <img id="item-badge-img" src="../item/pendant_hinata.webp" alt="青い石のネックレス">
+      <span id="item-badge-label">アイテムあり</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-wrap" id="note-body"></div>
+    <a class="related-link" id="related-link" href="https://ncode.syosetu.com/n0964mc/" target="_blank" rel="noopener" onclick="onReadHito()">
+      <div>
+        <p class="related-meta">2026.05.15 / 短編</p>
+        <p class="related-title">ひとつ多い音</p>
+      </div>
+      <span class="related-arrow">読む →</span>
+    </a>
+    <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+  </div>
+</main>
+
+<!-- 短篇読了アイテム解放ポップアップ -->
+<div id="item-popup">
+  <div class="item-popup-card">
+    <p class="item-popup-eyebrow" id="popup-eyebrow">NEW ITEM</p>
+    <img class="item-popup-img" src="../item/pendant_hinata.webp" alt="青い石のネックレス">
+    <p class="item-popup-name">青い石のネックレス</p>
+    <p class="item-popup-chara">HINATA</p>
+    <button class="item-popup-btn" id="popup-btn" onclick="closeHitoItemPopup()">── 受け取る ──</button>
+    <a class="item-popup-link" href="../sweets/">SWEETs へ →</a>
+  </div>
+</div>
+
+<script>
+  var NOTE_ID = 'note_hitotsu_1';
+  var NOTES_KEY = 'sf_sweets_notes_unlocked';
+
+  function _isUnlocked() {
+    if (typeof SfSnow === 'undefined') return false;
+    return SfSnow.isUnlocked(NOTE_ID) || localStorage.getItem(NOTES_KEY) === 'true';
+  }
+
+  // 短篇リンクを開くとき sessionStorage にフラグを立てる
+  function onReadHito() {
+    sessionStorage.setItem('sf_hito_reading', '1');
+    sessionStorage.setItem('sf_hito_left', Date.now().toString());
+  }
+
+  // タブに戻ったとき 2 分以上経過していれば pendant_hinata を付与
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState !== 'visible') return;
+    if (!sessionStorage.getItem('sf_hito_reading')) return;
+    if (typeof SfSnow === 'undefined') return;
+    sessionStorage.removeItem('sf_hito_reading');
+    var leftAt = parseInt(sessionStorage.getItem('sf_hito_left') || '0', 10);
+    sessionStorage.removeItem('sf_hito_left');
+    if (Date.now() - leftAt < 120000) return;
+    var popup = document.getElementById('item-popup');
+    if (!popup) return;
+    if (SfSnow.isUnlocked('pendant_hinata')) {
+      // 入手済み：ラベルを変更して表示
+      var eyebrow = document.getElementById('popup-eyebrow');
+      var btn = document.getElementById('popup-btn');
+      if (eyebrow) { eyebrow.textContent = 'ITEM'; eyebrow.style.color = '#64748b'; }
+      if (btn) { btn.textContent = '── 閉じる ──'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(148,163,184,0.3)'; btn.style.background = 'rgba(148,163,184,0.06)'; }
+    }
+    popup.classList.add('show');
+  });
+
+  function closeHitoItemPopup() {
+    var popup = document.getElementById('item-popup');
+    if (popup) popup.classList.remove('show');
+    if (typeof SfSnow === 'undefined') return;
+    if (!SfSnow.isUnlocked('pendant_hinata')) {
+      SfSnow.unlockItem('pendant_hinata');
+      // バッジを入手済みに更新
+      var badgeImg   = document.getElementById('item-badge-img');
+      var badgeLabel = document.getElementById('item-badge-label');
+      if (badgeImg)   { badgeImg.style.filter = 'none'; badgeImg.style.opacity = '0.85'; }
+      if (badgeLabel) { badgeLabel.textContent = '青い石のネックレス'; badgeLabel.style.color = '#93c5fd'; }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!_isUnlocked()) {
+      document.getElementById('locked-view').style.display = '';
+      document.getElementById('content-view').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('locked-view').style.display = 'none';
+    document.getElementById('content-view').style.display = 'block';
+
+    // バッジ表示
+    var badge      = document.getElementById('item-badge');
+    var badgeImg   = document.getElementById('item-badge-img');
+    var badgeLabel = document.getElementById('item-badge-label');
+    var itemGot    = typeof SfSnow !== 'undefined' && SfSnow.isUnlocked('pendant_hinata');
+    badge.style.display = 'inline-flex';
+    if (itemGot) {
+      badgeImg.style.filter  = 'none';
+      badgeImg.style.opacity = '0.85';
+      badgeLabel.textContent = '青い石のネックレス';
+      badgeLabel.style.color = '#93c5fd';
+    } else {
+      badgeImg.style.filter  = 'grayscale(1)';
+      badgeImg.style.opacity = '0.45';
+      badgeLabel.textContent = 'アイテムあり';
+    }
+
+    // 本文描画
+    var sections = [
+      { heading: null, body: '「ひとつ多い音」は、Snow flakes本編の外側にある短編です。\n読まなくても、本編は成立する。\nけれど読むことで、Snow flakesというバンドそのものの見え方が、少しだけ変わります。' },
+      { heading: '小さな違和感から始まる', body: '最初に起きる異変は、どれも説明できる程度のものです。\n・水面が遅れて揺れる\n・足音が半拍ずれる\n・音があとから追いついてくる\n・数えようとすると合わない\n\nどれも、「気のせい」で済ませられる。\nだからコウタは、何度も"見ない"ことを選びます。\n意味を与えた瞬間、戻れなくなる気がするから。\n\nこの作品の恐怖は、"何かが現れること"ではなく、「認識してしまうこと」にあります。' },
+      { heading: 'コウタだけが気づいてしまう', body: 'ヒナタは、最初から少しだけ"分かっている"。\nハヤテは、違和感を深く拾わない。\nその中でコウタだけが、ズレを見つけてしまう。\n\nだからこの作品は、コウタ視点で進む必要がある。\n読者もコウタと同じ速度で、少しずつ現実感を失っていく。\n「夢だったはずのもの」が、起きている時間にも残り始める。\nその感覚が、静かに侵食していきます。' },
+      { heading: '「気にした時点で、そっちに寄る」', body: 'ヒナタのこの言葉が、物語全体の核です。\n\nヒナタは、怪異を起こす存在ではありません。\nただ、"向こう側の音"を拾えてしまう。\nだから演奏シーンでは、音を「作っている」というより、"すでに置かれていた音をなぞっている"ように見える。\nヒナタは、音に近づいているというより、音の方に呼ばれている。' },
+      { heading: '「選ばなかった方」', body: '商店街で差し出される二枚のカード。\nここで重要なのは、どちらを選ぶかではありません。「選ぶ」という行為そのものです。\n\n選んだ瞬間、"選ばなかった可能性"から切り離される。\nそしてコウタは、選ばなかったつもりのまま、少しずつ"そちら側"へ寄っていく。\n\n黒い石。リング。揃いすぎる音。\n全部、"あとから遅れて成立する"。\nこの作品では、選択すら、少し遅れてやって来ます。' },
+      { heading: '揃いすぎる音', body: 'Snow flakesの音は本来、少しだけ揺れている音でした。\n未完成で、余白があって、人のズレが残る音。\nけれどこの物語では、少しずつ"余白"が消えていく。\n\n・足音\n・拍手\n・呼吸\n・演奏\n・観客\n\n全部が揃い始める。\nそれは上達ではない。\n"整いすぎること"そのものが恐怖として描かれています。' },
+      { heading: '「それで、よかったの？」', body: 'ショーケースのガラス越しに現れる、黒い髪の"もう一人"。\n\nこの存在は、単純な幽霊ではありません。\n・選ばなかった方\n・戻らなかった可能性\n・もう一つの音\n・揃いきった側\nそういったものの象徴です。\n\nそしてその存在だけが、コウタに問いかける。\n「それで、よかったの？」\n\nこれは、現実へ戻るかどうかの問いではありません。\n気づかないふりをしたまま、半歩だけ遅れた場所に立ち続けるのか。\nその確認です。' },
+      { heading: 'スノーフレークス編へ繋がるもの', body: 'この短編のあとに続くのが、スノーフレークス編です。\nそこでは、ヒナタが音を"整え始める"。\nズレを減らし、余白を埋め、完成度を上げていく。\n\nコウタは、そこに強い違和感を持つ。\n未読なら、それは単なる音楽性の衝突に見えます。\nでも「ひとつ多い音」を読んでいると、意味が変わる。\n\nコウタは、"揃いすぎること"の怖さを、すでに知ってしまっている。\nだから彼の違和感は、音楽理論ではなく、もっと本能的な恐怖に近い。\n\n一方ヒナタは、悪意なく、自然に、"音を揃えてしまう側"へ近づいていく。\nその結果、Snow flakesというバンドそのものに、「本当に三人だけで鳴らしている音なのか？」という、静かな不穏さが生まれていきます。' },
+      { heading: '「ひとつ多い音」とは', body: 'この作品のタイトルが示しているのは、単純な怪異ではありません。\n\n三人の音の中に、ほんの少しだけ混ざる、説明できない厚み。\n増えているわけではない。\n減っているわけでもない。\nでも、数えると合わない。\n\nそれは最後まで、はっきりとは説明されません。\nただ、Snow flakesという音の奥に、最初からずっと存在していたみたいに、静かに残り続けます。' },
+    ];
+
+    var bodyEl = document.getElementById('note-body');
+    var html = '';
+    sections.forEach(function(sec) {
+      if (sec.heading) {
+        html += '<p class="section-heading">&#9632; ' + sec.heading + '</p>';
+        html += '<p class="section-spacer">\u3000</p>';
+      }
+      sec.body.split('\n').forEach(function(line) {
+        html += '<p>' + (line === '' ? '\u3000' : line) + '</p>';
+      });
+      html += '<p class="section-spacer">\u3000</p>';
+    });
+    bodyEl.innerHTML = html;
+  });
+
+  // スノーフレーク
+  (function() {
+    var canvas = document.getElementById('snow');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    var flakes = [];
+    for (var i = 0; i < 70; i++) {
+      flakes.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight, r:Math.random()*2+0.5, speed:Math.random()*0.5+0.2, drift:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.2 });
+    }
+    function drawSnow() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      flakes.forEach(function(f) {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,'+f.opacity+')'; ctx.fill();
+        f.y += f.speed; f.x += f.drift;
+        if (f.y > canvas.height) { f.y = -5; f.x = Math.random()*canvas.width; }
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+      });
+      requestAnimationFrame(drawSnow);
+    }
+    drawSnow();
+  })();
+</script>
+</body>
+</html>
