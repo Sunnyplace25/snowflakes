@@ -168,9 +168,10 @@ function updateHeader() {
   const today = localDateISO();
   const wd = weekdayJa(today);
   const [y, mo, d] = today.split('-').map(Number);
-  document.getElementById('header-date').textContent =
-    `${y}年${mo}月${d}日（${wd}）`;
-  document.getElementById('current-month').textContent = monthLabel(currentMonth);
+  const hd = document.getElementById('header-date');
+  const cm = document.getElementById('current-month');
+  if (hd) hd.textContent = `${y}年${mo}月${d}日（${wd}）`;
+  if (cm) cm.textContent = monthLabel(currentMonth);
 }
 
 // ─── サマリーカード更新 ───────────────────────────────────────────────────────
@@ -237,7 +238,7 @@ async function loadWorks() {
     ({ data } = await api('GET', `/api/works?month=${currentMonth}`));
   } catch (err) {
     console.error('[JARVIS] loadWorks error:', err);
-    container.innerHTML = '<div class="empty-state" style="color:#f85149">データの読み込みに失敗しました</div>';
+    if (container) container.innerHTML = '<div class="empty-state" style="color:#f85149">データの読み込みに失敗しました</div>';
     return;
   }
   if (!data.ok || data.works.length === 0) {
@@ -318,11 +319,17 @@ window.updateStatus = async function(id, field, value) {
 // CRUD後にグラフiframeのリロードが必要かどうかのフラグ
 let _graphDataStale = false;
 
+// 請求実績・実績分析タブで共有する月別集計キャッシュ
+// ※ refresh() より前に宣言しないと TDZ ReferenceError になる
+let invAnalyticsFull        = null;  // GET /api/invoice/analytics のキャッシュ
+let invCurrentYear          = '';    // '' = 全期間
+let _worksMonthlySummaryRows = null; // GET /api/works/monthly-summary のキャッシュ
+
 async function refresh() {
-  invAnalyticsFull = null;   // 請求実績キャッシュをクリア
-  _graphDataStale  = true;   // グラフiframeを次回タブ切替時にリロード
+  invAnalyticsFull         = null;  // 請求実績キャッシュをクリア
+  _graphDataStale          = true;  // グラフiframeを次回タブ切替時にリロード
   updateHeader();
-  await Promise.all([loadSummary(), loadToday(), loadWorks()]);
+  await Promise.all([loadSummary(), loadToday(), loadWorks(), loadWorksMonthly()]);
 }
 
 // ─── 月ナビゲーション ─────────────────────────────────────────────────────────
@@ -649,8 +656,9 @@ function esc(str) {
       if (el) { el.className = ''; el.style.cssText = errStyle; el.textContent = errMsg; }
     });
   }
-  // 初期 Business サブタブを analytics に設定
-  switchBizTab('analytics');
+  // 初期 Business タブを音声に設定、サブタブは実績分析
+  switchBizTab('monthly');
+  switchAudioSubTab('analytics');
 })();
 
 // ─── モジュールタブ切替 ───────────────────────────────────────────────────────
@@ -721,7 +729,7 @@ document.querySelectorAll('.module-tab').forEach(btn => {
 
 // ─── Business サブタブ ────────────────────────────────────────────────────────
 
-let bizCurrentTab = 'analytics';
+let bizCurrentTab = 'monthly';
 
 function switchBizTab(name) {
   bizCurrentTab = name;
@@ -744,13 +752,37 @@ function switchBizTab(name) {
     if (iframe) iframe.src = iframe.src;  // eslint-disable-line no-self-assign
   }
 
-  if (name === 'analytics') initAnalyticsTab();
-  if (name === 'invoice')   initInvoiceTab();
   // initCalendarTab() は将来の独立カレンダー画面で使用（現在は非表示）
 }
 
 document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
   btn.addEventListener('click', () => switchBizTab(btn.dataset.bizTab));
+});
+
+// ─── 音声サブタブ ──────────────────────────────────────────────────────────────
+
+let audioCurrentSubTab = 'analytics';
+
+function switchAudioSubTab(name) {
+  audioCurrentSubTab = name;
+
+  // サブタブパネル表示切替
+  ['analytics', 'invoice'].forEach(t => {
+    const el = document.getElementById(`audio-subtab-${t}`);
+    if (el) el.hidden = (t !== name);
+  });
+
+  // ボタンの active 状態
+  document.querySelectorAll('#audio-subtabs [data-audio-tab]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.audioTab === name);
+  });
+
+  if (name === 'analytics') initAnalyticsTab();
+  if (name === 'invoice')   initInvoiceTab();
+}
+
+document.querySelectorAll('#audio-subtabs .sf-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchAudioSubTab(btn.dataset.audioTab));
 });
 
 // ─── 請求実績タブ（invoice analytics + Excel 取込）───────────────────────────
@@ -991,13 +1023,62 @@ document.getElementById('invoice-history-refresh-btn')
   .addEventListener('click', loadInvoiceHistory);
 
 // ─── 実績分析タブ ─────────────────────────────────────────────────────────────
-// work_records ベースの実績分析は別途実装予定。現在はプレースホルダー。
-
-let invAnalyticsFull = null;   // GET /api/invoice/analytics のキャッシュ
-let invCurrentYear   = '';     // '' = 全期間
 
 function initAnalyticsTab() {
-  // 将来: work_records ベースの集計処理をここに実装
+  // works-monthly-container はすでに refresh() で更新済み。
+  // タブ切替時にまだ空なら再取得する。
+  const el = document.getElementById('works-monthly-container');
+  if (el && (el.classList.contains('loading') || el.textContent === '読み込み中...')) {
+    loadWorksMonthly();
+  }
+}
+
+// ─── work_records 月別集計 ─────────────────────────────────────────────────────
+
+async function loadWorksMonthly() {
+  try {
+    const { data } = await api('GET', '/api/works/monthly-summary');
+    if (data.ok) {
+      _worksMonthlySummaryRows = data.rows;
+      renderWorksMonthlyTable(data.rows);           // 実績分析タブ
+      renderInvMonthlyFromWorks(invCurrentYear);    // 請求実績タブ
+    }
+  } catch (err) {
+    console.error('[JARVIS] loadWorksMonthly error:', err);
+  }
+}
+
+function renderWorksMonthlyTable(rows) {
+  const el = document.getElementById('works-monthly-container');
+  if (!el) return;
+  if (!rows || rows.length === 0) {
+    el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+    return;
+  }
+  const maxIncome = Math.max(...rows.map(r => r.income ?? 0), 1);
+  const trs = rows.map(r => {
+    const pct = Math.round(((r.income ?? 0) / maxIncome) * 100);
+    return `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px">${esc(r.month)}</td>
+        <td style="text-align:right;color:#64748b">${r.count}件</td>
+        <td style="text-align:right">${yen(r.income)}</td>
+        <td style="text-align:right;color:#f85149">${r.expense > 0 ? yen(r.expense) : '—'}</td>
+        <td style="width:140px;padding-right:0">
+          <div style="background:#1e3a5f;border-radius:3px;height:10px">
+            <div style="background:#3b82f6;width:${pct}%;height:100%;border-radius:3px"></div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  el.className = '';
+  el.innerHTML = `
+    <table class="works-table">
+      <thead><tr><th>月</th><th>件数</th><th>収入（税抜）</th><th>経費</th><th></th></tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
 }
 
 async function loadFullAnalytics() {
@@ -1055,7 +1136,7 @@ function renderAnalyticsAll() {
   setAnalyticsCards(yen(totalSubtotal), `${totalCount}件`, yen(avgAmount), '—');
   document.getElementById('inv-card-yoy').className = 'card-value';
 
-  renderMonthlyTable(byMonth);
+  renderInvMonthlyFromWorks('');   // work_records ベースの月別売上
   renderCategoryTable(byCategory);
   loadInvLines({});
 }
@@ -1077,7 +1158,7 @@ async function renderAnalyticsByYear(year) {
     setAnalyticsCards(yen(data.subtotal), `${data.lineCount}件`, yen(data.avgAmount), yoyText);
     document.getElementById('inv-card-yoy').className = yoyClass;
 
-    renderMonthlyTable(data.byMonth   ?? []);
+    renderInvMonthlyFromWorks(year);     // work_records ベースの月別売上
     renderCategoryTable(data.byCategory ?? []);
     loadInvLines({ year });
   } catch { /* silent */ }
@@ -1122,6 +1203,43 @@ function renderMonthlyTable(rows) {
   `;
 }
 
+/**
+ * 請求実績タブの「月別売上」を work_records から再描画する。
+ * year 指定がある場合は当該年のみ表示。キャッシュ未ロード時は何もしない。
+ */
+function renderInvMonthlyFromWorks(year = '') {
+  const el = document.getElementById('inv-monthly-container');
+  if (!el) return;
+  let rows = _worksMonthlySummaryRows ?? [];
+  if (year) rows = rows.filter(r => r.month.startsWith(String(year)));
+  if (!rows.length) {
+    el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+    return;
+  }
+  const max = Math.max(...rows.map(r => r.income ?? 0), 1);
+  const trs = rows.map(r => {
+    const pct = Math.round(((r.income ?? 0) / max) * 100);
+    return `
+      <tr>
+        <td style="color:#94a3b8;font-size:12px">${esc(r.month)}</td>
+        <td style="text-align:right;color:#64748b">${r.count}件</td>
+        <td style="text-align:right">${yen(r.income)}</td>
+        <td style="width:140px;padding-right:0">
+          <div style="background:#1e3a5f;border-radius:3px;height:10px">
+            <div style="background:#3b82f6;width:${pct}%;height:100%;border-radius:3px"></div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  el.innerHTML = `
+    <table class="works-table">
+      <thead><tr><th>月</th><th>件数</th><th>収入（税抜）</th><th></th></tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
 function renderCategoryTable(rows) {
   const el = document.getElementById('inv-category-container');
   if (!rows.length) {
@@ -1154,6 +1272,9 @@ function renderCategoryTable(rows) {
   `;
 }
 
+let _invLinesCache     = [];     // ロード済み明細（ソート用キャッシュ）
+let _invLinesSortOrder = 'desc'; // 初期: 新しい日付→古い日付
+
 async function loadInvLines({ year, month, category } = {}) {
   const el     = document.getElementById('inv-lines-container');
   const noteEl = document.getElementById('inv-lines-note');
@@ -1169,35 +1290,60 @@ async function loadInvLines({ year, month, category } = {}) {
     if (!data.ok || !data.lines?.length) {
       noteEl.textContent = '';
       el.innerHTML = '<p style="color:#64748b;font-size:13px">データなし</p>';
+      _invLinesCache = [];
       return;
     }
-
+    _invLinesCache = data.lines;
     noteEl.textContent = `${data.lines.length}件`;
-
-    const trs = data.lines.map(l => `
-      <tr>
-        <td style="color:#94a3b8;font-size:12px;white-space:nowrap">${esc(l.work_date ?? '—')}</td>
-        <td style="max-width:240px">${esc(l.description)}</td>
-        <td style="text-align:right;color:#64748b">${l.quantity}${esc(l.quantity_unit)}</td>
-        <td style="text-align:right;color:#64748b">${yen(l.unit_price)}</td>
-        <td style="text-align:right">${yen(l.amount)}</td>
-        <td style="color:#94a3b8">${esc(l.category)}</td>
-        <td style="color:#64748b;font-size:12px">${esc(l.invoice_number)}</td>
-      </tr>
-    `).join('');
-
-    el.innerHTML = `
-      <div style="overflow-x:auto">
-        <table class="works-table" style="font-size:12px;min-width:700px">
-          <thead><tr>
-            <th>作業日</th><th>作業内容</th><th>数量</th><th>単価</th><th>金額</th><th>カテゴリ</th><th>請求書</th>
-          </tr></thead>
-          <tbody>${trs}</tbody>
-        </table>
-      </div>
-    `;
+    renderInvLinesTable();
   } catch {
     el.innerHTML = '<p style="color:#64748b;font-size:13px">読み込みエラー</p>';
+  }
+}
+
+function renderInvLinesTable() {
+  const el = document.getElementById('inv-lines-container');
+  if (!el) return;
+
+  const sorted = [..._invLinesCache].sort((a, b) => {
+    const da = a.work_date ? new Date(a.work_date).getTime() : 0;
+    const db2 = b.work_date ? new Date(b.work_date).getTime() : 0;
+    return _invLinesSortOrder === 'asc' ? da - db2 : db2 - da;
+  });
+
+  const arrow = _invLinesSortOrder === 'asc' ? ' ▲' : ' ▼';
+
+  const trs = sorted.map(l => `
+    <tr>
+      <td style="color:#94a3b8;font-size:12px;white-space:nowrap">${esc(l.work_date ?? '—')}</td>
+      <td style="max-width:240px">${esc(l.description)}</td>
+      <td style="text-align:right;color:#64748b">${l.quantity}${esc(l.quantity_unit)}</td>
+      <td style="text-align:right;color:#64748b">${yen(l.unit_price)}</td>
+      <td style="text-align:right">${yen(l.amount)}</td>
+      <td style="color:#94a3b8">${esc(l.category)}</td>
+      <td style="color:#64748b;font-size:12px">${esc(l.invoice_number)}</td>
+    </tr>
+  `).join('');
+
+  el.innerHTML = `
+    <div style="overflow-x:auto">
+      <table class="works-table" style="font-size:12px;min-width:700px">
+        <thead><tr>
+          <th id="inv-lines-date-th" style="cursor:pointer;user-select:none" title="クリックで並べ替え">作業日${arrow}</th>
+          <th>作業内容</th><th>数量</th><th>単価</th><th>金額</th><th>カテゴリ</th><th>請求書</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
+      </table>
+    </div>
+  `;
+
+  // ヘッダークリックで昇順/降順を切り替え
+  const th = document.getElementById('inv-lines-date-th');
+  if (th) {
+    th.addEventListener('click', () => {
+      _invLinesSortOrder = _invLinesSortOrder === 'asc' ? 'desc' : 'asc';
+      renderInvLinesTable();
+    });
   }
 }
 

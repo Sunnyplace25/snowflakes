@@ -95,6 +95,18 @@ html, body {
   gap: 24px;
 }
 
+/* ─── 音声タブ 上部固定エリア ──────────────────────────────────────────────── */
+.audio-sticky-top {
+  position: sticky;
+  top: 65px;           /* ヘッダー高さ分オフセット */
+  z-index: 90;
+  background: var(--bg);
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 /* ─── Cards ───────────────────────────────────────────────────────────────── */
 .cards-primary {
   display: grid;

@@ -27,16 +27,17 @@
 <!-- ─── Main: Business ───────────────────────────────────────────────────── -->
 <main class="main" id="module-business">
 
-  <!-- Business サブタブ -->
+  <!-- Business タブ -->
   <nav class="sf-tabs" id="business-tabs">
-    <button class="sf-tab active" data-biz-tab="analytics">実績分析</button>
-    <button class="sf-tab" data-biz-tab="graph">グラフ</button>
-    <button class="sf-tab" data-biz-tab="monthly">音声</button>
-    <button class="sf-tab" data-biz-tab="invoice">請求実績</button>
+    <button class="sf-tab active" data-biz-tab="monthly">音声</button>
+    <button class="sf-tab" data-biz-tab="graph" style="display:none">グラフ</button>
   </nav>
 
   <!-- ─── 月次タブ ──────────────────────────────────────────────────────── -->
   <div id="biz-tab-monthly" class="sf-tab-panel" hidden>
+
+  <!-- ── 上部固定エリア（収入〜仕事一覧） ─────────────────────────────────── -->
+  <div class="audio-sticky-top">
 
   <!-- 月次サマリーカード（1行目：収支） -->
   <div class="cards-primary">
@@ -100,29 +101,27 @@
     <div id="works-table-container" class="loading">読み込み中...</div>
   </section>
 
-  </div><!-- /#biz-tab-monthly -->
+  </div><!-- /.audio-sticky-top -->
 
-  <!-- ─── グラフタブ ───────────────────────────────────────────────────────── -->
-  <div id="biz-tab-graph" class="sf-tab-panel" hidden>
-    <iframe src="/business-graph.html" title="Business 統計グラフ"
-            style="width:100%;height:min(90vh,900px);border:0;border-radius:8px;background:#0d1117;display:block"></iframe>
-  </div><!-- /#biz-tab-graph -->
+  <!-- ─── 音声サブタブナビ ────────────────────────────────────────────────── -->
+  <nav class="sf-tabs" id="audio-subtabs">
+    <button class="sf-tab active" data-audio-tab="analytics">実績分析</button>
+    <button class="sf-tab" data-audio-tab="invoice">請求実績</button>
+  </nav>
 
-  <!-- ─── 実績分析タブ ────────────────────────────────────────────────────── -->
-  <div id="biz-tab-analytics" class="sf-tab-panel">
+  <!-- ─── 実績分析サブタブ ────────────────────────────────────────────────── -->
+  <div id="audio-subtab-analytics" class="sf-tab-panel">
     <section class="section">
       <div class="section-header">
-        <h2>実績分析</h2>
-        <span class="sf-note">work_records ベースの実績分析（別途実装予定）</span>
+        <h2>月別売上</h2>
+        <span class="sf-note">仕事データ（work_records）から集計 · 登録・編集・削除後に自動更新</span>
       </div>
-      <div class="empty-state">実績分析機能は別途実装予定です</div>
+      <div id="works-monthly-container" class="loading">読み込み中...</div>
     </section>
-  </div><!-- /#biz-tab-analytics -->
+  </div><!-- /#audio-subtab-analytics -->
 
-  <!-- biz-tab-merch / biz-tab-nursery は各専用 JS が動的生成 -->
-
-  <!-- ─── 請求実績タブ ──────────────────────────────────────────────────────── -->
-  <div id="biz-tab-invoice" class="sf-tab-panel" hidden>
+  <!-- ─── 請求実績サブタブ ────────────────────────────────────────────────── -->
+  <div id="audio-subtab-invoice" class="sf-tab-panel" hidden>
 
     <!-- 年選択 -->
     <div class="sd-filter-bar">
@@ -222,7 +221,22 @@
       <div id="invoice-history-container" class="loading">読み込み中...</div>
     </section>
 
-  </div><!-- /#biz-tab-invoice -->
+  </div><!-- /#audio-subtab-invoice -->
+
+  </div><!-- /#biz-tab-monthly -->
+
+  <!-- ─── グラフタブ（非表示中） ──────────────────────────────────────────── -->
+  <div id="biz-tab-graph" class="sf-tab-panel" hidden style="display:none">
+    <!-- iframe は非表示中のため読み込み停止 -->
+  </div><!-- /#biz-tab-graph -->
+
+  <!-- ─── 実績分析タブ（音声サブタブへ移動済み）──────────────────────────── -->
+  <div id="biz-tab-analytics" class="sf-tab-panel" hidden></div>
+
+  <!-- biz-tab-merch / biz-tab-nursery は各専用 JS が動的生成 -->
+
+  <!-- ─── 請求実績タブ（音声サブタブへ移動済み）──────────────────────────── -->
+  <div id="biz-tab-invoice" class="sf-tab-panel" hidden></div>
 
   <!-- ─── Google Calendar パネル（非表示・将来の独立カレンダー画面用）────────── -->
   <div id="biz-tab-calendar" class="sf-tab-panel" hidden>
@@ -967,6 +981,6 @@
 </div><!-- /#module-sf -->
 
 <script src="modules/sf.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=20260825b"></script>
 </body>
 </html>

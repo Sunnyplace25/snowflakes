@@ -216,6 +216,37 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, works });
       }
 
+      // ── GET /api/works/monthly-summary — work_records 全月集計 ──────────────
+      if (path === '/api/works/monthly-summary' && method === 'GET') {
+        const rows = db.prepare(`
+          SELECT strftime('%Y-%m', date) AS month,
+                 COUNT(*) AS count,
+                 COALESCE(SUM(income), 0) AS income,
+                 COALESCE(SUM(expense), 0) AS expense
+          FROM work_records
+          GROUP BY month
+          ORDER BY month DESC
+        `).all();
+        return jsonRes(res, 200, { ok: true, rows });
+      }
+
+      // ── GET /api/works/category-monthly?year=YYYY — カテゴリ別月次集計 ─────
+      if (path.startsWith('/api/works/category-monthly') && method === 'GET') {
+        const year = url.searchParams.get('year') || new Date().getFullYear().toString();
+        const rows = db.prepare(`
+          SELECT strftime('%Y-%m', date) AS month,
+                 category,
+                 COALESCE(SUM(income), 0)  AS income,
+                 COALESCE(SUM(expense), 0) AS expense,
+                 COUNT(*) AS count
+          FROM work_records
+          WHERE date LIKE ?
+          GROUP BY month, category
+          ORDER BY month, category
+        `).all(`${year}-%`);
+        return jsonRes(res, 200, { ok: true, year, rows });
+      }
+
       // ── POST /api/work ──────────────────────────────────────────────────────
       if (path === '/api/work' && method === 'POST') {
         let body;

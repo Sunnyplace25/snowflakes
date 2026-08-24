@@ -1,102 +1,133 @@
 'use strict';
 
-(function () {
-  const MODES = [
-    { key:'total', label:'合計' },
-    { key:'audio', label:'音声' },
-    { key:'nursery', label:'パート' },
-    { key:'merch', label:'物販' },
-  ];
-  const COLORS = { audio:'#3b82f6', nursery:'#22c55e', merch:'#a855f7' };
-  let mode = 'total';
-  let cachedYear = null;
-  let cachedRows = null;
+/**
+ * business-graph-enhance.js
+ * 月別収入積み上げ棒グラフ（カテゴリ別）
+ *
+ * データソース：
+ *   - /api/works/category-monthly?year=YYYY  … work_records を月×カテゴリ集計
+ *   - /api/nursery-payslips                  … 保育園給与明細（パート）
+ *
+ * 表示ルール：
+ *   - データが存在するカテゴリのみ凡例・積み上げに表示
+ *   - ダミーデータなし
+ *   - 描画は 1 系統のみ（二重描画禁止）
+ */
 
+(function () {
+  // ── カテゴリ定義（work_records.category → 表示ラベル・色）──────────────────
+  // 順序は積み上げ順
+  const CAT_DEF = [
+    { key: '音声仕事',    label: '音声',        color: '#3b82f6' },
+    { key: '物販',        label: '物販',        color: '#a855f7' },
+    { key: '17配信',      label: '配信',        color: '#f59e0b' },
+    { key: 'Snow flakes', label: 'Snow flakes', color: '#ec4899' },
+    { key: 'その他',      label: 'その他',      color: '#6b7280' },
+    // パート（保育園給与明細）は別テーブルなので key = '__nursery__' で管理
+    { key: '__nursery__', label: 'パート',       color: '#22c55e' },
+  ];
+
+  const CAT_BY_KEY = Object.fromEntries(CAT_DEF.map(c => [c.key, c]));
   const yen = n => Number(n || 0).toLocaleString('ja-JP') + '円';
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  async function getMonth(year, month) {
-    const ym = `${year}-${String(month).padStart(2,'0')}`;
-    const r = await fetch(`/api/works?month=${ym}`);
+  let cachedYear = null;
+  let cachedRows = null;   // 配列[0..11] — 各月のカテゴリ別収入
+  let cachedKeys = null;   // データが存在するカテゴリキーの配列
+
+  // ── データ取得 ──────────────────────────────────────────────────────────────
+
+  async function fetchCategoryMonthly(year) {
+    const r = await fetch(`/api/works/category-monthly?year=${year}`);
     const d = await r.json();
-    return d.ok ? (d.works || []) : [];
+    return d.ok ? (d.rows || []) : [];
   }
 
-  async function getPayslips() {
+  async function fetchNursery() {
     const r = await fetch('/api/nursery-payslips');
     const d = await r.json();
     return d.ok ? (d.payslips || []) : [];
   }
 
   async function buildRows(year) {
-    if (cachedYear === year && cachedRows) return cachedRows;
-    const [months, payslips] = await Promise.all([
-      Promise.all(Array.from({length:12}, (_, i) => getMonth(year, i + 1))),
-      getPayslips(),
+    if (cachedYear === year && cachedRows) return { rows: cachedRows, keys: cachedKeys };
+
+    const [catRows, payslips] = await Promise.all([
+      fetchCategoryMonthly(year),
+      fetchNursery(),
     ]);
-    const nurseryByMonth = new Map(
-      payslips.filter(p => String(p.month || '').startsWith(`${year}-`))
-        .map(p => [String(p.month), p])
-    );
-    cachedRows = months.map((works, i) => {
-      const ym = `${year}-${String(i + 1).padStart(2,'0')}`;
-      const audioWorks = works.filter(w => w.category !== '物販');
-      const merchWorks = works.filter(w => w.category === '物販');
-      const payslip = nurseryByMonth.get(ym) || null;
-      const audio = audioWorks.reduce((s,w) => s + Number(w.income || 0), 0);
-      const merch = merchWorks.reduce((s,w) => s + Number(w.income || 0), 0);
-      const nursery = Number(payslip?.gross_pay || 0);
-      return {
-        month:i + 1,
-        ym,
-        audio,
-        nursery,
-        merch,
-        total:audio + nursery + merch,
-        audioWorks,
-        merchWorks,
-        payslip,
-      };
+
+    // 月×カテゴリ マップを構築
+    const byMonth = new Map();
+    for (let i = 1; i <= 12; i++) {
+      const ym = `${year}-${String(i).padStart(2, '0')}`;
+      byMonth.set(ym, {});
+    }
+    catRows.forEach(r => {
+      const m = byMonth.get(r.month);
+      if (m) m[r.category] = Number(r.income || 0);
     });
+
+    // 保育園給与を __nursery__ として追加
+    payslips
+      .filter(p => String(p.month || '').startsWith(`${year}-`))
+      .forEach(p => {
+        const m = byMonth.get(String(p.month));
+        if (m) m['__nursery__'] = Number(p.gross_pay || 0);
+      });
+
+    // rows[0..11] に変換
+    const rows = Array.from({ length: 12 }, (_, i) => {
+      const ym = `${year}-${String(i + 1).padStart(2, '0')}`;
+      const cats = byMonth.get(ym) || {};
+      const total = Object.values(cats).reduce((s, v) => s + v, 0);
+      return { month: i + 1, ym, cats, total };
+    });
+
+    // データが存在するカテゴリキーを CAT_DEF の順序で取得
+    const existingKeys = new Set(rows.flatMap(r => Object.keys(r.cats).filter(k => r.cats[k] > 0)));
+    const keys = CAT_DEF.map(c => c.key).filter(k => existingKeys.has(k));
+
     cachedYear = year;
-    return cachedRows;
+    cachedRows = rows;
+    cachedKeys = keys;
+    return { rows, keys };
   }
 
-  function ensureUi() {
+  // ── UI セットアップ ─────────────────────────────────────────────────────────
+
+  function ensureUi(keys) {
     const svg = document.getElementById('monthly-chart');
     const panel = svg?.closest('.panel');
     if (!svg || !panel) return false;
+
+    // パネルタイトル・説明を更新
     const h2 = panel.querySelector('h2');
     const note = panel.querySelector('.note');
-    if (h2) h2.textContent = '月別 収入';
-    if (note) note.textContent = '音声・パート（保育園）・物販を切り替えて確認。合計は色分けした積み上げ表示です。棒をクリックすると内訳を表示します。';
+    if (h2) h2.textContent = '月別収入（カテゴリ別積み上げ）';
+    if (note) note.textContent = 'work_records の収入をカテゴリ別に積み上げて表示。データが存在するカテゴリのみ表示します。棒をクリックすると内訳を表示します。';
 
-    let controls = document.getElementById('income-chart-controls');
-    if (!controls) {
-      controls = document.createElement('div');
-      controls.id = 'income-chart-controls';
-      controls.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px';
-      controls.innerHTML = MODES.map(m => `<button type="button" data-income-mode="${m.key}">${m.label}</button>`).join('');
+    // モード切替ボタンは不要なので既存のものを削除
+    const oldControls = document.getElementById('income-chart-controls');
+    if (oldControls) oldControls.remove();
+
+    // 凡例（データが存在するカテゴリのみ）
+    const legendId = 'income-chart-legend';
+    let legend = document.getElementById(legendId);
+    if (!legend) {
+      legend = document.createElement('div');
+      legend.id = legendId;
+      legend.className = 'legend';
       const wrap = panel.querySelector('.chart-wrap');
-      panel.insertBefore(controls, wrap);
-      controls.querySelectorAll('[data-income-mode]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          mode = btn.dataset.incomeMode;
-          updateModeButtons();
-          render();
-        });
-      });
+      if (wrap) panel.insertBefore(legend, wrap);
     }
+    legend.innerHTML = keys.map(k => {
+      const def = CAT_BY_KEY[k];
+      if (!def) return '';
+      return `<span><i class="key" style="background:${def.color};display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;"></i>${esc(def.label)}</span>`;
+    }).join('');
 
-    let legend = panel.querySelector('.legend');
-    if (legend) {
-      legend.id = 'income-chart-legend';
-      legend.innerHTML = `
-        <span><i class="key" style="background:${COLORS.audio}"></i>音声</span>
-        <span><i class="key" style="background:${COLORS.nursery}"></i>パート</span>
-        <span><i class="key" style="background:${COLORS.merch}"></i>物販</span>`;
-    }
-
+    // 詳細パネル
     let detail = document.getElementById('income-chart-detail');
     if (!detail) {
       detail = document.createElement('div');
@@ -105,120 +136,123 @@
       panel.appendChild(detail);
     }
 
+    // スタイル
     if (!document.getElementById('income-chart-enhance-style')) {
       const style = document.createElement('style');
       style.id = 'income-chart-enhance-style';
       style.textContent = `
-        #income-chart-controls button{background:#21262d;border:1px solid #30363d;color:#8b949e;border-radius:999px;padding:6px 12px;cursor:pointer}
-        #income-chart-controls button.active{color:#fff;border-color:#58a6ff;background:#1f6feb}
         #monthly-chart .income-segment{cursor:pointer;transition:opacity .15s}
-        #monthly-chart .income-segment:hover{opacity:.82}
-        #income-chart-detail .detail-grid{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:10px;margin-bottom:12px}
+        #monthly-chart .income-segment:hover{opacity:.78}
+        #income-chart-detail .detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:12px}
         #income-chart-detail .detail-card{background:#161b22;border:1px solid #30363d;border-radius:7px;padding:10px}
         #income-chart-detail .detail-label{color:#8b949e;font-size:11px;margin-bottom:4px}
         #income-chart-detail .detail-value{font-weight:700}
-        #income-chart-detail .detail-list{display:grid;gap:6px;font-size:12px;color:#c9d1d9}
-        #income-chart-detail .detail-row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #21262d;padding-top:6px}
         @media(max-width:760px){#income-chart-detail .detail-grid{grid-template-columns:1fr 1fr}}
       `;
       document.head.appendChild(style);
     }
-    updateModeButtons();
+
     return true;
   }
 
-  function updateModeButtons() {
-    document.querySelectorAll('[data-income-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.incomeMode === mode));
-    const legend = document.getElementById('income-chart-legend');
-    if (legend) legend.style.display = mode === 'total' ? '' : 'none';
-  }
-
-  function modeValue(row) {
-    return mode === 'total' ? row.total : Number(row[mode] || 0);
-  }
+  // ── SVG 描画 ─────────────────────────────────────────────────────────────────
 
   async function render() {
-    if (!ensureUi()) return;
     const year = Number(document.getElementById('year')?.value || new Date().getFullYear());
-    const rows = await buildRows(year);
+    const { rows, keys } = await buildRows(year);
     const svg = document.getElementById('monthly-chart');
     if (!svg) return;
+    if (!ensureUi(keys)) return;
 
-    const W=1000,H=330,L=58,R=18,T=18,B=42,plotW=W-L-R,plotH=H-T-B;
-    const max = Math.max(1, ...rows.map(modeValue));
-    const unit = max <= 100000 ? 10000 : 50000;
-    const nice = Math.ceil(max / unit) * unit || unit;
-    const y = v => T + plotH - (Math.max(0, v) / nice) * plotH;
+    const W = 1000, H = 330, L = 62, R = 18, T = 18, B = 42;
+    const plotW = W - L - R, plotH = H - T - B;
+    const maxVal = Math.max(1, ...rows.map(r => r.total));
+    const unit = maxVal <= 100000 ? 10000 : 50000;
+    const nice = Math.ceil(maxVal / unit) * unit || unit;
+    const yPos = v => T + plotH - (Math.max(0, v) / nice) * plotH;
     const step = plotW / 12;
-    const bw = Math.min(42, step * .55);
+    const bw = Math.min(44, step * 0.56);
+
     let s = '';
 
-    for (let i=0;i<=4;i++) {
-      const val = nice * i / 4, yy = y(val);
-      s += `<line class="gridline" x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}"/>`;
-      s += `<text class="axis-label" x="${L-8}" y="${yy+4}" text-anchor="end">${Math.round(val/10000)}万</text>`;
+    // グリッド + Y 軸ラベル
+    for (let i = 0; i <= 4; i++) {
+      const val = nice * i / 4;
+      const yy = yPos(val);
+      s += `<line class="gridline" x1="${L}" y1="${yy}" x2="${W - R}" y2="${yy}"/>`;
+      s += `<text class="axis-label" x="${L - 8}" y="${yy + 4}" text-anchor="end">${Math.round(val / 10000)}万</text>`;
     }
 
-    rows.forEach((r, i) => {
-      const cx = L + step * (i + .5);
+    // 各月の積み上げ棒
+    rows.forEach((row, i) => {
+      const cx = L + step * (i + 0.5);
       const x = cx - bw / 2;
-      if (mode === 'total') {
-        let base = 0;
-        for (const key of ['audio','nursery','merch']) {
-          const val = Number(r[key] || 0);
-          if (!val) continue;
-          const yTop = y(base + val);
-          const yBottom = y(base);
-          s += `<rect class="income-segment" data-month="${i}" data-kind="${key}" x="${x}" y="${yTop}" width="${bw}" height="${Math.max(1,yBottom-yTop)}" rx="2" fill="${COLORS[key]}"><title>${r.month}月 ${key==='audio'?'音声':key==='nursery'?'パート':'物販'} ${yen(val)}</title></rect>`;
-          base += val;
-        }
-      } else {
-        const val = Number(r[mode] || 0);
-        const yy = y(val);
-        s += `<rect class="income-segment" data-month="${i}" data-kind="${mode}" x="${x}" y="${yy}" width="${bw}" height="${Math.max(1,T+plotH-yy)}" rx="3" fill="${COLORS[mode]}"><title>${r.month}月 ${yen(val)}</title></rect>`;
+      let base = 0;
+      for (const key of keys) {
+        const val = Number(row.cats[key] || 0);
+        if (!val) continue;
+        const def = CAT_BY_KEY[key];
+        const yTop = yPos(base + val);
+        const yBot = yPos(base);
+        const h = Math.max(1, yBot - yTop);
+        s += `<rect class="income-segment" data-month="${i}" data-key="${esc(key)}" x="${x.toFixed(1)}" y="${yTop.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${def.color}"><title>${row.month}月 ${esc(def.label)} ${yen(val)}</title></rect>`;
+        base += val;
       }
-      s += `<text class="axis-label" x="${cx}" y="${H-18}" text-anchor="middle">${r.month}月</text>`;
+      // 合計ラベル（棒の上）
+      if (row.total > 0) {
+        const labelY = yPos(row.total) - 4;
+        s += `<text class="axis-label" x="${cx.toFixed(1)}" y="${labelY.toFixed(1)}" text-anchor="middle" font-size="9">${Math.round(row.total / 10000)}万</text>`;
+      }
+      // X 軸月ラベル
+      s += `<text class="axis-label" x="${cx.toFixed(1)}" y="${H - 18}" text-anchor="middle">${row.month}月</text>`;
     });
+
     svg.innerHTML = s;
-    svg.querySelectorAll('.income-segment').forEach(rect => rect.addEventListener('click', () => showDetail(rows[Number(rect.dataset.month)])));
+
+    // クリックで詳細表示
+    svg.querySelectorAll('.income-segment').forEach(rect => {
+      rect.addEventListener('click', () => showDetail(rows[Number(rect.dataset.month)], keys));
+    });
   }
 
-  function workLabel(w) {
-    return [w.date, w.content || w.work_type || w.category].filter(Boolean).join('　');
-  }
+  // ── 月別内訳パネル ──────────────────────────────────────────────────────────
 
-  function showDetail(row) {
+  function showDetail(row, keys) {
     const el = document.getElementById('income-chart-detail');
     if (!el) return;
     el.style.display = '';
-    const audioRows = row.audioWorks.map(w => `<div class="detail-row"><span>${esc(workLabel(w))}</span><strong>${yen(w.income)}</strong></div>`).join('');
-    const merchRows = row.merchWorks.map(w => `<div class="detail-row"><span>${esc(workLabel(w))}</span><strong>${yen(w.income)}</strong></div>`).join('');
-    const p = row.payslip;
-    const nurseryExtra = p ? `勤務 ${p.worked_hours == null ? '—' : Number(p.worked_hours).toFixed(2).replace(/\.00$/,'') + 'h'} / 手取り ${p.net_pay == null ? '—' : yen(p.net_pay)}` : '給与明細なし';
+
+    const cards = [
+      `<div class="detail-card"><div class="detail-label">合計</div><div class="detail-value">${yen(row.total)}</div></div>`,
+      ...keys.filter(k => row.cats[k] > 0).map(k => {
+        const def = CAT_BY_KEY[k];
+        return `<div class="detail-card"><div class="detail-label">${esc(def.label)}</div><div class="detail-value" style="color:${def.color}">${yen(row.cats[k])}</div></div>`;
+      }),
+    ].join('');
+
     el.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px"><strong>${row.month}月の内訳</strong><span style="color:#8b949e;font-size:12px">${row.ym}</span></div>
-      <div class="detail-grid">
-        <div class="detail-card"><div class="detail-label">合計</div><div class="detail-value">${yen(row.total)}</div></div>
-        <div class="detail-card"><div class="detail-label">音声</div><div class="detail-value" style="color:${COLORS.audio}">${yen(row.audio)}</div></div>
-        <div class="detail-card"><div class="detail-label">パート</div><div class="detail-value" style="color:${COLORS.nursery}">${yen(row.nursery)}</div></div>
-        <div class="detail-card"><div class="detail-label">物販</div><div class="detail-value" style="color:${COLORS.merch}">${yen(row.merch)}</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <strong>${row.month}月の内訳</strong>
+        <span style="color:#8b949e;font-size:12px">${row.ym}</span>
       </div>
-      <div class="detail-list">
-        ${audioRows ? `<div><strong>音声</strong>${audioRows}</div>` : ''}
-        ${row.nursery ? `<div><strong>パート</strong><div class="detail-row"><span>${esc(nurseryExtra)}</span><strong>${yen(row.nursery)}</strong></div></div>` : ''}
-        ${merchRows ? `<div><strong>物販</strong>${merchRows}</div>` : ''}
-        ${!row.total ? '<div style="color:#8b949e">この月の収入データはありません。</div>' : ''}
-      </div>`;
+      <div class="detail-grid">${cards}</div>
+      ${row.total === 0 ? '<div style="color:#8b949e">この月の収入データはありません。</div>' : ''}
+    `;
   }
+
+  // ── 初期化 ──────────────────────────────────────────────────────────────────
 
   function invalidateAndRender() {
     cachedYear = null;
     cachedRows = null;
-    setTimeout(render, 140);
+    cachedKeys = null;
+    render();
   }
 
   function init() {
-    if (!ensureUi()) {
+    const svg = document.getElementById('monthly-chart');
+    const panel = svg?.closest('.panel');
+    if (!svg || !panel) {
       setTimeout(init, 250);
       return;
     }
@@ -227,6 +261,9 @@
     render();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once:true });
-  else init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();

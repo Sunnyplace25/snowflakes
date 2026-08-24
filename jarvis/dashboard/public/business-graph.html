@@ -41,6 +41,6 @@ function renderMonthly(rows){/* SVG managed by business-graph-enhance.js */}
 function renderCategories(works){const map=new Map();works.forEach(w=>{const k=w.category||'未設定';map.set(k,(map.get(k)||0)+Number(w.income||0))});const rows=[...map.entries()].sort((a,b)=>b[1]-a[1]),el=document.getElementById('category-chart');if(!rows.length){el.innerHTML='<div class="empty">この年のデータはありません</div>';return}const max=Math.max(...rows.map(r=>r[1]),1);el.innerHTML=rows.map(([name,val])=>`<div class="cat-row"><div class="cat-name" title="${esc(name)}">${esc(name)}</div><div class="cat-track"><div class="cat-fill" style="width:${Math.max(1,val/max*100)}%"></div></div><div class="cat-value">${yen(val)}</div></div>`).join('')}
 yearSel.addEventListener('change',load);document.getElementById('reload').addEventListener('click',load);document.getElementById('sync-all').addEventListener('click',syncAllInvoices);load();
 </script>
-<script src="business-graph-enhance.js"></script>
+<script src="business-graph-enhance.js?v=20260825"></script>
 </body>
 </html>
