@@ -94,7 +94,11 @@ function quantityAndUnit(work) {
   if (Number.isFinite(hours) && hours > 0) {
     return { quantity: hours, unit: '時間' };
   }
-  return { quantity: 1, unit: '日' };
+  if (work.is_full_day) {
+    return { quantity: 1, unit: '日' };
+  }
+  // 未入力（work_hours=null, is_full_day=0）→「1日」として扱わない
+  return { quantity: 1, unit: '式' };
 }
 
 function defaultInvoiceNumber(month) {

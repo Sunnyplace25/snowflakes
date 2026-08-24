@@ -2,27 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="0;url=/business-graph.html">
 <title>JARVIS Business Graph</title>
-<style>
-html,body{margin:0;width:100%;height:100%;background:#0d1117;overflow:hidden}iframe{display:block;width:100%;height:100%;border:0;background:#0d1117}
-</style>
 </head>
 <body>
-<iframe id="graph-frame" src="/business-graph.html" title="Business 統計グラフ"></iframe>
-<script>
-'use strict';
-const frame=document.getElementById('graph-frame');
-frame.addEventListener('load',()=>{
-  try{
-    const doc=frame.contentDocument;
-    if(!doc||doc.getElementById('business-graph-enhance-loader'))return;
-    const script=doc.createElement('script');
-    script.id='business-graph-enhance-loader';
-    script.src='/business-graph-enhance.js';
-    doc.body.appendChild(script);
-  }catch(_){ }
-});
-</script>
+<!-- このファイルは廃止されました。business-graph.html に統合済みです。 -->
+<!-- business-graph-enhance.js は business-graph.html から直接読み込まれます。 -->
+<script>location.replace('/business-graph.html');</script>
 </body>
 </html>

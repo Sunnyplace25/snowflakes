@@ -31,6 +31,7 @@ export function addWorkRecord(db, {
   expense        = null,
   work_hours     = null,
   travel_hours   = null,
+  is_full_day    = 0,
   invoice_status = '対象外',
   payment_status = '対象外',
   memo           = null,
@@ -56,17 +57,18 @@ export function addWorkRecord(db, {
   }
 
   const effectiveJobId = job_id ?? randomUUID();
+  const effectiveIsFullDay = is_full_day ? 1 : 0;
   const stmt = db.prepare(`
     INSERT INTO work_records
       (job_id, date, category, work_type, content, client,
        income, expense, work_hours, travel_hours,
-       invoice_status, payment_status, memo)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       is_full_day, invoice_status, payment_status, memo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const result = stmt.run(
     effectiveJobId, date, category, work_type, content, client,
     income, expense, work_hours, travel_hours,
-    invoice_status, payment_status, memo
+    effectiveIsFullDay, invoice_status, payment_status, memo
   );
   return { rowid: result.lastInsertRowid, job_id: effectiveJobId };
 }
@@ -94,12 +96,24 @@ export function updateWorkRecordFull(db, id, fields = {}) {
   const {
     date, category, work_type, content, client,
     income, expense, work_hours, travel_hours,
+    is_full_day,
     invoice_status, payment_status, memo,
   } = fields;
 
   if (date !== undefined && date !== null) {
     if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       throw new Error('date は YYYY-MM-DD 形式で入力してください');
+    }
+    // 日付変更時のみ完全休日チェック
+    const current = db.prepare('SELECT date FROM work_records WHERE id = ?').get(id);
+    if (current && current.date !== date) {
+      const dayStatus = getDailyStatus(db, date);
+      if (dayStatus && dayStatus.is_full_day_off === 1) {
+        throw new Error(
+          `ConflictError: ${date} は完全休日として登録されています。` +
+          `変更するには完全休日を解除してください。`
+        );
+      }
     }
   }
   if (category !== undefined && category !== null) assertEnum(category, VALID_CATEGORIES, 'category');
@@ -143,6 +157,7 @@ export function updateWorkRecordFull(db, id, fields = {}) {
   if (expense !== undefined) add('expense', parsedExpense);
   if (work_hours !== undefined) add('work_hours', parsedWorkHours);
   if (travel_hours !== undefined) add('travel_hours', parsedTravelHours);
+  if (is_full_day !== undefined) add('is_full_day', is_full_day ? 1 : 0);
   if (invoice_status !== undefined) add('invoice_status', invoice_status);
   if (payment_status !== undefined) add('payment_status', payment_status);
   if (memo !== undefined) add('memo', memo);

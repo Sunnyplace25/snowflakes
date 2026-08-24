@@ -207,8 +207,6 @@ html, body {
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-card);
-  position: sticky;
-  top: 53px;
 }
 
 .works-table td {

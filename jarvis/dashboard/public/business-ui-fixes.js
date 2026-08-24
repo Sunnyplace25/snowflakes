@@ -39,21 +39,25 @@
       #nursery-shift-container::-webkit-scrollbar-thumb:hover,
       #nursery-bulk-grid::-webkit-scrollbar-thumb:hover { background: #64748b; background-clip: padding-box; }
 
+      #works-table-container {
+        max-height: min(60vh, 640px);
+        overflow-y: auto;
+        overflow-x: auto;
+        overscroll-behavior: contain;
+      }
       #works-table-container .works-table thead th,
       #nursery-shift-container .works-table thead th,
       #nursery-bulk-grid .works-table thead th {
         position: sticky;
         top: 0;
         z-index: 4;
-        background: #0f172a !important;
-        background-color: #0f172a !important;
-        opacity: 1 !important;
-        box-shadow: 0 1px 0 #334155;
+        background: #161b22;
+        box-shadow: 0 1px 0 #30363d;
       }
       #nursery-shift-container,
       #nursery-bulk-grid {
         max-height: min(48vh, 520px);
-        overflow-y: auto !important;
+        overflow-y: auto;
         overflow-x: auto;
         overscroll-behavior: contain;
       }
@@ -132,64 +136,6 @@
     }
   }
 
-  function addLinkedSubnav(panel, activeName, invoiceBtn, calendarBtn) {
-    if (!panel || $('.business-linked-subtabs', panel)) return;
-    const nav = document.createElement('nav');
-    nav.className = 'business-linked-subtabs';
-    nav.innerHTML = `
-      <button type="button" data-linked="invoice" class="${activeName === 'invoice' ? 'active' : ''}">請求書</button>
-      <button type="button" data-linked="calendar" class="${activeName === 'calendar' ? 'active' : ''}">Googleカレンダー</button>`;
-    panel.insertBefore(nav, panel.firstChild);
-    $('[data-linked="invoice"]', nav)?.addEventListener('click', () => invoiceBtn?.click());
-    $('[data-linked="calendar"]', nav)?.addEventListener('click', () => calendarBtn?.click());
-  }
-
-  function groupInvoiceAndCalendar() {
-    const tabs = $('#business-tabs');
-    if (!tabs) return;
-    const invoiceBtn = $('[data-biz-tab="invoice"]', tabs);
-    const calendarBtn = $('[data-biz-tab="calendar"]', tabs);
-    if (!invoiceBtn || !calendarBtn) return;
-
-    let groupBtn = $('#business-linked-tab', tabs);
-    if (!groupBtn) {
-      groupBtn = document.createElement('button');
-      groupBtn.id = 'business-linked-tab';
-      groupBtn.type = 'button';
-      groupBtn.className = 'sf-tab';
-      groupBtn.textContent = '請求・連携';
-      groupBtn.addEventListener('click', () => invoiceBtn.click());
-      tabs.appendChild(groupBtn);
-    }
-
-    invoiceBtn.style.display = 'none';
-    calendarBtn.style.display = 'none';
-    invoiceBtn.setAttribute('aria-hidden', 'true');
-    calendarBtn.setAttribute('aria-hidden', 'true');
-
-    const invoicePanel = $('#biz-tab-invoice');
-    const calendarPanel = $('#biz-tab-calendar');
-    addLinkedSubnav(invoicePanel, 'invoice', invoiceBtn, calendarBtn);
-    addLinkedSubnav(calendarPanel, 'calendar', invoiceBtn, calendarBtn);
-
-    const syncActive = (name) => queueMicrotask(() => {
-      groupBtn.classList.toggle('active', name === 'invoice' || name === 'calendar');
-    });
-    if (!invoiceBtn.dataset.linkedGroupBound) {
-      invoiceBtn.dataset.linkedGroupBound = '1';
-      invoiceBtn.addEventListener('click', () => syncActive('invoice'));
-    }
-    if (!calendarBtn.dataset.linkedGroupBound) {
-      calendarBtn.dataset.linkedGroupBound = '1';
-      calendarBtn.addEventListener('click', () => syncActive('calendar'));
-    }
-    $$('#business-tabs .sf-tab').forEach(btn => {
-      if (btn === groupBtn || btn === invoiceBtn || btn === calendarBtn || btn.dataset.linkedClearBound) return;
-      btn.dataset.linkedClearBound = '1';
-      btn.addEventListener('click', () => groupBtn.classList.remove('active'));
-    });
-  }
-
   function fixImportPreviewButton() {
     const candidates = $$('button').filter(btn => btn.textContent.includes('インポート内容を確認'));
     if (!candidates.length) return;
@@ -200,30 +146,10 @@
   function bindImportPreviewFix() {
     if (document.documentElement.dataset.importPreviewFixBound === '1') return;
     document.documentElement.dataset.importPreviewFixBound = '1';
+    // ファイル選択時のみ再評価（setInterval ポーリングは禁止）
     document.addEventListener('change', event => {
       if (event.target?.matches?.('input[type="file"]')) setTimeout(fixImportPreviewButton, 0);
     }, true);
-    setInterval(fixImportPreviewButton, 1200);
-  }
-
-  function injectGraphEnhancer() {
-    const frame = $('#business-analytics-graph-frame');
-    if (!frame) return;
-    const inject = () => {
-      try {
-        const doc = frame.contentDocument;
-        if (!doc || doc.getElementById('business-graph-enhance-loader')) return;
-        const script = doc.createElement('script');
-        script.id = 'business-graph-enhance-loader';
-        script.src = '/business-graph-enhance.js';
-        doc.body.appendChild(script);
-      } catch (_) {}
-    };
-    if (!frame.dataset.graphEnhancerBound) {
-      frame.dataset.graphEnhancerBound = '1';
-      frame.addEventListener('load', inject);
-    }
-    inject();
   }
 
   function apply() {
@@ -231,9 +157,7 @@
     relabelAudioDayOff();
     ensureNurseryCards();
     refreshNurseryCounts();
-    groupInvoiceAndCalendar();
     fixImportPreviewButton();
-    injectGraphEnhancer();
   }
 
   function init() {

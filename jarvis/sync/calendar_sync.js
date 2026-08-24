@@ -37,8 +37,9 @@ const INVOICE_LINE_ID_KEY = 'invoice_line_id';
 export function parseTimeFromDescription(description) {
   if (!description) return null;
 
-  // パターン1: (HH:MM-HH:MM) または (HH:MM〜HH:MM) — 括弧付き
-  const paren = description.match(/\((\d{1,2}):(\d{2})\s*[〜~－ー\-]\s*(\d{1,2}):(\d{2})\)/);
+  // パターン1: (HH:MM-HH:MM) または (HH:MM〜HH:MM) — 括弧付き（半角・全角・混在対応）
+  // 区切り: ASCII ハイフン / 全角ダッシュ / 全角チルダ / U+2010 HYPHEN (‐)
+  const paren = description.match(/[（(](\d{1,2}):(\d{2})\s*[〜~－ー\-\u2010]\s*(\d{1,2}):(\d{2})[)）]/);
   if (paren) {
     return {
       startH: parseInt(paren[1], 10), startM: parseInt(paren[2], 10),
@@ -47,8 +48,8 @@ export function parseTimeFromDescription(description) {
     };
   }
 
-  // パターン2: HH:MM-HH:MM または HH:MM〜HH:MM — 括弧なし
-  const plain = description.match(/(\d{1,2}):(\d{2})\s*[〜~－ー\-]\s*(\d{1,2}):(\d{2})/);
+  // パターン2: HH:MM-HH:MM または HH:MM〜HH:MM — 括弧なし（‐ U+2010含む）
+  const plain = description.match(/(\d{1,2}):(\d{2})\s*[〜~－ー\-\u2010]\s*(\d{1,2}):(\d{2})/);
   if (plain) {
     return {
       startH: parseInt(plain[1], 10), startM: parseInt(plain[2], 10),

@@ -29,14 +29,14 @@
 
   <!-- Business サブタブ -->
   <nav class="sf-tabs" id="business-tabs">
-    <button class="sf-tab active" data-biz-tab="monthly">月次</button>
-    <button class="sf-tab" data-biz-tab="invoice">請求書</button>
-    <button class="sf-tab" data-biz-tab="analytics">実績分析</button>
-    <button class="sf-tab" data-biz-tab="calendar">Google Calendar</button>
+    <button class="sf-tab active" data-biz-tab="analytics">実績分析</button>
+    <button class="sf-tab" data-biz-tab="graph">グラフ</button>
+    <button class="sf-tab" data-biz-tab="monthly">音声</button>
+    <button class="sf-tab" data-biz-tab="invoice">請求実績</button>
   </nav>
 
   <!-- ─── 月次タブ ──────────────────────────────────────────────────────── -->
-  <div id="biz-tab-monthly" class="sf-tab-panel">
+  <div id="biz-tab-monthly" class="sf-tab-panel" hidden>
 
   <!-- 月次サマリーカード（1行目：収支） -->
   <div class="cards-primary">
@@ -73,7 +73,7 @@
       <div class="card-value" id="card-travel-hours">—</div>
     </div>
     <div class="card">
-      <div class="card-label">完全休日</div>
+      <div class="card-label">音声休み</div>
       <div class="card-value" id="card-dayoff">—</div>
     </div>
   </div>
@@ -102,58 +102,27 @@
 
   </div><!-- /#biz-tab-monthly -->
 
-  <!-- ─── 請求書取込タブ ─────────────────────────────────────────────────── -->
+  <!-- ─── グラフタブ ───────────────────────────────────────────────────────── -->
+  <div id="biz-tab-graph" class="sf-tab-panel" hidden>
+    <iframe src="/business-graph.html" title="Business 統計グラフ"
+            style="width:100%;height:min(90vh,900px);border:0;border-radius:8px;background:#0d1117;display:block"></iframe>
+  </div><!-- /#biz-tab-graph -->
+
+  <!-- ─── 実績分析タブ ────────────────────────────────────────────────────── -->
+  <div id="biz-tab-analytics" class="sf-tab-panel">
+    <section class="section">
+      <div class="section-header">
+        <h2>実績分析</h2>
+        <span class="sf-note">work_records ベースの実績分析（別途実装予定）</span>
+      </div>
+      <div class="empty-state">実績分析機能は別途実装予定です</div>
+    </section>
+  </div><!-- /#biz-tab-analytics -->
+
+  <!-- biz-tab-merch / biz-tab-nursery は各専用 JS が動的生成 -->
+
+  <!-- ─── 請求実績タブ ──────────────────────────────────────────────────────── -->
   <div id="biz-tab-invoice" class="sf-tab-panel" hidden>
-
-    <!-- アップロードエリア -->
-    <section class="section">
-      <div class="section-header">
-        <h2>請求書 Excel 取込</h2>
-        <span class="sf-note">.xlsx をそのまま選択。CSVへの変換不要</span>
-      </div>
-      <div style="margin-bottom:20px">
-        <div id="invoice-dropzone"
-             style="border:2px dashed #334155;border-radius:8px;padding:32px;text-align:center;
-                    cursor:pointer;transition:border-color 0.2s;background:#0f172a">
-          <div style="font-size:14px;color:#94a3b8;margin-bottom:8px">クリックまたはドラッグ＆ドロップ</div>
-          <div style="font-size:12px;color:#475569">.xlsx 形式のみ対応</div>
-          <input type="file" id="invoice-file-input" accept=".xlsx" style="display:none">
-        </div>
-        <div id="invoice-file-info" style="margin-top:10px;font-size:13px;color:#94a3b8"></div>
-      </div>
-
-      <!-- プレビューエリア -->
-      <div id="invoice-preview-area" hidden>
-        <div id="invoice-preview-summary"
-             style="background:#1e293b;border-radius:6px;padding:14px 16px;margin-bottom:16px;
-                    font-size:13px;color:#94a3b8"></div>
-        <div id="invoice-preview-table-wrap" style="overflow-x:auto"></div>
-        <div id="invoice-preview-actions" style="margin-top:16px;display:flex;gap:10px;align-items:center">
-          <button id="invoice-import-btn" class="btn btn-primary" style="min-width:120px">取り込む</button>
-          <button id="invoice-cancel-btn" class="btn btn-secondary">キャンセル</button>
-          <span id="invoice-import-status" style="font-size:13px;color:#94a3b8"></span>
-        </div>
-      </div>
-
-      <!-- 取込済みメッセージ -->
-      <div id="invoice-already-msg"
-           style="display:none;background:#1e293b;border-radius:6px;padding:14px 16px;
-                  font-size:13px;color:#f59e0b"></div>
-    </section>
-
-    <!-- インポート履歴 -->
-    <section class="section">
-      <div class="section-header">
-        <h2>取込履歴</h2>
-        <button class="btn btn-secondary" id="invoice-history-refresh-btn" style="font-size:12px">更新</button>
-      </div>
-      <div id="invoice-history-container" class="loading">読み込み中...</div>
-    </section>
-
-  </div><!-- /#biz-tab-invoice -->
-
-  <!-- ─── 実績分析タブ ───────────────────────────────────────────────────── -->
-  <div id="biz-tab-analytics" class="sf-tab-panel" hidden>
 
     <!-- 年選択 -->
     <div class="sd-filter-bar">
@@ -208,9 +177,54 @@
       <div id="inv-lines-container"></div>
     </section>
 
-  </div><!-- /#biz-tab-analytics -->
+    <!-- 請求書 Excel 取込 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>請求書 Excel 取込</h2>
+        <span class="sf-note">.xlsx をそのまま選択。CSVへの変換不要</span>
+      </div>
+      <div style="margin-bottom:20px">
+        <div id="invoice-dropzone"
+             style="border:2px dashed #334155;border-radius:8px;padding:32px;text-align:center;
+                    cursor:pointer;transition:border-color 0.2s;background:#0f172a">
+          <div style="font-size:14px;color:#94a3b8;margin-bottom:8px">クリックまたはドラッグ＆ドロップ</div>
+          <div style="font-size:12px;color:#475569">.xlsx 形式のみ対応</div>
+          <input type="file" id="invoice-file-input" accept=".xlsx" style="display:none">
+        </div>
+        <div id="invoice-file-info" style="margin-top:10px;font-size:13px;color:#94a3b8"></div>
+      </div>
 
-  <!-- ─── Google Calendar タブ ──────────────────────────────────────────── -->
+      <!-- プレビューエリア -->
+      <div id="invoice-preview-area" hidden>
+        <div id="invoice-preview-summary"
+             style="background:#1e293b;border-radius:6px;padding:14px 16px;margin-bottom:16px;
+                    font-size:13px;color:#94a3b8"></div>
+        <div id="invoice-preview-table-wrap" style="overflow-x:auto"></div>
+        <div id="invoice-preview-actions" style="margin-top:16px;display:flex;gap:10px;align-items:center">
+          <button id="invoice-import-btn" class="btn btn-primary" style="min-width:120px">取り込む</button>
+          <button id="invoice-cancel-btn" class="btn btn-secondary">キャンセル</button>
+          <span id="invoice-import-status" style="font-size:13px;color:#94a3b8"></span>
+        </div>
+      </div>
+
+      <!-- 取込済みメッセージ -->
+      <div id="invoice-already-msg"
+           style="display:none;background:#1e293b;border-radius:6px;padding:14px 16px;
+                  font-size:13px;color:#f59e0b"></div>
+    </section>
+
+    <!-- インポート履歴 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>取込履歴</h2>
+        <button class="btn btn-secondary" id="invoice-history-refresh-btn" style="font-size:12px">更新</button>
+      </div>
+      <div id="invoice-history-container" class="loading">読み込み中...</div>
+    </section>
+
+  </div><!-- /#biz-tab-invoice -->
+
+  <!-- ─── Google Calendar パネル（非表示・将来の独立カレンダー画面用）────────── -->
   <div id="biz-tab-calendar" class="sf-tab-panel" hidden>
 
     <!-- 接続状態 -->
@@ -337,9 +351,23 @@
         </div>
 
         <div class="form-group form-full">
-          <label for="work-content">内容</label>
+          <label for="work-content-select">内容</label>
+          <select id="work-content-select">
+            <option value="">— 選択 —</option>
+            <option value="UHB みんテレ スタジオ音声業務 (14:00-19:30)">UHB みんテレ スタジオ音声業務 (14:00-19:30)</option>
+            <option value="UHB みんテレ スタジオ音声業務 (15:00-19:30)">UHB みんテレ スタジオ音声業務 (15:00-19:30)</option>
+            <option value="UHB いっとこ・みんテレ スタジオ音声業務 (10:00-19:30)">UHB いっとこ・みんテレ スタジオ音声業務 (10:00-19:30)</option>
+            <option value="UHB みんテレ スタジオ音声業務 (17:00-19:30)">UHB みんテレ スタジオ音声業務 (17:00-19:30)</option>
+            <option value="エスコン ファイターズ 練習中継 音声業務">エスコン ファイターズ 練習中継 音声業務</option>
+            <option value="meiji cup ゴルフ 音声業務">meiji cup ゴルフ 音声業務</option>
+            <option value="TVh 競馬中継 音声業務">TVh 競馬中継 音声業務</option>
+            <option value="UHB 競馬中継 音声業務">UHB 競馬中継 音声業務</option>
+            <option value="北海道マラソン スタジオ音声業務">北海道マラソン スタジオ音声業務</option>
+            <option value="__direct__">直接入力</option>
+          </select>
           <input type="text" id="work-content" name="content"
-            placeholder="例：UHB「みんテレ」スタジオAUD・祝日対応">
+            placeholder="仕事内容を入力"
+            style="display:none;margin-top:6px;width:100%;box-sizing:border-box">
         </div>
 
         <div class="form-group">
@@ -353,8 +381,19 @@
         </div>
 
         <div class="form-group">
-          <label for="work-hours">労働時間（h）</label>
-          <input type="number" id="work-hours" name="work_hours" min="0" step="0.5" placeholder="0.0">
+          <label for="work-hours-select">労働時間</label>
+          <select id="work-hours-select">
+            <option value="">—</option>
+            <option value="2.5h">2.5h</option>
+            <option value="4.5h">4.5h</option>
+            <option value="5.5h">5.5h</option>
+            <option value="9.5h">9.5h</option>
+            <option value="1日">1日</option>
+            <option value="__direct__">直接入力</option>
+          </select>
+          <input type="text" id="work-hours" name="work_hours"
+            placeholder="例: 3.5h"
+            style="display:none;margin-top:4px;width:100%;box-sizing:border-box">
         </div>
 
         <div class="form-group">
@@ -468,9 +507,23 @@
         </div>
 
         <div class="form-group form-full">
-          <label for="edit-work-content">内容</label>
+          <label for="edit-work-content-select">内容</label>
+          <select id="edit-work-content-select">
+            <option value="">— 選択 —</option>
+            <option value="UHB みんテレ スタジオ音声業務 (14:00-19:30)">UHB みんテレ スタジオ音声業務 (14:00-19:30)</option>
+            <option value="UHB みんテレ スタジオ音声業務 (15:00-19:30)">UHB みんテレ スタジオ音声業務 (15:00-19:30)</option>
+            <option value="UHB いっとこ・みんテレ スタジオ音声業務 (10:00-19:30)">UHB いっとこ・みんテレ スタジオ音声業務 (10:00-19:30)</option>
+            <option value="UHB みんテレ スタジオ音声業務 (17:00-19:30)">UHB みんテレ スタジオ音声業務 (17:00-19:30)</option>
+            <option value="エスコン ファイターズ 練習中継 音声業務">エスコン ファイターズ 練習中継 音声業務</option>
+            <option value="meiji cup ゴルフ 音声業務">meiji cup ゴルフ 音声業務</option>
+            <option value="TVh 競馬中継 音声業務">TVh 競馬中継 音声業務</option>
+            <option value="UHB 競馬中継 音声業務">UHB 競馬中継 音声業務</option>
+            <option value="北海道マラソン スタジオ音声業務">北海道マラソン スタジオ音声業務</option>
+            <option value="__direct__">直接入力</option>
+          </select>
           <input type="text" id="edit-work-content" name="content"
-            placeholder="例：UHB「みんテレ」スタジオAUD">
+            placeholder="仕事内容を入力"
+            style="display:none;margin-top:6px;width:100%;box-sizing:border-box">
         </div>
 
         <div class="form-group">
@@ -484,8 +537,19 @@
         </div>
 
         <div class="form-group">
-          <label for="edit-work-hours">労働時間（h）</label>
-          <input type="number" id="edit-work-hours" name="work_hours" min="0" step="0.5" placeholder="0.0">
+          <label for="edit-work-hours-select">労働時間</label>
+          <select id="edit-work-hours-select">
+            <option value="">—</option>
+            <option value="2.5h">2.5h</option>
+            <option value="4.5h">4.5h</option>
+            <option value="5.5h">5.5h</option>
+            <option value="9.5h">9.5h</option>
+            <option value="1日">1日</option>
+            <option value="__direct__">直接入力</option>
+          </select>
+          <input type="text" id="edit-work-hours" name="work_hours"
+            placeholder="例: 3.5h"
+            style="display:none;margin-top:4px;width:100%;box-sizing:border-box">
         </div>
 
         <div class="form-group">
@@ -526,6 +590,24 @@
   </div>
 
 </div><!-- /.modal-overlay -->
+
+<!-- ─── 完全休日 確認ダイアログ ──────────────────────────────────────────────── -->
+<div id="dayoff-confirm-wrap"
+     style="display:none;position:fixed;inset:0;z-index:9999;
+            background:rgba(0,0,0,0.72);align-items:center;justify-content:center;padding:24px">
+  <div class="modal" style="max-width:380px;display:block">
+    <h3>完全休日への仕事登録</h3>
+    <p style="margin:16px 0 20px;color:var(--text-sec);line-height:1.8;font-size:14px">
+      <strong id="dayoff-confirm-date"></strong> は完全休日に設定されています。<br>
+      仕事を登録すると完全休日を解除します。<br>
+      変更しますか？
+    </p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="dayoff-cancel-btn">キャンセル</button>
+      <button type="button" class="btn btn-primary" id="dayoff-confirm-btn">変更する</button>
+    </div>
+  </div>
+</div>
 
 <!-- ─── Main: Snow flakes ────────────────────────────────────────────────── -->
 <div id="module-sf" class="main" hidden>

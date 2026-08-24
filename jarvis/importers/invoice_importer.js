@@ -31,7 +31,7 @@ const CATEGORY_RULES = [
  * @returns {string}
  */
 export function classifyWork(description) {
-  const lower = description.toLowerCase();
+  const lower = toHalfWidth(description).toLowerCase();
   for (const rule of CATEGORY_RULES) {
     for (const p of rule.patterns) {
       if (lower.includes(p.toLowerCase())) return rule.category;
@@ -42,7 +42,9 @@ export function classifyWork(description) {
 
 // ─── 全角→半角変換 ────────────────────────────────────────────────────────────
 function toHalfWidth(str) {
-  return String(str).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+  return String(str)
+    .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+    .replace(/[Ａ-Ｚａ-ｚ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
 }
 
 // ─── Excel シリアル日付 → YYYY-MM-DD ─────────────────────────────────────────

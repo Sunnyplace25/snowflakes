@@ -362,6 +362,11 @@ const server = createServer(async (req, res) => {
         html = html.replace('</body>', `${merchScript}\n</body>`);
       }
 
+      const uiFixesScript = '<script src="business-ui-fixes.js"></script>';
+      if (!html.includes('business-ui-fixes.js')) {
+        html = html.replace('</body>', `${uiFixesScript}\n</body>`);
+      }
+
       const soundropGroupScript = '<script src="soundrop-group.js"></script>';
       if (!html.includes('soundrop-group.js')) {
         html = html.replace('</body>', `${soundropGroupScript}\n</body>`);

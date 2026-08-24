@@ -10,6 +10,100 @@
 let currentMonth = '';   // "YYYY-MM"
 let currentWorks = [];   // 現在表示中の仕事一覧（編集モーダル用）
 
+// ─── 仕事内容・労働時間 プルダウン定数 ──────────────────────────────────────────
+const CONTENT_OPTIONS = [
+  'UHB みんテレ スタジオ音声業務 (14:00-19:30)',
+  'UHB みんテレ スタジオ音声業務 (15:00-19:30)',
+  'UHB いっとこ・みんテレ スタジオ音声業務 (10:00-19:30)',
+  'UHB みんテレ スタジオ音声業務 (17:00-19:30)',
+  'エスコン ファイターズ 練習中継 音声業務',
+  'meiji cup ゴルフ 音声業務',
+  'TVh 競馬中継 音声業務',
+  'UHB 競馬中継 音声業務',
+  '北海道マラソン スタジオ音声業務',
+];
+
+// REAL値 → 表示ラベル
+const HOURS_TO_LABEL = { 2.5: '2.5h', 4.5: '4.5h', 5.5: '5.5h', 9.5: '9.5h' };
+
+/** selectの value 文字列から数値 work_hours を返す（"4.5h"→4.5、"1日"→null） */
+function parseHoursSelect(selVal, directInputId) {
+  if (!selVal || selVal === '1日') return null;
+  if (selVal === '__direct__') {
+    const raw = document.getElementById(directInputId).value.trim().replace(/[hHｈ\s]/g, '');
+    const n = parseFloat(raw);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  }
+  const n = parseFloat(selVal.replace(/[hHｈ]/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
+
+/** contentセレクトから保存する文字列を返す */
+function parseContentSelect(selId, directInputId) {
+  const sel = document.getElementById(selId).value;
+  if (sel === '__direct__') {
+    return document.getElementById(directInputId).value.trim() || null;
+  }
+  return sel || null;
+}
+
+/** プルダウン ↔ 直接入力 の表示切替をセットアップ */
+function setupSelectDirect(selectId, directInputId) {
+  document.getElementById(selectId).addEventListener('change', function () {
+    const inp = document.getElementById(directInputId);
+    const show = this.value === '__direct__';
+    inp.style.display = show ? '' : 'none';
+    if (!show) inp.value = '';
+  });
+}
+
+/** 既存値から content プルダウンを初期化 */
+function initContentSelect(selectId, directInputId, currentValue) {
+  const sel = document.getElementById(selectId);
+  const inp = document.getElementById(directInputId);
+  if (currentValue && CONTENT_OPTIONS.includes(currentValue)) {
+    sel.value = currentValue;
+    inp.style.display = 'none';
+    inp.value = '';
+  } else if (currentValue) {
+    sel.value = '__direct__';
+    inp.style.display = '';
+    inp.value = currentValue;
+  } else {
+    sel.value = '';
+    inp.style.display = 'none';
+    inp.value = '';
+  }
+}
+
+/** 既存値から work_hours プルダウンを初期化
+ *  @param {boolean} isFullDay  true なら「1日」を選択済みにする
+ */
+function initHoursSelect(selectId, directInputId, currentValue, isFullDay = false) {
+  const sel = document.getElementById(selectId);
+  const inp = document.getElementById(directInputId);
+  if (isFullDay) {
+    sel.value = '1日';
+    inp.style.display = 'none';
+    inp.value = '';
+  } else if (currentValue !== null && currentValue !== undefined) {
+    const label = HOURS_TO_LABEL[currentValue];
+    if (label) {
+      sel.value = label;
+      inp.style.display = 'none';
+      inp.value = '';
+    } else {
+      sel.value = '__direct__';
+      inp.style.display = '';
+      inp.value = currentValue + 'h';
+    }
+  } else {
+    sel.value = '';
+    inp.style.display = 'none';
+    inp.value = '';
+  }
+}
+
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
 /** PC ローカル日時で YYYY-MM-DD を返す */
@@ -82,55 +176,70 @@ function updateHeader() {
 // ─── サマリーカード更新 ───────────────────────────────────────────────────────
 
 async function loadSummary() {
-  const { data } = await api('GET', `/api/summary?month=${currentMonth}`);
-  if (!data.ok) return;
+  try {
+    const { data } = await api('GET', `/api/summary?month=${currentMonth}`);
+    if (!data.ok) return;
 
-  const s = data.summary;
-  document.getElementById('card-income').textContent    = yen(s.total_income);
-  document.getElementById('card-expense').textContent   = yen(s.total_expense);
-  document.getElementById('card-profit').textContent    = yen(s.profit);
-  document.getElementById('card-uninvoiced').textContent = `${data.uninvoiced}件`;
-  document.getElementById('card-unpaid').textContent     = `${data.unpaid}件`;
-  document.getElementById('card-work-hours').textContent   = hours(s.total_work_hours);
-  document.getElementById('card-travel-hours').textContent = hours(s.total_travel_hours);
-  document.getElementById('card-dayoff').textContent       = `${data.full_day_off}日`;
+    const s = data.summary;
+    document.getElementById('card-income').textContent    = yen(s.total_income);
+    document.getElementById('card-expense').textContent   = yen(s.total_expense);
+    document.getElementById('card-profit').textContent    = yen(s.profit);
+    document.getElementById('card-uninvoiced').textContent = `${data.uninvoiced}件`;
+    document.getElementById('card-unpaid').textContent     = `${data.unpaid}件`;
+    document.getElementById('card-work-hours').textContent   = hours(s.total_work_hours);
+    document.getElementById('card-travel-hours').textContent = hours(s.total_travel_hours);
+    document.getElementById('card-dayoff').textContent       = `${data.full_day_off}日`;
 
-  // 利益の色分け
-  const profitEl = document.getElementById('card-profit');
-  profitEl.className = 'card-value ' + (s.profit >= 0 ? 'green' : 'red');
+    // 利益の色分け
+    const profitEl = document.getElementById('card-profit');
+    profitEl.className = 'card-value ' + (s.profit >= 0 ? 'green' : 'red');
 
-  // 未請求・未入金の強調
-  document.getElementById('card-uninvoiced').className =
-    'card-value ' + (data.uninvoiced > 0 ? 'yellow' : '');
-  document.getElementById('card-unpaid').className =
-    'card-value ' + (data.unpaid > 0 ? 'red' : '');
+    // 未請求・未入金の強調
+    document.getElementById('card-uninvoiced').className =
+      'card-value ' + (data.uninvoiced > 0 ? 'yellow' : '');
+    document.getElementById('card-unpaid').className =
+      'card-value ' + (data.unpaid > 0 ? 'red' : '');
+  } catch (err) {
+    console.error('[JARVIS] loadSummary error:', err);
+  }
 }
 
 // ─── 今日の仕事 ───────────────────────────────────────────────────────────────
 
 async function loadToday() {
-  const { data } = await api('GET', '/api/today');
-  if (!data.ok) return;
+  try {
+    const { data } = await api('GET', '/api/today');
+    if (!data.ok) return;
 
-  const el = document.getElementById('today-works');
-  if (data.works.length === 0) {
-    el.innerHTML = '<p class="today-empty">本日の仕事はありません</p>';
-    return;
+    const el = document.getElementById('today-works');
+    if (data.works.length === 0) {
+      el.innerHTML = '<p class="today-empty">本日の仕事はありません</p>';
+      return;
+    }
+    el.innerHTML = data.works.map(w => `
+      <div class="today-work-item">
+        <span class="today-work-content">${esc(w.content || w.category)}</span>
+        ${w.client ? `<span class="today-work-client">${esc(w.client)}</span>` : ''}
+        ${w.income != null ? `<span class="today-work-income">${yen(w.income)}</span>` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('[JARVIS] loadToday error:', err);
   }
-  el.innerHTML = data.works.map(w => `
-    <div class="today-work-item">
-      <span class="today-work-content">${esc(w.content || w.category)}</span>
-      ${w.client ? `<span class="today-work-client">${esc(w.client)}</span>` : ''}
-      ${w.income != null ? `<span class="today-work-income">${yen(w.income)}</span>` : ''}
-    </div>
-  `).join('');
 }
 
 // ─── 仕事一覧 ─────────────────────────────────────────────────────────────────
 
 async function loadWorks() {
-  const { data } = await api('GET', `/api/works?month=${currentMonth}`);
   const container = document.getElementById('works-table-container');
+  let data;
+  try {
+    ({ data } = await api('GET', `/api/works?month=${currentMonth}`));
+  } catch (err) {
+    console.error('[JARVIS] loadWorks error:', err);
+    container.innerHTML = '<div class="empty-state" style="color:#f85149">データの読み込みに失敗しました</div>';
+    return;
+  }
   if (!data.ok || data.works.length === 0) {
     currentWorks = [];
     container.innerHTML = '<div class="empty-state">この月の仕事はまだありません</div>';
@@ -172,7 +281,7 @@ async function loadWorks() {
       </td>
       <td class="col-income">${w.income != null ? yen(w.income) : '—'}</td>
       <td class="col-expense">${w.expense ? yen(w.expense) : '—'}</td>
-      <td class="col-hours">${w.work_hours != null ? w.work_hours + 'h' : '—'}</td>
+      <td class="col-hours">${w.is_full_day ? '1日' : (w.work_hours != null ? w.work_hours + 'h' : '—')}</td>
       <td class="col-status">
         ${statusSelect(w.id, 'invoice_status', w.invoice_status, ['対象外', '未請求', '請求済'])}
         ${statusSelect(w.id, 'payment_status', w.payment_status, ['対象外', '未入金', '入金済'])}
@@ -206,7 +315,12 @@ window.updateStatus = async function(id, field, value) {
 
 // ─── 全体リフレッシュ ─────────────────────────────────────────────────────────
 
+// CRUD後にグラフiframeのリロードが必要かどうかのフラグ
+let _graphDataStale = false;
+
 async function refresh() {
+  invAnalyticsFull = null;   // 請求実績キャッシュをクリア
+  _graphDataStale  = true;   // グラフiframeを次回タブ切替時にリロード
   updateHeader();
   await Promise.all([loadSummary(), loadToday(), loadWorks()]);
 }
@@ -235,17 +349,32 @@ document.getElementById('add-work-btn').addEventListener('click', () => {
 document.getElementById('work-form').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target;
-  document.getElementById('work-error').textContent = '';
+  const errEl = document.getElementById('work-error');
+  errEl.textContent = '';
+
+  // 内容プルダウン検証
+  const cSelVal = document.getElementById('work-content-select').value;
+  if (cSelVal === '__direct__' && !document.getElementById('work-content').value.trim()) {
+    errEl.textContent = '仕事内容を入力してください';
+    return;
+  }
+  // 労働時間プルダウン検証
+  const hSelVal = document.getElementById('work-hours-select').value;
+  if (hSelVal === '__direct__' && !document.getElementById('work-hours').value.trim()) {
+    errEl.textContent = '労働時間を入力してください';
+    return;
+  }
 
   const body = {
     date:           f.date.value,
     category:       f.category.value,
     work_type:      f.work_type.value   || null,
-    content:        f.content.value     || null,
+    content:        parseContentSelect('work-content-select', 'work-content'),
     client:         f.client.value      || null,
     income:         f.income.value      ? Number(f.income.value)      : null,
     expense:        f.expense.value     ? Number(f.expense.value)     : null,
-    work_hours:     f.work_hours.value  ? Number(f.work_hours.value)  : null,
+    work_hours:     parseHoursSelect(hSelVal, 'work-hours'),
+    is_full_day:    hSelVal === '1日',
     travel_hours:   f.travel_hours.value ? Number(f.travel_hours.value) : null,
     invoice_status: f.invoice_status.value,
     payment_status: f.payment_status.value,
@@ -256,9 +385,18 @@ document.getElementById('work-form').addEventListener('submit', async e => {
   if (status === 201 && data.ok) {
     hideModal();
     f.reset();
+    document.getElementById('work-content-select').value = '';
+    document.getElementById('work-content').style.display = 'none';
+    document.getElementById('work-hours-select').value = '';
+    document.getElementById('work-hours').style.display = 'none';
     await refresh();
+  } else if (status === 409) {
+    _pendingWorkBody = body;
+    _pendingWorkMode = 'add';
+    _pendingWorkId   = null;
+    showDayoffConfirm(body.date);
   } else {
-    document.getElementById('work-error').textContent = data.error || '登録に失敗しました';
+    errEl.textContent = data.error || '登録に失敗しました';
   }
 });
 
@@ -302,33 +440,52 @@ window.openEditModal = function(id) {
   document.getElementById('edit-work-category').value   = w.category;
   document.getElementById('edit-work-type').value       = w.work_type   || '';
   document.getElementById('edit-work-client').value     = w.client      || '';
-  document.getElementById('edit-work-content').value    = w.content     || '';
   document.getElementById('edit-work-income').value     = w.income  != null ? w.income       : '';
   document.getElementById('edit-work-expense').value    = w.expense != null ? w.expense      : '';
-  document.getElementById('edit-work-hours').value      = w.work_hours   != null ? w.work_hours   : '';
   document.getElementById('edit-travel-hours').value    = w.travel_hours != null ? w.travel_hours : '';
   document.getElementById('edit-work-invoice').value    = w.invoice_status;
   document.getElementById('edit-work-payment').value    = w.payment_status;
   document.getElementById('edit-work-memo').value       = w.memo        || '';
   document.getElementById('edit-work-error').textContent = '';
+
+  // 内容プルダウン初期化
+  initContentSelect('edit-work-content-select', 'edit-work-content', w.content || '');
+  // 労働時間プルダウン初期化（is_full_day=1 なら「1日」を選択済みにする）
+  initHoursSelect('edit-work-hours-select', 'edit-work-hours', w.work_hours ?? null, !!w.is_full_day);
+
   showModal('modal-edit-work');
 };
 
 document.getElementById('edit-work-form').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target;
-  document.getElementById('edit-work-error').textContent = '';
+  const errEl = document.getElementById('edit-work-error');
+  errEl.textContent = '';
   const id = Number(document.getElementById('edit-work-id').value);
+
+  // 内容プルダウン検証
+  const cSelVal = document.getElementById('edit-work-content-select').value;
+  if (cSelVal === '__direct__' && !document.getElementById('edit-work-content').value.trim()) {
+    errEl.textContent = '仕事内容を入力してください';
+    return;
+  }
+  // 労働時間プルダウン検証
+  const hSelVal = document.getElementById('edit-work-hours-select').value;
+  if (hSelVal === '__direct__' && !document.getElementById('edit-work-hours').value.trim()) {
+    errEl.textContent = '労働時間を入力してください';
+    return;
+  }
 
   const body = {
     date:           f.date.value,
     category:       f.category.value,
     work_type:      f.work_type.value     || null,
-    content:        f.content.value       || null,
+    content:        parseContentSelect('edit-work-content-select', 'edit-work-content'),
     client:         f.client.value        || null,
     income:         f.income.value        ? Number(f.income.value)       : null,
     expense:        f.expense.value       ? Number(f.expense.value)      : null,
-    work_hours:     f.work_hours.value    ? Number(f.work_hours.value)   : null,
+    work_hours:     parseHoursSelect(hSelVal, 'edit-work-hours'),
+    is_full_day:    hSelVal === '1日',
     travel_hours:   f.travel_hours.value  ? Number(f.travel_hours.value) : null,
     invoice_status: f.invoice_status.value,
     payment_status: f.payment_status.value,
@@ -339,8 +496,13 @@ document.getElementById('edit-work-form').addEventListener('submit', async e => 
   if (status === 200 && data.ok) {
     hideModal();
     await refresh();
+  } else if (status === 409) {
+    _pendingWorkBody = body;
+    _pendingWorkMode = 'edit';
+    _pendingWorkId   = id;
+    showDayoffConfirm(body.date);
   } else {
-    document.getElementById('edit-work-error').textContent = data.error || '更新に失敗しました';
+    errEl.textContent = data.error || '更新に失敗しました';
   }
 });
 
@@ -362,6 +524,82 @@ document.getElementById('modal-overlay').addEventListener('click', e => {
 
 document.querySelectorAll('.modal-cancel').forEach(btn => {
   btn.addEventListener('click', hideModal);
+});
+
+// ─── プルダウン ↔ 直接入力 セットアップ ─────────────────────────────────────────
+setupSelectDirect('work-content-select',      'work-content');
+setupSelectDirect('work-hours-select',        'work-hours');
+setupSelectDirect('edit-work-content-select', 'edit-work-content');
+setupSelectDirect('edit-work-hours-select',   'edit-work-hours');
+
+// ─── 完全休日 確認ダイアログ ──────────────────────────────────────────────────────
+let _pendingWorkBody = null;
+let _pendingWorkMode = null;   // 'add' | 'edit'
+let _pendingWorkId   = null;
+
+function showDayoffConfirm(date) {
+  document.getElementById('dayoff-confirm-date').textContent = date;
+  document.getElementById('dayoff-confirm-wrap').style.display = 'flex';
+}
+
+function hideDayoffConfirm() {
+  document.getElementById('dayoff-confirm-wrap').style.display = 'none';
+  _pendingWorkBody = null;
+  _pendingWorkMode = null;
+  _pendingWorkId   = null;
+}
+
+document.getElementById('dayoff-cancel-btn').addEventListener('click', hideDayoffConfirm);
+
+document.getElementById('dayoff-confirm-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('dayoff-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = '処理中...';
+
+  // ダイアログクローズ前に値をキャプチャ
+  const date = document.getElementById('dayoff-confirm-date').textContent;
+  const body = _pendingWorkBody;
+  const mode = _pendingWorkMode;
+  const wid  = _pendingWorkId;
+
+  try {
+    // 完全休日を解除
+    const dayRes = await api('POST', '/api/day', { date, is_full_day_off: false });
+    if (!dayRes.data.ok) {
+      document.getElementById(mode === 'add' ? 'work-error' : 'edit-work-error')
+        .textContent = '休日設定の解除に失敗しました';
+      hideDayoffConfirm();
+      return;
+    }
+
+    // 仕事を登録・更新
+    const result = mode === 'add'
+      ? await api('POST', '/api/work', body)
+      : await api('PUT', `/api/work/${wid}`, body);
+
+    hideDayoffConfirm();
+
+    if ((result.status === 201 || result.status === 200) && result.data.ok) {
+      hideModal();
+      if (mode === 'add') {
+        document.getElementById('work-form').reset();
+        document.getElementById('work-content-select').value = '';
+        document.getElementById('work-content').style.display = 'none';
+        document.getElementById('work-hours-select').value = '';
+        document.getElementById('work-hours').style.display = 'none';
+      }
+      await refresh();
+    } else {
+      document.getElementById(mode === 'add' ? 'work-error' : 'edit-work-error')
+        .textContent = result.data.error || '登録に失敗しました';
+    }
+  } catch (err) {
+    hideDayoffConfirm();
+    alert('エラー: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '変更する';
+  }
 });
 
 // ─── JARVIS 入力欄 ────────────────────────────────────────────────────────────
@@ -399,7 +637,20 @@ function esc(str) {
 
 (async function init() {
   currentMonth = localYearMonth();
-  await refresh();
+  try {
+    await refresh();
+  } catch (err) {
+    console.error('[JARVIS] 初期化エラー:', err);
+    // 黒画面にならないよう各エリアにエラーメッセージを表示
+    const errStyle = 'padding:16px;color:#f85149;font-size:13px';
+    const errMsg   = '読み込みに失敗しました。サーバーが起動しているか確認してください。';
+    ['today-works', 'works-table-container'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.className = ''; el.style.cssText = errStyle; el.textContent = errMsg; }
+    });
+  }
+  // 初期 Business サブタブを analytics に設定
+  switchBizTab('analytics');
 })();
 
 // ─── モジュールタブ切替 ───────────────────────────────────────────────────────
@@ -470,38 +721,62 @@ document.querySelectorAll('.module-tab').forEach(btn => {
 
 // ─── Business サブタブ ────────────────────────────────────────────────────────
 
-let bizCurrentTab = 'monthly';
+let bizCurrentTab = 'analytics';
 
 function switchBizTab(name) {
   bizCurrentTab = name;
 
-  // panel 表示切替
-  ['monthly', 'invoice', 'analytics', 'calendar'].forEach(t => {
+  // パネル表示切替
+  ['analytics', 'graph', 'monthly', 'merch', 'nursery', 'invoice'].forEach(t => {
     const el = document.getElementById(`biz-tab-${t}`);
     if (el) el.hidden = (t !== name);
   });
 
   // ボタンの active 状態
-  document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
+  document.querySelectorAll('#business-tabs [data-biz-tab]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.bizTab === name);
   });
 
-  if (name === 'invoice')   initInvoiceTab();
+  // グラフタブ：CRUD後にデータが変更されていればiframeをリロード
+  if (name === 'graph' && _graphDataStale) {
+    _graphDataStale = false;
+    const iframe = document.querySelector('#biz-tab-graph iframe');
+    if (iframe) iframe.src = iframe.src;  // eslint-disable-line no-self-assign
+  }
+
   if (name === 'analytics') initAnalyticsTab();
-  if (name === 'calendar')  initCalendarTab();
+  if (name === 'invoice')   initInvoiceTab();
+  // initCalendarTab() は将来の独立カレンダー画面で使用（現在は非表示）
 }
 
 document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
   btn.addEventListener('click', () => switchBizTab(btn.dataset.bizTab));
 });
 
-// ─── 請求書取込タブ ───────────────────────────────────────────────────────────
+// ─── 請求実績タブ（invoice analytics + Excel 取込）───────────────────────────
 
 let invoiceFileBuffer = null;  // base64 of current file
 let invoiceFilename   = '';
 let invoiceInitialized = false;
 
 function initInvoiceTab() {
+  const yearSel = document.getElementById('inv-year-select');
+  if (yearSel && !yearSel.dataset.listenerBound) {
+    yearSel.dataset.listenerBound = '1';
+    yearSel.addEventListener('change', async e => {
+      invCurrentYear = e.target.value;
+      await renderAnalytics();
+    });
+  }
+  if (!invAnalyticsFull) {
+    loadFullAnalytics().then(() => {
+      populateYearSelect();
+      renderAnalytics();
+    });
+  } else {
+    populateYearSelect();
+    renderAnalytics();
+  }
   loadInvoiceHistory();
 }
 
@@ -716,17 +991,13 @@ document.getElementById('invoice-history-refresh-btn')
   .addEventListener('click', loadInvoiceHistory);
 
 // ─── 実績分析タブ ─────────────────────────────────────────────────────────────
+// work_records ベースの実績分析は別途実装予定。現在はプレースホルダー。
 
 let invAnalyticsFull = null;   // GET /api/invoice/analytics のキャッシュ
 let invCurrentYear   = '';     // '' = 全期間
 
-async function initAnalyticsTab() {
-  // 初回のみ全期間データを取得
-  if (!invAnalyticsFull) {
-    await loadFullAnalytics();
-    populateYearSelect();
-  }
-  await renderAnalytics();
+function initAnalyticsTab() {
+  // 将来: work_records ベースの集計処理をここに実装
 }
 
 async function loadFullAnalytics() {
@@ -738,6 +1009,7 @@ async function loadFullAnalytics() {
 
 function populateYearSelect() {
   const sel   = document.getElementById('inv-year-select');
+  if (!sel) return;
   const years = invAnalyticsFull?.availableYears ?? [];
 
   // 既存オプション（全期間以外）を削除
@@ -758,10 +1030,7 @@ function populateYearSelect() {
   sel.value = invCurrentYear;
 }
 
-document.getElementById('inv-year-select').addEventListener('change', async e => {
-  invCurrentYear = e.target.value;
-  await renderAnalytics();
-});
+// inv-year-select のイベントリスナーは initInvoiceTab() 内で一度だけ登録する
 
 async function renderAnalytics() {
   if (invCurrentYear) {

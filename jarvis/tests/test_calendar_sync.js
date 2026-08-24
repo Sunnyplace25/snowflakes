@@ -307,6 +307,36 @@ await test('parseTimeFromDescription: null / 空文字は null を返す', () =>
   assert.equal(parseTimeFromDescription(''), null);
 });
 
+await test('parseTimeFromDescription: (HH:MM‐HH:MM) U+2010ハイフン対応', () => {
+  // ‐ は U+2010 HYPHEN（ASCII ハイフンとは別文字）
+  const result = parseTimeFromDescription('UHBスタジオ 音声業務 (17:00\u201019:30)');
+  assert.ok(result !== null, 'U+2010 ハイフンを区切りとして認識する');
+  assert.equal(result.startH, 17);
+  assert.equal(result.startM, 0);
+  assert.equal(result.endH,   19);
+  assert.equal(result.endM,   30);
+});
+
+await test('parseTimeFromDescription: (HH:MM-HH:MM）全角閉じ括弧の混在対応', () => {
+  // 開き括弧が半角、閉じ括弧が全角の混在ケース
+  const result = parseTimeFromDescription('UHBスタジオ 音声業務 (10:00-19:30\uff09');
+  assert.ok(result !== null, '混在括弧を paren パターンで認識する');
+  assert.equal(result.startH, 10);
+  assert.equal(result.matchStr, '(10:00-19:30\uff09', 'matchStr が括弧ごと含まれる');
+});
+
+await test('buildEventFromLine: 混在括弧ケースでタイトルに括弧が残らない', () => {
+  const line = {
+    id: 99, work_date: '2026-05-15',
+    description: 'UHBスタジオ 音声業務 (10:00-19:30\uff09',
+    client_name: 'テスト取引先',
+  };
+  const event = buildEventFromLine(line);
+  assert.ok(!event.summary.includes('('), 'タイトルに開き括弧が残らない');
+  assert.ok(!event.summary.includes('\uff09'), 'タイトルに全角閉じ括弧が残らない');
+  assert.equal(event.start.dateTime, '2026-05-15T10:00:00+09:00');
+});
+
 // ─── イベント構築 ─────────────────────────────────────────────────────────────
 
 section('Section: イベント構築');

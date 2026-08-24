@@ -13,6 +13,141 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-08-24 — ダッシュボード不具合修正（黒画面 / データ未反映 / グラフ競合）
+
+### 目的
+1. 画面が黒いままになる不具合を修正（初期化エラー時の無音失敗）
+2. 仕事登録・編集後にグラフタブのデータが更新されない問題を修正
+3. `business-graph.html` と `business-graph-enhance.js` の SVG 二重描画競合を解消
+
+### 根本原因
+
+**黒画面：**
+- `init()` IIFE に try/catch がなく、`refresh()` が API エラー等で失敗すると例外が無音で消え、ページ全体が黒いまま停止していた
+- `loadSummary()` / `loadToday()` / `loadWorks()` も try/catch なしのため、例外が Promise.all を通じて init() まで伝播していた
+
+**データ未反映：**
+- グラフタブ（`#biz-tab-graph`）は `<iframe>` で分離されており、メインアプリの CRUD 後も自動リロードされない
+- `invAnalyticsFull` キャッシュが `refresh()` 呼び出し後もクリアされないため、請求実績タブが古いデータを保持し続けていた
+
+**グラフ競合：**
+- `business-graph.html` の `load()` と `business-graph-enhance.js` の `render()` が同一の `#monthly-chart` SVG に非同期で競合描画（先着が後から上書きされる）
+- どちらが最後に描画されるかは通信速度次第で決まり、表示が安定しない
+
+### 変更ファイル
+- `dashboard/public/app.js`
+- `dashboard/public/business-graph.html`
+
+### 実装内容
+
+**app.js**
+- `loadSummary()` / `loadToday()` / `loadWorks()` に try/catch を追加。各関数が失敗してもその他の表示には影響しない
+- `refresh()` 冒頭に `invAnalyticsFull = null`（請求実績キャッシュクリア）と `_graphDataStale = true` 追加
+- `init()` IIFE に try/catch を追加。失敗時は各エリアにエラーメッセージを表示（黒画面を解消）
+- `switchBizTab('graph')` に iframe 自動リロードを追加：`_graphDataStale === true` のときのみ実行、リロード後に false リセット
+
+**business-graph.html**
+- `load()` 内の `renderMonthly(monthly)` 呼び出しを削除（SVG は enhance.js が管理）
+- `renderMonthly` 関数自体は残してコメントで意図を明示
+
+### 確認結果
+- API テストで確認済み（前セッション）
+- ブラウザ UI での最終確認はユーザーに依頼
+
+### 未確認 / 残課題
+- ブラウザでの目視確認（ユーザー操作）
+
+### commit SHA：未採番（commit 前）
+
+---
+
+## 2026-08-23 — 仕事登録・編集プルダウン化 / 既存データ正規化
+
+### 目的
+仕事内容・労働時間の自由入力をプルダウン＋直接入力方式に変更し、既存 59件の表記ブレを正規化する。
+完全休日の日に仕事を登録しようとした際、エラーではなく確認ダイアログを表示するよう変更。
+
+### 変更ファイル
+- `dashboard/public/index.html`（仕事登録・編集モーダルのフィールド変更、完全休日確認ダイアログ追加）
+- `dashboard/public/app.js`（プルダウン制御・確認ダイアログ制御・409リトライフロー）
+- `dashboard/api.js`（PUT /api/work の 409 対応）
+- `data/work_record_manager.js`（updateWorkRecordFull に日付変更時の完全休日チェック追加）
+- `data/business_data.db`（既存 59件の content を正規名称に直接 UPDATE）
+
+### 実装内容
+
+**index.html**
+- `#modal-work` / `#modal-edit-work` のフィールド変更：
+  - 仕事内容（`#work-content`）: `<input type="text">` → `<select>` ＋ 直接入力 `<input>`
+  - 労働時間（`#work-hours`）: `<input type="number">` → `<select>` ＋ 直接入力 `<input>`
+  - 選択肢：9つの正式業務名 ＋「直接入力」／2.5h・4.5h・5.5h・9.5h・1日 ＋「直接入力」
+- 完全休日確認ダイアログ（`#dayoff-confirm-wrap`）追加：409 レスポンス時に表示
+
+**app.js**
+- 定数 `CONTENT_OPTIONS` / `HOURS_TO_LABEL` 追加
+- ヘルパー関数追加：`parseHoursSelect` / `parseContentSelect` / `setupSelectDirect` / `initContentSelect` / `initHoursSelect`
+- `work-form` / `edit-work-form` submit ハンドラをプルダウン対応に更新
+- 409 時の状態変数 `_pendingWorkBody / _pendingWorkMode / _pendingWorkId` 追加
+- `showDayoffConfirm / hideDayoffConfirm` 関数追加
+- `dayoff-confirm-btn` click ハンドラ：完全休日解除 → 仕事登録・更新 → refresh
+
+**api.js**
+- PUT /api/work/:id の catch ブロック：ConflictError の場合 400 → 409 に変更
+
+**work_record_manager.js**
+- `updateWorkRecordFull` 冒頭に日付変更時の完全休日チェック追加
+
+**business_data.db**
+- 正規化対象 59 件の正規化内訳（完了済み）：
+  - 15:00-19:30 変換：24件
+  - 14:00-19:30 変換：9件
+  - 10:00-19:30 変換：11件
+  - 17:00-19:30 変換：3件
+  - エスコン 変換：13件
+  - meiji cup 変換：5件
+  - TVh 競馬中継 変換：3件
+  - UHB 競馬中継 変換：3件
+  - 北海道マラソン 変換：4件
+- 正規化しなかった既存データ（意図的に残す）：
+  - ファイターズ 練習中継（6件・表記バリエーションあり）
+  - 北海道meijicup（5件）
+  - meijicup 音声技術費 variants
+  - 標準時間帯以外の業務
+
+### 設計上の決定事項
+- 「1日」を選択した場合 `work_hours = NULL` で保存（日額業務の既存パターンと統一）
+  - `aggregator.js` は `COALESCE(SUM(work_hours), 0)` で NULL を安全に扱う
+  - `invoice_generator.js` は `Number(work.work_hours || 0)` で NULL を安全に扱う
+  - 既存 124件中 118件がすでに NULL（NULL = 日額業務の確立パターン）
+- 請求書は `work.content` をそのまま使用する既存仕様を維持
+
+### APIテスト結果
+- 通常登録 → id:126 作成・content/work_hours 正常保存 ✓
+- 完全休日日への POST → 409 ConflictError ✓
+- POST /api/day is_full_day_off:false → POST /api/work → 両方成功 ✓
+
+### DB バックアップ状況
+- 最新バックアップ: `business_data_before_invoice_sync_2026-08-17T22-51-52-465Z.db`
+- 2026-08-23 正規化前のバックアップは**存在しない**
+- 正規化済みDB状態からは 2026-08-17 バックアップへの完全復元は不可
+
+### commit SHA：未採番（**commit/push 未実施 — ユーザー承認待ち**）
+
+---
+
+## 【次回以降の追加予定】17LIVE 配信売上タブ
+
+### 概要
+ビジネス JARVIS に 17LIVE タブを追加し配信収益を管理する（**今回は未実装**）
+
+### 予定内容
+- 新規テーブル：`live17_records`
+- フィールド：配信日 / 獲得コイン / 報酬額 / 配信時間 / メモ
+- 月別集計：合計報酬 / 月間コイン / 配信回数 / 合計配信時間 / 1配信あたり平均報酬 / 月別推移
+- ビジネス全体の売上・収益への合算（要検討）
+
+---
+
 ## 2026-08-19 — 請求書：出力ファイル名を生成画面で指定可能に
 
 ### 目的

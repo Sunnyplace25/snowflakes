@@ -243,6 +243,7 @@ export function createApiHandler(db) {
             expense,
             work_hours:     workHours,
             travel_hours:   travelHours,
+            is_full_day:    body.is_full_day ? 1 : 0,
             invoice_status: body.invoice_status || '対象外',
             payment_status: body.payment_status || '対象外',
             memo:           body.memo           || null,
@@ -272,13 +273,15 @@ export function createApiHandler(db) {
             expense:        body.expense,
             work_hours:     body.work_hours,
             travel_hours:   body.travel_hours,
+            is_full_day:    body.is_full_day !== undefined ? (body.is_full_day ? 1 : 0) : undefined,
             invoice_status: body.invoice_status,
             payment_status: body.payment_status,
             memo:           body.memo,
           });
           return jsonRes(res, 200, { ok: true });
         } catch (e) {
-          return errRes(res, 400, e.message);
+          const status = e.message.startsWith('ConflictError') ? 409 : 400;
+          return errRes(res, status, e.message);
         }
       }
 

@@ -349,21 +349,7 @@
     });
   }
 
-  function ensureGraphTab() {
-    const tabs = document.getElementById('business-tabs');
-    if (!tabs || tabs.querySelector('[data-business-graph]')) return;
-    const button = document.createElement('button');
-    button.className = 'sf-tab';
-    button.type = 'button';
-    button.dataset.businessGraph = '1';
-    button.textContent = 'グラフ';
-    button.addEventListener('click', () => {
-      location.href = '/business-graph.html';
-    });
-    tabs.appendChild(button);
-  }
-
-  let updatingCards = false;
+let updatingCards = false;
   async function updateMonthlyBillingCards() {
     if (updatingCards) return;
     if (typeof currentMonth === 'undefined' || !/^\d{4}-\d{2}$/.test(currentMonth)) return;
