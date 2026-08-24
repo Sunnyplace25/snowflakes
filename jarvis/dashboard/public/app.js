@@ -656,9 +656,9 @@ function esc(str) {
       if (el) { el.className = ''; el.style.cssText = errStyle; el.textContent = errMsg; }
     });
   }
-  // 初期 Business タブを音声に設定、サブタブは実績分析
+  // 初期 Business タブを音声に設定、サブタブはダッシュボード
   switchBizTab('monthly');
-  switchAudioSubTab('analytics');
+  switchAudioSubTab('dashboard');
 })();
 
 // ─── モジュールタブ切替 ───────────────────────────────────────────────────────
@@ -761,13 +761,13 @@ document.querySelectorAll('#business-tabs .sf-tab').forEach(btn => {
 
 // ─── 音声サブタブ ──────────────────────────────────────────────────────────────
 
-let audioCurrentSubTab = 'analytics';
+let audioCurrentSubTab = 'dashboard';
 
 function switchAudioSubTab(name) {
   audioCurrentSubTab = name;
 
   // サブタブパネル表示切替
-  ['analytics', 'invoice'].forEach(t => {
+  ['dashboard', 'analytics', 'invoice', 'invoice-gen'].forEach(t => {
     const el = document.getElementById(`audio-subtab-${t}`);
     if (el) el.hidden = (t !== name);
   });
@@ -779,6 +779,9 @@ function switchAudioSubTab(name) {
 
   if (name === 'analytics') initAnalyticsTab();
   if (name === 'invoice')   initInvoiceTab();
+  if (name === 'invoice-gen') {
+    if (typeof window.__jarvisEnsureInvoiceGen === 'function') window.__jarvisEnsureInvoiceGen();
+  }
 }
 
 document.querySelectorAll('#audio-subtabs .sf-tab').forEach(btn => {

@@ -36,8 +36,16 @@
   <!-- ─── 月次タブ ──────────────────────────────────────────────────────── -->
   <div id="biz-tab-monthly" class="sf-tab-panel" hidden>
 
-  <!-- ── 上部固定エリア（収入〜仕事一覧） ─────────────────────────────────── -->
-  <div class="audio-sticky-top">
+  <!-- ─── 音声サブタブナビ ────────────────────────────────────────────────── -->
+  <nav class="sf-tabs" id="audio-subtabs">
+    <button class="sf-tab active" data-audio-tab="dashboard">ダッシュボード</button>
+    <button class="sf-tab" data-audio-tab="analytics">実績分析</button>
+    <button class="sf-tab" data-audio-tab="invoice">請求実績</button>
+    <button class="sf-tab" data-audio-tab="invoice-gen">請求書作成</button>
+  </nav>
+
+  <!-- ─── ダッシュボードサブタブ ────────────────────────────────────────── -->
+  <div id="audio-subtab-dashboard" class="sf-tab-panel">
 
   <!-- 月次サマリーカード（1行目：収支） -->
   <div class="cards-primary">
@@ -54,11 +62,11 @@
       <div class="card-value" id="card-profit">—</div>
     </div>
     <div class="card">
-      <div class="card-label">未請求</div>
+      <div class="card-label">当月請求額（税込）</div>
       <div class="card-value" id="card-uninvoiced">—</div>
     </div>
     <div class="card">
-      <div class="card-label">未入金</div>
+      <div class="card-label">当月入金予定（源泉控除後）</div>
       <div class="card-value" id="card-unpaid">—</div>
     </div>
   </div>
@@ -101,13 +109,7 @@
     <div id="works-table-container" class="loading">読み込み中...</div>
   </section>
 
-  </div><!-- /.audio-sticky-top -->
-
-  <!-- ─── 音声サブタブナビ ────────────────────────────────────────────────── -->
-  <nav class="sf-tabs" id="audio-subtabs">
-    <button class="sf-tab active" data-audio-tab="analytics">実績分析</button>
-    <button class="sf-tab" data-audio-tab="invoice">請求実績</button>
-  </nav>
+  </div><!-- /#audio-subtab-dashboard -->
 
   <!-- ─── 実績分析サブタブ ────────────────────────────────────────────────── -->
   <div id="audio-subtab-analytics" class="sf-tab-panel">
@@ -222,6 +224,9 @@
     </section>
 
   </div><!-- /#audio-subtab-invoice -->
+
+  <!-- ─── 請求書作成サブタブ（カスタムスクリプトが動的注入）────────────────── -->
+  <div id="audio-subtab-invoice-gen" class="sf-tab-panel" hidden></div>
 
   </div><!-- /#biz-tab-monthly -->
 
@@ -981,6 +986,6 @@
 </div><!-- /#module-sf -->
 
 <script src="modules/sf.js"></script>
-<script src="app.js?v=20260825b"></script>
+<script src="app.js?v=20260825c"></script>
 </body>
 </html>

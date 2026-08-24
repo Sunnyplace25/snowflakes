@@ -661,7 +661,7 @@ let updatingCards = false;
   let currentInvoicePreview = null;
 
   function ensureInvoiceGeneratorUi() {
-    const panel = document.getElementById('biz-tab-invoice');
+    const panel = document.getElementById('audio-subtab-invoice-gen');
     if (!panel || document.getElementById('invoice-generator-section')) return;
 
     const section = document.createElement('section');
@@ -776,9 +776,9 @@ let updatingCards = false;
   }
 
   function invoiceDefaultFilename(invoiceDate) {
-    if (!invoiceDate || !/^\d{4}-\d{2}-\d{2}$/.test(invoiceDate)) return '';
-    const [y, m, d] = invoiceDate.split('-').map(Number);
-    return `${y}年${m}月${d}日_請求書_大和谷しおり.xlsx`;
+    if (!invoiceDate || !/^\d{4}-\d{2}/.test(invoiceDate)) return '';
+    const [y, m] = invoiceDate.split('-').map(Number);
+    return `${y}年${m}月_請求書_大和谷しおり.xlsx`;
   }
 
   function renderInvoiceGenerationPreview(data) {
@@ -787,9 +787,9 @@ let updatingCards = false;
     const rows = (data.rows || []).map(r => `
       <tr>
         <td>${r.no}</td>
-        <td>${escHtml(r.date)}</td>
-        <td>${escHtml(r.description)}</td>
-        <td style="text-align:right">${formatYen(r.unit_price)}</td>
+        <td style="white-space:nowrap">${escHtml(r.date)}</td>
+        <td style="white-space:nowrap">${escHtml(r.description)}</td>
+        <td style="text-align:right;white-space:nowrap">${formatYen(r.unit_price)}</td>
       </tr>
     `).join('');
 
@@ -951,6 +951,9 @@ let updatingCards = false;
       characterData: true,
     }));
   }
+
+  // switchAudioSubTab('invoice-gen') 時に app.js から呼べるよう公開
+  window.__jarvisEnsureInvoiceGen = ensureInvoiceGeneratorUi;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

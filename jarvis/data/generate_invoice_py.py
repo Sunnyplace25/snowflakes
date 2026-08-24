@@ -391,12 +391,15 @@ def rewrite_styles_xml(styles_bytes):
 def fix_sheet_layout(sheet_root, effective_end=None):
     """
     シート XML にレイアウト調整を適用する（テンプレートは変更しない）：
-    1. J列（col 10）の幅を 8.71 → 10.5 に拡張
+    1. G列（col 7）の幅を拡張 → C:G マージの内容列を広げる
+    2. J列（col 10）の幅を 8.71 → 10.5 に拡張
        → I39:J39 マージで「消費税相当額」（7文字）が収まるよう調整
-    2. 9行目の行高を 18.75 → 24.0 に拡張
+    3. 9行目の行高を 18.75 → 24.0 に拡張
        → I9 発行者名（17pt Meiryo）の垂直クリップを防ぐ
     """
-    # 1. J列幅を拡張
+    G_WIDTH = '30.0'   # C:G マージ内容列の G 列幅（折り返しなしで長い内容を表示）
+    J_WIDTH = '10.5'
+
     cols_el = sheet_root.find(f'{{{NS}}}cols')
     if cols_el is not None:
         to_remove = []
@@ -405,31 +408,45 @@ def fix_sheet_layout(sheet_root, effective_end=None):
             mn = int(col.get('min', 0))
             mx = int(col.get('max', 0))
             w  = col.get('width', '')
-            # J列 = col 10 が他の列と同じ範囲にまとめられている場合は分割
-            if mn <= 10 <= mx and mn != mx:
+
+            # G列 = col 7 を含む範囲を分割して幅を設定
+            if mn <= 7 <= mx and mn != mx:
                 to_remove.append(col)
-                # J列より前の範囲
+                if mn <= 6:
+                    to_add.append(ET.Element(f'{{{NS}}}col', {
+                        'customWidth': col.get('customWidth', '1'),
+                        'min': str(mn), 'max': '6', 'width': w,
+                    }))
+                to_add.append(ET.Element(f'{{{NS}}}col', {
+                    'customWidth': '1', 'min': '7', 'max': '7', 'width': G_WIDTH,
+                }))
+                if mx >= 8:
+                    to_add.append(ET.Element(f'{{{NS}}}col', {
+                        'customWidth': col.get('customWidth', '1'),
+                        'min': '8', 'max': str(mx), 'width': w,
+                    }))
+            elif mn == 7 and mx == 7:
+                col.set('width', G_WIDTH)
+
+            # J列 = col 10 を含む範囲を分割して幅を設定
+            elif mn <= 10 <= mx and mn != mx:
+                to_remove.append(col)
                 if mn <= 9:
-                    pre = ET.Element(f'{{{NS}}}col', {
+                    to_add.append(ET.Element(f'{{{NS}}}col', {
                         'customWidth': col.get('customWidth', '1'),
                         'min': str(mn), 'max': '9', 'width': w,
-                    })
-                    to_add.append(pre)
-                # J列単体
-                j_col = ET.Element(f'{{{NS}}}col', {
-                    'customWidth': '1', 'min': '10', 'max': '10', 'width': '10.5',
-                })
-                to_add.append(j_col)
-                # J列より後の範囲
+                    }))
+                to_add.append(ET.Element(f'{{{NS}}}col', {
+                    'customWidth': '1', 'min': '10', 'max': '10', 'width': J_WIDTH,
+                }))
                 if mx >= 11:
-                    post = ET.Element(f'{{{NS}}}col', {
+                    to_add.append(ET.Element(f'{{{NS}}}col', {
                         'customWidth': col.get('customWidth', '1'),
                         'min': '11', 'max': str(mx), 'width': w,
-                    })
-                    to_add.append(post)
+                    }))
             elif mn == 10 and mx == 10:
-                # すでに J 単体定義なら幅だけ更新
-                col.set('width', '10.5')
+                col.set('width', J_WIDTH)
+
         for col in to_remove:
             cols_el.remove(col)
         for col in to_add:

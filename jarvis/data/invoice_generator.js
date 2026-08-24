@@ -90,26 +90,40 @@ function invoiceDescription(work) {
 }
 
 function quantityAndUnit(work) {
-  const hours = Number(work.work_hours || work.hours || 0);
-  if (Number.isFinite(hours) && hours > 0) {
-    return { quantity: hours, unit: '時間' };
+  const content = String(work.content ?? work.work_type ?? '');
+  const isStudio = content.includes('スタジオ');
+
+  if (isStudio) {
+    // スタジオ → work_hours時間
+    const hours = Number(work.work_hours || work.hours || 0);
+    return { quantity: hours > 0 ? hours : 1, unit: '時間' };
   }
-  if (work.is_full_day) {
-    return { quantity: 1, unit: '日' };
-  }
-  // 未入力（work_hours=null, is_full_day=0）→「1日」として扱わない
-  return { quantity: 1, unit: '式' };
+
+  // ロケ・中継・その他 → 1日
+  return { quantity: 1, unit: '日' };
 }
 
-function defaultInvoiceNumber(month) {
+function defaultInvoiceNumber(db, month) {
   const [year, mon] = month.split('-');
-  return `${year}‐${mon}`;
+  // YYYYMM-連番（ゼロ埋めなし）。既存DBに同月の請求書があれば最大連番+1
+  const ym = `${year}${mon}`;
+  const prefix = `${ym}-`;
+  const existing = db.prepare(`
+    SELECT invoice_number FROM business_generated_invoices
+    WHERE work_month = ? AND invoice_number LIKE ?
+  `).all(month, `${prefix}%`);
+  let next = 1;
+  for (const row of existing) {
+    const n = parseInt(String(row.invoice_number).slice(prefix.length), 10);
+    if (!isNaN(n) && n >= next) next = n + 1;
+  }
+  return `${prefix}${next}`;
 }
 
 function defaultOutputFilename(issueDate) {
-  // YYYY-MM-DD → "YYYY年M月D日_請求書_大和谷しおり.xlsx"
-  const [y, m, d] = String(issueDate).split('-').map(Number);
-  return `${y}年${m}月${d}日_請求書_大和谷しおり.xlsx`;
+  // YYYY-MM-DD → "YYYY年M月_請求書_大和谷しおり.xlsx"
+  const [y, m] = String(issueDate).split('-').map(Number);
+  return `${y}年${m}月_請求書_大和谷しおり.xlsx`;
 }
 
 function sanitizeFilename(name) {
@@ -190,7 +204,7 @@ export function buildInvoicePreview(db, month) {
   return {
     month,
     client: '株式会社　オーテック',
-    invoice_number: prior?.invoice_number || defaultInvoiceNumber(month),
+    invoice_number: prior?.invoice_number || defaultInvoiceNumber(db, month),
     invoice_date: prior?.invoice_date || firstDayOfNextMonth(month),
     due_date: prior?.due_date || lastDayOfMonth(month, 1),
     rows,
