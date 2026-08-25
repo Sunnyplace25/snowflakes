@@ -46,12 +46,63 @@
       panel.id = 'biz-tab-merch';
       panel.className = 'sf-tab-panel';
       panel.hidden = true;
-      panel.innerHTML = `<section class="section">
-        <div class="section-header"><h2>物販</h2><button class="btn btn-primary" id="merch-add-btn">＋ 物販を登録</button></div>
-        <div id="merch-container" class="loading">読み込み中...</div>
-      </section>`;
+      panel.innerHTML = `
+        <!-- ─── 物販サブタブナビ ─── -->
+        <nav class="sf-tabs" id="merch-subtabs">
+          <button class="sf-tab active" data-merch-tab="dashboard">ダッシュボード</button>
+          <button class="sf-tab" data-merch-tab="items">商品一覧</button>
+          <button class="sf-tab" data-merch-tab="sold">売却済み</button>
+          <button class="sf-tab" data-merch-tab="stock">在庫</button>
+        </nav>
+
+        <!-- ─── ダッシュボード ─── -->
+        <div id="merch-subtab-dashboard" class="sf-tab-panel">
+          <section class="section">
+            <div class="section-header">
+              <h2>物販</h2>
+              <button class="btn btn-primary" id="merch-add-btn">＋ 物販を登録</button>
+            </div>
+            <div id="merch-container" class="loading">読み込み中...</div>
+          </section>
+        </div>
+
+        <!-- ─── 商品一覧 ─── -->
+        <div id="merch-subtab-items" class="sf-tab-panel" hidden>
+          <section class="section">
+            <div class="section-header"><h2>商品一覧</h2></div>
+            <div id="merch-items-container" style="padding:20px;color:var(--text-sec);font-size:13px">
+              （実装予定）
+            </div>
+          </section>
+        </div>
+
+        <!-- ─── 売却済み ─── -->
+        <div id="merch-subtab-sold" class="sf-tab-panel" hidden>
+          <section class="section">
+            <div class="section-header"><h2>売却済み</h2></div>
+            <div id="merch-sold-container" style="padding:20px;color:var(--text-sec);font-size:13px">
+              （実装予定）
+            </div>
+          </section>
+        </div>
+
+        <!-- ─── 在庫 ─── -->
+        <div id="merch-subtab-stock" class="sf-tab-panel" hidden>
+          <section class="section">
+            <div class="section-header"><h2>在庫</h2></div>
+            <div id="merch-stock-container" style="padding:20px;color:var(--text-sec);font-size:13px">
+              （実装予定）
+            </div>
+          </section>
+        </div>
+      `;
       monthly.parentNode.insertBefore(panel, monthly.nextSibling);
       document.getElementById('merch-add-btn')?.addEventListener('click', () => openModal(null));
+
+      // サブタブ切替
+      panel.querySelectorAll('#merch-subtabs [data-merch-tab]').forEach(btn => {
+        btn.addEventListener('click', () => switchMerchSubTab(btn.dataset.merchTab));
+      });
     }
 
     const overlay = document.getElementById('modal-overlay');
@@ -83,12 +134,35 @@
     document.getElementById('merch-delete-btn').addEventListener('click', deleteMerch);
   }
 
+  // ─── サブタブ切替 ──────────────────────────────────────────────────────────
+  let merchCurrentSubTab = 'dashboard';
+
+  function switchMerchSubTab(name) {
+    merchCurrentSubTab = name;
+    ['dashboard', 'items', 'sold', 'stock'].forEach(t => {
+      const el = document.getElementById(`merch-subtab-${t}`);
+      if (el) el.hidden = (t !== name);
+    });
+    document.querySelectorAll('#merch-subtabs [data-merch-tab]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.merchTab === name);
+    });
+    // インポートセクションはダッシュボードのみ表示
+    const importSec = document.getElementById('merch-import-section');
+    if (importSec) importSec.hidden = (name !== 'dashboard');
+    // 商品一覧系タブの描画フック
+    if (typeof window.__jarvisMerchSubTabChanged === 'function') {
+      window.__jarvisMerchSubTabChanged(name);
+    }
+  }
+
   function openMerchTab() {
     document.querySelectorAll('#module-business .sf-tab-panel').forEach(p => { p.hidden = true; });
     const p = document.getElementById('biz-tab-merch');
     if (p) p.hidden = false;
     document.querySelectorAll('#business-tabs .sf-tab').forEach(b => b.classList.remove('active'));
     document.getElementById('business-merch-tab')?.classList.add('active');
+    // 初回表示はダッシュボードに戻す
+    switchMerchSubTab(merchCurrentSubTab || 'dashboard');
     loadMerch(true);
   }
 
