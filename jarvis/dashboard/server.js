@@ -34,6 +34,11 @@ import {
   buildInvoicePreview,
   generateInvoiceWorkbook,
 } from '../data/invoice_generator.js';
+import {
+  ensureMerchTables,
+  previewMerchImport,
+  confirmMerchImport,
+} from '../data/merch_import.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
@@ -317,6 +322,47 @@ const server = createServer(async (req, res) => {
     }
   }
 
+  // ─── 物販 Excel インポート ────────────────────────────────────────────────
+  if (url.pathname === '/api/merch/import-preview' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      if (!body.data_b64) throw new Error('data_b64 が必要です');
+      const buffer = Buffer.from(body.data_b64, 'base64');
+      const result = previewMerchImport(db, buffer, body.filename || '');
+      return jsonRes(res, 200, { ok: true, ...result });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/merch/import-confirm' && req.method === 'POST') {
+    try {
+      const body = await readJsonBody(req);
+      if (!Array.isArray(body.items)) throw new Error('items が必要です');
+      const result = confirmMerchImport(db, body.items, body.meta || {});
+      return jsonRes(res, 200, result);
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
+  if (url.pathname === '/api/merch/items' && req.method === 'GET') {
+    try {
+      ensureMerchTables(db);
+      const type = url.searchParams.get('type');   // 'apparel' | 'ebay' | null(全件)
+      const year = url.searchParams.get('year');
+      let sql = 'SELECT * FROM merch_items WHERE 1=1';
+      const params = [];
+      if (type) { sql += ' AND source_type = ?'; params.push(type); }
+      if (year) { sql += ' AND (purchase_date LIKE ? OR sale_date LIKE ?)'; params.push(`${year}-%`, `${year}-%`); }
+      sql += ' ORDER BY COALESCE(purchase_date, sale_date) DESC, id DESC';
+      const items = db.prepare(sql).all(...params);
+      return jsonRes(res, 200, { ok: true, items });
+    } catch (e) {
+      return jsonRes(res, 400, { ok: false, error: e.message });
+    }
+  }
+
   if (url.pathname.startsWith('/api/')) {
     return apiHandler(req, res, url);
   }
@@ -360,6 +406,11 @@ const server = createServer(async (req, res) => {
       const merchScript = '<script src="business-merch.js"></script>';
       if (!html.includes('business-merch.js')) {
         html = html.replace('</body>', `${merchScript}\n</body>`);
+      }
+
+      const merchImportScript = '<script src="business-merch-import.js"></script>';
+      if (!html.includes('business-merch-import.js')) {
+        html = html.replace('</body>', `${merchImportScript}\n</body>`);
       }
 
       const uiFixesScript = '<script src="business-ui-fixes.js"></script>';
