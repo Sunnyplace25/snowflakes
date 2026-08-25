@@ -466,9 +466,11 @@ export function confirmMerchImport(db, items, meta) {
     )
   `);
 
-  const insertAll = db.transaction(rows => {
-    let created = 0;
-    for (const r of rows) {
+  // node:sqlite は db.transaction() を持たないため BEGIN/COMMIT/ROLLBACK で制御
+  db.exec('BEGIN');
+  let created = 0;
+  try {
+    for (const r of items) {
       const res = insert.run(
         r.source_type,    importId,           r.sheet_name    ?? null,
         r.product_name,   r.purchase_date  ?? null, r.purchase_price ?? 0,
@@ -480,10 +482,11 @@ export function confirmMerchImport(db, items, meta) {
       );
       if (res.changes > 0) created++;
     }
-    return created;
-  });
-
-  const created = insertAll(items);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
   db.prepare('UPDATE merch_imports SET created_rows = ? WHERE id = ?').run(created, importId);
 
   return { ok: true, import_id: Number(importId), created, skipped: items.length - created };
