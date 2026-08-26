@@ -374,9 +374,10 @@ let updatingCards = false;
         .reduce((sum, w) => sum + Number(w.income || 0), 0);
 
       const billing = addOtecTax(billingBase);
-      const payment = addOtecTax(paymentBase);
+      // 入金予定: 税抜 + 消費税10% - floor(税抜 × 10.21%)
+      const paymentTax  = Math.floor(paymentBase * OTEC_TAX_RATE);
       const withholding = calcWithholding(paymentBase);
-      const paymentNet = payment.total - withholding;
+      const paymentNet  = paymentBase + paymentTax - withholding;
 
       const billingLabel = invoiceCard.closest('.card')?.querySelector('.card-label');
       const paymentLabel = paymentCard.closest('.card')?.querySelector('.card-label');
@@ -386,7 +387,7 @@ let updatingCards = false;
       invoiceCard.textContent = formatYen(billing.total);
       paymentCard.textContent = formatYen(paymentNet);
       invoiceCard.title = `税抜 ${formatYen(billing.base)} + 消費税 ${formatYen(billing.tax)}`;
-      paymentCard.title = `税抜 ${formatYen(payment.base)} + 消費税 ${formatYen(payment.tax)} - 源泉徴収 ${formatYen(withholding)}`;
+      paymentCard.title = `税抜 ${formatYen(paymentBase)} + 消費税 ${formatYen(paymentTax)} - 源泉徴収 ${formatYen(withholding)}`;
       invoiceCard.className = 'card-value green';
       paymentCard.className = 'card-value accent';
     } catch (_) {
