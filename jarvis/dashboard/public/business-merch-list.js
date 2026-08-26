@@ -37,21 +37,42 @@
   // ─── テーブル描画 ─────────────────────────────────────────────────────────
 
   const COLS = [
-    { label: '種別',     key: r => r.source_type === 'apparel' ? 'アパレル' : 'eBay', align: '' },
-    { label: '商品名',   key: r => esc(r.product_name), align: '', wide: true },
-    { label: '状態',     key: r => esc(r.status), align: '' },
-    { label: '元シート', key: r => esc(r.sheet_name), align: '' },
-    { label: '仕入日',   key: r => dash(r.purchase_date), align: '' },
-    { label: '売却日',   key: r => dash(r.sale_date), align: '' },
-    { label: '仕入値',   key: r => yen(r.purchase_price), align: 'right', minWidth: '100px' },
-    { label: '売上',     key: r => r.sale_price ? yen(r.sale_price) : '—', align: 'right', minWidth: '100px' },
-    { label: '手数料',   key: r => r.commission ? yen(r.commission) : '—', align: 'right', minWidth: '88px' },
-    { label: '送料',     key: r => r.shipping_cost ? yen(r.shipping_cost) : '—', align: 'right', minWidth: '80px' },
+    // ── 識別 ──
+    { label: '種別',       key: r => r.source_type === 'apparel' ? 'アパレル' : 'eBay', align: '' },
+    { label: 'カテゴリ',   key: r => dash(r.category), align: '' },
+    { label: 'ブランド',   key: r => dash(r.brand), align: '' },
+    { label: '商品名',     key: r => esc(r.product_name), align: '', wide: true },
+    // ── 状態・属性 ──
+    { label: '状態',       key: r => esc(r.status), align: '' },
+    { label: '仕入先',     key: r => dash(r.supplier), align: '' },
+    { label: '販路',       key: r => dash(r.channel), align: '' },
+    { label: '帳簿',       key: r => dash(r.ledger), align: '' },
+    { label: '販売先URL',  key: r => r.sales_url
+        ? `<a href="${esc(r.sales_url)}" target="_blank" rel="noopener" style="color:#58a6ff;text-decoration:none">リンク</a>`
+        : '—', align: 'center' },
+    { label: '元シート',   key: r => dash(r.sheet_name), align: '' },
+    // ── 日付 ──
+    { label: '仕入日',     key: r => dash(r.purchase_date), align: '' },
+    { label: '出品日',     key: r => dash(r.listing_date), align: '' },
+    { label: '売却日',     key: r => dash(r.sale_date), align: '' },
+    { label: '回転日数',   key: r => r.turnover_days != null ? r.turnover_days + '日' : '—', align: 'right', minWidth: '72px' },
+    // ── 金額 ──
+    { label: '仕入値',     key: r => yen(r.purchase_price), align: 'right', minWidth: '100px' },
+    { label: '売上',       key: r => r.sale_price ? yen(r.sale_price) : '—', align: 'right', minWidth: '100px' },
+    { label: '手数料',     key: r => r.commission ? yen(r.commission) : '—', align: 'right', minWidth: '88px' },
+    { label: '送料',       key: r => r.shipping_cost ? yen(r.shipping_cost) : '—', align: 'right', minWidth: '80px' },
+    { label: '入金額',     key: r => r.net_income ? yen(r.net_income) : '—', align: 'right', minWidth: '100px' },
     { label: '粗利',
       key: r => yen(r.profit),
       align: 'right',
       minWidth: '100px',
       color: r => r.profit >= 0 ? 'var(--green)' : 'var(--red)',
+    },
+    { label: '粗利率',
+      key: r => r.profit_rate != null ? (r.profit_rate * 100).toFixed(1) + '%' : '—',
+      align: 'right',
+      minWidth: '72px',
+      color: r => r.profit_rate != null ? (r.profit_rate >= 0 ? 'var(--green)' : 'var(--red)') : '',
     },
   ];
 
@@ -71,7 +92,8 @@
     const tbody = items.map(r => {
       const cells = COLS.map(c => {
         const val = c.key(r);
-        const color = c.color ? `color:${c.color(r)};` : '';
+        const colorVal = c.color ? c.color(r) : '';
+        const color = colorVal ? `color:${colorVal};` : '';
         const align = c.align ? `text-align:${c.align};` : '';
         const minW = c.minWidth ? `min-width:${c.minWidth};` : '';
         const wrap = c.wide
