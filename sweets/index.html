@@ -845,7 +845,6 @@
     <p class="gate-eyebrow">Snow flakes — fan contents</p>
     <h1 class="gate-title">SWEETs</h1>
     <p class="gate-sub">members only</p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,6vw,36px);font-weight:300;letter-spacing:6px;color:#7dd3fc;margin:18px 0 0;text-align:center;">GATE OPEN</p>
     <div class="gate-form">
       <p class="gate-season" id="gate-season"></p>
       <input class="gate-input" type="password" id="pw-input" placeholder="SWEETs code" autocomplete="off">
@@ -870,20 +869,12 @@
 
     </div>
 
-    <!-- Gate Open notice -->
-    <div style="margin-top:32px;width:100%;max-width:300px;text-align:center;border:1px solid rgba(125,211,252,0.2);border-radius:16px;padding:20px 24px;background:rgba(125,211,252,0.03);" data-no-replace>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#7dd3fc;margin-bottom:14px;">GATE OPEN</p>
+    <!-- Autumn Gate Open notice -->
+    <div style="margin-top:32px;width:100%;max-width:300px;text-align:center;border:1px solid rgba(251,146,60,0.2);border-radius:16px;padding:20px 24px;background:rgba(251,146,60,0.03);" data-no-replace>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:6px;color:#fb923c;margin-bottom:14px;">GATE OPEN</p>
       <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:2.2;letter-spacing:1px;">コード不要で入場できます。</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2.2;letter-spacing:1px;margin-top:10px;">SWEETsCode をお持ちの方には<br>❄ 555 Snow をプレゼント。</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#64748b;line-height:2;letter-spacing:1px;margin-top:14px;border-top:1px solid rgba(125,211,252,0.1);padding-top:12px;">Summer SWEETsコード入力で<br>555 Snow 配布中<br><span style="font-size:9px;">（自動入力の方は自動配布）</span></p>
-    </div>
-
-    <!-- Summer start notice -->
-    <div style="margin-top:36px;width:100%;max-width:300px;text-align:center;" data-no-replace>
-      <p style="font-family:'Noto Serif JP',serif;font-size:15px;color:#7dd3fc;letter-spacing:1px;line-height:2;margin-bottom:16px;">SWEETs 2026 Summer<br>はじまりました。</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:0;">ノベルゲーム＆フォーチュン<br>『Under tone』を公開中です。<br><br>物語を読み進めながら、<br>カードに込められた「音」を受け取っていく<br>Snow flakesのもうひとつの入口です。<br><br>夏のあいだ、少しずつ開いていくコンテンツを<br>楽しんでいただけましたら嬉しいです。</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#e2e8f0;line-height:2.4;margin:20px 0 0;">入室にはInstagram投稿にて配布される<br>SWEETsCodeが必要です。<br>コードはリールの最後をご確認ください。</p>
-      <a href="https://www.instagram.com/reel/DZXpxWRsxlt/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" style="display:inline-block;margin:14px 0 0;padding:8px 24px;border:1px solid rgba(125,211,252,0.35);border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#7dd3fc;text-decoration:none;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='rgba(125,211,252,0.7)';this.style.color='#e0f2fe'" onmouseout="this.style.borderColor='rgba(125,211,252,0.35)';this.style.color='#7dd3fc'">Instagram へ →</a>
+      <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#94a3b8;line-height:2.2;letter-spacing:1px;margin-top:10px;">SWEETsCode をお持ちの方には<br>❄ 888 Snow をプレゼント。</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;color:#64748b;line-height:2;letter-spacing:1px;margin-top:14px;border-top:1px solid rgba(251,146,60,0.1);padding-top:12px;">Autumn SWEETsコード入力で<br>888 Snow 配布中<br><span style="font-size:9px;">（自動入力の方は自動配布）</span></p>
     </div>
 
   </div>
@@ -5814,9 +5805,11 @@
     const _now           = new Date();
     const _springEndDate = new Date('2026-06-10T00:00:00+09:00');
     const _transitionDate = new Date('2026-06-05T00:00:00+09:00');
+    const _autumnStartDate = new Date('2026-09-01T00:00:00+09:00');
     const _isSummer      = _now >= _springEndDate;
     const _isTransition  = !_isSummer && _now >= _transitionDate;
-    const SWEETS_VERSION = _isSummer ? '2026-summer' : '2026-spring';
+    const _isAutumn      = _now >= _autumnStartDate;
+    const SWEETS_VERSION = _isAutumn ? '2026-autumn' : _isSummer ? '2026-summer' : '2026-spring';
     const PASSWORD         = _isSummer ? 'cottoncandy' : 'applepie';
     const PASSWORD_SUMMER  = 'cottoncandy';
     const PASSWORD_SHIROIHANA = 'kinakomochi';
@@ -5841,8 +5834,20 @@
       });
     }
 
-    // 6/10以降は全員夏色 / 移行期間中はcottoncandy入力者のみ
-    if (_isSummer || (_isTransition && localStorage.getItem('sf_summer_entered'))) {
+    // Autumn テーマ適用（Montblanc コード入力者のみ）
+    function applyAutumnTheme() {
+      document.documentElement.style.setProperty('--sweets', '#fb923c');
+      var s = document.createElement('style');
+      s.textContent = '.gate-btn{background:rgba(251,146,60,0.08)!important;}.gate-btn:hover{background:rgba(251,146,60,0.18)!important;}.gate-input:focus{border-color:rgba(251,146,60,0.5)!important;}';
+      document.head.appendChild(s);
+      var cb = document.getElementById('keep-login-cb');
+      if (cb) cb.style.accentColor = '#fb923c';
+      var lbl = document.getElementById('keep-login-label');
+      if (lbl) lbl.style.color = '#64748b';
+    }
+
+    // 6/10以降は全員夏色 / 移行期間中はcottoncandy入力者のみ（Autumnは除く）
+    if (!_isAutumn && (_isSummer || (_isTransition && localStorage.getItem('sf_summer_entered')))) {
       applySummerTheme();
       if (_isSummer && !localStorage.getItem('sf_summer_auto_event')) {
         localStorage.setItem('sf_summer_auto_event', '1');
@@ -5873,6 +5878,49 @@
       const val = document.getElementById('pw-input').value.trim();
       const lower = val.toLowerCase();
       document.getElementById('pw-input').value = '';
+
+      // Autumn (2026-09-01〜): ゲート常時オープン
+      if (_isAutumn) {
+        const upper = val.toUpperCase();
+        if (upper === 'MONTBLANC') {
+          // Montblanc: 888 Snow + Autumn橙テーマ
+          const used = JSON.parse(localStorage.getItem('sf_used_codes') || '[]');
+          if (used.indexOf('MONTBLANC') !== -1) {
+            showGateMsg('このコードはすでに使用済みです', 'error');
+          } else {
+            const cur = parseInt(localStorage.getItem('sf_snow') || '0', 10);
+            localStorage.setItem('sf_snow', String(cur + 888));
+            used.push('MONTBLANC');
+            localStorage.setItem('sf_used_codes', JSON.stringify(used));
+            localStorage.setItem('sf_autumn_code', '1');
+            applyAutumnTheme();
+            if (typeof SfSnow !== 'undefined') SfSnow.updateUI();
+            document.getElementById('snow-get-amount').textContent = '888';
+            document.getElementById('snow-get-popup').classList.add('show');
+          }
+        } else if (upper) {
+          // その他のSnowコードも引き続き使用可
+          const code = SNOW_CODES[upper];
+          if (code) {
+            const used = JSON.parse(localStorage.getItem('sf_used_codes') || '[]');
+            if (used.indexOf(upper) !== -1) {
+              showGateMsg('このコードはすでに使用済みです', 'error');
+            } else if (code.expires && new Date() > new Date(code.expires)) {
+              showGateMsg('このコードの有効期限が切れています', 'error');
+            } else {
+              const cur = parseInt(localStorage.getItem('sf_snow') || '0', 10);
+              localStorage.setItem('sf_snow', String(cur + code.snow));
+              used.push(upper);
+              localStorage.setItem('sf_used_codes', JSON.stringify(used));
+              if (typeof SfSnow !== 'undefined') SfSnow.updateUI();
+              document.getElementById('snow-get-amount').textContent = code.snow;
+              document.getElementById('snow-get-popup').classList.add('show');
+            }
+          }
+        }
+        unlock(); return;
+      }
+
       // オープン期間中はパスワード不要でそのまま入れる
       var _openStart = new Date('2026-07-01T00:00:00+09:00');
       var _openEnd   = new Date('2026-08-31T23:59:59+09:00');
@@ -6342,12 +6390,19 @@
 
     // ページロード時：保存済みなら自動入力
     document.addEventListener('DOMContentLoaded', async function() {
-      // ゲートオープンデー (2026/07/01 〜 2026/08/31 JST) はGATEを表示したまま、エンターのみで入れる
-
       // Supabase から復元（localStorageが空でメールが保存されている場合）
       var _savedEmail = localStorage.getItem('sf_sweets_email');
       if (_savedEmail && typeof sfSyncRestore === 'function') {
         await sfSyncRestore(_savedEmail);
+      }
+
+      // Autumn (2026-09-01〜): ゲート常時オープン・自動入場
+      if (_isAutumn) {
+        var navLbl = document.getElementById('nav-season-label');
+        if (navLbl) navLbl.textContent = 'SWEETs 2026 Autumn';
+        if (localStorage.getItem('sf_autumn_code')) applyAutumnTheme();
+        checkPassword(); // 空入力でも unlock() → _doEnter() へ
+        return;
       }
 
       if (localStorage.getItem(SWEETS_KEY) === '1' &&
