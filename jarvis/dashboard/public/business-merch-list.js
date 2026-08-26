@@ -87,7 +87,7 @@
         c.minWidth ? `min-width:${c.minWidth}` : '',
       ].filter(Boolean).join(';');
       return `<th style="${thStyle}">${c.label}</th>`;
-    }).join('');
+    }).join('') + '<th style="min-width:52px"></th>';
 
     const tbody = items.map(r => {
       const cells = COLS.map(c => {
@@ -101,7 +101,12 @@
           : 'white-space:nowrap;';
         return `<td style="${align}${color}${minW}${wrap}">${val}</td>`;
       }).join('');
-      return `<tr>${cells}</tr>`;
+      const editBtn = `<td style="text-align:center;white-space:nowrap">
+        <button class="btn btn-secondary btn-sm merch-edit-btn"
+                data-merch-id="${r.id}"
+                style="font-size:11px;padding:2px 8px">編集</button>
+      </td>`;
+      return `<tr>${cells}${editBtn}</tr>`;
     }).join('');
 
     return `<div style="overflow-x:auto">
@@ -148,8 +153,222 @@
       if (!all) return;
       const items = filter ? all.filter(filter) : all;
       el.innerHTML = buildSummary(items) + buildTable(items);
+      bindEditButtons(el, all);
     } catch (e) {
       el.innerHTML = `<div style="padding:20px;color:var(--red);font-size:13px">読み込みエラー: ${esc(e.message)}</div>`;
+    }
+  }
+
+  // ─── 編集ボタン バインド ───────────────────────────────────────────────────
+
+  function bindEditButtons(container, allItems) {
+    container.querySelectorAll('.merch-edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.merchId);
+        const item = allItems.find(r => r.id === id);
+        if (item) openEditModal(item);
+      });
+    });
+  }
+
+  // ─── 編集モーダル ─────────────────────────────────────────────────────────
+
+  function ensureEditModal() {
+    if (document.getElementById('merch-item-edit-modal')) return;
+
+    const overlay = document.getElementById('modal-overlay');
+    if (!overlay) return;
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'merch-item-edit-modal';
+    modal.hidden = true;
+    modal.innerHTML = `
+      <h3 id="merch-item-edit-title">商品を編集</h3>
+      <form id="merch-item-edit-form" autocomplete="off">
+        <input type="hidden" id="merch-item-edit-id">
+        <div style="font-size:12px;color:var(--text-sec);margin-bottom:12px"
+             id="merch-item-edit-info"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="merch-item-edit-sale-date">売却日</label>
+            <input type="date" id="merch-item-edit-sale-date">
+          </div>
+          <div class="form-group">
+            <label for="merch-item-edit-sale-price">売価（円）</label>
+            <input type="number" id="merch-item-edit-sale-price" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="merch-item-edit-commission">手数料（円）</label>
+            <input type="number" id="merch-item-edit-commission" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="merch-item-edit-shipping">送料（円）</label>
+            <input type="number" id="merch-item-edit-shipping" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="merch-item-edit-channel">販路</label>
+            <input type="text" id="merch-item-edit-channel" placeholder="例：メルカリ、eBay">
+          </div>
+        </div>
+        <div id="merch-item-edit-preview"
+             style="background:var(--bg-card,#1e1e1e);border-radius:6px;padding:12px;
+                    font-size:12px;margin:12px 0;display:none">
+          <div style="font-weight:600;margin-bottom:8px;color:var(--text-sec)">
+            自動計算プレビュー
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px 16px">
+            <span style="color:var(--text-sec)">入金額</span>
+            <span id="merch-item-preview-net" style="text-align:right"></span>
+            <span style="color:var(--text-sec)">粗利</span>
+            <span id="merch-item-preview-profit" style="text-align:right"></span>
+            <span style="color:var(--text-sec)">粗利率</span>
+            <span id="merch-item-preview-rate" style="text-align:right"></span>
+            <span style="color:var(--text-sec)">回転日数</span>
+            <span id="merch-item-preview-turnover" style="text-align:right"></span>
+          </div>
+        </div>
+        <div class="error-msg" id="merch-item-edit-error"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="merch-item-edit-cancel">
+            キャンセル
+          </button>
+          <button type="submit" class="btn btn-primary" id="merch-item-edit-submit">
+            販売済みとして保存
+          </button>
+        </div>
+      </form>`;
+    overlay.appendChild(modal);
+
+    document.getElementById('merch-item-edit-cancel')
+      .addEventListener('click', closeEditModal);
+    document.getElementById('merch-item-edit-form')
+      .addEventListener('submit', submitEditModal);
+
+    // ── 入力変化で計算プレビュー更新 ──
+    ['merch-item-edit-sale-price',
+     'merch-item-edit-commission',
+     'merch-item-edit-shipping',
+     'merch-item-edit-sale-date'].forEach(id => {
+      document.getElementById(id)
+        .addEventListener('input', updateEditPreview);
+    });
+  }
+
+  let _editItem = null;   // 現在編集中のアイテム
+
+  function openEditModal(item) {
+    ensureEditModal();
+    _editItem = item;
+
+    document.getElementById('merch-item-edit-id').value     = item.id;
+    document.getElementById('merch-item-edit-sale-date').value  = item.sale_date    || '';
+    document.getElementById('merch-item-edit-sale-price').value = item.sale_price   || '';
+    document.getElementById('merch-item-edit-commission').value = item.commission   || '';
+    document.getElementById('merch-item-edit-shipping').value   = item.shipping_cost|| '';
+    document.getElementById('merch-item-edit-channel').value    = item.channel      || '';
+    document.getElementById('merch-item-edit-error').textContent = '';
+
+    // 商品情報表示
+    const info = [
+      item.product_name ? `商品名：${item.product_name}` : '',
+      item.purchase_date  ? `仕入日：${item.purchase_date}` : '',
+      item.purchase_price ? `仕入値：${yen(item.purchase_price)}` : '',
+    ].filter(Boolean).join('　/　');
+    document.getElementById('merch-item-edit-info').textContent = info;
+
+    // ボタン文言（既売却は「更新する」）
+    document.getElementById('merch-item-edit-submit').textContent =
+      item.sale_date ? '更新する' : '販売済みとして保存';
+
+    updateEditPreview();
+
+    const overlay = document.getElementById('modal-overlay');
+    overlay.removeAttribute('hidden');
+    overlay.querySelectorAll('.modal').forEach(m => { m.hidden = true; });
+    document.getElementById('merch-item-edit-modal').hidden = false;
+  }
+
+  function closeEditModal() {
+    document.getElementById('modal-overlay')?.setAttribute('hidden', '');
+    _editItem = null;
+  }
+
+  function updateEditPreview() {
+    const salePrice    = Number(document.getElementById('merch-item-edit-sale-price').value  || 0);
+    const commission   = Number(document.getElementById('merch-item-edit-commission').value  || 0);
+    const shipping     = Number(document.getElementById('merch-item-edit-shipping').value    || 0);
+    const saleDate     = document.getElementById('merch-item-edit-sale-date').value;
+    const purchaseDate = _editItem?.purchase_date || '';
+    const purchasePrice= _editItem?.purchase_price || 0;
+
+    const net     = salePrice - commission - shipping;
+    const profit  = salePrice - purchasePrice - commission - shipping;
+    const rate    = purchasePrice > 0 ? (profit / purchasePrice * 100).toFixed(1) + '%' : '—';
+
+    let turnover = '—';
+    if (saleDate && purchaseDate) {
+      const ms = new Date(saleDate) - new Date(purchaseDate);
+      if (!isNaN(ms) && ms >= 0) turnover = Math.round(ms / 86_400_000) + '日';
+    }
+
+    const green = 'var(--green)', red = 'var(--red)';
+    const pEl = document.getElementById('merch-item-preview-profit');
+    const rEl = document.getElementById('merch-item-preview-rate');
+
+    document.getElementById('merch-item-preview-net').textContent      = yen(net);
+    pEl.textContent = yen(profit);
+    pEl.style.color = profit >= 0 ? green : red;
+    rEl.textContent = rate;
+    rEl.style.color = profit >= 0 ? green : red;
+    document.getElementById('merch-item-preview-turnover').textContent = turnover;
+
+    document.getElementById('merch-item-edit-preview').style.display =
+      (salePrice || commission || shipping) ? '' : 'none';
+  }
+
+  async function submitEditModal(e) {
+    e.preventDefault();
+    const id = Number(document.getElementById('merch-item-edit-id').value);
+    const errEl = document.getElementById('merch-item-edit-error');
+    errEl.textContent = '';
+
+    const body = {
+      sale_date:     document.getElementById('merch-item-edit-sale-date').value  || null,
+      sale_price:    Number(document.getElementById('merch-item-edit-sale-price').value  || 0),
+      commission:    Number(document.getElementById('merch-item-edit-commission').value  || 0),
+      shipping_cost: Number(document.getElementById('merch-item-edit-shipping').value    || 0),
+      channel:       document.getElementById('merch-item-edit-channel').value.trim()     || null,
+    };
+
+    const btn = document.getElementById('merch-item-edit-submit');
+    btn.disabled = true;
+    btn.textContent = '保存中...';
+
+    try {
+      const res = await fetch(`/api/merch/item/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || '保存に失敗しました');
+
+      // キャッシュ・描画済みフラグをリセットして再描画
+      _cache = null;
+      rendered.clear();
+      closeEditModal();
+
+      // 現在表示中のサブタブを再描画
+      const activeTab = document.querySelector('#merch-subtabs [data-merch-tab].active');
+      if (activeTab && typeof window.__jarvisMerchSubTabChanged === 'function') {
+        window.__jarvisMerchSubTabChanged(activeTab.dataset.merchTab);
+      }
+    } catch (err) {
+      errEl.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = _editItem?.sale_date ? '更新する' : '販売済みとして保存';
     }
   }
 

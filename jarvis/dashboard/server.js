@@ -363,6 +363,64 @@ const server = createServer(async (req, res) => {
     }
   }
 
+  // ─── 物販アイテム 個別更新 ────────────────────────────────────────────────
+  {
+    const m = url.pathname.match(/^\/api\/merch\/item\/(\d+)$/);
+    if (m && req.method === 'PUT') {
+      try {
+        ensureMerchTables(db);
+        const id = Number(m[1]);
+        const body = await readJsonBody(req);
+
+        const item = db.prepare('SELECT * FROM merch_items WHERE id = ?').get(id);
+        if (!item) return jsonRes(res, 404, { ok: false, error: 'アイテムが見つかりません' });
+
+        // ── 入力値を整数に ──
+        const saleDate     = body.sale_date     || null;
+        const salePrice    = body.sale_price    != null ? Math.round(Number(body.sale_price))    : (item.sale_price    || 0);
+        const commission   = body.commission    != null ? Math.round(Number(body.commission))    : (item.commission    || 0);
+        const shippingCost = body.shipping_cost != null ? Math.round(Number(body.shipping_cost)) : (item.shipping_cost || 0);
+        const channel      = body.channel       != null ? String(body.channel).trim() || null    : item.channel;
+
+        // ── 自動計算 ──
+        const purchasePrice = item.purchase_price || 0;
+        const netIncome     = salePrice - commission - shippingCost;
+        const profit        = salePrice - purchasePrice - commission - shippingCost;
+        const profitRate    = purchasePrice > 0 ? profit / purchasePrice : null;
+
+        // 回転日数（仕入日と売却日が両方ある場合のみ）
+        let turnoverDays = item.turnover_days;
+        if (saleDate && item.purchase_date) {
+          const ms = new Date(saleDate) - new Date(item.purchase_date);
+          if (!isNaN(ms)) turnoverDays = Math.round(ms / 86_400_000);
+        }
+
+        const status = '販売済み';
+
+        db.prepare(`
+          UPDATE merch_items SET
+            sale_date     = ?,
+            sale_price    = ?,
+            commission    = ?,
+            shipping_cost = ?,
+            channel       = ?,
+            net_income    = ?,
+            profit        = ?,
+            profit_rate   = ?,
+            turnover_days = ?,
+            status        = ?
+          WHERE id = ?
+        `).run(saleDate, salePrice, commission, shippingCost, channel,
+               netIncome, profit, profitRate, turnoverDays, status, id);
+
+        const updated = db.prepare('SELECT * FROM merch_items WHERE id = ?').get(id);
+        return jsonRes(res, 200, { ok: true, item: updated });
+      } catch (e) {
+        return jsonRes(res, 400, { ok: false, error: e.message });
+      }
+    }
+  }
+
   if (url.pathname.startsWith('/api/')) {
     return apiHandler(req, res, url);
   }
