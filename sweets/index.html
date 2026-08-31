@@ -6444,7 +6444,7 @@
         var navLbl = document.getElementById('nav-season-label');
         if (navLbl) navLbl.textContent = 'SWEETs 2026 Autumn';
         applyAutumnTheme(); // 全員に Autumn テーマ適用
-        checkPassword(); // 空入力でも unlock() → _doEnter() へ
+        // ゲート画面は表示したまま。enterボタンでコードなし入場可能
         return;
       }
 
