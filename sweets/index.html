@@ -6400,7 +6400,7 @@
       if (_isAutumn) {
         var navLbl = document.getElementById('nav-season-label');
         if (navLbl) navLbl.textContent = 'SWEETs 2026 Autumn';
-        if (localStorage.getItem('sf_autumn_code')) applyAutumnTheme();
+        applyAutumnTheme(); // 全員に Autumn テーマ適用
         checkPassword(); // 空入力でも unlock() → _doEnter() へ
         return;
       }
