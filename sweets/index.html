@@ -955,37 +955,6 @@
 
       </div>
 
-      <!-- 夏のホラー特集リンク -->
-      <div id="horror-link-wrap" style="display:none;margin-top:20px;">
-        <a href="../horror.html" target="_blank" rel="noopener"
-           style="display:flex;align-items:center;gap:16px;padding:20px 24px;border-radius:14px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.06);text-decoration:none;transition:background 0.25s,border-color 0.25s;box-shadow:0 0 24px rgba(239,68,68,0.15),inset 0 0 16px rgba(239,68,68,0.05);"
-           onmouseover="this.style.background='rgba(239,68,68,0.12)';this.style.borderColor='rgba(239,68,68,0.5)'"
-           onmouseout="this.style.background='rgba(239,68,68,0.06)';this.style.borderColor='rgba(239,68,68,0.35)'">
-          <div style="flex:1;min-width:0;">
-            <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:6px;">SUMMER HORROR 2026</p>
-            <p style="font-family:'Noto Serif JP',serif;font-size:15px;font-weight:300;color:#fecaca;letter-spacing:0.08em;margin-bottom:6px;">夏のホラー特集</p>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#7f1d1d;">2026.07.18 — 08.16</p>
-          </div>
-          <span style="font-size:18px;color:#f87171;flex-shrink:0;">→</span>
-        </a>
-      </div>
-
-      <!-- ホラー解説6本追加記念 配布 -->
-      <div id="horror-notes-campaign" style="display:none;margin-top:12px;">
-        <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:1px solid rgba(239,68,68,0.22);background:rgba(239,68,68,0.04);">
-          <img src="../item/proteincoffee.webp" style="width:38px;flex-shrink:0;opacity:0.9;" alt="プロテインコーヒー">
-          <div style="flex:1;min-width:0;">
-            <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:4px;">HORROR NOTES 2026</p>
-            <p style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;color:#fecaca;letter-spacing:0.05em;margin-bottom:3px;">ホラー解説6本追加記念</p>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#e2e8f0;">プロテインコーヒー × 3</p>
-          </div>
-          <div style="flex-shrink:0;text-align:center;">
-            <button id="horror-notes-campaign-btn" onclick="claimHorrorNotesCampaign()" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fecaca;border:1px solid rgba(239,68,68,0.38);border-radius:50px;padding:9px 16px;background:rgba(239,68,68,0.08);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.16)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'">受け取る</button>
-            <p id="horror-notes-campaign-claimed" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">受け取り済み</p>
-          </div>
-        </div>
-      </div>
-
     </div>
 
 
@@ -2034,62 +2003,58 @@
 
       </div><!-- /se-section -->
 
-      <!-- Interview section -->
-      <!-- Summer Interview -->
-      <div id="interview-summer-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
-        <div class="itv-section-acc" id="itv-summer-section-acc">
-          <button class="itv-section-header" onclick="toggleItvSummerSection()">
-            <span class="itv-section-arrow" id="itv-summer-section-arrow">▶</span>
-            <span class="itv-section-title" data-no-replace style="color:#7dd3fc;">SWEETs ‐2026 Summer‐&nbsp;&nbsp;Special Interview</span>
-          </button>
-          <div class="itv-section-body">
-            <div style="display:flex;gap:10px;padding:0 12px 16px;">
+      <!-- Autumn Special Episode section -->
+      <div id="ase-section" style="max-width:480px;margin:48px auto 0;">
+        <div class="section-label" style="text-align:center;">autumn special episode</div>
+        <p style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;letter-spacing:3px;margin-top:-24px;margin-bottom:28px;">準備中</p>
 
-              <!-- ハヤテ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
-                <p class="itv-acc-status" id="itv-s-status-hayate">LOCKED</p>
-                <div id="itv-s-locked-hayate">
-                  <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvSummerModal('hayate')">解放する</button>
-                </div>
-                <a class="itv-unlocked-link" id="itv-s-unlocked-hayate" href="itv_hayate_s.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
+        <div style="display:flex;gap:10px;margin-bottom:0;">
+
+          <!-- ヒナタ -->
+          <div style="flex:1;border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/hinata/room_face.webp" alt="HINATA" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:0.5;">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.65);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
               </div>
-
-              <!-- ヒナタ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
-                <p class="itv-acc-status" id="itv-s-status-hinata">LOCKED</p>
-                <div id="itv-s-locked-hinata">
-                  <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvSummerModal('hinata')">解放する</button>
-                </div>
-                <a class="itv-unlocked-link" id="itv-s-unlocked-hinata" href="itv_hinata_s.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
-              </div>
-
-              <!-- コウタ -->
-              <div style="flex:1;text-align:center;">
-                <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
-                <p class="itv-acc-status" id="itv-s-status-kouta">LOCKED</p>
-                <div id="itv-s-locked-kouta">
-                  <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
-                  <button class="itv-unlock-btn" onclick="openItvSummerModal('kouta')">解放する</button>
-                </div>
-                <a class="itv-unlocked-link" id="itv-s-unlocked-kouta" href="itv_kouta_s.html" style="display:none;">
-                  <span class="itv-read-btn">読む →</span>
-                </a>
-              </div>
-
+            </div>
+            <div style="padding:10px 8px 12px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;">HINATA</p>
             </div>
           </div>
-        </div>
-      </div><!-- /interview-summer-section -->
 
-      <!-- Archive section (Spring Interview) -->
+          <!-- コウタ -->
+          <div style="flex:1;border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/kouta/room_face.webp" alt="KOUTA" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:0.5;">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.65);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
+              </div>
+            </div>
+            <div style="padding:10px 8px 12px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;">KOUTA</p>
+            </div>
+          </div>
+
+          <!-- ハヤテ -->
+          <div style="flex:1;border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.02);position:relative;">
+            <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;">
+              <img src="../room/hayate/room_face.webp" alt="HAYATE" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:0.5;">
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.65);gap:8px;">
+                <span style="font-size:18px;color:#475569;">🔒</span>
+              </div>
+            </div>
+            <div style="padding:10px 8px 12px;text-align:center;">
+              <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;">HAYATE</p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /ase-section -->
+
+      <!-- Interview section -->
+      <!-- Summer Interview -->
+      <!-- Archive section (Summer + Spring Interview) -->
       <div id="archive-section" style="max-width:480px;margin:32px auto 0;">
         <div class="itv-section-acc" id="archive-section-acc">
           <button class="itv-section-header" onclick="toggleArchiveSection()">
@@ -2097,6 +2062,53 @@
             <span class="itv-section-title" data-no-replace style="color:#475569;letter-spacing:6px;">archive</span>
           </button>
           <div class="itv-section-body" id="archive-section-body" style="max-height:0;">
+            <!-- Summer Interview -->
+            <div id="interview-summer-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
+              <div class="itv-section-acc" id="itv-summer-section-acc" style="margin:12px 12px 0;">
+                <button class="itv-section-header" onclick="toggleItvSummerSection()">
+                  <span class="itv-section-arrow" id="itv-summer-section-arrow">▶</span>
+                  <span class="itv-section-title" data-no-replace style="color:#7dd3fc;">SWEETs ‐2026 Summer‐&nbsp;&nbsp;Special Interview</span>
+                </button>
+                <div class="itv-section-body">
+                  <div style="display:flex;gap:10px;padding:0 12px 16px;">
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
+                      <p class="itv-acc-status" id="itv-s-status-hayate">LOCKED</p>
+                      <div id="itv-s-locked-hayate">
+                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvSummerModal('hayate')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-s-unlocked-hayate" href="itv_hayate_s.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
+                      <p class="itv-acc-status" id="itv-s-status-hinata">LOCKED</p>
+                      <div id="itv-s-locked-hinata">
+                        <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvSummerModal('hinata')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-s-unlocked-hinata" href="itv_hinata_s.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+                    <div style="flex:1;text-align:center;">
+                      <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
+                      <p class="itv-acc-status" id="itv-s-status-kouta">LOCKED</p>
+                      <div id="itv-s-locked-kouta">
+                        <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
+                        <button class="itv-unlock-btn" onclick="openItvSummerModal('kouta')">解放する</button>
+                      </div>
+                      <a class="itv-unlocked-link" id="itv-s-unlocked-kouta" href="itv_kouta_s.html" style="display:none;">
+                        <span class="itv-read-btn">読む →</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /interview-summer-section -->
+
             <!-- Spring Interview -->
             <div id="interview-section" style="max-width:480px;margin:0 auto;padding-bottom:12px;">
               <div class="itv-section-acc" id="itv-section-acc" style="margin:12px 12px 0;">
@@ -2600,6 +2612,37 @@
     <!-- 短編先行 -->
     <div class="section" id="sw-another">
       <div class="section-label">another</div>
+
+      <!-- 夏のホラー特集リンク -->
+      <div id="horror-link-wrap" style="display:none;margin-bottom:12px;">
+        <a href="../horror.html" target="_blank" rel="noopener"
+           style="display:flex;align-items:center;gap:16px;padding:20px 24px;border-radius:14px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.06);text-decoration:none;transition:background 0.25s,border-color 0.25s;box-shadow:0 0 24px rgba(239,68,68,0.15),inset 0 0 16px rgba(239,68,68,0.05);"
+           onmouseover="this.style.background='rgba(239,68,68,0.12)';this.style.borderColor='rgba(239,68,68,0.5)'"
+           onmouseout="this.style.background='rgba(239,68,68,0.06)';this.style.borderColor='rgba(239,68,68,0.35)'">
+          <div style="flex:1;min-width:0;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:6px;">SUMMER HORROR 2026</p>
+            <p style="font-family:'Noto Serif JP',serif;font-size:15px;font-weight:300;color:#fecaca;letter-spacing:0.08em;margin-bottom:6px;">夏のホラー特集</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#7f1d1d;">2026.07.18 — 08.16</p>
+          </div>
+          <span style="font-size:18px;color:#f87171;flex-shrink:0;">→</span>
+        </a>
+      </div>
+
+      <!-- ホラー解説6本追加記念 配布 -->
+      <div id="horror-notes-campaign" style="display:none;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:1px solid rgba(239,68,68,0.22);background:rgba(239,68,68,0.04);">
+          <img src="../item/proteincoffee.webp" style="width:38px;flex-shrink:0;opacity:0.9;" alt="プロテインコーヒー">
+          <div style="flex:1;min-width:0;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:4px;">HORROR NOTES 2026</p>
+            <p style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;color:#fecaca;letter-spacing:0.05em;margin-bottom:3px;">ホラー解説6本追加記念</p>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#e2e8f0;">プロテインコーヒー × 3</p>
+          </div>
+          <div style="flex-shrink:0;text-align:center;">
+            <button id="horror-notes-campaign-btn" onclick="claimHorrorNotesCampaign()" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#fecaca;border:1px solid rgba(239,68,68,0.38);border-radius:50px;padding:9px 16px;background:rgba(239,68,68,0.08);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.16)'" onmouseout="this.style.background='rgba(239,68,68,0.08)'">受け取る</button>
+            <p id="horror-notes-campaign-claimed" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">受け取り済み</p>
+          </div>
+        </div>
+      </div>
 
       <div class="post-card" style="display:none;position:relative;">
         <img id="story-pendant-icon" src="../item/pendant_hinata.webp" title="青い石のネックレス" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;z-index:1;pointer-events:none;opacity:0.22;filter:grayscale(1);">
