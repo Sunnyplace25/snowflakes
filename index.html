@@ -556,19 +556,20 @@
 </head>
 <body>
 
-<!-- New Album Popup -->
+<!-- New Single Popup — In One Sky -->
 <div id="newalbum-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
   <div style="max-width:340px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:24px;overflow:hidden;position:relative;">
     <button onclick="closeNewAlbumPopup()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#475569;font-size:18px;cursor:pointer;line-height:1;z-index:1;">×</button>
-    <img src="Discography/undertone.webp" alt="Undertone" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+    <img src="Discography/in_one_sky.webp" alt="In One Sky" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
     <div style="padding:22px 22px 24px;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">NEW ALBUM</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:300;color:#f1f5f9;letter-spacing:2px;margin-bottom:4px;">Undertone</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;margin-bottom:18px;">Snow flakes</p>
-      <a href="https://open.spotify.com/intl-ja/album/3cY9qIWkcj3S5veSYjx351?si=xwjg26RZQLKmPbssgQHERw" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#1db954;color:#000;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:8px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">NEW SINGLE</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:300;color:#f1f5f9;letter-spacing:2px;margin-bottom:4px;">In One Sky</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;margin-bottom:2px;">C/w 帰らないほどでもない</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#334155;margin-bottom:18px;">Snow flakes</p>
+      <a href="https://open.spotify.com/intl-ja/album/4ZB3NH6YOUIPmRcy0h8yX7?si=dTO8gAKtQUaGazBwD-Oabw" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#1db954;color:#000;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:8px;">
         <i class="fa-brands fa-spotify" style="font-size:16px;"></i> Spotify で聴く
       </a>
-      <a href="https://music.amazon.co.jp/albums/B0HBFLP371?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_LmhZ9iODcOC3DvaIE2F2H5kNB" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(90,143,168,0.12);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
+      <a href="https://music.amazon.co.jp/albums/B0HBFMD4Y3?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_ZZ5CnT5YOl2fPZAgTXtnHnluQ" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(90,143,168,0.12);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
         <i class="fa-brands fa-amazon" style="font-size:16px;"></i> Amazon Music で聴く
       </a>
     </div>
@@ -576,15 +577,15 @@
 </div>
 <script>
 (function() {
-  var EXPIRY = new Date('2026-08-07').getTime();
+  var EXPIRY = new Date('2026-09-10').getTime();
   if (Date.now() > EXPIRY) return;
-  if (sessionStorage.getItem('sf_newalbum_closed') === '1') return;
+  if (localStorage.getItem('sf_inoonesky_seen') === '1') return;
   var el = document.getElementById('newalbum-popup');
   el.style.display = 'flex';
 })();
 function closeNewAlbumPopup() {
   document.getElementById('newalbum-popup').style.display = 'none';
-  sessionStorage.setItem('sf_newalbum_closed', '1');
+  localStorage.setItem('sf_inoonesky_seen', '1');
 }
 </script>
 
@@ -1785,6 +1786,10 @@ function sfShare() {
       (function() {
         // ★ シングル追加はここに追記
         var SF_SINGLES = [
+          { img:'Discography/in_one_sky.webp', title:'In One Sky /<br class="sp-mb-br">帰らないほどでもない', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/4ZB3NH6YOUIPmRcy0h8yX7?si=dTO8gAKtQUaGazBwD-Oabw',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0HBFMD4Y3?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_ZZ5CnT5YOl2fPZAgTXtnHnluQ',
+            links:[] },
           { img:'Discography/undertone.webp', title:'Undertone<br><span style="font-size:0.72em;color:#94a3b8;letter-spacing:1px;">Spring Waltz / Aftertone</span>', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/album/3cY9qIWkcj3S5veSYjx351?si=xwjg26RZQLKmPbssgQHERw',
             amazonUrl:'https://music.amazon.co.jp/albums/B0HBFLP371?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_LmhZ9iODcOC3DvaIE2F2H5kNB',
@@ -3625,16 +3630,16 @@ document.addEventListener('visibilitychange', function() {
   transition:opacity 0.4s, transform 0.4s;
   opacity:0; transform:translateY(16px); pointer-events:none;
 ">
-  <iframe id="sf-sp-iframe" src="https://open.spotify.com/embed/album/3cY9qIWkcj3S5veSYjx351?utm_source=generator&theme=0"
-    width="100%" height="152" frameborder="0"
+  <iframe id="sf-sp-iframe" data-testid="embed-iframe" style="border-radius:12px;display:block;" src="https://open.spotify.com/embed/album/4ZB3NH6YOUIPmRcy0h8yX7?utm_source=generator&si=2cb2968fb2434bde"
+    width="100%" height="152" frameBorder="0"
     allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy" style="display:block;">
+    loading="lazy">
   </iframe>
   <div id="sf-am-panel" style="display:none;width:100%;height:152px;background:#0d1117;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;box-sizing:border-box;">
-    <img src="Discography/undertone.webp" style="width:52px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;">
-    <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#e2e8f0;margin:0;letter-spacing:1px;">Undertone</p>
+    <img src="Discography/in_one_sky.webp" style="width:52px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+    <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#e2e8f0;margin:0;letter-spacing:1px;">In One Sky</p>
     <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;margin:0;">Snow flakes</p>
-    <a href="https://music.amazon.co.jp/albums/B0HBFLP371?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_LmhZ9iODcOC3DvaIE2F2H5kNB" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(90,143,168,0.18);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;border-radius:100px;padding:5px 12px;margin-top:2px;"><i class="fa-brands fa-amazon" style="font-size:12px;"></i> Amazon Music で聴く</a>
+    <a href="https://music.amazon.co.jp/albums/B0HBFMD4Y3?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_ZZ5CnT5YOl2fPZAgTXtnHnluQ" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(90,143,168,0.18);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;border-radius:100px;padding:5px 12px;margin-top:2px;"><i class="fa-brands fa-amazon" style="font-size:12px;"></i> Amazon Music で聴く</a>
   </div>
   <button onclick="sfClose()" style="
     position:absolute; top:6px; right:6px;
