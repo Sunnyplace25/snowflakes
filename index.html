@@ -577,15 +577,15 @@
 </div>
 <script>
 (function() {
-  var EXPIRY = new Date('2026-09-10').getTime();
+  var EXPIRY = new Date('2026-09-11').getTime();
   if (Date.now() > EXPIRY) return;
-  if (localStorage.getItem('sf_inoonesky_seen') === '1') return;
+  if (localStorage.getItem('sf_inoonesky_seen2') === '1') return;
   var el = document.getElementById('newalbum-popup');
   el.style.display = 'flex';
 })();
 function closeNewAlbumPopup() {
   document.getElementById('newalbum-popup').style.display = 'none';
-  localStorage.setItem('sf_inoonesky_seen', '1');
+  localStorage.setItem('sf_inoonesky_seen2', '1');
 }
 </script>
 
