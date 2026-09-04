@@ -1061,6 +1061,7 @@ function sfShare() {
       var SKIP_DAYS = [
         new Date('2026-06-17T21:00:00'), // 6/17 更新なし
         new Date('2026-06-18T21:00:00'), // 6/18 更新なし
+        new Date('2026-09-04T21:00:00'), // 9/4 更新なし（翌9/5に#286）
       ];
 
       function getEpisode(now) {
@@ -1112,6 +1113,19 @@ function sfShare() {
         var epEl   = document.getElementById('update-ep');
         var status = document.getElementById('update-status');
         if (!banner || !epEl) return;
+
+        // スキップ日チェック（話数カウントしない日はバナーをアクティブにしない）
+        var todayStr = getTodayKey(now);
+        var isSkipDay = false;
+        for (var i = 0; i < SKIP_DAYS.length; i++) {
+          if (getTodayKey(SKIP_DAYS[i]) === todayStr) { isSkipDay = true; break; }
+        }
+        if (isSkipDay) {
+          banner.classList.remove('active');
+          status.textContent = '21 : 00';
+          if (sub) sub.textContent = '本編 明日21時更新';
+          return;
+        }
 
         var hours = getUpdateHours(now);
 
