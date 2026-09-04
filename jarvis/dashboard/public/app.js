@@ -183,17 +183,9 @@ async function loadSummary() {
 
     const s = data.summary;
     document.getElementById('card-income').textContent    = yen(s.total_income);
-    document.getElementById('card-expense').textContent   = yen(s.total_expense);
-    document.getElementById('card-profit').textContent    = yen(s.profit);
     document.getElementById('card-uninvoiced').textContent = `${data.uninvoiced}件`;
     document.getElementById('card-unpaid').textContent     = `${data.unpaid}件`;
     document.getElementById('card-work-hours').textContent   = hours(s.total_work_hours);
-    document.getElementById('card-travel-hours').textContent = hours(s.total_travel_hours);
-    document.getElementById('card-dayoff').textContent       = `${data.full_day_off}日`;
-
-    // 利益の色分け
-    const profitEl = document.getElementById('card-profit');
-    profitEl.className = 'card-value ' + (s.profit >= 0 ? 'green' : 'red');
 
     // 未請求・未入金の強調
     document.getElementById('card-uninvoiced').className =
@@ -257,7 +249,7 @@ async function loadWorks() {
           <th class="col-cat">カテゴリ</th>
           <th class="col-type">種別</th>
           <th class="col-content">内容・発注元</th>
-          <th class="col-income">収入</th>
+          <th class="col-income">売上</th>
           <th class="col-expense">経費</th>
           <th class="col-hours">労働h</th>
           <th class="col-status">請求 / 入金</th>
@@ -379,7 +371,6 @@ document.getElementById('work-form').addEventListener('submit', async e => {
     content:        parseContentSelect('work-content-select', 'work-content'),
     client:         f.client.value      || null,
     income:         f.income.value      ? Number(f.income.value)      : null,
-    expense:        f.expense.value     ? Number(f.expense.value)     : null,
     work_hours:     parseHoursSelect(hSelVal, 'work-hours'),
     is_full_day:    hSelVal === '1日',
     travel_hours:   f.travel_hours.value ? Number(f.travel_hours.value) : null,
@@ -407,35 +398,6 @@ document.getElementById('work-form').addEventListener('submit', async e => {
   }
 });
 
-// ─── 休日登録モーダル ─────────────────────────────────────────────────────────
-
-document.getElementById('add-day-btn').addEventListener('click', () => {
-  document.getElementById('day-date').value = localDateISO();
-  document.getElementById('day-error').textContent = '';
-  showModal('modal-day');
-});
-
-document.getElementById('day-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const f = e.target;
-  document.getElementById('day-error').textContent = '';
-
-  const body = {
-    date:           f.date.value,
-    is_full_day_off: f.type.value === 'off',
-    memo:           f.memo.value || null,
-  };
-
-  const { status, data } = await api('POST', '/api/day', body);
-  if (status === 200 && data.ok) {
-    hideModal();
-    f.reset();
-    await refresh();
-  } else {
-    document.getElementById('day-error').textContent = data.error || '登録に失敗しました';
-  }
-});
-
 // ─── 仕事編集モーダル ─────────────────────────────────────────────────────────
 
 window.openEditModal = function(id) {
@@ -448,7 +410,8 @@ window.openEditModal = function(id) {
   document.getElementById('edit-work-type').value       = w.work_type   || '';
   document.getElementById('edit-work-client').value     = w.client      || '';
   document.getElementById('edit-work-income').value     = w.income  != null ? w.income       : '';
-  document.getElementById('edit-work-expense').value    = w.expense != null ? w.expense      : '';
+  const expEl = document.getElementById('edit-work-expense');
+  if (expEl) expEl.value = w.expense != null ? w.expense : '';
   document.getElementById('edit-travel-hours').value    = w.travel_hours != null ? w.travel_hours : '';
   document.getElementById('edit-work-invoice').value    = w.invoice_status;
   document.getElementById('edit-work-payment').value    = w.payment_status;
@@ -490,7 +453,6 @@ document.getElementById('edit-work-form').addEventListener('submit', async e => 
     content:        parseContentSelect('edit-work-content-select', 'edit-work-content'),
     client:         f.client.value        || null,
     income:         f.income.value        ? Number(f.income.value)       : null,
-    expense:        f.expense.value       ? Number(f.expense.value)      : null,
     work_hours:     parseHoursSelect(hSelVal, 'edit-work-hours'),
     is_full_day:    hSelVal === '1日',
     travel_hours:   f.travel_hours.value  ? Number(f.travel_hours.value) : null,

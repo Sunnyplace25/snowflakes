@@ -867,7 +867,9 @@ def main():
     parser.add_argument('--json', help='JSON 文字列として入力')
     args = parser.parse_args()
 
-    raw = args.json if args.json else sys.stdin.read()
+    # Windows では sys.stdin がデフォルト CP932 になるため
+    # stdin は常にバイト列として読み取り UTF-8 でデコードする
+    raw = args.json if args.json else sys.stdin.buffer.read().decode('utf-8')
     try:
         data   = json.loads(raw)
         result = generate(data)

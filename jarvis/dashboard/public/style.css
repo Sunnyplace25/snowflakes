@@ -108,6 +108,19 @@ html, body {
   gap: 12px;
 }
 
+/* ダッシュボード統合サマリー（4カード横一列） */
+.cards-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .cards-summary { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .cards-summary { grid-template-columns: 1fr; }
+}
+
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-lite);

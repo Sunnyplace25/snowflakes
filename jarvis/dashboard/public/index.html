@@ -6,6 +6,21 @@
   <title>JARVIS Dashboard</title>
   <!-- 外部 CDN・外部フォント・外部スクリプト 不使用 -->
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* color-scheme: light にしてネイティブカレンダーを白背景で表示（黒文字で確実に読める）
+       入力欄自体はCSSで暗色を維持する */
+    input[type="date"] {
+      color-scheme: light;
+      background: var(--bg, #0d1117) !important;
+      color: #e2e8f0 !important;
+      border-color: var(--border, #30363d) !important;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      /* lightテーマのアイコンは黒→暗背景で見えないのでinvertで白くする */
+      filter: invert(0.85) opacity(0.8);
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
@@ -47,43 +62,23 @@
   <!-- ─── ダッシュボードサブタブ ────────────────────────────────────────── -->
   <div id="audio-subtab-dashboard" class="sf-tab-panel">
 
-  <!-- 月次サマリーカード（1行目：収支） -->
-  <div class="cards-primary">
+  <!-- 月次サマリーカード（4列横一列） -->
+  <div class="cards-summary">
     <div class="card">
-      <div class="card-label">収入</div>
+      <div class="card-label">売上</div>
       <div class="card-value green" id="card-income">—</div>
     </div>
     <div class="card">
-      <div class="card-label">経費</div>
-      <div class="card-value red" id="card-expense">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">利益</div>
-      <div class="card-value" id="card-profit">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">当月請求額（税込）</div>
+      <div class="card-label">オーテック 当月請求額（税込10%）</div>
       <div class="card-value" id="card-uninvoiced">—</div>
     </div>
     <div class="card">
-      <div class="card-label">当月入金予定（源泉控除後）</div>
+      <div class="card-label">当月入金予定（源泉控除後・前月分）</div>
       <div class="card-value" id="card-unpaid">—</div>
     </div>
-  </div>
-
-  <!-- 月次サマリーカード（2行目：時間・休日） -->
-  <div class="cards-secondary">
     <div class="card">
       <div class="card-label">総労働時間</div>
       <div class="card-value accent" id="card-work-hours">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">総移動時間</div>
-      <div class="card-value" id="card-travel-hours">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">音声休み</div>
-      <div class="card-value" id="card-dayoff">—</div>
     </div>
   </div>
 
@@ -103,7 +98,6 @@
       <h2>仕事一覧</h2>
       <div class="btn-group">
         <button class="btn btn-primary" id="add-work-btn">＋ 仕事を登録</button>
-        <button class="btn btn-secondary" id="add-day-btn">＋ 休日を登録</button>
       </div>
     </div>
     <div id="works-table-container" class="loading">読み込み中...</div>
@@ -395,7 +389,7 @@
         </div>
 
         <div class="form-group">
-          <label for="work-expense">経費（円）</label>
+          <label for="work-expense">交通費（円）</label>
           <input type="number" id="work-expense" name="expense" min="0" step="1" placeholder="0">
         </div>
 
@@ -445,39 +439,6 @@
 
       </div>
       <div class="error-msg" id="work-error"></div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
-        <button type="submit" class="btn btn-primary">登録する</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- 休日登録モーダル -->
-  <div class="modal" id="modal-day" hidden>
-    <h3>日次状態を登録</h3>
-    <form id="day-form" autocomplete="off">
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label for="day-date">日付 *</label>
-          <input type="date" id="day-date" name="date" required>
-        </div>
-
-        <div class="form-group">
-          <label for="day-type">状態 *</label>
-          <select id="day-type" name="type" required>
-            <option value="off">完全休日</option>
-            <option value="work">勤務日</option>
-          </select>
-        </div>
-
-        <div class="form-group form-full">
-          <label for="day-memo">メモ</label>
-          <input type="text" id="day-memo" name="memo" placeholder="例：お盆、祝日など">
-        </div>
-
-      </div>
-      <div class="error-msg" id="day-error"></div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
         <button type="submit" class="btn btn-primary">登録する</button>
@@ -551,7 +512,7 @@
         </div>
 
         <div class="form-group">
-          <label for="edit-work-expense">経費（円）</label>
+          <label for="edit-work-expense">交通費（円）</label>
           <input type="number" id="edit-work-expense" name="expense" min="0" step="1" placeholder="0">
         </div>
 

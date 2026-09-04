@@ -14,9 +14,9 @@
 
 import * as XLSX from 'xlsx';
 import {
-  existsSync, mkdirSync, readFileSync, writeFileSync,
+  existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync,
 } from 'node:fs';
-import { resolve, dirname, basename } from 'node:path';
+import { resolve, dirname, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
@@ -46,6 +46,12 @@ function ensureGenerationTable(db) {
     CREATE INDEX IF NOT EXISTS idx_bgi_month ON business_generated_invoices(work_month);
     CREATE INDEX IF NOT EXISTS idx_bgi_number ON business_generated_invoices(invoice_number);
   `);
+  // archive_path カラムが未存在の場合のみ追加（既存DBへの後方互換）
+  try {
+    db.exec(`ALTER TABLE business_generated_invoices ADD COLUMN archive_path TEXT`);
+  } catch (_) {
+    // 既にカラムが存在する場合は無視
+  }
 }
 
 function validateMonth(month) {
@@ -90,16 +96,18 @@ function invoiceDescription(work) {
 }
 
 function quantityAndUnit(work) {
-  const content = String(work.content ?? work.work_type ?? '');
-  const isStudio = content.includes('スタジオ');
+  // work_type で業務種別を判定（contentではなくwork_typeを優先）
+  // 例: "北海道マラソン スタジオ音声業務" の中継仕事を誤判定しないため
+  const wt = String(work.work_type ?? '').toUpperCase();
+  const isStudio = wt === 'STUDIO' || wt === 'スタジオ';
 
   if (isStudio) {
-    // スタジオ → work_hours時間
-    const hours = Number(work.work_hours || work.hours || 0);
-    return { quantity: hours > 0 ? hours : 1, unit: '時間' };
+    // スタジオ → 実際の作業時間（時間）
+    const hours = Number(work.work_hours ?? 0);
+    return { quantity: hours, unit: '時間' };
   }
 
-  // ロケ・中継・その他 → 1日
+  // 中継・ロケ・その他 → 1日
   return { quantity: 1, unit: '日' };
 }
 
@@ -120,9 +128,9 @@ function defaultInvoiceNumber(db, month) {
   return `${prefix}${next}`;
 }
 
-function defaultOutputFilename(issueDate) {
-  // YYYY-MM-DD → "YYYY年M月_請求書_大和谷しおり.xlsx"
-  const [y, m] = String(issueDate).split('-').map(Number);
+function defaultOutputFilename(month) {
+  // YYYY-MM → "YYYY年M月_請求書_大和谷しおり.xlsx"（請求対象月を使用）
+  const [y, m] = String(month).split('-').map(Number);
   return `${y}年${m}月_請求書_大和谷しおり.xlsx`;
 }
 
@@ -281,11 +289,11 @@ export function generateInvoiceWorkbook(db, {
   let filename;
   if (output_filename && String(output_filename).trim()) {
     let fn = sanitizeFilename(String(output_filename).trim());
-    if (!fn) fn = defaultOutputFilename(issueDate).replace(/\.xlsx$/i, '');
+    if (!fn) fn = defaultOutputFilename(month).replace(/\.xlsx$/i, '');
     if (!fn.toLowerCase().endsWith('.xlsx')) fn += '.xlsx';
     filename = fn;
   } else {
-    filename = defaultOutputFilename(issueDate);
+    filename = defaultOutputFilename(month);
   }
   const outputPath = resolve(EXPORT_DIR, filename);
 
@@ -314,12 +322,17 @@ export function generateInvoiceWorkbook(db, {
 
   let pyOut;
   try {
-    pyOut = execFileSync('python', [PY_SCRIPT, '--json', pyInput], {
+    // 日本語ファイル名等を含む JSON をコマンドライン引数で渡すと Windows で
+    // 文字化けが発生するため、stdin 経由でパイプ渡しする。
+    // input を Buffer(utf-8) で渡し、encoding は stdout の解析にのみ使用する。
+    pyOut = execFileSync('python', [PY_SCRIPT], {
+      input:    Buffer.from(pyInput, 'utf8'),
       encoding: 'utf8',
       timeout:  30_000,
     });
   } catch (err) {
-    throw new Error(`請求書生成（Python）失敗: ${err.stderr || err.message}`);
+    const detail = (err.stderr || '') + (err.stdout || '') + (err.message || '');
+    throw new Error(`請求書生成（Python）失敗: ${detail}`);
   }
 
   let pyResult;
@@ -334,11 +347,28 @@ export function generateInvoiceWorkbook(db, {
 
   const buffer = readFileSync(outputPath);
 
+  // ── アーカイブコピー: jarvis/invoices/YYYY/MM/ ──────────────────────────
+  const [archiveYear, archiveMon] = month.split('-');
+  const ARCHIVE_BASE = resolve(JARVIS_DIR, 'invoices', archiveYear, archiveMon);
+  mkdirSync(ARCHIVE_BASE, { recursive: true });
+
+  // 同名ファイルが存在する場合は末尾に _2, _3 ... を付けて上書き防止
+  const ext = extname(filename);                        // ".xlsx"
+  const base = basename(filename, ext);                 // 拡張子なし部分
+  let archiveFilename = filename;
+  let counter = 2;
+  while (existsSync(resolve(ARCHIVE_BASE, archiveFilename))) {
+    archiveFilename = `${base}_${counter}${ext}`;
+    counter++;
+  }
+  const archivePath = resolve(ARCHIVE_BASE, archiveFilename);
+  copyFileSync(outputPath, archivePath);
+
   ensureGenerationTable(db);
   db.prepare(`
     INSERT INTO business_generated_invoices
-      (work_month, invoice_number, invoice_date, due_date, subtotal, tax, total, filename)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (work_month, invoice_number, invoice_date, due_date, subtotal, tax, total, filename, archive_path)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(work_month, invoice_number) DO UPDATE SET
       invoice_date = excluded.invoice_date,
       due_date = excluded.due_date,
@@ -346,13 +376,15 @@ export function generateInvoiceWorkbook(db, {
       tax = excluded.tax,
       total = excluded.total,
       filename = excluded.filename,
+      archive_path = excluded.archive_path,
       created_at = datetime('now','localtime')
-  `).run(month, number, issueDate, paymentDue, preview.subtotal, preview.tax, preview.total, filename);
+  `).run(month, number, issueDate, paymentDue, preview.subtotal, preview.tax, preview.total, filename, archivePath);
 
   return {
     buffer,
     filename,
     outputPath,
+    archivePath,
     preview: { ...preview, invoice_number: number, invoice_date: issueDate, due_date: paymentDue },
   };
 }

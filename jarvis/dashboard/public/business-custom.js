@@ -776,9 +776,10 @@ let updatingCards = false;
     }
   }
 
-  function invoiceDefaultFilename(invoiceDate) {
-    if (!invoiceDate || !/^\d{4}-\d{2}/.test(invoiceDate)) return '';
-    const [y, m] = invoiceDate.split('-').map(Number);
+  function invoiceDefaultFilename(month) {
+    // 請求対象月（YYYY-MM）からファイル名を生成
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) return '';
+    const [y, m] = month.split('-').map(Number);
     return `${y}年${m}月_請求書_大和谷しおり.xlsx`;
   }
 
@@ -794,7 +795,7 @@ let updatingCards = false;
       </tr>
     `).join('');
 
-    const defaultFn = invoiceDefaultFilename(data.invoice_date);
+    const defaultFn = invoiceDefaultFilename(data.month);
     el.innerHTML = `
       <div class="business-form-inline" style="margin-bottom:14px">
         <div class="form-group">
@@ -824,13 +825,23 @@ let updatingCards = false;
           </table>
         </div>
       ` : '<div class="empty-state">請求対象がありません</div>'}
-      <div style="display:flex;justify-content:flex-end;gap:20px;margin-top:14px;flex-wrap:wrap">
-        <span>税抜 <strong>${formatYen(data.subtotal)}</strong></span>
-        <span>消費税10% <strong>${formatYen(data.tax)}</strong></span>
-        <span>請求額 <strong>${formatYen(data.total)}</strong></span>
-      </div>
-      <div class="business-muted-note" style="margin-top:10px">
-        源泉徴収は請求書の金額からは引かず、JARVISの「入金予定」で控除後の金額を表示します。
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
+        <div style="background:var(--card-bg,#1e293b);border-radius:8px;padding:10px 14px;text-align:center">
+          <div style="font-size:0.72rem;color:var(--text-muted,#94a3b8);margin-bottom:4px">請求額（税抜）</div>
+          <div style="font-size:1.05rem;font-weight:700">${formatYen(data.subtotal)}</div>
+        </div>
+        <div style="background:var(--card-bg,#1e293b);border-radius:8px;padding:10px 14px;text-align:center">
+          <div style="font-size:0.72rem;color:var(--text-muted,#94a3b8);margin-bottom:4px">税込み額</div>
+          <div style="font-size:1.05rem;font-weight:700">${formatYen(data.total)}</div>
+        </div>
+        <div style="background:var(--card-bg,#1e293b);border-radius:8px;padding:10px 14px;text-align:center">
+          <div style="font-size:0.72rem;color:var(--text-muted,#94a3b8);margin-bottom:4px">控除金額（源泉徴収）</div>
+          <div style="font-size:1.05rem;font-weight:700;color:#f87171">−${formatYen(Math.floor(data.subtotal * OTEC_WITHHOLD_RATE))}</div>
+        </div>
+        <div style="background:var(--card-bg,#1e293b);border-radius:8px;padding:10px 14px;text-align:center">
+          <div style="font-size:0.72rem;color:var(--text-muted,#94a3b8);margin-bottom:4px">入金予定額</div>
+          <div style="font-size:1.05rem;font-weight:700;color:#34d399">${formatYen(data.total - Math.floor(data.subtotal * OTEC_WITHHOLD_RATE))}</div>
+        </div>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:14px">
         <button class="btn btn-primary" id="invoice-gen-download-btn" ${(!invoiceTemplateConfigured || !rows) ? 'disabled' : ''}>Excel請求書を作成</button>
@@ -838,16 +849,10 @@ let updatingCards = false;
     `;
     document.getElementById('invoice-gen-download-btn')?.addEventListener('click', generateInvoiceExcel);
 
-    // 請求日変更時にファイル名を自動更新（ユーザーが手動変更した場合は追従しない）
-    const dateInput = document.getElementById('invoice-gen-date');
+    // 請求日を変えてもファイル名は請求対象月で固定（発行日連動は廃止）
     const fnInput = document.getElementById('invoice-gen-filename');
-    if (dateInput && fnInput) {
+    if (fnInput) {
       fnInput.addEventListener('input', () => { fnInput.dataset.userModified = '1'; });
-      dateInput.addEventListener('change', () => {
-        if (!fnInput.dataset.userModified) {
-          fnInput.value = invoiceDefaultFilename(dateInput.value);
-        }
-      });
     }
   }
 
