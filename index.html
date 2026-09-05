@@ -556,35 +556,32 @@
 </head>
 <body>
 
-<!-- New Album Popup -->
+<!-- New Story Popup -->
 <div id="newalbum-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(8,13,24,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px;">
   <div style="max-width:340px;width:100%;background:#0f1729;border:1px solid rgba(255,255,255,0.08);border-radius:24px;overflow:hidden;position:relative;">
     <button onclick="closeNewAlbumPopup()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#475569;font-size:18px;cursor:pointer;line-height:1;z-index:1;">×</button>
-    <img src="Discography/undertone.webp" alt="Undertone" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+    <img src="story_drumstick.png" alt="一本だけのドラムスティック" style="width:100%;aspect-ratio:1;object-fit:cover;object-position:center top;display:block;">
     <div style="padding:22px 22px 24px;">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#c4b5fd;margin-bottom:6px;">NEW ALBUM</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:300;color:#f1f5f9;letter-spacing:2px;margin-bottom:4px;">Undertone</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">NEW SHORT STORY</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:300;color:#f1f5f9;letter-spacing:2px;margin-bottom:4px;">一本だけのドラムスティック</p>
       <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;margin-bottom:18px;">Snow flakes</p>
-      <a href="https://open.spotify.com/intl-ja/album/3cY9qIWkcj3S5veSYjx351?si=xwjg26RZQLKmPbssgQHERw" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#1db954;color:#000;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:8px;">
-        <i class="fa-brands fa-spotify" style="font-size:16px;"></i> Spotify で聴く
-      </a>
-      <a href="https://music.amazon.co.jp/albums/B0HBFLP371?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_LmhZ9iODcOC3DvaIE2F2H5kNB" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(90,143,168,0.12);color:#5a8fa8;border:1px solid rgba(90,143,168,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
-        <i class="fa-brands fa-amazon" style="font-size:16px;"></i> Amazon Music で聴く
+      <a href="https://ncode.syosetu.com/n3171798/" target="_blank" onclick="closeNewAlbumPopup()" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(147,197,253,0.12);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:3px;border-radius:100px;padding:11px 20px;margin-bottom:12px;">
+        小説を読む
       </a>
     </div>
   </div>
 </div>
 <script>
 (function() {
-  var EXPIRY = new Date('2026-08-07').getTime();
+  var EXPIRY = new Date('2026-09-12').getTime();
   if (Date.now() > EXPIRY) return;
-  if (sessionStorage.getItem('sf_newalbum_closed') === '1') return;
+  if (sessionStorage.getItem('sf_newstory_drumstick_closed') === '1') return;
   var el = document.getElementById('newalbum-popup');
   el.style.display = 'flex';
 })();
 function closeNewAlbumPopup() {
   document.getElementById('newalbum-popup').style.display = 'none';
-  sessionStorage.setItem('sf_newalbum_closed', '1');
+  sessionStorage.setItem('sf_newstory_drumstick_closed', '1');
 }
 </script>
 
