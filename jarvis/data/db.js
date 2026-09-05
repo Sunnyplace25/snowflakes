@@ -560,6 +560,56 @@ function runMigrations(db) {
   for (const sql of WORK_CALENDAR_TABLES) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
+
+  // Phase 21: Google Calendar → JARVIS 逆方向同期 取り込み候補テーブル
+  // work_records への自動 INSERT は行わない。候補の記録・レビュー管理のみ。
+  const PULL_SYNC_TABLES = [
+    `CREATE TABLE IF NOT EXISTS calendar_import_candidates (
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+
+      -- Calendar 識別情報
+      google_calendar_id  TEXT    NOT NULL,
+      google_event_id     TEXT    NOT NULL,
+
+      -- イベント内容（必要最小限）
+      event_date          TEXT,              -- YYYY-MM-DD
+      start_datetime      TEXT,             -- 時間指定: ISO8601 / 終日: YYYY-MM-DD
+      end_datetime        TEXT,
+      is_all_day          INTEGER NOT NULL DEFAULT 0,
+      title               TEXT,
+      description         TEXT,
+      event_updated_at    TEXT,             -- Calendar 側の updated フィールド
+      etag                TEXT,             -- 変更検知用
+      recurring_event_id  TEXT,             -- 繰り返しイベントの場合のみ
+
+      -- 重複チェック（警告のみ・自動除外・結合はしない）
+      duplicate_work_id   INTEGER,          -- 重複候補の work_record.id（FK なし・参照のみ）
+      duplicate_reason    TEXT,
+
+      -- レビュー状態
+      status              TEXT    NOT NULL DEFAULT 'pending'
+                            CHECK (status IN ('pending', 'imported', 'skipped', 'ignored', 'removed')),
+        -- pending  : レビュー待ち
+        -- imported : work_records に取り込み済み（将来フェーズ）
+        -- skipped  : 今回スキップ（手動判断）
+        -- ignored  : 以後スキャン対象外（定期予定など）
+        -- removed  : Calendar 側で削除済み（スキャン時に不在を検出）
+
+      imported_work_id    INTEGER,          -- 取り込んだ work_record.id（imported のとき）
+
+      -- 時刻管理
+      scanned_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      last_seen_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),  -- 最後にスキャンで確認された日時
+      updated_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+
+      UNIQUE(google_calendar_id, google_event_id)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_cic_status     ON calendar_import_candidates(status)`,
+    `CREATE INDEX IF NOT EXISTS idx_cic_event_date ON calendar_import_candidates(event_date)`,
+  ];
+  for (const sql of PULL_SYNC_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
 }
 
 /**
