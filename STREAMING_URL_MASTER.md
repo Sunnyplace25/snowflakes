@@ -19,7 +19,7 @@
 | Amazon Music | In One Sky | https://music.amazon.co.jp/albums/B0HBFMD4Y3 | HPで使用中 |
 | Anghami | Artist | https://play.anghami.com/artist/27779853 | Snow flakes アーティストページとして管理 |
 | Deezer | In One Sky | https://www.deezer.com/album/1037299042 | 2026-09-05確認: 別アーティスト `Snow Flakes` 側に関連表示されており混在あり。Artist Separation申請が必要 |
-| Qobuz | Web Player | https://play.qobuz.com/label/10071545 | 2026-09-05確認: Snow flakesの10作品は同ページに集約済み。別作品混在は見当たらない。Artist表記のみ `Snow Flakes` のままで要修正 |
+| Qobuz | Web Player | https://play.qobuz.com/label/10071545 | 2026-09-05ユーザー確認: 別アーティスト作品の混在がまだ残っている。Artist表記も `Snow Flakes` のまま。Qobuzサポートへ継続対応中 |
 | Instagram | Official | https://www.instagram.com/snowflakes_story/ | Snow flakes公式SNS |
 
 ## Soundrop 配信先一覧
@@ -42,18 +42,18 @@ Soundrop上では以下のサービスへ `Delivered`。
 | iTunes / Apple Music | Artist / In One Sky URLあり | 確認済 |
 | KKBOX | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、本人のArtist/Release URLは未特定。推測URLは登録しない |
 | LINE MUSIC | — | 2026-09-05再確認: 公開検索・作品名検索でもSnow flakes本人のArtist/Release URLは未特定。LINE MUSIC Web版はJS依存で外部取得困難。別人 `The Snowflakes` は除外 |
-| Lissen | — | 要確認 |
-| LyricFind | — | 歌詞データ事業者 |
-| NetEase | — | 要確認 |
-| Nuuday | — | 要確認 |
+| Lissen | — | 2026-09-05確認: アプリ中心の音楽ストリーミングサービス。公開検索でSnow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
+| LyricFind | — | 歌詞ライセンス/データ提供系。一般向けの固定Artistページを管理する通常DSPではないためURL確認対象外 |
+| NetEase | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが本人URLは未特定。中国圏サービスのため外部検索での確定が困難。推測URLは登録しない |
+| Nuuday | — | 2026-09-05確認: デンマークの通信/デジタルエンタメ統合系配信先。Snow flakes単独の一般向け固定Artist URLは未特定 |
 | Pandora | — | 2026-09-05確認: Soundrop上ではDelivered。公開検索ではSnow flakes本人のArtist/Release URLを特定できず。Pandoraは米国内限定サービスのため日本からの通常確認は困難 |
-| Peloton | — | 一般向け固定Artistページがない場合あり |
-| Qobuz | https://play.qobuz.com/label/10071545 | 作品集約は確認済 / Artist名のF大文字だけ未修正 |
-| Snapchat / 7Digital | — | 要確認 |
+| Peloton | — | Peloton内の音楽カタログ向け配信。一般向けの通常DSP型Artistページは管理対象外 |
+| Qobuz | https://play.qobuz.com/label/10071545 | 別アーティスト混在が未解消 / `Snow Flakes`→`Snow flakes` 表記修正も未完 / サポート対応中 |
+| Snapchat / 7Digital | — | Snapchatは音楽ライブラリ配信で通常の公開Artistページなし。7Digitalは `Snow flakes` / `In One Sky` 公開検索で本人URL未特定 |
 | Spotify | Artist / In One Sky URLあり | 確認済 |
-| Tencent | — | 要確認 |
+| Tencent | — | 2026-09-05 QQ Music/Tencent系を `Snow flakes` / `In One Sky` で公開検索したが本人Artist/Release URLは未特定。推測URLは登録しない |
 | TIDAL | https://tidal.com/artist/3921906 | 2026-09-05ユーザー確認: 別アーティスト `Snow Flakes` のArtistページにSnow flakes作品が混在。Artist Separation申請が必要 |
-| TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
+| TikTok | — | 音源ライブラリへの配信はDelivered。公開検索でSnow flakesの配信音源ページ/Artist紐付けは未特定。公式SNSアカウントとは別管理 |
 | YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | 2026-09-05ユーザー画面でSnow flakesの正しいページと確認。In One Sky / Undertone / Little Snow / Signal / Rabbit / 瞬間に残る等を確認。別候補は別アーティストとして除外 |
 
 ## In One Sky Soundrop納品記録
@@ -76,13 +76,14 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Artistページとして扱う場合は、誤紐付けが解消されているか都度確認する
 
 
-### 2026-09-05 現況確認
+### Qobuz 2026-09-05 現況確認
 
-- レーベルページ `https://play.qobuz.com/label/10071545` に Snow flakes の10作品が集約されている
-- 現時点で別アーティスト作品の混在は確認できない
-- レーベル名は `Snow flakes` で正しい
-- 各作品のArtist表記は `Snow Flakes` のまま
-- 残課題はArtist名の表記を `Snow flakes` に修正すること
+- 視聴リンク: `https://play.qobuz.com/label/10071545`
+- ユーザー確認では、別アーティスト作品の混在がまだ残っておりArtist Separationは未解消
+- Artist表記も `Snow Flakes` のままで、正式表記 `Snow flakes` への修正が未完
+- Qobuzサポート（Edgar）へ継続対応を依頼中
+- 2026-09-05に進捗確認メールを送信済み
+- Qobuz側から回答/修正完了連絡が来るまで未解決として管理
 
 
 ### Amazon Music 2026-09-05 現況確認
@@ -94,7 +95,7 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Amazon Music Japan上の表示差:
   - `Early Snow` が `初雪` と表示される
   - `Round Bounce` のリリース名が `ラウンドバウンス` と表示される（曲名は `Round Bounce`）
-- Spotify / Apple Musicでは英字タイトルのままのため、Amazon側のみの表示差として記録
+- 日本語UIによる自動ローカライズ表示の可能性が高いため、現時点ではメタデータ修正案件にしない
 
 
 ### Deezer 2026-09-05 現況確認
@@ -106,6 +107,11 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - 正しいArtistページを新規分離するか、既存の正しいSnow flakesページへSnow flakes作品だけを集約する必要あり
 
 ## 保留中の対応
+
+- Qobuz: サポート回答待ち
+  - 別アーティスト作品の混在が未解消
+  - `Snow Flakes` → `Snow flakes` の表記修正も未完
+  - 2026-09-05 Edgarへ進捗確認メール送信済み
 
 - TIDAL: 後で Artist Separation / Artist Mapping correction を申請する
   - 誤紐付け先: `https://tidal.com/artist/3921906`
@@ -125,7 +131,7 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - HPで使用中の `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw` を2026-09-05にユーザー画面で確認
 - `In One Sky` / `Undertone` / `Little Snow` / `Signal` / `Rabbit` / `瞬間に残る` 等、Snow flakes作品が同一ページに掲載されている
 - 画面で確認できた範囲では別アーティスト作品の混在は見当たらない
-- `Early Snow` はYouTube Music日本語UI上で `初雪` と表示される
+- `Early Snow` はYouTube Music日本語UI上で `初雪` と表示される。UI側の自動ローカライズとみて修正案件にはしない
 - 現在のHPリンクを正規YouTube Musicリンクとして使用継続
 
 
@@ -225,19 +231,28 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - 同名別アーティスト誤登録を避けるため、推測URLは登録しない
 - 現状は `Delivered / Public URL未特定` として管理
 
-## 今後確認する優先順位
 
-1. YouTube Music
-2. LINE MUSIC
-3. AWA
-4. TIDAL
-5. Deezer Artist
-6. Qobuz Artist
-7. KKBOX
-8. Audiomack
-9. Boomplay
-10. Pandora
-11. その他地域別サービス
+### その他配信先 2026-09-05 一括確認
+
+- Lissen: アプリ中心のストリーミングサービス。Snow flakes本人の公開Artist/Release URLは未特定
+- NetEase Cloud Music: 公開検索で本人URL未特定
+- Nuuday: デンマークの通信/デジタルエンタメ統合系配信先。単独の一般向けArtist URLは未特定
+- Snapchat: 音楽ライブラリ配信で、通常の公開Artistページ確認対象外
+- 7Digital: 公開検索でSnow flakes本人URL未特定
+- Tencent / QQ Music: 公開検索でSnow flakes本人URL未特定
+- TikTok: 音源ライブラリへのDeliveredは確認済み。公開の配信音源/Artist URLは未特定
+- Peloton: アプリ内音楽カタログ向け。一般向けArtist URLの確認対象外
+- LyricFind: 歌詞ライセンス/データ提供系。通常DSP型Artistページの確認対象外
+- Audible Magic: コンテンツ識別/権利管理・B2Bカタログ系。一般消費者向けArtistページの確認対象外
+
+## 現在の未解決・保留
+
+1. Qobuz — 混在 + Artist表記修正、サポート回答待ち
+2. Deezer — Artist Separation申請予定
+3. TIDAL — Artist Separation / Artist Mapping correction申請予定
+4. LINE MUSIC / AWA / KKBOX — Deliveredだが公開情報だけでは本人URLを確定できず
+5. Audiomack / Boomplay / Claro Música / FLO / iHeartRadio / Pandora / Lissen / NetEase / 7Digital / Tencent / TikTok — Delivered、本人の公開URL未特定
+6. Audible Magic / LyricFind / Peloton / Snapchat / Nuuday — 通常の一般向けArtistページ管理対象外または統合型配信先
 
 ## 運用ルール
 
