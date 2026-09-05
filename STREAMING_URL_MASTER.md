@@ -54,7 +54,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Tencent | — | 要確認 |
 | TIDAL | — | 要確認 |
 | TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
-| YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | HPで使用中。別候補 `UCwgKTXlu654Ir8I2i30GZ_w` はユーザー確認により完全に別アーティストと判明し除外 |
+| YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | 2026-09-05ユーザー画面でSnow flakesの正しいページと確認。In One Sky / Undertone / Little Snow / Signal / Rabbit / 瞬間に残る等を確認。別候補は別アーティストとして除外 |
 
 ## In One Sky Soundrop納品記録
 
@@ -118,8 +118,11 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - HPで現在使用中のYouTube Music URL:
   - `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw`
 - 別の同名チャンネル `https://music.youtube.com/channel/UCwgKTXlu654Ir8I2i30GZ_w` は、2026-09-05にユーザー確認で完全に別アーティストと判明。Snow flakes候補から除外
-- 残る確認対象はHPで使用中の `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw`
-- このページに `In One Sky` / `Undertone` / `Early Snow` / `Round Bounce` 等が正しくまとまっているか最終確認する
+- HPで使用中の `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw` を2026-09-05にユーザー画面で確認
+- `In One Sky` / `Undertone` / `Little Snow` / `Signal` / `Rabbit` / `瞬間に残る` 等、Snow flakes作品が同一ページに掲載されている
+- 画面で確認できた範囲では別アーティスト作品の混在は見当たらない
+- `Early Snow` はYouTube Music日本語UI上で `初雪` と表示される
+- 現在のHPリンクを正規YouTube Musicリンクとして使用継続
 
 ## 今後確認する優先順位
 
