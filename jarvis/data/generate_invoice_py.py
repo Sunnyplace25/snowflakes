@@ -863,6 +863,9 @@ def generate(data):
 
 
 def main():
+    # Windows では stdout がデフォルト CP932 になるため UTF-8 に強制切り替え
+    sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1, closefd=False)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--json', help='JSON 文字列として入力')
     args = parser.parse_args()
