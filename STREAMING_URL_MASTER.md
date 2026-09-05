@@ -37,7 +37,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Claro Música | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` を確認したが、Snow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
 | Deezer | In One Sky URLあり | Release確認済 / 同名別アーティストとの混在あり / Deezer for CreatorsでArtist Separation要申請 |
 | Facebook / Instagram | 公式Instagramあり | 音楽カタログ専用URLとは別 |
-| FLO | — | 要確認 |
+| FLO | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、Snow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
 | iHeartRadio | — | 要確認 |
 | iTunes / Apple Music | Artist / In One Sky URLあり | 確認済 |
 | KKBOX | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、本人のArtist/Release URLは未特定。推測URLは登録しない |
@@ -202,6 +202,16 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` で公開検索
 - Snow flakes本人と断定できるClaro Música Artist / Releaseページは特定できなかった
 - Claro Músicaの公開ページは外部検索で拾いにくく、固定URLを確定できない
+- 同名別アーティスト誤登録を避けるため、推測URLは登録しない
+- 現状は `Delivered / Public URL未特定` として管理
+
+
+### FLO 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索
+- Snow flakes本人と断定できるFLO Artist / Releaseページは特定できなかった
+- FLOは外部検索でArtist / Releaseページが拾われにくいため、公開情報だけでは固定URLを確定できない
 - 同名別アーティスト誤登録を避けるため、推測URLは登録しない
 - 現状は `Delivered / Public URL未特定` として管理
 
