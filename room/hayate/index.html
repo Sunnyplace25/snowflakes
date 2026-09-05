@@ -1647,6 +1647,19 @@
       document.getElementById('room-light').classList.remove('open');
     }
 
+    function renderDrumstickLog() {
+      if (typeof SfSnow === 'undefined') return;
+      if (SfSnow.isUnlocked('drumstick_hayate')) {
+        if (typeof revealItemTag === 'function') {
+          revealItemTag('il-drumstick-tag', '../../item/drumstick.webp', '古いドラムスティック');
+        }
+        var dLocked = document.getElementById('il-drumstick-locked');
+        var dOwned  = document.getElementById('il-drumstick-owned');
+        if (dLocked) dLocked.style.display = 'none';
+        if (dOwned)  dOwned.style.display  = '';
+      }
+    }
+
     function openRoomHotspot(label, desc, itemKey, imgSrc, itemName) {
       document.getElementById('hayate-hs-label').textContent = label;
       document.getElementById('hayate-hs-desc').textContent  = desc;
@@ -1683,6 +1696,7 @@
           if (hsImg && imgSrc) { hsImg.src = imgSrc; hsImg.style.display = 'block'; }
           if (hsItemName && itemName) { hsItemName.textContent = itemName; hsItemName.style.display = 'block'; }
           if (drumstickLink && itemKey === 'drumstick_hayate') drumstickLink.style.display = 'inline-block';
+          if (itemKey === 'drumstick_hayate') renderDrumstickLog();
         }
       }
     }
@@ -1899,15 +1913,6 @@
       }
 
       // 古いドラムスティック（バッグホットスポットで入手）
-      function renderDrumstickLog() {
-        if (SfSnow.isUnlocked('drumstick_hayate')) {
-          revealItemTag('il-drumstick-tag', '../../item/drumstick.webp', '古いドラムスティック');
-          var dLocked = document.getElementById('il-drumstick-locked');
-          var dOwned  = document.getElementById('il-drumstick-owned');
-          if (dLocked) dLocked.style.display = 'none';
-          if (dOwned)  dOwned.style.display  = '';
-        }
-      }
       renderDrumstickLog();
 
       // ハヤテのブートニア（祝奏DEMOクリアで入手）
