@@ -15,7 +15,8 @@
 | Spotify | In One Sky | https://open.spotify.com/intl-ja/album/4ZB3NH6YOUIPmRcy0h8yX7 | HPで使用中 |
 | Apple Music / iTunes | Artist | https://music.apple.com/us/artist/snow-flakes/1895094537 | Snow flakes アーティストページとして管理 |
 | Apple Music / iTunes | In One Sky | https://music.apple.com/us/album/in-one-sky-single/6794577227?uo=4 | Soundrop提供URL |
-| Amazon Music | In One Sky | https://music.amazon.co.jp/albums/B0HBFMD4Y3 | HPで使用中。アーティスト固定URLは要再確認 |
+| Amazon Music | Artist | https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes | 2026-09-05確認済。Snow flakesの10作品が同一Artistページに集約。別アーティスト混在は見当たらない |
+| Amazon Music | In One Sky | https://music.amazon.co.jp/albums/B0HBFMD4Y3 | HPで使用中 |
 | Anghami | Artist | https://play.anghami.com/artist/27779853 | Snow flakes アーティストページとして管理 |
 | Deezer | In One Sky | https://www.deezer.com/album/1037299042 | Soundrop提供URL。Artist URLは要確認 |
 | Qobuz | Web Player | https://play.qobuz.com/label/10071545 | 2026-09-05確認: Snow flakesの10作品は同ページに集約済み。別作品混在は見当たらない。Artist表記のみ `Snow Flakes` のままで要修正 |
@@ -27,7 +28,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 
 | Service | Public URL | 管理状態 |
 | --- | --- | --- |
-| Amazon | In One Sky URLあり | 確認済 |
+| Amazon | Artist / In One Sky URLあり | Artist Mapping確認済。Amazon JP上で `Early Snow`→`初雪`、`Round Bounce`→`ラウンドバウンス` の表示差あり |
 | Anghami | Artist URLあり | 確認済 |
 | Audible Magic (Aggregation) | — | 一般向けArtistページなし |
 | Audiomack | — | 要確認 |
@@ -82,6 +83,18 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - レーベル名は `Snow flakes` で正しい
 - 各作品のArtist表記は `Snow Flakes` のまま
 - 残課題はArtist名の表記を `Snow flakes` に修正すること
+
+
+### Amazon Music 2026-09-05 現況確認
+
+- Artist URL: `https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes`
+- Snow flakesの10作品が同一Artistページに集約されている
+- 現時点で別アーティスト作品の混在は確認できない
+- Artist表記は `Snow flakes` で正しい
+- Amazon Music Japan上の表示差:
+  - `Early Snow` が `初雪` と表示される
+  - `Round Bounce` のリリース名が `ラウンドバウンス` と表示される（曲名は `Round Bounce`）
+- Spotify / Apple Musicでは英字タイトルのままのため、Amazon側のみの表示差として記録
 
 ## 今後確認する優先順位
 
