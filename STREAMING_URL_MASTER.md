@@ -54,7 +54,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Tencent | — | 要確認 |
 | TIDAL | — | 要確認 |
 | TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
-| YouTube Music | — | Official Artist Channel / Topicの正規ページ要確認 |
+| YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | HPで使用中のMusicチャンネル。公開検索で別の同名 `SNOW FLAKES` チャンネル（UCwgKTXlu654Ir8I2i30GZ_w）も出るため、両方の中身比較が必要 |
 
 ## In One Sky Soundrop納品記録
 
@@ -111,6 +111,17 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
   - Issue Type: `Someone else's content is on my artist page`
   - 対象: Snow flakes と同名別アーティストの混在
   - In One Sky: `https://www.deezer.com/album/1037299042`
+
+
+### YouTube Music 2026-09-05 現況確認
+
+- HPで現在使用中のYouTube Music URL:
+  - `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw`
+- 公開検索で別の同名チャンネルも確認:
+  - `https://music.youtube.com/channel/UCwgKTXlu654Ir8I2i30GZ_w`
+- 現時点では、どちらがSoundrop配信カタログの正しいArtist/Topicページか外部検索だけでは確定できない
+- 両ページを開き、`In One Sky` / `Undertone` / `Early Snow` / `Round Bounce` 等がどちらに載っているか比較する
+- 正しいページ確定後、HPリンクと本マスターを統一する
 
 ## 今後確認する優先順位
 
