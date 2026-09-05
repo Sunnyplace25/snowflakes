@@ -34,7 +34,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Audiomack | — | 2026-09-05確認: `https://audiomack.com/snow-flakes` はTogoのAfrobeats系別アーティスト。Snow flakes本人のArtist/Release URLは公開検索で未特定 |
 | AWA | — | 2026-09-05外部検索ではSnow flakes本人のArtist/Release URLを特定できず。AWA内で手動確認待ち |
 | Boomplay / Ayoba | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、Snow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
-| Claro Música | — | 要確認 |
+| Claro Música | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` を確認したが、Snow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
 | Deezer | In One Sky URLあり | Release確認済 / 同名別アーティストとの混在あり / Deezer for CreatorsでArtist Separation要申請 |
 | Facebook / Instagram | 公式Instagramあり | 音楽カタログ専用URLとは別 |
 | FLO | — | 要確認 |
@@ -193,6 +193,16 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Pandora公式ヘルプでは、サービス利用は米国内限定
 - 海外アーティストでもPandora AMPのArtist profile claimは可能
 - 日本から通常利用してカタログを直接確認するのは難しいため、推測URLは登録しない
+- 現状は `Delivered / Public URL未特定` として管理
+
+
+### Claro Música 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` で公開検索
+- Snow flakes本人と断定できるClaro Música Artist / Releaseページは特定できなかった
+- Claro Músicaの公開ページは外部検索で拾いにくく、固定URLを確定できない
+- 同名別アーティスト誤登録を避けるため、推測URLは登録しない
 - 現状は `Delivered / Public URL未特定` として管理
 
 ## 今後確認する優先順位
