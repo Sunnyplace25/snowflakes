@@ -4417,6 +4417,100 @@ document.addEventListener('visibilitychange', function() {
 })();
 </script>
 
+<!-- OTOHAZU Side Ad (Desktop) -->
+<style>
+  @media (max-width:1279px) { #otohazu-side-ad { display:none !important; } }
+  #otohazu-side-ad {
+    position:fixed;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%) translateX(12px);
+    z-index:190;
+    width:156px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.45s ease, transform 0.45s ease;
+  }
+  @media (min-width:1500px) {
+    #otohazu-side-ad { width:180px; right:22px; }
+  }
+  #otohazu-side-ad.otohazu-visible {
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(-50%) translateX(0);
+  }
+  #otohazu-side-ad a {
+    display:block;
+    overflow:hidden;
+    border-radius:14px;
+    background:rgba(7,13,25,0.96);
+    border:1px solid rgba(125,211,252,0.20);
+    box-shadow:0 10px 34px rgba(0,0,0,0.45),0 0 24px rgba(96,165,250,0.08);
+    text-decoration:none;
+    backdrop-filter:blur(14px);
+    transition:transform 0.25s ease,border-color 0.25s ease,box-shadow 0.25s ease;
+  }
+  #otohazu-side-ad a:hover {
+    transform:translateY(-3px);
+    border-color:rgba(125,211,252,0.48);
+    box-shadow:0 14px 38px rgba(0,0,0,0.55),0 0 32px rgba(96,165,250,0.15);
+  }
+  #otohazu-side-ad img {
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  #otohazu-side-ad .otohazu-copy {
+    padding:12px 12px 13px;
+  }
+  #otohazu-side-ad .otohazu-label {
+    font-family:'Cormorant Garamond',serif;
+    font-size:8px;
+    letter-spacing:4px;
+    color:#7dd3fc;
+    margin:0 0 7px;
+  }
+  #otohazu-side-ad .otohazu-tagline {
+    font-family:'Noto Serif JP',serif;
+    font-size:10px;
+    line-height:1.9;
+    letter-spacing:0.4px;
+    color:#cbd5e1;
+    margin:0 0 9px;
+  }
+  #otohazu-side-ad .otohazu-cta {
+    font-family:'Cormorant Garamond',serif;
+    font-size:8px;
+    letter-spacing:2px;
+    color:#60a5fa;
+    margin:0;
+  }
+</style>
+<aside id="otohazu-side-ad" aria-label="音ハズ 新連載">
+  <a href="https://ncode.syosetu.com/n1351mq/" target="_blank" rel="noopener">
+    <img src="otohazu_ad.webp" alt="音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい">
+    <div class="otohazu-copy">
+      <p class="otohazu-label">NEW SERIAL</p>
+      <p class="otohazu-tagline">山吹ことりが描く、<br>「音」が運命を変える<br>異世界ファンタジー。</p>
+      <p class="otohazu-cta">小説家になろうで読む →</p>
+    </div>
+  </a>
+</aside>
+<script>
+(function() {
+  var ad = document.getElementById('otohazu-side-ad');
+  var hero = document.querySelector('.hero');
+  if (!ad) return;
+  if (!hero) {
+    ad.classList.add('otohazu-visible');
+    return;
+  }
+  new IntersectionObserver(function(entries) {
+    ad.classList.toggle('otohazu-visible', !entries[0].isIntersecting);
+  }, { threshold: 0 }).observe(hero);
+})();
+</script>
+
 <!-- Mobile Menu -->
 <style>
   @media (min-width: 720px) { #sf-mob-btn, #sf-mob-overlay, #sf-mob-panel { display: none !important; } }
@@ -4466,6 +4560,8 @@ document.addEventListener('visibilitychange', function() {
   #sf-mob-panel a.link-sweets:hover { color: #f9a8d4; opacity: 0.8; }
   #sf-mob-panel a.link-gacha { color: #fde68a; }
   #sf-mob-panel a.link-gacha:hover { color: #fde68a; opacity: 0.8; }
+  #sf-mob-panel a.link-otohazu { color: #7dd3fc; }
+  #sf-mob-panel a.link-otohazu:hover { color: #bae6fd; }
 </style>
 
 <button id="sf-mob-btn" aria-label="メニュー">
@@ -4480,6 +4576,7 @@ document.addEventListener('visibilitychange', function() {
   <a href="#topics"><span class="pnd"></span>TOPICS</a>
   <a href="#characters"><span class="pnd"></span>CHARACTERS</a>
   <a href="#novel"><span class="pnd"></span>NOVEL</a>
+  <a href="https://ncode.syosetu.com/n1351mq/" target="_blank" rel="noopener" class="link-otohazu"><span class="pnd"></span>音ハズ｜NEW SERIAL</a>
   <a href="#short-stories"><span class="pnd"></span>STORIES</a>
   <a href="#qf"><span class="pnd"></span>QF</a>
   <a href="#music"><span class="pnd"></span>MUSIC</a>
