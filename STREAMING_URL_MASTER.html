@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Snow flakes 配信先管理一覧</title>
+<style>
+:root{
+  --bg:#0b1020;--panel:#11182a;--line:#26324a;--text:#e7edf7;--muted:#9aa8bd;
+  --ok:#4ade80;--warn:#fbbf24;--bad:#fb7185;--info:#60a5fa;--na:#94a3b8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0a0f1d,#0e1628);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:36px 18px 72px}
+h1{margin:0 0 6px;font-size:28px}
+.sub{color:var(--muted);margin:0 0 26px;font-size:14px;line-height:1.8}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0 0 26px}
+.card{background:rgba(17,24,42,.88);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card b{display:block;font-size:21px;margin-top:5px}
+.ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)} .info{color:var(--info)}
+.section{margin-top:28px}
+h2{font-size:18px;margin:0 0 12px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:rgba(17,24,42,.78)}
+table{width:100%;border-collapse:collapse;min-width:920px}
+th,td{padding:13px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:13px;line-height:1.65}
+th{background:#151f34;color:#cbd5e1;font-size:12px;letter-spacing:.04em;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+a{color:#93c5fd;text-decoration:none;word-break:break-all}
+a:hover{text-decoration:underline}
+.tag{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.tag.ok{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35)}
+.tag.bad{background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.35)}
+.tag.warn{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35)}
+.tag.na{color:var(--na);background:rgba(148,163,184,.10);border:1px solid rgba(148,163,184,.25)}
+.pending{display:grid;gap:10px}
+.pending .item{background:rgba(17,24,42,.88);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:12px;padding:14px 16px}
+.pending .item b{display:block;margin-bottom:4px}
+.small{font-size:12px;color:var(--muted)}
+footer{margin-top:30px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Snow flakes 配信先管理一覧</h1>
+  <p class="sub">更新日: 2026-09-05 / 配信元: Soundrop / 正式アーティスト表記: <code>Snow flakes</code>（fは小文字）<br>
+  同名アーティストが多いため、推測URLは登録しない運用。</p>
+
+  <div class="cards">
+    <div class="card"><span class="ok">● 正常確認済み</span><b>Spotify / Apple / Amazon / Anghami / YouTube Music</b></div>
+    <div class="card"><span class="bad">● 修正必要</span><b>Qobuz / Deezer / TIDAL</b></div>
+    <div class="card"><span class="warn">● Delivered・URL未特定</span><b>複数サービス</b></div>
+    <div class="card"><span class="info">● 管理対象外</span><b>B2B・アプリ内カタログ系</b></div>
+  </div>
+
+  <section class="section">
+    <h2>修正・対応が必要</h2>
+    <div class="pending">
+      <div class="item">
+        <b>Qobuz — 混在 + 表記修正</b>
+        <div>別アーティスト作品の混在が未解消。<code>Snow Flakes</code> → <code>Snow flakes</code> も未修正。Edgarへ2026-09-05に進捗確認済み。</div>
+        <div><a href="https://play.qobuz.com/label/10071545" target="_blank" rel="noopener">https://play.qobuz.com/label/10071545</a></div>
+      </div>
+      <div class="item">
+        <b>Deezer — Artist Separation申請予定</b>
+        <div>同名別アーティストとの混在あり。Deezer for Creatorsで <code>Someone else's content is on my artist page</code> を選んで申請。</div>
+        <div><a href="https://www.deezer.com/album/1037299042" target="_blank" rel="noopener">In One Sky</a></div>
+      </div>
+      <div class="item">
+        <b>TIDAL — Artist Separation / Mapping correction申請予定</b>
+        <div>別アーティスト <code>Snow Flakes</code> のArtistページにSnow flakes作品が混在。</div>
+        <div><a href="https://tidal.com/artist/3921906" target="_blank" rel="noopener">https://tidal.com/artist/3921906</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>配信先一覧</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>サービス</th><th>状態</th><th>URL</th><th>確認内容 / 対応</th></tr></thead>
+        <tbody>
+          <tr><td>Spotify</td><td><span class="tag ok">正常</span></td><td><a href="https://open.spotify.com/intl-ja/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank">Artist</a><br><a href="https://open.spotify.com/intl-ja/album/4ZB3NH6YOUIPmRcy0h8yX7" target="_blank">In One Sky</a></td><td>正しいSnow flakes Artistページ。</td></tr>
+          <tr><td>Apple Music / iTunes</td><td><span class="tag ok">正常</span></td><td><a href="https://music.apple.com/us/artist/snow-flakes/1895094537" target="_blank">Artist</a><br><a href="https://music.apple.com/us/album/in-one-sky-single/6794577227?uo=4" target="_blank">In One Sky</a></td><td>正しいArtistページ確認済み。</td></tr>
+          <tr><td>Amazon Music</td><td><span class="tag ok">正常</span></td><td><a href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank">Artist</a><br><a href="https://music.amazon.co.jp/albums/B0HBFMD4Y3" target="_blank">In One Sky</a></td><td>作品集約・表記とも正常。日本語UIでタイトルが自動ローカライズされる場合あり。</td></tr>
+          <tr><td>Anghami</td><td><span class="tag ok">正常</span></td><td><a href="https://play.anghami.com/artist/27779853" target="_blank">Artist</a></td><td>Snow flakes Artistページ確認済み。</td></tr>
+          <tr><td>YouTube Music</td><td><span class="tag ok">正常</span></td><td><a href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank">Artist / Topic</a></td><td>In One Sky / Undertone / Little Snow / Signal / Rabbit / 瞬間に残る等を確認。別候補 <code>UCwgKTXlu654Ir8I2i30GZ_w</code> は別人。</td></tr>
+
+          <tr><td>Qobuz</td><td><span class="tag bad">修正中</span></td><td><a href="https://play.qobuz.com/label/10071545" target="_blank">Web Player</a></td><td>別人混在あり。<code>Snow Flakes</code>表記も未修正。サポート回答待ち。</td></tr>
+          <tr><td>Deezer</td><td><span class="tag bad">混在</span></td><td><a href="https://www.deezer.com/album/1037299042" target="_blank">In One Sky</a></td><td>Artist Separation申請予定。</td></tr>
+          <tr><td>TIDAL</td><td><span class="tag bad">混在</span></td><td><a href="https://tidal.com/artist/3921906" target="_blank">誤紐付け先</a></td><td>別アーティストのArtistページに混在。分離申請予定。</td></tr>
+
+          <tr><td>LINE MUSIC</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。Web版がJS依存で外部取得困難。別人 <code>The Snowflakes</code> は除外。</td></tr>
+          <tr><td>AWA</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。公開検索では本人ページを確定できず。</td></tr>
+          <tr><td>KKBOX</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人ページ未特定。</td></tr>
+          <tr><td>Audiomack</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td><code>audiomack.com/snow-flakes</code> はTogoの別アーティスト。本人ページ未特定。</td></tr>
+          <tr><td>Boomplay / Ayoba</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人ページ未特定。</td></tr>
+          <tr><td>Claro Música</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人ページ未特定。</td></tr>
+          <tr><td>FLO</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。韓国系サービス。公開検索では本人ページ未特定。</td></tr>
+          <tr><td>iHeartRadio</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人ページ未特定。</td></tr>
+          <tr><td>Lissen</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。アプリ中心。公開Artist URL未特定。</td></tr>
+          <tr><td>NetEase Cloud Music</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。中国圏サービス。本人URL未特定。</td></tr>
+          <tr><td>Pandora</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。米国内限定のため日本から通常確認が難しい。</td></tr>
+          <tr><td>7Digital</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人URL未特定。</td></tr>
+          <tr><td>Tencent / QQ Music</td><td><span class="tag warn">URL未特定</span></td><td>—</td><td>Delivered。本人URL未特定。</td></tr>
+          <tr><td>TikTok</td><td><span class="tag warn">音源URL未特定</span></td><td>—</td><td>音源ライブラリへDelivered。公式SNSアカウントとは別管理。</td></tr>
+
+          <tr><td>Facebook / Instagram</td><td><span class="tag na">SNS音源ライブラリ</span></td><td><a href="https://www.instagram.com/snowflakes_story/" target="_blank">公式Instagram</a></td><td>配信音源と公式SNSプロフィールは別管理。</td></tr>
+          <tr><td>Audible Magic</td><td><span class="tag na">公開Artistページなし</span></td><td>—</td><td>音源識別・権利管理等のB2B系。</td></tr>
+          <tr><td>LyricFind</td><td><span class="tag na">公開Artistページなし</span></td><td>—</td><td>歌詞ライセンス / データ提供系。</td></tr>
+          <tr><td>Nuuday</td><td><span class="tag na">統合型配信先</span></td><td>—</td><td>デンマークの通信・デジタルエンタメ統合系。</td></tr>
+          <tr><td>Peloton</td><td><span class="tag na">アプリ内カタログ</span></td><td>—</td><td>一般向け通常DSP型Artistページの管理対象外。</td></tr>
+          <tr><td>Snapchat</td><td><span class="tag na">音源ライブラリ</span></td><td>—</td><td>通常の公開Artistページなし。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Soundrop納品</h2>
+    <div class="card">
+      <div>In One Sky</div>
+      <div class="small">Service date added: 2026-07-17 / Delivered on: 2026-07-25</div>
+      <div class="small">Soundropの「No link provided」は未配信を意味しない。公開URLが返っていないだけの場合がある。</div>
+    </div>
+  </section>
+
+  <footer>Source of truth: STREAMING_URL_MASTER.md / Snow flakes official repository</footer>
+</div>
+</body>
+</html>
