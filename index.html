@@ -808,6 +808,26 @@ function sfShare() {
   <div style="text-align:center;margin-bottom:36px;">
     <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
+  <!-- 一本だけのドラムスティック 短篇バナー（2026-09-05〜2026-09-10） -->
+  <div id="banner-drumstick" style="display:none;max-width:680px;margin:0 auto 12px;">
+    <a href="https://ncode.syosetu.com/n3171798/" target="_blank" rel="noopener"
+       style="display:block;text-decoration:none;border-radius:16px;padding:24px 28px;background:rgba(253,230,138,0.04);border:1px solid rgba(253,230,138,0.3);transition:background 0.3s,border-color 0.3s,transform 0.3s;position:relative;overflow:hidden;"
+       onmouseover="this.style.background='rgba(253,230,138,0.08)';this.style.borderColor='rgba(253,230,138,0.55)'"
+       onmouseout="this.style.background='rgba(253,230,138,0.04)';this.style.borderColor='rgba(253,230,138,0.3)'">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:6px;color:#92740a;margin-bottom:8px;">NEW &nbsp;·&nbsp; SHORT STORY</p>
+          <p style="font-size:clamp(17px,3vw,23px);font-weight:300;color:#fde68a;font-family:'Noto Serif JP',serif;letter-spacing:0.08em;margin-bottom:6px;">一本だけのドラムスティック</p>
+          <p style="font-family:'Noto Serif JP',serif;font-size:12px;font-weight:300;color:#ca8a04;letter-spacing:0.04em;">「今の音を、もう一度聴きたいと思った。」</p>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#ca8a04;margin-bottom:4px;">09.05</p>
+          <p style="font-size:18px;color:#fde68a;">→</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
   <!-- Under tone 短篇バナー（2026-08-20 23:00〜2026-08-31） -->
   <div id="banner-ut-story" style="display:none;max-width:680px;margin:0 auto 12px;">
     <a href="https://ncode.syosetu.com/n1628mq/" target="_blank" rel="noopener"
@@ -1289,13 +1309,21 @@ function sfShare() {
   <script>
     // ── 夏のホラー特集バナー / Under tone 短篇バナー ──
     (function() {
-      var HORROR_START  = new Date('2026-07-18T00:00:00+09:00');
-      var HORROR_END    = new Date('2026-08-31T23:59:59+09:00');
-      var UT_START      = new Date('2026-08-20T23:00:00+09:00');
-      var UT_END        = new Date('2026-08-31T23:59:59+09:00');
+      var HORROR_START      = new Date('2026-07-18T00:00:00+09:00');
+      var HORROR_END        = new Date('2026-08-31T23:59:59+09:00');
+      var UT_START          = new Date('2026-08-20T23:00:00+09:00');
+      var UT_END            = new Date('2026-08-31T23:59:59+09:00');
+      var DRUMSTICK_START   = new Date('2026-09-05T00:00:00+09:00');
+      var DRUMSTICK_END     = new Date('2026-09-10T23:59:59+09:00');
 
       function updateStoryBanners() {
         var now = new Date();
+
+        // 一本だけのドラムスティック 短篇バナー
+        var drumstick = document.getElementById('banner-drumstick');
+        if (drumstick) {
+          drumstick.style.display = (now >= DRUMSTICK_START && now <= DRUMSTICK_END) ? 'block' : 'none';
+        }
 
         // Under tone 短篇バナー（期間中は毎回表示）
         var utStory = document.getElementById('banner-ut-story');
