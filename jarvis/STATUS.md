@@ -2,8 +2,8 @@
 
 ## 現在地
 
-**最新到達点：Phase 17 GA4 本番接続・Task Scheduler 自動実行登録 完了**
-commit: 未採番 / branch: `jarvis-development`
+**最新到達点：Phase 21 Google Calendar → JARVIS 逆方向同期（取り込み候補スキャン）完了**
+commit: `76d8385` / branch: `jarvis-development`
 
 ---
 
@@ -44,6 +44,8 @@ jarvis-development
 | Soundrop Stats / Track Catalog | Soundrop統計表示・トラックカタログツール | ✅ 完了 | `f4b2756` |
 | Phase 16 Soundrop Catalog Auto Sync | Soundrop catalog DB migration / API取得 / normalizer / diff / writer / sync / CLI / Dashboard同期タブ / dry-run / apply / バックアップ / 22 tests | ✅ 完了 | `5f85052` |
 | Phase 17 GA4 本番接続・自動実行登録 | GA4 Property 535639087 接続・sf_ga_daily 598件 / sf_ga_events 2424件同期・SnowflakesOpsRunner Task Scheduler 登録（毎日06:00） | ✅ 完了 | 未採番 |
+| Phase 20 CRUD Auto-Sync Hooks | work_records CRUD → Calendar 自動連携（hookWorkCreated/Updated/Deleted）・calendar_delete_queue アウトボックス・リトライ・47 tests | ✅ 完了 | `dc8cd62` |
+| Phase 21 Google Calendar → JARVIS 逆同期 | calendar_import_candidates テーブル・dryRunCalendarPull / scanCalendarCandidates・ページネーション・期間フィルタ・削除判定安全設計・28 tests | ✅ 完了 | `76d8385` |
 
 ---
 
@@ -73,7 +75,9 @@ jarvis-development
 - GA4 Data Sync: `1ceeb09 feat: add GA4 data sync`
 - Soundrop Stats / Track Catalog: `f4b2756 feat: add Soundrop stats and track catalog tools`
 - Phase 16 Soundrop Catalog Auto Sync: `5f85052 feat: add Soundrop catalog auto sync`
-- Phase 17 GA4 本番接続・自動実行登録: 未採番（commit 前）
+- Phase 17 GA4 本番接続・自動実行登録: 未採番
+- Phase 20 CRUD Auto-Sync Hooks: `dc8cd62 feat(jarvis): work_records CRUD→Calendar自動連携・削除キュー・リトライ実装`
+- Phase 21 Google Calendar → JARVIS 逆同期: `76d8385 feat(jarvis): Google Calendar取り込み候補同期を実装`
 
 ---
 
