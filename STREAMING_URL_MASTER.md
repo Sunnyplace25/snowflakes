@@ -18,7 +18,7 @@
 | Amazon Music | In One Sky | https://music.amazon.co.jp/albums/B0HBFMD4Y3 | HPで使用中。アーティスト固定URLは要再確認 |
 | Anghami | Artist | https://play.anghami.com/artist/27779853 | Snow flakes アーティストページとして管理 |
 | Deezer | In One Sky | https://www.deezer.com/album/1037299042 | Soundrop提供URL。Artist URLは要確認 |
-| Qobuz | Web Player | https://play.qobuz.com/label/10071545 | In One Sky / Snow flakes のQobuz視聴リンクとして使用。Artist Mapping誤紐付け履歴には注意 |
+| Qobuz | Web Player | https://play.qobuz.com/label/10071545 | 2026-09-05確認: Snow flakesの10作品は同ページに集約済み。別作品混在は見当たらない。Artist表記のみ `Snow Flakes` のままで要修正 |
 | Instagram | Official | https://www.instagram.com/snowflakes_story/ | Snow flakes公式SNS |
 
 ## Soundrop 配信先一覧
@@ -47,7 +47,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Nuuday | — | 要確認 |
 | Pandora | — | 要確認 |
 | Peloton | — | 一般向け固定Artistページがない場合あり |
-| Qobuz | https://play.qobuz.com/label/10071545 | 視聴リンク確認済 / Artist Mapping誤紐付け履歴あり |
+| Qobuz | https://play.qobuz.com/label/10071545 | 作品集約は確認済 / Artist名のF大文字だけ未修正 |
 | Snapchat / 7Digital | — | 要確認 |
 | Spotify | Artist / In One Sky URLあり | 確認済 |
 | Tencent | — | 要確認 |
@@ -73,6 +73,15 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - SoundropからQobuzへ直接修正できなかったため、Qobuz側へArtist Separation / Mapping correctionを依頼
 - HP等でQobuzへの視聴リンクを置く場合は `https://play.qobuz.com/label/10071545` を使用
 - Artistページとして扱う場合は、誤紐付けが解消されているか都度確認する
+
+
+### 2026-09-05 現況確認
+
+- レーベルページ `https://play.qobuz.com/label/10071545` に Snow flakes の10作品が集約されている
+- 現時点で別アーティスト作品の混在は確認できない
+- レーベル名は `Snow flakes` で正しい
+- 各作品のArtist表記は `Snow Flakes` のまま
+- 残課題はArtist名の表記を `Snow flakes` に修正すること
 
 ## 今後確認する優先順位
 
