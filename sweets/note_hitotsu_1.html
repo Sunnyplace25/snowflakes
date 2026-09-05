@@ -99,7 +99,7 @@
     </div>
     <div class="divider"></div>
     <div class="body-wrap" id="note-body"></div>
-    <a class="related-link" id="related-link" href="https://ncode.syosetu.com/n0964mc/" target="_blank" rel="noopener" onclick="onReadHito()">
+    <a class="related-link" id="related-link" href="https://ncode.syosetu.com/n0964mc/" target="_blank" rel="noopener">
       <div>
         <p class="related-meta">2026.05.15 / 短編</p>
         <p class="related-title">ひとつ多い音</p>
@@ -107,6 +107,7 @@
       <span class="related-arrow">読む →</span>
     </a>
     <a class="note-index-back-bottom" href="./index.html#notes-index-wrap">← NOTE INDEXへ戻る</a>
+    <div id="scroll-sentinel" style="height:1px;"></div>
   </div>
 </main>
 
@@ -118,68 +119,25 @@
     <p class="item-popup-name">青い石のネックレス</p>
     <p class="item-popup-chara">HINATA</p>
     <p class="item-popup-msg" id="popup-msg" style="font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:20px;">を入手しました</p>
-    <button class="item-popup-btn" id="popup-btn" onclick="closeHitoItemPopup()">── 受け取る ──</button>
+    <button class="item-popup-btn" id="popup-btn" onclick="closeItemPopup()">── 受け取る ──</button>
     <a class="item-popup-link" href="../sweets/">SWEETs へ →</a>
   </div>
 </div>
 
 <script>
-  var NOTE_ID   = 'note_hitotsu_1';
+  var NOTE_ID    = 'note_hitotsu_1';
   var NOTES_KEY  = 'sf_sweets_notes_unlocked';
   var REWARD_KEY = 'sf_note_reward_note_hitotsu_1';
+  var _rewardFired = false;
 
   function _isUnlocked() {
     if (typeof SfSnow === 'undefined') return false;
     return SfSnow.isUnlocked(NOTE_ID) || localStorage.getItem(NOTES_KEY) === 'true';
   }
 
-  // 短篇リンクを開くとき sessionStorage にフラグを立てる
-  function onReadHito() {
-    sessionStorage.setItem('sf_hito_reading', '1');
-    sessionStorage.setItem('sf_hito_left', Date.now().toString());
-  }
-
-  // タブに戻ったとき 2 分以上経過していれば報酬ポップアップを表示
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState !== 'visible') return;
-    if (!sessionStorage.getItem('sf_hito_reading')) return;
-    if (typeof SfSnow === 'undefined') return;
-    sessionStorage.removeItem('sf_hito_reading');
-    var leftAt = parseInt(sessionStorage.getItem('sf_hito_left') || '0', 10);
-    sessionStorage.removeItem('sf_hito_left');
-    if (Date.now() - leftAt < 120000) return;
-    var popup   = document.getElementById('item-popup');
-    if (!popup) return;
-    var eyebrow = document.getElementById('popup-eyebrow');
-    var msg     = document.getElementById('popup-msg');
-    var btn     = document.getElementById('popup-btn');
-    var alreadyClaimed = localStorage.getItem(REWARD_KEY) === '1';
-    if (alreadyClaimed) {
-      // 再読：入手済み表示
-      if (eyebrow) { eyebrow.textContent = 'ITEM'; eyebrow.style.color = '#64748b'; }
-      if (msg)     { msg.textContent = '青い石のネックレスは入手済みです'; }
-      if (btn)     { btn.textContent = '── 閉じる ──'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(148,163,184,0.3)'; btn.style.background = 'rgba(148,163,184,0.06)'; }
-    } else {
-      // 初回：入手表示
-      if (msg) { msg.textContent = '青い石のネックレスを入手しました'; }
-    }
-    popup.classList.add('show');
-  });
-
-  function closeHitoItemPopup() {
+  function closeItemPopup() {
     var popup = document.getElementById('item-popup');
     if (popup) popup.classList.remove('show');
-    if (typeof SfSnow === 'undefined') return;
-    if (localStorage.getItem(REWARD_KEY) !== '1') {
-      // 初回：pendant_hinata を付与・フラグ記録（所持済みでも付与する）
-      SfSnow.unlockItem('pendant_hinata');
-      localStorage.setItem(REWARD_KEY, '1');
-      // バッジを入手済みに更新
-      var badgeImg   = document.getElementById('item-badge-img');
-      var badgeLabel = document.getElementById('item-badge-label');
-      if (badgeImg)   { badgeImg.style.filter = 'none'; badgeImg.style.opacity = '0.85'; }
-      if (badgeLabel) { badgeLabel.textContent = '青い石のネックレス'; badgeLabel.style.color = '#93c5fd'; }
-    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -235,6 +193,42 @@
       html += '<p class="section-spacer">\u3000</p>';
     });
     bodyEl.innerHTML = html;
+
+    // スクロール読了でアイテム付与
+    var sentinel = document.getElementById('scroll-sentinel');
+    if (sentinel && 'IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function(entries) {
+        if (!entries[0].isIntersecting) return;
+        if (_rewardFired) return;
+        _rewardFired = true;
+        obs.disconnect();
+        var alreadyClaimed = localStorage.getItem(REWARD_KEY) === '1';
+        var popup   = document.getElementById('item-popup');
+        var eyebrow = document.getElementById('popup-eyebrow');
+        var msg     = document.getElementById('popup-msg');
+        var btn     = document.getElementById('popup-btn');
+        if (!alreadyClaimed) {
+          // 初回読了：付与＋フラグ保存（所持済みでも付与する）
+          if (typeof SfSnow !== 'undefined') SfSnow.unlockItem('pendant_hinata');
+          localStorage.setItem(REWARD_KEY, '1');
+          // バッジを入手済みに更新
+          if (badgeImg)   { badgeImg.style.filter = 'none'; badgeImg.style.opacity = '0.85'; }
+          if (badgeLabel) { badgeLabel.textContent = '青い石のネックレス'; badgeLabel.style.color = '#93c5fd'; }
+          if (eyebrow) { eyebrow.textContent = 'NEW ITEM'; eyebrow.style.color = ''; }
+          if (msg)     { msg.textContent = 'を入手しました'; }
+          if (btn)     { btn.textContent = '── 受け取る ──'; btn.style.color = '#c4b5fd'; btn.style.borderColor = 'rgba(196,181,253,0.28)'; btn.style.background = 'rgba(196,181,253,0.08)'; }
+        } else {
+          // 再読：入手済み表示
+          if (eyebrow) { eyebrow.textContent = 'ITEM'; eyebrow.style.color = '#64748b'; }
+          if (msg)     { msg.textContent = '青い石のネックレスは入手済みです'; }
+          if (btn)     { btn.textContent = '── 閉じる ──'; btn.style.color = '#94a3b8'; btn.style.borderColor = 'rgba(148,163,184,0.3)'; btn.style.background = 'rgba(148,163,184,0.06)'; }
+        }
+        setTimeout(function() {
+          if (popup) popup.classList.add('show');
+        }, 1000);
+      }, { threshold: 0.5 });
+      obs.observe(sentinel);
+    }
   });
 
   // スノーフレーク

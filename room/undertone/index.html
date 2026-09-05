@@ -3529,9 +3529,9 @@ function submitUtPw() {
   }
 
   var _CH2_RARE = [
-    { key:'pendant_hinata', img:'../../item/pendant_hinata.webp', name:'ペンダント', link:'../../sweets/#sw-notes',           color:'#93c5fd' },
-    { key:'earring_hayate', img:'../../item/earring_hayate.webp', name:'ピアス',     link:'../../sweets/#undertone-yt-wrap', color:'#fde68a' },
-    { key:'ring_kouta',     img:'../../item/ring_kouta.webp',     name:'リング',     link:'../../sweets/#sw-notes',          color:'#fca5a5' }
+    { key:'pendant_hinata', img:'../../item/pendant_hinata.webp', name:'ペンダント', link:'../../sweets/note_hitotsu_1.html', color:'#93c5fd', hint:'解説を読む' },
+    { key:'earring_hayate', img:'../../item/earring_hayate.webp', name:'ピアス',     link:'../../sweets/#undertone-yt-wrap',  color:'#fde68a', hint:'動画を視聴する' },
+    { key:'ring_kouta',     img:'../../item/ring_kouta.webp',     name:'リング',     link:'#chapter-list',                    color:'#fca5a5', hint:'Prologue 1-5 を読む' }
   ];
 
   function updateCh2Btn() {
@@ -3564,9 +3564,14 @@ function submitUtPw() {
             + 'border:1.5px solid ' + c + ';'
             + 'background:rgba(255,255,255,0.02);';
           var imgStyle = 'width:48px;height:48px;object-fit:contain;' + (got ? '' : 'filter:grayscale(1);opacity:0.3;');
-          return '<a href="' + r.link + '" style="' + boxStyle + '" title="' + r.name + '">'
+          var hintStyle = 'font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:0.5px;'
+            + 'color:' + (got ? c : '#334155') + ';text-align:center;max-width:72px;line-height:1.4;';
+          return '<div style="display:inline-flex;flex-direction:column;align-items:center;gap:5px;">'
+            + '<a href="' + r.link + '" style="' + boxStyle + '" title="' + r.name + '">'
             + '<img src="' + r.img + '" alt="' + r.name + '" style="' + imgStyle + '">'
-            + '</a>';
+            + '</a>'
+            + '<span style="' + hintStyle + '">' + r.hint + '</span>'
+            + '</div>';
         }).join('');
       }
     }
@@ -3777,6 +3782,13 @@ function submitUtPw() {
         localStorage.setItem('sf_monthly_items', JSON.stringify(_ci));
         _itemUnlockCb = function() {
           setTimeout(function() { showItemUnlock('クッキー', '../../item/cookie.webp'); }, 300);
+        };
+      }
+      // Prologue 0-5 読了 → ring_kouta 付与
+      if (idx === 4 && typeof SfSnow !== 'undefined' && !SfSnow.isUnlocked('ring_kouta')) {
+        SfSnow.unlockItem('ring_kouta');
+        _itemUnlockCb = function() {
+          setTimeout(function() { showItemUnlock('黒い石のシルバーリング', '../../item/ring_kouta.webp'); }, 300);
         };
       }
     }
