@@ -41,7 +41,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | iHeartRadio | — | 要確認 |
 | iTunes / Apple Music | Artist / In One Sky URLあり | 確認済 |
 | KKBOX | — | 要確認 |
-| LINE MUSIC | — | 2026-09-05外部検索ではSnow flakes本人のArtist/Release URLを特定できず。LINE MUSIC内で手動確認待ち |
+| LINE MUSIC | — | 2026-09-05再確認: 公開検索・作品名検索でもSnow flakes本人のArtist/Release URLは未特定。LINE MUSIC Web版はJS依存で外部取得困難。別人 `The Snowflakes` は除外 |
 | Lissen | — | 要確認 |
 | LyricFind | — | 歌詞データ事業者 |
 | NetEase | — | 要確認 |
@@ -143,7 +143,10 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Soundrop上では `Delivered`
 - 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるLINE MUSICページは特定できなかった
 - 同名・類似名が多いため推測URLは登録しない
-- LINE MUSIC内で `Snow flakes` または `In One Sky` を検索し、候補Artistページに `In One Sky` / `Undertone` / `Early Snow` / `Signal` 等がまとまっているか手動確認する
+- `Snow flakes` / `In One Sky` / `Undertone` / `瞬間に残る` / `Early Snow` まで公開検索したがSnow flakes本人のLINE MUSICページはヒットしなかった
+- LINE MUSIC Web版はJavaScript依存で、外部検索からArtist検索結果の中身を取得しにくい
+- 公開検索で出る `The Snowflakes` は別アーティストなので除外
+- 現時点では公開情報だけで正しいArtist URLを確定できない。必要になった場合のみLINE MUSICアプリ内確認を行う
 
 
 ### AWA 2026-09-05 現況確認
