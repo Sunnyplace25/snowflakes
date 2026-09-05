@@ -32,7 +32,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Anghami | Artist URLあり | 確認済 |
 | Audible Magic (Aggregation) | — | 一般向けArtistページなし |
 | Audiomack | — | 要確認 |
-| AWA | — | 要確認 |
+| AWA | — | 2026-09-05外部検索ではSnow flakes本人のArtist/Release URLを特定できず。AWA内で手動確認待ち |
 | Boomplay / Ayoba | — | 要確認 |
 | Claro Música | — | 要確認 |
 | Deezer | In One Sky URLあり | Release確認済 / 同名別アーティストとの混在あり / Deezer for CreatorsでArtist Separation要申請 |
@@ -144,6 +144,14 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるLINE MUSICページは特定できなかった
 - 同名・類似名が多いため推測URLは登録しない
 - LINE MUSIC内で `Snow flakes` または `In One Sky` を検索し、候補Artistページに `In One Sky` / `Undertone` / `Early Snow` / `Signal` 等がまとまっているか手動確認する
+
+
+### AWA 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるAWAページは特定できなかった
+- 検索では別アーティストの曲名・作品名としての `Snow Flakes` が多数ヒットするため、推測URLは登録しない
+- AWA内で `Snow flakes` または `In One Sky` を検索し、候補ArtistページにSnow flakes作品がまとまっているか手動確認する
 
 ## 今後確認する優先順位
 
