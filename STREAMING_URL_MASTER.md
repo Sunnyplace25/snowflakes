@@ -46,7 +46,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | LyricFind | — | 歌詞データ事業者 |
 | NetEase | — | 要確認 |
 | Nuuday | — | 要確認 |
-| Pandora | — | 要確認 |
+| Pandora | — | 2026-09-05確認: Soundrop上ではDelivered。公開検索ではSnow flakes本人のArtist/Release URLを特定できず。Pandoraは米国内限定サービスのため日本からの通常確認は困難 |
 | Peloton | — | 一般向け固定Artistページがない場合あり |
 | Qobuz | https://play.qobuz.com/label/10071545 | 作品集約は確認済 / Artist名のF大文字だけ未修正 |
 | Snapchat / 7Digital | — | 要確認 |
@@ -184,6 +184,16 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Snow flakes本人と断定できるBoomplayページは特定できなかった
 - 同名別アーティストが複数存在するため、推測URLは登録しない
 - 現時点では公開情報だけで正しいBoomplay / Ayoba URLを確定できない
+
+
+### Pandora 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索したが、Snow flakes本人と断定できるPandora Artist / Releaseページは特定できなかった
+- Pandora公式ヘルプでは、サービス利用は米国内限定
+- 海外アーティストでもPandora AMPのArtist profile claimは可能
+- 日本から通常利用してカタログを直接確認するのは難しいため、推測URLは登録しない
+- 現状は `Delivered / Public URL未特定` として管理
 
 ## 今後確認する優先順位
 
