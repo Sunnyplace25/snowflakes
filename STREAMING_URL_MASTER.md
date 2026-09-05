@@ -33,7 +33,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Audible Magic (Aggregation) | — | 一般向けArtistページなし |
 | Audiomack | — | 2026-09-05確認: `https://audiomack.com/snow-flakes` はTogoのAfrobeats系別アーティスト。Snow flakes本人のArtist/Release URLは公開検索で未特定 |
 | AWA | — | 2026-09-05外部検索ではSnow flakes本人のArtist/Release URLを特定できず。AWA内で手動確認待ち |
-| Boomplay / Ayoba | — | 要確認 |
+| Boomplay / Ayoba | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、Snow flakes本人のArtist/Release URLは未特定。推測URLは登録しない |
 | Claro Música | — | 要確認 |
 | Deezer | In One Sky URLあり | Release確認済 / 同名別アーティストとの混在あり / Deezer for CreatorsでArtist Separation要申請 |
 | Facebook / Instagram | 公式Instagramあり | 音楽カタログ専用URLとは別 |
@@ -175,6 +175,15 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
   - 代表曲: `Jollof (feat. Cheezy)`
 - `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索したが、Snow flakes本人のページは特定できなかった
 - 同名別アーティストが多いため、推測URLは登録しない
+
+
+### Boomplay / Ayoba 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- BoomplayのArtist / Album / Songページを対象に、`Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索
+- Snow flakes本人と断定できるBoomplayページは特定できなかった
+- 同名別アーティストが複数存在するため、推測URLは登録しない
+- 現時点では公開情報だけで正しいBoomplay / Ayoba URLを確定できない
 
 ## 今後確認する優先順位
 
