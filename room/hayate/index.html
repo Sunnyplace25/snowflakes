@@ -526,7 +526,11 @@
         <img id="hayate-hs-img" style="display:none;width:120px;margin:0 auto 12px;border-radius:8px;" alt="item">
         <p id="hayate-hs-itemname" style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#fde68a;margin-bottom:12px;"></p>
         <p class="room-hs-desc" id="hayate-hs-desc"></p>
-        <p id="hayate-hs-note" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;margin-bottom:16px;">入手済みです</p>
+        <p id="hayate-hs-note" style="display:none;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#94a3b8;margin-bottom:12px;">入手済みです</p>
+        <a id="hayate-hs-drumstick-link" href="https://ncode.syosetu.com/n3171798/" target="_blank" rel="noopener"
+           style="display:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#fde68a;text-decoration:none;padding:6px 18px;border-radius:100px;border:1px solid rgba(253,230,138,0.3);background:rgba(253,230,138,0.05);transition:all 0.2s;margin-bottom:16px;"
+           onmouseover="this.style.background='rgba(253,230,138,0.12)';this.style.borderColor='rgba(253,230,138,0.55)'"
+           onmouseout="this.style.background='rgba(253,230,138,0.05)';this.style.borderColor='rgba(253,230,138,0.3)'">一本だけのドラムスティック →</a>
         <div id="hayate-hs-game" style="display:none;margin-bottom:4px;">
           <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:4px;color:#64748b;margin-bottom:6px;">育成ゲーム</p>
           <p style="font-family:'Noto Serif JP',serif;font-size:14px;color:#fde68a;letter-spacing:2px;margin-bottom:20px;">ハヤテっち</p>
@@ -1653,6 +1657,8 @@
       if (hsItemName) { hsItemName.style.display = 'none'; }
       var note = document.getElementById('hayate-hs-note');
       if (note) note.style.display = 'none';
+      var drumstickLink = document.getElementById('hayate-hs-drumstick-link');
+      if (drumstickLink) drumstickLink.style.display = 'none';
       var gameEl  = document.getElementById('hayate-hs-game');
       var closeEl = document.getElementById('hayate-hs-close');
       var isGame = (label === 'ゲーム');
@@ -1676,6 +1682,7 @@
           if (note) note.style.display = 'block';
           if (hsImg && imgSrc) { hsImg.src = imgSrc; hsImg.style.display = 'block'; }
           if (hsItemName && itemName) { hsItemName.textContent = itemName; hsItemName.style.display = 'block'; }
+          if (drumstickLink && itemKey === 'drumstick_hayate') drumstickLink.style.display = 'inline-block';
         }
       }
     }
