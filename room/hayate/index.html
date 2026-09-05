@@ -1647,16 +1647,23 @@
       document.getElementById('room-light').classList.remove('open');
     }
 
+    function revealItemTag(tagId, imgSrc, name) {
+      var tag = document.getElementById(tagId);
+      if (!tag) return;
+      tag.innerHTML = '<img src="' + imgSrc + '" alt="item">' + name;
+      tag.classList.add('owned');
+    }
+
     function renderDrumstickLog() {
       if (typeof SfSnow === 'undefined') return;
       if (SfSnow.isUnlocked('drumstick_hayate')) {
-        if (typeof revealItemTag === 'function') {
-          revealItemTag('il-drumstick-tag', '../../item/drumstick.webp', '古いドラムスティック');
-        }
+        revealItemTag('il-drumstick-tag', '../../item/drumstick.webp', '古いドラムスティック');
         var dLocked = document.getElementById('il-drumstick-locked');
         var dOwned  = document.getElementById('il-drumstick-owned');
+        var dItem   = document.getElementById('il-drumstick-item');
         if (dLocked) dLocked.style.display = 'none';
         if (dOwned)  dOwned.style.display  = '';
+        if (dItem && !dItem.classList.contains('open')) dItem.classList.add('open');
       }
     }
 
@@ -1894,13 +1901,6 @@
       }
 
       // ITEM LOG
-      function revealItemTag(tagId, imgSrc, name) {
-        var tag = document.getElementById(tagId);
-        if (!tag) return;
-        tag.innerHTML = '<img src="' + imgSrc + '" alt="item">' + name;
-        tag.classList.add('owned');
-      }
-
       // 古いリストバンド
       var desc1 = document.getElementById('il-1-desc');
       if (SfSnow.isUnlocked(ITEM_KEY)) {
