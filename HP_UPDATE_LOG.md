@@ -7,6 +7,51 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 
 ## 2026-09-05 追記
 
+### SWEETs Autumn画像の分離修正
+
+対象:
+
+`sweets/index.html`
+`room/hinata/index.html`
+`room/kouta/index.html`
+`room/hayate/index.html`
+
+原因:
+
+2026-08-31のAutumn対応で三人の部屋画像をゴルフ場画像へ差し替えた後、Summer Special Episodeの表紙を保護するため `room_face.webp` を夏画像へ戻したため、Autumn側と各部屋トップまで夏画像へ戻っていた。
+
+修正内容:
+
+- Summer Special Episode
+  - ヒナタ / コウタ / ハヤテとも既存の夏画像 `room_face.webp` を維持
+- Autumn Special Episode
+  - 三人とも専用のゴルフ画像 `room_face_autumn.webp` を使用
+- 各キャラクターの部屋トップ
+  - 三人とも `room_face_autumn.webp` を使用
+- 夏と秋で画像ファイルを分離し、今後片方の差し替えで他方が巻き戻らない構成へ変更
+
+追加ファイル:
+
+- `room/hinata/room_face_autumn.webp`
+- `room/kouta/room_face_autumn.webp`
+- `room/hayate/room_face_autumn.webp`
+
+画像復元元:
+
+- ヒナタ / コウタ: 2026-08-31 Autumnゴルフ場対応コミット `b50ae81ad843465d6e93dd41c70e9791d640a50d`
+- ハヤテ: 2026-08-31 Autumn対応コミット `3c980d8b2f9f3fa7ab7929dce7abf1247ba160fd`
+
+関連コミット:
+
+- Autumn画像専用ファイル復元: `603300e2534a6a8ae14c933f754c866d09a0baa0`
+- コウタ部屋トップ: `788c1918905ab00e4a54861a8327af135143af02`
+- ハヤテ部屋トップ: `73708eb5a20bde88288ab55694c123ec68ae3bf3`
+- Autumn / Summer Episode参照分離: `c1e14e0fe7dd01dfa2f525d3168bd577680a9891`
+
+---
+
+## 2026-09-05 追記
+
 ### 新連載の活動報告を追加
 
 対象ファイル:
