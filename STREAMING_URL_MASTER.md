@@ -105,6 +105,13 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Issue Type: `Someone else's content is on my artist page`
 - 正しいArtistページを新規分離するか、既存の正しいSnow flakesページへSnow flakes作品だけを集約する必要あり
 
+## 保留中の対応
+
+- Deezer: 後で Deezer for Creators から Artist Separation を申請する
+  - Issue Type: `Someone else's content is on my artist page`
+  - 対象: Snow flakes と同名別アーティストの混在
+  - In One Sky: `https://www.deezer.com/album/1037299042`
+
 ## 今後確認する優先順位
 
 1. YouTube Music
