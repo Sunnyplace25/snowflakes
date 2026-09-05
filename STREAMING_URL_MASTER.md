@@ -54,7 +54,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Tencent | — | 要確認 |
 | TIDAL | — | 要確認 |
 | TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
-| YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | HPで使用中のMusicチャンネル。公開検索で別の同名 `SNOW FLAKES` チャンネル（UCwgKTXlu654Ir8I2i30GZ_w）も出るため、両方の中身比較が必要 |
+| YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | HPで使用中。別候補 `UCwgKTXlu654Ir8I2i30GZ_w` はユーザー確認により完全に別アーティストと判明し除外 |
 
 ## In One Sky Soundrop納品記録
 
@@ -117,11 +117,9 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 
 - HPで現在使用中のYouTube Music URL:
   - `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw`
-- 公開検索で別の同名チャンネルも確認:
-  - `https://music.youtube.com/channel/UCwgKTXlu654Ir8I2i30GZ_w`
-- 現時点では、どちらがSoundrop配信カタログの正しいArtist/Topicページか外部検索だけでは確定できない
-- 両ページを開き、`In One Sky` / `Undertone` / `Early Snow` / `Round Bounce` 等がどちらに載っているか比較する
-- 正しいページ確定後、HPリンクと本マスターを統一する
+- 別の同名チャンネル `https://music.youtube.com/channel/UCwgKTXlu654Ir8I2i30GZ_w` は、2026-09-05にユーザー確認で完全に別アーティストと判明。Snow flakes候補から除外
+- 残る確認対象はHPで使用中の `https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw`
+- このページに `In One Sky` / `Undertone` / `Early Snow` / `Round Bounce` 等が正しくまとまっているか最終確認する
 
 ## 今後確認する優先順位
 
