@@ -52,7 +52,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Snapchat / 7Digital | — | 要確認 |
 | Spotify | Artist / In One Sky URLあり | 確認済 |
 | Tencent | — | 要確認 |
-| TIDAL | — | 2026-09-05外部検索では正しいSnow flakes Artist/Release URLを特定できず。手動確認待ち |
+| TIDAL | https://tidal.com/artist/3921906 | 2026-09-05ユーザー確認: 別アーティスト `Snow Flakes` のArtistページにSnow flakes作品が混在。Artist Separation申請が必要 |
 | TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
 | YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | 2026-09-05ユーザー画面でSnow flakesの正しいページと確認。In One Sky / Undertone / Little Snow / Signal / Rabbit / 瞬間に残る等を確認。別候補は別アーティストとして除外 |
 
@@ -107,6 +107,10 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 
 ## 保留中の対応
 
+- TIDAL: 後で Artist Separation / Artist Mapping correction を申請する
+  - 誤紐付け先: `https://tidal.com/artist/3921906`
+  - 対象: 別アーティスト `Snow Flakes` とSnow flakes作品の混在
+
 - Deezer: 後で Deezer for Creators から Artist Separation を申請する
   - Issue Type: `Someone else's content is on my artist page`
   - 対象: Snow flakes と同名別アーティストの混在
@@ -128,9 +132,10 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 ### TIDAL 2026-09-05 現況確認
 
 - Soundrop上では `Delivered`
-- 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるTIDALページは特定できなかった
-- 同名・類似名の別アーティストが複数存在するため、推測URLは登録しない
-- TIDAL内検索で候補ページを開き、`In One Sky` / `Undertone` / `Early Snow` / `Signal` 等がまとまっているか手動確認する
+- 2026-09-05ユーザー確認で `https://tidal.com/artist/3921906` にSnow flakes作品が混在していることを確認
+- このArtistページは別アーティスト `Snow Flakes` のページであり、Snow flakesの作品が誤って紐付いている
+- Artist Separation / Artist Mapping correction が必要
+- 正しいSnow flakes専用Artistページへ作品を分離する
 
 ## 今後確認する優先順位
 
