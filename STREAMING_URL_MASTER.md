@@ -40,7 +40,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | FLO | — | 要確認 |
 | iHeartRadio | — | 要確認 |
 | iTunes / Apple Music | Artist / In One Sky URLあり | 確認済 |
-| KKBOX | — | 要確認 |
+| KKBOX | — | 2026-09-05公開検索で `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` を確認したが、本人のArtist/Release URLは未特定。推測URLは登録しない |
 | LINE MUSIC | — | 2026-09-05再確認: 公開検索・作品名検索でもSnow flakes本人のArtist/Release URLは未特定。LINE MUSIC Web版はJS依存で外部取得困難。別人 `The Snowflakes` は除外 |
 | Lissen | — | 要確認 |
 | LyricFind | — | 歌詞データ事業者 |
@@ -155,6 +155,15 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるAWAページは特定できなかった
 - 検索では別アーティストの曲名・作品名としての `Snow Flakes` が多数ヒットするため、推測URLは登録しない
 - AWA内で `Snow flakes` または `In One Sky` を検索し、候補ArtistページにSnow flakes作品がまとまっているか手動確認する
+
+
+### KKBOX 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索
+- Snow flakes本人と断定できるKKBOX Artist / Releaseページは特定できなかった
+- 同名・類似名の別作品が多いため、推測URLは登録しない
+- 現時点では公開情報だけで正しいKKBOX URLを確定できない
 
 ## 今後確認する優先順位
 
