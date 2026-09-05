@@ -31,7 +31,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Amazon | Artist / In One Sky URLあり | Artist Mapping確認済。Amazon JP上で `Early Snow`→`初雪`、`Round Bounce`→`ラウンドバウンス` の表示差あり |
 | Anghami | Artist URLあり | 確認済 |
 | Audible Magic (Aggregation) | — | 一般向けArtistページなし |
-| Audiomack | — | 要確認 |
+| Audiomack | — | 2026-09-05確認: `https://audiomack.com/snow-flakes` はTogoのAfrobeats系別アーティスト。Snow flakes本人のArtist/Release URLは公開検索で未特定 |
 | AWA | — | 2026-09-05外部検索ではSnow flakes本人のArtist/Release URLを特定できず。AWA内で手動確認待ち |
 | Boomplay / Ayoba | — | 要確認 |
 | Claro Música | — | 要確認 |
@@ -164,6 +164,17 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - Snow flakes本人と断定できるKKBOX Artist / Releaseページは特定できなかった
 - 同名・類似名の別作品が多いため、推測URLは登録しない
 - 現時点では公開情報だけで正しいKKBOX URLを確定できない
+
+
+### Audiomack 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- `https://audiomack.com/snow-flakes` は別アーティスト
+  - 表示名: `SNOW FLAKES`
+  - 所在地/ジャンル: Lome, Togo / Afrosounds
+  - 代表曲: `Jollof (feat. Cheezy)`
+- `Snow flakes` / `In One Sky` / `Undertone` / `Early Snow` / `瞬間に残る` で公開検索したが、Snow flakes本人のページは特定できなかった
+- 同名別アーティストが多いため、推測URLは登録しない
 
 ## 今後確認する優先順位
 
