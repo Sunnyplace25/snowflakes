@@ -190,6 +190,21 @@ export async function updateEvent(accessToken, calendarId, eventId, event) {
 }
 
 /**
+ * カレンダーのイベントを削除する。
+ * @param {string} accessToken
+ * @param {string} calendarId
+ * @param {string} eventId
+ * @returns {Promise<void>}
+ */
+export async function deleteEvent(accessToken, calendarId, eventId) {
+  const encodedCalId   = encodeURIComponent(calendarId);
+  const encodedEventId = encodeURIComponent(eventId);
+  await calendarFetch(accessToken, `/calendars/${encodedCalId}/events/${encodedEventId}`, {
+    method: 'DELETE',
+  });
+}
+
+/**
  * extendedProperties.private の key=value でイベントを検索する。
  * @param {string} accessToken
  * @param {string} calendarId

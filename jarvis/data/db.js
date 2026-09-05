@@ -513,6 +513,53 @@ function runMigrations(db) {
   for (const sql of CALENDAR_TABLES) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
+
+  // Phase 20: work_records ↔ Google Calendar 同期テーブル追加
+  // ベストエフォート設計: Calendar API 失敗時も work_records への書き込みは独立
+  const WORK_CALENDAR_TABLES = [
+    `CREATE TABLE IF NOT EXISTS work_calendar_links (
+      id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+      work_record_id     INTEGER NOT NULL REFERENCES work_records(id) ON DELETE CASCADE,
+      google_calendar_id TEXT    NOT NULL,
+      google_event_id    TEXT,              -- API失敗時はNULL（pending/errorで保持）
+      sync_status        TEXT    NOT NULL DEFAULT 'pending'
+                           CHECK (sync_status IN ('pending', 'synced', 'error', 'orphaned')),
+        -- pending  : 同期未実行 or リトライ待ち
+        -- synced   : Calendarへの同期成功
+        -- error    : API失敗（error_message に詳細、error_count でリトライ回数管理）
+        -- orphaned : Calendar側イベントが削除済み（照合時に検出）
+      error_message      TEXT,
+      error_count        INTEGER NOT NULL DEFAULT 0,
+      last_attempted_at  TEXT,
+      last_synced_at     TEXT,
+      created_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(work_record_id),
+      UNIQUE(google_calendar_id, google_event_id)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_wcl_work_record ON work_calendar_links(work_record_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_wcl_sync_status ON work_calendar_links(sync_status)`,
+
+    // Calendar 削除 Outbox: work_records 削除後の Calendar 側削除リトライ用
+    // work_calendar_links は ON DELETE CASCADE で消えるため FK を持たない
+    `CREATE TABLE IF NOT EXISTS calendar_delete_queue (
+      id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+      google_calendar_id TEXT    NOT NULL,
+      google_event_id    TEXT    NOT NULL,
+      work_record_id     INTEGER,              -- 参照情報のみ（FK なし・削除後 NULL 可）
+      status             TEXT    NOT NULL DEFAULT 'pending'
+                           CHECK (status IN ('pending', 'done')),
+      error_message      TEXT,
+      retry_count        INTEGER NOT NULL DEFAULT 0,
+      created_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      last_attempted_at  TEXT,
+      completed_at       TEXT
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_cdq_status ON calendar_delete_queue(status)`,
+  ];
+  for (const sql of WORK_CALENDAR_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
 }
 
 /**

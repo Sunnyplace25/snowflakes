@@ -7,7 +7,7 @@
  * - ConflictError（完全休日への仕事登録）は 409 で返す
  */
 
-import { addWorkRecord, getWorkRecords, updateWorkRecord, updateWorkRecordFull }
+import { addWorkRecord, getWorkRecords, updateWorkRecord, updateWorkRecordFull, deleteWorkRecord }
   from '../data/work_record_manager.js';
 import { upsertDailyStatus, getDailyStatus, getFullDayOffCount }
   from '../data/daily_status_manager.js';
@@ -86,6 +86,14 @@ import {
   getCalendarLinks, getCalendarLinkCount,
   insertSyncRun, completeSyncRun, getSyncRuns,
 } from '../data/calendar_manager.js';
+
+// ── work_records ↔ Google Calendar 自動連動フック (Phase 20) ──────────────────
+import {
+  hookWorkCreated,
+  hookWorkUpdated,
+  hookWorkDeleted,
+  getGoogleEventIdBeforeDelete,
+} from '../sync/work_calendar_hook.js';
 
 // ── Soundrop Catalog Sync ─────────────────────────────────────────────────────
 import { extractTokenFromInput, verifyToken } from '../sync/soundrop_client.mjs';
@@ -279,6 +287,8 @@ export function createApiHandler(db) {
             payment_status: body.payment_status || '対象外',
             memo:           body.memo           || null,
           });
+          // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
+          hookWorkCreated(db, rowid);
           return jsonRes(res, 201, { ok: true, id: rowid, job_id });
         } catch (e) {
           const status = e.message.startsWith('ConflictError') ? 409 : 400;
@@ -286,8 +296,9 @@ export function createApiHandler(db) {
         }
       }
 
-      // ── PUT /api/work/:id ──────────────────────────────────────────────────
+      // ── PUT /api/work/:id  ／  DELETE /api/work/:id ───────────────────────
       const workMatch = path.match(/^\/api\/work\/(\d+)$/);
+
       if (workMatch && method === 'PUT') {
         const id = parseInt(workMatch[1], 10);
         if (!id || isNaN(id)) return errRes(res, 400, '不正なIDです');
@@ -309,11 +320,29 @@ export function createApiHandler(db) {
             payment_status: body.payment_status,
             memo:           body.memo,
           });
+          // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
+          hookWorkUpdated(db, id);
           return jsonRes(res, 200, { ok: true });
         } catch (e) {
           const status = e.message.startsWith('ConflictError') ? 409 : 400;
           return errRes(res, status, e.message);
         }
+      }
+
+      if (workMatch && method === 'DELETE') {
+        const id = parseInt(workMatch[1], 10);
+        if (!id || isNaN(id)) return errRes(res, 400, '不正なIDです');
+
+        // ON DELETE CASCADE でリンクが消える前に google_event_id を取得する
+        const googleEventId = getGoogleEventIdBeforeDelete(db, id);
+
+        const deleted = deleteWorkRecord(db, id);
+        if (!deleted) return errRes(res, 404, '指定された仕事レコードが見つかりません');
+
+        // DB 削除成功後、非同期で Calendar からも削除（失敗時は calendar_delete_queue に記録）
+        hookWorkDeleted(db, googleEventId, id);
+
+        return jsonRes(res, 200, { ok: true });
       }
 
       // ── POST /api/day ───────────────────────────────────────────────────────

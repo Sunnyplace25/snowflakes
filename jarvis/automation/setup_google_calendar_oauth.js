@@ -46,6 +46,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** Google Calendar 用スコープ */
 export const SCOPES = [
+  'https://www.googleapis.com/auth/calendar',          // カレンダー管理（作成・削除含む）
   'https://www.googleapis.com/auth/calendar.events',
   'https://www.googleapis.com/auth/calendar.readonly',
 ];
