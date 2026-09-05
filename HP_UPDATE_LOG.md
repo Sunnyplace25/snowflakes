@@ -21,6 +21,29 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 
 ## 2026-09-05 追記
 
+### 配信先管理HTMLを追加
+
+対象:
+
+`STREAMING_URL_MASTER.html`
+
+内容:
+
+- `STREAMING_URL_MASTER.md` の内容を、状態別に見やすく一覧化
+- 正常確認済み / 修正必要 / Delivered・URL未特定 / 一般向けArtistページ管理対象外 を色分け
+- Spotify / Apple Music / Amazon Music / Anghami / YouTube Music の確認済みURLを掲載
+- Qobuz / Deezer / TIDAL の混在・修正案件を上部にまとめて表示
+- その他Soundrop配信先も一括掲載
+- 各URLはその場で開ける管理画面形式
+
+関連コミット:
+
+- `5b14d1476c8406b3d1442c4e8552bfac8a13c330`
+
+---
+
+## 2026-09-05 追記
+
 ### 音ハズ広告画像を高解像度版へ差し替え
 
 対象:
