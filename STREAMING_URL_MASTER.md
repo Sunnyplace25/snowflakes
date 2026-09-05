@@ -52,7 +52,7 @@ Soundrop上では以下のサービスへ `Delivered`。
 | Snapchat / 7Digital | — | 要確認 |
 | Spotify | Artist / In One Sky URLあり | 確認済 |
 | Tencent | — | 要確認 |
-| TIDAL | — | 要確認 |
+| TIDAL | — | 2026-09-05外部検索では正しいSnow flakes Artist/Release URLを特定できず。手動確認待ち |
 | TikTok | — | 配信楽曲ページ / Artist紐付け要確認 |
 | YouTube Music | https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw | 2026-09-05ユーザー画面でSnow flakesの正しいページと確認。In One Sky / Undertone / Little Snow / Signal / Rabbit / 瞬間に残る等を確認。別候補は別アーティストとして除外 |
 
@@ -123,6 +123,14 @@ URLがSoundrop画面に返されていないサービスは、各サービス側
 - 画面で確認できた範囲では別アーティスト作品の混在は見当たらない
 - `Early Snow` はYouTube Music日本語UI上で `初雪` と表示される
 - 現在のHPリンクを正規YouTube Musicリンクとして使用継続
+
+
+### TIDAL 2026-09-05 現況確認
+
+- Soundrop上では `Delivered`
+- 外部検索で `Snow flakes` / `In One Sky` / `Undertone` を確認したが、Snow flakes本人と断定できるTIDALページは特定できなかった
+- 同名・類似名の別アーティストが複数存在するため、推測URLは登録しない
+- TIDAL内検索で候補ページを開き、`In One Sky` / `Undertone` / `Early Snow` / `Signal` 等がまとまっているか手動確認する
 
 ## 今後確認する優先順位
 
