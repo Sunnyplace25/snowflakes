@@ -645,6 +645,74 @@ function runMigrations(db) {
          AND import_origin = 'jarvis'
     `);
   } catch (_) { /* calendar_import_candidates が未存在の環境（古い DB）は無視 */ }
+
+  // Phase 24: sf_artist_profiles platform CHECK 拡張 (tidal, qobuz 追加)
+  // SQLite は CHECK 制約の変更 (MODIFY COLUMN) 不可のため、テーブル再構築が必要。
+  // sf_artist_profiles は他テーブルから FK 参照されていないため安全に再構築できる。
+  // 冪等判定: sqlite_master の CREATE TABLE 文に 'tidal' が含まれているか確認する。
+  try {
+    const row = db.prepare(
+      "SELECT sql FROM sqlite_master WHERE type='table' AND name='sf_artist_profiles'"
+    ).get();
+    if (row && !row.sql.includes("'tidal'")) {
+      db.exec('PRAGMA foreign_keys = OFF');
+      try {
+        db.exec(`
+          CREATE TABLE sf_artist_profiles_v2 (
+            id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+            artist_key         TEXT    NOT NULL,
+            artist_name        TEXT    NOT NULL,
+            platform           TEXT    NOT NULL
+              CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','tidal','qobuz','other')),
+            platform_artist_id TEXT,
+            artist_page_url    TEXT,
+            profile_status     TEXT    NOT NULL DEFAULT 'unknown'
+              CHECK (profile_status IN ('unknown','active','pending','unclaimed','inactive')),
+            claimed            INTEGER NOT NULL DEFAULT 0 CHECK (claimed IN (0,1)),
+            last_checked_at    TEXT,
+            memo               TEXT,
+            created_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+            updated_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+            UNIQUE(artist_key, platform)
+          )
+        `);
+        db.exec(`INSERT INTO sf_artist_profiles_v2 SELECT * FROM sf_artist_profiles`);
+        db.exec(`DROP TABLE sf_artist_profiles`);
+        db.exec(`ALTER TABLE sf_artist_profiles_v2 RENAME TO sf_artist_profiles`);
+      } finally {
+        db.exec('PRAGMA foreign_keys = ON');
+      }
+    }
+  } catch (_) { /* 既にマイグレーション済み、または sf_artist_profiles 未存在の場合はスキップ */ }
+
+  // Phase 24: sf_platform_issues テーブル追加（配信サイト問題管理）
+  const PLATFORM_ISSUES_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_platform_issues (
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      entity_type     TEXT    NOT NULL
+        CHECK (entity_type IN ('artist','release','track')),
+      entity_id       INTEGER NOT NULL,
+      platform        TEXT    NOT NULL,
+      issue_type      TEXT    NOT NULL DEFAULT 'other'
+        CHECK (issue_type IN ('mixed_artist','wrong_link','name_variant','not_reflected','other')),
+      issue_status    TEXT    NOT NULL DEFAULT 'open'
+        CHECK (issue_status IN ('open','requested','resolved','wont_fix')),
+      opened_at       TEXT,
+      requested_at    TEXT,
+      resolved_at     TEXT,
+      last_checked_at TEXT,
+      related_url     TEXT,
+      memo            TEXT,
+      created_at      TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at      TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_entity   ON sf_platform_issues(entity_type, entity_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_status   ON sf_platform_issues(issue_status)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_platform ON sf_platform_issues(platform)`,
+  ];
+  for (const sql of PLATFORM_ISSUES_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
 }
 
 /**

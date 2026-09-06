@@ -476,12 +476,13 @@ CREATE INDEX IF NOT EXISTS idx_sf_import_rows_track     ON sf_distribution_impor
 CREATE INDEX IF NOT EXISTS idx_sf_import_rows_unmatched ON sf_distribution_import_rows(needs_review);
 
 -- ── アーティストページ管理 ────────────────────────────────────────────────────
+-- platform: tidal / qobuz は Phase 24 で追加（既存 DB は db.js マイグレーションで対応）
 CREATE TABLE IF NOT EXISTS sf_artist_profiles (
   id                 INTEGER PRIMARY KEY AUTOINCREMENT,
   artist_key         TEXT    NOT NULL,
   artist_name        TEXT    NOT NULL,
   platform           TEXT    NOT NULL
-    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','other')),
+    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','tidal','qobuz','other')),
   platform_artist_id TEXT,
   artist_page_url    TEXT,
   profile_status     TEXT    NOT NULL DEFAULT 'unknown'
@@ -1143,3 +1144,39 @@ CREATE TABLE IF NOT EXISTS business_calendar_imports (
 
 CREATE INDEX IF NOT EXISTS idx_bci_event  ON business_calendar_imports(google_calendar_id, google_event_id);
 CREATE INDEX IF NOT EXISTS idx_bci_status ON business_calendar_imports(import_status);
+
+-- ── 配信サイト問題管理 (Phase 24) ────────────────────────────────────────────
+-- アーティストページ・リリース・楽曲単位の問題発生・対応履歴を保管する。
+-- entity_type / entity_id はポリモーフィックな設計のため DB 外部キー制約を付けない。
+--   entity_type='artist'  → sf_artist_profiles.id
+--   entity_type='release' → sf_releases.id
+--   entity_type='track'   → sf_tracks.id
+-- アプリケーション側でエンティティの存在確認を行うこと。
+-- issue_type はアプリ内コードで管理し、UI 表示名への変換は sf_platform_manager.js で行う。
+--   mixed_artist  : 別アーティストとの混在
+--   wrong_link    : 別人・別ページへの紐付け
+--   name_variant  : アーティスト名・表記揺れ
+--   not_reflected : 未反映（配信申請後に反映されない）
+--   other         : その他
+CREATE TABLE IF NOT EXISTS sf_platform_issues (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  entity_type     TEXT    NOT NULL
+    CHECK (entity_type IN ('artist','release','track')),
+  entity_id       INTEGER NOT NULL,
+  platform        TEXT    NOT NULL,
+  issue_type      TEXT    NOT NULL DEFAULT 'other'
+    CHECK (issue_type IN ('mixed_artist','wrong_link','name_variant','not_reflected','other')),
+  issue_status    TEXT    NOT NULL DEFAULT 'open'
+    CHECK (issue_status IN ('open','requested','resolved','wont_fix')),
+  opened_at       TEXT,             -- 問題発覚日 (YYYY-MM-DD)
+  requested_at    TEXT,             -- 修正依頼日
+  resolved_at     TEXT,             -- 解決日
+  last_checked_at TEXT,             -- 最後に状態確認した日
+  related_url     TEXT,             -- SoundropチケットURL 等
+  memo            TEXT,
+  created_at      TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at      TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_entity   ON sf_platform_issues(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_status   ON sf_platform_issues(issue_status);
+CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_platform ON sf_platform_issues(platform);

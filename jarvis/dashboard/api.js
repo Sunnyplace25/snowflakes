@@ -66,6 +66,18 @@ import {
   VALID_EXPORT_FORMATS,
 } from '../data/note_manager.js';
 
+// ── 配信サイト問題管理 (Phase 24) ─────────────────────────────────────────────
+import {
+  getDistributionPlatforms,
+  getIssues,
+  getIssue,
+  createIssue,
+  updateIssue,
+  setIssueRequested,
+  resolveIssue,
+  touchIssueChecked,
+} from '../data/sf_platform_manager.js';
+
 // ── Business Invoice Import ───────────────────────────────────────────────────
 import { parseExcel, computeFileHash, getCategoryRules } from '../importers/invoice_importer.js';
 import {
@@ -452,6 +464,16 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, profiles: getArtistProfiles(db) });
       }
 
+      // ── POST /api/sf/artist-profiles ──────────────────────────────────
+      if (path === '/api/sf/artist-profiles' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = upsertArtistProfile(db, body);
+          return jsonRes(res, 201, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
       // ── PUT /api/sf/artist-profiles/:id ───────────────────────────────
       const sfProfileMatch = path.match(/^\/api\/sf\/artist-profiles\/(\d+)$/);
       if (sfProfileMatch && method === 'PUT') {
@@ -459,6 +481,77 @@ export function createApiHandler(db) {
         try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
         try {
           const result = upsertArtistProfile(db, { ...body, id: parseInt(sfProfileMatch[1], 10) });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── GET /api/sf/distribution-platforms ────────────────────────────
+      if (path === '/api/sf/distribution-platforms' && method === 'GET') {
+        return jsonRes(res, 200, { ok: true, platforms: getDistributionPlatforms() });
+      }
+
+      // ── GET /api/sf/platform-issues ───────────────────────────────────
+      if (path === '/api/sf/platform-issues' && method === 'GET') {
+        const opts = {
+          entity_type:  url.searchParams.get('entity_type')  || undefined,
+          entity_id:    url.searchParams.get('entity_id')
+                          ? parseInt(url.searchParams.get('entity_id'), 10) : undefined,
+          platform:     url.searchParams.get('platform')     || undefined,
+          issue_status: url.searchParams.get('issue_status') || undefined,
+        };
+        return jsonRes(res, 200, { ok: true, issues: getIssues(db, opts) });
+      }
+
+      // ── POST /api/sf/platform-issues ──────────────────────────────────
+      if (path === '/api/sf/platform-issues' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = createIssue(db, body);
+          return jsonRes(res, 201, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // ── /api/sf/platform-issues/:id/* ─────────────────────────────────
+      const sfIssueMatch  = path.match(/^\/api\/sf\/platform-issues\/(\d+)$/);
+      const sfIssueAction = path.match(/^\/api\/sf\/platform-issues\/(\d+)\/(request|resolve|check)$/);
+
+      // PUT /api/sf/platform-issues/:id
+      if (sfIssueMatch && method === 'PUT') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const result = updateIssue(db, parseInt(sfIssueMatch[1], 10), body);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // POST /api/sf/platform-issues/:id/request
+      if (sfIssueAction && sfIssueAction[2] === 'request' && method === 'POST') {
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        try {
+          const result = setIssueRequested(db, parseInt(sfIssueAction[1], 10), body.requested_at ?? undefined);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // POST /api/sf/platform-issues/:id/resolve
+      if (sfIssueAction && sfIssueAction[2] === 'resolve' && method === 'POST') {
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        try {
+          const result = resolveIssue(db, parseInt(sfIssueAction[1], 10), body.resolved_at ?? undefined);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) { return errRes(res, 400, e.message); }
+      }
+
+      // POST /api/sf/platform-issues/:id/check
+      if (sfIssueAction && sfIssueAction[2] === 'check' && method === 'POST') {
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        try {
+          const result = touchIssueChecked(db, parseInt(sfIssueAction[1], 10), body.checked_at ?? undefined);
           return jsonRes(res, 200, { ok: true, ...result });
         } catch (e) { return errRes(res, 400, e.message); }
       }
