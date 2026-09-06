@@ -101,7 +101,10 @@ export async function searchKnowledge(query, opts = {}) {
     contextLines  = 3,
     caseSensitive = false,
     sources       = ['existing', 'chatgpt'],
+    _dirs         = null, // テスト用ディレクトリオーバーライド（本番では使用しない）
   } = opts;
+
+  const dirs = _dirs ?? KNOWLEDGE_DIRS;
 
   // クエリを正規表現に変換（メタ文字をエスケープ）
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -111,7 +114,7 @@ export async function searchKnowledge(query, opts = {}) {
   const output = [];
 
   for (const source of sources) {
-    const dir = KNOWLEDGE_DIRS[source];
+    const dir = dirs[source];
     if (!dir) continue;
 
     const files = await listMdFiles(dir);
@@ -156,11 +159,12 @@ export async function searchKnowledge(query, opts = {}) {
  * @returns {Promise<{ source: string, file: string, filePath: string }[]>}
  */
 export async function listKnowledgeFiles(opts = {}) {
-  const { sources = ['existing', 'chatgpt'] } = opts;
+  const { sources = ['existing', 'chatgpt'], _dirs = null } = opts;
+  const dirs = _dirs ?? KNOWLEDGE_DIRS;
   const output = [];
 
   for (const source of sources) {
-    const dir = KNOWLEDGE_DIRS[source];
+    const dir = dirs[source];
     if (!dir) continue;
     const files = await listMdFiles(dir);
     for (const filePath of files.sort()) {

@@ -39,6 +39,7 @@ import {
   previewMerchImport,
   confirmMerchImport,
 } from '../data/merch_import.js';
+import { askKnowledge, QUERY_MAX_LENGTH } from '../tools/knowledge_ask.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
@@ -418,6 +419,20 @@ const server = createServer(async (req, res) => {
       } catch (e) {
         return jsonRes(res, 400, { ok: false, error: e.message });
       }
+    }
+  }
+
+  // ── GET /api/knowledge/search?q=... ──────────────────────────────────────
+  // Snow flakes 設定資料検索（127.0.0.1 バインドのためローカル限定）
+  // 安全制御: クエリ長制限・ファイル数制限・snippet制限はaskKnowledge側で保証
+  //           パスはコード側で固定（ユーザー指定不可・path traversal不可）
+  if (url.pathname === '/api/knowledge/search' && req.method === 'GET') {
+    try {
+      const q = url.searchParams.get('q') ?? '';
+      const result = await askKnowledge(q);
+      return jsonRes(res, 200, result);
+    } catch (e) {
+      return jsonRes(res, 500, { found: false, query: '', message: 'サーバーエラーが発生しました', results: [] });
     }
   }
 
