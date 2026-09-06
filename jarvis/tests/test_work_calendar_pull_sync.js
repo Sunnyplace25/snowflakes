@@ -27,6 +27,8 @@ import {
 import {
   dryRunCalendarPull,
   scanCalendarCandidates,
+  importCalendarCandidate,
+  dryRunImportCandidate,
 } from '../sync/work_calendar_pull_sync.js';
 
 // ─── テストヘルパー ───────────────────────────────────────────────────────────
@@ -64,11 +66,13 @@ function setupDb() {
       client         TEXT,
       income         INTEGER DEFAULT 0,
       expense        INTEGER DEFAULT 0,
+      work_hours     REAL,
+      travel_hours   REAL,
       invoice_status TEXT    NOT NULL DEFAULT '対象外',
       payment_status TEXT    NOT NULL DEFAULT '対象外',
       memo           TEXT,
       created_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
-      is_full_day    INTEGER NOT NULL DEFAULT 0
+      is_full_day    INTEGER NOT NULL DEFAULT 0 CHECK(is_full_day IN (0,1))
     )
   `);
   db.exec(`
@@ -82,9 +86,14 @@ function setupDb() {
       error_count        INTEGER NOT NULL DEFAULT 0,
       last_attempted_at  TEXT,
       last_synced_at     TEXT,
+      start_datetime     TEXT,
+      end_datetime       TEXT,
+      import_origin      TEXT    NOT NULL DEFAULT 'jarvis'
+                           CHECK (import_origin IN ('jarvis','calendar')),
       created_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
       updated_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
-      UNIQUE(work_record_id)
+      UNIQUE(work_record_id),
+      UNIQUE(google_calendar_id, google_event_id)
     )
   `);
   db.exec(`
@@ -584,6 +593,343 @@ await test('scanCalendarCandidates: ページネーション全完了後に remo
 
   assert.strictEqual(result.removedCount, 1, 'absent は全ページ取得後に removed になること');
   assert.strictEqual(getCalendarImportCandidate(db, CAL_ID, 'will-be-absent').status, 'removed');
+});
+
+// ─── Section 5: importCalendarCandidate ──────────────────────────────────────
+
+section('Section: importCalendarCandidate（Phase 22）');
+
+// ヘルパー: 終日候補を1件作成して id を返す
+function insertPendingAllDay(db, { googleEventId = 'ev-allday', title = '外部予定', eventDate = '2026-09-15', duplicateWorkId = null } = {}) {
+  upsertCalendarImportCandidate(db, {
+    googleCalendarId: CAL_ID,
+    googleEventId,
+    eventDate,
+    title,
+    isAllDay: 1,
+    duplicateWorkId: duplicateWorkId ?? null,
+  });
+  const row = db.prepare('SELECT id FROM calendar_import_candidates WHERE google_event_id = ?').get(googleEventId);
+  return row.id;
+}
+
+// ヘルパー: 時間指定候補を1件作成して id を返す
+function insertPendingTimed(db, { googleEventId = 'ev-timed', title = '時間指定予定', eventDate = '2026-09-20' } = {}) {
+  upsertCalendarImportCandidate(db, {
+    googleCalendarId:  CAL_ID,
+    googleEventId,
+    eventDate,
+    title,
+    isAllDay:       0,
+    startDatetime:  `${eventDate}T10:00:00+09:00`,
+    endDatetime:    `${eventDate}T12:00:00+09:00`,
+  });
+  const row = db.prepare('SELECT id FROM calendar_import_candidates WHERE google_event_id = ?').get(googleEventId);
+  return row.id;
+}
+
+await test('importCalendarCandidate: work_records が1件作成される', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+  const countBefore = db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt;
+
+  importCalendarCandidate(db, candidateId, { category: '音声仕事', content: 'スタジオ業務' });
+
+  const countAfter = db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt;
+  assert.strictEqual(countAfter, countBefore + 1);
+});
+
+await test('importCalendarCandidate: work_records に正しい値が設定される', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { eventDate: '2026-09-16', title: 'テスト予定' });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, {
+    category:       '音声仕事',
+    work_type:      '中継',
+    content:        'スタジオ中継',
+    client:         'テスト局',
+    income:         30000,
+    invoice_status: '未請求',
+  });
+
+  const wr = db.prepare('SELECT * FROM work_records WHERE id = ?').get(workRecordId);
+  assert.strictEqual(wr.date,           '2026-09-16');
+  assert.strictEqual(wr.category,       '音声仕事');
+  assert.strictEqual(wr.work_type,      '中継');
+  assert.strictEqual(wr.content,        'スタジオ中継');
+  assert.strictEqual(wr.client,         'テスト局');
+  assert.strictEqual(wr.income,         30000);
+  assert.strictEqual(wr.invoice_status, '未請求');
+  assert.strictEqual(wr.is_full_day,    1);
+});
+
+await test('importCalendarCandidate: content 未指定時は candidate.title を使う', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { title: '自動タイトル' });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const wr = db.prepare('SELECT content FROM work_records WHERE id = ?').get(workRecordId);
+  assert.strictEqual(wr.content, '自動タイトル');
+});
+
+await test('importCalendarCandidate: work_calendar_links が synced で作成される', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { googleEventId: 'gev-001' });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const link = db.prepare('SELECT * FROM work_calendar_links WHERE work_record_id = ?').get(workRecordId);
+  assert.ok(link,                                 'work_calendar_links が作成されること');
+  assert.strictEqual(link.google_event_id,    'gev-001',  '既存の google_event_id がそのまま使われること');
+  assert.strictEqual(link.google_calendar_id, CAL_ID);
+  assert.strictEqual(link.sync_status,        'synced');
+});
+
+await test('importCalendarCandidate: 終日イベントは start/end_datetime が null', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const link = db.prepare('SELECT start_datetime, end_datetime FROM work_calendar_links WHERE work_record_id = ?').get(workRecordId);
+  assert.strictEqual(link.start_datetime, null);
+  assert.strictEqual(link.end_datetime,   null);
+});
+
+await test('importCalendarCandidate: 時間指定イベントは start/end_datetime が work_calendar_links に保存される', () => {
+  const db = setupDb();
+  const candidateId = insertPendingTimed(db, { googleEventId: 'gev-timed' });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const link = db.prepare('SELECT start_datetime, end_datetime FROM work_calendar_links WHERE work_record_id = ?').get(workRecordId);
+  assert.ok(link.start_datetime?.includes('T10:00'), '開始時刻が保存されること');
+  assert.ok(link.end_datetime?.includes('T12:00'),   '終了時刻が保存されること');
+
+  const wr = db.prepare('SELECT is_full_day FROM work_records WHERE id = ?').get(workRecordId);
+  assert.strictEqual(wr.is_full_day, 0, '時間指定は is_full_day=0');
+});
+
+await test('importCalendarCandidate: candidate.status が imported に更新される', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const cand = db.prepare('SELECT status, imported_work_id FROM calendar_import_candidates WHERE id = ?').get(candidateId);
+  assert.strictEqual(cand.status,           'imported');
+  assert.strictEqual(cand.imported_work_id, workRecordId);
+});
+
+await test('importCalendarCandidate: 同じ候補を2回取り込もうとするとエラー', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+
+  importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, { category: '音声仕事' }),
+    /status.*imported|imported/,
+    '2回目の取り込みはエラーになること'
+  );
+});
+
+await test('importCalendarCandidate: duplicate_work_id あり・allowDuplicate なしでエラー', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { duplicateWorkId: 99 });
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, { category: '音声仕事' }),
+    /DuplicateError/,
+    'duplicate_work_id があると DuplicateError が投げられること'
+  );
+  // work_records は作成されていない
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt, 0);
+});
+
+await test('importCalendarCandidate: allowDuplicate=true で duplicate_work_id あり候補を取り込める', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { duplicateWorkId: 99 });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' }, { allowDuplicate: true });
+
+  assert.ok(workRecordId > 0, '取り込み成功');
+  const cand = db.prepare('SELECT status FROM calendar_import_candidates WHERE id = ?').get(candidateId);
+  assert.strictEqual(cand.status, 'imported');
+});
+
+await test('importCalendarCandidate: status が pending 以外はエラー', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+  db.prepare("UPDATE calendar_import_candidates SET status = 'skipped' WHERE id = ?").run(candidateId);
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, { category: '音声仕事' }),
+    /status.*skipped|pending のみ/,
+    'skipped 候補は取り込みエラー'
+  );
+});
+
+await test('importCalendarCandidate: 存在しない id はエラー', () => {
+  const db = setupDb();
+  assert.throws(
+    () => importCalendarCandidate(db, 9999, { category: '音声仕事' }),
+    /見つかりません/,
+    '存在しない候補はエラー'
+  );
+});
+
+await test('importCalendarCandidate: category 未指定はエラー（デフォルト補完しない）', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, {}),
+    /category は必須/,
+    'category を省略した場合はエラーになること（自動補完しない）'
+  );
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt, 0, 'work_records は作成されない');
+});
+
+await test('importCalendarCandidate: 無効な category はエラー', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, { category: '無効カテゴリ' }),
+    /Invalid category/
+  );
+  // ロールバックで work_records も作成されていない
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt, 0);
+});
+
+await test('importCalendarCandidate: DB エラー時はトランザクションでロールバックされる', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { googleEventId: 'ev-tx' });
+
+  // work_calendar_links に同じ (google_calendar_id, google_event_id) を事前登録して UNIQUE 制約違反を誘発
+  db.prepare('INSERT INTO work_records (job_id, date, category) VALUES (?, ?, ?)').run('pre-job', '2026-01-01', '音声仕事');
+  db.prepare(
+    'INSERT INTO work_calendar_links (work_record_id, google_calendar_id, google_event_id, sync_status) VALUES (?, ?, ?, ?)'
+  ).run(1, CAL_ID, 'ev-tx', 'synced');
+
+  const wrCountBefore = db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt;
+
+  assert.throws(
+    () => importCalendarCandidate(db, candidateId, { category: '音声仕事' }),
+    /UNIQUE constraint|already|duplicate/i,
+    'UNIQUE 違反で例外が発生すること'
+  );
+
+  // ロールバックで work_records は増えていない
+  const wrCountAfter = db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt;
+  assert.strictEqual(wrCountAfter, wrCountBefore, 'ロールバックで work_records は増加しないこと');
+
+  // candidate は pending のまま
+  const cand = db.prepare('SELECT status FROM calendar_import_candidates WHERE id = ?').get(candidateId);
+  assert.strictEqual(cand.status, 'pending', 'ロールバックで candidate は pending のまま');
+});
+
+await test('importCalendarCandidate: work_calendar_links の import_origin = calendar', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { googleEventId: 'ev-origin' });
+
+  const { workRecordId } = importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  const link = db.prepare('SELECT import_origin FROM work_calendar_links WHERE work_record_id = ?').get(workRecordId);
+  assert.strictEqual(link.import_origin, 'calendar', 'Calendar取り込みリンクは import_origin=calendar であること');
+});
+
+await test('importCalendarCandidate: Google Calendar API は一切呼ばない（createEvent なし）', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+  let apiCalled = false;
+  const fakeCreateEvent = () => { apiCalled = true; };
+
+  // importCalendarCandidate は apiClient を受け取らない設計 → 外部 API 呼び出し不可
+  importCalendarCandidate(db, candidateId, { category: '音声仕事' });
+
+  assert.strictEqual(apiCalled, false, 'createEvent は呼ばれない');
+});
+
+// ─── Section 6: dryRunImportCandidate ────────────────────────────────────────
+
+section('Section: dryRunImportCandidate（Phase 22）');
+
+await test('dryRunImportCandidate: DB に書き込まない', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { googleEventId: 'ev-dry' });
+
+  dryRunImportCandidate(db, candidateId, { category: '音声仕事' });
+
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS cnt FROM work_records').get().cnt, 0, 'work_records に書き込まない');
+  assert.strictEqual(db.prepare('SELECT COUNT(*) AS cnt FROM work_calendar_links').get().cnt, 0, 'work_calendar_links に書き込まない');
+  const cand = db.prepare('SELECT status FROM calendar_import_candidates WHERE id = ?').get(candidateId);
+  assert.strictEqual(cand.status, 'pending', 'candidate は pending のまま');
+});
+
+await test('dryRunImportCandidate: 取り込み予定内容を正しく返す', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, {
+    googleEventId: 'ev-preview',
+    title:         'Preview予定',
+    eventDate:     '2026-10-01',
+  });
+
+  const result = dryRunImportCandidate(db, candidateId, {
+    category:  '音声仕事',
+    work_type: 'レコーディング',
+    income:    50000,
+  });
+
+  assert.strictEqual(result.candidateId,             candidateId);
+  assert.strictEqual(result.candidate.google_event_id, 'ev-preview');
+  assert.strictEqual(result.candidate.event_date,      '2026-10-01');
+  assert.strictEqual(result.workRecord.date,           '2026-10-01');
+  assert.strictEqual(result.workRecord.category,       '音声仕事');
+  assert.strictEqual(result.workRecord.work_type,      'レコーディング');
+  assert.strictEqual(result.workRecord.income,         50000);
+  assert.strictEqual(result.workRecord.content,        'Preview予定', 'content は title から補完');
+  assert.strictEqual(result.calendarLink.google_event_id, 'ev-preview');
+  assert.strictEqual(result.calendarLink.sync_status,     'synced');
+});
+
+await test('dryRunImportCandidate: 時間指定イベントの start/end_datetime が含まれる', () => {
+  const db = setupDb();
+  const candidateId = insertPendingTimed(db, { googleEventId: 'ev-dry-timed', eventDate: '2026-10-05' });
+
+  const result = dryRunImportCandidate(db, candidateId, { category: '音声仕事' });
+
+  assert.ok(result.calendarLink.start_datetime?.includes('T10:00'), 'start_datetime が含まれること');
+  assert.ok(result.calendarLink.end_datetime?.includes('T12:00'),   'end_datetime が含まれること');
+  assert.strictEqual(result.workRecord.is_full_day, 0);
+});
+
+await test('dryRunImportCandidate: duplicate_work_id がある場合に hasDuplicate=true', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db, { duplicateWorkId: 42 });
+
+  assert.throws(
+    () => dryRunImportCandidate(db, candidateId, { category: '音声仕事' }),
+    /DuplicateError/,
+    'allowDuplicate なしで DuplicateError'
+  );
+
+  const result = dryRunImportCandidate(db, candidateId, { category: '音声仕事' }, { allowDuplicate: true });
+  assert.strictEqual(result.hasDuplicate,   true);
+  assert.strictEqual(result.duplicateWorkId, 42);
+});
+
+await test('dryRunImportCandidate: pending 以外はエラー', () => {
+  const db = setupDb();
+  const candidateId = insertPendingAllDay(db);
+  db.prepare("UPDATE calendar_import_candidates SET status = 'ignored' WHERE id = ?").run(candidateId);
+
+  assert.throws(
+    () => dryRunImportCandidate(db, candidateId, { category: '音声仕事' }),
+    /status.*ignored|pending のみ/
+  );
 });
 
 // ─── 結果 ────────────────────────────────────────────────────────────────────

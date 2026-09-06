@@ -45,11 +45,11 @@ export function getWorkCalendarLink(db, workRecordId) {
 export function upsertWorkCalendarLink(db, {
   workRecordId,
   googleCalendarId,
-  googleEventId = null,
-  syncStatus    = 'pending',
-  errorMessage  = null,
+  googleEventId  = null,
+  syncStatus     = 'pending',
+  errorMessage   = null,
+  importOrigin   = 'jarvis',   // Phase 23: 'jarvis' | 'calendar'
 }) {
-  const now      = "datetime('now','localtime')";
   const existing = db.prepare(
     'SELECT id, error_count FROM work_calendar_links WHERE work_record_id = ?'
   ).get(workRecordId);
@@ -59,6 +59,7 @@ export function upsertWorkCalendarLink(db, {
       ? (existing.error_count ?? 0) + 1
       : (existing.error_count ?? 0);
 
+    // import_origin は作成時に確定・UPDATE では変更しない
     db.prepare(`
       UPDATE work_calendar_links
          SET google_calendar_id = ?,
@@ -86,8 +87,8 @@ export function upsertWorkCalendarLink(db, {
   const result = db.prepare(`
     INSERT INTO work_calendar_links
       (work_record_id, google_calendar_id, google_event_id, sync_status,
-       error_message, error_count, last_attempted_at, last_synced_at)
-    VALUES (?, ?, ?, ?, ?, ?,
+       error_message, error_count, import_origin, last_attempted_at, last_synced_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?,
             datetime('now','localtime'),
             CASE WHEN ? = 'synced' THEN datetime('now','localtime') ELSE NULL END)
   `).run(
@@ -97,6 +98,7 @@ export function upsertWorkCalendarLink(db, {
     syncStatus,
     errorMessage,
     initErrorCount,
+    importOrigin,
     syncStatus,
   );
   return { action: 'created', id: Number(result.lastInsertRowid) };

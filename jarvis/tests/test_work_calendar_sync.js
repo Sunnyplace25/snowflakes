@@ -39,6 +39,7 @@ import {
   hookWorkUpdated,
   hookWorkDeleted,
   getGoogleEventIdBeforeDelete,
+  prepareWorkRecordDelete,
   retryPendingCalendarDeletes,
 } from '../sync/work_calendar_hook.js';
 
@@ -103,9 +104,38 @@ function setupDb() {
       error_count        INTEGER NOT NULL DEFAULT 0,
       last_attempted_at  TEXT,
       last_synced_at     TEXT,
+      start_datetime     TEXT,
+      end_datetime       TEXT,
+      import_origin      TEXT    NOT NULL DEFAULT 'jarvis'
+                           CHECK (import_origin IN ('jarvis','calendar')),
       created_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
       updated_at         TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
       UNIQUE(work_record_id),
+      UNIQUE(google_calendar_id, google_event_id)
+    )
+  `);
+  db.exec(`
+    CREATE TABLE calendar_import_candidates (
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+      google_calendar_id  TEXT    NOT NULL,
+      google_event_id     TEXT    NOT NULL,
+      event_date          TEXT,
+      start_datetime      TEXT,
+      end_datetime        TEXT,
+      is_all_day          INTEGER NOT NULL DEFAULT 0,
+      title               TEXT,
+      description         TEXT,
+      event_updated_at    TEXT,
+      etag                TEXT,
+      recurring_event_id  TEXT,
+      duplicate_work_id   INTEGER,
+      duplicate_reason    TEXT,
+      status              TEXT    NOT NULL DEFAULT 'pending'
+                            CHECK (status IN ('pending','imported','skipped','ignored','removed')),
+      imported_work_id    INTEGER,
+      scanned_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      last_seen_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      updated_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
       UNIQUE(google_calendar_id, google_event_id)
     )
   `);
@@ -842,6 +872,156 @@ await test('リトライ時 404: 成功相当として queue が done になる'
   assert.strictEqual(results[0].success, true);
   assert.strictEqual(results[0].reason, 'not_found');
   assert.strictEqual(getPendingCalendarDeletes(db).length, 0, '404 は done 扱いで pending から除外');
+});
+
+// ─── Section 10: Phase 23 import_origin 削除ポリシー ─────────────────────────
+
+section('Section: prepareWorkRecordDelete / import_origin 削除ポリシー（Phase 23）');
+
+const CAL_P23 = 'test-cal-p23@group.calendar.google.com';
+
+// ヘルパー: work_record + work_calendar_link を作成して id を返す
+function insertRecordWithLink(db, { googleEventId = 'ev-p23', importOrigin = 'jarvis' } = {}) {
+  const wrRes = db.prepare(
+    "INSERT INTO work_records (date, category) VALUES ('2026-10-01', '音声仕事')"
+  ).run();
+  const wrId = Number(wrRes.lastInsertRowid);
+  db.prepare(`
+    INSERT INTO work_calendar_links
+      (work_record_id, google_calendar_id, google_event_id, sync_status, import_origin)
+    VALUES (?, ?, ?, 'synced', ?)
+  `).run(wrId, CAL_P23, googleEventId, importOrigin);
+  return wrId;
+}
+
+// ヘルパー: calendar_import_candidates に imported 候補を追加
+function insertImportedCandidate(db, { googleEventId = 'ev-p23', importedWorkId = null } = {}) {
+  db.prepare(`
+    INSERT INTO calendar_import_candidates
+      (google_calendar_id, google_event_id, status, imported_work_id)
+    VALUES (?, ?, 'imported', ?)
+  `).run(CAL_P23, googleEventId, importedWorkId);
+}
+
+await test('prepareWorkRecordDelete: JARVIS起点 → googleEventId を返す', () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'jarvis-ev', importOrigin: 'jarvis' });
+
+  const result = prepareWorkRecordDelete(db, wrId);
+  assert.strictEqual(result.googleEventId, 'jarvis-ev', 'JARVIS起点は googleEventId を返すこと');
+  assert.strictEqual(result.importOrigin,  'jarvis');
+});
+
+await test('prepareWorkRecordDelete: Calendar起点 → googleEventId は null', () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'cal-ev', importOrigin: 'calendar' });
+
+  const result = prepareWorkRecordDelete(db, wrId);
+  assert.strictEqual(result.googleEventId, null, 'Calendar起点は googleEventId=null を返すこと');
+  assert.strictEqual(result.importOrigin,  'calendar');
+});
+
+await test('prepareWorkRecordDelete: Calendar起点 → candidate が ignored / imported_work_id=NULL に更新される', () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'cal-ev-2', importOrigin: 'calendar' });
+  insertImportedCandidate(db, { googleEventId: 'cal-ev-2', importedWorkId: wrId });
+
+  prepareWorkRecordDelete(db, wrId);
+
+  const cand = db.prepare('SELECT status, imported_work_id FROM calendar_import_candidates WHERE google_event_id = ?').get('cal-ev-2');
+  assert.strictEqual(cand.status,           'ignored', 'candidateは ignored になること');
+  assert.strictEqual(cand.imported_work_id, null,      'imported_work_id は NULL になること');
+});
+
+await test('prepareWorkRecordDelete: Calendar起点 → calendar_delete_queue に追加されない', async () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'cal-ev-3', importOrigin: 'calendar' });
+
+  const { googleEventId } = prepareWorkRecordDelete(db, wrId);
+
+  // hookWorkDeleted に null を渡す（Calendar起点の削除フロー）
+  let deleteEventCalled = false;
+  const mockClient = {
+    calendarId:     CAL_P23,
+    getAccessToken: async () => 'tok',
+    deleteEvent:    async () => { deleteEventCalled = true; },
+  };
+  await hookWorkDeleted(db, googleEventId, wrId, mockClient);
+
+  assert.strictEqual(deleteEventCalled, false, 'Calendar起点ではdeleteEvent が呼ばれないこと');
+  const queue = db.prepare('SELECT * FROM calendar_delete_queue').all();
+  assert.strictEqual(queue.length, 0, 'delete_queue に追加されないこと');
+});
+
+await test('prepareWorkRecordDelete: JARVIS起点 → hookWorkDeleted で delete_queue に追加される', async () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'jarvis-ev-q', importOrigin: 'jarvis' });
+
+  const { googleEventId } = prepareWorkRecordDelete(db, wrId);
+
+  let deleteEventCalled = false;
+  const mockClient = {
+    calendarId:     CAL_P23,
+    getAccessToken: async () => 'tok',
+    deleteEvent:    async () => { deleteEventCalled = true; },
+  };
+  await hookWorkDeleted(db, googleEventId, wrId, mockClient);
+
+  assert.strictEqual(deleteEventCalled, true,  'JARVIS起点では deleteEvent が呼ばれること');
+  const queue = db.prepare("SELECT * FROM calendar_delete_queue WHERE status = 'done'").all();
+  assert.strictEqual(queue.length, 1, 'delete_queue に done エントリが追加されること');
+});
+
+await test('getGoogleEventIdBeforeDelete（後方互換）: JARVIS起点は google_event_id を返す', () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'back-compat-ev', importOrigin: 'jarvis' });
+
+  const evId = getGoogleEventIdBeforeDelete(db, wrId);
+  assert.strictEqual(evId, 'back-compat-ev');
+});
+
+await test('getGoogleEventIdBeforeDelete（後方互換）: Calendar起点は null を返す', () => {
+  const db = setupDb();
+  const wrId = insertRecordWithLink(db, { googleEventId: 'back-compat-cal', importOrigin: 'calendar' });
+
+  const evId = getGoogleEventIdBeforeDelete(db, wrId);
+  assert.strictEqual(evId, null, 'Calendar起点は null を返すこと（Calendar削除しない）');
+});
+
+await test('upsertWorkCalendarLink: JARVIS経路では import_origin = jarvis で作成される', () => {
+  const db = setupDb();
+  db.prepare("INSERT INTO work_records (date, category) VALUES ('2026-10-10', '音声仕事')").run();
+  upsertWorkCalendarLink(db, {
+    workRecordId:     1,
+    googleCalendarId: CAL_P23,
+    googleEventId:    'jarvis-new',
+    syncStatus:       'synced',
+    // importOrigin を省略 → デフォルト 'jarvis'
+  });
+  const link = db.prepare('SELECT import_origin FROM work_calendar_links WHERE work_record_id = 1').get();
+  assert.strictEqual(link.import_origin, 'jarvis');
+});
+
+await test('upsertWorkCalendarLink: UPDATE しても import_origin は変わらない', () => {
+  const db = setupDb();
+  db.prepare("INSERT INTO work_records (date, category) VALUES ('2026-10-11', '音声仕事')").run();
+  // calendar 起点で作成
+  db.prepare(`
+    INSERT INTO work_calendar_links (work_record_id, google_calendar_id, google_event_id, sync_status, import_origin)
+    VALUES (1, ?, 'cal-stable', 'synced', 'calendar')
+  `).run(CAL_P23);
+
+  // upsertWorkCalendarLink（UPDATE パス）を呼んでも import_origin は変わらない
+  upsertWorkCalendarLink(db, {
+    workRecordId:     1,
+    googleCalendarId: CAL_P23,
+    googleEventId:    'cal-stable',
+    syncStatus:       'synced',
+    importOrigin:     'jarvis',  // ← UPDATE では無視される
+  });
+
+  const link = db.prepare('SELECT import_origin FROM work_calendar_links WHERE work_record_id = 1').get();
+  assert.strictEqual(link.import_origin, 'calendar', 'UPDATE では import_origin が変更されないこと');
 });
 
 // ─── 結果 ────────────────────────────────────────────────────────────────────

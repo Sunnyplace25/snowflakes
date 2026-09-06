@@ -610,6 +610,41 @@ function runMigrations(db) {
   for (const sql of PULL_SYNC_TABLES) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
+
+  // Phase 22: Calendar → work_records 承認取り込み
+  // work_calendar_links に時刻保持カラム追加
+  // work_records の is_full_day は別経路（過去マイグレーション）で追加済み
+  const PHASE22_MIGRATIONS = [
+    `ALTER TABLE work_records ADD COLUMN is_full_day INTEGER NOT NULL DEFAULT 0 CHECK(is_full_day IN (0,1))`,
+    `ALTER TABLE work_calendar_links ADD COLUMN start_datetime TEXT`,
+    `ALTER TABLE work_calendar_links ADD COLUMN end_datetime TEXT`,
+  ];
+  for (const sql of PHASE22_MIGRATIONS) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
+  // Phase 23: work_calendar_links に起点情報を追加
+  //   import_origin = 'jarvis'   : JARVIS で work_record を作成 → Calendar へ送った予定
+  //   import_origin = 'calendar' : Google Calendar から importCalendarCandidate で取り込んだ予定
+  const PHASE23_MIGRATIONS = [
+    `ALTER TABLE work_calendar_links ADD COLUMN import_origin TEXT NOT NULL DEFAULT 'jarvis' CHECK(import_origin IN ('jarvis','calendar'))`,
+  ];
+  for (const sql of PHASE23_MIGRATIONS) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
+  // Phase 23 データ補正: calendar_import_candidates.status='imported' のイベントに紐づく
+  //   work_calendar_links を 'calendar' 起点として更新する（冪等・安全）
+  try {
+    db.exec(`
+      UPDATE work_calendar_links
+         SET import_origin = 'calendar'
+       WHERE google_event_id IN (
+         SELECT google_event_id FROM calendar_import_candidates WHERE status = 'imported'
+       )
+         AND import_origin = 'jarvis'
+    `);
+  } catch (_) { /* calendar_import_candidates が未存在の環境（古い DB）は無視 */ }
 }
 
 /**

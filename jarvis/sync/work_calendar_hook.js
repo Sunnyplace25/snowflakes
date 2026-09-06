@@ -1,14 +1,19 @@
 /**
  * jarvis/sync/work_calendar_hook.js
- * work_records CRUD → Google Calendar 自動連動フック (Phase 20)
+ * work_records CRUD → Google Calendar 自動連動フック (Phase 20 / Phase 23)
  *
  * 設計方針:
  *   - Calendar API 失敗でも work_records 操作（HTTP 応答）は影響を受けない
  *   - 作成・更新: syncSingleWorkRecord を使ってリンク状態を DB に記録する
- *   - 削除: ON DELETE CASCADE でリンクが消えるため、削除前に google_event_id を取得する
- *           Calendar 削除前に calendar_delete_queue へエントリを挿入し、
- *           成功時は 'done'、失敗時は pending のまま error 情報を記録してリトライ可能にする
- *           404 / 410 応答はすでに存在しない = 削除成功相当として扱う
+ *   - 削除 (Phase 23 import_origin による分岐):
+ *       import_origin = 'jarvis':
+ *         Calendar 削除前に calendar_delete_queue へエントリを挿入し、
+ *         成功時は 'done'、失敗時は pending のまま error 情報を記録してリトライ可能にする
+ *         404 / 410 応答はすでに存在しない = 削除成功相当として扱う
+ *       import_origin = 'calendar':
+ *         Google Calendar イベントを絶対に削除しない
+ *         calendar_delete_queue にも積まない
+ *         calendar_import_candidates を ignored / imported_work_id=NULL に更新
  *   - GCALENDAR_CALENDAR_ID 未設定時はすべてのフックが即時 return（Calendar 連動無効）
  *   - apiClient 引数を渡すとテスト用モックとして使用できる
  *     形式: { calendarId?, getAccessToken?, createEvent?, updateEvent?, deleteEvent? }
@@ -126,20 +131,59 @@ export function hookWorkUpdated(db, workRecordId, apiClient = null) {
 // ─── Delete Hook ─────────────────────────────────────────────────────────────
 
 /**
- * DB から work_record を削除する前に google_event_id を取得する。
+ * work_record 削除前に呼ぶ前処理関数（Phase 23 起点情報対応版）。
  * ON DELETE CASCADE でリンクが消えるため、必ず deleteWorkRecord より前に呼ぶこと。
- * sync_status = 'synced' のリンクのみ google_event_id を返す。
  *
+ * import_origin による分岐:
+ *   'jarvis'   → googleEventId を返す（hookWorkDeleted で Calendar 削除キューへ）
+ *   'calendar' → Calendar イベントを削除しない。
+ *                calendar_import_candidates を ignored / imported_work_id=NULL に更新してから
+ *                googleEventId = null を返す（hookWorkDeleted は何もしない）
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} workRecordId
+ * @returns {{ googleEventId: string|null, importOrigin: 'jarvis'|'calendar'|null }}
+ */
+export function prepareWorkRecordDelete(db, workRecordId) {
+  const link = getWorkCalendarLink(db, workRecordId);
+  if (!link) return { googleEventId: null, importOrigin: null };
+
+  const importOrigin = link.import_origin ?? 'jarvis';
+
+  if (importOrigin === 'calendar') {
+    // Calendar 起点: Calendar イベントは削除しない
+    // 対応候補を ignored にリセットして次のスキャンで再候補化を防ぐ
+    if (link.google_event_id) {
+      db.prepare(`
+        UPDATE calendar_import_candidates
+           SET status           = 'ignored',
+               imported_work_id = NULL,
+               updated_at       = datetime('now','localtime')
+         WHERE google_event_id = ?
+           AND status = 'imported'
+      `).run(link.google_event_id);
+    }
+    return { googleEventId: null, importOrigin: 'calendar' };
+  }
+
+  // JARVIS 起点: synced かつ google_event_id があれば Calendar 削除対象
+  if (link.sync_status === 'synced' && link.google_event_id) {
+    return { googleEventId: link.google_event_id, importOrigin: 'jarvis' };
+  }
+  return { googleEventId: null, importOrigin: 'jarvis' };
+}
+
+/**
+ * DB から work_record を削除する前に google_event_id を取得する。
+ * @deprecated prepareWorkRecordDelete を使用してください。
+ *             この関数は後方互換のため残しています。
  * @param {import('node:sqlite').DatabaseSync} db
  * @param {number} workRecordId
  * @returns {string|null}
  */
 export function getGoogleEventIdBeforeDelete(db, workRecordId) {
-  const link = getWorkCalendarLink(db, workRecordId);
-  if (link?.sync_status === 'synced' && link?.google_event_id) {
-    return link.google_event_id;
-  }
-  return null;
+  const { googleEventId } = prepareWorkRecordDelete(db, workRecordId);
+  return googleEventId;
 }
 
 /**

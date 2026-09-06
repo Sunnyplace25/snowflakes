@@ -92,7 +92,8 @@ import {
   hookWorkCreated,
   hookWorkUpdated,
   hookWorkDeleted,
-  getGoogleEventIdBeforeDelete,
+  prepareWorkRecordDelete,
+  getGoogleEventIdBeforeDelete,  // 後方互換のため保持
 } from '../sync/work_calendar_hook.js';
 
 // ── Soundrop Catalog Sync ─────────────────────────────────────────────────────
@@ -333,13 +334,16 @@ export function createApiHandler(db) {
         const id = parseInt(workMatch[1], 10);
         if (!id || isNaN(id)) return errRes(res, 400, '不正なIDです');
 
-        // ON DELETE CASCADE でリンクが消える前に google_event_id を取得する
-        const googleEventId = getGoogleEventIdBeforeDelete(db, id);
+        // ON DELETE CASCADE でリンクが消える前に削除情報を取得する（Phase 23 起点分岐）
+        // calendar 起点の場合は candidate をリセットし googleEventId=null を返す
+        const { googleEventId } = prepareWorkRecordDelete(db, id);
 
         const deleted = deleteWorkRecord(db, id);
         if (!deleted) return errRes(res, 404, '指定された仕事レコードが見つかりません');
 
-        // DB 削除成功後、非同期で Calendar からも削除（失敗時は calendar_delete_queue に記録）
+        // DB 削除成功後:
+        //   jarvis 起点 → Calendar からも非同期削除（失敗時は calendar_delete_queue に記録）
+        //   calendar 起点 → googleEventId=null のため hookWorkDeleted は即時 return（削除しない）
         hookWorkDeleted(db, googleEventId, id);
 
         return jsonRes(res, 200, { ok: true });
