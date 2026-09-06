@@ -99,6 +99,7 @@ const SfModule = (() => {
         // タブに応じたデータ読み込み
         if (tabName === 'library') loadLibrary();
         else if (tabName === 'profiles')       loadProfiles();
+        else if (tabName === 'distribution')   loadDistribution();
         else if (tabName === 'import')         loadImports();
         else if (tabName === 'soundrop-stats') initSoundropStats();
         else if (tabName === 'soundrop-sync')  loadSoundropSync();
@@ -534,6 +535,509 @@ const SfModule = (() => {
     } catch (e) {
       if (el) el.innerHTML = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
     }
+  }
+
+  // ─── 配信状況タブ (Phase 24) ─────────────────────────────────────────────
+
+  /** 配信プラットフォームの表示名マップ（配信状況タブ用・tidal/qobuz含む） */
+  const DIST_PLATFORM_LABELS = {
+    spotify:       'Spotify',
+    apple_music:   'Apple Music',
+    amazon_music:  'Amazon Music',
+    youtube_music: 'YouTube Music',
+    tidal:         'TIDAL',
+    qobuz:         'Qobuz',
+    other:         'その他',
+  };
+
+  /** 全プラットフォームの定義順（表示順に使用） */
+  const PLATFORM_ORDER = ['spotify','apple_music','amazon_music','youtube_music','tidal','qobuz','other'];
+
+  /** issue_type → 表示名 */
+  const ISSUE_TYPE_LABELS = {
+    mixed_artist:  '別アーティストとの混在',
+    wrong_link:    '別ページへの紐付け',
+    name_variant:  '表記揺れ',
+    not_reflected: '未反映',
+    other:         'その他',
+  };
+
+  /** issue_status → バッジ CSS */
+  const ISSUE_STATUS_BADGE = {
+    open:      { cls: 'sf-badge-red',    label: 'オープン' },
+    requested: { cls: 'sf-badge-yellow', label: '修正依頼済み' },
+    resolved:  { cls: 'sf-badge-green',  label: '解決済み' },
+    wont_fix:  { cls: 'sf-badge-dim',    label: '対応しない' },
+  };
+
+  /** profile_status → バッジ CSS */
+  const PROFILE_STATUS_BADGE = {
+    active:    { cls: 'sf-badge-green',  label: 'active' },
+    pending:   { cls: 'sf-badge-yellow', label: 'pending' },
+    unclaimed: { cls: 'sf-badge-yellow', label: 'unclaimed' },
+    inactive:  { cls: 'sf-badge-dim',    label: 'inactive' },
+    unknown:   { cls: 'sf-badge-gray',   label: 'unknown' },
+  };
+
+  /** 内部データキャッシュ */
+  let _distProfiles = [];
+  let _distIssues   = [];
+
+  /** 配信状況タブ: プロフィール一覧 + issue一覧を読み込む */
+  async function loadDistribution() {
+    const pEl = document.getElementById('dist-platforms-container');
+    const iEl = document.getElementById('dist-issues-container');
+    if (pEl) pEl.innerHTML = '<div class="loading">読み込み中...</div>';
+    if (iEl) iEl.innerHTML = '<div class="loading">読み込み中...</div>';
+
+    try {
+      const [profRes, issueRes] = await Promise.all([
+        fetch('/api/sf/artist-profiles').then(r => r.json()),
+        fetch('/api/sf/platform-issues').then(r => r.json()),
+      ]);
+
+      _distProfiles = profRes.profiles || [];
+      _distIssues   = issueRes.issues  || [];
+
+      if (pEl) pEl.innerHTML = renderDistPlatforms(_distProfiles, _distIssues);
+      _renderDistIssues();
+      _bindDistEvents();
+    } catch (e) {
+      if (pEl) pEl.innerHTML = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+      if (iEl) iEl.innerHTML = '';
+    }
+  }
+
+  /** フィルタ変更時のissue再描画のみ */
+  function _renderDistIssues() {
+    const iEl    = document.getElementById('dist-issues-container');
+    const filter = document.getElementById('dist-issue-filter')?.value || '';
+    if (!iEl) return;
+    const filtered = filter ? _distIssues.filter(i => i.issue_status === filter) : _distIssues;
+    iEl.innerHTML = renderDistIssues(filtered, _distProfiles);
+    _bindDistIssueActions();
+  }
+
+  /** プラットフォームグリッドを描画する */
+  function renderDistPlatforms(profiles, issues) {
+    // platform -> profile マップ
+    const profMap = {};
+    for (const p of profiles) profMap[p.platform] = p;
+
+    // platform -> open issue 数
+    const issueCount = {};
+    for (const iss of issues) {
+      if (iss.issue_status !== 'resolved' && iss.issue_status !== 'wont_fix') {
+        issueCount[iss.platform] = (issueCount[iss.platform] || 0) + 1;
+      }
+    }
+
+    const cards = PLATFORM_ORDER.map(platform => {
+      const p    = profMap[platform];
+      const cnt  = issueCount[platform] || 0;
+      const name = DIST_PLATFORM_LABELS[platform] || platform;
+
+      if (!p) {
+        return `
+          <div class="dist-platform-card dist-platform-empty">
+            <div class="dist-platform-name">${esc(name)}</div>
+            <div class="dist-platform-status">
+              <span class="sf-badge sf-badge-dim">未登録</span>
+            </div>
+            <div class="dist-platform-actions">
+              <button class="sf-btn dist-add-profile-for" data-platform="${esc(platform)}">追加</button>
+            </div>
+          </div>`;
+      }
+
+      const stInfo   = PROFILE_STATUS_BADGE[p.profile_status] || { cls: 'sf-badge-gray', label: p.profile_status };
+      const claimed  = p.claimed ? '<span class="sf-badge sf-badge-green">✓ claimed</span>' : '<span class="sf-badge sf-badge-dim">unclaimed</span>';
+      const issLabel = cnt > 0
+        ? `<span class="sf-badge sf-badge-red" title="未解決の問題">${cnt} 件</span>`
+        : '<span class="sf-badge sf-badge-dim">問題なし</span>';
+      const urlHtml  = p.artist_page_url
+        ? `<a href="${esc(p.artist_page_url)}" target="_blank" rel="noopener"
+              style="color:var(--accent);font-size:11px;word-break:break-all">${esc(p.artist_page_url)}</a>`
+        : '<span style="color:var(--text-dim);font-size:11px">URL未登録</span>';
+
+      return `
+        <div class="dist-platform-card" data-platform="${esc(platform)}">
+          <div class="dist-platform-name">${esc(name)}</div>
+          <div class="dist-platform-status">
+            <span class="sf-badge ${stInfo.cls}">${stInfo.label}</span>
+            ${claimed}
+            ${issLabel}
+          </div>
+          <div class="dist-platform-detail">
+            <div style="font-size:11px;color:var(--text-sec);margin-top:4px">
+              ${p.platform_artist_id ? `ID: ${esc(p.platform_artist_id)}` : '<span style="color:var(--text-dim)">ID未登録</span>'}
+            </div>
+            <div style="margin-top:4px">${urlHtml}</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:4px">
+              確認日: ${p.last_checked_at || '—'}
+            </div>
+            ${p.memo ? `<div style="font-size:11px;color:var(--text-sec);margin-top:2px">${esc(p.memo)}</div>` : ''}
+          </div>
+          <div class="dist-platform-actions">
+            <button class="sf-btn dist-edit-profile" data-id="${p.id}">編集</button>
+          </div>
+        </div>`;
+    });
+
+    return `<div class="dist-platforms-grid">${cards.join('')}</div>`;
+  }
+
+  /** issue一覧テーブルを描画する */
+  function renderDistIssues(issues, profiles) {
+    if (!issues.length) {
+      return '<div class="empty-state">問題は登録されていません</div>';
+    }
+
+    // profileId -> "Platform (artist_key)" マップ（entity_type=artist用）
+    const profLabels = {};
+    for (const p of profiles) {
+      profLabels[p.id] = `${DIST_PLATFORM_LABELS[p.platform] || p.platform} (${p.artist_key})`;
+    }
+
+    const rows = issues.map(iss => {
+      const stInfo  = ISSUE_STATUS_BADGE[iss.issue_status] || { cls: 'sf-badge-gray', label: iss.issue_status };
+      const typeLabel = ISSUE_TYPE_LABELS[iss.issue_type] || iss.issue_type;
+      const pLabel  = DIST_PLATFORM_LABELS[iss.platform] || iss.platform;
+      const entity  = iss.entity_type === 'artist'
+        ? (profLabels[iss.entity_id] || `artist #${iss.entity_id}`)
+        : `${iss.entity_type} #${iss.entity_id}`;
+      const urlHtml = iss.related_url
+        ? `<a href="${esc(iss.related_url)}" target="_blank" rel="noopener"
+              style="color:var(--accent);font-size:11px">リンク</a>`
+        : '';
+
+      const canRequest = (iss.issue_status === 'open');
+      const canResolve = (iss.issue_status !== 'resolved');
+
+      return `
+        <tr data-issue-id="${iss.id}">
+          <td><span class="sf-badge ${stInfo.cls}">${stInfo.label}</span></td>
+          <td>${esc(pLabel)}</td>
+          <td style="font-size:12px;color:var(--text-sec)">${esc(entity)}</td>
+          <td>${esc(typeLabel)}</td>
+          <td style="font-size:12px">${esc(iss.opened_at || '—')}</td>
+          <td style="font-size:12px">${esc(iss.requested_at || '—')}</td>
+          <td style="font-size:12px">${esc(iss.resolved_at || '—')}</td>
+          <td style="font-size:12px">${esc(iss.last_checked_at || '—')}</td>
+          <td style="max-width:160px;font-size:11px;word-break:break-all">${esc(iss.memo || '')} ${urlHtml}</td>
+          <td>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+              <button class="sf-btn dist-issue-edit" data-id="${iss.id}" style="font-size:11px;padding:3px 7px">編集</button>
+              ${canRequest ? `<button class="sf-btn dist-issue-request" data-id="${iss.id}" style="font-size:11px;padding:3px 7px;background:#92400e">依頼済み</button>` : ''}
+              ${canResolve ? `<button class="sf-btn dist-issue-resolve" data-id="${iss.id}" style="font-size:11px;padding:3px 7px;background:#14532d">解決済み</button>` : ''}
+              <button class="sf-btn dist-issue-check" data-id="${iss.id}" style="font-size:11px;padding:3px 7px">今日確認</button>
+            </div>
+          </td>
+        </tr>`;
+    });
+
+    return `
+      <div style="overflow-x:auto">
+        <table class="sf-table">
+          <thead>
+            <tr>
+              <th>状態</th>
+              <th>プラットフォーム</th>
+              <th>対象</th>
+              <th>問題種別</th>
+              <th>発覚日</th>
+              <th>依頼日</th>
+              <th>解決日</th>
+              <th>最終確認</th>
+              <th>メモ / URL</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>${rows.join('')}</tbody>
+        </table>
+      </div>`;
+  }
+
+  /** 配信状況タブのイベントをバインドする（ページ・フィルタ級） */
+  function _bindDistEvents() {
+    // ＋ プロフィール追加ボタン
+    document.getElementById('dist-add-profile-btn')?.addEventListener('click', () => {
+      _openProfileModal(null, null);
+    });
+
+    // プラットフォームカードの「追加」ボタン（platform プリセット付き）
+    document.querySelectorAll('.dist-add-profile-for').forEach(btn => {
+      btn.addEventListener('click', () => _openProfileModal(null, btn.dataset.platform));
+    });
+
+    // プラットフォームカードの「編集」ボタン
+    document.querySelectorAll('.dist-edit-profile').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id      = parseInt(btn.dataset.id, 10);
+        const profile = _distProfiles.find(p => p.id === id);
+        if (profile) _openProfileModal(profile, null);
+      });
+    });
+
+    // ＋ 問題追加ボタン
+    document.getElementById('dist-add-issue-btn')?.addEventListener('click', () => {
+      _openIssueModal(null);
+    });
+
+    // フィルタ変更
+    document.getElementById('dist-issue-filter')?.addEventListener('change', _renderDistIssues);
+  }
+
+  /** issue アクションボタンのバインド（issue テーブル再描画後に呼ぶ） */
+  function _bindDistIssueActions() {
+    document.querySelectorAll('.dist-issue-edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id    = parseInt(btn.dataset.id, 10);
+        const issue = _distIssues.find(i => i.id === id);
+        if (issue) _openIssueModal(issue);
+      });
+    });
+
+    document.querySelectorAll('.dist-issue-request').forEach(btn => {
+      btn.addEventListener('click', () => _issueAction(parseInt(btn.dataset.id, 10), 'request'));
+    });
+
+    document.querySelectorAll('.dist-issue-resolve').forEach(btn => {
+      btn.addEventListener('click', () => _issueAction(parseInt(btn.dataset.id, 10), 'resolve'));
+    });
+
+    document.querySelectorAll('.dist-issue-check').forEach(btn => {
+      btn.addEventListener('click', () => _issueAction(parseInt(btn.dataset.id, 10), 'check'));
+    });
+  }
+
+  // ─── プロフィールモーダル ──────────────────────────────────────────────────
+
+  function _openProfileModal(profile, presetPlatform) {
+    const overlay = document.getElementById('modal-overlay');
+    const modal   = document.getElementById('modal-dist-profile');
+    if (!overlay || !modal) return;
+
+    // 他モーダルを非表示
+    overlay.querySelectorAll('.modal').forEach(m => m.hidden = true);
+    document.getElementById('dist-profile-error').textContent = '';
+
+    const isEdit = !!profile;
+    document.getElementById('modal-dist-profile-title').textContent = isEdit ? 'プロフィールを編集' : 'プロフィールを追加';
+    document.getElementById('dist-profile-id').value          = profile?.id ?? '';
+    document.getElementById('dist-profile-platform').value    = profile?.platform ?? presetPlatform ?? '';
+    document.getElementById('dist-profile-platform').disabled = isEdit;
+    document.getElementById('dist-profile-status').value      = profile?.profile_status ?? 'unknown';
+    document.getElementById('dist-profile-artist-id').value   = profile?.platform_artist_id ?? '';
+    document.getElementById('dist-profile-claimed').checked   = !!(profile?.claimed);
+    document.getElementById('dist-profile-url').value         = profile?.artist_page_url ?? '';
+    document.getElementById('dist-profile-checked').value     = profile?.last_checked_at ?? '';
+    document.getElementById('dist-profile-memo').value        = profile?.memo ?? '';
+    document.getElementById('dist-profile-submit').textContent = isEdit ? '保存する' : '追加する';
+
+    modal.hidden = false;
+    overlay.hidden = false;
+
+    document.getElementById('dist-profile-form').onsubmit = (e) => {
+      e.preventDefault();
+      _submitProfileModal(isEdit);
+    };
+  }
+
+  async function _submitProfileModal(isEdit) {
+    const errEl  = document.getElementById('dist-profile-error');
+    errEl.textContent = '';
+
+    const id       = document.getElementById('dist-profile-id').value;
+    const platform = document.getElementById('dist-profile-platform').value;
+    const status   = document.getElementById('dist-profile-status').value;
+    const artistId = document.getElementById('dist-profile-artist-id').value.trim();
+    const claimed  = document.getElementById('dist-profile-claimed').checked ? 1 : 0;
+    const url      = document.getElementById('dist-profile-url').value.trim();
+    const checked  = document.getElementById('dist-profile-checked').value;
+    const memo     = document.getElementById('dist-profile-memo').value.trim();
+
+    if (!platform) { errEl.textContent = 'プラットフォームを選択してください'; return; }
+
+    const body = {
+      artist_key:         'snow_flakes',
+      artist_name:        'Snow flakes',
+      platform,
+      profile_status:     status,
+      platform_artist_id: artistId || null,
+      claimed,
+      artist_page_url:    url || null,
+      last_checked_at:    checked || null,
+      memo:               memo || null,
+    };
+
+    try {
+      let res;
+      if (isEdit && id) {
+        res = await fetch(`/api/sf/artist-profiles/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }).then(r => r.json());
+      } else {
+        res = await fetch('/api/sf/artist-profiles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }).then(r => r.json());
+      }
+
+      if (!res.ok) { errEl.textContent = res.message || '保存に失敗しました'; return; }
+      _closeModals();
+      await loadDistribution();
+    } catch (e) {
+      errEl.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  // ─── issueモーダル ─────────────────────────────────────────────────────────
+
+  function _openIssueModal(issue) {
+    const overlay = document.getElementById('modal-overlay');
+    const modal   = document.getElementById('modal-dist-issue');
+    if (!overlay || !modal) return;
+
+    overlay.querySelectorAll('.modal').forEach(m => m.hidden = true);
+    document.getElementById('dist-issue-error').textContent = '';
+
+    const isEdit = !!issue;
+    document.getElementById('modal-dist-issue-title').textContent = isEdit ? '問題を編集' : '問題を追加';
+    document.getElementById('dist-issue-id').value          = issue?.id ?? '';
+    document.getElementById('dist-issue-entity-type').value = issue?.entity_type ?? 'artist';
+    document.getElementById('dist-issue-platform').value    = issue?.platform ?? '';
+    document.getElementById('dist-issue-type').value        = issue?.issue_type ?? 'other';
+    document.getElementById('dist-issue-status').value      = issue?.issue_status ?? 'open';
+    document.getElementById('dist-issue-opened-at').value   = issue?.opened_at ?? '';
+    document.getElementById('dist-issue-url').value         = issue?.related_url ?? '';
+    document.getElementById('dist-issue-memo').value        = issue?.memo ?? '';
+    document.getElementById('dist-issue-submit').textContent = isEdit ? '保存する' : '追加する';
+
+    // entity selector を更新
+    _updateEntitySelector(issue?.entity_type ?? 'artist', issue?.entity_id ?? null);
+
+    modal.hidden  = false;
+    overlay.hidden = false;
+
+    // entity_type 変更時に selector を切り替え
+    document.getElementById('dist-issue-entity-type').onchange = function() {
+      _updateEntitySelector(this.value, null);
+    };
+
+    document.getElementById('dist-issue-form').onsubmit = (e) => {
+      e.preventDefault();
+      _submitIssueModal(isEdit);
+    };
+  }
+
+  /** entity種別に応じてセレクタ or テキスト入力を切り替える */
+  function _updateEntitySelector(entityType, selectedId) {
+    const sel   = document.getElementById('dist-issue-entity-id-select');
+    const inp   = document.getElementById('dist-issue-entity-id-input');
+    if (!sel || !inp) return;
+
+    if (entityType === 'artist') {
+      sel.style.display = '';
+      inp.style.display = 'none';
+      // プロフィール一覧を option として展開
+      sel.innerHTML = '<option value="">— 選択 —</option>' +
+        _distProfiles.map(p =>
+          `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>
+            ${esc(DIST_PLATFORM_LABELS[p.platform] || p.platform)} (id: ${p.id})
+           </option>`
+        ).join('');
+    } else {
+      sel.style.display = 'none';
+      inp.style.display = '';
+      inp.value = selectedId ?? '';
+    }
+  }
+
+  async function _submitIssueModal(isEdit) {
+    const errEl = document.getElementById('dist-issue-error');
+    errEl.textContent = '';
+
+    const id         = document.getElementById('dist-issue-id').value;
+    const entityType = document.getElementById('dist-issue-entity-type').value;
+    const sel        = document.getElementById('dist-issue-entity-id-select');
+    const inp        = document.getElementById('dist-issue-entity-id-input');
+    const entityId   = entityType === 'artist'
+      ? parseInt(sel.value, 10)
+      : parseInt(inp.value, 10);
+    const platform   = document.getElementById('dist-issue-platform').value;
+    const issueType  = document.getElementById('dist-issue-type').value;
+    const issueStatus = document.getElementById('dist-issue-status').value;
+    const openedAt   = document.getElementById('dist-issue-opened-at').value;
+    const url        = document.getElementById('dist-issue-url').value.trim();
+    const memo       = document.getElementById('dist-issue-memo').value.trim();
+
+    if (!platform)       { errEl.textContent = 'プラットフォームを選択してください'; return; }
+    if (!entityId || isNaN(entityId)) { errEl.textContent = '対象を選択してください'; return; }
+
+    try {
+      let res;
+      if (isEdit && id) {
+        res = await fetch(`/api/sf/platform-issues/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            platform, issue_type: issueType, issue_status: issueStatus,
+            opened_at: openedAt || null, related_url: url || null, memo: memo || null,
+          }),
+        }).then(r => r.json());
+      } else {
+        res = await fetch('/api/sf/platform-issues', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            entity_type: entityType, entity_id: entityId, platform,
+            issue_type: issueType, issue_status: issueStatus,
+            opened_at: openedAt || null, related_url: url || null, memo: memo || null,
+          }),
+        }).then(r => r.json());
+      }
+
+      if (!res.ok) { errEl.textContent = res.message || '保存に失敗しました'; return; }
+      _closeModals();
+      await loadDistribution();
+    } catch (e) {
+      errEl.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  // ─── issueアクション（request / resolve / check） ──────────────────────────
+
+  async function _issueAction(id, action) {
+    const actions = { request: '修正依頼済みに変更', resolve: '解決済みに変更', check: '今日確認日を記録' };
+    try {
+      const res = await fetch(`/api/sf/platform-issues/${id}/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      }).then(r => r.json());
+
+      if (!res.ok) {
+        alert(`エラー: ${res.message || '操作に失敗しました'}`);
+        return;
+      }
+      // issue を更新して再描画（全リロード不要）
+      const updated = await fetch('/api/sf/platform-issues').then(r => r.json());
+      _distIssues = updated.issues || [];
+      _renderDistIssues();
+    } catch (e) {
+      alert(`エラー: ${e.message}`);
+    }
+  }
+
+  /** モーダルを閉じる */
+  function _closeModals() {
+    const overlay = document.getElementById('modal-overlay');
+    if (overlay) overlay.hidden = true;
+    overlay?.querySelectorAll('.modal').forEach(m => m.hidden = true);
   }
 
   // ─── YouTube Analytics タブ ────────────────────────────────────────────────
@@ -1988,6 +2492,8 @@ const SfModule = (() => {
     loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
     loadFunnel, loadEventImpact, loadSync, loadHpAnalytics,
     loadSoundropStats, initSoundropStats, loadSoundropSync,
+    loadDistribution,
+    renderDistPlatforms, renderDistIssues,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,

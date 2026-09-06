@@ -569,6 +569,158 @@
     </form>
   </div>
 
+  <!-- ── 配信プロフィール 追加/編集モーダル (Phase 24) ──────────────────────── -->
+  <div class="modal" id="modal-dist-profile" hidden>
+    <h3 id="modal-dist-profile-title">プロフィール追加</h3>
+    <input type="hidden" id="dist-profile-id">
+    <form id="dist-profile-form" autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="dist-profile-platform">プラットフォーム *</label>
+          <select id="dist-profile-platform" required>
+            <option value="">— 選択 —</option>
+            <option value="spotify">Spotify</option>
+            <option value="apple_music">Apple Music</option>
+            <option value="amazon_music">Amazon Music</option>
+            <option value="youtube_music">YouTube Music</option>
+            <option value="tidal">TIDAL</option>
+            <option value="qobuz">Qobuz</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dist-profile-status">ステータス</label>
+          <select id="dist-profile-status">
+            <option value="unknown">unknown</option>
+            <option value="active">active</option>
+            <option value="pending">pending</option>
+            <option value="unclaimed">unclaimed</option>
+            <option value="inactive">inactive</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dist-profile-artist-id">アーティスト ID</label>
+          <input type="text" id="dist-profile-artist-id" placeholder="プラットフォーム上の ID">
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;margin-top:24px">
+            <input type="checkbox" id="dist-profile-claimed">
+            <span>Claimed（オーナー確認済み）</span>
+          </label>
+        </div>
+
+        <div class="form-group form-full">
+          <label for="dist-profile-url">アーティストページ URL</label>
+          <input type="text" id="dist-profile-url" placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+          <label for="dist-profile-checked">最終確認日</label>
+          <input type="date" id="dist-profile-checked">
+        </div>
+
+        <div class="form-group form-full">
+          <label for="dist-profile-memo">メモ</label>
+          <textarea id="dist-profile-memo" placeholder="備考・メモ" rows="2"></textarea>
+        </div>
+
+      </div>
+      <div class="error-msg" id="dist-profile-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary" id="dist-profile-submit">保存する</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── 配信問題 追加/編集モーダル (Phase 24) ─────────────────────────────── -->
+  <div class="modal" id="modal-dist-issue" hidden>
+    <h3 id="modal-dist-issue-title">問題を追加</h3>
+    <input type="hidden" id="dist-issue-id">
+    <form id="dist-issue-form" autocomplete="off">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="dist-issue-entity-type">対象種別 *</label>
+          <select id="dist-issue-entity-type" required>
+            <option value="artist">アーティストプロフィール</option>
+            <option value="release">リリース</option>
+            <option value="track">楽曲</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dist-issue-entity-id">対象 ID *</label>
+          <select id="dist-issue-entity-id-select" style="width:100%">
+            <option value="">— 選択 —</option>
+          </select>
+          <input type="number" id="dist-issue-entity-id-input" min="1" placeholder="ID を入力"
+                 style="display:none;margin-top:4px;width:100%">
+        </div>
+
+        <div class="form-group">
+          <label for="dist-issue-platform">プラットフォーム *</label>
+          <select id="dist-issue-platform" required>
+            <option value="">— 選択 —</option>
+            <option value="spotify">Spotify</option>
+            <option value="apple_music">Apple Music</option>
+            <option value="amazon_music">Amazon Music</option>
+            <option value="youtube_music">YouTube Music</option>
+            <option value="tidal">TIDAL</option>
+            <option value="qobuz">Qobuz</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dist-issue-type">問題種別</label>
+          <select id="dist-issue-type">
+            <option value="mixed_artist">別アーティストとの混在</option>
+            <option value="wrong_link">別人・別ページへの紐付け</option>
+            <option value="name_variant">表記揺れ</option>
+            <option value="not_reflected">未反映</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="dist-issue-status-group">
+          <label for="dist-issue-status">ステータス</label>
+          <select id="dist-issue-status">
+            <option value="open">オープン</option>
+            <option value="requested">修正依頼済み</option>
+            <option value="resolved">解決済み</option>
+            <option value="wont_fix">対応しない</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dist-issue-opened-at">発覚日</label>
+          <input type="date" id="dist-issue-opened-at">
+        </div>
+
+        <div class="form-group form-full">
+          <label for="dist-issue-url">関連 URL（Soundropチケット等）</label>
+          <input type="text" id="dist-issue-url" placeholder="https://...">
+        </div>
+
+        <div class="form-group form-full">
+          <label for="dist-issue-memo">メモ</label>
+          <textarea id="dist-issue-memo" placeholder="問題の詳細・対応記録" rows="3"></textarea>
+        </div>
+
+      </div>
+      <div class="error-msg" id="dist-issue-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary modal-cancel">キャンセル</button>
+        <button type="submit" class="btn btn-primary" id="dist-issue-submit">保存する</button>
+      </div>
+    </form>
+  </div>
+
 </div><!-- /.modal-overlay -->
 
 <!-- ─── 完全休日 確認ダイアログ ──────────────────────────────────────────────── -->
@@ -644,6 +796,7 @@
   <nav class="sf-tabs">
     <button class="sf-tab active" data-sf-tab="library">Music Library</button>
     <button class="sf-tab" data-sf-tab="profiles">Artist Profiles</button>
+    <button class="sf-tab" data-sf-tab="distribution">配信状況</button>
     <button class="sf-tab" data-sf-tab="import">Soundrop Import</button>
     <button class="sf-tab" data-sf-tab="soundrop-stats">Soundrop Stats</button>
     <button class="sf-tab" data-sf-tab="soundrop-sync">Soundrop同期</button>
@@ -682,6 +835,38 @@
       <div id="sf-profiles-container" class="loading">読み込み中...</div>
     </section>
   </div>
+
+  <!-- 配信状況 tab (Phase 24) -->
+  <div id="sf-tab-distribution" class="sf-tab-panel" hidden>
+
+    <!-- プラットフォーム一覧 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>配信サービス一覧</h2>
+        <button class="sf-btn" id="dist-add-profile-btn">＋ プロフィール追加</button>
+      </div>
+      <div id="dist-platforms-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 問題一覧 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>問題一覧</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="dist-issue-filter" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:5px 10px;border-radius:4px;font-size:12px">
+            <option value="">すべて</option>
+            <option value="open">オープン</option>
+            <option value="requested">修正依頼済み</option>
+            <option value="resolved">解決済み</option>
+            <option value="wont_fix">対応しない</option>
+          </select>
+          <button class="sf-btn" id="dist-add-issue-btn">＋ 問題を追加</button>
+        </div>
+      </div>
+      <div id="dist-issues-container" class="loading">読み込み中...</div>
+    </section>
+
+  </div><!-- /#sf-tab-distribution -->
 
   <!-- Soundrop Import tab -->
   <div id="sf-tab-import" class="sf-tab-panel" hidden>
