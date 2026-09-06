@@ -713,6 +713,49 @@ function runMigrations(db) {
   for (const sql of PLATFORM_ISSUES_TABLES) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
+
+  // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
+  // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
+  try {
+    const row = db.prepare(
+      "SELECT sql FROM sqlite_master WHERE type='table' AND name='sf_artist_profiles'"
+    ).get();
+    if (row && !row.sql.includes("'deezer'")) {
+      db.exec('PRAGMA foreign_keys = OFF');
+      try {
+        db.exec(`
+          CREATE TABLE sf_artist_profiles_v3 (
+            id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+            artist_key         TEXT    NOT NULL,
+            artist_name        TEXT    NOT NULL,
+            platform           TEXT    NOT NULL
+              CHECK (platform IN (
+                'spotify','apple_music','amazon_music','youtube_music','tidal','qobuz',
+                'deezer','pandora','iheartradio','tiktok','facebook_instagram','anghami',
+                'boomplay','ayoba','netease','tencent','claro_musica','peloton',
+                'awa','line_music','kkbox','lissen','audiomack','audible_magic',
+                'nuuday','flo','snapchat','seven_digital','other'
+              )),
+            platform_artist_id TEXT,
+            artist_page_url    TEXT,
+            profile_status     TEXT    NOT NULL DEFAULT 'unknown'
+              CHECK (profile_status IN ('unknown','active','pending','unclaimed','inactive')),
+            claimed            INTEGER NOT NULL DEFAULT 0 CHECK (claimed IN (0,1)),
+            last_checked_at    TEXT,
+            memo               TEXT,
+            created_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+            updated_at         TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+            UNIQUE(artist_key, platform)
+          )
+        `);
+        db.exec(`INSERT INTO sf_artist_profiles_v3 SELECT * FROM sf_artist_profiles`);
+        db.exec(`DROP TABLE sf_artist_profiles`);
+        db.exec(`ALTER TABLE sf_artist_profiles_v3 RENAME TO sf_artist_profiles`);
+      } finally {
+        db.exec('PRAGMA foreign_keys = ON');
+      }
+    }
+  } catch (_) { /* 既にマイグレーション済み、または sf_artist_profiles 未存在の場合はスキップ */ }
 }
 
 /**

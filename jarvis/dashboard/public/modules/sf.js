@@ -539,19 +539,47 @@ const SfModule = (() => {
 
   // ─── 配信状況タブ (Phase 24) ─────────────────────────────────────────────
 
-  /** 配信プラットフォームの表示名マップ（配信状況タブ用・tidal/qobuz含む） */
+  /** 配信プラットフォームの表示名マップ（配信状況タブ用・Phase 25 拡張版） */
   const DIST_PLATFORM_LABELS = {
-    spotify:       'Spotify',
-    apple_music:   'Apple Music',
-    amazon_music:  'Amazon Music',
-    youtube_music: 'YouTube Music',
-    tidal:         'TIDAL',
-    qobuz:         'Qobuz',
-    other:         'その他',
+    spotify:            'Spotify',
+    apple_music:        'Apple Music',
+    amazon_music:       'Amazon Music',
+    youtube_music:      'YouTube Music',
+    tidal:              'TIDAL',
+    qobuz:              'Qobuz',
+    deezer:             'Deezer',
+    pandora:            'Pandora',
+    iheartradio:        'iHeartRadio',
+    tiktok:             'TikTok',
+    facebook_instagram: 'Facebook / Instagram',
+    anghami:            'Anghami',
+    boomplay:           'Boomplay',
+    ayoba:              'Ayoba',
+    netease:            'NetEase',
+    tencent:            'Tencent Music',
+    claro_musica:       'Claro música',
+    peloton:            'Peloton',
+    awa:                'AWA',
+    line_music:         'LINE MUSIC',
+    kkbox:              'KKBOX',
+    lissen:             'Lissen',
+    audiomack:          'Audiomack',
+    audible_magic:      'Audible Magic',
+    nuuday:             'Nuuday',
+    flo:                'FLO',
+    snapchat:           'Snapchat',
+    seven_digital:      '7digital',
+    other:              'その他',
   };
 
   /** 全プラットフォームの定義順（表示順に使用） */
-  const PLATFORM_ORDER = ['spotify','apple_music','amazon_music','youtube_music','tidal','qobuz','other'];
+  const PLATFORM_ORDER = [
+    'spotify','apple_music','amazon_music','youtube_music','tidal','qobuz',
+    'deezer','pandora','iheartradio','tiktok','facebook_instagram','anghami',
+    'boomplay','ayoba','netease','tencent','claro_musica','peloton',
+    'awa','line_music','kkbox','lissen','audiomack','audible_magic',
+    'nuuday','flo','snapchat','seven_digital','other',
+  ];
 
   /** issue_type → 表示名 */
   const ISSUE_TYPE_LABELS = {

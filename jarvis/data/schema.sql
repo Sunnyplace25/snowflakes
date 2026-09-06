@@ -476,13 +476,19 @@ CREATE INDEX IF NOT EXISTS idx_sf_import_rows_track     ON sf_distribution_impor
 CREATE INDEX IF NOT EXISTS idx_sf_import_rows_unmatched ON sf_distribution_import_rows(needs_review);
 
 -- ── アーティストページ管理 ────────────────────────────────────────────────────
--- platform: tidal / qobuz は Phase 24 で追加（既存 DB は db.js マイグレーションで対応）
+-- platform: tidal / qobuz は Phase 24 で追加、その他は Phase 25 で追加（既存 DB は db.js マイグレーションで対応）
 CREATE TABLE IF NOT EXISTS sf_artist_profiles (
   id                 INTEGER PRIMARY KEY AUTOINCREMENT,
   artist_key         TEXT    NOT NULL,
   artist_name        TEXT    NOT NULL,
   platform           TEXT    NOT NULL
-    CHECK (platform IN ('spotify','apple_music','amazon_music','youtube_music','tidal','qobuz','other')),
+    CHECK (platform IN (
+      'spotify','apple_music','amazon_music','youtube_music','tidal','qobuz',
+      'deezer','pandora','iheartradio','tiktok','facebook_instagram','anghami',
+      'boomplay','ayoba','netease','tencent','claro_musica','peloton',
+      'awa','line_music','kkbox','lissen','audiomack','audible_magic',
+      'nuuday','flo','snapchat','seven_digital','other'
+    )),
   platform_artist_id TEXT,
   artist_page_url    TEXT,
   profile_status     TEXT    NOT NULL DEFAULT 'unknown'

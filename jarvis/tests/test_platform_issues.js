@@ -503,10 +503,101 @@ test('sf_artist_profiles への INSERT / DELETE が正常に動作する（既�
   assert.equal(db.prepare('SELECT id FROM sf_artist_profiles WHERE id = ?').get(id), undefined);
 });
 
+// ── Section 11: Phase 25 プラットフォーム拡張 ───────────────────────────────
+
+console.log('\n─── Section 11: Phase 25 プラットフォーム拡張（22 platform 追加） ───');
+
+const PHASE25_PLATFORMS = [
+  'deezer','pandora','iheartradio','tiktok','facebook_instagram','anghami',
+  'boomplay','ayoba','netease','tencent','claro_musica','peloton',
+  'awa','line_music','kkbox','lissen','audiomack','audible_magic',
+  'nuuday','flo','snapchat','seven_digital',
+];
+
+test('DISTRIBUTION_PLATFORMS に Phase 25 の全 22 platform が含まれる', () => {
+  const values = DISTRIBUTION_PLATFORMS.map(p => p.value);
+  for (const pv of PHASE25_PLATFORMS) {
+    assert.ok(values.includes(pv), `${pv} が DISTRIBUTION_PLATFORMS に含まれない`);
+  }
+});
+
+test('getDistributionPlatforms() が 29 件（既存 7 + 新規 22）を返す', () => {
+  const platforms = getDistributionPlatforms();
+  assert.equal(platforms.length, 29, `expected 29, got ${platforms.length}`);
+});
+
+test('sf_artist_profiles の CHECK 制約が Phase 25 の platform を許可する', () => {
+  for (const pv of PHASE25_PLATFORMS) {
+    const { id } = upsertArtistProfile(db, {
+      artist_key:  `p25_test_${pv}`,
+      artist_name: 'Snow flakes',
+      platform:    pv,
+    });
+    assert.ok(id > 0, `${pv} の INSERT が失敗した`);
+    db.prepare('DELETE FROM sf_artist_profiles WHERE id = ?').run(id);
+  }
+});
+
+test('Phase 25 の platform で issue を登録できる', () => {
+  const profile = upsertArtistProfile(db, {
+    artist_key: 'p25_issue_test', artist_name: 'Snow flakes', platform: 'deezer',
+  });
+  const { id } = createIssue(db, {
+    entity_type: 'artist',
+    entity_id:   profile.id,
+    platform:    'deezer',
+    issue_type:  'mixed_artist',
+  });
+  assert.ok(id > 0);
+  const issue = getIssue(db, id);
+  assert.equal(issue.platform, 'deezer');
+  db.prepare('DELETE FROM sf_artist_profiles WHERE id = ?').run(profile.id);
+});
+
+test('soundcloud 等の未定義 platform は CHECK 制約で拒否される（Phase 25 後も）', () => {
+  throws(
+    () => db.prepare(`
+      INSERT INTO sf_artist_profiles (artist_key, artist_name, platform)
+      VALUES ('bad_p25', 'Bad', 'soundcloud')
+    `).run(),
+    /CHECK|check/i
+  );
+});
+
+test('Phase 25 migration 再実行で既存 profile が壊れない（冪等確認）', () => {
+  // createDb を再度呼ぶことで runMigrations が再実行される
+  const db2 = createDb(':memory:');
+  // 既存 platform で insert できる
+  const { id } = upsertArtistProfile(db2, {
+    artist_key: 'idempotent_test', artist_name: 'Snow flakes', platform: 'spotify',
+  });
+  assert.ok(id > 0);
+  // Phase 25 platform も使える
+  const { id: id2 } = upsertArtistProfile(db2, {
+    artist_key: 'idempotent_test', artist_name: 'Snow flakes', platform: 'line_music',
+  });
+  assert.ok(id2 > 0);
+  db2.close();
+});
+
+test('既存 6 platform（spotify/apple_music/amazon_music/youtube_music/tidal/qobuz）は引き続き使える', () => {
+  const existingPlatforms = ['spotify','apple_music','amazon_music','youtube_music','tidal','qobuz'];
+  for (const pv of existingPlatforms) {
+    const { id } = upsertArtistProfile(db, {
+      artist_key:  `p25_exist_${pv}`,
+      artist_name: 'Snow flakes',
+      platform:    pv,
+    });
+    assert.ok(id > 0, `${pv} の INSERT が失敗した`);
+    db.prepare('DELETE FROM sf_artist_profiles WHERE id = ?').run(id);
+  }
+});
+
 // ── 結果 ──────────────────────────────────────────────────────────────────────
 
 // クリーンアップ
 db.prepare("DELETE FROM sf_artist_profiles WHERE artist_key='snow_flakes_issue_test'").run();
+db.prepare("DELETE FROM sf_artist_profiles WHERE artist_key='p25_issue_test'").run();
 
 console.log(`\n${'─'.repeat(60)}`);
 console.log(`合計: ${passed + failed} tests  ✅ ${passed} passed  ❌ ${failed} failed`);
