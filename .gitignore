@@ -54,3 +54,5 @@ jarvis/imports/*_audit.txt
 # JARVIS note export — 投稿用コンテンツ（公開前コンテンツはgit管理しない）
 jarvis/exports/note/*
 !jarvis/exports/note/.gitkeep
+# JARVIS ローカル専用設定資料（内部資料・絶対にpush不可）
+jarvis/knowledge/
