@@ -591,6 +591,72 @@ const SfModule = (() => {
     other:         'その他',
   };
 
+  /**
+   * Soundrop配信済みだが Snow flakes 本人と確定できる公開 Artist URL が未特定のサービス。
+   * 「未配信」ではなく「URL 未特定」と表示する。
+   */
+  const DIST_URL_UNKNOWN = new Set([
+    'awa', 'line_music', 'kkbox', 'boomplay', 'ayoba', 'pandora',
+    'iheartradio', 'claro_musica', 'flo', 'lissen', 'netease',
+    'tencent', 'seven_digital', 'audiomack',
+  ]);
+
+  /**
+   * 一般向け固定 Artist プロフィールページを管理する通常の DSP ではないサービス。
+   * Soundrop 経由の著作権管理・データ照合等を行うプラットフォーム。
+   */
+  const DIST_NOT_APPLICABLE = new Set([
+    'audible_magic', 'peloton', 'nuuday',
+  ]);
+
+  /**
+   * 音源ライブラリ配信（TikTok Sound Library / Meta Sound Collection 等）のサービス。
+   * 通常の Artist ページとは異なる配信形態であり、固定 Artist プロフィール URL は存在しない。
+   */
+  const DIST_LIBRARY_ONLY = new Set([
+    'tiktok', 'facebook_instagram', 'snapchat',
+  ]);
+
+  /**
+   * プラットフォームの統合表示ステータスを返す。
+   * 優先順位: issue状態 > profile_status > プラットフォーム分類 > 未登録
+   *
+   * @param {string} platform
+   * @param {object|undefined} profile  - sf_artist_profiles 行 or undefined
+   * @param {Array}  issues             - sf_platform_issues 全行（フィルタはここで行う）
+   * @returns {{ cls: string, label: string }}
+   */
+  function _platformDisplayStatus(platform, profile, issues) {
+    // 未解決 issue（このplatform対象）
+    const unresolved = issues.filter(i =>
+      i.platform === platform &&
+      i.issue_status !== 'resolved' &&
+      i.issue_status !== 'wont_fix'
+    );
+
+    if (profile) {
+      if (unresolved.length > 0) {
+        // open が1件でもあれば「問題あり」、全件 requested なら「修正依頼済み」
+        const hasOpen = unresolved.some(i => i.issue_status === 'open');
+        return hasOpen
+          ? { cls: 'sf-badge-red',    label: '問題あり' }
+          : { cls: 'sf-badge-yellow', label: '修正依頼済み' };
+      }
+      if (profile.profile_status === 'active') {
+        return { cls: 'sf-badge-green', label: '問題なし' };
+      }
+      // active 以外（unknown / pending 等）は profile_status をそのまま表示
+      return PROFILE_STATUS_BADGE[profile.profile_status]
+        || { cls: 'sf-badge-gray', label: profile.profile_status };
+    }
+
+    // プロフィールなし → プラットフォーム分類で判定
+    if (DIST_NOT_APPLICABLE.has(platform))  return { cls: 'sf-badge-dim',  label: '対象外' };
+    if (DIST_LIBRARY_ONLY.has(platform))    return { cls: 'sf-badge-dim',  label: '音源ライブラリ' };
+    if (DIST_URL_UNKNOWN.has(platform))     return { cls: 'sf-badge-blue', label: 'URL未特定' };
+    return { cls: 'sf-badge-dim', label: '未登録' };
+  }
+
   /** issue_status → バッジ CSS */
   const ISSUE_STATUS_BADGE = {
     open:      { cls: 'sf-badge-red',    label: 'オープン' },
@@ -653,7 +719,7 @@ const SfModule = (() => {
     const profMap = {};
     for (const p of profiles) profMap[p.platform] = p;
 
-    // platform -> open issue 数
+    // platform -> 未解決 issue 数
     const issueCount = {};
     for (const iss of issues) {
       if (iss.issue_status !== 'resolved' && iss.issue_status !== 'wont_fix') {
@@ -662,29 +728,35 @@ const SfModule = (() => {
     }
 
     const cards = PLATFORM_ORDER.map(platform => {
-      const p    = profMap[platform];
-      const cnt  = issueCount[platform] || 0;
-      const name = DIST_PLATFORM_LABELS[platform] || platform;
+      const p      = profMap[platform];
+      const cnt    = issueCount[platform] || 0;
+      const name   = DIST_PLATFORM_LABELS[platform] || platform;
+      const status = _platformDisplayStatus(platform, p, issues);
 
       if (!p) {
+        // プロフィール未登録カード
+        // 対象外・音源ライブラリは「追加」ボタンを表示しない
+        const addBtn = (DIST_NOT_APPLICABLE.has(platform) || DIST_LIBRARY_ONLY.has(platform))
+          ? ''
+          : `<button class="sf-btn dist-add-profile-for" data-platform="${esc(platform)}">追加</button>`;
         return `
           <div class="dist-platform-card dist-platform-empty">
             <div class="dist-platform-name">${esc(name)}</div>
             <div class="dist-platform-status">
-              <span class="sf-badge sf-badge-dim">未登録</span>
+              <span class="sf-badge ${status.cls}">${status.label}</span>
             </div>
-            <div class="dist-platform-actions">
-              <button class="sf-btn dist-add-profile-for" data-platform="${esc(platform)}">追加</button>
-            </div>
+            ${addBtn ? `<div class="dist-platform-actions">${addBtn}</div>` : ''}
           </div>`;
       }
 
-      const stInfo   = PROFILE_STATUS_BADGE[p.profile_status] || { cls: 'sf-badge-gray', label: p.profile_status };
-      const claimed  = p.claimed ? '<span class="sf-badge sf-badge-green">✓ claimed</span>' : '<span class="sf-badge sf-badge-dim">unclaimed</span>';
+      // プロフィール登録済みカード
+      const claimed = p.claimed
+        ? '<span class="sf-badge sf-badge-green">✓ claimed</span>'
+        : '';
       const issLabel = cnt > 0
-        ? `<span class="sf-badge sf-badge-red" title="未解決の問題">${cnt} 件</span>`
-        : '<span class="sf-badge sf-badge-dim">問題なし</span>';
-      const urlHtml  = p.artist_page_url
+        ? `<span class="sf-badge sf-badge-red" title="未解決の問題あり">${cnt} 件</span>`
+        : '';
+      const urlHtml = p.artist_page_url
         ? `<a href="${esc(p.artist_page_url)}" target="_blank" rel="noopener"
               style="color:var(--accent);font-size:11px;word-break:break-all">${esc(p.artist_page_url)}</a>`
         : '<span style="color:var(--text-dim);font-size:11px">URL未登録</span>';
@@ -693,7 +765,7 @@ const SfModule = (() => {
         <div class="dist-platform-card" data-platform="${esc(platform)}">
           <div class="dist-platform-name">${esc(name)}</div>
           <div class="dist-platform-status">
-            <span class="sf-badge ${stInfo.cls}">${stInfo.label}</span>
+            <span class="sf-badge ${status.cls}">${status.label}</span>
             ${claimed}
             ${issLabel}
           </div>
