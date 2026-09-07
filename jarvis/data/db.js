@@ -1078,3 +1078,136 @@ export function seedSfWorksInventory(db) {
 
   return { inserted_works, verified_works, inserted_pubs, updated_pubs, errors };
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Snow flakes HP限定作品シード（5件）
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Snow flakes HP限定5件を sf_works + sf_work_publications（hp）へ登録する。
+ *
+ * sf_works 方針:
+ *   - work_key で存在確認
+ *   - 未存在 → INSERT（inserted_works にカウント）
+ *   - 存在し title/work_type が一致 → id 再利用（verified_works にカウント）
+ *   - 存在するが title/work_type が不一致 → errors に記録（INSERT/UPDATE ともしない）
+ *
+ * sf_work_publications 方針:
+ *   - (work_id, 'hp') で存在確認
+ *   - 未存在 → INSERT（inserted_pubs にカウント）
+ *   - 存在する → publication_status / memo / public_url を更新（updated_pubs にカウント）
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @returns {{ inserted_works: number, verified_works: number, inserted_pubs: number, updated_pubs: number, errors: string[] }}
+ */
+export function seedHpExclusiveWorks(db) {
+  /** @type {{ work_key: string, title: string, work_type: string, status: string, tp: number, pub_status: string, public_url: string|null, memo: string|null }[]} */
+  const HP_SEED = [
+    {
+      work_key:   'kankei',
+      title:      '関係者',
+      work_type:  'short_story',
+      status:     'completed',
+      tp:         0,
+      pub_status: 'published',
+      public_url: 'https://sunnyplace25.github.io/snowflakes/horror_kankei.html',
+      memo:       null,
+    },
+    {
+      work_key:   'yoninnme',
+      title:      '四人目',
+      work_type:  'short_story',
+      status:     'completed',
+      tp:         0,
+      pub_status: 'published',
+      public_url: 'https://sunnyplace25.github.io/snowflakes/horror_yoninnme.html',
+      memo:       null,
+    },
+    {
+      work_key:   'tebiki',
+      title:      '手引き',
+      work_type:  'short_story',
+      status:     'completed',
+      tp:         0,
+      pub_status: 'published',
+      public_url: 'https://sunnyplace25.github.io/snowflakes/horror_tebiki.html',
+      memo:       null,
+    },
+    {
+      work_key:   'oboetokuwa',
+      title:      '覚えとくわ',
+      work_type:  'short_story',
+      status:     'completed',
+      tp:         0,
+      pub_status: 'published',
+      public_url: 'https://sunnyplace25.github.io/snowflakes/horror_oboetokuwa.html',
+      memo:       null,
+    },
+    {
+      work_key:   'namae_mada_narenai',
+      title:      '名前、まだ慣れない',
+      work_type:  'other',
+      status:     'completed',
+      tp:         0,
+      pub_status: 'published',
+      public_url: 'https://sunnyplace25.github.io/snowflakes/ura/',
+      memo:       '裏話 第1回 / noindex,nofollow',
+    },
+  ];
+
+  let inserted_works = 0;
+  let verified_works = 0;
+  let inserted_pubs  = 0;
+  let updated_pubs   = 0;
+  const errors = [];
+
+  const stmtFindWork   = db.prepare('SELECT id, title, work_type FROM sf_works WHERE work_key = ?');
+  const stmtInsertWork = db.prepare(
+    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional) VALUES (?, ?, ?, ?, ?)'
+  );
+  const stmtFindPub = db.prepare(
+    "SELECT id FROM sf_work_publications WHERE work_id = ? AND platform = 'hp'"
+  );
+  const stmtInsertPub = db.prepare(
+    "INSERT INTO sf_work_publications (work_id, platform, publication_status, public_url, memo) " +
+    "VALUES (?, 'hp', ?, ?, ?)"
+  );
+  const stmtUpdatePub = db.prepare(
+    "UPDATE sf_work_publications " +
+    "SET publication_status = ?, public_url = ?, memo = ? " +
+    "WHERE work_id = ? AND platform = 'hp'"
+  );
+
+  for (const seed of HP_SEED) {
+    // ── sf_works 存在確認 ────────────────────────────────────────────────────
+    let workId;
+    const existing = stmtFindWork.get(seed.work_key);
+    if (existing) {
+      const mismatches = [];
+      if (existing.title     !== seed.title)     mismatches.push(`title: DB="${existing.title}" expected="${seed.title}"`);
+      if (existing.work_type !== seed.work_type) mismatches.push(`work_type: DB="${existing.work_type}" expected="${seed.work_type}"`);
+      if (mismatches.length > 0) {
+        errors.push(`work_key="${seed.work_key}" mismatch — ${mismatches.join(', ')}`);
+        continue;
+      }
+      workId = Number(existing.id);
+      verified_works++;
+    } else {
+      const result = stmtInsertWork.run(seed.work_key, seed.title, seed.work_type, seed.status, seed.tp);
+      workId = Number(result.lastInsertRowid);
+      inserted_works++;
+    }
+
+    // ── sf_work_publications (hp) upsert ────────────────────────────────────
+    const existingPub = stmtFindPub.get(workId);
+    if (existingPub) {
+      stmtUpdatePub.run(seed.pub_status, seed.public_url, seed.memo, workId);
+      updated_pubs++;
+    } else {
+      stmtInsertPub.run(workId, seed.pub_status, seed.public_url, seed.memo);
+      inserted_pubs++;
+    }
+  }
+
+  return { inserted_works, verified_works, inserted_pubs, updated_pubs, errors };
+}

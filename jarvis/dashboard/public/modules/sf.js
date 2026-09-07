@@ -2794,8 +2794,23 @@ const SfModule = (() => {
           <td>${narouBadge}</td>
           <td>${archiveBadge}</td>
           <td>
-            <button class="sf-btn sf-btn-sm works-pub-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">公開URL</button>
-            <button class="sf-btn sf-btn-sm works-arc-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">アーカイブ</button>
+            <div class="sf-action-btns">
+              <button class="sf-action-btn works-pub-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                公開先
+              </button>
+              <button class="sf-action-btn works-arc-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                原稿
+              </button>
+            </div>
           </td>
         </tr>`;
     }).join('');
