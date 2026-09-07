@@ -116,8 +116,8 @@ const SfModule = (() => {
     }
     btn.classList.add('active');
 
-    // パネル切替
-    document.querySelectorAll('.sf-tab-panel').forEach(p => { p.hidden = true; });
+    // パネル切替（#module-sf 内だけ対象。Business 側の .sf-tab-panel には触れない）
+    document.querySelectorAll('#module-sf .sf-tab-panel').forEach(p => { p.hidden = true; });
     const panel = document.getElementById(`sf-tab-${tabName}`);
     if (panel) panel.hidden = false;
 
@@ -148,7 +148,7 @@ const SfModule = (() => {
     document.getElementById('sf-global-sync-btn')?.addEventListener('click', () => {
       document.querySelectorAll('.sf-big-tab').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.sf-tabs[data-group]').forEach(nav => { nav.hidden = true; });
-      document.querySelectorAll('.sf-tab-panel').forEach(p => { p.hidden = true; });
+      document.querySelectorAll('#module-sf .sf-tab-panel').forEach(p => { p.hidden = true; });
       const panel = document.getElementById('sf-tab-sync');
       if (panel) panel.hidden = false;
       loadSync();
