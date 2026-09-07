@@ -78,37 +78,93 @@ const SfModule = (() => {
     setAllCharsState(state);
   }
 
-  // ─── SF サブタブ切替 ──────────────────────────────────────────────────────
+  // ─── SF 2段タブ切替（Phase 28） ───────────────────────────────────────────
+
+  /** big-tab グループ定義 */
+  const BIG_TAB_GROUPS = {
+    music: ['library', 'profiles', 'distribution', 'import', 'soundrop-stats', 'soundrop-sync'],
+    story: ['works', 'knowledge'],
+    sns:   ['youtube', 'tiktok', 'hp-analytics', 'funnel'],
+  };
+
+  /** タブ名に応じたデータ読み込み */
+  function _activateTabContent(tabName) {
+    if      (tabName === 'library')         loadLibrary();
+    else if (tabName === 'profiles')        loadProfiles();
+    else if (tabName === 'distribution')    loadDistribution();
+    else if (tabName === 'import')          loadImports();
+    else if (tabName === 'soundrop-stats')  initSoundropStats();
+    else if (tabName === 'soundrop-sync')   loadSoundropSync();
+    else if (tabName === 'youtube')         loadYouTube();
+    else if (tabName === 'tiktok')          loadTikTok();
+    else if (tabName === 'funnel')          loadFunnel();
+    else if (tabName === 'sync')            loadSync();
+    else if (tabName === 'hp-analytics')    loadHpAnalytics();
+    else if (tabName === 'knowledge')       initKnowledge();
+    else if (tabName === 'works')           loadWorks();
+  }
+
+  /** sub-tab ボタンをアクティブ化してパネルを表示する */
+  function _selectSubTab(btn) {
+    const tabName = btn.dataset.sfTab;
+    const group   = btn.closest('.sf-tabs[data-group]')?.dataset.group;
+
+    // アクティブ状態: 同グループ内だけ解除
+    if (group) {
+      document.querySelectorAll(`.sf-tabs[data-group="${group}"] .sf-tab`)
+        .forEach(b => b.classList.remove('active'));
+    }
+    btn.classList.add('active');
+
+    // パネル切替
+    document.querySelectorAll('.sf-tab-panel').forEach(p => { p.hidden = true; });
+    const panel = document.getElementById(`sf-tab-${tabName}`);
+    if (panel) panel.hidden = false;
+
+    _activateTabContent(tabName);
+  }
 
   function initSubTabs() {
-    document.querySelectorAll('.sf-tab').forEach(btn => {
+    // ── big-tab 切替 ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.sf-big-tab').forEach(btn => {
       btn.addEventListener('click', () => {
-        const tabName = btn.dataset.sfTab;
+        const group = btn.dataset.sfBigtab;
 
-        // ボタンのアクティブ状態
-        document.querySelectorAll('.sf-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.sf-big-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // パネルの表示切替
-        document.querySelectorAll('.sf-tab-panel').forEach(panel => {
-          panel.hidden = true;
+        // グループに対応するサブナビを表示、それ以外を非表示
+        document.querySelectorAll('.sf-tabs[data-group]').forEach(nav => {
+          nav.hidden = nav.dataset.group !== group;
         });
-        const panel = document.getElementById(`sf-tab-${tabName}`);
-        if (panel) panel.hidden = false;
 
-        // タブに応じたデータ読み込み
-        if (tabName === 'library') loadLibrary();
-        else if (tabName === 'profiles')       loadProfiles();
-        else if (tabName === 'distribution')   loadDistribution();
-        else if (tabName === 'import')         loadImports();
-        else if (tabName === 'soundrop-stats') initSoundropStats();
-        else if (tabName === 'soundrop-sync')  loadSoundropSync();
-        else if (tabName === 'youtube')        loadYouTube();
-        else if (tabName === 'tiktok')         loadTikTok();
-        else if (tabName === 'funnel')         loadFunnel();
-        else if (tabName === 'sync')           loadSync();
-        else if (tabName === 'hp-analytics')   loadHpAnalytics();
-        else if (tabName === 'knowledge')       initKnowledge();
+        // グループ内の先頭タブを自動選択
+        const firstTab = document.querySelector(`.sf-tabs[data-group="${group}"] .sf-tab`);
+        if (firstTab) _selectSubTab(firstTab);
+      });
+    });
+
+    // ── 全体同期 / Ops ボタン ────────────────────────────────────────────────
+    document.getElementById('sf-global-sync-btn')?.addEventListener('click', () => {
+      document.querySelectorAll('.sf-big-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sf-tabs[data-group]').forEach(nav => { nav.hidden = true; });
+      document.querySelectorAll('.sf-tab-panel').forEach(p => { p.hidden = true; });
+      const panel = document.getElementById('sf-tab-sync');
+      if (panel) panel.hidden = false;
+      loadSync();
+    });
+
+    // ── sub-tab 切替 ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.sf-tab[data-sf-tab]').forEach(btn => {
+      btn.addEventListener('click', () => _selectSubTab(btn));
+    });
+
+    // ── モーダル閉じるボタン ─────────────────────────────────────────────────
+    document.querySelectorAll('.sf-modal-close').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalId = btn.dataset.modal;
+        const modal = document.getElementById(modalId);
+        if (modal) modal.hidden = true;
       });
     });
   }
@@ -2666,6 +2722,302 @@ const SfModule = (() => {
     });
   }
 
+  // ─── 作品管理 (Phase 28) ─────────────────────────────────────────────────
+
+  /** 作品タイプラベル */
+  const WORK_TYPE_LABELS = {
+    novel:        '長編小説',
+    short_story:  '短編小説',
+    short_series: '短編連作',
+    game:         'ゲーム',
+    other:        'その他',
+  };
+
+  /** 公開ステータスラベル */
+  const PUB_STATUS_LABELS = {
+    published:   '公開中',
+    unpublished: '未公開',
+    private:     '非公開',
+    deleted:     '削除済',
+  };
+
+  /** アーカイブ種別ラベル */
+  const ARCHIVE_TYPE_LABELS = {
+    submission:  '投稿用',
+    publication: '公開版',
+    revision:    '改稿',
+    backup:      'バックアップ',
+    other:       'その他',
+  };
+
+  let _worksLoaded = false;
+
+  async function loadWorks() {
+    const container = document.getElementById('sf-works-container');
+    if (!container) return;
+    container.className = 'loading';
+    container.textContent = '読み込み中...';
+    _worksLoaded = false;
+
+    try {
+      const res  = await fetch('/api/sf/works');
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'unknown error');
+      container.className = '';
+      container.innerHTML = _renderWorksTable(data.works || []);
+      _bindWorksEvents(container, data.works || []);
+      _worksLoaded = true;
+    } catch (e) {
+      container.className = 'error';
+      container.textContent = `エラー: ${e.message}`;
+    }
+  }
+
+  function _renderWorksTable(works) {
+    if (!works.length) {
+      return '<div class="empty-state">作品がありません</div>';
+    }
+
+    const rows = works.map(w => {
+      const typeLabel    = WORK_TYPE_LABELS[w.work_type] || w.work_type;
+      const narouBadge   = w.narou_url
+        ? `<span class="sf-badge sf-badge-green">なろう公開中</span>`
+        : `<span class="sf-badge sf-badge-dim">URL未登録</span>`;
+      const archiveBadge = w.archive_count > 0
+        ? `<span class="sf-badge sf-badge-yellow">${w.archive_count}件</span>`
+        : `<span class="sf-badge sf-badge-dim">なし</span>`;
+      return `
+        <tr>
+          <td>${esc(w.title)}</td>
+          <td>${typeLabel}</td>
+          <td>${w.published_at || '—'}</td>
+          <td>${narouBadge}</td>
+          <td>${archiveBadge}</td>
+          <td>
+            <button class="sf-btn sf-btn-sm works-pub-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">公開URL</button>
+            <button class="sf-btn sf-btn-sm works-arc-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">アーカイブ</button>
+          </td>
+        </tr>`;
+    }).join('');
+
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>タイトル</th>
+            <th>種別</th>
+            <th>公開日</th>
+            <th>なろう</th>
+            <th>アーカイブ</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function _bindWorksEvents(container) {
+    container.querySelectorAll('.works-pub-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const workId    = parseInt(btn.dataset.workId, 10);
+        const workTitle = btn.dataset.workTitle;
+        _openWorkPubModal(workId, workTitle);
+      });
+    });
+    container.querySelectorAll('.works-arc-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const workId    = parseInt(btn.dataset.workId, 10);
+        const workTitle = btn.dataset.workTitle;
+        _openWorkArchiveModal(workId, workTitle);
+      });
+    });
+  }
+
+  async function _openWorkPubModal(workId, workTitle) {
+    const modal = document.getElementById('modal-work-pub');
+    const title = document.getElementById('modal-work-pub-title');
+    const body  = document.getElementById('modal-work-pub-body');
+    if (!modal || !body) return;
+
+    title.textContent = `公開URL管理 — ${workTitle}`;
+    body.innerHTML    = '<div class="loading">読み込み中...</div>';
+    modal.hidden      = false;
+
+    try {
+      const res  = await fetch(`/api/sf/works/${workId}/publications`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      const PLATFORMS = ['narou', 'kakuyomu', 'note', 'pixiv', 'other'];
+      const pubMap    = Object.fromEntries((data.publications || []).map(p => [p.platform, p]));
+
+      const rows = PLATFORMS.map(pl => {
+        const pub       = pubMap[pl] || {};
+        const statusSel = ['published','unpublished','private','deleted'].map(s =>
+          `<option value="${s}" ${pub.publication_status === s ? 'selected' : ''}>${PUB_STATUS_LABELS[s]}</option>`
+        ).join('');
+        return `
+          <tr data-platform="${pl}">
+            <td>${pl}</td>
+            <td><input type="text" class="pub-url-input" value="${esc(pub.public_url || '')}" placeholder="https://..." style="width:280px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px"></td>
+            <td><input type="text" class="pub-wid-input" value="${esc(pub.platform_work_id || '')}" placeholder="作品ID" style="width:100px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px"></td>
+            <td>
+              <select class="pub-status-sel" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 6px;border-radius:4px;font-size:12px">
+                ${statusSel}
+              </select>
+            </td>
+            <td><button class="sf-btn sf-btn-sm pub-save-btn" data-work-id="${workId}" data-platform="${pl}" data-pub-id="${pub.id || ''}">保存</button></td>
+          </tr>`;
+      }).join('');
+
+      body.innerHTML = `
+        <table class="sf-table" style="font-size:12px">
+          <thead><tr><th>プラットフォーム</th><th>公開URL</th><th>作品ID</th><th>状態</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div id="pub-save-msg" style="margin-top:8px;font-size:12px;color:#4ade80"></div>`;
+
+      body.querySelectorAll('.pub-save-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const row      = btn.closest('tr');
+          const platform = btn.dataset.platform;
+          const pubId    = btn.dataset.pubId;
+          const public_url         = row.querySelector('.pub-url-input').value.trim() || null;
+          const platform_work_id   = row.querySelector('.pub-wid-input').value.trim() || null;
+          const publication_status = row.querySelector('.pub-status-sel').value;
+
+          const method  = pubId ? 'PUT' : 'POST';
+          const url     = pubId
+            ? `/api/sf/works/${workId}/publications/${pubId}`
+            : `/api/sf/works/${workId}/publications`;
+
+          try {
+            const r = await fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ platform, public_url, platform_work_id, publication_status }),
+            });
+            const d = await r.json();
+            const msg = document.getElementById('pub-save-msg');
+            if (d.ok) {
+              if (msg) msg.textContent = `${platform} を保存しました`;
+              if (!pubId && d.id) btn.dataset.pubId = String(d.id);
+              if (_worksLoaded) loadWorks();
+            } else {
+              if (msg) { msg.style.color = '#f87171'; msg.textContent = d.error; }
+            }
+          } catch (e) {
+            const msg = document.getElementById('pub-save-msg');
+            if (msg) { msg.style.color = '#f87171'; msg.textContent = e.message; }
+          }
+        });
+      });
+
+    } catch (e) {
+      body.innerHTML = `<div class="error">エラー: ${esc(e.message)}</div>`;
+    }
+  }
+
+  async function _openWorkArchiveModal(workId, workTitle) {
+    const modal = document.getElementById('modal-work-archive');
+    const title = document.getElementById('modal-work-archive-title');
+    const body  = document.getElementById('modal-work-archive-body');
+    if (!modal || !body) return;
+
+    title.textContent = `原稿アーカイブ — ${workTitle}`;
+    body.innerHTML    = '<div class="loading">読み込み中...</div>';
+    modal.hidden      = false;
+
+    async function _reloadArchiveList() {
+      try {
+        const res  = await fetch(`/api/sf/works/${workId}/archives`);
+        const data = await res.json();
+        const list = document.getElementById('archive-list');
+        if (!list) return;
+        if (!data.ok || !data.archives?.length) {
+          list.innerHTML = '<div class="empty-state" style="font-size:12px">アーカイブがありません</div>';
+          return;
+        }
+        list.innerHTML = data.archives.map(a => `
+          <tr>
+            <td>${ARCHIVE_TYPE_LABELS[a.archive_type] || a.archive_type}</td>
+            <td style="font-family:monospace;font-size:11px">${esc(a.archived_filename)}</td>
+            <td>${esc(a.version_label || '—')}</td>
+            <td>${a.file_size_bytes ? Math.round(a.file_size_bytes / 1024) + ' KB' : '—'}</td>
+            <td>${a.archived_at?.slice(0, 10) || '—'}</td>
+            <td><a href="/api/sf/works/${workId}/archives/${a.id}/file" class="sf-btn sf-btn-sm" download>DL</a></td>
+          </tr>`).join('');
+      } catch (_) {}
+    }
+
+    const archiveTypeOptions = Object.entries(ARCHIVE_TYPE_LABELS)
+      .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+
+    body.innerHTML = `
+      <div style="margin-bottom:16px">
+        <h4 style="font-size:13px;color:#94a3b8;margin:0 0 8px">新しいアーカイブを追加</h4>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:12px;margin-bottom:8px">
+          <label>種別</label>
+          <select id="arc-type-sel" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">${archiveTypeOptions}</select>
+          <label>バージョン</label>
+          <input type="text" id="arc-version" placeholder="例: v1.2、第一稿" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">
+          <label>メモ</label>
+          <input type="text" id="arc-memo" placeholder="任意" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">
+          <label>ファイル</label>
+          <input type="file" id="arc-file" accept=".docx,.md,.txt,.pdf" style="font-size:12px;color:#e2e8f0">
+        </div>
+        <button class="sf-btn" id="arc-upload-btn">アーカイブ登録</button>
+        <span id="arc-msg" style="margin-left:10px;font-size:12px;color:#4ade80"></span>
+      </div>
+      <h4 style="font-size:13px;color:#94a3b8;margin:0 0 8px">アーカイブ一覧</h4>
+      <table class="sf-table" style="font-size:12px">
+        <thead><tr><th>種別</th><th>ファイル名</th><th>バージョン</th><th>サイズ</th><th>登録日</th><th></th></tr></thead>
+        <tbody id="archive-list"></tbody>
+      </table>`;
+
+    await _reloadArchiveList();
+
+    document.getElementById('arc-upload-btn')?.addEventListener('click', async () => {
+      const file        = document.getElementById('arc-file')?.files?.[0];
+      const archiveType = document.getElementById('arc-type-sel')?.value;
+      const version     = document.getElementById('arc-version')?.value.trim() || null;
+      const memo        = document.getElementById('arc-memo')?.value.trim() || null;
+      const msgEl       = document.getElementById('arc-msg');
+
+      if (!file)        { if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent='ファイルを選択してください'; } return; }
+      if (!archiveType) { if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent='種別を選択してください'; } return; }
+
+      if (msgEl) { msgEl.style.color='#94a3b8'; msgEl.textContent='アップロード中...'; }
+
+      try {
+        const buf     = await file.arrayBuffer();
+        const headers = {
+          'Content-Type':        'application/octet-stream',
+          'X-Archive-Type':      archiveType,
+          'X-Original-Filename': encodeURIComponent(file.name),
+        };
+        if (version) headers['X-Version-Label'] = encodeURIComponent(version);
+        if (memo)    headers['X-Memo']           = encodeURIComponent(memo);
+
+        const r = await fetch(`/api/sf/works/${workId}/archives`, {
+          method: 'POST',
+          headers,
+          body: buf,
+        });
+        const d = await r.json();
+        if (d.ok) {
+          if (msgEl) { msgEl.style.color='#4ade80'; msgEl.textContent=`登録しました (${d.archived_filename})`; }
+          await _reloadArchiveList();
+          if (_worksLoaded) loadWorks();
+        } else {
+          if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent=d.error; }
+        }
+      } catch (e) {
+        if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent=e.message; }
+      }
+    });
+  }
+
   // ─── モジュール起動 ────────────────────────────────────────────────────────
 
   /**
@@ -2807,6 +3159,7 @@ const SfModule = (() => {
     loadDistribution,
     renderDistPlatforms, renderDistIssues,
     initKnowledge,
+    loadWorks,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,

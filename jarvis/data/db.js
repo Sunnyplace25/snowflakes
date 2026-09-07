@@ -714,6 +714,50 @@ function runMigrations(db) {
     try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 
+  // Phase 28: 作品公開URL・原稿アーカイブ管理テーブル追加
+  const PHASE28_TABLES = [
+    `CREATE TABLE IF NOT EXISTS sf_work_publications (
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+      work_id             INTEGER NOT NULL REFERENCES sf_works(id),
+      platform            TEXT    NOT NULL
+        CHECK (platform IN ('narou','kakuyomu','note','pixiv','hp','other')),
+      platform_work_id    TEXT,
+      public_url          TEXT,
+      publication_status  TEXT    NOT NULL DEFAULT 'published'
+        CHECK (publication_status IN ('published','unpublished','private','deleted')),
+      published_at        TEXT,
+      last_checked_at     TEXT,
+      memo                TEXT,
+      created_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      UNIQUE(work_id, platform)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_work_pub_work   ON sf_work_publications(work_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_work_pub_status ON sf_work_publications(publication_status)`,
+    `CREATE TABLE IF NOT EXISTS sf_work_archives (
+      id                INTEGER PRIMARY KEY AUTOINCREMENT,
+      work_id           INTEGER NOT NULL REFERENCES sf_works(id),
+      archive_type      TEXT    NOT NULL
+        CHECK (archive_type IN ('submission','publication','revision','backup','other')),
+      version_label     TEXT,
+      original_filename TEXT,
+      archived_filename TEXT    NOT NULL,
+      file_path         TEXT    NOT NULL,
+      sha256            TEXT    NOT NULL,
+      file_size_bytes   INTEGER NOT NULL,
+      archived_at       TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+      memo              TEXT,
+      UNIQUE(work_id, sha256, archive_type)
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_work_arch_work ON sf_work_archives(work_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_sf_work_arch_type ON sf_work_archives(archive_type)`,
+  ];
+  for (const sql of PHASE28_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
+  // Phase 28 Extension: title_provisional + sf_work_publications 'hp' + ICE BREAKER 修正
+  phase28ExtensionMigration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -802,4 +846,235 @@ export function createDbReadOnly(dbPath = DEFAULT_DB_PATH) {
 export function isSoundropMigrationApplied(db) {
   const cols = db.prepare('PRAGMA table_info(sf_releases)').all();
   return cols.some(c => c.name === 'soundrop_release_id');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 28 Extension: title_provisional / sf_work_publications 'hp' / ICE BREAKER 修正
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Phase 28 拡張マイグレーション。runMigrations から自動呼び出し済み。
+ * テストから直接呼ぶことも可（冪等）。
+ *
+ * 1. sf_works.title_provisional カラム追加（PRAGMA table_info で存在確認）
+ * 2. sf_work_publications テーブル再構築（platform CHECK に 'hp' 追加）
+ *    - BEGIN TRANSACTION / COMMIT + エラー時 ROLLBACK
+ *    - 移行カラムを明示（SELECT * 不使用）
+ *    - COMMIT 後に PRAGMA foreign_key_check
+ * 3. ICE BREAKER work_type 修正（work_key 指定・冪等）
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase28ExtensionMigration(db) {
+  // ─── 1. title_provisional カラム追加（冪等）────────────────────────────────
+  const sfWorksCols = db.prepare('PRAGMA table_info(sf_works)').all();
+  if (!sfWorksCols.some(c => c.name === 'title_provisional')) {
+    db.exec(
+      "ALTER TABLE sf_works ADD COLUMN title_provisional INTEGER NOT NULL DEFAULT 0 " +
+      "CHECK (title_provisional IN (0, 1))"
+    );
+  }
+
+  // ─── 2. sf_work_publications 再構築（'hp' 追加、冪等）─────────────────────
+  // CHECK 制約は ALTER TABLE で変更不可のためテーブル再構築。
+  // sqlite_master の CREATE 文に 'hp' が含まれていれば適用済みとして skip する。
+  const pubRow = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='sf_work_publications'"
+  ).get();
+  if (pubRow && !pubRow.sql.includes("'hp'")) {
+    db.exec('PRAGMA foreign_keys = OFF');
+    let committed = false;
+    try {
+      db.exec('BEGIN TRANSACTION');
+
+      db.exec(`
+        CREATE TABLE sf_work_publications_new (
+          id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+          work_id             INTEGER NOT NULL REFERENCES sf_works(id),
+          platform            TEXT    NOT NULL
+            CHECK (platform IN ('narou','kakuyomu','note','pixiv','hp','other')),
+          platform_work_id    TEXT,
+          public_url          TEXT,
+          publication_status  TEXT    NOT NULL DEFAULT 'published'
+            CHECK (publication_status IN ('published','unpublished','private','deleted')),
+          published_at        TEXT,
+          last_checked_at     TEXT,
+          memo                TEXT,
+          created_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+          UNIQUE(work_id, platform)
+        )
+      `);
+
+      // 移行対象カラムを明示（カラム順変更・追加に影響されない）
+      db.exec(`
+        INSERT INTO sf_work_publications_new
+          (id, work_id, platform, platform_work_id, public_url,
+           publication_status, published_at, last_checked_at, memo, created_at)
+        SELECT
+          id, work_id, platform, platform_work_id, public_url,
+          publication_status, published_at, last_checked_at, memo, created_at
+        FROM sf_work_publications
+      `);
+
+      db.exec('DROP TABLE sf_work_publications');
+      db.exec('ALTER TABLE sf_work_publications_new RENAME TO sf_work_publications');
+
+      db.exec('CREATE INDEX IF NOT EXISTS idx_sf_work_pub_work   ON sf_work_publications(work_id)');
+      db.exec('CREATE INDEX IF NOT EXISTS idx_sf_work_pub_status ON sf_work_publications(publication_status)');
+
+      db.exec('COMMIT');
+      committed = true;
+
+      // FK 整合性チェック（COMMIT 後）
+      const fkErrors = db.prepare('PRAGMA foreign_key_check(sf_work_publications)').all();
+      if (fkErrors.length > 0) {
+        throw new Error(`foreign_key_check failed after sf_work_publications rebuild: ${JSON.stringify(fkErrors)}`);
+      }
+    } catch (err) {
+      if (!committed) {
+        try { db.exec('ROLLBACK'); } catch (_) {}
+      }
+      throw err;
+    } finally {
+      db.exec('PRAGMA foreign_keys = ON');
+    }
+  }
+
+  // ─── 3. ICE BREAKER work_type 修正（work_key 指定・冪等）──────────────────
+  // sf_works が存在しない DB（古い環境）は例外を無視する。
+  try {
+    db.exec(
+      "UPDATE sf_works SET work_type = 'short_series' " +
+      "WHERE work_key = 'ice_breaker' AND work_type = 'short_story'"
+    );
+  } catch (_) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Snow flakes 作品在庫シード（39件）
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Snow flakes 全39件の作品在庫を sf_works + sf_work_publications（narou）へ登録する。
+ *
+ * sf_works 方針:
+ *   - work_key で存在確認
+ *   - 未存在 → INSERT（inserted_works にカウント）
+ *   - 存在し title/work_type が一致 → id 再利用（verified_works にカウント）
+ *   - 存在するが title/work_type が不一致 → errors に記録（INSERT/UPDATE ともしない）
+ *
+ * sf_work_publications 方針:
+ *   - (work_id, 'narou') で存在確認
+ *   - 未存在 → INSERT（inserted_pubs にカウント）
+ *   - 存在する → publication_status を更新。memo は非 NULL 時のみ上書き（updated_pubs にカウント）
+ *   - public_url / platform_work_id / published_at / last_checked_at は一切上書きしない
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @returns {{ inserted_works: number, verified_works: number, inserted_pubs: number, updated_pubs: number, errors: string[] }}
+ */
+export function seedSfWorksInventory(db) {
+  /** @type {{ work_key: string, title: string, work_type: string, status: string, tp: number, pub: string, memo: string|null }[]} */
+  const SEED = [
+    // ── 既存9件 ─────────────────────────────────────────────────────────────
+    { work_key: 'snow_flakes_main',       title: 'Snow flakes',    work_type: 'novel',        status: 'active',    tp: 0, pub: 'published',   memo: null },
+    { work_key: 'under_tone',             title: 'Under tone',     work_type: 'game',         status: 'active',    tp: 0, pub: 'published',   memo: null },
+    { work_key: 'hitotsu_ooi_oto',        title: 'ひとつ多い音',   work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'totonoena\u00ee_oto',    title: '整えない音',     work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'shiroi_oto',             title: '白い音',         work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'toumei_na_rhythm',       title: '透明なリズム',   work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'ice_breaker',            title: 'ICE BREAKER',   work_type: 'short_series', status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'moon_veil',              title: 'Moon Veil',     work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: 'なろうでの表記は「Moon Vail」' },
+    { work_key: 'hajimari_no_bass',       title: '始まりのベース', work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    // ── 新規30件（公開8件）───────────────────────────────────────────────────
+    { work_key: 'oto_hazure_skill',       title: '音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい', work_type: 'novel',        status: 'active',    tp: 0, pub: 'published',   memo: null },
+    { work_key: 'ippon_drumstick',        title: '一本だけのドラムスティック',                                                         work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'tadashii_kyori',         title: '正しい距離より、触れている方がいい',                                                 work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'hanbun_no_mama',         title: '半分のまま',                                                                         work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'oto_no_naru_ishi',       title: '音の鳴る石',                                                                         work_type: 'short_series', status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'mada_natteiru',          title: 'まだ、鳴っている',                                                                   work_type: 'short_series', status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'shikiichi',              title: '閾値',                                                                               work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    { work_key: 'dekkin',                 title: '出禁',                                                                               work_type: 'short_story',  status: 'completed', tp: 0, pub: 'published',   memo: null },
+    // ── 新規30件（未公開22件）────────────────────────────────────────────────
+    { work_key: 'headroom',               title: 'ヘッドルーム',                    work_type: 'other',        status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'tomaranai_oto',          title: '止まらない音',                    work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'tsuki_ga_michiru_made',  title: '月が満ちるまで',                  work_type: 'short_series', status: 'completed', tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'blue_night_drive',       title: 'Blue Night Drive',               work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'yoi_no_tsuki',           title: '宵の月',                         work_type: 'other',        status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'tsubasa',                title: '翼',                             work_type: 'short_series', status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'shunkan_ni_nokoru',      title: '瞬間に残る',                     work_type: 'novel',        status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'fuyu_tanpen',            title: '冬短篇',                         work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'idol_tanpen',            title: 'アイドル',                       work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'akari_kouta_tanpen',     title: 'あかり視点のコウタ短編',          work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'kouta_highschool_adult', title: 'コウタ　高校後半から　社会人',    work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'kouta_no_nikki',         title: 'コウタの日記',                   work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'shiroi_hana',            title: '白い花',                         work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'in_one_sky',             title: 'In One Sky',                     work_type: 'short_series', status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'after_the_snow',         title: 'After the Snow',                 work_type: 'other',        status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'hinata_koyuki',          title: 'ヒナタ小雪',                     work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'another_peace_after_snow', title: 'AnotherPeace\u3000+AftertheSnow', work_type: 'other',    status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'totonoeru_me',           title: '整える目',                       work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'amane',                  title: 'アマネ',                         work_type: 'other',        status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'little_snow',            title: 'リトルスノー',                   work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+    { work_key: 'snow_another_piece',     title: 'Snow frakes - Anoter piece -',   work_type: 'other',        status: 'active',    tp: 1, pub: 'unpublished', memo: null },
+    { work_key: 'rising_wind',            title: 'Rising Wind',                    work_type: 'short_story',  status: 'active',    tp: 0, pub: 'unpublished', memo: null },
+  ];
+
+  let inserted_works = 0;
+  let verified_works = 0;
+  let inserted_pubs  = 0;
+  let updated_pubs   = 0;
+  const errors = [];
+
+  const stmtFindWork   = db.prepare('SELECT id, title, work_type FROM sf_works WHERE work_key = ?');
+  const stmtInsertWork = db.prepare(
+    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional) VALUES (?, ?, ?, ?, ?)'
+  );
+  const stmtFindPub = db.prepare(
+    "SELECT id FROM sf_work_publications WHERE work_id = ? AND platform = 'narou'"
+  );
+  const stmtInsertPub = db.prepare(
+    "INSERT INTO sf_work_publications (work_id, platform, publication_status, memo) " +
+    "VALUES (?, 'narou', ?, ?)"
+  );
+  // pub_status のみ更新。memo は非 NULL 時のみ上書き（NULL なら既存値を維持）。
+  // public_url / platform_work_id / published_at / last_checked_at は SET 句に含めない。
+  const stmtUpdatePub = db.prepare(
+    "UPDATE sf_work_publications " +
+    "SET publication_status = ?, " +
+    "    memo = CASE WHEN ? IS NOT NULL THEN ? ELSE memo END " +
+    "WHERE work_id = ? AND platform = 'narou'"
+  );
+
+  for (const seed of SEED) {
+    // ── sf_works 存在確認 ────────────────────────────────────────────────────
+    let workId;
+    const existing = stmtFindWork.get(seed.work_key);
+    if (existing) {
+      const mismatches = [];
+      if (existing.title     !== seed.title)     mismatches.push(`title: DB="${existing.title}" expected="${seed.title}"`);
+      if (existing.work_type !== seed.work_type) mismatches.push(`work_type: DB="${existing.work_type}" expected="${seed.work_type}"`);
+      if (mismatches.length > 0) {
+        errors.push(`work_key="${seed.work_key}" mismatch — ${mismatches.join(', ')}`);
+        continue; // publication も skip
+      }
+      workId = Number(existing.id);
+      verified_works++;
+    } else {
+      const result = stmtInsertWork.run(seed.work_key, seed.title, seed.work_type, seed.status, seed.tp);
+      workId = Number(result.lastInsertRowid);
+      inserted_works++;
+    }
+
+    // ── sf_work_publications (narou) upsert ─────────────────────────────────
+    const existingPub = stmtFindPub.get(workId);
+    if (existingPub) {
+      stmtUpdatePub.run(seed.pub, seed.memo, seed.memo, workId);
+      updated_pubs++;
+    } else {
+      stmtInsertPub.run(workId, seed.pub, seed.memo);
+      inserted_pubs++;
+    }
+  }
+
+  return { inserted_works, verified_works, inserted_pubs, updated_pubs, errors };
 }

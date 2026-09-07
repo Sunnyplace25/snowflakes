@@ -116,8 +116,17 @@ import { applyStatusReconciliation, localDateStr } from '../sync/status_reconcil
 import {
   createDbReadOnly, isSoundropMigrationApplied, DEFAULT_DB_PATH,
 } from '../data/db.js';
-import { copyFileSync, mkdirSync, existsSync } from 'node:fs';
-import { resolve as pathResolve }              from 'node:path';
+import { copyFileSync, mkdirSync, existsSync,
+         createReadStream }                    from 'node:fs';
+import { resolve as pathResolve,
+         extname as pathExtname }              from 'node:path';
+
+// ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
+import {
+  getWorks, getWork,
+  getWorkPublications, upsertWorkPublication, updateWorkPublication,
+  getWorkArchives, getWorkArchive, archiveManuscript, getArchivePath,
+} from '../data/sf_works_manager.js';
 import { fileURLToPath }                       from 'node:url';
 import { DatabaseSync }                        from 'node:sqlite';
 
@@ -151,6 +160,21 @@ function readBody(req) {
       try { resolve(body ? JSON.parse(body) : {}); }
       catch  { reject(new Error('Invalid JSON')); }
     });
+    req.on('error', reject);
+  });
+}
+
+/** バイナリ POST ボディを Buffer として読み込む（最大 maxBytes） */
+function readBinaryBody(req, maxBytes = 52_428_800) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let total = 0;
+    req.on('data', chunk => {
+      total += chunk.length;
+      if (total > maxBytes) return reject(new Error('Request body too large (max 50MB)'));
+      chunks.push(chunk);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
 }
@@ -1781,7 +1805,9 @@ export function createApiHandler(db) {
           status:        row?.status        ?? 'never_synced',
           lastSuccessAt: row?.last_success_at ?? null,
           lastAttemptAt: row?.last_attempt_at ?? null,
-          lastError:     row?.last_error      ?? null,
+          lastError:     row?.last_error
+            ? row.last_error.replace(/SOUNDROP_TOKEN/g, 'Soundrop Token')
+            : null,
           hoursAgo,
         });
       }
@@ -1842,7 +1868,7 @@ export function createApiHandler(db) {
             UPDATE sf_sync_state SET
               status          = 'unconfigured',
               last_attempt_at = ?,
-              last_error      = 'SOUNDROP_TOKEN が未設定です',
+              last_error      = 'Soundrop Token が未設定です（.env を更新してください）',
               updated_at      = ?
             WHERE source = 'soundrop_catalog'
           `).run(nowIso, nowIso);
@@ -2603,6 +2629,139 @@ export function createApiHandler(db) {
       if (method === 'GET' && path === '/api/calendar/links') {
         const links = getCalendarLinks(db);
         return jsonRes(res, 200, { ok: true, links, count: links.length });
+      }
+
+      // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────
+
+      // GET /api/sf/works  — 作品一覧（公開URL件数・アーカイブ件数付き）
+      if (method === 'GET' && path === '/api/sf/works') {
+        const works = getWorks(db);
+        return jsonRes(res, 200, { ok: true, works });
+      }
+
+      // GET /api/sf/works/:id/publications  — 作品の公開URL一覧
+      const worksPublicationsMatch = path.match(/^\/api\/sf\/works\/(\d+)\/publications$/);
+      if (method === 'GET' && worksPublicationsMatch) {
+        const workId = parseInt(worksPublicationsMatch[1], 10);
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        const publications = getWorkPublications(db, workId);
+        return jsonRes(res, 200, { ok: true, publications });
+      }
+
+      // POST /api/sf/works/:id/publications  — 公開URL登録/更新（UPSERT）
+      if (method === 'POST' && worksPublicationsMatch) {
+        const workId = parseInt(worksPublicationsMatch[1], 10);
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.platform) return errRes(res, 400, 'platform が必要です');
+        try {
+          const result = upsertWorkPublication(db, { ...body, work_id: workId });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // PUT /api/sf/works/:id/publications/:pubId  — 公開URL更新（所属確認付き）
+      const worksPubUpdateMatch = path.match(/^\/api\/sf\/works\/(\d+)\/publications\/(\d+)$/);
+      if (method === 'PUT' && worksPubUpdateMatch) {
+        const workId = parseInt(worksPubUpdateMatch[1], 10);
+        const pubId  = parseInt(worksPubUpdateMatch[2], 10);
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          updateWorkPublication(db, workId, pubId, body);
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) {
+          return errRes(res, e.message.includes('見つかりません') ? 404 : 400, e.message);
+        }
+      }
+
+      // GET /api/sf/works/:id/archives  — アーカイブ一覧
+      const worksArchivesMatch = path.match(/^\/api\/sf\/works\/(\d+)\/archives$/);
+      if (method === 'GET' && worksArchivesMatch) {
+        const workId = parseInt(worksArchivesMatch[1], 10);
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        const archives = getWorkArchives(db, workId);
+        return jsonRes(res, 200, { ok: true, archives });
+      }
+
+      // POST /api/sf/works/:id/archives  — 原稿アーカイブ登録（バイナリアップロード）
+      if (method === 'POST' && worksArchivesMatch) {
+        const workId = parseInt(worksArchivesMatch[1], 10);
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+
+        const archiveDir = process.env.MANUSCRIPT_ARCHIVE_DIR?.trim();
+        if (!archiveDir) {
+          return errRes(res, 503, 'MANUSCRIPT_ARCHIVE_DIR が設定されていません');
+        }
+
+        // X-* ヘッダからメタデータを取得
+        const archive_type       = req.headers['x-archive-type'];
+        const original_filename  = req.headers['x-original-filename']
+          ? decodeURIComponent(req.headers['x-original-filename']) : null;
+        const version_label      = req.headers['x-version-label']
+          ? decodeURIComponent(req.headers['x-version-label']) : null;
+        const memo               = req.headers['x-memo']
+          ? decodeURIComponent(req.headers['x-memo']) : null;
+
+        if (!archive_type)      return errRes(res, 400, 'X-Archive-Type ヘッダが必要です');
+        if (!original_filename) return errRes(res, 400, 'X-Original-Filename ヘッダが必要です');
+
+        let buffer;
+        try { buffer = await readBinaryBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        try {
+          const result = archiveManuscript(
+            db,
+            { work_id: workId, archive_type, version_label, original_filename, memo, buffer },
+            pathResolve(archiveDir),
+          );
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // GET /api/sf/works/:id/archives/:archiveId/file  — アーカイブファイルダウンロード
+      const worksArchiveFileMatch = path.match(/^\/api\/sf\/works\/(\d+)\/archives\/(\d+)\/file$/);
+      if (method === 'GET' && worksArchiveFileMatch) {
+        const workId    = parseInt(worksArchiveFileMatch[1], 10);
+        const archiveId = parseInt(worksArchiveFileMatch[2], 10);
+
+        const archiveDir = process.env.MANUSCRIPT_ARCHIVE_DIR?.trim();
+        if (!archiveDir) return errRes(res, 503, 'MANUSCRIPT_ARCHIVE_DIR が設定されていません');
+
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        const record = getWorkArchive(db, workId, archiveId);
+        if (!record) return errRes(res, 404, 'アーカイブが見つかりません');
+
+        let filePath;
+        try {
+          filePath = getArchivePath(record, pathResolve(archiveDir));
+        } catch (e) {
+          return errRes(res, 400, 'Invalid file path');
+        }
+
+        const ext      = pathExtname(record.archived_filename).toLowerCase();
+        const mimeMap  = {
+          '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          '.md':   'text/markdown; charset=utf-8',
+          '.txt':  'text/plain; charset=utf-8',
+          '.pdf':  'application/pdf',
+        };
+        const mime = mimeMap[ext] || 'application/octet-stream';
+        const safeName = encodeURIComponent(record.archived_filename);
+
+        res.writeHead(200, {
+          'Content-Type':        mime,
+          'Content-Disposition': `attachment; filename*=UTF-8''${safeName}`,
+          'Cache-Control':       'no-store',
+        });
+        createReadStream(filePath).pipe(res);
+        return;
       }
 
       return errRes(res, 404, 'Not Found');

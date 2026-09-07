@@ -56,3 +56,5 @@ jarvis/exports/note/*
 !jarvis/exports/note/.gitkeep
 # JARVIS ローカル専用設定資料（内部資料・絶対にpush不可）
 jarvis/knowledge/
+# JARVIS 原稿アーカイブ（個人の未公開原稿はgit管理しない）
+jarvis/manuscripts/

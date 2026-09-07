@@ -1417,3 +1417,116 @@ html, body {
   border-radius: 4px;
   padding: 6px 8px;
 }
+
+/* ── Phase 28: big-tab ナビゲーション ─────────────────────────────────────── */
+
+.sf-category-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 0 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.sf-big-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.sf-big-tab {
+  padding: 10px 22px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-sec);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.sf-big-tab:hover {
+  color: var(--text-pri);
+}
+
+.sf-big-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.sf-ops-btn {
+  font-size: 12px;
+  padding: 6px 14px;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+/* ── Phase 28: モーダル ─────────────────────────────────────────────────── */
+
+.sf-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.sf-modal[hidden] {
+  display: none;
+}
+
+.sf-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 760px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.sf-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sf-modal-header h3 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-pri);
+}
+
+.sf-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-sec);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sf-modal-close:hover {
+  color: var(--text-pri);
+  background: var(--border);
+}
+
+.sf-modal-body {
+  padding: 16px 18px;
+}
+
+/* small button variant */
+.sf-btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}

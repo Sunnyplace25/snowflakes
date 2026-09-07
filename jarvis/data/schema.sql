@@ -42,15 +42,17 @@ CREATE TABLE IF NOT EXISTS daily_status (
 -- ── 作品マスター ──────────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS sf_works (
-  id           INTEGER PRIMARY KEY AUTOINCREMENT,
-  work_key     TEXT    NOT NULL UNIQUE,
-  title        TEXT    NOT NULL,
-  work_type    TEXT    NOT NULL
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  work_key          TEXT    NOT NULL UNIQUE,
+  title             TEXT    NOT NULL,
+  work_type         TEXT    NOT NULL
     CHECK (work_type IN ('novel', 'short_story', 'short_series', 'game', 'other')),
-  status       TEXT    NOT NULL DEFAULT 'active'
+  status            TEXT    NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'completed', 'hiatus')),
-  published_at TEXT,
-  created_at   TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  published_at      TEXT,
+  title_provisional INTEGER NOT NULL DEFAULT 0
+    CHECK (title_provisional IN (0, 1)),
+  created_at        TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
 -- ── 楽曲マスター ──────────────────────────────────────────────────────────────
@@ -1186,3 +1188,55 @@ CREATE TABLE IF NOT EXISTS sf_platform_issues (
 CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_entity   ON sf_platform_issues(entity_type, entity_id);
 CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_status   ON sf_platform_issues(issue_status);
 CREATE INDEX IF NOT EXISTS idx_sf_platform_issues_platform ON sf_platform_issues(platform);
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- Phase 28: 作品公開URL・原稿アーカイブ管理
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+-- ── 作品公開URL管理 ──────────────────────────────────────────────────────────
+-- 1作品 × 1プラットフォーム = 1行（UNIQUE(work_id, platform)）
+-- 公開URLはユーザーが手動で記録する。自動投稿・自動取得は行わない。
+-- public_url は http:// または https:// のみ許可（アプリケーション側で検証）。
+
+CREATE TABLE IF NOT EXISTS sf_work_publications (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  work_id             INTEGER NOT NULL REFERENCES sf_works(id),
+  platform            TEXT    NOT NULL
+    CHECK (platform IN ('narou','kakuyomu','note','pixiv','hp','other')),
+  platform_work_id    TEXT,
+  public_url          TEXT,
+  publication_status  TEXT    NOT NULL DEFAULT 'published'
+    CHECK (publication_status IN ('published','unpublished','private','deleted')),
+  published_at        TEXT,
+  last_checked_at     TEXT,
+  memo                TEXT,
+  created_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(work_id, platform)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_work_pub_work   ON sf_work_publications(work_id);
+CREATE INDEX IF NOT EXISTS idx_sf_work_pub_status ON sf_work_publications(publication_status);
+
+-- ── 原稿アーカイブ管理 ───────────────────────────────────────────────────────
+-- ファイル本体は MANUSCRIPT_ARCHIVE_DIR 配下に保存（DB には格納しない）。
+-- sha256 は work_id + archive_type の組み合わせで一意（同一内容でも種別が違えば別行）。
+-- file_path は MANUSCRIPT_ARCHIVE_DIR からの相対パスで保存。
+
+CREATE TABLE IF NOT EXISTS sf_work_archives (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  work_id           INTEGER NOT NULL REFERENCES sf_works(id),
+  archive_type      TEXT    NOT NULL
+    CHECK (archive_type IN ('submission','publication','revision','backup','other')),
+  version_label     TEXT,
+  original_filename TEXT,
+  archived_filename TEXT    NOT NULL,
+  file_path         TEXT    NOT NULL,
+  sha256            TEXT    NOT NULL,
+  file_size_bytes   INTEGER NOT NULL,
+  archived_at       TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  memo              TEXT,
+  UNIQUE(work_id, sha256, archive_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sf_work_arch_work ON sf_work_archives(work_id);
+CREATE INDEX IF NOT EXISTS idx_sf_work_arch_type ON sf_work_archives(archive_type);
