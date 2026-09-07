@@ -11,7 +11,8 @@
  *   Pass 3: リリース-トラック リレーション（全 ID 確定後）
  */
 
-import { toDbStatus } from './catalog_normalizer.mjs';
+import { toDbStatus, localDateStr } from './catalog_normalizer.mjs';
+import { applyStatusReconciliation } from './status_reconciler.mjs';
 
 // ── リリース更新 ──────────────────────────────────────────────────────────────
 // 既存レコードの title / status / release_type は変更しない。
@@ -189,9 +190,12 @@ function upsertReleaseTracks(db, releaseDetails, releaseIdMap, trackIdMap, exist
  * @param {object} diff    - diffReleases / diffTracks / diffReleaseTracks の結果
  * @param {object[]} releaseDetails - normalizeReleaseDetail[] (tracks[] 含む)
  * @param {object[]} existingRelTracks - loadDbReleaseTracks() の結果
+ * @param {object}  [options]
+ * @param {string}  [options.todayLocal] - YYYY-MM-DD（テスト用日付注入。省略時はローカル現在日）
  * @returns {{ releasesUpdated, releasesInserted, tracksUpdated, tracksInserted, relationsAdded, relationsOrderUpdated }}
  */
-export function applyDiff(db, diff, releaseDetails, existingRelTracks) {
+export function applyDiff(db, diff, releaseDetails, existingRelTracks, options = {}) {
+  const todayLocal = options.todayLocal ?? localDateStr();
   const releaseIdMap = new Map(); // soundrop_release_id → sf_releases.id
   const trackIdMap   = new Map(); // soundrop_track_id  → sf_tracks.id
 
@@ -228,6 +232,11 @@ export function applyDiff(db, diff, releaseDetails, existingRelTracks) {
     // ── Pass 3: リレーション ──────────────────────────────────────────────────
     const { added: relationsAdded, orderUpdated: relationsOrderUpdated } =
       upsertReleaseTracks(db, releaseDetails, releaseIdMap, trackIdMap, existingRelTracks);
+
+    // ── Pass 4: ステータス整合 ────────────────────────────────────────────────
+    // soundrop_* カラムが確定した後にリリース・トラックのstatusを整合する。
+    // sf_distributions は変更しない。
+    applyStatusReconciliation(db, todayLocal);
 
     db.exec('COMMIT');
 

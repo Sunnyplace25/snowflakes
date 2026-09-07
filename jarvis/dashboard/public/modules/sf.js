@@ -2442,6 +2442,95 @@ const SfModule = (() => {
   }
 
   /**
+   * 自動同期ステータスパネルを描画・更新する。
+   * #sd-auto-sync-panel が存在する場合のみ実行。
+   */
+  async function _refreshSdAutoSyncPanel() {
+    const panel = document.getElementById('sd-auto-sync-panel');
+    if (!panel) return;
+    try {
+      const res  = await fetch('/api/sf/soundrop-sync/token-status');
+      const data = await res.json();
+
+      const tokenBadge = data.tokenConfigured
+        ? '<span style="color:#34d399">● 設定済み</span>'
+        : '<span style="color:#94a3b8">○ 未設定（手動のみ有効）</span>';
+
+      let lastSyncText = '未同期';
+      if (data.lastSuccessAt) {
+        const d = new Date(data.lastSuccessAt);
+        const fmt = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const h   = data.hoursAgo != null ? `（${Math.round(data.hoursAgo)}時間前）` : '';
+        lastSyncText = fmt + h;
+      }
+
+      const statusColors = { fresh: '#34d399', error: '#f87171', unconfigured: '#94a3b8', never_synced: '#94a3b8' };
+      const statusColor  = statusColors[data.status] ?? '#94a3b8';
+
+      const errorLine = (data.status === 'error' || data.needsToken)
+        ? `<p style="color:#f87171;font-size:12px;margin:4px 0 0">${escHtml(data.lastError ?? 'Soundrop接続情報の更新が必要です')}</p>`
+        : '';
+
+      panel.innerHTML = `
+        <div style="padding:14px 16px;background:#1e293b;border-radius:8px;border:1px solid #334155;margin-bottom:16px">
+          <p style="font-size:13px;font-weight:600;color:#cbd5e1;margin:0 0 8px">自動同期ステータス</p>
+          <table style="font-size:12px;color:#94a3b8;border-collapse:collapse">
+            <tr><td style="padding:2px 12px 2px 0">トークン</td><td>${tokenBadge}</td></tr>
+            <tr><td style="padding:2px 12px 2px 0">最終API同期</td><td style="color:#e2e8f0">${escHtml(lastSyncText)}</td></tr>
+            <tr><td style="padding:2px 12px 2px 0">ステータス</td><td style="color:${statusColor}">${escHtml(data.status)}</td></tr>
+          </table>
+          ${errorLine}
+          <div style="margin-top:10px">
+            <button id="sd-force-sync-btn"
+                    style="padding:6px 16px;background:#3b82f6;color:#fff;border:none;
+                           border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">
+              今すぐ同期
+            </button>
+            <span id="sd-force-sync-msg" style="font-size:12px;color:#94a3b8;margin-left:10px"></span>
+          </div>
+        </div>`;
+
+      // 「今すぐ同期」ハンドラ
+      document.getElementById('sd-force-sync-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('sd-force-sync-btn');
+        const msg = document.getElementById('sd-force-sync-msg');
+        btn.disabled    = true;
+        btn.textContent = '同期中...';
+        if (msg) msg.textContent = '';
+        try {
+          const r    = await fetch('/api/sf/soundrop-sync/auto', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ force: true }),
+          });
+          const d = await r.json();
+          if (d.needsToken) {
+            if (msg) msg.textContent = 'Soundrop接続情報の更新が必要です';
+            if (msg) msg.style.color = '#f87171';
+          } else if (!d.ok) {
+            if (msg) msg.textContent = d.error ?? '同期エラー';
+            if (msg) msg.style.color = '#f87171';
+          } else {
+            const s = d.stats;
+            if (msg) msg.textContent = s
+              ? `完了 (R+${s.releasesInserted} T+${s.tracksInserted} Rel+${s.relationsAdded})`
+              : '完了';
+            if (msg) msg.style.color = '#34d399';
+          }
+        } catch (_e) {
+          if (msg) { msg.textContent = '通信エラー'; msg.style.color = '#f87171'; }
+        } finally {
+          btn.disabled    = false;
+          btn.textContent = '今すぐ同期';
+          _refreshSdAutoSyncPanel();
+        }
+      });
+    } catch (_e) {
+      panel.innerHTML = '<p style="color:#64748b;font-size:12px">同期状態の取得に失敗しました</p>';
+    }
+  }
+
+  /**
    * Soundrop 同期タブ — メイン関数
    * 初回タブ開時・タブ再選択時に呼ばれる。
    * DB 書き込みは「同期する」ボタン押下時のみ。
@@ -2451,6 +2540,9 @@ const SfModule = (() => {
     const checkBtn  = document.getElementById('soundrop-check-btn');
     const resultDiv = document.getElementById('soundrop-sync-result');
     if (!checkBtn) return;
+
+    // ステータスパネルを初期描画（毎回更新）
+    _refreshSdAutoSyncPanel();
 
     // 二重初期化防止
     if (checkBtn.dataset.sdSyncInit === '1') return;
@@ -2577,12 +2669,32 @@ const SfModule = (() => {
   // ─── モジュール起動 ────────────────────────────────────────────────────────
 
   /**
+   * SF画面起動時にバックグラウンドでSoundrop自動同期を1回トリガーする。
+   * UIをブロックしない。エラーは静かに無視する。
+   */
+  async function _triggerSoundropAutoSync() {
+    try {
+      await fetch('/api/sf/soundrop-sync/auto', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ force: false }),
+      });
+      // soundrop-sync タブが現在開いていれば状態パネルを更新
+      const syncPanel = document.getElementById('sd-auto-sync-panel');
+      if (syncPanel) _refreshSdAutoSyncPanel();
+    } catch (_e) {
+      // ネットワークエラー等は無視（UIを壊さない）
+    }
+  }
+
+  /**
    * Snow flakes タブへの切替時に呼ばれる。
    */
   function activate() {
     setState('idle');
     initSubTabs();
     loadLibrary();
+    _triggerSoundropAutoSync();
   }
 
   // ─── 設定資料検索 (Phase 26) ─────────────────────────────────────────────

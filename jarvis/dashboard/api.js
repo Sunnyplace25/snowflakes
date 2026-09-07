@@ -112,6 +112,7 @@ import {
 import { extractTokenFromInput, verifyToken } from '../sync/soundrop_client.mjs';
 import { runSoundropDiff, summarizeDiff }     from '../sync/soundrop_sync.mjs';
 import { applyDiff }                           from '../sync/catalog_writer.mjs';
+import { applyStatusReconciliation, localDateStr } from '../sync/status_reconciler.mjs';
 import {
   createDbReadOnly, isSoundropMigrationApplied, DEFAULT_DB_PATH,
 } from '../data/db.js';
@@ -1756,6 +1757,176 @@ export function createApiHandler(db) {
         } catch (e) {
           const safeMsg = e.message.replaceAll(token, '[TOKEN]');
           return errRes(res, 500, `同期エラー: ${safeMsg}`);
+        }
+      }
+
+      // ── GET /api/sf/soundrop-sync/token-status ───────────────────────────────
+      // Token設定状況 + soundrop_catalog 同期状態（source='soundrop_catalog' のみ参照）
+      // ※ source='soundrop' (Statement CSV) は一切変更・参照しない
+      if (method === 'GET' && path === '/api/sf/soundrop-sync/token-status') {
+        const tokenConfigured = !!process.env.SOUNDROP_TOKEN?.trim();
+        const row = db.prepare(
+          "SELECT status, last_success_at, last_attempt_at, last_error FROM sf_sync_state WHERE source = 'soundrop_catalog'"
+        ).get() ?? null;
+
+        let hoursAgo = null;
+        if (row?.last_success_at) {
+          const ms = Date.now() - new Date(row.last_success_at).getTime();
+          hoursAgo = Math.round(ms / 36000) / 100;  // 小数2桁
+        }
+
+        return jsonRes(res, 200, {
+          ok:            true,
+          tokenConfigured,
+          status:        row?.status        ?? 'never_synced',
+          lastSuccessAt: row?.last_success_at ?? null,
+          lastAttemptAt: row?.last_attempt_at ?? null,
+          lastError:     row?.last_error      ?? null,
+          hoursAgo,
+        });
+      }
+
+      // ── POST /api/sf/soundrop-sync/auto ──────────────────────────────────────
+      // Token環境変数を使った自動同期。
+      // 処理順:
+      //   1. ローカル reconciliation（常に実行）
+      //   2. soundrop_catalog 行の確認/初期化
+      //   3. 6時間判定（force=false 時）
+      //   4. Token確認（未設定 → unconfigured / 無効 → error）
+      //   5. Soundrop API同期（applyDiff 内で Pass4 reconciliation 再実行）
+      //   6. sf_sync_state 更新
+      // ※ source='soundrop'（Statement CSV 同期状態）は絶対に変更しない
+      if (method === 'POST' && path === '/api/sf/soundrop-sync/auto') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const force = body?.force === true;
+
+        // Step 1: ローカル reconciliation（Token不要・常に実行）
+        const reconcileStats = applyStatusReconciliation(db);
+
+        // Step 2: soundrop_catalog 行の確認 / 初期化
+        let catalogRow = db.prepare(
+          "SELECT * FROM sf_sync_state WHERE source = 'soundrop_catalog'"
+        ).get() ?? null;
+
+        if (!catalogRow) {
+          db.prepare(`
+            INSERT INTO sf_sync_state (source, mode, status, consecutive_failures)
+            VALUES ('soundrop_catalog', 'auto', 'never_synced', 0)
+          `).run();
+          catalogRow = db.prepare(
+            "SELECT * FROM sf_sync_state WHERE source = 'soundrop_catalog'"
+          ).get();
+        }
+
+        // Step 3: 6時間判定（force=false かつ 前回成功あり）
+        if (!force && catalogRow.last_success_at) {
+          const ms      = Date.now() - new Date(catalogRow.last_success_at).getTime();
+          const hoursAgo = ms / (1000 * 60 * 60);
+          if (hoursAgo < 6) {
+            return jsonRes(res, 200, {
+              ok:      true,
+              skipped: true,
+              hoursAgo: Math.round(hoursAgo * 100) / 100,
+              reconcileStats,
+            });
+          }
+        }
+
+        const nowIso = new Date().toISOString();
+
+        // Step 4a: Token未設定 → unconfigured
+        const token = process.env.SOUNDROP_TOKEN?.trim() || null;
+        if (!token) {
+          db.prepare(`
+            UPDATE sf_sync_state SET
+              status          = 'unconfigured',
+              last_attempt_at = ?,
+              last_error      = 'SOUNDROP_TOKEN が未設定です',
+              updated_at      = ?
+            WHERE source = 'soundrop_catalog'
+          `).run(nowIso, nowIso);
+          return jsonRes(res, 200, {
+            ok:           false,
+            needsToken:   true,
+            error:        'Soundrop接続情報の更新が必要です',
+            reconcileStats,
+          });
+        }
+
+        // Step 4b: Token検証（401/403 → error + needsToken）
+        const verify = await verifyToken(token);
+        if (!verify.ok) {
+          const failures = (catalogRow.consecutive_failures ?? 0) + 1;
+          db.prepare(`
+            UPDATE sf_sync_state SET
+              status               = 'error',
+              last_attempt_at      = ?,
+              last_error           = ?,
+              consecutive_failures = ?,
+              updated_at           = ?
+            WHERE source = 'soundrop_catalog'
+          `).run(
+            nowIso,
+            `Token検証エラー (HTTP ${verify.httpStatus ?? 'null'})`,
+            failures,
+            nowIso,
+          );
+          return jsonRes(res, 200, {
+            ok:           false,
+            needsToken:   true,
+            error:        'Soundrop接続情報の更新が必要です',
+            reconcileStats,
+          });
+        }
+
+        // Step 5: Soundrop API 同期（applyDiff 内で Pass4 reconciliation 再実行）
+        try {
+          const { releaseDetails, dbRelTracks, releaseDiff, trackDiff } =
+            await runSoundropDiff(token, db);
+
+          const stats = applyDiff(
+            db,
+            { releases: releaseDiff, tracks: trackDiff },
+            releaseDetails,
+            dbRelTracks,
+          );
+
+          // Step 6: sf_sync_state 更新（成功）
+          db.prepare(`
+            UPDATE sf_sync_state SET
+              status               = 'fresh',
+              last_attempt_at      = ?,
+              last_success_at      = ?,
+              last_error           = null,
+              consecutive_failures = 0,
+              updated_at           = ?
+            WHERE source = 'soundrop_catalog'
+          `).run(nowIso, nowIso, nowIso);
+
+          return jsonRes(res, 200, {
+            ok:      true,
+            skipped: false,
+            stats,
+            reconcileStats,
+          });
+        } catch (e) {
+          const safeMsg  = e.message.replaceAll(token, '[TOKEN]');
+          const failures = (catalogRow.consecutive_failures ?? 0) + 1;
+          db.prepare(`
+            UPDATE sf_sync_state SET
+              status               = 'error',
+              last_attempt_at      = ?,
+              last_error           = ?,
+              consecutive_failures = ?,
+              updated_at           = ?
+            WHERE source = 'soundrop_catalog'
+          `).run(nowIso, safeMsg.slice(0, 500), failures, nowIso);
+          return jsonRes(res, 500, {
+            ok:    false,
+            error: `同期エラー: ${safeMsg}`,
+            reconcileStats,
+          });
         }
       }
 

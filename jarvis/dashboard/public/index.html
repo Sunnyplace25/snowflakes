@@ -996,7 +996,11 @@
         <span class="sf-note">カタログ情報を Soundrop から取得して JARVIS DB と照合します</span>
       </div>
 
-      <!-- URL 入力エリア -->
+      <!-- 自動同期ステータスパネル（JS で動的に更新） -->
+      <div id="sd-auto-sync-panel" style="margin-bottom:4px"></div>
+
+      <!-- 手動同期: URL 入力エリア -->
+      <p style="font-size:12px;color:#64748b;margin:0 0 8px;font-weight:600">手動同期（Request URL 貼り付け）</p>
       <div id="soundrop-sync-input-area" style="margin-bottom:20px">
         <label for="soundrop-request-url"
                style="display:block;font-size:13px;color:#94a3b8;margin-bottom:6px;font-weight:500">

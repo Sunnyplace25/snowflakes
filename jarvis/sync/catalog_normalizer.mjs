@@ -28,6 +28,16 @@ export function mapTypeName(typeName) {
   return TYPE_NAME_MAP[key] ?? 'single';
 }
 
+// ── ローカル日付を YYYY-MM-DD 文字列で返す ───────────────────────────────────
+// toISOString() は UTC 変換で日付がずれるため使用しない。
+// status_reconciler.mjs と共有するためエクスポートする。
+export function localDateStr(date = new Date()) {
+  const yy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
 // ── ISO8601 → YYYY-MM-DD（時刻部分を除去） ────────────────────────────────────
 function toDate(isoString) {
   if (!isoString) return null;
@@ -66,13 +76,8 @@ export function deriveReleaseStatus(normalized, today = new Date()) {
   if (normalized.soundrop_is_draft)    return 'unreleased';
   if (!normalized.release_date)        return 'unreleased';
 
-  const rd = new Date(normalized.release_date + 'T00:00:00');
-  // ローカル日付の年月日を取得（toISOString は UTC 変換で日付がずれるため使用しない）
-  const yy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  const todayDate = new Date(`${yy}-${mm}-${dd}T00:00:00`);
-  return rd > todayDate ? 'scheduled' : 'released';
+  // YYYY-MM-DD 文字列の辞書順比較でローカル日付と比較（タイムゾーン安全）
+  return normalized.release_date > localDateStr(today) ? 'scheduled' : 'released';
 }
 
 /**
