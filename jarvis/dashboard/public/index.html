@@ -849,6 +849,7 @@
     <button class="sf-tab" data-sf-tab="funnel">Funnel</button>
     <button class="sf-tab" data-sf-tab="sync">Sync / Ops</button>
     <button class="sf-tab" data-sf-tab="hp-analytics">HP Analytics</button>
+    <button class="sf-tab" data-sf-tab="knowledge">設定資料</button>
   </nav>
 
   <!-- Music Library tab -->
@@ -1172,6 +1173,28 @@
     </section>
 
   </div><!-- /#sf-tab-hp-analytics -->
+
+  <!-- 設定資料検索 tab (Phase 26) -->
+  <div id="sf-tab-knowledge" class="sf-tab-panel" hidden>
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>設定資料検索</h2>
+        <span class="sf-note">読み取り専用 · ファイルは非公開</span>
+      </div>
+      <div class="knowledge-search-bar">
+        <input
+          type="text"
+          id="knowledge-search-input"
+          class="knowledge-search-input"
+          placeholder="例：ヒナタの大学時代の設定、ハヤテと翼の関係"
+          autocomplete="off"
+          maxlength="200"
+        >
+        <button class="sf-btn" id="knowledge-search-btn">検索</button>
+      </div>
+      <div id="knowledge-results-container" class="knowledge-results"></div>
+    </section>
+  </div><!-- /#sf-tab-knowledge -->
 
 </div><!-- /#module-sf -->
 

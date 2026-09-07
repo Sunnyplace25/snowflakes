@@ -108,6 +108,7 @@ const SfModule = (() => {
         else if (tabName === 'funnel')         loadFunnel();
         else if (tabName === 'sync')           loadSync();
         else if (tabName === 'hp-analytics')   loadHpAnalytics();
+        else if (tabName === 'knowledge')       initKnowledge();
       });
     });
   }
@@ -2512,6 +2513,105 @@ const SfModule = (() => {
     loadLibrary();
   }
 
+  // ─── 設定資料検索 (Phase 26) ─────────────────────────────────────────────
+
+  /** source コード → UI 表示名 */
+  const KNOWLEDGE_SOURCE_LABELS = {
+    existing: '既存資料',
+    chatgpt:  'ChatGPT作成資料',
+  };
+
+  /** matchType コード → UI 表示名 */
+  const KNOWLEDGE_MATCH_LABELS = {
+    name: 'タイトル一致',
+    body: '本文一致',
+  };
+
+  /**
+   * 設定資料タブを初期化する。
+   * タブ切り替え時に1回だけ呼ばれる。2回目以降はイベントが重複しないよう管理。
+   */
+  let _knowledgeInitialized = false;
+
+  function initKnowledge() {
+    if (_knowledgeInitialized) return;
+    _knowledgeInitialized = true;
+
+    const input  = document.getElementById('knowledge-search-input');
+    const btn    = document.getElementById('knowledge-search-btn');
+    const container = document.getElementById('knowledge-results-container');
+    if (!input || !btn || !container) return;
+
+    btn.addEventListener('click', () => _runKnowledgeSearch());
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') _runKnowledgeSearch();
+    });
+  }
+
+  /** 検索を実行してコンテナに結果を描画する */
+  async function _runKnowledgeSearch() {
+    const input     = document.getElementById('knowledge-search-input');
+    const container = document.getElementById('knowledge-results-container');
+    if (!input || !container) return;
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    container.innerHTML = '<p class="knowledge-loading">検索中...</p>';
+
+    try {
+      const res = await fetch(`/api/knowledge/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      container.innerHTML = _renderKnowledgeResults(data.results ?? [], query);
+    } catch (e) {
+      container.innerHTML = `<p class="knowledge-error">検索エラー：${esc(e.message)}</p>`;
+    }
+  }
+
+  /**
+   * 検索結果を HTML 文字列で返す。
+   * @param {Array} results - API レスポンスの results 配列
+   * @param {string} query  - 検索クエリ（表示用）
+   * @returns {string}
+   */
+  function _renderKnowledgeResults(results, query) {
+    if (results.length === 0) {
+      return `<p class="knowledge-empty">「${esc(query)}」の設定資料では確認できません。</p>`;
+    }
+
+    const items = results.map(r => {
+      const sourceLabel = KNOWLEDGE_SOURCE_LABELS[r.source] ?? r.source;
+      const sourceBadge = `<span class="knowledge-badge knowledge-badge-${esc(r.source)}">${esc(sourceLabel)}</span>`;
+
+      const matchRows = (r.matches ?? []).map(m => {
+        const matchLabel = KNOWLEDGE_MATCH_LABELS[m.matchType] ?? m.matchType;
+        const snippet = (m.snippet ?? '').trim().slice(0, 300);
+        return `
+          <div class="knowledge-match">
+            <div class="knowledge-match-meta">
+              <span class="knowledge-match-type">${esc(matchLabel)}</span>
+              <span class="knowledge-line-no">L${m.lineNo}</span>
+            </div>
+            <pre class="knowledge-snippet">${esc(snippet)}</pre>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="knowledge-result-card">
+          <div class="knowledge-result-header">
+            <span class="knowledge-filename">${esc(r.file)}</span>
+            ${sourceBadge}
+          </div>
+          ${matchRows}
+        </div>`;
+    });
+
+    return `
+      <p class="knowledge-summary">${results.length} 件の資料が見つかりました</p>
+      <div class="knowledge-result-list">${items.join('')}</div>`;
+  }
+
   // ─── Public API ────────────────────────────────────────────────────────────
 
   return {
@@ -2522,6 +2622,7 @@ const SfModule = (() => {
     loadSoundropStats, initSoundropStats, loadSoundropSync,
     loadDistribution,
     renderDistPlatforms, renderDistIssues,
+    initKnowledge,
     renderTracksTable, renderReleasesTable, renderProfilesTable, renderImportHistory,
     renderYouTubeChannel, renderYouTubeVideos,
     renderTikTokAccount, renderTikTokVideos,

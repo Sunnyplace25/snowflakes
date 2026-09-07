@@ -1298,3 +1298,121 @@ html, body {
 .dist-platform-actions {
   margin-top: 4px;
 }
+
+/* ── 設定資料検索 (Phase 26) ─────────────────────────────────────────────── */
+
+.knowledge-search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.knowledge-search-input {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-pri);
+  font-size: 14px;
+  padding: 8px 12px;
+  outline: none;
+}
+
+.knowledge-search-input:focus {
+  border-color: var(--accent);
+}
+
+.knowledge-loading,
+.knowledge-empty,
+.knowledge-summary {
+  font-size: 13px;
+  color: var(--text-sec);
+  padding: 8px 0;
+}
+
+.knowledge-error {
+  font-size: 13px;
+  color: #f87171;
+  padding: 8px 0;
+}
+
+.knowledge-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.knowledge-result-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.knowledge-result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.knowledge-filename {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-pri);
+}
+
+.knowledge-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.knowledge-badge-existing {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+.knowledge-badge-chatgpt {
+  background: #3b2e5a;
+  color: #c4b5fd;
+}
+
+.knowledge-match {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.knowledge-match-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.knowledge-match-type {
+  font-size: 11px;
+  color: var(--text-sec);
+}
+
+.knowledge-line-no {
+  font-size: 11px;
+  color: var(--text-sec);
+  font-family: monospace;
+}
+
+.knowledge-snippet {
+  font-size: 12px;
+  color: var(--text-sec);
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  max-height: 120px;
+  overflow-y: auto;
+  background: #0f172a;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
