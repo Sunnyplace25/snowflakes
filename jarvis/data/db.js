@@ -37,7 +37,7 @@ const SF_REVENUE_MIGRATIONS = [
   "ALTER TABLE sf_revenue ADD COLUMN quantity INTEGER NOT NULL DEFAULT 0",
 ];
 
-function runMigrations(db) {
+function runMigrations(db, dbPath = ':memory:') {
   // Phase 1.5: sf_tracks カラム追加
   for (const sql of SF_TRACKS_MIGRATIONS) {
     try { db.exec(sql); } catch (_) { /* column already exists */ }
@@ -758,6 +758,21 @@ function runMigrations(db) {
   // Phase 28 Extension: title_provisional + sf_work_publications 'hp' + ICE BREAKER 修正
   phase28ExtensionMigration(db);
 
+  // Phase 29: sf_works.display_order カラム追加・初期値設定
+  phase29Migration(db);
+
+  // Phase 30: sf_work_archives 再構築（direct_input/literary_award/version_date 追加）+ sf_works 新カラム
+  // ★ :memory: DB（テスト用）は自動適用。実DBファイルへの適用は承認後に手動呼び出しすること。
+  if (dbPath === ':memory:') {
+    phase30Migration(db);
+  }
+
+  // Phase 31: sf_sync_source_settings テーブル追加（source の enabled/disabled 管理）
+  // ★ :memory: DB（テスト用）は自動適用。実DBファイルへの適用は承認後に手動呼び出しすること。
+  if (dbPath === ':memory:') {
+    phase31Migration(db);
+  }
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -817,7 +832,7 @@ export function createDb(dbPath = DEFAULT_DB_PATH) {
   const schema = readFileSync(SCHEMA_PATH, 'utf8');
   db.exec(schema);
 
-  runMigrations(db);
+  runMigrations(db, dbPath);
 
   return db;
 }
@@ -1026,8 +1041,10 @@ export function seedSfWorksInventory(db) {
   const errors = [];
 
   const stmtFindWork   = db.prepare('SELECT id, title, work_type FROM sf_works WHERE work_key = ?');
+  // display_order はINSERT時点で末尾へ自動付与（MAX + 10）
   const stmtInsertWork = db.prepare(
-    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional, display_order) ' +
+    'VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(display_order), 0) + 10 FROM sf_works))'
   );
   const stmtFindPub = db.prepare(
     "SELECT id FROM sf_work_publications WHERE work_id = ? AND platform = 'narou'"
@@ -1077,6 +1094,182 @@ export function seedSfWorksInventory(db) {
   }
 
   return { inserted_works, verified_works, inserted_pubs, updated_pubs, errors };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 29: display_order migration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Phase 29 マイグレーション。runMigrations から自動呼び出し済み。
+ * テストから直接呼ぶことも可（冪等）。
+ *
+ * 1. sf_works.display_order カラム追加（PRAGMA table_info で存在確認）
+ * 2. display_order が NULL の作品に初期値を付与（ユーザー設定済みの値は絶対に変更しない）
+ *
+ *    ケース A: まだ1件も display_order が設定されていない（初回 migration）
+ *      → 現行表示順 (published_at DESC NULLS LAST, id DESC) で 10, 20, 30... を付与
+ *
+ *    ケース B: 一部の作品に display_order が設定済み（ユーザーが並べ替え後に新規作品が追加された等）
+ *      → 既存の MAX(display_order) を起点に id ASC 順で末尾へ追加
+ *      → 既存の display_order は一切変更しない
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase29Migration(db) {
+  // 1. display_order カラム追加（冪等）
+  const cols = db.prepare('PRAGMA table_info(sf_works)').all();
+  if (!cols.some(c => c.name === 'display_order')) {
+    db.exec('ALTER TABLE sf_works ADD COLUMN display_order INTEGER');
+  }
+
+  // 2. NULL作品が存在しない場合は何もしない
+  const nullCount = Number(
+    db.prepare('SELECT COUNT(*) AS cnt FROM sf_works WHERE display_order IS NULL').get()?.cnt ?? 0
+  );
+  if (nullCount === 0) return;
+
+  const orderedCount = Number(
+    db.prepare('SELECT COUNT(*) AS cnt FROM sf_works WHERE display_order IS NOT NULL').get()?.cnt ?? 0
+  );
+
+  if (orderedCount === 0) {
+    // ケース A: 初回 — 現行ソート順 (published_at DESC NULLS LAST, id DESC) で初期化
+    db.exec(`
+      UPDATE sf_works
+      SET display_order = (
+        SELECT sub.rn * 10
+        FROM (
+          SELECT id,
+                 ROW_NUMBER() OVER (ORDER BY published_at DESC NULLS LAST, id DESC) AS rn
+          FROM sf_works
+        ) sub
+        WHERE sub.id = sf_works.id
+      )
+      WHERE display_order IS NULL
+    `);
+  } else {
+    // ケース B: 既存順を維持し、NULL作品を末尾に id ASC 順で追加
+    //   MAX(display_order) + 10, +20, +30 ... と付与
+    //   サブクエリ内で id <= sf_works.id かつ NULL の作品数を数えることで連番を実現
+    db.exec(`
+      UPDATE sf_works
+      SET display_order = (
+        SELECT COALESCE(
+          (SELECT MAX(display_order) FROM sf_works WHERE display_order IS NOT NULL),
+          0
+        ) + (
+          SELECT COUNT(*) * 10
+          FROM sf_works AS s2
+          WHERE s2.display_order IS NULL AND s2.id <= sf_works.id
+        )
+      )
+      WHERE display_order IS NULL
+    `);
+  }
+}
+
+/**
+ * Phase 30 マイグレーション。
+ *
+ * 1. sf_work_archives テーブル再構築（direct_input / literary_award 追加、version_date 追加）
+ * 2. sf_works に synopsis / first_draft_date / character_count / memo カラム追加
+ * 3. sf_work_archives に version_date カラム確認・追加（再構築スキップ時のフォールバック）
+ * 4. PRAGMA foreign_key_check
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase30Migration(db) {
+  // ── Step 1: sf_work_archives 再構築（冪等判定） ──────────────────────────────
+  const archiveTableRow = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='sf_work_archives'"
+  ).get();
+  const archiveTableSql = archiveTableRow?.sql ?? '';
+  // CHECK に7種すべて + version_date カラムが存在する場合のみ再構築をスキップ
+  const ALL_ARCHIVE_TYPES = ['submission', 'publication', 'revision', 'literary_award', 'direct_input', 'backup', 'other'];
+  const checkHasAllTypes  = ALL_ARCHIVE_TYPES.every(t => archiveTableSql.includes(`'${t}'`));
+  const archiveColNames   = db.prepare('PRAGMA table_info(sf_work_archives)').all().map(c => c.name);
+  const hasVersionDate    = archiveColNames.includes('version_date');
+  const skipRebuild       = checkHasAllTypes && hasVersionDate;
+
+  db.exec('PRAGMA foreign_keys = OFF');
+  try {
+    if (!skipRebuild) {
+      let committed = false;
+      try {
+        db.exec('BEGIN TRANSACTION');
+
+        db.exec(`
+          CREATE TABLE sf_work_archives_new (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            work_id           INTEGER NOT NULL REFERENCES sf_works(id),
+            archive_type      TEXT    NOT NULL
+              CHECK (archive_type IN ('submission','publication','revision','literary_award','direct_input','backup','other')),
+            version_label     TEXT,
+            version_date      TEXT,
+            original_filename TEXT,
+            archived_filename TEXT    NOT NULL,
+            file_path         TEXT    NOT NULL,
+            sha256            TEXT    NOT NULL,
+            file_size_bytes   INTEGER NOT NULL,
+            archived_at       TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+            memo              TEXT,
+            UNIQUE(work_id, sha256, archive_type)
+          )
+        `);
+
+        db.exec(`
+          INSERT INTO sf_work_archives_new
+            (id, work_id, archive_type, version_label, original_filename, archived_filename,
+             file_path, sha256, file_size_bytes, archived_at, memo)
+          SELECT
+            id, work_id, archive_type, version_label, original_filename, archived_filename,
+            file_path, sha256, file_size_bytes, archived_at, memo
+          FROM sf_work_archives
+        `);
+
+        db.exec('DROP TABLE sf_work_archives');
+        db.exec('ALTER TABLE sf_work_archives_new RENAME TO sf_work_archives');
+
+        db.exec('COMMIT');
+        committed = true;
+
+        db.exec('CREATE INDEX IF NOT EXISTS idx_sf_work_arch_work ON sf_work_archives(work_id)');
+        db.exec('CREATE INDEX IF NOT EXISTS idx_sf_work_arch_type ON sf_work_archives(archive_type)');
+
+        const fkCheck = db.prepare('PRAGMA foreign_key_check(sf_work_archives)').all();
+        if (fkCheck.length > 0) {
+          throw new Error(`sf_work_archives FK check failed: ${JSON.stringify(fkCheck)}`);
+        }
+      } catch (e) {
+        if (!committed) {
+          try { db.exec('ROLLBACK'); } catch (_) {}
+        }
+        throw e;
+      }
+    }
+  } finally {
+    db.exec('PRAGMA foreign_keys = ON');
+  }
+
+  // ── Step 2: sf_works カラム追加（冪等） ──────────────────────────────────────
+  const worksCols = db.prepare('PRAGMA table_info(sf_works)').all().map(c => c.name);
+  if (!worksCols.includes('synopsis'))         db.exec('ALTER TABLE sf_works ADD COLUMN synopsis TEXT');
+  if (!worksCols.includes('first_draft_date')) db.exec('ALTER TABLE sf_works ADD COLUMN first_draft_date TEXT');
+  if (!worksCols.includes('character_count'))  db.exec('ALTER TABLE sf_works ADD COLUMN character_count INTEGER');
+  if (!worksCols.includes('memo'))             db.exec('ALTER TABLE sf_works ADD COLUMN memo TEXT');
+
+  // ── Step 3: version_date カラム確認（再構築スキップ時のフォールバック） ────────
+  const archiveCols = db.prepare('PRAGMA table_info(sf_work_archives)').all().map(c => c.name);
+  if (!archiveCols.includes('version_date')) {
+    db.exec('ALTER TABLE sf_work_archives ADD COLUMN version_date TEXT');
+  }
+
+  // ── Step 4: Final FK check ────────────────────────────────────────────────────
+  const fkErrors = db.prepare('PRAGMA foreign_key_check').all();
+  if (fkErrors.length > 0) {
+    throw new Error(`foreign_key_check failed: ${JSON.stringify(fkErrors)}`);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1162,8 +1355,10 @@ export function seedHpExclusiveWorks(db) {
   const errors = [];
 
   const stmtFindWork   = db.prepare('SELECT id, title, work_type FROM sf_works WHERE work_key = ?');
+  // display_order はINSERT時点で末尾へ自動付与（MAX + 10）
   const stmtInsertWork = db.prepare(
-    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO sf_works (work_key, title, work_type, status, title_provisional, display_order) ' +
+    'VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(display_order), 0) + 10 FROM sf_works))'
   );
   const stmtFindPub = db.prepare(
     "SELECT id FROM sf_work_publications WHERE work_id = ? AND platform = 'hp'"
@@ -1210,4 +1405,27 @@ export function seedHpExclusiveWorks(db) {
   }
 
   return { inserted_works, verified_works, inserted_pubs, updated_pubs, errors };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 31: sf_sync_source_settings テーブル追加（source enabled/disabled 管理）
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Phase 31 マイグレーション。
+ * sf_sync_source_settings テーブルを追加する（冪等）。
+ *
+ * ★ runMigrations() から :memory: DB のみ自動適用。
+ *    実 DB（business_data.db）への適用は承認後に別途呼び出すこと。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase31Migration(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sf_sync_source_settings (
+      source_key  TEXT PRIMARY KEY,
+      enabled     INTEGER NOT NULL DEFAULT 1,
+      updated_at  TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    )
+  `);
 }

@@ -52,6 +52,11 @@ CREATE TABLE IF NOT EXISTS sf_works (
   published_at      TEXT,
   title_provisional INTEGER NOT NULL DEFAULT 0
     CHECK (title_provisional IN (0, 1)),
+  display_order     INTEGER,
+  synopsis          TEXT,
+  first_draft_date  TEXT,
+  character_count   INTEGER,
+  memo              TEXT,
   created_at        TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
 );
 
@@ -1226,8 +1231,9 @@ CREATE TABLE IF NOT EXISTS sf_work_archives (
   id                INTEGER PRIMARY KEY AUTOINCREMENT,
   work_id           INTEGER NOT NULL REFERENCES sf_works(id),
   archive_type      TEXT    NOT NULL
-    CHECK (archive_type IN ('submission','publication','revision','backup','other')),
+    CHECK (archive_type IN ('submission','publication','revision','literary_award','direct_input','backup','other')),
   version_label     TEXT,
+  version_date      TEXT,
   original_filename TEXT,
   archived_filename TEXT    NOT NULL,
   file_path         TEXT    NOT NULL,
@@ -1240,3 +1246,13 @@ CREATE TABLE IF NOT EXISTS sf_work_archives (
 
 CREATE INDEX IF NOT EXISTS idx_sf_work_arch_work ON sf_work_archives(work_id);
 CREATE INDEX IF NOT EXISTS idx_sf_work_arch_type ON sf_work_archives(archive_type);
+
+-- ── Sync source 設定（Phase 31）─────────────────────────────────────────────
+-- source ごとの enabled/disabled を管理する。
+-- レコードが存在しない source のデフォルトは enabled = 1（利用中）。
+
+CREATE TABLE IF NOT EXISTS sf_sync_source_settings (
+  source_key  TEXT PRIMARY KEY,
+  enabled     INTEGER NOT NULL DEFAULT 1,
+  updated_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);

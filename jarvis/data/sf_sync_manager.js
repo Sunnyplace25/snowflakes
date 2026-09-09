@@ -269,6 +269,46 @@ export function evaluateFreshness(db, source, today = null) {
   return { status, last_data_date: lastDate, days_since_update: diff };
 }
 
+// ─── source enabled/disabled 設定 ────────────────────────────────────────────
+
+/**
+ * source の enabled 状態を sf_sync_source_settings から取得する。
+ * レコードが存在しない場合のデフォルトは 1（利用中）。
+ * ENVが未設定でも自動的に 0 にはしない（DB 値のみで判定）。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {string} sourceKey
+ * @returns {number} 1（利用中）または 0（未使用）
+ */
+export function getSourceEnabled(db, sourceKey) {
+  try {
+    const row = db.prepare(
+      'SELECT enabled FROM sf_sync_source_settings WHERE source_key = ?'
+    ).get(sourceKey);
+    return row != null ? (row.enabled ? 1 : 0) : 1;
+  } catch (_) {
+    return 1; // テーブル未作成時はデフォルト利用中
+  }
+}
+
+/**
+ * source の enabled 状態を sf_sync_source_settings に UPSERT する。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {string} sourceKey
+ * @param {number} enabled - 1（利用中）または 0（未使用）
+ */
+export function setSourceEnabled(db, sourceKey, enabled) {
+  const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  db.prepare(`
+    INSERT INTO sf_sync_source_settings (source_key, enabled, updated_at)
+    VALUES (?, ?, ?)
+    ON CONFLICT(source_key) DO UPDATE SET
+      enabled    = excluded.enabled,
+      updated_at = excluded.updated_at
+  `).run(sourceKey, enabled ? 1 : 0, now);
+}
+
 // ─── sync_state CRUD ─────────────────────────────────────────────────────────
 
 /**
@@ -443,8 +483,16 @@ export function getSyncSources() {
  * @returns {{ sources: object[], auto: string[], manual: string[], summary: object }}
  */
 export function getSyncStatus(db, today = null) {
-  const sources = SOURCE_NAMES.map(s => getSourceStatus(db, s, today));
-  const attention = sources.filter(s => s.requires_user_action);
+  const sources = SOURCE_NAMES.map(s => {
+    const st = getSourceStatus(db, s, today);
+    return { ...st, enabled: getSourceEnabled(db, s) };
+  });
+  // 要確認件数: enabled AUTO source の error/unconfigured/never_synced/stale のみ
+  const attentionSources = sources.filter(s => {
+    if (!s.enabled) return false;
+    if (s.mode !== 'auto') return false;
+    return ['error', 'unconfigured', 'never_synced', 'stale'].includes(s.status);
+  });
 
   return {
     sources,
@@ -456,7 +504,7 @@ export function getSyncStatus(db, today = null) {
       stale:        sources.filter(s => s.status === 'stale').length,
       error:        sources.filter(s => s.status === 'error').length,
       unconfigured: sources.filter(s => s.status === 'unconfigured').length,
-      attention_count: attention.length,
+      attention_count: attentionSources.length,
     },
   };
 }
@@ -481,7 +529,17 @@ export function getAttentionItems(db, opts = {}) {
 
   for (const source of SOURCE_NAMES) {
     const st = getSourceStatus(db, source, today);
-    if (!st.requires_user_action) continue;
+
+    // disabled source は要確認に出さない
+    const enabled = getSourceEnabled(db, source);
+    if (!enabled) continue;
+
+    // 要確認対象: enabled AUTO source の error / unconfigured / never_synced / stale のみ
+    // MANUAL source の stale / manual_required は要確認件数から除外
+    const isAutoAttention =
+      st.mode === 'auto' &&
+      ['error', 'unconfigured', 'never_synced', 'stale'].includes(st.status);
+    if (!isAutoAttention) continue;
 
     // 派生 source 抑制:
     // この source の親 source（DERIVED_FROM[source]）が attention に出ている場合はスキップ。
@@ -647,6 +705,11 @@ export async function runAutoSync(db, opts = {}) {
   const results = [];
 
   for (const source of AUTO_SOURCES) {
+    // enabled=0 の source はスキップ
+    if (!getSourceEnabled(db, source)) {
+      results.push({ source, success: false, error: 'disabled', data_date: null, skipped: true });
+      continue;
+    }
     const collectFn = opts.collectFns?.[source] ?? null;
     const r = await runSourceSync(db, source, {
       collectFn,
@@ -655,12 +718,15 @@ export async function runAutoSync(db, opts = {}) {
     results.push(r);
   }
 
-  const succeeded = results.filter(r => r.success).map(r => r.source);
-  const failed    = results.filter(r => !r.success).map(r => r.source);
+  // skipped（disabled）は succeeded/failed の集計から除外する
+  const ran       = results.filter(r => !r.skipped);
+  const succeeded = ran.filter(r => r.success).map(r => r.source);
+  const failed    = ran.filter(r => !r.success).map(r => r.source);
 
   const overall =
-    failed.length === 0           ? 'success' :
-    succeeded.length === 0        ? 'failed'  :
+    ran.length === 0               ? 'success' :  // 全source disabled の場合は success 扱い
+    failed.length === 0            ? 'success' :
+    succeeded.length === 0         ? 'failed'  :
     'partial';
 
   return { overall, results, succeeded, failed };

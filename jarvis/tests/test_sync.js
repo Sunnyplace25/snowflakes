@@ -735,13 +735,15 @@ await test('runSourceSync: invalid source → エラー', async () => {
 
 console.log('\nSection 12: attention items');
 
-await test('全データ未取得 → attention に全 MANUAL source が含まれる', () => {
+await test('全データ未取得 → MANUAL source は attention に出ない（Phase 31: AUTO onlyに変更）', () => {
+  // Phase 31 仕様変更: getAttentionItems は enabled AUTO source のみを要確認対象とする。
+  // MANUAL source の manual_required / stale はダッシュボードの「更新待ち/未取込」ラインで表示するため除外。
   const db = makeDb();
   const items = getAttentionItems(db, { ignoreCooldown: true, today: '2026-08-14' });
   const sources = items.map(i => i.source);
-  assert.ok(sources.includes('tiktok'));
-  assert.ok(sources.includes('soundrop'));
-  assert.ok(sources.includes('narou'));
+  assert.ok(!sources.includes('tiktok'),   'tiktok（MANUAL）が attention に出ている');
+  assert.ok(!sources.includes('soundrop'), 'soundrop（MANUAL）が attention に出ている');
+  assert.ok(!sources.includes('narou'),    'narou（MANUAL）が attention に出ている');
   db.close?.();
 });
 
@@ -797,21 +799,22 @@ await test('DERIVED_FROM に revenue → soundrop が定義されている', () 
   assert.equal(DERIVED_FROM['revenue'], 'soundrop');
 });
 
-await test('Soundrop stale + Revenue stale → attention は soundrop のみ（1件）', () => {
+await test('Soundrop stale + Revenue stale → どちらも attention に出ない（Phase 31: MANUAL除外）', () => {
+  // Phase 31 仕様変更: MANUAL source は getAttentionItems に出ない。
+  // soundrop/revenue はどちらも MANUAL なので attention に出ない。
   const db = makeDb();
-  // どちらも未取得（manual_required）
   const items = getAttentionItems(db, { ignoreCooldown: true, today: '2026-08-14' });
   const soundropItem = items.find(i => i.source === 'soundrop');
   const revenueItem  = items.find(i => i.source === 'revenue');
-  assert.ok(soundropItem, 'soundrop が attention に出ていない');
-  assert.equal(revenueItem, undefined, 'Revenue が soundrop と同時に attention に出ている（重複）');
+  assert.equal(soundropItem, undefined, 'soundrop（MANUAL）が attention に出ている');
+  assert.equal(revenueItem,  undefined, 'revenue（MANUAL）が attention に出ている');
 });
 
-await test('Soundrop fresh + Revenue stale → Revenue は独立 attention を出す', () => {
+await test('Soundrop fresh + Revenue stale → どちらも attention に出ない（Phase 31: MANUAL除外）', () => {
+  // Phase 31 仕様変更: MANUAL source は getAttentionItems に出ない。
+  // soundrop/revenue はどちらも MANUAL source なので attention 対象外。
+  // getSyncStatus / ダッシュボードの「更新待ち」ラインで表示するため attention からは除外。
   const db = makeDb();
-  // Soundrop: fresh（transaction_month='2026-08' = 当月）
-  // Revenue: stale（month='2025-12' = 8か月前、しきい値35日超え）
-  // → 同じ sf_revenue テーブルだが読むカラムが異なるため独立した freshness を持つ
   db.prepare(`
     INSERT OR IGNORE INTO sf_revenue (date, month, transaction_month, source, platform, amount, quantity)
     VALUES ('2025-12-01', '2025-12', '2026-08', '音楽配信', 'Spotify', 100.0, 50000)
@@ -819,10 +822,8 @@ await test('Soundrop fresh + Revenue stale → Revenue は独立 attention を�
   const items = getAttentionItems(db, { ignoreCooldown: true, today: '2026-08-14' });
   const soundropItem = items.find(i => i.source === 'soundrop');
   const revenueItem  = items.find(i => i.source === 'revenue');
-  // soundrop: transaction_month='2026-08' → fresh → attention に出ない
-  assert.equal(soundropItem, undefined, 'fresh な soundrop が attention に出ている');
-  // revenue: MAX(month)='2025-12' → stale（240日以上）→ 出てよい
-  assert.ok(revenueItem, 'soundrop が fresh のとき Revenue の独立 attention が出ない');
+  assert.equal(soundropItem, undefined, 'soundrop（MANUAL）が attention に出ている');
+  assert.equal(revenueItem,  undefined, 'revenue（MANUAL）が attention に出ている');
   db.close?.();
 });
 
