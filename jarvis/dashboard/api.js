@@ -123,9 +123,10 @@ import { resolve as pathResolve,
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
-  getWorks, getWork,
+  getWorks, getWork, reorderWorks, deleteWork,
   getWorkPublications, upsertWorkPublication, updateWorkPublication,
   getWorkArchives, getWorkArchive, archiveManuscript, getArchivePath,
+  deleteWorkArchive, archiveTextContent,
 } from '../data/sf_works_manager.js';
 import { fileURLToPath }                       from 'node:url';
 import { DatabaseSync }                        from 'node:sqlite';
@@ -2639,6 +2640,32 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, works });
       }
 
+      // PUT /api/sf/works/reorder  — 表示順を一括更新
+      if (method === 'PUT' && path === '/api/sf/works/reorder') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const workIds = body?.work_ids;
+        if (!Array.isArray(workIds)) return errRes(res, 400, 'work_ids が配列ではありません');
+        try {
+          reorderWorks(db, workIds.map(id => Number(id)));
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // DELETE /api/sf/works/:id  — 作品削除（依存チェック付き）
+      const worksIdMatch = path.match(/^\/api\/sf\/works\/(\d+)$/);
+      if (method === 'DELETE' && worksIdMatch) {
+        const workId = parseInt(worksIdMatch[1], 10);
+        try {
+          const result = deleteWork(db, workId);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, e.status || 400, e.message);
+        }
+      }
+
       // GET /api/sf/works/:id/publications  — 作品の公開URL一覧
       const worksPublicationsMatch = path.match(/^\/api\/sf\/works\/(\d+)\/publications$/);
       if (method === 'GET' && worksPublicationsMatch) {
@@ -2688,6 +2715,33 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, archives });
       }
 
+      // POST /api/sf/works/:workId/archives/text  — 直接入力テキストをアーカイブ保存
+      const worksArchiveTextMatch = path.match(/^\/api\/sf\/works\/(\d+)\/archives\/text$/);
+      if (method === 'POST' && worksArchiveTextMatch) {
+        const workId = parseInt(worksArchiveTextMatch[1], 10);
+        const archiveDir = process.env.MANUSCRIPT_ARCHIVE_DIR?.trim();
+        if (!archiveDir) return errRes(res, 503, 'MANUSCRIPT_ARCHIVE_DIR が設定されていません');
+        if (!getWork(db, workId)) return errRes(res, 404, '作品が見つかりません');
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const { content, version_label, version_date, memo } = body ?? {};
+        if (!content?.trim()) return errRes(res, 400, '本文が空です');
+        if (version_date && !/^\d{4}-\d{2}-\d{2}$/.test(version_date)) {
+          return errRes(res, 400, 'version_date は YYYY-MM-DD 形式で指定してください');
+        }
+        try {
+          const result = archiveTextContent(db, workId, content, {
+            version_label: version_label || null,
+            version_date:  version_date  || null,
+            memo:          memo          || null,
+            archiveDir,
+          });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, e.status || 400, e.message);
+        }
+      }
+
       // POST /api/sf/works/:id/archives  — 原稿アーカイブ登録（バイナリアップロード）
       if (method === 'POST' && worksArchivesMatch) {
         const workId = parseInt(worksArchivesMatch[1], 10);
@@ -2704,6 +2758,8 @@ export function createApiHandler(db) {
           ? decodeURIComponent(req.headers['x-original-filename']) : null;
         const version_label      = req.headers['x-version-label']
           ? decodeURIComponent(req.headers['x-version-label']) : null;
+        const version_date       = req.headers['x-version-date']
+          ? decodeURIComponent(req.headers['x-version-date']) : null;
         const memo               = req.headers['x-memo']
           ? decodeURIComponent(req.headers['x-memo']) : null;
 
@@ -2716,12 +2772,25 @@ export function createApiHandler(db) {
         try {
           const result = archiveManuscript(
             db,
-            { work_id: workId, archive_type, version_label, original_filename, memo, buffer },
+            { work_id: workId, archive_type, version_label, version_date, original_filename, memo, buffer },
             pathResolve(archiveDir),
           );
           return jsonRes(res, 200, { ok: true, ...result });
         } catch (e) {
           return errRes(res, 400, e.message);
+        }
+      }
+
+      // DELETE /api/sf/works/:workId/archives/:archiveId  — アーカイブ登録解除（実ファイルは削除しない）
+      const worksArchiveDelMatch = path.match(/^\/api\/sf\/works\/(\d+)\/archives\/(\d+)$/);
+      if (method === 'DELETE' && worksArchiveDelMatch) {
+        const workId    = parseInt(worksArchiveDelMatch[1], 10);
+        const archiveId = parseInt(worksArchiveDelMatch[2], 10);
+        try {
+          const result = deleteWorkArchive(db, workId, archiveId);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, e.status || 500, e.message);
         }
       }
 
@@ -2748,16 +2817,23 @@ export function createApiHandler(db) {
         const ext      = pathExtname(record.archived_filename).toLowerCase();
         const mimeMap  = {
           '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          '.md':   'text/markdown; charset=utf-8',
+          '.md':   'text/plain; charset=utf-8',
           '.txt':  'text/plain; charset=utf-8',
           '.pdf':  'application/pdf',
         };
-        const mime = mimeMap[ext] || 'application/octet-stream';
+        const mime     = mimeMap[ext] || 'application/octet-stream';
         const safeName = encodeURIComponent(record.archived_filename);
+
+        // ?mode=inline: PDF/TXT/MD はインライン表示、DOCX は強制ダウンロード
+        const INLINE_EXTS = new Set(['.pdf', '.txt', '.md']);
+        const wantInline  = url.searchParams.get('mode') === 'inline' && INLINE_EXTS.has(ext);
+        const disposition = wantInline
+          ? `inline; filename*=UTF-8''${safeName}`
+          : `attachment; filename*=UTF-8''${safeName}`;
 
         res.writeHead(200, {
           'Content-Type':        mime,
-          'Content-Disposition': `attachment; filename*=UTF-8''${safeName}`,
+          'Content-Disposition': disposition,
           'Cache-Control':       'no-store',
         });
         createReadStream(filePath).pipe(res);

@@ -2743,14 +2743,18 @@ const SfModule = (() => {
 
   /** アーカイブ種別ラベル */
   const ARCHIVE_TYPE_LABELS = {
-    submission:  '投稿用',
-    publication: '公開版',
-    revision:    '改稿',
-    backup:      'バックアップ',
-    other:       'その他',
+    submission:     '投稿用',
+    publication:    '公開版',
+    revision:       '改稿',
+    literary_award: '文学賞',
+    direct_input:   '直接入力',
+    backup:         'バックアップ',
+    other:          'その他',
   };
 
   let _worksLoaded = false;
+  let _allWorks    = [];     // API から取得した全作品（manual order を保持）
+  let _worksSort   = null;   // null | { col: string, dir: 'asc'|'desc' }
 
   async function loadWorks() {
     const container = document.getElementById('sf-works-container');
@@ -2758,14 +2762,16 @@ const SfModule = (() => {
     container.className = 'loading';
     container.textContent = '読み込み中...';
     _worksLoaded = false;
+    _worksSort   = null;
 
     try {
       const res  = await fetch('/api/sf/works');
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || 'unknown error');
+      _allWorks    = data.works || [];
       container.className = '';
-      container.innerHTML = _renderWorksTable(data.works || []);
-      _bindWorksEvents(container, data.works || []);
+      container.innerHTML = _renderWorksTable(_allWorks);
+      _bindWorksEvents(container);
       _worksLoaded = true;
     } catch (e) {
       container.className = 'error';
@@ -2773,77 +2779,412 @@ const SfModule = (() => {
     }
   }
 
+  /** プラットフォーム表示名 */
+  const WORKS_PLATFORM_LABELS = {
+    narou:    'なろう',
+    kakuyomu: 'カクヨム',
+    note:     'note',
+    pixiv:    'pixiv',
+    hp:       'HP',
+    other:    'その他',
+  };
+
+  /**
+   * 全platform の公開状態バッジを生成する。
+   * @param {string|null} publishedPlatforms - カンマ区切りの published platform 名
+   * @param {number} pubCount - publication 行の総件数
+   */
+  function _makePublicBadge(publishedPlatforms, pubCount) {
+    if (pubCount === 0) {
+      return '<span class="sf-badge sf-badge-dim">公開先未登録</span>';
+    }
+    if (!publishedPlatforms) {
+      return '<span class="sf-badge sf-badge-dim">未公開</span>';
+    }
+    const platforms = publishedPlatforms.split(',').filter(Boolean);
+    const labels    = platforms.map(p => WORKS_PLATFORM_LABELS[p] || p).join('・');
+    return `<span class="sf-badge sf-badge-green">公開中（${labels}）</span>`;
+  }
+
+  /** 種別の表示ソート順 */
+  const _WORKS_TYPE_ORDER = { novel: 0, short_series: 1, short_story: 2, game: 3, other: 4 };
+
+  /** 公開状態のソート順（バッジ表示に準拠） */
+  function _worksStatusRank(w) {
+    if (Number(w.pub_count) === 0) return 2; // 公開先未登録
+    if (w.published_platforms)    return 0; // 公開中
+    return 1;                                // 未公開
+  }
+
+  /** _worksSort に従って works を並べ替えて返す（元配列を破壊しない） */
+  function _sortedWorks(works) {
+    if (!_worksSort) return works;
+    const { col, dir } = _worksSort;
+    const sign = dir === 'asc' ? 1 : -1;
+
+    return [...works].sort((a, b) => {
+      switch (col) {
+        case 'title':
+          return sign * a.title.localeCompare(b.title, 'ja');
+        case 'type': {
+          const oa = _WORKS_TYPE_ORDER[a.work_type] ?? 99;
+          const ob = _WORKS_TYPE_ORDER[b.work_type] ?? 99;
+          return sign * (oa - ob);
+        }
+        case 'pubdate': {
+          const da = a.earliest_pub_date || null;
+          const db = b.earliest_pub_date || null;
+          if (da === null && db === null) return 0;
+          if (da === null) return 1;   // NULL は昇順・降順どちらでも末尾
+          if (db === null) return -1;
+          return sign * da.localeCompare(db);
+        }
+        case 'status':
+          return sign * (_worksStatusRank(a) - _worksStatusRank(b));
+        case 'archive': {
+          const ca = Number(a.archive_count) || 0;
+          const cb = Number(b.archive_count) || 0;
+          return sign * (ca - cb);
+        }
+        default:
+          return 0;
+      }
+    });
+  }
+
   function _renderWorksTable(works) {
     if (!works.length) {
       return '<div class="empty-state">作品がありません</div>';
     }
 
+    const sortActive = _worksSort !== null;
+
+    /** ソート矢印 HTML を返す */
+    function _arrowFor(col) {
+      if (!_worksSort || _worksSort.col !== col) {
+        return '<span class="sf-sort-arrow">↕</span>';
+      }
+      return _worksSort.dir === 'asc'
+        ? '<span class="sf-sort-arrow active">↑</span>'
+        : '<span class="sf-sort-arrow active">↓</span>';
+    }
+
+    /** th の追加クラス（ソート中の列を薄く強調） */
+    function _thClass(col) {
+      const active = _worksSort?.col === col ? ' works-th-sorted' : '';
+      return `sf-th-sort${active}`;
+    }
+
     const rows = works.map(w => {
       const typeLabel    = WORK_TYPE_LABELS[w.work_type] || w.work_type;
-      const narouBadge   = w.narou_url
-        ? `<span class="sf-badge sf-badge-green">なろう公開中</span>`
-        : `<span class="sf-badge sf-badge-dim">URL未登録</span>`;
+      const pubBadge     = _makePublicBadge(w.published_platforms, Number(w.pub_count));
       const archiveBadge = w.archive_count > 0
         ? `<span class="sf-badge sf-badge-yellow">${w.archive_count}件</span>`
         : `<span class="sf-badge sf-badge-dim">なし</span>`;
+
+      const handleCell = sortActive
+        ? `<td class="works-drag-handle works-drag-handle--disabled" aria-hidden="true"></td>`
+        : `<td class="works-drag-handle" title="ドラッグで並べ替え" aria-label="並べ替え">
+            <svg width="10" height="14" viewBox="0 0 10 16" fill="currentColor" aria-hidden="true">
+              <circle cx="3" cy="2"  r="1.5"/><circle cx="7" cy="2"  r="1.5"/>
+              <circle cx="3" cy="6"  r="1.5"/><circle cx="7" cy="6"  r="1.5"/>
+              <circle cx="3" cy="10" r="1.5"/><circle cx="7" cy="10" r="1.5"/>
+              <circle cx="3" cy="14" r="1.5"/><circle cx="7" cy="14" r="1.5"/>
+            </svg>
+          </td>`;
+
       return `
-        <tr>
+        <tr data-work-id="${w.id}"${sortActive ? '' : ' draggable="true"'}>
+          ${handleCell}
           <td>${esc(w.title)}</td>
           <td>${typeLabel}</td>
-          <td>${w.published_at || '—'}</td>
-          <td>${narouBadge}</td>
+          <td>${(w.earliest_pub_date || '').slice(0, 10) || '—'}</td>
+          <td>${pubBadge}</td>
           <td>${archiveBadge}</td>
-          <td>
-            <div class="sf-action-btns">
-              <button class="sf-action-btn works-pub-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
+          <td class="works-action-td">
+            <div class="works-row-menu-wrap">
+              <button class="works-more-btn" data-work-id="${w.id}" aria-label="アクションメニュー" title="アクション">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <circle cx="12" cy="5"  r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
                 </svg>
-                公開先
               </button>
-              <button class="sf-action-btn works-arc-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                </svg>
-                原稿
-              </button>
+              <ul class="works-row-menu" hidden>
+                <li><button class="works-menu-item works-pub-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">公開先を管理</button></li>
+                <li><button class="works-menu-item works-arc-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">原稿アーカイブ</button></li>
+                <li class="works-menu-divider"></li>
+                <li><button class="works-menu-item works-menu-item--danger works-del-btn" data-work-id="${w.id}" data-work-title="${esc(w.title)}">JARVISから削除…</button></li>
+              </ul>
             </div>
           </td>
         </tr>`;
     }).join('');
 
     return `
-      <table class="sf-table">
+      <table class="sf-table sf-works-table">
         <thead>
           <tr>
-            <th>タイトル</th>
-            <th>種別</th>
-            <th>公開日</th>
-            <th>なろう</th>
-            <th>アーカイブ</th>
-            <th>操作</th>
+            <th class="works-handle-th"></th>
+            <th class="${_thClass('title')}"  data-works-sort-col="title">タイトル${_arrowFor('title')}</th>
+            <th class="${_thClass('type')}"   data-works-sort-col="type">種別${_arrowFor('type')}</th>
+            <th class="${_thClass('pubdate')}" data-works-sort-col="pubdate">公開日${_arrowFor('pubdate')}</th>
+            <th class="${_thClass('status')}" data-works-sort-col="status">公開状態${_arrowFor('status')}</th>
+            <th class="${_thClass('archive')}" data-works-sort-col="archive">アーカイブ${_arrowFor('archive')}</th>
+            <th class="works-action-th"></th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;
   }
 
+  /** 開いているドロップダウンをすべて閉じる */
+  function _closeAllWorksMenus() {
+    document.querySelectorAll('.works-row-menu').forEach(m => { m.hidden = true; });
+  }
+
   function _bindWorksEvents(container) {
+    // ── 「…」ドロップダウンメニュー ──────────────────────────────────────────
+    container.querySelectorAll('.works-more-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        // バブリングを止めて document の閉じるハンドラに拾われないようにする
+        e.stopPropagation();
+        const wrap = btn.closest('.works-row-menu-wrap');
+        const menu = wrap?.querySelector('.works-row-menu');
+        if (!menu) return;
+        const isOpen = !menu.hidden;
+        _closeAllWorksMenus();
+        if (!isOpen) menu.hidden = false;
+      });
+    });
+
+    // ── メニュー内アイテム ────────────────────────────────────────────────────
     container.querySelectorAll('.works-pub-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        _closeAllWorksMenus();
         const workId    = parseInt(btn.dataset.workId, 10);
         const workTitle = btn.dataset.workTitle;
         _openWorkPubModal(workId, workTitle);
       });
     });
     container.querySelectorAll('.works-arc-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        _closeAllWorksMenus();
         const workId    = parseInt(btn.dataset.workId, 10);
         const workTitle = btn.dataset.workTitle;
         _openWorkArchiveModal(workId, workTitle);
+      });
+    });
+    container.querySelectorAll('.works-del-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        _closeAllWorksMenus();
+        const workId    = parseInt(btn.dataset.workId, 10);
+        const workTitle = btn.dataset.workTitle;
+        _openWorkDeleteModal(workId, workTitle);
+      });
+    });
+
+    // ── 外側クリックでメニューを閉じる（1回だけ登録） ─────────────────────
+    if (!container._worksMenuOutsideHandler) {
+      container._worksMenuOutsideHandler = () => _closeAllWorksMenus();
+      document.addEventListener('click', container._worksMenuOutsideHandler);
+    }
+
+    // ── ヘッダーソート ──────────────────────────────────────────────────────
+    container.querySelectorAll('th[data-works-sort-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.worksSortCol;
+        if (_worksSort === null || _worksSort.col !== col) {
+          // 別の列 or 未ソート → 昇順
+          _worksSort = { col, dir: 'asc' };
+        } else if (_worksSort.dir === 'asc') {
+          // 同列2回目 → 降順
+          _worksSort = { col, dir: 'desc' };
+        } else {
+          // 同列3回目 → ソート解除（manual order へ戻す）
+          _worksSort = null;
+        }
+        const c = document.getElementById('sf-works-container');
+        if (!c) return;
+        c.innerHTML = _renderWorksTable(_sortedWorks(_allWorks));
+        _bindWorksEvents(c);
+      });
+    });
+
+    _initWorksDragDrop(container);
+  }
+
+  /** 削除確認モーダルを動的生成して表示する */
+  function _openWorkDeleteModal(workId, workTitle) {
+    document.getElementById('modal-work-delete')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id        = 'modal-work-delete';
+    modal.className = 'sf-modal-overlay';
+    modal.innerHTML = `
+      <div class="work-delete-dialog">
+        <p class="wdd-title">JARVISから削除</p>
+        <p class="wdd-body">「<span class="wdd-name">${esc(workTitle)}</span>」を作品管理から削除します。</p>
+        <p class="wdd-note">外部サイトの作品や原稿ファイルは削除されません。</p>
+        <div id="wdd-blockers" class="wdd-blockers" style="display:none"></div>
+        <p id="wdd-error" class="wdd-error" style="display:none"></p>
+        <div class="wdd-actions">
+          <button class="sf-btn" id="del-cancel-btn">キャンセル</button>
+          <button class="sf-btn wdd-del-btn" id="del-confirm-btn">削除</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const close = () => modal.remove();
+    modal.querySelector('#del-cancel-btn').addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function onKey(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); }
+    });
+
+    modal.querySelector('#del-confirm-btn').addEventListener('click', async () => {
+      const confirmBtn  = modal.querySelector('#del-confirm-btn');
+      const cancelBtn   = modal.querySelector('#del-cancel-btn');
+      const errorEl     = modal.querySelector('#wdd-error');
+      const blockersEl  = modal.querySelector('#wdd-blockers');
+      confirmBtn.disabled = true;
+      cancelBtn.disabled  = true;
+      confirmBtn.textContent = '削除中…';
+      errorEl.style.display = 'none';
+
+      try {
+        const res  = await fetch(`/api/sf/works/${workId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.ok) {
+          modal.remove();
+          setStatus('completed', `「${workTitle}」を削除しました`);
+          setTimeout(() => setStatus('idle'), 2500);
+          loadWorks();
+        } else if (res.status === 409 && data.blockers) {
+          // 関連データあり → ブロッカー一覧をコンパクトに表示
+          const BLOCKER_LABELS = {
+            sf_work_archives:      '原稿',
+            sf_track_work_links:   '楽曲紐付け',
+            sf_revenue:            '収益データ',
+            sf_narou_snapshot:     'なろうスナップショット',
+            sf_content_registry:   'コンテンツ登録',
+            sf_funnel_event:       'ファネルイベント',
+            sf_kdp_book_map:       'KDPマッピング',
+            sf_note_article:       'note記事',
+          };
+          const items = data.blockers.map(b =>
+            `<span class="wdd-blocker-item">${BLOCKER_LABELS[b.table] ?? b.table} ${b.count}件</span>`
+          ).join('');
+          blockersEl.innerHTML = items;
+          blockersEl.style.display = 'flex';
+          errorEl.textContent   = '関連データがあるため削除できません';
+          errorEl.style.display = 'block';
+          confirmBtn.disabled       = true;
+          cancelBtn.disabled        = false;
+          confirmBtn.textContent    = '削除';
+        } else {
+          errorEl.textContent   = data.error ?? '削除に失敗しました';
+          errorEl.style.display = 'block';
+          confirmBtn.disabled   = false;
+          cancelBtn.disabled    = false;
+          confirmBtn.textContent = '削除';
+        }
+      } catch (err) {
+        errorEl.textContent   = `エラー: ${err.message}`;
+        errorEl.style.display = 'block';
+        confirmBtn.disabled   = false;
+        cancelBtn.disabled    = false;
+        confirmBtn.textContent = '削除';
+      }
+    });
+  }
+
+  /**
+   * 作品一覧テーブルのドラッグ並べ替えを初期化する。
+   * ハンドル (.works-drag-handle) を掴んだときだけドラッグを開始する。
+   * ドロップ後に PUT /api/sf/works/reorder へ保存し、
+   * 失敗時はステータスバーにエラーを表示して loadWorks() でDBの順番へ戻す。
+   */
+  function _initWorksDragDrop(container) {
+    // ソート中はドラッグ並べ替えを無効にする
+    if (_worksSort !== null) return;
+
+    const tbody = container.querySelector('.sf-works-table tbody');
+    if (!tbody) return;
+
+    let dragSrcRow  = null;
+    let fromHandle  = false;
+
+    tbody.querySelectorAll('tr').forEach(tr => {
+      // ハンドル上でのみドラッグ開始を許可
+      tr.querySelector('.works-drag-handle')?.addEventListener('mousedown', () => {
+        fromHandle = true;
+      });
+      document.addEventListener('mouseup', () => { fromHandle = false; }, { once: false, passive: true });
+
+      tr.setAttribute('draggable', 'true');
+
+      tr.addEventListener('dragstart', e => {
+        if (!fromHandle) { e.preventDefault(); return; }
+        dragSrcRow = tr;
+        // Firefox requires dataTransfer data
+        e.dataTransfer.setData('text/plain', tr.dataset.workId);
+        e.dataTransfer.effectAllowed = 'move';
+        // 少し遅らせて透過（dragstart 中に style を変えると ghost 画像に影響するため）
+        requestAnimationFrame(() => { if (dragSrcRow) dragSrcRow.classList.add('works-dragging'); });
+      });
+
+      tr.addEventListener('dragend', () => {
+        if (dragSrcRow) dragSrcRow.classList.remove('works-dragging');
+        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over-top', 'drag-over-bottom'));
+        dragSrcRow = null;
+        fromHandle = false;
+      });
+
+      tr.addEventListener('dragover', e => {
+        if (!dragSrcRow || tr === dragSrcRow) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over-top', 'drag-over-bottom'));
+        const rect = tr.getBoundingClientRect();
+        tr.classList.add(e.clientY < rect.top + rect.height / 2 ? 'drag-over-top' : 'drag-over-bottom');
+      });
+
+      tr.addEventListener('dragleave', () => {
+        tr.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+
+      tr.addEventListener('drop', async e => {
+        e.preventDefault();
+        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over-top', 'drag-over-bottom'));
+        if (!dragSrcRow || dragSrcRow === tr) return;
+
+        const rect = tr.getBoundingClientRect();
+        const insertBefore = e.clientY < rect.top + rect.height / 2;
+        if (insertBefore) {
+          tbody.insertBefore(dragSrcRow, tr);
+        } else {
+          tbody.insertBefore(dragSrcRow, tr.nextSibling);
+        }
+
+        const newOrder = [...tbody.querySelectorAll('tr[data-work-id]')]
+          .map(r => parseInt(r.dataset.workId, 10));
+
+        try {
+          const res = await fetch('/api/sf/works/reorder', {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ work_ids: newOrder }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.error || '保存失敗');
+          setStatus('completed', '順番を保存しました');
+          setTimeout(() => setStatus('idle'), 2000);
+        } catch (err) {
+          setStatus('notice', `並べ替え保存失敗: ${err.message}`);
+          loadWorks();
+        }
       });
     });
   }
@@ -2863,7 +3204,7 @@ const SfModule = (() => {
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
 
-      const PLATFORMS = ['narou', 'kakuyomu', 'note', 'pixiv', 'other'];
+      const PLATFORMS = ['narou', 'kakuyomu', 'note', 'pixiv', 'hp', 'other'];
       const pubMap    = Object.fromEntries((data.publications || []).map(p => [p.platform, p]));
 
       const rows = PLATFORMS.map(pl => {
@@ -2871,26 +3212,48 @@ const SfModule = (() => {
         const statusSel = ['published','unpublished','private','deleted'].map(s =>
           `<option value="${s}" ${pub.publication_status === s ? 'selected' : ''}>${PUB_STATUS_LABELS[s]}</option>`
         ).join('');
+        const openBtn = pub.public_url && /^https?:\/\//i.test(pub.public_url)
+          ? `<a href="${esc(pub.public_url)}" target="_blank" rel="noopener noreferrer" class="pub-open-btn" title="新しいタブで開く">↗</a>`
+          : '';
+        const pubDate = (pub.published_at || '').slice(0, 10);
         return `
           <tr data-platform="${pl}">
-            <td>${pl}</td>
-            <td><input type="text" class="pub-url-input" value="${esc(pub.public_url || '')}" placeholder="https://..." style="width:280px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px"></td>
-            <td><input type="text" class="pub-wid-input" value="${esc(pub.platform_work_id || '')}" placeholder="作品ID" style="width:100px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px"></td>
-            <td>
-              <select class="pub-status-sel" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 6px;border-radius:4px;font-size:12px">
+            <td class="pub-col-platform">${WORKS_PLATFORM_LABELS[pl] || pl}</td>
+            <td class="pub-col-url">
+              <div class="pub-url-cell">
+                <input type="text" class="pub-modal-input pub-url-input" value="${esc(pub.public_url || '')}" placeholder="https://...">
+                ${openBtn}
+              </div>
+            </td>
+            <td class="pub-col-wid"><input type="text" class="pub-modal-input-sm pub-wid-input" value="${esc(pub.platform_work_id || '')}" placeholder="作品ID"></td>
+            <td class="pub-col-date">
+              <input type="date" class="pub-modal-input-sm pub-date-input" value="${esc(pubDate)}">
+            </td>
+            <td class="pub-col-status">
+              <select class="pub-modal-input-sm pub-status-sel">
                 ${statusSel}
               </select>
             </td>
-            <td><button class="sf-btn sf-btn-sm pub-save-btn" data-work-id="${workId}" data-platform="${pl}" data-pub-id="${pub.id || ''}">保存</button></td>
+            <td class="pub-col-save"><button class="sf-btn sf-btn-sm pub-save-btn" data-work-id="${workId}" data-platform="${pl}" data-pub-id="${pub.id || ''}">保存</button></td>
           </tr>`;
       }).join('');
 
       body.innerHTML = `
-        <table class="sf-table" style="font-size:12px">
-          <thead><tr><th>プラットフォーム</th><th>公開URL</th><th>作品ID</th><th>状態</th><th></th></tr></thead>
+        <table class="pub-modal-table">
+          <colgroup>
+            <col class="pub-col-w-platform">
+            <col class="pub-col-w-url">
+            <col class="pub-col-w-wid">
+            <col class="pub-col-w-date">
+            <col class="pub-col-w-status">
+            <col class="pub-col-w-save">
+          </colgroup>
+          <thead><tr>
+            <th>プラットフォーム</th><th>公開URL</th><th>作品ID</th><th>公開日</th><th>状態</th><th></th>
+          </tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <div id="pub-save-msg" style="margin-top:8px;font-size:12px;color:#4ade80"></div>`;
+        <div id="pub-save-msg" class="pub-save-msg"></div>`;
 
       body.querySelectorAll('.pub-save-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -2899,6 +3262,7 @@ const SfModule = (() => {
           const pubId    = btn.dataset.pubId;
           const public_url         = row.querySelector('.pub-url-input').value.trim() || null;
           const platform_work_id   = row.querySelector('.pub-wid-input').value.trim() || null;
+          const published_at       = row.querySelector('.pub-date-input').value.trim() || null;
           const publication_status = row.querySelector('.pub-status-sel').value;
 
           const method  = pubId ? 'PUT' : 'POST';
@@ -2910,7 +3274,7 @@ const SfModule = (() => {
             const r = await fetch(url, {
               method,
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ platform, public_url, platform_work_id, publication_status }),
+              body: JSON.stringify({ platform, public_url, platform_work_id, publication_status, published_at }),
             });
             const d = await r.json();
             const msg = document.getElementById('pub-save-msg');
@@ -2943,6 +3307,13 @@ const SfModule = (() => {
     body.innerHTML    = '<div class="loading">読み込み中...</div>';
     modal.hidden      = false;
 
+    function _fmtBytes(bytes) {
+      if (!bytes) return '—';
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
     async function _reloadArchiveList() {
       try {
         const res  = await fetch(`/api/sf/works/${workId}/archives`);
@@ -2953,51 +3324,169 @@ const SfModule = (() => {
           list.innerHTML = '<div class="empty-state" style="font-size:12px">アーカイブがありません</div>';
           return;
         }
-        list.innerHTML = data.archives.map(a => `
+        const INLINE_EXTS = new Set(['.pdf', '.txt', '.md']);
+        list.innerHTML = data.archives.map(a => {
+          const displayName = a.original_filename && a.original_filename !== 'direct_input.md'
+            ? a.original_filename
+            : a.archived_filename;
+          const ext      = (a.archived_filename.match(/\.[^.]+$/) || [''])[0].toLowerCase();
+          const fileBase = `/api/sf/works/${workId}/archives/${a.id}/file`;
+          const openBtn  = INLINE_EXTS.has(ext)
+            ? `<a href="${fileBase}?mode=inline" target="_blank" rel="noopener noreferrer" class="sf-btn sf-btn-sm" style="text-decoration:none;font-size:11px;padding:2px 7px">開く</a>`
+            : '';
+          return `
           <tr>
             <td>${ARCHIVE_TYPE_LABELS[a.archive_type] || a.archive_type}</td>
-            <td style="font-family:monospace;font-size:11px">${esc(a.archived_filename)}</td>
+            <td style="font-family:monospace;font-size:11px">${esc(displayName)}</td>
             <td>${esc(a.version_label || '—')}</td>
-            <td>${a.file_size_bytes ? Math.round(a.file_size_bytes / 1024) + ' KB' : '—'}</td>
+            <td>${_fmtBytes(a.file_size_bytes)}</td>
             <td>${a.archived_at?.slice(0, 10) || '—'}</td>
-            <td><a href="/api/sf/works/${workId}/archives/${a.id}/file" class="sf-btn sf-btn-sm" download>DL</a></td>
-          </tr>`).join('');
+            <td style="white-space:nowrap">
+              ${openBtn}
+              <a href="${fileBase}" class="sf-btn sf-btn-sm" download style="text-decoration:none">DL</a>
+            </td>
+            <td class="works-action-td">
+              <div class="works-row-menu-wrap">
+                <button class="works-more-btn arc-more-btn" data-arc-id="${a.id}" aria-label="メニュー" title="メニュー">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                  </svg>
+                </button>
+                <ul class="works-row-menu" hidden>
+                  <li><button class="works-menu-item works-menu-item--danger arc-unregister-btn"
+                    data-arc-id="${a.id}"
+                    data-arc-filename="${esc(a.archived_filename)}"
+                    data-arc-type="${esc(a.archive_type)}"
+                    data-arc-version="${esc(a.version_label || '')}"
+                    data-arc-date="${esc(a.version_date || '')}">アーカイブ登録を解除…</button></li>
+                </ul>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
       } catch (_) {}
+
+      // アーカイブ一覧の … メニュー / 登録解除バインド
+      const arcList = document.getElementById('archive-list');
+      if (!arcList) return;
+
+      // 外側クリックでアーカイブメニューを閉じる（重複登録防止）
+      if (!arcList._arcMenuOutsideHandler) {
+        arcList._arcMenuOutsideHandler = () => {
+          arcList.querySelectorAll('.works-row-menu').forEach(m => { m.hidden = true; });
+        };
+        document.addEventListener('click', arcList._arcMenuOutsideHandler);
+      }
+
+      arcList.querySelectorAll('.arc-more-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const wrap = btn.closest('.works-row-menu-wrap');
+          const menu = wrap?.querySelector('.works-row-menu');
+          if (!menu) return;
+          const isOpen = !menu.hidden;
+          arcList.querySelectorAll('.works-row-menu').forEach(m => { m.hidden = true; });
+          if (!isOpen) menu.hidden = false;
+        });
+      });
+
+      arcList.querySelectorAll('.arc-unregister-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          arcList.querySelectorAll('.works-row-menu').forEach(m => { m.hidden = true; });
+          const arcId       = parseInt(btn.dataset.arcId, 10);
+          const arcFilename = btn.dataset.arcFilename;
+          const arcType     = ARCHIVE_TYPE_LABELS[btn.dataset.arcType] || btn.dataset.arcType;
+          const arcVersion  = btn.dataset.arcVersion;
+          const arcDate     = btn.dataset.arcDate;
+          _openArchiveUnregisterDialog(workId, arcId, arcFilename, arcType, arcVersion, arcDate, _reloadArchiveList);
+        });
+      });
     }
 
-    const archiveTypeOptions = Object.entries(ARCHIVE_TYPE_LABELS)
+    // ファイルアップロード用種別（direct_input は除外）
+    const fileTypeOptions = Object.entries(ARCHIVE_TYPE_LABELS)
+      .filter(([v]) => v !== 'direct_input')
       .map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+
+    const inputStyle = 'background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px;width:100%';
 
     body.innerHTML = `
       <div style="margin-bottom:16px">
-        <h4 style="font-size:13px;color:#94a3b8;margin:0 0 8px">新しいアーカイブを追加</h4>
-        <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:12px;margin-bottom:8px">
-          <label>種別</label>
-          <select id="arc-type-sel" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">${archiveTypeOptions}</select>
-          <label>バージョン</label>
-          <input type="text" id="arc-version" placeholder="例: v1.2、第一稿" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">
-          <label>メモ</label>
-          <input type="text" id="arc-memo" placeholder="任意" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:12px">
-          <label>ファイル</label>
-          <input type="file" id="arc-file" accept=".docx,.md,.txt,.pdf" style="font-size:12px;color:#e2e8f0">
+        <div class="arc-mode-tabs">
+          <button class="arc-mode-tab arc-mode-tab--active" data-mode="file">ファイルから登録</button>
+          <button class="arc-mode-tab" data-mode="text">直接入力</button>
         </div>
-        <button class="sf-btn" id="arc-upload-btn">アーカイブ登録</button>
-        <span id="arc-msg" style="margin-left:10px;font-size:12px;color:#4ade80"></span>
+
+        <div id="arc-panel-file">
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:12px;margin-bottom:8px">
+            <label>種別</label>
+            <select id="arc-type-sel" style="${inputStyle}">${fileTypeOptions}</select>
+            <label>バージョン</label>
+            <input type="text" id="arc-version" placeholder="例: v1.2、第一稿" style="${inputStyle}">
+            <label>版日付</label>
+            <input type="date" id="arc-version-date" style="${inputStyle}">
+            <label>メモ</label>
+            <input type="text" id="arc-memo" placeholder="任意" style="${inputStyle}">
+            <label>ファイル</label>
+            <input type="file" id="arc-file" accept=".docx,.md,.txt,.pdf" style="font-size:12px;color:#e2e8f0;background:#1e293b;border:1px solid #334155;border-radius:4px;padding:4px 6px;width:100%;box-sizing:border-box">
+          </div>
+          <button class="sf-btn" id="arc-upload-btn">アーカイブ登録</button>
+          <span id="arc-msg" style="margin-left:10px;font-size:12px;color:#4ade80"></span>
+        </div>
+
+        <div id="arc-panel-text" style="display:none">
+          <div style="font-size:12px;margin-bottom:8px">
+            <textarea id="arc-text-content" placeholder="本文を入力してください"></textarea>
+            <div id="arc-char-count" style="font-size:11px;color:#64748b;text-align:right;margin-top:4px">0字</div>
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:12px;margin-bottom:8px">
+            <label>バージョン名</label>
+            <input type="text" id="arc-text-version" placeholder="例: 第一稿、投稿用" style="${inputStyle}">
+            <label>版日付</label>
+            <input type="date" id="arc-text-date" style="${inputStyle}">
+            <label>メモ</label>
+            <input type="text" id="arc-text-memo" placeholder="任意" style="${inputStyle}">
+          </div>
+          <button class="sf-btn" id="arc-text-submit-btn">保存</button>
+          <span id="arc-text-msg" style="margin-left:10px;font-size:12px;color:#4ade80"></span>
+        </div>
       </div>
       <h4 style="font-size:13px;color:#94a3b8;margin:0 0 8px">アーカイブ一覧</h4>
       <table class="sf-table" style="font-size:12px">
-        <thead><tr><th>種別</th><th>ファイル名</th><th>バージョン</th><th>サイズ</th><th>登録日</th><th></th></tr></thead>
+        <thead><tr><th>種別</th><th>ファイル名</th><th>バージョン</th><th>サイズ</th><th>登録日</th><th></th><th class="works-action-th"></th></tr></thead>
         <tbody id="archive-list"></tbody>
       </table>`;
 
     await _reloadArchiveList();
 
+    // タブ切り替え
+    document.querySelectorAll('.arc-mode-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.arc-mode-tab').forEach(t => t.classList.remove('arc-mode-tab--active'));
+        tab.classList.add('arc-mode-tab--active');
+        const mode = tab.dataset.mode;
+        document.getElementById('arc-panel-file').style.display = mode === 'file' ? '' : 'none';
+        document.getElementById('arc-panel-text').style.display = mode === 'text' ? '' : 'none';
+      });
+    });
+
+    // 文字数カウント
+    document.getElementById('arc-text-content')?.addEventListener('input', () => {
+      const content = document.getElementById('arc-text-content').value;
+      const count   = [...content].length;
+      const el      = document.getElementById('arc-char-count');
+      if (el) el.textContent = count.toLocaleString('ja-JP') + '字';
+    });
+
+    // ファイルアップロードハンドラー
     document.getElementById('arc-upload-btn')?.addEventListener('click', async () => {
-      const file        = document.getElementById('arc-file')?.files?.[0];
-      const archiveType = document.getElementById('arc-type-sel')?.value;
-      const version     = document.getElementById('arc-version')?.value.trim() || null;
-      const memo        = document.getElementById('arc-memo')?.value.trim() || null;
-      const msgEl       = document.getElementById('arc-msg');
+      const file         = document.getElementById('arc-file')?.files?.[0];
+      const archiveType  = document.getElementById('arc-type-sel')?.value;
+      const version      = document.getElementById('arc-version')?.value.trim() || null;
+      const version_date = document.getElementById('arc-version-date')?.value.trim() || null;
+      const memo         = document.getElementById('arc-memo')?.value.trim() || null;
+      const msgEl        = document.getElementById('arc-msg');
 
       if (!file)        { if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent='ファイルを選択してください'; } return; }
       if (!archiveType) { if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent='種別を選択してください'; } return; }
@@ -3011,8 +3500,9 @@ const SfModule = (() => {
           'X-Archive-Type':      archiveType,
           'X-Original-Filename': encodeURIComponent(file.name),
         };
-        if (version) headers['X-Version-Label'] = encodeURIComponent(version);
-        if (memo)    headers['X-Memo']           = encodeURIComponent(memo);
+        if (version)      headers['X-Version-Label'] = encodeURIComponent(version);
+        if (version_date) headers['X-Version-Date']  = version_date;
+        if (memo)         headers['X-Memo']           = encodeURIComponent(memo);
 
         const r = await fetch(`/api/sf/works/${workId}/archives`, {
           method: 'POST',
@@ -3029,6 +3519,111 @@ const SfModule = (() => {
         }
       } catch (e) {
         if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent=e.message; }
+      }
+    });
+
+    // 直接入力保存ハンドラー
+    document.getElementById('arc-text-submit-btn')?.addEventListener('click', async () => {
+      const content      = document.getElementById('arc-text-content')?.value ?? '';
+      const version      = document.getElementById('arc-text-version')?.value.trim() || null;
+      const version_date = document.getElementById('arc-text-date')?.value.trim() || null;
+      const memo         = document.getElementById('arc-text-memo')?.value.trim() || null;
+      const msgEl        = document.getElementById('arc-text-msg');
+      if (!content.trim()) {
+        if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent='本文を入力してください'; }
+        return;
+      }
+      if (msgEl) { msgEl.style.color='#94a3b8'; msgEl.textContent='保存中...'; }
+      try {
+        const r = await fetch(`/api/sf/works/${workId}/archives/text`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content, version_label: version, version_date, memo }),
+        });
+        const d = await r.json();
+        const charCount = [...content].length;
+        if (d.ok) {
+          if (msgEl) { msgEl.style.color='#4ade80'; msgEl.textContent=`${charCount.toLocaleString('ja-JP')}字で保存しました (${d.archived_filename})`; }
+          document.getElementById('arc-text-content').value = '';
+          document.getElementById('arc-char-count').textContent = '0字';
+          await _reloadArchiveList();
+          if (_worksLoaded) loadWorks();
+        } else {
+          if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent=d.error; }
+        }
+      } catch (e) {
+        if (msgEl) { msgEl.style.color='#f87171'; msgEl.textContent=e.message; }
+      }
+    });
+  }
+
+  /**
+   * アーカイブ登録解除の確認ダイアログを表示する。
+   * 実ファイルは削除せず、sf_work_archives の行だけ DELETE する。
+   */
+  function _openArchiveUnregisterDialog(workId, archiveId, filename, typeLabel, versionLabel, versionDate, onSuccess) {
+    document.getElementById('modal-arc-unregister')?.remove();
+
+    const infoLines = [
+      `<span class="wdd-name">${esc(filename)}</span>`,
+      typeLabel,
+      versionLabel || null,
+      versionDate  || null,
+    ].filter(Boolean).map(s => `<span class="arc-ud-info-item">${s}</span>`).join('');
+
+    const modal = document.createElement('div');
+    modal.id        = 'modal-arc-unregister';
+    modal.className = 'sf-modal-overlay';
+    modal.innerHTML = `
+      <div class="work-delete-dialog">
+        <p class="wdd-title">アーカイブ登録を解除</p>
+        <p class="wdd-body">このアーカイブをJARVISから外します。</p>
+        <p class="wdd-note">保存済みの原稿ファイル自体は削除されません。</p>
+        <div class="arc-ud-info">${infoLines}</div>
+        <p id="arc-ud-error" class="wdd-error" style="display:none"></p>
+        <div class="wdd-actions">
+          <button class="sf-btn" id="arc-ud-cancel">キャンセル</button>
+          <button class="sf-btn wdd-del-btn" id="arc-ud-confirm">登録を解除</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const close = () => modal.remove();
+    modal.querySelector('#arc-ud-cancel').addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function onKey(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); }
+    });
+
+    modal.querySelector('#arc-ud-confirm').addEventListener('click', async () => {
+      const confirmBtn = modal.querySelector('#arc-ud-confirm');
+      const cancelBtn  = modal.querySelector('#arc-ud-cancel');
+      const errorEl    = modal.querySelector('#arc-ud-error');
+      confirmBtn.disabled = true;
+      cancelBtn.disabled  = true;
+      confirmBtn.textContent = '解除中…';
+      errorEl.style.display = 'none';
+
+      try {
+        const res  = await fetch(`/api/sf/works/${workId}/archives/${archiveId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.ok) {
+          modal.remove();
+          if (_worksLoaded) loadWorks();
+          await onSuccess();
+        } else {
+          errorEl.textContent   = data.error ?? '解除に失敗しました';
+          errorEl.style.display = 'block';
+          confirmBtn.disabled   = false;
+          cancelBtn.disabled    = false;
+          confirmBtn.textContent = '登録を解除';
+        }
+      } catch (err) {
+        errorEl.textContent   = `エラー: ${err.message}`;
+        errorEl.style.display = 'block';
+        confirmBtn.disabled   = false;
+        cancelBtn.disabled    = false;
+        confirmBtn.textContent = '登録を解除';
       }
     });
   }

@@ -1457,16 +1457,42 @@ html, body {
   border-bottom-color: var(--accent);
 }
 
+/* sf-btn: JARVIS ダークUIの汎用ボタン（ブラウザデフォルト上書き） */
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 13px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--btn-sec);
+  color: var(--text-pri);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.sf-btn:hover:not(:disabled) {
+  background: var(--btn-sec-hov);
+}
+.sf-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .sf-ops-btn {
   font-size: 12px;
-  padding: 6px 14px;
+  padding: 5px 12px;
   white-space: nowrap;
   margin-right: 4px;
 }
 
 /* ── Phase 28: モーダル ─────────────────────────────────────────────────── */
 
-.sf-modal {
+.sf-modal,
+.sf-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -1579,3 +1605,683 @@ html, body {
   cursor: default;
   pointer-events: none;
 }
+
+/* 削除ボタン（赤系ゴースト・通常時は控えめ） */
+.sf-action-btn-danger {
+  color: rgba(239, 68, 68, 0.55);
+  border-color: rgba(239, 68, 68, 0.20);
+}
+
+.sf-action-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.50);
+}
+
+/* ── works 行アクションメニュー（「…」ドロップダウン） ── */
+.works-action-th {
+  width: 36px;
+}
+
+.works-action-td {
+  text-align: center;
+  padding: 0 8px !important;
+}
+
+.works-row-menu-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.works-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  padding: 0;
+}
+
+.works-more-btn:hover {
+  background: rgba(148, 163, 184, 0.10);
+  color: #94a3b8;
+}
+
+.works-row-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 200;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.40);
+}
+
+.works-menu-item {
+  display: block;
+  width: 100%;
+  padding: 7px 14px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s;
+}
+
+.works-menu-item:hover {
+  background: rgba(148, 163, 184, 0.08);
+  color: #e2e8f0;
+}
+
+.works-menu-item--danger {
+  color: rgba(239, 68, 68, 0.65);
+}
+
+.works-menu-item--danger:hover {
+  background: rgba(239, 68, 68, 0.06);
+  color: #ef4444;
+}
+
+.works-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 0;
+}
+
+/* アーカイブモーダルは他より広く */
+#modal-work-archive .sf-modal-box {
+  max-width: min(1000px, calc(100vw - 48px));
+}
+
+/* ── 公開URL管理モーダル専用 ───────────────────────────────────────────────── */
+
+#modal-work-pub .sf-modal-box {
+  max-width: min(1180px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#modal-work-pub .sf-modal-header {
+  flex-shrink: 0;
+}
+
+#modal-work-pub .sf-modal-body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+}
+
+#modal-work-pub .sf-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+#modal-work-pub .sf-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#modal-work-pub .sf-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 3px;
+}
+
+/* 公開URL管理テーブル */
+.pub-modal-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+/* 列幅 */
+.pub-col-w-platform { width: 72px; }
+.pub-col-w-url      { width: auto; }          /* 残り全幅 */
+.pub-col-w-wid      { width: 110px; }
+.pub-col-w-date     { width: 130px; }
+.pub-col-w-status   { width: 90px; }
+.pub-col-w-save     { width: 52px; }
+
+.pub-modal-table thead th {
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 400;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.pub-modal-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.pub-modal-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.pub-modal-table td {
+  padding: 9px 8px;
+  vertical-align: middle;
+}
+
+/* URL欄の入力欄＋開くボタンの横並び */
+.pub-url-cell {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+
+/* 共通 input / select（URL列用・幅いっぱい） */
+.pub-modal-input {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color-scheme: dark;
+}
+
+/* 固定列用 input / select（セル幅に合わせる） */
+.pub-modal-input-sm {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  padding: 5px 7px;
+  border-radius: 4px;
+  font-size: 12px;
+  color-scheme: dark;
+}
+
+.pub-modal-input:focus,
+.pub-modal-input-sm:focus {
+  outline: none;
+  border-color: #4f73a6;
+}
+
+/* 「↗」開くボタン */
+.pub-open-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.pub-open-btn:hover {
+  color: #e2e8f0;
+  border-color: #64748b;
+}
+
+/* 保存完了・エラーメッセージ */
+.pub-save-msg {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #4ade80;
+  min-height: 16px;
+}
+
+/* 小画面（680px以下）: 縦積みブロック */
+@media (max-width: 680px) {
+  .pub-modal-table,
+  .pub-modal-table thead,
+  .pub-modal-table tbody,
+  .pub-modal-table tr,
+  .pub-modal-table th,
+  .pub-modal-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pub-modal-table thead {
+    display: none;
+  }
+
+  .pub-modal-table tbody tr {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding: 8px;
+  }
+
+  .pub-modal-table td {
+    padding: 4px 0;
+  }
+
+  .pub-col-platform {
+    font-weight: 600;
+    color: var(--text-pri);
+    font-size: 13px;
+    padding-bottom: 6px;
+  }
+}
+
+/* アーカイブモード切り替えタブ */
+.arc-mode-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 8px;
+}
+
+.arc-mode-tab {
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.arc-mode-tab:hover {
+  color: #94a3b8;
+  background: rgba(148,163,184,0.06);
+}
+
+.arc-mode-tab--active {
+  color: #e2e8f0;
+  background: rgba(148,163,184,0.10);
+}
+
+/* 直接入力テキストエリア */
+#arc-text-content {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.7;
+  resize: vertical;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 320px;
+}
+
+#arc-text-content:focus {
+  outline: none;
+  border-color: #475569;
+}
+
+/* アーカイブ解除ダイアログ内のファイル情報 */
+.arc-ud-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.arc-ud-info-item {
+  font-size: 11px;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-family: monospace;
+}
+
+/* ── 削除確認ダイアログ（Linear/Notion 風・静かなデザイン） ── */
+.work-delete-dialog {
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 22px 24px 20px;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wdd-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.01em;
+}
+
+.wdd-body {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.wdd-name {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.wdd-note {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.wdd-blockers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.wdd-blocker-item {
+  font-size: 11px;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.wdd-error {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(239, 68, 68, 0.80);
+}
+
+.wdd-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.wdd-del-btn {
+  color: rgba(239, 68, 68, 0.70);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.wdd-del-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.50);
+}
+
+.wdd-del-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* works table drag-and-drop */
+.works-handle-th {
+  width: 24px;
+  padding: 0;
+}
+
+.works-drag-handle {
+  width: 24px;
+  padding: 0 4px;
+  text-align: center;
+  color: rgba(100, 116, 139, 0.40);
+  cursor: grab;
+  user-select: none;
+  vertical-align: middle;
+  transition: color 0.12s ease;
+}
+
+.works-drag-handle:hover {
+  color: rgba(100, 116, 139, 0.80);
+}
+
+.works-drag-handle:active {
+  cursor: grabbing;
+}
+
+.sf-works-table tbody tr.works-dragging {
+  opacity: 0.40;
+}
+
+.sf-works-table tbody tr.drag-over-top {
+  box-shadow: inset 0 2px 0 0 #60a5fa;
+}
+
+.sf-works-table tbody tr.drag-over-bottom {
+  box-shadow: inset 0 -2px 0 0 #60a5fa;
+}
+
+/* ソート中はドラッグハンドルを非表示 */
+.works-drag-handle--disabled {
+  width: 24px;
+  padding: 0 4px;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ソート中の列ヘッダーを薄く強調 */
+.sf-works-table th.works-th-sorted {
+  color: var(--accent);
+  background: rgba(96, 165, 250, 0.06);
+}
+
+/* ─── Sync / Ops Phase 31 ─────────────────────────────────────────────────── */
+
+/* サマリーバナー */
+.sf-sync-summary-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.sync-summary-line {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sync-summary-ok      { color: #4ade80; }
+.sync-summary-error   { color: #f87171; font-weight: 500; }
+.sync-summary-waiting { color: #a1855a; }
+.sync-summary-pending { color: #94a3b8; }
+
+/* AUTO同期セクションヘッダー内のタイトルブロック */
+.sync-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.sync-header-title h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-pri);
+  margin: 0;
+}
+.sync-header-sub {
+  font-size: 11px;
+  color: #475569;
+}
+
+/* AUTO同期ボタン周辺 */
+.sync-run-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* 旧 sync-run-note は非表示（タイトルブロックに移動） */
+.sync-run-note {
+  display: none;
+}
+
+/* セクションヘッダー */
+.sync-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 10px 0 4px;
+  color: #64748b;
+}
+
+.sync-section-unused {
+  color: #475569;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10px;
+}
+
+/* source 行 */
+.sync-source-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.sync-source-row:last-child {
+  border-bottom: none;
+}
+
+.sync-row-disabled {
+  opacity: 0.5;
+}
+
+/* 状態dot */
+.sync-status-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.sync-dot-fresh    { background: #4ade80; }
+.sync-dot-stale    { background: #fbbf24; }
+.sync-dot-error    { background: #f87171; }
+.sync-dot-disabled { background: #334155; }
+.sync-dot-pending  { background: #94a3b8; }
+
+/* source名 */
+.sync-source-name {
+  flex: 1;
+  font-size: 13px;
+  color: #e2e8f0;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+/* 最終データ日 */
+.sync-last-date {
+  font-size: 12px;
+  color: #64748b;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* 状態ラベル */
+.sync-state-label {
+  font-size: 12px;
+  min-width: 72px;
+  text-align: center;
+}
+
+.sync-label-fresh   { color: #4ade80; }
+.sync-label-stale   { color: #a1855a; }
+.sync-label-error   { color: #f87171; }
+.sync-label-pending { color: #94a3b8; }
+.sync-label-disabled { color: #475569; }
+
+/* 利用中/未使用 segmented toggle */
+.sync-seg-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.15s;
+}
+
+.sync-seg-toggle.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.sync-seg-btn {
+  font-size: 11px;
+  padding: 3px 9px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.sync-seg-btn:hover {
+  color: #94a3b8;
+}
+
+/* アクティブ側（現在の状態） */
+.sync-seg-btn.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  cursor: default;
+}
+
+/* 「利用中」がアクティブなときは緑がかった色 */
+.sync-seg-toggle.state-enabled .sync-seg-btn[data-to="0"].is-active {
+  /* 利用中ボタン active */
+  color: #86efac;
+}
+
+/* 「未使用」がアクティブなときは薄いグレー */
+.sync-seg-toggle.state-disabled .sync-seg-btn[data-to="1"].is-active {
+  color: #64748b;
+}
+
+/* 旧 sync-toggle-btn は後方互換で残す（表示なし） */
+.sync-toggle-btn { display: none; }
