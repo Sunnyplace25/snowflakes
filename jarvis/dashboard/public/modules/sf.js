@@ -1765,7 +1765,7 @@ const SfModule = (() => {
   // グローバル公開（onclick から呼ばれる）
   if (typeof window !== 'undefined') window.loadEventImpact = loadEventImpact;
 
-  // ─── Sync / Ops（Phase 10）────────────────────────────────────────────────
+  // ─── Sync / Ops（Phase 10 / Phase 31 改修）──────────────────────────────
 
   async function loadSync() {
     setState('analyzing');
@@ -1777,16 +1777,27 @@ const SfModule = (() => {
     try {
       const [statusRes, attentionRes] = await Promise.all([
         fetch('/api/sf/sync/status'),
-        fetch('/api/sf/sync/attention'),
+        fetch('/api/sf/sync/attention?all=1'),
       ]);
       const statusData    = await statusRes.json();
       const attentionData = await attentionRes.json();
 
-      renderSyncAttentionBanner(bannerEl, attentionData.items ?? []);
-      renderSyncSources(autoEl,   statusData.sources?.filter(s => s.mode === 'auto')   ?? []);
-      renderSyncSources(manualEl, statusData.sources?.filter(s => s.mode === 'manual') ?? []);
+      const allSources = statusData.sources ?? [];
 
-      if (attentionData.count > 0) setState('notice');
+      renderSyncSummaryBanner(bannerEl, allSources, attentionData.items ?? []);
+
+      const autoSources   = allSources.filter(s => s.mode === 'auto');
+      const manualSources = allSources.filter(s => s.mode === 'manual');
+      renderSyncSourcesSection(autoEl,   autoSources,   'AUTO');
+      renderSyncSourcesSection(manualEl, manualSources, 'MANUAL');
+
+      // 要確認件数: enabled AUTO source の error/unconfigured/never_synced/stale
+      const attentionCount = allSources.filter(s =>
+        s.enabled !== 0 &&
+        s.mode === 'auto' &&
+        ['error', 'unconfigured', 'never_synced', 'stale'].includes(s.status)
+      ).length;
+      if (attentionCount > 0) setState('notice');
       else setState('completed');
     } catch (e) {
       if (bannerEl) bannerEl.innerHTML = `<div class="error-state">読み込みエラー: ${esc(e.message)}</div>`;
@@ -1799,56 +1810,152 @@ const SfModule = (() => {
         runBtn.textContent = '同期中...';
         setState('working');
         try {
-          const res  = await fetch('/api/sf/sync/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
-          const data = await res.json();
-          loadSync();
-        } catch (_) {
-          loadSync();
-        } finally {
+          await fetch('/api/sf/sync/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+        } catch (_) {}
+        finally {
           runBtn.disabled = false;
           runBtn.textContent = '今すぐ同期';
+          loadSync();
         }
       };
     }
   }
 
-  function renderSyncAttentionBanner(el, items) {
+  /** 上部サマリーバナー（要確認 / 更新待ち / 未取込の3ライン）*/
+  function renderSyncSummaryBanner(el, allSources, attentionItems) {
     if (!el) return;
-    if (items.length === 0) {
-      el.innerHTML = '<div class="sf-attention-ok">要確認なし — すべてのデータソースが正常です</div>';
-      return;
+
+    // 要確認: enabled AUTO source の error/unconfigured/never_synced/stale
+    const attentionCount = allSources.filter(s =>
+      s.enabled !== 0 &&
+      s.mode === 'auto' &&
+      ['error', 'unconfigured', 'never_synced', 'stale'].includes(s.status)
+    ).length;
+
+    // 更新待ち: enabled MANUAL source の stale
+    const waitingCount = allSources.filter(s =>
+      s.enabled !== 0 &&
+      s.mode === 'manual' &&
+      s.status === 'stale'
+    ).length;
+
+    // 未取込: enabled MANUAL source の manual_required
+    const pendingCount = allSources.filter(s =>
+      s.enabled !== 0 &&
+      s.mode === 'manual' &&
+      s.status === 'manual_required'
+    ).length;
+
+    const lines = [];
+    if (attentionCount > 0) {
+      lines.push(`<div class="sync-summary-line sync-summary-error">要確認 ${attentionCount} 件 — AUTO取得に問題があるソースがあります</div>`);
+    } else {
+      lines.push(`<div class="sync-summary-line sync-summary-ok">要確認なし — AUTO取得ソースは正常です</div>`);
     }
-    const rows = items.map(item => {
-      const cls = item.severity === 'error' ? 'attention-error' : item.severity === 'warning' ? 'attention-warning' : 'attention-info';
-      return `<div class="sf-attention-item ${cls}">
-        <strong>${esc(item.label)}</strong> — ${esc(item.message)}
-      </div>`;
-    }).join('');
-    el.innerHTML = `<div class="sf-attention-banner">
-      <div class="sf-attention-title">要確認 ${items.length} 件</div>
-      ${rows}
-    </div>`;
+    if (waitingCount > 0) {
+      lines.push(`<div class="sync-summary-line sync-summary-waiting">更新待ち ${waitingCount} 件 — 手動取込が必要なソースがあります</div>`);
+    }
+    if (pendingCount > 0) {
+      lines.push(`<div class="sync-summary-line sync-summary-pending">未取込 ${pendingCount} 件 — データがまだ取り込まれていないソースがあります</div>`);
+    }
+
+    el.innerHTML = `<div class="sf-sync-summary-banner">${lines.join('')}</div>`;
   }
 
-  function renderSyncSources(el, sources) {
+  /** AUTO / MANUAL セクションのソース一覧をレンダリング */
+  function renderSyncSourcesSection(el, sources, sectionMode) {
     if (!el) return;
     if (sources.length === 0) { el.innerHTML = ''; return; }
-    const rows = sources.map(s => {
-      const stCls = s.status === 'fresh' ? 'status-fresh' : s.status === 'stale' ? 'status-stale' : 'status-other';
-      const lastDate = s.last_data_date ?? '未取得';
-      const nextAction = s.requires_user_action
-        ? `<span class="sync-action">${esc(s.action_message ?? '確認が必要です')}</span>` : '';
-      return `<tr>
-        <td>${esc(s.label)}</td>
-        <td>${esc(lastDate)}</td>
-        <td><span class="sf-badge ${stCls}">${esc(s.status)}</span></td>
-        <td>${nextAction}</td>
-      </tr>`;
-    }).join('');
-    el.innerHTML = `<table class="sf-table">
-      <thead><tr><th>Source</th><th>最終データ日</th><th>状態</th><th>次の対応</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+
+    const enabled  = sources.filter(s => s.enabled !== 0);
+    const disabled = sources.filter(s => s.enabled === 0);
+
+    const renderRow = (s) => {
+      const isDisabled = s.enabled === 0;
+      const dotCls = isDisabled ? 'sync-dot-disabled'
+        : s.status === 'fresh'                            ? 'sync-dot-fresh'
+        : s.status === 'stale'                            ? 'sync-dot-stale'
+        : s.status === 'manual_required'                  ? 'sync-dot-pending'
+        : ['error','unconfigured','never_synced'].includes(s.status) ? 'sync-dot-error'
+        : 'sync-dot-disabled';
+
+      const stateLabel = isDisabled ? '未使用'
+        : sectionMode === 'AUTO'
+          ? (s.status === 'fresh'       ? '最新'
+          : s.status === 'stale'        ? '更新待ち'
+          : s.status === 'error'        ? 'エラー'
+          : s.status === 'unconfigured' ? '設定が必要'
+          : '未取得')
+          : (s.status === 'fresh'           ? '最新'
+          : s.status === 'stale'            ? '更新待ち'
+          : s.status === 'manual_required'  ? '未取込'
+          : '未取得');
+
+      const stateCls = isDisabled ? 'sync-label-disabled'
+        : (stateLabel === '最新')    ? 'sync-label-fresh'
+        : (stateLabel === '更新待ち') ? 'sync-label-stale'
+        : (stateLabel === '未取込')   ? 'sync-label-pending'
+        : (stateLabel === 'エラー' || stateLabel === '設定が必要' || stateLabel === '未取得') ? 'sync-label-error'
+        : '';
+
+      const lastDate   = s.last_data_date ?? '—';
+      // segmented toggle: 「利用中」と「未使用」の2択ピル
+      const toggleStateCls = isDisabled ? 'state-disabled' : 'state-enabled';
+      const segToggle = `
+        <div class="sync-seg-toggle ${toggleStateCls}" data-source="${esc(s.source)}">
+          <button class="sync-seg-btn${!isDisabled ? ' is-active' : ''}" data-to="0">利用中</button>
+          <button class="sync-seg-btn${isDisabled  ? ' is-active' : ''}" data-to="1">未使用</button>
+        </div>`;
+
+      return `<div class="sync-source-row${isDisabled ? ' sync-row-disabled' : ''}">
+        <span class="sync-status-dot ${dotCls}"></span>
+        <span class="sync-source-name">${esc(s.label)}</span>
+        <span class="sync-last-date">${esc(lastDate)}</span>
+        <span class="sync-state-label ${stateCls}">${stateLabel}</span>
+        ${segToggle}
+      </div>`;
+    };
+
+    let html = '';
+    if (enabled.length > 0) {
+      html += enabled.map(renderRow).join('');
+    }
+    if (disabled.length > 0) {
+      html += `<div class="sync-section-label sync-section-unused">未使用</div>`;
+      html += disabled.map(renderRow).join('');
+    }
+
+    el.innerHTML = html;
+
+    // segmented toggle のイベント登録
+    el.querySelectorAll('.sync-seg-toggle').forEach(toggle => {
+      toggle.querySelectorAll('.sync-seg-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (btn.classList.contains('is-active')) return; // 現在の状態はno-op
+          const sourceKey  = toggle.dataset.source;
+          const newEnabled = parseInt(btn.dataset.to, 10) === 0; // 0=利用中, 1=未使用
+          toggle.classList.add('is-loading');
+          try {
+            await fetch(`/api/sf/sync/sources/${encodeURIComponent(sourceKey)}/enabled`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ enabled: newEnabled }),
+            });
+            loadSync();
+          } catch (_) {
+            toggle.classList.remove('is-loading');
+          }
+        });
+      });
+    });
+  }
+
+  // 旧 renderSyncAttentionBanner / renderSyncSources はエイリアスとして残す（export互換）
+  function renderSyncAttentionBanner(el, items) {
+    renderSyncSummaryBanner(el, [], items);
+  }
+  function renderSyncSources(el, sources) {
+    renderSyncSourcesSection(el, sources, 'AUTO');
   }
 
   // グローバル公開

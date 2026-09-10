@@ -843,7 +843,7 @@
       <button class="sf-big-tab" data-sf-bigtab="story">物語・小説</button>
       <button class="sf-big-tab" data-sf-bigtab="sns">SNS</button>
     </div>
-    <button class="sf-btn sf-ops-btn" id="sf-global-sync-btn">全体同期 / Ops</button>
+    <button class="sf-btn sf-ops-btn" id="sf-global-sync-btn">AUTO同期 / Ops</button>
   </div>
 
   <!-- 音楽 sub-tabs -->
@@ -1124,8 +1124,13 @@
     <!-- AUTO sources -->
     <section class="sf-section">
       <div class="sf-section-header">
-        <h2>AUTO 取得</h2>
-        <button id="sf-sync-run-btn" class="sf-btn">今すぐ同期</button>
+        <div class="sync-header-title">
+          <h2>AUTO 取得</h2>
+          <span class="sync-header-sub">自動取得できるソースのみ更新</span>
+        </div>
+        <div class="sync-run-area">
+          <button id="sf-sync-run-btn" class="sf-btn">AUTO同期を実行</button>
+        </div>
       </div>
       <div id="sf-sync-auto-container" class="loading">読み込み中...</div>
     </section>

@@ -34,6 +34,7 @@ import {
   getAttentionItems,
   runAutoSync,
   runSourceSync,
+  setSourceEnabled,
   AUTO_SOURCES,
   SOURCE_REGISTRY,
 } from '../data/sf_sync_manager.js';
@@ -1671,6 +1672,23 @@ export function createApiHandler(db) {
         const result = await runSourceSync(db, source, { dryRun });
         const statusCode = result.success ? 200 : 500;
         return jsonRes(res, statusCode, { ok: result.success, ...result });
+      }
+
+      // PUT /api/sf/sync/sources/:source/enabled — source の利用中/未使用を切り替え
+      {
+        const m = path.match(/^\/api\/sf\/sync\/sources\/([^/]+)\/enabled$/);
+        if (method === 'PUT' && m) {
+          const sourceKey = m[1];
+          if (!SOURCE_REGISTRY[sourceKey]) {
+            return errRes(res, 400, `不明な source: ${sourceKey}`);
+          }
+          const body = await readBody(req);
+          if (typeof body.enabled !== 'boolean' && body.enabled !== 0 && body.enabled !== 1) {
+            return errRes(res, 400, 'enabled は boolean または 0/1 が必要です');
+          }
+          setSourceEnabled(db, sourceKey, body.enabled ? 1 : 0);
+          return jsonRes(res, 200, { ok: true });
+        }
       }
 
       // ── Soundrop Catalog Sync ─────────────────────────────────────────────────
