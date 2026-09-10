@@ -42,5 +42,8 @@
     "googleapis": "174.0.1",
     "pdf2json": "4.0.3",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "puppeteer": "^25.10.0"
   }
 }
