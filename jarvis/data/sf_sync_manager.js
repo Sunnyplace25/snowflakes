@@ -422,6 +422,31 @@ export function getSourceStatus(db, source, today = null) {
 
   const status = freshness.status;
 
+  // auth_failed: AUTO source でトークンが失効している場合（stale + invalid_grant + 3回以上失敗）
+  const consecutive_failures = stateRow?.consecutive_failures ?? 0;
+  if (
+    status === 'stale' &&
+    def.mode === 'auto' &&
+    consecutive_failures >= 3 &&
+    last_error?.toLowerCase().includes('invalid_grant')
+  ) {
+    return {
+      source,
+      mode:        def.mode,
+      label:       def.label,
+      granularity: def.granularity,
+      configured,
+      status: 'auth_failed',
+      last_data_date:    freshness.last_data_date,
+      days_since_update: freshness.days_since_update,
+      last_attempt_at,
+      last_success_at,
+      last_error,
+      requires_user_action: true,
+      action_message: `${def.label} の認証トークンが失効しています。再認証が必要です`,
+    };
+  }
+
   // ユーザー操作が必要な条件
   const requires_user_action =
     status === 'stale' ||
@@ -487,11 +512,11 @@ export function getSyncStatus(db, today = null) {
     const st = getSourceStatus(db, s, today);
     return { ...st, enabled: getSourceEnabled(db, s) };
   });
-  // 要確認件数: enabled AUTO source の error/unconfigured/never_synced/stale のみ
+  // 要確認件数: enabled AUTO source の error/unconfigured/never_synced/stale/auth_failed のみ
   const attentionSources = sources.filter(s => {
     if (!s.enabled) return false;
     if (s.mode !== 'auto') return false;
-    return ['error', 'unconfigured', 'never_synced', 'stale'].includes(s.status);
+    return ['error', 'unconfigured', 'never_synced', 'stale', 'auth_failed'].includes(s.status);
   });
 
   return {
@@ -503,6 +528,7 @@ export function getSyncStatus(db, today = null) {
       fresh:        sources.filter(s => s.status === 'fresh').length,
       stale:        sources.filter(s => s.status === 'stale').length,
       error:        sources.filter(s => s.status === 'error').length,
+      auth_failed:  sources.filter(s => s.status === 'auth_failed').length,
       unconfigured: sources.filter(s => s.status === 'unconfigured').length,
       attention_count: attentionSources.length,
     },
@@ -534,11 +560,11 @@ export function getAttentionItems(db, opts = {}) {
     const enabled = getSourceEnabled(db, source);
     if (!enabled) continue;
 
-    // 要確認対象: enabled AUTO source の error / unconfigured / never_synced / stale のみ
+    // 要確認対象: enabled AUTO source の error / unconfigured / never_synced / stale / auth_failed のみ
     // MANUAL source の stale / manual_required は要確認件数から除外
     const isAutoAttention =
       st.mode === 'auto' &&
-      ['error', 'unconfigured', 'never_synced', 'stale'].includes(st.status);
+      ['error', 'unconfigured', 'never_synced', 'stale', 'auth_failed'].includes(st.status);
     if (!isAutoAttention) continue;
 
     // 派生 source 抑制:
@@ -565,19 +591,22 @@ export function getAttentionItems(db, opts = {}) {
     }
 
     const severity =
-      st.status === 'error' || st.status === 'unconfigured' ? 'error'  :
+      st.status === 'error' || st.status === 'unconfigured' ? 'error'   :
+      st.status === 'auth_failed'                            ? 'error'   :
       st.status === 'stale'                                  ? 'warning' :
       'info';
 
     const reason =
-      st.status === 'error'        ? 'auto_error'     :
-      st.status === 'unconfigured' ? 'unconfigured'   :
-      st.status === 'stale'        ? 'stale'          :
+      st.status === 'error'           ? 'auto_error'      :
+      st.status === 'unconfigured'    ? 'unconfigured'    :
+      st.status === 'auth_failed'     ? 'auth_failed'     :
+      st.status === 'stale'           ? 'stale'           :
       st.status === 'manual_required' ? 'manual_required' :
       'never_synced';
 
     const action =
-      st.mode === 'auto' ? 'check_auth' : 'import_data';
+      st.status === 'auth_failed'  ? 'reauth'       :
+      st.mode   === 'auto'         ? 'check_auth'   : 'import_data';
 
     items.push({
       source:   st.source,

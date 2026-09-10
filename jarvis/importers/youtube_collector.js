@@ -76,9 +76,10 @@ export function getYouTubeConfig() {
 
 /**
  * OAuth 2.0 refresh token でアクセストークンを取得する。
+ * Google がトークンローテーションで新しい refresh_token を返した場合は合わせて返す。
  *
  * @param {{ clientId: string, clientSecret: string, refreshToken: string }} opts
- * @returns {Promise<string>} アクセストークン
+ * @returns {Promise<{ accessToken: string, newRefreshToken: string|null }>}
  */
 export async function refreshAccessToken({ clientId, clientSecret, refreshToken }) {
   const res = await fetch(GOOGLE_TOKEN_URL, {
@@ -99,7 +100,11 @@ export async function refreshAccessToken({ clientId, clientSecret, refreshToken 
   if (!data.access_token) {
     throw new Error(`Token refresh: access_token not returned`);
   }
-  return data.access_token;
+  return {
+    accessToken:     data.access_token,
+    // Google がトークンローテーションで新しい refresh_token を返した場合に保持
+    newRefreshToken: data.refresh_token ?? null,
+  };
 }
 
 /**

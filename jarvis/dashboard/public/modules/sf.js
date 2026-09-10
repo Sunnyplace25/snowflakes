@@ -1873,18 +1873,20 @@ const SfModule = (() => {
     const renderRow = (s) => {
       const isDisabled = s.enabled === 0;
       const dotCls = isDisabled ? 'sync-dot-disabled'
-        : s.status === 'fresh'                            ? 'sync-dot-fresh'
-        : s.status === 'stale'                            ? 'sync-dot-stale'
-        : s.status === 'manual_required'                  ? 'sync-dot-pending'
-        : ['error','unconfigured','never_synced'].includes(s.status) ? 'sync-dot-error'
+        : s.status === 'fresh'                                        ? 'sync-dot-fresh'
+        : s.status === 'stale'                                        ? 'sync-dot-stale'
+        : s.status === 'manual_required'                              ? 'sync-dot-pending'
+        : s.status === 'auth_failed'                                  ? 'sync-dot-error'
+        : ['error','unconfigured','never_synced'].includes(s.status)  ? 'sync-dot-error'
         : 'sync-dot-disabled';
 
       const stateLabel = isDisabled ? '未使用'
         : sectionMode === 'AUTO'
-          ? (s.status === 'fresh'       ? '最新'
-          : s.status === 'stale'        ? '更新待ち'
-          : s.status === 'error'        ? 'エラー'
-          : s.status === 'unconfigured' ? '設定が必要'
+          ? (s.status === 'fresh'        ? '最新'
+          : s.status === 'auth_failed'   ? '再認証が必要'
+          : s.status === 'stale'         ? '更新が遅れています'
+          : s.status === 'error'         ? 'エラー'
+          : s.status === 'unconfigured'  ? (s.source === 'instagram' ? '初回設定が必要' : '設定が必要')
           : '未取得')
           : (s.status === 'fresh'           ? '最新'
           : s.status === 'stale'            ? '更新待ち'
@@ -1892,11 +1894,31 @@ const SfModule = (() => {
           : '未取得');
 
       const stateCls = isDisabled ? 'sync-label-disabled'
-        : (stateLabel === '最新')    ? 'sync-label-fresh'
-        : (stateLabel === '更新待ち') ? 'sync-label-stale'
-        : (stateLabel === '未取込')   ? 'sync-label-pending'
-        : (stateLabel === 'エラー' || stateLabel === '設定が必要' || stateLabel === '未取得') ? 'sync-label-error'
+        : (stateLabel === '最新')             ? 'sync-label-fresh'
+        : (stateLabel === '更新待ち')          ? 'sync-label-stale'
+        : (stateLabel === '更新が遅れています') ? 'sync-label-stale'
+        : (stateLabel === '未取込')            ? 'sync-label-pending'
+        : (stateLabel === '再認証が必要' || stateLabel === 'エラー' ||
+           stateLabel === '設定が必要'  || stateLabel === '初回設定が必要' ||
+           stateLabel === '未取得')            ? 'sync-label-error'
         : '';
+
+      // アクションボタン
+      let actionBtn = '';
+      if (!isDisabled) {
+        if (s.status === 'auth_failed' && s.source === 'youtube') {
+          actionBtn = `<button class="sync-action-btn sync-action-reauth" data-action="youtube-reauth">再認証</button>`;
+        } else if (s.status === 'unconfigured' && s.source === 'instagram') {
+          actionBtn = `<button class="sync-action-btn sync-action-guide" data-action="instagram-guide">接続手順</button>`;
+        } else if (['stale','manual_required','never_synced'].includes(s.status) && sectionMode === 'MANUAL') {
+          const actionMap = { soundrop: 'soundrop-import', tiktok: 'csv-import-tiktok',
+                              x: 'csv-import-x', kdp: 'csv-import-kdp', narou: 'narou-input' };
+          const action = actionMap[s.source];
+          if (action) {
+            actionBtn = `<button class="sync-action-btn sync-action-import" data-action="${action}">取込</button>`;
+          }
+        }
+      }
 
       const lastDate   = s.last_data_date ?? '—';
       // segmented toggle: 「利用中」と「未使用」の2択ピル
@@ -1912,6 +1934,7 @@ const SfModule = (() => {
         <span class="sync-source-name">${esc(s.label)}</span>
         <span class="sync-last-date">${esc(lastDate)}</span>
         <span class="sync-state-label ${stateCls}">${stateLabel}</span>
+        ${actionBtn}
         ${segToggle}
       </div>`;
     };
@@ -1947,6 +1970,238 @@ const SfModule = (() => {
           }
         });
       });
+    });
+
+    // アクションボタンのイベント登録
+    el.querySelectorAll('.sync-action-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        if (action === 'youtube-reauth')    openYoutubeReauthModal();
+        else if (action === 'instagram-guide') openInstagramGuideModal();
+        else if (action === 'soundrop-import') openSoundropImportModal();
+        else if (action === 'csv-import-tiktok') openCsvImportModal('tiktok', 'TikTok');
+        else if (action === 'csv-import-x')      openCsvImportModal('x', 'X（旧Twitter）');
+        else if (action === 'csv-import-kdp')    openCsvImportModal('kdp', 'KDP');
+        else if (action === 'narou-input')   openNarouInputModal();
+      });
+    });
+  }
+
+  // ── Sync アクション モーダル ──────────────────────────────────────────────────
+
+  function createSyncModal(id, contentHtml) {
+    let modal = document.getElementById(id);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = id;
+      modal.className = 'sync-modal-overlay';
+      document.body.appendChild(modal);
+    }
+    modal.innerHTML = `<div class="sync-modal-box">${contentHtml}</div>`;
+    modal.style.display = 'flex';
+    modal.addEventListener('click', e => { if (e.target === modal) closeSyncModal(id); }, { once: true });
+    return modal;
+  }
+
+  function closeSyncModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.style.display = 'none';
+  }
+
+  function openYoutubeReauthModal() {
+    createSyncModal('sync-modal-youtube', `
+      <h3>YouTube 再認証</h3>
+      <p>「認証を開始する」をクリックすると、Google の認証ページが新しいタブで開きます。</p>
+      <p>認証完了後に表示されるページで「適用する」を押すと、トークンが自動的に更新されます。</p>
+      <div class="sync-modal-note">
+        <strong>事前確認：</strong>
+        Google Cloud Console の OAuth クライアントに<br>
+        <code>http://localhost:3000/api/sf/sync/youtube/oauth/callback</code><br>
+        がリダイレクト URI として登録されている必要があります。
+      </div>
+      <div class="sync-modal-actions">
+        <button id="youtube-reauth-start" class="sync-modal-btn-primary">認証を開始する</button>
+        <button class="sync-modal-btn-cancel" onclick="document.getElementById('sync-modal-youtube').style.display='none'">閉じる</button>
+      </div>
+    `);
+    document.getElementById('youtube-reauth-start').addEventListener('click', () => {
+      window.open('/api/sf/sync/youtube/oauth/start', '_blank');
+      closeSyncModal('sync-modal-youtube');
+    });
+  }
+
+  function openInstagramGuideModal() {
+    createSyncModal('sync-modal-instagram', `
+      <h3>Instagram 接続手順</h3>
+      <p>Instagram Graph API を利用するには、以下の 4 つの ENV 変数を <code>.env</code> ファイルに設定してください。</p>
+      <table class="sync-env-table">
+        <tr><td><code>INSTAGRAM_ACCOUNT_ID</code></td><td>ビジネスアカウントの数字 ID</td></tr>
+        <tr><td><code>INSTAGRAM_ACCESS_TOKEN</code></td><td>長期アクセストークン</td></tr>
+        <tr><td><code>INSTAGRAM_CLIENT_ID</code></td><td>Facebook アプリの App ID</td></tr>
+        <tr><td><code>INSTAGRAM_CLIENT_SECRET</code></td><td>Facebook アプリの App Secret</td></tr>
+      </table>
+      <p style="margin-top:12px;font-size:0.85em;color:#666">
+        取得方法: Facebook Developers → アプリ作成 → Instagram Basic Display API または Instagram Graph API を追加 → トークン発行
+      </p>
+      <div class="sync-modal-actions">
+        <button class="sync-modal-btn-cancel" onclick="document.getElementById('sync-modal-instagram').style.display='none'">閉じる</button>
+      </div>
+    `);
+  }
+
+  function openSoundropImportModal() {
+    createSyncModal('sync-modal-soundrop', `
+      <h3>Soundrop 収益 CSV 取込</h3>
+      <p>Soundrop からダウンロードした CSV ファイルの内容を貼り付けてください。</p>
+      <textarea id="soundrop-csv-input" class="sync-import-textarea" placeholder="CSV の内容をここに貼り付け…" rows="8"></textarea>
+      <div id="soundrop-preview-area" style="display:none" class="sync-preview-box"></div>
+      <div class="sync-modal-actions">
+        <button id="soundrop-preview-btn" class="sync-modal-btn-secondary">プレビュー</button>
+        <button id="soundrop-import-btn" class="sync-modal-btn-primary" style="display:none">取込実行</button>
+        <button class="sync-modal-btn-cancel" onclick="document.getElementById('sync-modal-soundrop').style.display='none'">キャンセル</button>
+      </div>
+      <p id="soundrop-result-msg" style="margin-top:8px;font-size:0.9em"></p>
+    `);
+
+    let previewedCsv = null;
+
+    document.getElementById('soundrop-preview-btn').addEventListener('click', async () => {
+      const csv = document.getElementById('soundrop-csv-input').value.trim();
+      if (!csv) return;
+      const previewArea = document.getElementById('soundrop-preview-area');
+      const importBtn   = document.getElementById('soundrop-import-btn');
+      previewArea.textContent = '読み込み中...';
+      previewArea.style.display = 'block';
+      try {
+        const r = await fetch('/api/sf/sync/import/soundrop/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csv }),
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error);
+        previewArea.innerHTML = `<strong>${j.rows} 行</strong>${j.period ? `　期間: ${j.period}` : ''}`;
+        previewedCsv = csv;
+        importBtn.style.display = '';
+      } catch (e) {
+        previewArea.textContent = '❌ ' + e.message;
+        importBtn.style.display = 'none';
+      }
+    });
+
+    document.getElementById('soundrop-import-btn').addEventListener('click', async () => {
+      if (!previewedCsv) return;
+      const msg = document.getElementById('soundrop-result-msg');
+      msg.textContent = '取込中...';
+      try {
+        const r = await fetch('/api/sf/sync/import/soundrop', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csv: previewedCsv }),
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error);
+        msg.textContent = '✅ 取込完了しました';
+        msg.style.color = '#1a7';
+        setTimeout(() => { closeSyncModal('sync-modal-soundrop'); loadSync(); }, 1200);
+      } catch (e) {
+        msg.textContent = '❌ ' + e.message;
+        msg.style.color = '#c00';
+      }
+    });
+  }
+
+  function openCsvImportModal(source, label) {
+    const modalId = `sync-modal-csv-${source}`;
+    createSyncModal(modalId, `
+      <h3>${esc(label)} CSV 取込</h3>
+      ${source === 'x' ? `<p>スナップショット日付（省略時は今日）: <input id="csv-snapshot-date" type="date" style="margin-left:6px"></p>` : ''}
+      <textarea id="csv-import-input-${source}" class="sync-import-textarea" placeholder="CSV の内容をここに貼り付け…" rows="8"></textarea>
+      <div class="sync-modal-actions">
+        <button id="csv-import-btn-${source}" class="sync-modal-btn-primary">取込実行</button>
+        <button class="sync-modal-btn-cancel" onclick="document.getElementById('${modalId}').style.display='none'">キャンセル</button>
+      </div>
+      <p id="csv-import-msg-${source}" style="margin-top:8px;font-size:0.9em"></p>
+    `);
+
+    document.getElementById(`csv-import-btn-${source}`).addEventListener('click', async () => {
+      const csv = document.getElementById(`csv-import-input-${source}`).value.trim();
+      const msg = document.getElementById(`csv-import-msg-${source}`);
+      if (!csv) { msg.textContent = 'CSV を入力してください'; return; }
+      msg.textContent = '取込中...';
+      const body = { csv };
+      if (source === 'x') {
+        const dateInput = document.getElementById('csv-snapshot-date');
+        if (dateInput?.value) body.snapshot_date = dateInput.value;
+      }
+      try {
+        const r = await fetch('/api/sf/sync/import/csv', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Source': source },
+          body: JSON.stringify(body),
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error);
+        msg.textContent = '✅ 取込完了しました';
+        msg.style.color = '#1a7';
+        setTimeout(() => { closeSyncModal(modalId); loadSync(); }, 1200);
+      } catch (e) {
+        msg.textContent = '❌ ' + e.message;
+        msg.style.color = '#c00';
+      }
+    });
+  }
+
+  function openNarouInputModal() {
+    createSyncModal('sync-modal-narou', `
+      <h3>なろう スナップショット入力</h3>
+      <div class="sync-narou-form">
+        <label>Nコード <input id="narou-ncode" type="text" placeholder="例: N1234AB" maxlength="20"></label>
+        <label>対象月 <input id="narou-month" type="month"></label>
+        <label>ブックマーク数 <input id="narou-bookmarks" type="number" min="0"></label>
+        <label>日間ポイント <input id="narou-daily" type="number" min="0"></label>
+        <label>週間ポイント <input id="narou-weekly" type="number" min="0"></label>
+        <label>月間ポイント <input id="narou-monthly" type="number" min="0"></label>
+        <label>評価数 <input id="narou-hyoka-cnt" type="number" min="0"></label>
+        <label>評価ポイント <input id="narou-all-point" type="number" min="0"></label>
+      </div>
+      <div class="sync-modal-actions">
+        <button id="narou-submit-btn" class="sync-modal-btn-primary">登録</button>
+        <button class="sync-modal-btn-cancel" onclick="document.getElementById('sync-modal-narou').style.display='none'">キャンセル</button>
+      </div>
+      <p id="narou-result-msg" style="margin-top:8px;font-size:0.9em"></p>
+    `);
+
+    document.getElementById('narou-submit-btn').addEventListener('click', async () => {
+      const msg   = document.getElementById('narou-result-msg');
+      const ncode = document.getElementById('narou-ncode').value.trim();
+      const month = document.getElementById('narou-month').value;
+      if (!ncode || !month) { msg.textContent = 'Nコードと対象月は必須です'; return; }
+      const intVal = id => { const v = document.getElementById(id).value; return v === '' ? null : parseInt(v, 10); };
+      msg.textContent = '登録中...';
+      try {
+        const r = await fetch('/api/sf/sync/narou/snapshot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ncode, month,
+            bookmarks:     intVal('narou-bookmarks'),
+            daily_point:   intVal('narou-daily'),
+            weekly_point:  intVal('narou-weekly'),
+            monthly_point: intVal('narou-monthly'),
+            all_hyoka_cnt: intVal('narou-hyoka-cnt'),
+            all_point:     intVal('narou-all-point'),
+          }),
+        });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error);
+        msg.textContent = '✅ 登録しました';
+        msg.style.color = '#1a7';
+        setTimeout(() => { closeSyncModal('sync-modal-narou'); loadSync(); }, 1200);
+      } catch (e) {
+        msg.textContent = '❌ ' + e.message;
+        msg.style.color = '#c00';
+      }
     });
   }
 

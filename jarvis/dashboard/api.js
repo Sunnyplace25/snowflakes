@@ -35,6 +35,7 @@ import {
   runAutoSync,
   runSourceSync,
   setSourceEnabled,
+  notifyImportSuccess,
   AUTO_SOURCES,
   SOURCE_REGISTRY,
 } from '../data/sf_sync_manager.js';
@@ -118,9 +119,15 @@ import {
   createDbReadOnly, isSoundropMigrationApplied, DEFAULT_DB_PATH,
 } from '../data/db.js';
 import { copyFileSync, mkdirSync, existsSync,
-         createReadStream }                    from 'node:fs';
+         createReadStream, readFileSync,
+         writeFileSync, unlinkSync }           from 'node:fs';
 import { resolve as pathResolve,
          extname as pathExtname }              from 'node:path';
+import { tmpdir }                              from 'node:os';
+import { importTikTokCSV }  from '../importers/tiktok_csv_importer.js';
+import { importXCSV }       from '../importers/x_csv_importer.js';
+import { importKdpReport }  from '../importers/kdp_report_importer.js';
+import { writeNarouSnapshot } from '../importers/narou_writer.js';
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
@@ -131,10 +138,20 @@ import {
 } from '../data/sf_works_manager.js';
 import { fileURLToPath }                       from 'node:url';
 import { DatabaseSync }                        from 'node:sqlite';
+import { randomBytes }                         from 'node:crypto';
 
 const _BACKUPS_DIR = pathResolve(
   fileURLToPath(import.meta.url), '../../backups',
 );
+
+// YouTube OAuth 用の .env ファイルパス
+const _ENV_FILE_PATH = pathResolve(fileURLToPath(import.meta.url), '../../.env');
+
+// YouTube OAuth 認証フローの一時状態管理（サーバーメモリのみ）
+// state: CSRF防止。start時に生成しcallbackで一致確認（10分TTL）
+// token: callback成功後に一時保管（5分TTL）、apply時に.envへ書き込む
+let _youtubeOauthState = null;  // { value: string, expiresAt: number }
+let _pendingYoutubeToken = null; // { refreshToken: string, expiresAt: number }
 
 // ─── ユーティリティ ───────────────────────────────────────────────────────────
 
@@ -195,6 +212,60 @@ function todayISO() {
 function currentYearMonth() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** YouTube OAuth コールバック結果ページ HTML */
+function buildOauthResultHtml({ success, error = '' }) {
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  if (success) {
+    return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<title>YouTube 再認証</title>
+<style>body{font-family:sans-serif;max-width:480px;margin:60px auto;text-align:center}
+.box{border:1px solid #ccc;border-radius:8px;padding:32px}
+h2{color:#1a7}button{margin-top:24px;padding:12px 32px;background:#1a7;color:#fff;
+border:none;border-radius:6px;font-size:1rem;cursor:pointer}
+button:hover{background:#159}</style></head><body>
+<div class="box">
+<h2>✅ 新しい認証情報を取得しました</h2>
+<p>「適用する」をクリックすると .env を更新し、YouTube の自動同期を再実行します。</p>
+<button id="applyBtn">適用する</button>
+<p id="msg" style="margin-top:16px;color:#555"></p>
+</div>
+<script>
+document.getElementById('applyBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('applyBtn');
+  const msg = document.getElementById('msg');
+  btn.disabled = true;
+  msg.textContent = '適用中...';
+  try {
+    const r = await fetch('/api/sf/sync/youtube/oauth/apply', { method: 'POST' });
+    const j = await r.json();
+    if (j.ok) {
+      msg.textContent = '✅ .env を更新しました。このタブを閉じてください。';
+      msg.style.color = '#1a7';
+    } else {
+      msg.textContent = '❌ ' + (j.error || '適用に失敗しました');
+      msg.style.color = '#c00';
+      btn.disabled = false;
+    }
+  } catch (e) {
+    msg.textContent = '❌ 通信エラー: ' + e.message;
+    msg.style.color = '#c00';
+    btn.disabled = false;
+  }
+});
+</script></body></html>`;
+  }
+  return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+<title>YouTube 再認証エラー</title>
+<style>body{font-family:sans-serif;max-width:480px;margin:60px auto;text-align:center}
+.box{border:1px solid #f99;border-radius:8px;padding:32px}
+h2{color:#c00}</style></head><body>
+<div class="box">
+<h2>❌ 認証に失敗しました</h2>
+<p>${esc(error)}</p>
+<p>このタブを閉じて、JARVISの「再認証」ボタンからやり直してください。</p>
+</div></body></html>`;
 }
 
 // ─── 入力検証ヘルパー ─────────────────────────────────────────────────────────
@@ -1689,6 +1760,283 @@ export function createApiHandler(db) {
           setSourceEnabled(db, sourceKey, body.enabled ? 1 : 0);
           return jsonRes(res, 200, { ok: true });
         }
+      }
+
+      // ── YouTube OAuth 再認証フロー ──────────────────────────────────────────────
+
+      // GET /api/sf/sync/youtube/oauth/start — state 生成 → OAuth 認証 URL にリダイレクト
+      if (method === 'GET' && path === '/api/sf/sync/youtube/oauth/start') {
+        const clientId     = process.env.YOUTUBE_CLIENT_ID;
+        const clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+        if (!clientId || !clientSecret) {
+          return errRes(res, 503, 'YOUTUBE_CLIENT_ID または YOUTUBE_CLIENT_SECRET が未設定です');
+        }
+
+        // CSRF 防止 state: 32バイト hex（10分TTL）
+        const stateValue = randomBytes(32).toString('hex');
+        _youtubeOauthState = { value: stateValue, expiresAt: Date.now() + 10 * 60 * 1000 };
+
+        const redirectUri = 'http://localhost:3000/api/sf/sync/youtube/oauth/callback';
+        const params = new URLSearchParams({
+          client_id:     clientId,
+          redirect_uri:  redirectUri,
+          response_type: 'code',
+          // youtube.readonly + yt-analytics.readonly の両スコープが必要
+          scope: [
+            'https://www.googleapis.com/auth/youtube.readonly',
+            'https://www.googleapis.com/auth/yt-analytics.readonly',
+          ].join(' '),
+          access_type:   'offline',
+          prompt:        'consent', // 既存トークンがあっても必ず再発行させる
+          state:         stateValue,
+        });
+        res.writeHead(302, { Location: `https://accounts.google.com/o/oauth2/v2/auth?${params}` });
+        return res.end();
+      }
+
+      // GET /api/sf/sync/youtube/oauth/callback — state 検証 → コード交換 → token 一時保管
+      if (method === 'GET' && path === '/api/sf/sync/youtube/oauth/callback') {
+        const code       = url.searchParams.get('code');
+        const error      = url.searchParams.get('error');
+        const stateParam = url.searchParams.get('state');
+        const htmlRes = (html) => {
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+          return res.end(html);
+        };
+
+        // ① Google 側エラー
+        if (error) {
+          _youtubeOauthState = null;
+          return htmlRes(buildOauthResultHtml({ success: false, error: `Google からエラーが返りました: ${error}` }));
+        }
+
+        // ② state 検証（未設定・不一致・期限切れ）
+        const now = Date.now();
+        if (!_youtubeOauthState) {
+          return htmlRes(buildOauthResultHtml({ success: false, error: '認証フローが開始されていません。やり直してください' }));
+        }
+        if (now > _youtubeOauthState.expiresAt) {
+          _youtubeOauthState = null;
+          return htmlRes(buildOauthResultHtml({ success: false, error: '認証フローがタイムアウトしました。やり直してください' }));
+        }
+        if (!stateParam || stateParam !== _youtubeOauthState.value) {
+          _youtubeOauthState = null;
+          return htmlRes(buildOauthResultHtml({ success: false, error: 'state が一致しません。CSRF の可能性があるため拒否しました' }));
+        }
+        // state は使い捨て
+        _youtubeOauthState = null;
+
+        // ③ 認証コード確認
+        if (!code) {
+          return htmlRes(buildOauthResultHtml({ success: false, error: '認証コードがありません' }));
+        }
+
+        const clientId     = process.env.YOUTUBE_CLIENT_ID;
+        const clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+        const redirectUri  = 'http://localhost:3000/api/sf/sync/youtube/oauth/callback';
+
+        try {
+          const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              code,
+              client_id:     clientId,
+              client_secret: clientSecret,
+              redirect_uri:  redirectUri,
+              grant_type:    'authorization_code',
+            }),
+          });
+          const tokenData = await tokenRes.json();
+
+          if (!tokenRes.ok || !tokenData.refresh_token) {
+            // エラー詳細はログに留め、画面にはトークン値を一切表示しない
+            const errMsg = tokenData.error_description || tokenData.error || 'トークン取得に失敗しました';
+            return htmlRes(buildOauthResultHtml({ success: false, error: errMsg }));
+          }
+
+          // refresh token は HTML に表示せず、サーバーメモリに一時保管（5分TTL）
+          _pendingYoutubeToken = {
+            refreshToken: tokenData.refresh_token,
+            expiresAt: Date.now() + 5 * 60 * 1000,
+          };
+
+          return htmlRes(buildOauthResultHtml({ success: true }));
+        } catch (e) {
+          return htmlRes(buildOauthResultHtml({ success: false, error: e.message }));
+        }
+      }
+
+      // POST /api/sf/sync/youtube/oauth/apply — 一時トークンを .env に書き込み → 自動同期実行
+      if (method === 'POST' && path === '/api/sf/sync/youtube/oauth/apply') {
+        if (!_pendingYoutubeToken) {
+          return errRes(res, 400, '適用できるトークンがありません。再認証からやり直してください');
+        }
+        if (Date.now() > _pendingYoutubeToken.expiresAt) {
+          _pendingYoutubeToken = null;
+          return errRes(res, 400, 'トークンの有効期限が切れました。再認証からやり直してください');
+        }
+
+        const { refreshToken } = _pendingYoutubeToken;
+        _pendingYoutubeToken = null;
+
+        // ① 新しい refresh token でアクセストークンが取れるか事前検証（.env 書き込み前）
+        let verifyError = null;
+        try {
+          const verifyRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              client_id:     process.env.YOUTUBE_CLIENT_ID,
+              client_secret: process.env.YOUTUBE_CLIENT_SECRET,
+              refresh_token: refreshToken,
+              grant_type:    'refresh_token',
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (!verifyRes.ok || !verifyData.access_token) {
+            verifyError = verifyData.error_description || verifyData.error || 'トークン検証失敗';
+          }
+        } catch (e) {
+          verifyError = e.message;
+        }
+
+        if (verifyError) {
+          return errRes(res, 400, `新しいトークンが無効です（Google API エラー: ${verifyError}）。再認証からやり直してください`);
+        }
+
+        // ② 検証通過後のみ .env に書き込む
+        let envText = '';
+        try { envText = readFileSync(_ENV_FILE_PATH, 'utf8'); } catch {}
+        const keyLine = `YOUTUBE_REFRESH_TOKEN=${refreshToken}`;
+        if (/^YOUTUBE_REFRESH_TOKEN=.*/m.test(envText)) {
+          envText = envText.replace(/^YOUTUBE_REFRESH_TOKEN=.*$/m, keyLine);
+        } else {
+          envText = envText.endsWith('\n') ? envText + keyLine + '\n' : envText + '\n' + keyLine + '\n';
+        }
+        writeFileSync(_ENV_FILE_PATH, envText, 'utf8');
+
+        // ③ 現在のプロセスにも即時反映
+        process.env.YOUTUBE_REFRESH_TOKEN = refreshToken;
+
+        // ④ 実際に同期を実行して invalid_grant が解消されたことを確認
+        // 同期結果は sf_sync_state に記録される（status を強制変更しない）
+        let syncResult = null;
+        try {
+          syncResult = await runSourceSync(db, 'youtube');
+        } catch (_syncErr) {
+          // runSourceSync は内部で catch するため通常ここには来ない
+        }
+
+        const syncMsg = syncResult?.success
+          ? `YouTube 同期成功（最新データ: ${syncResult.data_date}）`
+          : `トークン更新済み。同期: ${syncResult?.error?.slice(0, 80) ?? '不明なエラー'}`;
+
+        return jsonRes(res, 200, { ok: true, sync_success: syncResult?.success ?? false, message: syncMsg });
+      }
+
+      // ── 手動 CSV・スナップショット取込 ───────────────────────────────────────
+
+      // POST /api/sf/sync/import/soundrop/preview — CSV内容を受け取り、取込内容プレビューを返す
+      if (method === 'POST' && path === '/api/sf/sync/import/soundrop/preview') {
+        const body = await readBody(req);
+        const { csv } = body;
+        if (typeof csv !== 'string' || !csv.trim()) {
+          return errRes(res, 400, 'csv フィールドに CSV テキストを指定してください');
+        }
+        // ヘッダー行と行数のみカウント（DB書き込みなし）
+        const lines = csv.split('\n').filter(l => l.trim());
+        const header = lines[0] ?? '';
+        const dataRows = lines.length - 1;
+        // 期間（最初と最後のデータ行から推測）
+        let period = null;
+        if (dataRows > 0) {
+          const firstCols = (lines[1] ?? '').split(',');
+          const lastCols  = (lines[lines.length - 1] ?? '').split(',');
+          // Soundrop CSV は通常 col[1] が period
+          if (firstCols[1] && lastCols[1]) {
+            const p1 = firstCols[1].replace(/"/g, '').trim();
+            const p2 = lastCols[1].replace(/"/g, '').trim();
+            period = p1 === p2 ? p1 : `${p1} 〜 ${p2}`;
+          }
+        }
+        return jsonRes(res, 200, { ok: true, header, rows: dataRows, period });
+      }
+
+      // POST /api/sf/sync/import/soundrop — Soundrop CSV を取り込む
+      if (method === 'POST' && path === '/api/sf/sync/import/soundrop') {
+        const body = await readBody(req);
+        const { csv } = body;
+        if (typeof csv !== 'string' || !csv.trim()) {
+          return errRes(res, 400, 'csv フィールドに CSV テキストを指定してください');
+        }
+        // 一時ファイルに書き込んで既存 importFile() を利用
+        const tmpPath = pathResolve(tmpdir(), `soundrop_import_${Date.now()}.csv`);
+        try {
+          writeFileSync(tmpPath, csv, 'utf8');
+          const result = importFile(db, tmpPath);
+          notifyImportSuccess(db, 'soundrop');
+          notifyImportSuccess(db, 'revenue');
+          return jsonRes(res, 200, { ok: true, result });
+        } finally {
+          try { unlinkSync(tmpPath); } catch {}
+        }
+      }
+
+      // POST /api/sf/sync/import/csv — TikTok / X / KDP CSV を取り込む
+      // X-Source ヘッダーで source を指定: tiktok | x | kdp
+      if (method === 'POST' && path === '/api/sf/sync/import/csv') {
+        const source = req.headers['x-source'];
+        if (!['tiktok', 'x', 'kdp'].includes(source)) {
+          return errRes(res, 400, 'X-Source ヘッダーに tiktok / x / kdp のいずれかを指定してください');
+        }
+        const body = await readBody(req);
+        const { csv, snapshot_date } = body;
+        if (typeof csv !== 'string' || !csv.trim()) {
+          return errRes(res, 400, 'csv フィールドに CSV テキストを指定してください');
+        }
+
+        let result;
+        if (source === 'tiktok') {
+          result = importTikTokCSV(db, csv);
+          notifyImportSuccess(db, 'tiktok');
+        } else if (source === 'x') {
+          const snapshotDate = snapshot_date ?? todayISO();
+          result = importXCSV(db, csv, snapshotDate);
+          notifyImportSuccess(db, 'x');
+        } else if (source === 'kdp') {
+          result = importKdpReport(db, csv);
+          notifyImportSuccess(db, 'kdp');
+        }
+        return jsonRes(res, 200, { ok: true, source, result });
+      }
+
+      // POST /api/sf/sync/narou/snapshot — なろう手動スナップショット投入
+      if (method === 'POST' && path === '/api/sf/sync/narou/snapshot') {
+        const body = await readBody(req);
+        const { ncode, month, bookmarks, daily_point, weekly_point, monthly_point,
+                impression, review_count, all_hyoka_cnt, all_point } = body;
+        if (!ncode || typeof ncode !== 'string' || !/^[A-Za-z0-9]+$/.test(ncode)) {
+          return errRes(res, 400, 'ncode は英数字で指定してください');
+        }
+        if (!month || !/^\d{4}-\d{2}$/.test(month)) {
+          return errRes(res, 400, 'month は YYYY-MM 形式で指定してください');
+        }
+        const snapshot = {
+          ncode: ncode.toUpperCase(),
+          month,
+          bookmarks:      bookmarks      ?? null,
+          daily_point:    daily_point    ?? null,
+          weekly_point:   weekly_point   ?? null,
+          monthly_point:  monthly_point  ?? null,
+          impression:     impression     ?? null,
+          review_count:   review_count   ?? null,
+          all_hyoka_cnt:  all_hyoka_cnt  ?? null,
+          all_point:      all_point      ?? null,
+        };
+        writeNarouSnapshot(db, [snapshot]);
+        notifyImportSuccess(db, 'narou');
+        return jsonRes(res, 200, { ok: true });
       }
 
       // ── Soundrop Catalog Sync ─────────────────────────────────────────────────

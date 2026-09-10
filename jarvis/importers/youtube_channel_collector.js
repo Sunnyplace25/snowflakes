@@ -486,7 +486,30 @@ export async function collectYouTubeChannel(db, { startDate, endDate, fetchVideo
   const errors = [];
   let channelWritten = 0;
   let videoWritten = 0;
-  const accessToken = await refreshAccessToken({ clientId, clientSecret, refreshToken });
+  const { accessToken, newRefreshToken } = await refreshAccessToken({ clientId, clientSecret, refreshToken });
+
+  // Google がトークンローテーションで新しい refresh_token を返した場合は .env に保存
+  if (newRefreshToken && newRefreshToken !== refreshToken) {
+    try {
+      const { readFileSync, writeFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      const { fileURLToPath } = await import('node:url');
+      // youtube_channel_collector.js は importers/ 内にあるため ../../.env = jarvis/.env
+      const envPath = resolve(fileURLToPath(import.meta.url), '../../.env');
+      let envText = '';
+      try { envText = readFileSync(envPath, 'utf8'); } catch {}
+      const keyLine = `YOUTUBE_REFRESH_TOKEN=${newRefreshToken}`;
+      if (/^YOUTUBE_REFRESH_TOKEN=.*/m.test(envText)) {
+        envText = envText.replace(/^YOUTUBE_REFRESH_TOKEN=.*$/m, keyLine);
+      } else {
+        envText = envText.endsWith('\n') ? envText + keyLine + '\n' : envText + '\n' + keyLine + '\n';
+      }
+      writeFileSync(envPath, envText, 'utf8');
+      process.env.YOUTUBE_REFRESH_TOKEN = newRefreshToken;
+    } catch (_) {
+      // ローテーション保存失敗は致命的ではない（次回の /apply で解決）
+    }
+  }
 
   const [statsData, channelAnalytics] = await Promise.all([
     fetchChannelStats({ accessToken }).catch(e => {
