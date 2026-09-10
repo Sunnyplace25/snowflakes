@@ -22,6 +22,9 @@
   --btn-sec-hov: #30363d;
   --radius:      6px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  --link:         #7dd3fc;
+  --link-hover:   #bae6fd;
+  --link-visited: #c4b5fd;
 }
 
 html, body {
@@ -31,6 +34,25 @@ html, body {
   font-family: var(--font);
   font-size: 14px;
   line-height: 1.5;
+}
+
+/* ─── テキストリンク（ボタン・タブ・アイコンボタン系を除く通常リンク）────── */
+a:not(.sf-btn):not(.sf-tab):not(.pub-open-btn):not(.wd-back):not([role="button"]) {
+  color: var(--link);
+  text-decoration: none;
+}
+a:not(.sf-btn):not(.sf-tab):not(.pub-open-btn):not(.wd-back):not([role="button"]):hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+a:not(.sf-btn):not(.sf-tab):not(.pub-open-btn):not(.wd-back):not([role="button"]):visited {
+  color: var(--link-visited);
+}
+a:not(.sf-btn):not(.sf-tab):not(.pub-open-btn):not(.wd-back):not([role="button"]):focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* ─── Header ──────────────────────────────────────────────────────────────── */
@@ -2288,12 +2310,15 @@ html, body {
 
 /* ── works タイトルリンク ─────────────────────────────────────────────────── */
 .works-title-link {
-  color: var(--text-pri);
+  color: var(--link);
   text-decoration: none;
 }
 .works-title-link:hover {
-  color: var(--accent);
+  color: var(--link-hover);
   text-decoration: underline;
+}
+.works-title-link:visited {
+  color: var(--link-visited);
 }
 
 /* ── 作品詳細ページ (work.html) ──────────────────────────────────────────── */

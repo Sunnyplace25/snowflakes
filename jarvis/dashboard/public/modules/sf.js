@@ -2027,6 +2027,12 @@ const SfModule = (() => {
     document.getElementById('youtube-reauth-start').addEventListener('click', () => {
       window.open('/api/sf/sync/youtube/oauth/start', '_blank');
       closeSyncModal('sync-modal-youtube');
+      // OAuth 完了後にダッシュボードへ戻った時点で Ops を自動再読込（1回限り）
+      const onFocus = () => {
+        window.removeEventListener('focus', onFocus);
+        loadSync();
+      };
+      window.addEventListener('focus', onFocus);
     });
   }
 

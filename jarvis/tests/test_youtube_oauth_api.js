@@ -194,12 +194,11 @@ test('成功HTMLに「新しい認証情報を取得しました」が含まれ�
 });
 
 test('/apply レスポンスの jsonRes 呼び出しに refreshToken 値が含まれない', () => {
-  // apply 最後の jsonRes(...) 呼び出しだけを抜き出して確認
-  // → { ok: true, message: '...' } のみで refresh token の値を返していないこと
+  // apply エンドポイントの jsonRes は sync_success フィールドを含む
+  // → { ok: true, sync_success: ..., message: syncMsg } のみで refresh token の値を返していないこと
   const jsonResCalls = [...API_SRC.matchAll(/jsonRes\(res,\s*200,\s*\{([^}]+)\}\)/g)]
     .map(m => m[1]);
-  // apply エンドポイントの jsonRes は "YouTube 同期を実行しました" を含む
-  const applyJsonRes = jsonResCalls.find(s => s.includes('YouTube 同期を実行しました')) ?? '';
+  const applyJsonRes = jsonResCalls.find(s => s.includes('sync_success')) ?? '';
   assert.ok(!!applyJsonRes, 'apply の jsonRes 呼び出しを発見できた');
   assert.ok(!applyJsonRes.includes('refreshToken'), 'jsonRes の中に refreshToken が含まれない');
   assert.ok(!applyJsonRes.includes('refresh_token'), 'jsonRes の中に refresh_token が含まれない');
@@ -261,19 +260,21 @@ test('apply エンドポイントで runSourceSync を呼び出している', ()
 });
 
 test('runSourceSync は try/catch で囲まれている（同期失敗でも apply 成功を返す）', () => {
+  // apply ブロックは verify → .env 書き込み → runSourceSync と続くため 4000文字のウィンドウで確認
   const applyBlock = API_SRC.slice(
     API_SRC.indexOf('POST /api/sf/sync/youtube/oauth/apply'),
-    API_SRC.indexOf('POST /api/sf/sync/youtube/oauth/apply') + 2000
+    API_SRC.indexOf('POST /api/sf/sync/youtube/oauth/apply') + 4000
   );
   assert.ok(applyBlock.includes('try {'), 'try ブロック');
   assert.ok(applyBlock.includes('} catch ('), 'catch ブロック');
   assert.ok(applyBlock.includes("runSourceSync(db, 'youtube')"), 'runSourceSync 呼び出し');
 });
 
-test('apply レスポンスに「同期を実行」の文言が含まれる', () => {
+test('apply レスポンスに「同期成功」の文言が含まれる', () => {
+  // 同期成功時は "YouTube 同期成功（最新データ: ...）"、失敗時は "トークン更新済み。同期: ..." を返す
   assert.ok(
-    API_SRC.includes('YouTube 同期を実行しました'),
-    'apply レスポンスメッセージに同期実行の旨がある'
+    API_SRC.includes('YouTube 同期成功'),
+    'apply レスポンスメッセージに同期結果の旨がある'
   );
 });
 
