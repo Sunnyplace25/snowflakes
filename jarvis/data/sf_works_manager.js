@@ -104,6 +104,62 @@ export function getWork(db, workId) {
 }
 
 /**
+ * 作品詳細フィールドを更新する。
+ * 更新可能フィールド: synopsis, first_draft_date, character_count, memo のみ。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} workId
+ * @param {object} fields
+ * @returns {object} 更新後の作品レコード
+ * @throws {Error} 作品不在 → .status=404 / バリデーション失敗 → .status=400
+ */
+export function updateWorkDetail(db, workId, fields) {
+  const work = db.prepare('SELECT id FROM sf_works WHERE id = ?').get(workId);
+  if (!work) {
+    const e = new Error('作品が見つかりません'); e.status = 404; throw e;
+  }
+
+  const ALLOWED = ['synopsis', 'first_draft_date', 'character_count', 'memo'];
+
+  // 許可外フィールドを拒否
+  const disallowed = Object.keys(fields).filter(k => !ALLOWED.includes(k));
+  if (disallowed.length > 0) {
+    const e = new Error(`更新できないフィールドが含まれています: ${disallowed.join(', ')}`);
+    e.status = 400; throw e;
+  }
+
+  const updates = {};
+  for (const key of ALLOWED) {
+    if (key in fields) updates[key] = fields[key];
+  }
+  if (Object.keys(updates).length === 0) {
+    const e = new Error('更新するフィールドがありません'); e.status = 400; throw e;
+  }
+
+  // Validate first_draft_date
+  if ('first_draft_date' in updates && updates.first_draft_date !== null && updates.first_draft_date !== '') {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(updates.first_draft_date)) {
+      const e = new Error('first_draft_date は YYYY-MM-DD 形式で指定してください'); e.status = 400; throw e;
+    }
+  }
+  if ('first_draft_date' in updates && updates.first_draft_date === '') updates.first_draft_date = null;
+
+  // Validate character_count
+  if ('character_count' in updates && updates.character_count !== null && updates.character_count !== '') {
+    const n = Number(updates.character_count);
+    if (!Number.isInteger(n) || n < 0) {
+      const e = new Error('character_count は 0 以上の整数で指定してください'); e.status = 400; throw e;
+    }
+    updates.character_count = n;
+  }
+  if ('character_count' in updates && updates.character_count === '') updates.character_count = null;
+
+  const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
+  const values = [...Object.values(updates), workId];
+  db.prepare(`UPDATE sf_works SET ${setClauses} WHERE id = ?`).run(...values);
+  return db.prepare('SELECT * FROM sf_works WHERE id = ?').get(workId);
+}
+
+/**
  * 作品の表示順を更新する。
  *
  * 検証:

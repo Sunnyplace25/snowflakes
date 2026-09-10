@@ -3003,7 +3003,7 @@ const SfModule = (() => {
       return `
         <tr data-work-id="${w.id}"${sortActive ? '' : ' draggable="true"'}>
           ${handleCell}
-          <td>${esc(w.title)}</td>
+          <td><a href="/work.html?id=${w.id}" class="works-title-link">${esc(w.title)}</a></td>
           <td>${typeLabel}</td>
           <td>${(w.earliest_pub_date || '').slice(0, 10) || '—'}</td>
           <td>${pubBadge}</td>

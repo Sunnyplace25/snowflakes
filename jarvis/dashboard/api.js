@@ -124,7 +124,7 @@ import { resolve as pathResolve,
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
-  getWorks, getWork, reorderWorks, deleteWork,
+  getWorks, getWork, updateWorkDetail, reorderWorks, deleteWork,
   getWorkPublications, upsertWorkPublication, updateWorkPublication,
   getWorkArchives, getWorkArchive, archiveManuscript, getArchivePath,
   deleteWorkArchive, archiveTextContent,
@@ -2672,8 +2672,31 @@ export function createApiHandler(db) {
         }
       }
 
-      // DELETE /api/sf/works/:id  — 作品削除（依存チェック付き）
+      // GET /api/sf/works/:id  — 作品詳細（work + publications + archives）
       const worksIdMatch = path.match(/^\/api\/sf\/works\/(\d+)$/);
+      if (method === 'GET' && worksIdMatch) {
+        const workId = parseInt(worksIdMatch[1], 10);
+        const work = getWork(db, workId);
+        if (!work) return errRes(res, 404, '作品が見つかりません');
+        const publications = getWorkPublications(db, workId);
+        const archives     = getWorkArchives(db, workId);
+        return jsonRes(res, 200, { ok: true, work, publications, archives });
+      }
+
+      // PUT /api/sf/works/:id  — 作品詳細更新（synopsis / first_draft_date / character_count / memo のみ）
+      if (method === 'PUT' && worksIdMatch) {
+        const workId = parseInt(worksIdMatch[1], 10);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        try {
+          const updated = updateWorkDetail(db, workId, body ?? {});
+          return jsonRes(res, 200, { ok: true, work: updated });
+        } catch (e) {
+          return errRes(res, e.status || 400, e.message);
+        }
+      }
+
+      // DELETE /api/sf/works/:id  — 作品削除（依存チェック付き）
       if (method === 'DELETE' && worksIdMatch) {
         const workId = parseInt(worksIdMatch[1], 10);
         try {
