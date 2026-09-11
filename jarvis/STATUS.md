@@ -1673,6 +1673,77 @@ X Analytics（analytics.x.com → Post Activity Dashboard → Export Data）が�
 
 ---
 
+### Phase 32 完了記録（2026-09-11）
+
+#### 実装内容
+競合アカウント分析 MVP（メルカリ出品者トラッキング）
+
+| ファイル | 変更内容 |
+|---|---|
+| data/db.js | phase32Migration() 追加（9テーブル作成・初期設定挿入） |
+| data/schema.sql | 競合分析用テーブル9件追加 |
+| data/merch_competitor_manager.js | 新規作成（競合アカウント・スキャン・分析・通知CRUD） |
+| data/merch_competitor_scraper.js | 新規作成（Mercari API取得・SSRF防止） |
+| data/merch_competitor_analyzer.js | 新規作成（分類・仕入れ上限計算・信頼度判定） |
+| data/merch_competitor_reporter.js | 新規作成（週次・月次レポート生成） |
+| automation/merch_daily_scan.js | 新規作成（Task Scheduler 6:15AM実行用） |
+| dashboard/api.js | Phase 32 APIエンドポイント9件追加 |
+| dashboard/public/business-merch.js | 競合分析サブタブ追加 |
+| dashboard/public/business-merch-competitor.js | 新規作成（競合分析UI全体） |
+| dashboard/server.js | business-merch-competitor.js injection追加 |
+
+#### APIエンドポイント（9件）
+- GET/POST /api/competitor/accounts
+- PATCH /api/competitor/accounts/:id
+- GET /api/competitor/accounts/:id/items, /scans, /analysis
+- GET /api/competitor/reports, /notifications
+- POST /api/competitor/notifications/read
+- GET/PATCH /api/competitor/settings
+
+#### テスト結果
+| ファイル | 結果 |
+|---|---|
+| test_mercari_competitor.js（新規） | 31 passed / 0 failed ✅ |
+
+#### commitID: 8f0b89d
+
+---
+
+### Phase 33 完了記録（2026-09-11）
+
+#### 実装内容
+物販登録画面改修 - 原価・経費の詳細分解
+
+旧「原価・経費（円）」フィールドを廃止し、6フィールドに分解。
+既存のexpense値は保持（ALTER TABLE ADD COLUMNで後方互換）。
+
+| ファイル | 変更内容 |
+|---|---|
+| data/schema.sql | work_recordsに6カラム追加（cost_purchase, cost_shipping, commission_rate, commission_amount, platform, purchase_place） |
+| data/db.js | phase33Migration() 追加（既存レコードのexpense値保持） |
+| data/work_record_manager.js | addWorkRecord / updateWorkRecordFull に6フィールド対応 |
+| dashboard/api.js | POST/PUT /api/work に新フィールドのパススルー追加 |
+| dashboard/public/business-merch.js | モーダル全面改修・calcCommission()・updateProfitPreview()追加 |
+| dashboard/public/business-merch-competitor.js | hookチェーンバグ修正（Phase 32の副作用） |
+
+#### 利益計算式
+```
+expense = 仕入れ原価 + 送料 + 手数料（新フィールドがある場合）
+利益 = 売上 − expense
+手数料 = Math.round(売上 × 手数料率 / 100)
+```
+手数料率: 10%（メルカリ標準）/ 8% / 5% / その他（手動入力）
+
+#### テスト結果（Phase 33追加分）
+| ファイル | 結果 |
+|---|---|
+| 全既存テスト（回帰） | 906 passed / 0 failed ✅ |
+| API動作確認（実DB） | POST/PUT/DELETE全件正常 ✅ |
+
+#### commitID: 3e94266
+
+---
+
 ### 注意事項
 
 - `related_work` / `related_track` TEXT参照は廃止。`work_id` / `track_id` FK参照に統一済み
