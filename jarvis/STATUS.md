@@ -2,8 +2,8 @@
 
 ## 現在地
 
-**最新到達点：Phase 21 Google Calendar → JARVIS 逆方向同期（取り込み候補スキャン）完了**
-commit: `76d8385` / branch: `jarvis-development`
+**最新到達点：Phase 34 ダッシュボード復元・カレンダー祝日色分け・競合API 401対応**
+commit: `7ab15af` / branch: `jarvis-development`
 
 ---
 
@@ -46,6 +46,8 @@ jarvis-development
 | Phase 17 GA4 本番接続・自動実行登録 | GA4 Property 535639087 接続・sf_ga_daily 598件 / sf_ga_events 2424件同期・SnowflakesOpsRunner Task Scheduler 登録（毎日06:00） | ✅ 完了 | 未採番 |
 | Phase 20 CRUD Auto-Sync Hooks | work_records CRUD → Calendar 自動連携（hookWorkCreated/Updated/Deleted）・calendar_delete_queue アウトボックス・リトライ・47 tests | ✅ 完了 | `dc8cd62` |
 | Phase 21 Google Calendar → JARVIS 逆同期 | calendar_import_candidates テーブル・dryRunCalendarPull / scanCalendarCandidates・ページネーション・期間フィルタ・削除判定安全設計・28 tests | ✅ 完了 | `76d8385` |
+| Phase 30/31 物販 Phase 33 | work_records 新フィールド（原価/送料/手数料率/プラットフォーム等）・物販サブタブ再構成 | ✅ 完了 | `3e94266` |
+| Phase 34 ダッシュボード・色分け・401対応 | 物販ダッシュボード復元（年度別集計）・カレンダー土日祝色分け・競合API 401フォールバック（公開HTML）・手動取り込み案内 | ✅ 完了 | `7ab15af` |
 
 ---
 
