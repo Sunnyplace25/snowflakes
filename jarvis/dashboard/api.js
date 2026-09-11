@@ -146,7 +146,9 @@ import {
 import {
   extractUserIdFromProfileUrl,
 } from '../data/merch_competitor_scraper.js';
-import { scanAllAccounts, scanSingleAccount } from '../data/merch_competitor_scan.js';
+// scanAllAccounts / scanSingleAccount は HTTP 401 のため停止（自動スキャン無効）
+// import { scanAllAccounts, scanSingleAccount } from '../data/merch_competitor_scan.js';
+import { parseJsonItems, parseCsvItems, importItemsToDB, csvTemplate } from '../data/merch_competitor_importer.js';
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
@@ -3376,37 +3378,55 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true });
       }
 
-      // POST /api/competitor/scan — 手動スキャン（日次スキャンと同一ロジック）
+      // POST /api/competitor/scan — 自動スキャンは HTTP 401 のため無効化
       if (method === 'POST' && path === '/api/competitor/scan') {
+        return errRes(res, 410,
+          'メルカリ自動取得は HTTP 401 により停止しています。' +
+          '競合分析画面の「手動取り込み」タブからブックマークレットで取得したJSONをインポートしてください。'
+        );
+      }
+
+      // POST /api/competitor/import — ブックマークレット経由の手動取り込み
+      if (method === 'POST' && path === '/api/competitor/import') {
         let body;
         try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
 
-        const accountId = body.account_id; // number | 'all'
-        const lockKey   = accountId === 'all' ? 'all' : Number(accountId);
-
-        // 二重実行防止
-        if (_scanningAccounts.has(lockKey) || _scanningAccounts.has('all')) {
-          const who = _scanningAccounts.has('all') ? '全アカウント' : `アカウント ${lockKey}`;
-          return errRes(res, 409, `${who} のスキャンがすでに実行中です。完了後に再試行してください。`);
+        const accountId = parseInt(body.account_id, 10);
+        if (!accountId || accountId <= 0) {
+          return errRes(res, 400, 'account_id は正の整数を指定してください');
         }
+        const format  = String(body.format ?? 'json').toLowerCase();  // 'json' | 'csv'
+        const rawData = body.data;
+        if (!rawData) return errRes(res, 400, 'data フィールドが必要です');
 
-        _scanningAccounts.add(lockKey);
+        let items;
         try {
-          let scanResult;
-          if (accountId === 'all') {
-            scanResult = await scanAllAccounts(db);
-          } else {
-            const id = parseInt(accountId, 10);
-            if (!id || id <= 0) return errRes(res, 400, 'account_id は正の整数または "all" を指定してください');
-            scanResult = await scanSingleAccount(db, id);
-          }
-          return jsonRes(res, 200, { ok: true, ...scanResult });
+          items = format === 'csv' ? parseCsvItems(rawData) : parseJsonItems(rawData);
         } catch (e) {
-          console.error('[competitor/scan]', e.message);
-          return errRes(res, 500, e.message);
-        } finally {
-          _scanningAccounts.delete(lockKey);
+          return errRes(res, 422, `データ解析エラー: ${e.message}`);
         }
+
+        if (items.length === 0) {
+          return errRes(res, 422, '取り込み対象のアイテムが0件です');
+        }
+
+        try {
+          const result = importItemsToDB(db, accountId, items);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          console.error('[competitor/import]', e.message);
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // GET /api/competitor/import/template — CSV テンプレートダウンロード
+      if (method === 'GET' && path === '/api/competitor/import/template') {
+        res.writeHead(200, {
+          'Content-Type':        'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="mercari_import_template.csv"',
+        });
+        res.end('\uFEFF' + csvTemplate()); // BOM 付きで Excel 対応
+        return;
       }
 
       // GET /api/competitor/settings — 分析設定

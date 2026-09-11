@@ -18,7 +18,7 @@
 
   let currentAccountId = null;
   let accounts = [];
-  let competitorSubTab = 'today';
+  let competitorSubTab = 'import';
 
   // ─── ユーティリティ ─────────────────────────────────────────────────────────
 
@@ -36,44 +36,118 @@
     root.innerHTML = `
       <section class="section">
         <!-- タブナビ -->
-        <nav class="sf-tabs" id="competitor-subtabs" style="margin-bottom:0">
-          <button class="sf-tab active" data-comp-tab="today">今日の分析</button>
-          <button class="sf-tab" data-comp-tab="accounts">競合アカウント</button>
-          <button class="sf-tab" data-comp-tab="brands">売れ筋分析</button>
-          <button class="sf-tab" data-comp-tab="candidates">仕入れ候補</button>
-          <button class="sf-tab" data-comp-tab="reports">レポート</button>
-          <button class="sf-tab" data-comp-tab="settings">設定</button>
+        <nav class="sf-tabs" id="competitor-subtabs" style="margin-bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;white-space:nowrap;scrollbar-width:none">
+          <button class="sf-tab active" data-comp-tab="import" style="white-space:nowrap">手動取り込み</button>
+          <button class="sf-tab" data-comp-tab="today" style="white-space:nowrap">今日の分析</button>
+          <button class="sf-tab" data-comp-tab="accounts" style="white-space:nowrap">競合アカウント</button>
+          <button class="sf-tab" data-comp-tab="brands" style="white-space:nowrap">売れ筋分析</button>
+          <button class="sf-tab" data-comp-tab="candidates" style="white-space:nowrap">仕入れ候補</button>
+          <button class="sf-tab" data-comp-tab="reports" style="white-space:nowrap">レポート</button>
+          <button class="sf-tab" data-comp-tab="settings" style="white-space:nowrap">設定</button>
         </nav>
 
+        <!-- 手動取り込み -->
+        <div id="comp-tab-import" class="sf-tab-panel" style="padding-top:16px">
+
+          <!-- アカウント選択 -->
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+            <label style="font-size:13px;color:var(--text-sec)">取り込み先アカウント:</label>
+            <select id="comp-import-account" class="sf-input" style="width:auto"></select>
+          </div>
+
+          <!-- ブックマークレット案内 -->
+          <div style="background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.25);border-radius:10px;padding:16px 18px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:600;color:#93c5fd;margin-bottom:10px">
+              📌 ステップ1 — ブックマークレットを保存する
+            </div>
+            <p style="font-size:12px;color:var(--text-sec);margin:0 0 10px">
+              下のリンクをブラウザのブックマークバーへドラッグして保存してください。<br>
+              メルカリにログイン不要・追加通信なし・Cookie非取得の安全な抽出ツールです。
+            </p>
+            <a id="comp-bookmarklet-link"
+               href="javascript:void(0)"
+               style="display:inline-block;padding:8px 16px;
+                      background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);
+                      border-radius:6px;color:#93c5fd;font-size:13px;font-weight:600;
+                      text-decoration:none;cursor:grab;user-select:none"
+               title="このリンクをブックマークバーにドラッグしてください">
+              🔖 JARVIS用に保存
+            </a>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:8px">
+              ドラッグが難しい場合: リンクを右クリック →「ブックマークに追加」
+            </div>
+          </div>
+
+          <!-- 取り込み手順 -->
+          <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">
+              📋 ステップ2 — メルカリから商品データを取得する
+            </div>
+            <ol style="font-size:12px;color:var(--text-sec);margin:0;padding-left:20px;line-height:1.9">
+              <li>通常のブラウザで競合のメルカリプロフィールページを開く</li>
+              <li>商品が表示されたら、ブックマークバーの「JARVIS用に保存」をクリック</li>
+              <li>JSONファイルが自動ダウンロードされる</li>
+              <li>下のドロップゾーンにファイルをドラッグ＆ドロップ（またはファイル選択）</li>
+            </ol>
+          </div>
+
+          <!-- ドロップゾーン -->
+          <div id="comp-import-dropzone" style="
+            border:2px dashed rgba(96,165,250,.4);border-radius:10px;
+            padding:32px 20px;text-align:center;cursor:pointer;
+            transition:border-color .2s,background .2s;margin-bottom:12px
+          ">
+            <div style="font-size:28px;margin-bottom:8px">📂</div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:6px">
+              JSONファイルをここにドロップ
+            </div>
+            <div style="font-size:12px;color:var(--text-sec);margin-bottom:14px">
+              または
+            </div>
+            <label style="cursor:pointer">
+              <input type="file" id="comp-import-file" accept=".json,.csv" style="display:none">
+              <span class="btn btn-secondary" style="font-size:13px;pointer-events:none">
+                ファイルを選択
+              </span>
+            </label>
+          </div>
+
+          <!-- テキスト直接貼り付け（上級者向け） -->
+          <details style="margin-bottom:12px">
+            <summary style="font-size:12px;color:var(--text-sec);cursor:pointer;padding:6px 0">
+              テキストを直接貼り付ける（JSON / CSV）
+            </summary>
+            <div style="margin-top:10px">
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <button class="btn btn-secondary comp-import-fmt-btn active" data-fmt="json" style="font-size:12px;padding:4px 12px">JSON</button>
+                <button class="btn btn-secondary comp-import-fmt-btn" data-fmt="csv" style="font-size:12px;padding:4px 12px">CSV</button>
+                <a href="/api/competitor/import/template" download style="margin-left:auto;font-size:12px;color:var(--text-sec);align-self:center;text-decoration:none">
+                  CSVテンプレートをダウンロード
+                </a>
+              </div>
+              <textarea id="comp-import-text"
+                placeholder="JSONまたはCSVテキストをここに貼り付けてください..."
+                style="width:100%;height:120px;resize:vertical;font-family:monospace;font-size:12px;
+                       background:var(--bg-card);border:1px solid var(--border);border-radius:6px;
+                       padding:8px;color:var(--text);box-sizing:border-box"></textarea>
+              <button class="btn btn-primary" id="comp-import-text-btn" style="margin-top:8px;font-size:13px">
+                テキストから取り込む
+              </button>
+            </div>
+          </details>
+
+          <!-- 取り込み結果 -->
+          <div id="comp-import-result"></div>
+        </div>
+
         <!-- 今日の分析 -->
-        <div id="comp-tab-today" class="sf-tab-panel" style="padding-top:16px">
+        <div id="comp-tab-today" class="sf-tab-panel" hidden style="padding-top:16px">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
             <div>
               <label style="font-size:13px;color:var(--text-sec)">アカウント: </label>
               <select id="comp-account-select" class="sf-input" style="width:auto;display:inline-block"></select>
             </div>
-            <button class="btn btn-primary" id="comp-scan-btn" style="white-space:nowrap">
-              今すぐ調査
-            </button>
           </div>
-
-          <!-- 手動スキャンパネル -->
-          <div id="comp-scan-panel" hidden style="
-            background:rgba(255,255,255,.04);border:1px solid var(--border);
-            border-radius:8px;padding:14px 16px;margin-bottom:14px
-          ">
-            <div style="font-size:13px;font-weight:600;margin-bottom:10px">スキャン対象を選択</div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-              <select id="comp-scan-target" class="sf-input" style="width:auto">
-                <option value="current">現在選択中のアカウント</option>
-                <option value="all">全アカウントを調査</option>
-              </select>
-              <button class="btn btn-primary" id="comp-scan-run-btn">実行</button>
-              <button class="btn btn-secondary" id="comp-scan-cancel-btn">キャンセル</button>
-            </div>
-            <div id="comp-scan-status" style="font-size:13px;color:var(--text-sec)"></div>
-          </div>
-
           <div id="comp-today-content" class="loading">読み込み中...</div>
         </div>
 
@@ -173,16 +247,8 @@
     document.getElementById('comp-modal-cancel').addEventListener('click', closeAddModal);
     document.getElementById('comp-modal-save').addEventListener('click', saveAccount);
 
-    // 手動スキャンボタン
-    document.getElementById('comp-scan-btn').addEventListener('click', () => {
-      const panel = document.getElementById('comp-scan-panel');
-      if (panel) panel.hidden = !panel.hidden;
-    });
-    document.getElementById('comp-scan-cancel-btn').addEventListener('click', () => {
-      const panel = document.getElementById('comp-scan-panel');
-      if (panel) panel.hidden = true;
-    });
-    document.getElementById('comp-scan-run-btn').addEventListener('click', runManualScan);
+    // 手動取り込みイベント
+    setupImportUi();
 
     loadAccounts();
     checkNotifications();
@@ -192,7 +258,7 @@
 
   function switchCompTab(name) {
     competitorSubTab = name;
-    ['today', 'accounts', 'brands', 'candidates', 'reports', 'settings'].forEach(t => {
+    ['import', 'today', 'accounts', 'brands', 'candidates', 'reports', 'settings'].forEach(t => {
       const el = document.getElementById(`comp-tab-${t}`);
       if (el) el.hidden = (t !== name);
     });
@@ -230,10 +296,16 @@
     const opts = accounts.map(a =>
       `<option value="${a.id}" ${a.id === currentAccountId ? 'selected' : ''}>${esc(a.display_name)}</option>`
     ).join('');
-    for (const id of ['comp-account-select', 'comp-brands-account-select', 'comp-candidates-account-select']) {
+    for (const id of [
+      'comp-account-select',
+      'comp-import-account',
+      'comp-brands-account-select',
+      'comp-candidates-account-select',
+    ]) {
       const el = document.getElementById(id);
       if (el) el.innerHTML = opts || '<option value="">（アカウントなし）</option>';
     }
+    updateBookmarklet();
   }
 
   function renderAccountsList() {
@@ -632,120 +704,210 @@
     }
   }
 
-  // ─── 手動スキャン ──────────────────────────────────────────────────────────
+  // ─── 手動取り込み ──────────────────────────────────────────────────────────
 
-  async function runManualScan() {
-    const targetEl = document.getElementById('comp-scan-target');
-    const runBtn   = document.getElementById('comp-scan-run-btn');
-    const cancelBtn = document.getElementById('comp-scan-cancel-btn');
-    const statusEl  = document.getElementById('comp-scan-status');
-    if (!targetEl || !runBtn || !statusEl) return;
+  /**
+   * ブックマークレットコードを生成する。
+   * - メルカリへの追加通信なし
+   * - ログイン情報・Cookie・トークン取得なし
+   * - 現在ページの __NEXT_DATA__ または DOM から公開情報のみ抽出
+   */
+  function buildBookmarklet() {
+    // ミニファイ済みブックマークレット本体
+    const code = `(function(){
+var nd=window.__NEXT_DATA__;
+var uid=location.pathname.match(/\/user\/profile\/(\d+)/);
+var sellerId=uid?uid[1]:'unknown';
+var ts=new Date().toISOString();
+var items=[];
+if(nd){
+  var pp=(nd.props&&nd.props.pageProps)||{};
+  var ri=pp.items||((pp.data)&&pp.data.items)||(pp.seller&&pp.seller.items)||(pp.searchResult&&pp.searchResult.items)||[];
+  items=ri.map(function(r){return{
+    id:String(r.id||''),
+    name:r.name||'',
+    price:(r.price&&typeof r.price==='object')?Number(r.price.amount||r.price.value||0):Number(r.price||0),
+    status:r.status||'ITEM_STATUS_ON_SALE',
+    brand:(r.itemBrand&&r.itemBrand.name)||r.brand||null,
+    category:(r.itemCategory&&r.itemCategory.name)||r.category||null,
+    size:(r.itemSize&&r.itemSize.name)||r.size||null,
+    color:(r.colors&&r.colors[0]&&r.colors[0].name)||r.color||null,
+    image_url:(r.thumbnails&&r.thumbnails[0])||r.thumbnail||null,
+    item_url:r.id?'https://jp.mercari.com/item/'+r.id:null
+  };});
+}
+if(items.length===0){
+  var cards=document.querySelectorAll('[data-testid="item-cell"],[data-location*="item_thumbnail_list"],[class*="merItem"],[class*="item-cell"]');
+  items=Array.from(cards).map(function(c){
+    var a=c.querySelector('a');var img=c.querySelector('img');
+    var pm=c.querySelector('[class*="price"],[class*="Price"]');
+    var nm=c.querySelector('[class*="name"],[class*="Name"],[class*="title"]');
+    var im=(a&&a.href||'').match(/\/item\/(m[A-Za-z0-9]+)/);
+    if(!im)return null;
+    return{id:im[1],name:nm?nm.textContent.trim():null,price:pm?parseInt(pm.textContent.replace(/[^\d]/g,''),10)||0:0,status:'ITEM_STATUS_ON_SALE',image_url:img?img.src:null,item_url:a?a.href:null};
+  }).filter(function(r){return r&&r.id;});
+}
+if(items.length===0){alert('JARVIS: 商品データを取得できませんでした。\\nメルカリの出品者プロフィールページで実行してください。');return;}
+var data={jarvis_import:true,seller_id:sellerId,extracted_at:ts,source:'bookmarklet_v1',items:items};
+var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;a.download='mercari_'+sellerId+'_'+ts.slice(0,10)+'.json';
+document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+alert('JARVIS: '+items.length+'件の商品データを保存しました。\\nJARVIS競合分析の「手動取り込み」へドラッグ＆ドロップしてください。');
+})();`;
+    return 'javascript:' + encodeURIComponent(code);
+  }
 
-    const target = targetEl.value; // 'current' | 'all'
-    const accountId = target === 'all' ? 'all' : currentAccountId;
+  function updateBookmarklet() {
+    const link = document.getElementById('comp-bookmarklet-link');
+    if (link) link.href = buildBookmarklet();
+  }
 
-    if (target === 'current' && !accountId) {
-      statusEl.innerHTML = '<span style="color:var(--danger)">アカウントが選択されていません。</span>';
+  let _importFormat = 'json';
+  let _importBusy   = false;
+
+  function setupImportUi() {
+    // ブックマークレット href を設定
+    updateBookmarklet();
+
+    // フォーマット切替
+    document.querySelectorAll('.comp-import-fmt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        _importFormat = btn.dataset.fmt;
+        document.querySelectorAll('.comp-import-fmt-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const ta = document.getElementById('comp-import-text');
+        if (ta) ta.placeholder = _importFormat === 'csv'
+          ? '商品ID,商品名,価格,状態,ブランド,カテゴリ\nm12345678901,商品名,1000,on_sale,ブランド,カテゴリ'
+          : 'JSONをここに貼り付けてください（ブックマークレットで保存したファイルの内容、またはAPIレスポンス）...';
+      });
+    });
+
+    // テキスト直接取り込み
+    document.getElementById('comp-import-text-btn')?.addEventListener('click', () => {
+      const text = document.getElementById('comp-import-text')?.value?.trim();
+      if (!text) return;
+      runImport(_importFormat, text);
+    });
+
+    // ファイル選択
+    document.getElementById('comp-import-file')?.addEventListener('change', e => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const fmt = file.name.endsWith('.csv') ? 'csv' : 'json';
+      readFileAndImport(file, fmt);
+      e.target.value = ''; // 同ファイル再選択を可能にする
+    });
+
+    // ドロップゾーン
+    const dz = document.getElementById('comp-import-dropzone');
+    if (dz) {
+      dz.addEventListener('dragover', e => {
+        e.preventDefault();
+        dz.style.borderColor = '#60a5fa';
+        dz.style.background  = 'rgba(96,165,250,.06)';
+      });
+      dz.addEventListener('dragleave', () => {
+        dz.style.borderColor = 'rgba(96,165,250,.4)';
+        dz.style.background  = '';
+      });
+      dz.addEventListener('drop', e => {
+        e.preventDefault();
+        dz.style.borderColor = 'rgba(96,165,250,.4)';
+        dz.style.background  = '';
+        const file = e.dataTransfer?.files?.[0];
+        if (!file) return;
+        const fmt = file.name.endsWith('.csv') ? 'csv' : 'json';
+        readFileAndImport(file, fmt);
+      });
+      dz.addEventListener('click', e => {
+        if (!e.target.closest('label')) {
+          document.getElementById('comp-import-file')?.click();
+        }
+      });
+    }
+  }
+
+  function readFileAndImport(file, fmt) {
+    const reader = new FileReader();
+    reader.onload = e => runImport(fmt, e.target.result);
+    reader.onerror = () => showImportResult(null, '❌ ファイル読み込みエラー');
+    reader.readAsText(file, 'utf-8');
+  }
+
+  async function runImport(format, data) {
+    if (_importBusy) return;
+    _importBusy = true;
+
+    const accountId = parseInt(document.getElementById('comp-import-account')?.value, 10);
+    const resultEl  = document.getElementById('comp-import-result');
+
+    if (!accountId) {
+      showImportResult(null, '❌ 取り込み先アカウントを選択してください。');
+      _importBusy = false;
       return;
     }
 
-    // UI: 実行中
-    runBtn.disabled   = true;
-    cancelBtn.disabled = true;
-    runBtn.textContent = '実行中...';
-    const targetLabel = target === 'all' ? '全アカウント' : (accounts.find(a => a.id === accountId)?.display_name || `ID:${accountId}`);
-    statusEl.innerHTML = `
-      <span style="color:var(--text-sec)">
-        ⏳ ${esc(targetLabel)} を調査中です。メルカリAPIの応答待ちのため数秒〜数十秒かかります...
-      </span>`;
+    showImportResult(null, '<span style="color:var(--text-sec)">⏳ 処理中...</span>');
 
     try {
-      const res = await fetch('/api/competitor/scan', {
-        method: 'POST',
+      const res = await fetch('/api/competitor/import', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account_id: accountId }),
+        body:    JSON.stringify({ account_id: accountId, format, data }),
       });
       const d = await res.json();
 
       if (!res.ok || !d.ok) {
-        // 409 = 二重実行 / 4xx = 入力エラー / 5xx = メルカリブロック等
-        const isBusy   = res.status === 409;
-        const errMsg   = d.error || '';
-        const is401    = errMsg.includes('401') || errMsg.includes('認証エラー');
-        const isBlock  = errMsg.includes('block') || errMsg.includes('429') || errMsg.includes('rate');
-        statusEl.innerHTML = `
-          <div style="color:var(--danger);padding:10px;background:rgba(239,68,68,.1);
-               border:1px solid rgba(239,68,68,.3);border-radius:6px;margin-top:6px">
-            ${isBusy  ? '⚠️ 別のスキャンが進行中です。完了後に再試行してください。' :
-              is401   ? `🔒 <strong>HTTP 401（認証エラー）</strong><br>
-                         メルカリ API が認証を要求しています（自動再試行は行いません）。<br>
-                         公開プロフィールページ（jp.mercari.com）へのフォールバックも取得できませんでした。<br>
-                         <strong style="color:var(--text)">→ 手動でメルカリページを開き、CSVや画面情報を直接取り込んでください。</strong><br>
-                         <span style="font-size:11px;color:var(--text-sec);margin-top:4px;display:block">${esc(errMsg)}</span>` :
-              isBlock ? '🚫 メルカリからのブロックを検出しました。時間をおいて再試行してください。' :
-                        `❌ エラー: ${esc(errMsg)}`}
-          </div>`;
+        showImportResult(null, `❌ エラー: ${esc(d.error || '不明なエラー')}`);
         return;
       }
 
-      // 成功 — 結果表示
-      const results = d.results ?? [];
-      const rows = results.map(r => {
-        const icon  = r.ok ? '✓' : '✗';
-        const color = r.ok ? 'var(--success)' : 'var(--danger)';
-        const err   = r.error || '';
-        const is401Row  = err.includes('401') || err.includes('認証エラー');
-        const isFallback = err.includes('フォールバック') && r.ok;
-        let errText = '';
-        if (!r.ok && err) {
-          errText = is401Row
-            ? ` <span style="color:var(--danger);font-size:11px">🔒 HTTP 401（API取得不可・フォールバック失敗）</span>`
-            : ` <span style="color:var(--danger);font-size:11px">（${esc(err)}）</span>`;
-        } else if (isFallback) {
-          errText = ` <span style="color:#f59e0b;font-size:11px">⚠️ HTML取得（API 401）</span>`;
-        }
-        return `<tr>
-          <td style="padding:4px 8px"><span style="color:${color}">${icon}</span> ${esc(r.display_name)}</td>
-          <td style="padding:4px 8px;text-align:right">${r.items_fetched}件取得</td>
-          <td style="padding:4px 8px;text-align:right;color:var(--success)">新規 ${r.items_new}</td>
-          <td style="padding:4px 8px;text-align:right;color:var(--danger)">売却 ${r.items_sold}</td>
-          <td style="padding:4px 8px;text-align:right">価格変 ${r.items_price_changed}</td>
-          <td style="padding:4px 8px">${errText}</td>
-        </tr>`;
-      }).join('');
+      const accountName = accounts.find(a => a.id === accountId)?.display_name || `ID:${accountId}`;
+      const errRows = (d.errors || []).map(e =>
+        `<li style="color:var(--danger)">${esc(e.item_id || e.name || '?')}: ${esc(e.error)}</li>`
+      ).join('');
 
-      statusEl.innerHTML = `
-        <div style="color:var(--success);font-weight:600;margin-bottom:8px">✓ スキャン完了</div>
-        <table style="width:100%;font-size:12px;border-collapse:collapse">
-          <thead><tr style="color:var(--text-sec);font-size:11px">
-            <th style="padding:4px 8px;text-align:left">アカウント</th>
-            <th style="padding:4px 8px;text-align:right">取得</th>
-            <th style="padding:4px 8px;text-align:right">新規</th>
-            <th style="padding:4px 8px;text-align:right">売却</th>
-            <th style="padding:4px 8px;text-align:right">価格変</th>
-            <th></th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>`;
+      showImportResult('ok', `
+        <div style="font-weight:600;color:var(--success);font-size:15px;margin-bottom:10px">
+          ✓ 取り込み完了 — ${esc(accountName)}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:${errRows ? '12px' : '0'}">
+          <div class="card"><div class="card-label">合計</div><div class="card-value">${d.total}件</div></div>
+          <div class="card"><div class="card-label">新規登録</div><div class="card-value green">${d.new}件</div></div>
+          <div class="card"><div class="card-label">価格変更</div><div class="card-value">${d.price_changed}件</div></div>
+          <div class="card"><div class="card-label">売却検知</div><div class="card-value ${d.sold > 0 ? 'red' : ''}">${d.sold}件</div></div>
+          <div class="card"><div class="card-label">変更なし</div><div class="card-value">${d.unchanged}件</div></div>
+        </div>
+        ${errRows ? `<div style="margin-top:4px;font-size:12px;color:var(--text-sec)">スキップ:</div><ul style="margin:4px 0;padding-left:18px;font-size:12px">${errRows}</ul>` : ''}
+      `);
 
-      // 分析結果と通知を自動更新
+      // 分析タブを自動更新
       await loadAccounts();
-      if (competitorSubTab === 'today') loadToday();
-      else if (competitorSubTab === 'brands') loadBrands();
+      if (competitorSubTab === 'today')      loadToday();
+      else if (competitorSubTab === 'brands')     loadBrands();
       else if (competitorSubTab === 'candidates') loadCandidates();
       await checkNotifications();
 
     } catch (e) {
-      statusEl.innerHTML = `
-        <div style="color:var(--danger);padding:10px;background:rgba(239,68,68,.1);
-             border:1px solid rgba(239,68,68,.3);border-radius:6px;margin-top:6px">
-          ❌ 通信エラー: ${esc(e.message)}
-        </div>`;
+      showImportResult(null, `❌ 通信エラー: ${esc(e.message)}`);
     } finally {
-      runBtn.disabled    = false;
-      cancelBtn.disabled = false;
-      runBtn.textContent = '実行';
+      _importBusy = false;
     }
+  }
+
+  function showImportResult(type, html) {
+    const el = document.getElementById('comp-import-result');
+    if (!el) return;
+    const bg = type === 'ok' ? 'rgba(74,222,128,.07)' : type === null ? 'rgba(239,68,68,.07)' : '';
+    const border = type === 'ok' ? '1px solid rgba(74,222,128,.25)' : type === null ? '1px solid rgba(239,68,68,.25)' : '';
+    el.style.cssText = `
+      padding:${html ? '14px 16px' : '0'};
+      background:${bg};border:${border};border-radius:8px;
+      margin-top:${html ? '12px' : '0'}
+    `;
+    el.innerHTML = html || '';
   }
 
   // ─── 通知チェック ──────────────────────────────────────────────────────────
