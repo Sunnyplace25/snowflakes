@@ -23,7 +23,15 @@ CREATE TABLE IF NOT EXISTS work_records (
   payment_status TEXT    NOT NULL DEFAULT '対象外'
     CHECK (payment_status IN ('対象外', '未入金', '入金済')),
   memo           TEXT,
-  created_at     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
+  created_at     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+  -- Phase 33: 物販詳細フィールド（既存 expense は保持・後方互換維持）
+  is_full_day    INTEGER NOT NULL DEFAULT 0 CHECK (is_full_day IN (0,1)),
+  cost_purchase    INTEGER NOT NULL DEFAULT 0,  -- 仕入れ原価
+  cost_shipping    INTEGER NOT NULL DEFAULT 0,  -- 送料
+  commission_rate  TEXT,                        -- '10%'|'8%'|'5%'|'other'
+  commission_amount INTEGER NOT NULL DEFAULT 0, -- 手数料額
+  platform         TEXT,                        -- 'メルカリ'|'ラクマ'|'ヤフオク'|'その他'
+  purchase_place   TEXT                         -- 仕入れ場所（自由入力）
 );
 
 CREATE TABLE IF NOT EXISTS daily_status (

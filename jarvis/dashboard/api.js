@@ -402,19 +402,26 @@ export function createApiHandler(db) {
 
         try {
           const { rowid, job_id } = addWorkRecord(db, {
-            date:           body.date,
-            category:       body.category,
-            work_type:      body.work_type      || null,
-            content:        body.content        || null,
-            client:         body.client         || null,
+            date:              body.date,
+            category:          body.category,
+            work_type:         body.work_type      || null,
+            content:           body.content        || null,
+            client:            body.client         || null,
             income,
             expense,
-            work_hours:     workHours,
-            travel_hours:   travelHours,
-            is_full_day:    body.is_full_day ? 1 : 0,
-            invoice_status: body.invoice_status || '対象外',
-            payment_status: body.payment_status || '対象外',
-            memo:           body.memo           || null,
+            work_hours:        workHours,
+            travel_hours:      travelHours,
+            is_full_day:       body.is_full_day ? 1 : 0,
+            invoice_status:    body.invoice_status || '対象外',
+            payment_status:    body.payment_status || '対象外',
+            memo:              body.memo           || null,
+            // Phase 33
+            cost_purchase:     body.cost_purchase     ?? 0,
+            cost_shipping:     body.cost_shipping     ?? 0,
+            commission_rate:   body.commission_rate   ?? null,
+            commission_amount: body.commission_amount ?? 0,
+            platform:          body.platform          ?? null,
+            purchase_place:    body.purchase_place    ?? null,
           });
           // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
           hookWorkCreated(db, rowid);
@@ -435,19 +442,26 @@ export function createApiHandler(db) {
         try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
         try {
           updateWorkRecordFull(db, id, {
-            date:           body.date,
-            category:       body.category,
-            work_type:      body.work_type,
-            content:        body.content,
-            client:         body.client,
-            income:         body.income,
-            expense:        body.expense,
-            work_hours:     body.work_hours,
-            travel_hours:   body.travel_hours,
-            is_full_day:    body.is_full_day !== undefined ? (body.is_full_day ? 1 : 0) : undefined,
-            invoice_status: body.invoice_status,
-            payment_status: body.payment_status,
-            memo:           body.memo,
+            date:              body.date,
+            category:          body.category,
+            work_type:         body.work_type,
+            content:           body.content,
+            client:            body.client,
+            income:            body.income,
+            expense:           body.expense,
+            work_hours:        body.work_hours,
+            travel_hours:      body.travel_hours,
+            is_full_day:       body.is_full_day !== undefined ? (body.is_full_day ? 1 : 0) : undefined,
+            invoice_status:    body.invoice_status,
+            payment_status:    body.payment_status,
+            memo:              body.memo,
+            // Phase 33
+            cost_purchase:     body.cost_purchase,
+            cost_shipping:     body.cost_shipping,
+            commission_rate:   body.commission_rate,
+            commission_amount: body.commission_amount,
+            platform:          body.platform,
+            purchase_place:    body.purchase_place,
           });
           // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
           hookWorkUpdated(db, id);

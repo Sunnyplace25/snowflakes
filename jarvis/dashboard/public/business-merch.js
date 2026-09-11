@@ -123,10 +123,72 @@
         <div class="form-grid">
           <div class="form-group"><label for="merch-date">日付 *</label><input type="date" id="merch-date" required></div>
           <div class="form-group form-full"><label for="merch-content">商品・内容</label><input type="text" id="merch-content"></div>
-          <div class="form-group"><label for="merch-income">売上（円）</label><input type="number" id="merch-income" min="0"></div>
-          <div class="form-group"><label for="merch-expense">原価・経費（円）</label><input type="number" id="merch-expense" min="0"></div>
+
+          <div class="form-group"><label for="merch-income">売上（円）</label><input type="number" id="merch-income" min="0" placeholder="0"></div>
+          <div class="form-group"><label for="merch-platform">プラットフォーム</label>
+            <select id="merch-platform">
+              <option value="">─ 未選択 ─</option>
+              <option value="メルカリ">メルカリ</option>
+              <option value="ラクマ">ラクマ</option>
+              <option value="ヤフオク">ヤフオク</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+
+          <!-- 原価3点セット：横並び -->
+          <div class="form-group form-full">
+            <label style="display:block;margin-bottom:6px">原価・経費（円）</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <div>
+                <label for="merch-cost-purchase" style="font-size:11px;color:var(--text-sec)">仕入れ原価</label>
+                <input type="number" id="merch-cost-purchase" min="0" placeholder="0" style="width:100%">
+              </div>
+              <div>
+                <label for="merch-cost-shipping" style="font-size:11px;color:var(--text-sec)">送料</label>
+                <input type="number" id="merch-cost-shipping" min="0" placeholder="0" style="width:100%">
+              </div>
+              <div>
+                <label for="merch-commission-amount" style="font-size:11px;color:var(--text-sec)">手数料</label>
+                <input type="number" id="merch-commission-amount" min="0" placeholder="0" style="width:100%">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group"><label for="merch-commission-rate">手数料率</label>
+            <select id="merch-commission-rate">
+              <option value="">─ 未選択 ─</option>
+              <option value="10%">10%（メルカリ標準）</option>
+              <option value="8%">8%</option>
+              <option value="5%">5%</option>
+              <option value="other">その他（手動入力）</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="merch-purchase-place">仕入れ場所</label>
+            <input type="text" id="merch-purchase-place" placeholder="例: ブックオフ、メルカリ">
+          </div>
+
+          <!-- 既存データ用: 旧「原価・経費」フィールド（Phase32以前のデータのみ表示） -->
+          <div class="form-group form-full" id="merch-legacy-expense-row" hidden>
+            <label style="font-size:12px;color:var(--text-sec)">
+              旧・原価経費（参照のみ — 下記の原価欄が未入力の場合に集計へ反映）
+            </label>
+            <input type="number" id="merch-expense" min="0" readonly
+              style="background:var(--card-bg);color:var(--text-sec);width:100%">
+          </div>
+
           <div class="form-group form-full"><label for="merch-memo">メモ</label><textarea id="merch-memo"></textarea></div>
         </div>
+
+        <!-- 利益プレビュー -->
+        <div id="merch-profit-preview" style="
+          background:rgba(255,255,255,.04);border:1px solid var(--border);
+          border-radius:8px;padding:10px 14px;margin:8px 0;font-size:13px;display:none
+        ">
+          <span style="color:var(--text-sec)">利益プレビュー：</span>
+          <span id="merch-profit-value" style="font-weight:600;font-size:16px"></span>
+          <span id="merch-profit-breakdown" style="color:var(--text-sec);font-size:11px;margin-left:8px"></span>
+        </div>
+
         <div class="error-msg" id="merch-error"></div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary edit-delete-btn" id="merch-delete-btn" hidden>削除</button>
@@ -138,6 +200,10 @@
     document.getElementById('merch-cancel-btn').addEventListener('click', closeModal);
     document.getElementById('merch-form').addEventListener('submit', saveMerch);
     document.getElementById('merch-delete-btn').addEventListener('click', deleteMerch);
+    // 手数料自動計算・利益プレビュー更新
+    ['merch-income','merch-cost-purchase','merch-cost-shipping','merch-commission-amount']
+      .forEach(id => document.getElementById(id)?.addEventListener('input', updateProfitPreview));
+    document.getElementById('merch-commission-rate')?.addEventListener('change', calcCommission);
   }
 
   // ─── サブタブ切替 ──────────────────────────────────────────────────────────
@@ -184,15 +250,71 @@
   function openModal(row) {
     const month = monthValue(), today = todayISO();
     document.getElementById('merch-modal-title').textContent = row ? '物販を編集' : '物販を登録';
-    document.getElementById('merch-id').value = row?.id || '';
-    document.getElementById('merch-date').value = row?.date || (today.startsWith(month) ? today : `${month}-01`);
-    document.getElementById('merch-content').value = row?.content || '';
-    document.getElementById('merch-income').value = row?.income ?? '';
-    document.getElementById('merch-expense').value = row?.expense ?? '';
-    document.getElementById('merch-memo').value = row?.memo || '';
-    document.getElementById('merch-error').textContent = '';
-    document.getElementById('merch-delete-btn').hidden = !row;
+    document.getElementById('merch-id').value               = row?.id || '';
+    document.getElementById('merch-date').value             = row?.date || (today.startsWith(month) ? today : `${month}-01`);
+    document.getElementById('merch-content').value          = row?.content || '';
+    document.getElementById('merch-income').value           = row?.income ?? '';
+    document.getElementById('merch-platform').value         = row?.platform || '';
+    document.getElementById('merch-cost-purchase').value    = row?.cost_purchase || '';
+    document.getElementById('merch-cost-shipping').value    = row?.cost_shipping || '';
+    document.getElementById('merch-commission-rate').value  = row?.commission_rate || '';
+    document.getElementById('merch-commission-amount').value = row?.commission_amount || '';
+    document.getElementById('merch-purchase-place').value   = row?.purchase_place || '';
+    document.getElementById('merch-memo').value             = row?.memo || '';
+    document.getElementById('merch-error').textContent      = '';
+    document.getElementById('merch-delete-btn').hidden      = !row;
+
+    // 旧データ（expense に値があり新フィールドが 0 の場合）は legacy 行を表示
+    const hasLegacyExpense = row && Number(row.expense || 0) > 0
+      && !Number(row.cost_purchase) && !Number(row.cost_shipping) && !Number(row.commission_amount);
+    const legacyRow = document.getElementById('merch-legacy-expense-row');
+    if (legacyRow) legacyRow.hidden = !hasLegacyExpense;
+    if (hasLegacyExpense) {
+      document.getElementById('merch-expense').value = row.expense;
+    }
+
+    updateProfitPreview();
     showModal();
+  }
+
+  // ─── 手数料自動計算 ──────────────────────────────────────────────────────────
+
+  function calcCommission() {
+    const income = Number(document.getElementById('merch-income').value  || 0);
+    const rate   = document.getElementById('merch-commission-rate').value;
+    if (!rate || rate === 'other') return;
+    const pct = parseFloat(rate) / 100;
+    if (!isNaN(pct) && income > 0) {
+      document.getElementById('merch-commission-amount').value = Math.round(income * pct);
+    }
+    updateProfitPreview();
+  }
+
+  function updateProfitPreview() {
+    const income   = Number(document.getElementById('merch-income').value           || 0);
+    const purchase = Number(document.getElementById('merch-cost-purchase').value    || 0);
+    const shipping = Number(document.getElementById('merch-cost-shipping').value    || 0);
+    const comm     = Number(document.getElementById('merch-commission-amount').value || 0);
+    // legacy
+    const legacyEl  = document.getElementById('merch-legacy-expense-row');
+    const legacyExp = (!legacyEl?.hidden) ? Number(document.getElementById('merch-expense').value || 0) : 0;
+    const useNew    = purchase > 0 || shipping > 0 || comm > 0;
+    const expense   = useNew ? (purchase + shipping + comm) : legacyExp;
+    const profit    = income - expense;
+    const prev      = document.getElementById('merch-profit-preview');
+    const val       = document.getElementById('merch-profit-value');
+    const brkdn     = document.getElementById('merch-profit-breakdown');
+    if (!prev) return;
+    prev.style.display = income > 0 ? 'block' : 'none';
+    if (val) {
+      val.textContent  = yen(profit);
+      val.style.color  = profit >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+    if (brkdn && useNew) {
+      brkdn.textContent = `（売上${yen(income)} − 仕入${yen(purchase)} − 送料${yen(shipping)} − 手数料${yen(comm)}）`;
+    } else if (brkdn) {
+      brkdn.textContent = '';
+    }
   }
 
   async function loadMerch(force=false) {
@@ -246,12 +368,57 @@
 
   async function saveMerch(e) {
     e.preventDefault();
-    const id=Number(document.getElementById('merch-id').value||0);
-    const body={date:document.getElementById('merch-date').value,category:'物販',work_type:'物販',content:document.getElementById('merch-content').value.trim()||null,client:null,income:Number(document.getElementById('merch-income').value||0),expense:Number(document.getElementById('merch-expense').value||0),invoice_status:'対象外',payment_status:'対象外',memo:document.getElementById('merch-memo').value.trim()||null};
-    try{
-      const r=await fetch(id?`/api/work/${id}`:'/api/work',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'保存に失敗しました');
-      closeModal();loadedMonth=null;if(typeof refresh==='function')await refresh();await keepMonthlyWorkOnly();await loadMerch(true);
-    }catch(err){document.getElementById('merch-error').textContent=err.message;}
+    const id = Number(document.getElementById('merch-id').value || 0);
+
+    const income   = Number(document.getElementById('merch-income').value           || 0);
+    const purchase = Number(document.getElementById('merch-cost-purchase').value    || 0);
+    const shipping = Number(document.getElementById('merch-cost-shipping').value    || 0);
+    const commAmt  = Number(document.getElementById('merch-commission-amount').value || 0);
+    const commRate = document.getElementById('merch-commission-rate').value  || null;
+    const platform = document.getElementById('merch-platform').value         || null;
+    const place    = document.getElementById('merch-purchase-place').value.trim() || null;
+
+    // legacy expense: 旧データ編集時に新フィールドが全て 0 ならそのまま保持
+    const useNewFields = purchase > 0 || shipping > 0 || commAmt > 0;
+    const legacyEl     = document.getElementById('merch-legacy-expense-row');
+    const legacyExp    = (!legacyEl?.hidden) ? Number(document.getElementById('merch-expense').value || 0) : 0;
+    const expense      = useNewFields ? (purchase + shipping + commAmt) : legacyExp;
+
+    const body = {
+      date:              document.getElementById('merch-date').value,
+      category:          '物販',
+      work_type:         '物販',
+      content:           document.getElementById('merch-content').value.trim() || null,
+      client:            null,
+      income,
+      expense,
+      invoice_status:    '対象外',
+      payment_status:    '対象外',
+      memo:              document.getElementById('merch-memo').value.trim() || null,
+      cost_purchase:     purchase,
+      cost_shipping:     shipping,
+      commission_rate:   commRate,
+      commission_amount: commAmt,
+      platform,
+      purchase_place:    place,
+    };
+
+    try {
+      const r = await fetch(id ? `/api/work/${id}` : '/api/work', {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.ok) throw new Error(d.error || '保存に失敗しました');
+      closeModal();
+      loadedMonth = null;
+      if (typeof refresh === 'function') await refresh();
+      await keepMonthlyWorkOnly();
+      await loadMerch(true);
+    } catch (err) {
+      document.getElementById('merch-error').textContent = err.message;
+    }
   }
 
   async function deleteMerch() {

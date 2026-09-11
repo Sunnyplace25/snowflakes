@@ -777,6 +777,10 @@ function runMigrations(db, dbPath = ':memory:') {
   // schema.sql に CREATE TABLE IF NOT EXISTS 済み。既存 DB への適用 + 初期設定データ投入用。
   phase32Migration(db);
 
+  // Phase 33: work_records 物販詳細カラム追加
+  // 既存 expense カラムは保持・既存データは破壊しない。
+  phase33Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -1586,6 +1590,27 @@ const PHASE32_DEFAULT_SETTINGS = [
 const PHASE32_INITIAL_ACCOUNTS = [
   ['793350860', 'はーと♡セール開催中', 'https://jp.mercari.com/user/profile/793350860'],
 ];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 33: work_records 物販詳細カラム追加
+// ═══════════════════════════════════════════════════════════════════════════════
+// 既存 expense カラムは削除・変更しない（旧データの保持）。
+// 新規レコードでは expense = cost_purchase + cost_shipping + commission_amount。
+
+const PHASE33_COLUMNS = [
+  "ALTER TABLE work_records ADD COLUMN cost_purchase    INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE work_records ADD COLUMN cost_shipping    INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE work_records ADD COLUMN commission_rate  TEXT",
+  "ALTER TABLE work_records ADD COLUMN commission_amount INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE work_records ADD COLUMN platform         TEXT",
+  "ALTER TABLE work_records ADD COLUMN purchase_place   TEXT",
+];
+
+export function phase33Migration(db) {
+  for (const sql of PHASE33_COLUMNS) {
+    try { db.exec(sql); } catch (_) { /* column already exists */ }
+  }
+}
 
 export function phase32Migration(db) {
   for (const sql of PHASE32_TABLES) {

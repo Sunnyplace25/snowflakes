@@ -669,8 +669,14 @@
   }
 
   // ─── 外部フック（business-merch.js の __jarvisMerchSubTabChanged から呼ばれる） ──
+  // business-merch-list.js が先に同名フックを設定しているため、
+  // 既存フックを保持してから連鎖呼び出しする（上書きしない）。
 
+  const _prevMerchSubTabHook = window.__jarvisMerchSubTabChanged;
   window.__jarvisMerchSubTabChanged = function (name) {
+    // 既存フック（dashboard/items/sold/stock の描画）を先に呼ぶ
+    if (typeof _prevMerchSubTabHook === 'function') _prevMerchSubTabHook(name);
+    // 競合分析タブのみ追加処理
     if (name === 'competitor') {
       ensureCompetitorUi();
       switchCompTab(competitorSubTab || 'today');
