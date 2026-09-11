@@ -1256,3 +1256,165 @@ CREATE TABLE IF NOT EXISTS sf_sync_source_settings (
   enabled     INTEGER NOT NULL DEFAULT 1,
   updated_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
 );
+
+-- ── 競合アカウント分析（Phase 32）──────────────────────────────────────────────
+-- メルカリ競合セラーの商品動向を追跡するシステム。
+
+-- 競合セラーアカウント登録
+CREATE TABLE IF NOT EXISTS merch_competitor_accounts (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  mercari_user_id TEXT    NOT NULL UNIQUE,   -- URL末尾の数字 ID
+  display_name    TEXT    NOT NULL,          -- セラー表示名（スキャン時に更新）
+  profile_url     TEXT    NOT NULL,          -- https://jp.mercari.com/user/profile/{id}
+  note            TEXT,                      -- 管理メモ
+  is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
+  first_scanned_at TEXT,
+  last_scanned_at  TEXT,
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- スキャン実行ログ（アカウント×日次）
+CREATE TABLE IF NOT EXISTS merch_competitor_scans (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id        INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+  scan_date         TEXT    NOT NULL,           -- YYYY-MM-DD (JST)
+  started_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  finished_at       TEXT,
+  status            TEXT    NOT NULL DEFAULT 'running'
+    CHECK (status IN ('running','completed','failed','partial')),
+  items_fetched     INTEGER NOT NULL DEFAULT 0,
+  items_new         INTEGER NOT NULL DEFAULT 0,
+  items_sold        INTEGER NOT NULL DEFAULT 0,
+  items_price_changed INTEGER NOT NULL DEFAULT 0,
+  items_missing     INTEGER NOT NULL DEFAULT 0,
+  items_reappeared  INTEGER NOT NULL DEFAULT 0,
+  error_message     TEXT,
+  UNIQUE(account_id, scan_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mcs_account  ON merch_competitor_scans(account_id);
+CREATE INDEX IF NOT EXISTS idx_mcs_date     ON merch_competitor_scans(scan_date);
+CREATE INDEX IF NOT EXISTS idx_mcs_status   ON merch_competitor_scans(status);
+
+-- 競合アカウントの商品スナップショット
+CREATE TABLE IF NOT EXISTS merch_competitor_items (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id        INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+  mercari_item_id   TEXT    NOT NULL,           -- メルカリ商品 ID
+  name              TEXT    NOT NULL,
+  price             INTEGER NOT NULL DEFAULT 0,
+  status            TEXT    NOT NULL DEFAULT 'unknown'
+    CHECK (status IN ('on_sale','sold','missing','unknown')),
+  brand             TEXT,
+  category          TEXT,
+  color             TEXT,
+  material          TEXT,
+  size              TEXT,
+  condition_text    TEXT,
+  target_gender     TEXT    CHECK (target_gender IN ('male','female','unisex','unknown') OR target_gender IS NULL),
+  season            TEXT,
+  image_url         TEXT,
+  raw_data          TEXT,                       -- JSON文字列
+  -- 自動分類フィールド（merch_competitor_analyzer が設定）
+  classified_brand  TEXT,
+  classified_category TEXT,
+  classified_color  TEXT,
+  classified_season TEXT,
+  classified_target TEXT,
+  classification_confidence TEXT CHECK (classification_confidence IN ('high','medium','low') OR classification_confidence IS NULL),
+  -- 買付け上限価格
+  buying_limit      INTEGER,                    -- 円（NULL = 計算不可）
+  -- 管理フィールド
+  first_seen_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  last_seen_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  sold_at           TEXT,
+  status_changed_at TEXT,
+  created_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(account_id, mercari_item_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mci_account  ON merch_competitor_items(account_id);
+CREATE INDEX IF NOT EXISTS idx_mci_status   ON merch_competitor_items(status);
+CREATE INDEX IF NOT EXISTS idx_mci_brand    ON merch_competitor_items(classified_brand);
+CREATE INDEX IF NOT EXISTS idx_mci_category ON merch_competitor_items(classified_category);
+CREATE INDEX IF NOT EXISTS idx_mci_last_seen ON merch_competitor_items(last_seen_at);
+
+-- 価格変更履歴
+CREATE TABLE IF NOT EXISTS merch_competitor_price_history (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id     INTEGER NOT NULL REFERENCES merch_competitor_items(id),
+  price_from  INTEGER NOT NULL,
+  price_to    INTEGER NOT NULL,
+  changed_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  scan_id     INTEGER REFERENCES merch_competitor_scans(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mcph_item    ON merch_competitor_price_history(item_id);
+CREATE INDEX IF NOT EXISTS idx_mcph_changed ON merch_competitor_price_history(changed_at);
+
+-- スキャンイベント（変化の記録）
+CREATE TABLE IF NOT EXISTS merch_competitor_scan_events (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  scan_id     INTEGER NOT NULL REFERENCES merch_competitor_scans(id),
+  item_id     INTEGER NOT NULL REFERENCES merch_competitor_items(id),
+  event_type  TEXT    NOT NULL
+    CHECK (event_type IN ('new','sold','price_change','missing','reappeared')),
+  price_from  INTEGER,
+  price_to    INTEGER,
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_mcse_scan   ON merch_competitor_scan_events(scan_id);
+CREATE INDEX IF NOT EXISTS idx_mcse_item   ON merch_competitor_scan_events(item_id);
+CREATE INDEX IF NOT EXISTS idx_mcse_event  ON merch_competitor_scan_events(event_type);
+
+-- 日次通知（ポップアップ用）
+CREATE TABLE IF NOT EXISTS merch_competitor_notifications (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  notify_date TEXT    NOT NULL UNIQUE,          -- YYYY-MM-DD
+  summary     TEXT    NOT NULL,                 -- JSON文字列（サマリー情報）
+  is_read     INTEGER NOT NULL DEFAULT 0 CHECK (is_read IN (0,1)),
+  created_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_mcn_date   ON merch_competitor_notifications(notify_date);
+CREATE INDEX IF NOT EXISTS idx_mcn_unread ON merch_competitor_notifications(is_read) WHERE is_read = 0;
+
+-- 週次・月次レポート
+CREATE TABLE IF NOT EXISTS merch_competitor_reports (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  report_type   TEXT    NOT NULL CHECK (report_type IN ('weekly','monthly')),
+  period_start  TEXT    NOT NULL,               -- YYYY-MM-DD
+  period_end    TEXT    NOT NULL,
+  account_id    INTEGER REFERENCES merch_competitor_accounts(id),  -- NULLは全アカウント集計
+  body          TEXT    NOT NULL,               -- JSON文字列（レポート本文）
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(report_type, period_start, account_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mcr_type   ON merch_competitor_reports(report_type);
+CREATE INDEX IF NOT EXISTS idx_mcr_period ON merch_competitor_reports(period_start);
+
+-- 分析設定
+CREATE TABLE IF NOT EXISTS merch_analysis_settings (
+  key         TEXT    PRIMARY KEY,
+  value       TEXT    NOT NULL,
+  description TEXT,
+  updated_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+
+-- 分類手動オーバーライド
+CREATE TABLE IF NOT EXISTS merch_classification_overrides (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_id         INTEGER NOT NULL UNIQUE REFERENCES merch_competitor_items(id),
+  override_brand  TEXT,
+  override_category TEXT,
+  override_color  TEXT,
+  override_season TEXT,
+  override_target TEXT,
+  note            TEXT,
+  created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);

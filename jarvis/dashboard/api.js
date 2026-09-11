@@ -129,6 +129,24 @@ import { importXCSV }       from '../importers/x_csv_importer.js';
 import { importKdpReport }  from '../importers/kdp_report_importer.js';
 import { writeNarouSnapshot } from '../importers/narou_writer.js';
 
+// ── Phase 32: 競合アカウント分析 ─────────────────────────────────────────────
+import {
+  listAllAccounts as listCompetitorAccounts,
+  getAccount as getCompetitorAccount,
+  insertAccount as insertCompetitorAccount,
+  updateAccount as updateCompetitorAccount,
+  listItems as listCompetitorItems,
+  getBrandSoldRanking, getCategoryStats,
+  getBuyingCandidates,
+  getRecentScans as getCompetitorScans,
+  getSettings as getAnalysisSettings, setSetting,
+  listUnreadNotifications, markNotificationRead,
+  listReports as listCompetitorReports,
+} from '../data/merch_competitor_manager.js';
+import {
+  extractUserIdFromProfileUrl,
+} from '../data/merch_competitor_scraper.js';
+
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
   getWorks, getWork, updateWorkDetail, reorderWorks, deleteWork,
@@ -3227,6 +3245,129 @@ export function createApiHandler(db) {
         });
         createReadStream(filePath).pipe(res);
         return;
+      }
+
+      // ── Phase 32: 競合アカウント分析 API ─────────────────────────────────────
+
+      // GET /api/competitor/accounts — アカウント一覧
+      if (method === 'GET' && path === '/api/competitor/accounts') {
+        const accounts = listCompetitorAccounts(db);
+        return jsonRes(res, 200, { ok: true, accounts });
+      }
+
+      // POST /api/competitor/accounts — アカウント登録
+      if (method === 'POST' && path === '/api/competitor/accounts') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const { profile_url, note } = body;
+        if (!profile_url) return errRes(res, 400, 'profile_url は必須です');
+
+        let mercari_user_id;
+        try {
+          mercari_user_id = extractUserIdFromProfileUrl(profile_url);
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+
+        // 表示名は未確定（スキャン時に更新）、とりあえず ID で仮登録
+        const display_name = body.display_name || `セラー ${mercari_user_id}`;
+        try {
+          const result = insertCompetitorAccount(db, {
+            mercari_user_id, display_name,
+            profile_url: `https://jp.mercari.com/user/profile/${mercari_user_id}`,
+            note: note ?? null,
+          });
+          return jsonRes(res, 201, { ok: true, id: result.id, mercari_user_id });
+        } catch (e) {
+          if (e.message?.includes('UNIQUE')) return errRes(res, 409, 'このアカウントは既に登録されています');
+          throw e;
+        }
+      }
+
+      // PATCH /api/competitor/accounts/:id — アカウント更新
+      if (method === 'PATCH' && /^\/api\/competitor\/accounts\/\d+$/.test(path)) {
+        const id = parseInt(path.split('/').pop(), 10);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const account = getCompetitorAccount(db, id);
+        if (!account) return errRes(res, 404, 'アカウントが見つかりません');
+        updateCompetitorAccount(db, id, {
+          display_name: body.display_name,
+          note:         body.note,
+          is_active:    body.is_active,
+        });
+        return jsonRes(res, 200, { ok: true });
+      }
+
+      // GET /api/competitor/accounts/:id/items — 商品一覧
+      if (method === 'GET' && /^\/api\/competitor\/accounts\/\d+\/items$/.test(path)) {
+        const id     = parseInt(path.split('/')[4], 10);
+        const status = url.searchParams.get('status') ?? undefined;
+        const limit  = parseInt(url.searchParams.get('limit')  ?? '100', 10);
+        const offset = parseInt(url.searchParams.get('offset') ?? '0',   10);
+        const items = listCompetitorItems(db, id, { status, limit, offset });
+        return jsonRes(res, 200, { ok: true, items });
+      }
+
+      // GET /api/competitor/accounts/:id/scans — スキャン履歴
+      if (method === 'GET' && /^\/api\/competitor\/accounts\/\d+\/scans$/.test(path)) {
+        const id    = parseInt(path.split('/')[4], 10);
+        const limit = parseInt(url.searchParams.get('limit') ?? '30', 10);
+        const scans = getCompetitorScans(db, id, limit);
+        return jsonRes(res, 200, { ok: true, scans });
+      }
+
+      // GET /api/competitor/accounts/:id/analysis — 分析データ
+      if (method === 'GET' && /^\/api\/competitor\/accounts\/\d+\/analysis$/.test(path)) {
+        const id = parseInt(path.split('/')[4], 10);
+        return jsonRes(res, 200, {
+          ok: true,
+          brand_ranking:     getBrandSoldRanking(db, id),
+          category_stats:    getCategoryStats(db, id),
+          buying_candidates: getBuyingCandidates(db, id, 50),
+        });
+      }
+
+      // GET /api/competitor/reports — レポート一覧
+      if (method === 'GET' && path === '/api/competitor/reports') {
+        const report_type = url.searchParams.get('type') ?? undefined;
+        const reports = listCompetitorReports(db, { report_type });
+        return jsonRes(res, 200, { ok: true, reports });
+      }
+
+      // GET /api/competitor/notifications — 未読通知
+      if (method === 'GET' && path === '/api/competitor/notifications') {
+        const notifications = listUnreadNotifications(db);
+        return jsonRes(res, 200, { ok: true, notifications });
+      }
+
+      // POST /api/competitor/notifications/read — 通知既読
+      if (method === 'POST' && path === '/api/competitor/notifications/read') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.date) return errRes(res, 400, 'date は必須です');
+        markNotificationRead(db, body.date);
+        return jsonRes(res, 200, { ok: true });
+      }
+
+      // GET /api/competitor/settings — 分析設定
+      if (method === 'GET' && path === '/api/competitor/settings') {
+        const settings = getAnalysisSettings(db);
+        return jsonRes(res, 200, { ok: true, settings });
+      }
+
+      // PATCH /api/competitor/settings — 分析設定更新
+      if (method === 'PATCH' && path === '/api/competitor/settings') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const ALLOWED_KEYS = new Set([
+          'fee_rate', 'shipping_cost', 'min_profit',
+          'max_items_per_scan', 'confidence_high_min', 'confidence_med_min',
+        ]);
+        for (const [key, value] of Object.entries(body)) {
+          if (ALLOWED_KEYS.has(key)) setSetting(db, key, String(value));
+        }
+        return jsonRes(res, 200, { ok: true, settings: getAnalysisSettings(db) });
       }
 
       return errRes(res, 404, 'Not Found');

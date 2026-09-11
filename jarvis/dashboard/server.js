@@ -491,6 +491,11 @@ const server = createServer(async (req, res) => {
         html = html.replace('</body>', `${merchListScript}\n</body>`);
       }
 
+      const merchCompetitorScript = '<script src="business-merch-competitor.js"></script>';
+      if (!html.includes('business-merch-competitor.js')) {
+        html = html.replace('</body>', `${merchCompetitorScript}\n</body>`);
+      }
+
       const uiFixesScript = '<script src="business-ui-fixes.js"></script>';
       if (!html.includes('business-ui-fixes.js')) {
         html = html.replace('</body>', `${uiFixesScript}\n</body>`);

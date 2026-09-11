@@ -773,6 +773,10 @@ function runMigrations(db, dbPath = ':memory:') {
     phase31Migration(db);
   }
 
+  // Phase 32: 競合アカウント分析テーブル追加
+  // schema.sql に CREATE TABLE IF NOT EXISTS 済み。既存 DB への適用 + 初期設定データ投入用。
+  phase32Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -1428,4 +1432,179 @@ export function phase31Migration(db) {
       updated_at  TEXT NOT NULL DEFAULT (datetime('now','localtime'))
     )
   `);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 32: 競合アカウント分析テーブル追加
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const PHASE32_TABLES = [
+  `CREATE TABLE IF NOT EXISTS merch_competitor_accounts (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    mercari_user_id TEXT    NOT NULL UNIQUE,
+    display_name    TEXT    NOT NULL,
+    profile_url     TEXT    NOT NULL,
+    note            TEXT,
+    is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
+    first_scanned_at TEXT,
+    last_scanned_at  TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    updated_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_scans (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id        INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+    scan_date         TEXT    NOT NULL,
+    started_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    finished_at       TEXT,
+    status            TEXT    NOT NULL DEFAULT 'running'
+      CHECK (status IN ('running','completed','failed','partial')),
+    items_fetched     INTEGER NOT NULL DEFAULT 0,
+    items_new         INTEGER NOT NULL DEFAULT 0,
+    items_sold        INTEGER NOT NULL DEFAULT 0,
+    items_price_changed INTEGER NOT NULL DEFAULT 0,
+    items_missing     INTEGER NOT NULL DEFAULT 0,
+    items_reappeared  INTEGER NOT NULL DEFAULT 0,
+    error_message     TEXT,
+    UNIQUE(account_id, scan_date)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mcs_account  ON merch_competitor_scans(account_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcs_date     ON merch_competitor_scans(scan_date)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcs_status   ON merch_competitor_scans(status)`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_items (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id        INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+    mercari_item_id   TEXT    NOT NULL,
+    name              TEXT    NOT NULL,
+    price             INTEGER NOT NULL DEFAULT 0,
+    status            TEXT    NOT NULL DEFAULT 'unknown'
+      CHECK (status IN ('on_sale','sold','missing','unknown')),
+    brand             TEXT,
+    category          TEXT,
+    color             TEXT,
+    material          TEXT,
+    size              TEXT,
+    condition_text    TEXT,
+    target_gender     TEXT CHECK (target_gender IN ('male','female','unisex','unknown') OR target_gender IS NULL),
+    season            TEXT,
+    image_url         TEXT,
+    raw_data          TEXT,
+    classified_brand  TEXT,
+    classified_category TEXT,
+    classified_color  TEXT,
+    classified_season TEXT,
+    classified_target TEXT,
+    classification_confidence TEXT CHECK (classification_confidence IN ('high','medium','low') OR classification_confidence IS NULL),
+    buying_limit      INTEGER,
+    first_seen_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    last_seen_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    sold_at           TEXT,
+    status_changed_at TEXT,
+    created_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    updated_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(account_id, mercari_item_id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mci_account   ON merch_competitor_items(account_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mci_status    ON merch_competitor_items(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_mci_brand     ON merch_competitor_items(classified_brand)`,
+  `CREATE INDEX IF NOT EXISTS idx_mci_category  ON merch_competitor_items(classified_category)`,
+  `CREATE INDEX IF NOT EXISTS idx_mci_last_seen ON merch_competitor_items(last_seen_at)`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_price_history (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id     INTEGER NOT NULL REFERENCES merch_competitor_items(id),
+    price_from  INTEGER NOT NULL,
+    price_to    INTEGER NOT NULL,
+    changed_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    scan_id     INTEGER REFERENCES merch_competitor_scans(id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mcph_item    ON merch_competitor_price_history(item_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcph_changed ON merch_competitor_price_history(changed_at)`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_scan_events (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    scan_id     INTEGER NOT NULL REFERENCES merch_competitor_scans(id),
+    item_id     INTEGER NOT NULL REFERENCES merch_competitor_items(id),
+    event_type  TEXT    NOT NULL
+      CHECK (event_type IN ('new','sold','price_change','missing','reappeared')),
+    price_from  INTEGER,
+    price_to    INTEGER,
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mcse_scan  ON merch_competitor_scan_events(scan_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcse_item  ON merch_competitor_scan_events(item_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcse_event ON merch_competitor_scan_events(event_type)`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_notifications (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    notify_date TEXT    NOT NULL UNIQUE,
+    summary     TEXT    NOT NULL,
+    is_read     INTEGER NOT NULL DEFAULT 0 CHECK (is_read IN (0,1)),
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mcn_date ON merch_competitor_notifications(notify_date)`,
+  `CREATE TABLE IF NOT EXISTS merch_competitor_reports (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    report_type   TEXT    NOT NULL CHECK (report_type IN ('weekly','monthly')),
+    period_start  TEXT    NOT NULL,
+    period_end    TEXT    NOT NULL,
+    account_id    INTEGER REFERENCES merch_competitor_accounts(id),
+    body          TEXT    NOT NULL,
+    created_at    TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    UNIQUE(report_type, period_start, account_id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mcr_type   ON merch_competitor_reports(report_type)`,
+  `CREATE INDEX IF NOT EXISTS idx_mcr_period ON merch_competitor_reports(period_start)`,
+  `CREATE TABLE IF NOT EXISTS merch_analysis_settings (
+    key         TEXT    PRIMARY KEY,
+    value       TEXT    NOT NULL,
+    description TEXT,
+    updated_at  TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS merch_classification_overrides (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id         INTEGER NOT NULL UNIQUE REFERENCES merch_competitor_items(id),
+    override_brand  TEXT,
+    override_category TEXT,
+    override_color  TEXT,
+    override_season TEXT,
+    override_target TEXT,
+    note            TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+    updated_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+  )`,
+];
+
+/** デフォルト分析設定 */
+const PHASE32_DEFAULT_SETTINGS = [
+  ['fee_rate',            '0.10',  'メルカリ手数料率（デフォルト10%）'],
+  ['shipping_cost',       '600',   '送料目安（円）'],
+  ['min_profit',          '2000',  '最低利益（円）'],
+  ['max_items_per_scan',  '300',   '1スキャンで取得する最大商品数'],
+  ['confidence_high_min', '10',    'high判定の最低サンプル数'],
+  ['confidence_med_min',  '3',     'medium判定の最低サンプル数'],
+];
+
+/** 初期アカウント（はーと♡セール開催中） */
+const PHASE32_INITIAL_ACCOUNTS = [
+  ['793350860', 'はーと♡セール開催中', 'https://jp.mercari.com/user/profile/793350860'],
+];
+
+export function phase32Migration(db) {
+  for (const sql of PHASE32_TABLES) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
+  }
+
+  // デフォルト設定を INSERT OR IGNORE
+  const settingStmt = db.prepare(
+    'INSERT OR IGNORE INTO merch_analysis_settings (key, value, description) VALUES (?, ?, ?)'
+  );
+  for (const [key, value, description] of PHASE32_DEFAULT_SETTINGS) {
+    try { settingStmt.run(key, value, description); } catch (_) {}
+  }
+
+  // 初期アカウントを INSERT OR IGNORE
+  const accountStmt = db.prepare(
+    'INSERT OR IGNORE INTO merch_competitor_accounts (mercari_user_id, display_name, profile_url) VALUES (?, ?, ?)'
+  );
+  for (const [uid, name, url] of PHASE32_INITIAL_ACCOUNTS) {
+    try { accountStmt.run(uid, name, url); } catch (_) {}
+  }
 }

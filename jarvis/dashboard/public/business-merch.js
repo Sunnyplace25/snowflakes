@@ -53,6 +53,7 @@
           <button class="sf-tab" data-merch-tab="items">商品一覧</button>
           <button class="sf-tab" data-merch-tab="sold">売却済み</button>
           <button class="sf-tab" data-merch-tab="stock">在庫</button>
+          <button class="sf-tab" data-merch-tab="competitor">競合分析</button>
         </nav>
 
         <!-- ─── ダッシュボード ─── -->
@@ -94,6 +95,11 @@
               （実装予定）
             </div>
           </section>
+        </div>
+
+        <!-- ─── 競合分析 ─── -->
+        <div id="merch-subtab-competitor" class="sf-tab-panel" hidden>
+          <div id="merch-competitor-root"></div>
         </div>
       `;
       monthly.parentNode.insertBefore(panel, monthly.nextSibling);
@@ -139,7 +145,7 @@
 
   function switchMerchSubTab(name) {
     merchCurrentSubTab = name;
-    ['dashboard', 'items', 'sold', 'stock'].forEach(t => {
+    ['dashboard', 'items', 'sold', 'stock', 'competitor'].forEach(t => {
       const el = document.getElementById(`merch-subtab-${t}`);
       if (el) el.hidden = (t !== name);
     });
