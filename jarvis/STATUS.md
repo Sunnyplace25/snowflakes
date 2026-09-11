@@ -48,6 +48,7 @@ jarvis-development
 | Phase 21 Google Calendar → JARVIS 逆同期 | calendar_import_candidates テーブル・dryRunCalendarPull / scanCalendarCandidates・ページネーション・期間フィルタ・削除判定安全設計・28 tests | ✅ 完了 | `76d8385` |
 | Phase 30/31 物販 Phase 33 | work_records 新フィールド（原価/送料/手数料率/プラットフォーム等）・物販サブタブ再構成 | ✅ 完了 | `3e94266` |
 | Phase 34 ダッシュボード・色分け・401対応 | 物販ダッシュボード復元（年度別集計）・カレンダー土日祝色分け・競合API 401フォールバック（公開HTML）・手動取り込み案内 | ✅ 完了 | `7ab15af` |
+| 競合分析 手動取り込み | ブックマークレット＋ドラッグ＆ドロップ取り込み・自動スキャン無効化・JSON/CSV対応・分類自動更新 | ✅ 完了 | `65efca1` |
 
 ---
 
