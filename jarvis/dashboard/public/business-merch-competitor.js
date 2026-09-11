@@ -47,10 +47,33 @@
 
         <!-- 今日の分析 -->
         <div id="comp-tab-today" class="sf-tab-panel" style="padding-top:16px">
-          <div id="comp-today-selector" style="margin-bottom:12px">
-            <label style="font-size:13px;color:var(--text-sec)">アカウント: </label>
-            <select id="comp-account-select" class="sf-input" style="width:auto;display:inline-block"></select>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+            <div>
+              <label style="font-size:13px;color:var(--text-sec)">アカウント: </label>
+              <select id="comp-account-select" class="sf-input" style="width:auto;display:inline-block"></select>
+            </div>
+            <button class="btn btn-primary" id="comp-scan-btn" style="white-space:nowrap">
+              今すぐ調査
+            </button>
           </div>
+
+          <!-- 手動スキャンパネル -->
+          <div id="comp-scan-panel" hidden style="
+            background:rgba(255,255,255,.04);border:1px solid var(--border);
+            border-radius:8px;padding:14px 16px;margin-bottom:14px
+          ">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px">スキャン対象を選択</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+              <select id="comp-scan-target" class="sf-input" style="width:auto">
+                <option value="current">現在選択中のアカウント</option>
+                <option value="all">全アカウントを調査</option>
+              </select>
+              <button class="btn btn-primary" id="comp-scan-run-btn">実行</button>
+              <button class="btn btn-secondary" id="comp-scan-cancel-btn">キャンセル</button>
+            </div>
+            <div id="comp-scan-status" style="font-size:13px;color:var(--text-sec)"></div>
+          </div>
+
           <div id="comp-today-content" class="loading">読み込み中...</div>
         </div>
 
@@ -149,6 +172,17 @@
     document.getElementById('comp-add-account-btn').addEventListener('click', openAddModal);
     document.getElementById('comp-modal-cancel').addEventListener('click', closeAddModal);
     document.getElementById('comp-modal-save').addEventListener('click', saveAccount);
+
+    // 手動スキャンボタン
+    document.getElementById('comp-scan-btn').addEventListener('click', () => {
+      const panel = document.getElementById('comp-scan-panel');
+      if (panel) panel.hidden = !panel.hidden;
+    });
+    document.getElementById('comp-scan-cancel-btn').addEventListener('click', () => {
+      const panel = document.getElementById('comp-scan-panel');
+      if (panel) panel.hidden = true;
+    });
+    document.getElementById('comp-scan-run-btn').addEventListener('click', runManualScan);
 
     loadAccounts();
     checkNotifications();
@@ -595,6 +629,122 @@
     } catch (e) {
       errEl.textContent = e.message;
       errEl.style.display = 'block';
+    }
+  }
+
+  // ─── 手動スキャン ──────────────────────────────────────────────────────────
+
+  async function runManualScan() {
+    const targetEl = document.getElementById('comp-scan-target');
+    const runBtn   = document.getElementById('comp-scan-run-btn');
+    const cancelBtn = document.getElementById('comp-scan-cancel-btn');
+    const statusEl  = document.getElementById('comp-scan-status');
+    if (!targetEl || !runBtn || !statusEl) return;
+
+    const target = targetEl.value; // 'current' | 'all'
+    const accountId = target === 'all' ? 'all' : currentAccountId;
+
+    if (target === 'current' && !accountId) {
+      statusEl.innerHTML = '<span style="color:var(--danger)">アカウントが選択されていません。</span>';
+      return;
+    }
+
+    // UI: 実行中
+    runBtn.disabled   = true;
+    cancelBtn.disabled = true;
+    runBtn.textContent = '実行中...';
+    const targetLabel = target === 'all' ? '全アカウント' : (accounts.find(a => a.id === accountId)?.display_name || `ID:${accountId}`);
+    statusEl.innerHTML = `
+      <span style="color:var(--text-sec)">
+        ⏳ ${esc(targetLabel)} を調査中です。メルカリAPIの応答待ちのため数秒〜数十秒かかります...
+      </span>`;
+
+    try {
+      const res = await fetch('/api/competitor/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account_id: accountId }),
+      });
+      const d = await res.json();
+
+      if (!res.ok || !d.ok) {
+        // 409 = 二重実行 / 4xx = 入力エラー / 5xx = メルカリブロック等
+        const isBusy   = res.status === 409;
+        const errMsg   = d.error || '';
+        const is401    = errMsg.includes('401') || errMsg.includes('認証エラー');
+        const isBlock  = errMsg.includes('block') || errMsg.includes('429') || errMsg.includes('rate');
+        statusEl.innerHTML = `
+          <div style="color:var(--danger);padding:10px;background:rgba(239,68,68,.1);
+               border:1px solid rgba(239,68,68,.3);border-radius:6px;margin-top:6px">
+            ${isBusy  ? '⚠️ 別のスキャンが進行中です。完了後に再試行してください。' :
+              is401   ? `🔒 <strong>HTTP 401（認証エラー）</strong><br>
+                         メルカリ API が認証を要求しています（自動再試行は行いません）。<br>
+                         公開プロフィールページ（jp.mercari.com）へのフォールバックも取得できませんでした。<br>
+                         <strong style="color:var(--text)">→ 手動でメルカリページを開き、CSVや画面情報を直接取り込んでください。</strong><br>
+                         <span style="font-size:11px;color:var(--text-sec);margin-top:4px;display:block">${esc(errMsg)}</span>` :
+              isBlock ? '🚫 メルカリからのブロックを検出しました。時間をおいて再試行してください。' :
+                        `❌ エラー: ${esc(errMsg)}`}
+          </div>`;
+        return;
+      }
+
+      // 成功 — 結果表示
+      const results = d.results ?? [];
+      const rows = results.map(r => {
+        const icon  = r.ok ? '✓' : '✗';
+        const color = r.ok ? 'var(--success)' : 'var(--danger)';
+        const err   = r.error || '';
+        const is401Row  = err.includes('401') || err.includes('認証エラー');
+        const isFallback = err.includes('フォールバック') && r.ok;
+        let errText = '';
+        if (!r.ok && err) {
+          errText = is401Row
+            ? ` <span style="color:var(--danger);font-size:11px">🔒 HTTP 401（API取得不可・フォールバック失敗）</span>`
+            : ` <span style="color:var(--danger);font-size:11px">（${esc(err)}）</span>`;
+        } else if (isFallback) {
+          errText = ` <span style="color:#f59e0b;font-size:11px">⚠️ HTML取得（API 401）</span>`;
+        }
+        return `<tr>
+          <td style="padding:4px 8px"><span style="color:${color}">${icon}</span> ${esc(r.display_name)}</td>
+          <td style="padding:4px 8px;text-align:right">${r.items_fetched}件取得</td>
+          <td style="padding:4px 8px;text-align:right;color:var(--success)">新規 ${r.items_new}</td>
+          <td style="padding:4px 8px;text-align:right;color:var(--danger)">売却 ${r.items_sold}</td>
+          <td style="padding:4px 8px;text-align:right">価格変 ${r.items_price_changed}</td>
+          <td style="padding:4px 8px">${errText}</td>
+        </tr>`;
+      }).join('');
+
+      statusEl.innerHTML = `
+        <div style="color:var(--success);font-weight:600;margin-bottom:8px">✓ スキャン完了</div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <thead><tr style="color:var(--text-sec);font-size:11px">
+            <th style="padding:4px 8px;text-align:left">アカウント</th>
+            <th style="padding:4px 8px;text-align:right">取得</th>
+            <th style="padding:4px 8px;text-align:right">新規</th>
+            <th style="padding:4px 8px;text-align:right">売却</th>
+            <th style="padding:4px 8px;text-align:right">価格変</th>
+            <th></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+
+      // 分析結果と通知を自動更新
+      await loadAccounts();
+      if (competitorSubTab === 'today') loadToday();
+      else if (competitorSubTab === 'brands') loadBrands();
+      else if (competitorSubTab === 'candidates') loadCandidates();
+      await checkNotifications();
+
+    } catch (e) {
+      statusEl.innerHTML = `
+        <div style="color:var(--danger);padding:10px;background:rgba(239,68,68,.1);
+             border:1px solid rgba(239,68,68,.3);border-radius:6px;margin-top:6px">
+          ❌ 通信エラー: ${esc(e.message)}
+        </div>`;
+    } finally {
+      runBtn.disabled    = false;
+      cancelBtn.disabled = false;
+      runBtn.textContent = '実行';
     }
   }
 

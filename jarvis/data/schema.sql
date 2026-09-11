@@ -31,7 +31,11 @@ CREATE TABLE IF NOT EXISTS work_records (
   commission_rate  TEXT,                        -- '10%'|'8%'|'5%'|'other'
   commission_amount INTEGER NOT NULL DEFAULT 0, -- 手数料額
   platform         TEXT,                        -- 'メルカリ'|'ラクマ'|'ヤフオク'|'その他'
-  purchase_place   TEXT                         -- 仕入れ場所（自由入力）
+  purchase_place   TEXT,                        -- 仕入れ場所（自由入力）
+  -- Phase 34: 出品日・売却日・仕入日（date は listed_date と同値で月次フィルタ互換）
+  listed_date    TEXT,                          -- 出品日 YYYY-MM-DD
+  sold_date      TEXT,                          -- 売却日 YYYY-MM-DD（未販売は NULL）
+  purchased_date TEXT                           -- 仕入日 YYYY-MM-DD
 );
 
 CREATE TABLE IF NOT EXISTS daily_status (

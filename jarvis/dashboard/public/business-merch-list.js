@@ -412,17 +412,31 @@
       </div>`;
   }
 
-  // purchase_date から年を取得。取れない場合は '__unknown__' を返す
+  // 売れた日優先、未販売は出品日→仕入日の順にフォールバック
   function itemYear(r) {
-    const y = r.purchase_date ? r.purchase_date.slice(0, 4) : null;
+    const d = r.sale_date || r.listing_date || r.purchase_date;
+    const y = d ? d.slice(0, 4) : null;
     return (y && /^\d{4}$/.test(y)) ? y : '__unknown__';
   }
 
   function buildDashboard(all) {
-    // 仕入日から年一覧を抽出（降順）、年不明は末尾に固定
-    const knownYears = [...new Set(
-      all.map(itemYear).filter(y => y !== '__unknown__')
-    )].sort((a, b) => b - a);
+    const currentYear = new Date().getFullYear();
+
+    // DB内の全日付から最小年を取得
+    const knownYears = [];
+    const yearSet = new Set();
+    all.forEach(r => {
+      const y = itemYear(r);
+      if (y !== '__unknown__') yearSet.add(parseInt(y));
+    });
+
+    let minYear = currentYear;
+    if (yearSet.size > 0) minYear = Math.min(...yearSet);
+
+    // minYear から currentYear まで全年度をリストアップ（降順）
+    for (let y = currentYear; y >= minYear; y--) {
+      knownYears.push(String(y));
+    }
 
     const hasUnknown = all.some(r => itemYear(r) === '__unknown__');
     const allKeys = hasUnknown ? [...knownYears, '__unknown__'] : knownYears;

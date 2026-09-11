@@ -90,6 +90,47 @@ function httpsPost(url, payload, headers = {}) {
   });
 }
 
+/**
+ * HTTPS GET リクエストを送信してレスポンスボディ（テキスト）を返す。
+ * @param {string} url
+ * @param {object} headers
+ * @returns {Promise<{ status: number, text: string }>}
+ */
+function httpsGet(url, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const options = {
+      hostname: parsed.hostname,
+      path:     parsed.pathname + parsed.search,
+      method:   'GET',
+      headers:  {
+        'Accept':          'text/html,application/xhtml+xml,*/*',
+        'Accept-Language': 'ja,en;q=0.9',
+        'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+        ...headers,
+      },
+      timeout: 30_000,
+    };
+
+    const req = https.request(options, (res) => {
+      // リダイレクト追従（1段のみ）
+      if (res.statusCode >= 301 && res.statusCode <= 302 && res.headers.location) {
+        return httpsGet(res.headers.location, headers).then(resolve, reject);
+      }
+      const chunks = [];
+      res.on('data', (c) => chunks.push(c));
+      res.on('end', () => resolve({
+        status: res.statusCode,
+        text:   Buffer.concat(chunks).toString('utf8'),
+      }));
+    });
+
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('request timeout')); });
+    req.end();
+  });
+}
+
 // ─── メルカリ API ─────────────────────────────────────────────────────────────
 
 const MERCARI_SEARCH_URL = 'https://api.mercari.jp/v2/entities:search';
@@ -104,8 +145,60 @@ const BASE_HEADERS = {
   'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 };
 
+// 公開プロフィールページ URL（スクレイピング用）
+const PROFILE_PAGE_URL = 'https://jp.mercari.com/user/profile/';
+
+/**
+ * メルカリ公開プロフィールページ（HTML）から出品商品を取得する。
+ * __NEXT_DATA__ 内の JSON を解析する。
+ * 認証不要の公開情報のみを使用する。
+ *
+ * @param {string} userId
+ * @param {number} maxItems
+ * @returns {Promise<object[]>}
+ */
+async function fetchSellerItemsFromHtml(userId, maxItems) {
+  validateUserId(userId);
+  const url = PROFILE_PAGE_URL + userId;
+  let resp;
+  try {
+    resp = await httpsGet(url);
+  } catch (err) {
+    throw new Error(`プロフィールページ取得失敗: ${err.message}`);
+  }
+
+  if (resp.status !== 200) {
+    throw new Error(`プロフィールページ HTTP ${resp.status}`);
+  }
+
+  // __NEXT_DATA__ スクリプトタグを抽出
+  const match = resp.text.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+  if (!match) {
+    throw new Error('プロフィールページから商品データを取得できませんでした（__NEXT_DATA__ なし）');
+  }
+
+  let nextData;
+  try {
+    nextData = JSON.parse(match[1]);
+  } catch (e) {
+    throw new Error(`プロフィールページ JSON 解析エラー: ${e.message}`);
+  }
+
+  // Next.js のページデータ構造からアイテムを探す
+  const pageProps = nextData?.props?.pageProps ?? {};
+  const rawItems  = pageProps.items ?? pageProps.data?.items ?? pageProps.seller?.items ?? [];
+
+  if (!Array.isArray(rawItems) || rawItems.length === 0) {
+    throw new Error('プロフィールページから商品一覧を取得できませんでした（アイテムなし）');
+  }
+
+  return rawItems.slice(0, maxItems).map(parseItem);
+}
+
 /**
  * メルカリ出品商品一覧を取得する。
+ * 1. API（api.mercari.jp）を試みる
+ * 2. 401 の場合は公開プロフィールページ（HTML）にフォールバック
  * ページネーション対応（最大 maxItems 件）。
  *
  * @param {string} userId - 数字のみの seller ID
@@ -118,6 +211,8 @@ export async function fetchSellerItems(userId, maxItems = 300) {
   const items = [];
   let pageToken = '';
   const pageSize = 120; // API の最大ページサイズ
+  let apiBlocked = false;
+  let apiBlockStatus = null;
 
   while (items.length < maxItems) {
     const payload = {
@@ -134,6 +229,13 @@ export async function fetchSellerItems(userId, maxItems = 300) {
       throw new Error(`メルカリ API リクエスト失敗: ${err.message}`);
     }
 
+    if (resp.status === 401 || resp.status === 403) {
+      // 認証が必要なエラー → フォールバックへ
+      apiBlocked = true;
+      apiBlockStatus = resp.status;
+      break;
+    }
+
     if (resp.status !== 200) {
       throw new Error(`メルカリ API エラー: HTTP ${resp.status}`);
     }
@@ -147,6 +249,19 @@ export async function fetchSellerItems(userId, maxItems = 300) {
 
     pageToken = data.nextPageToken ?? '';
     if (!pageToken || rawItems.length === 0) break;
+  }
+
+  // API が 401/403 でブロックされた場合は HTML フォールバック
+  if (apiBlocked) {
+    try {
+      const htmlItems = await fetchSellerItemsFromHtml(userId, maxItems);
+      // フォールバック成功時はフォールバック元を示すフラグを付与
+      return htmlItems.map(item => ({ ...item, _source: 'html_fallback' }));
+    } catch (fallbackErr) {
+      throw new Error(
+        `API HTTP ${apiBlockStatus}（認証エラー）、フォールバックも失敗: ${fallbackErr.message}`
+      );
+    }
   }
 
   return items;
@@ -220,17 +335,41 @@ function extractGender(raw) {
  */
 export async function fetchSellerName(userId) {
   validateUserId(userId);
-  // API v2 には users endpoint がないため、検索結果の seller 情報から取得
+  // API v2 の検索結果 seller フィールドから取得を試みる
   try {
     const resp = await httpsPost(MERCARI_SEARCH_URL, {
       userId,
       pageSize: 1,
     }, BASE_HEADERS);
-    if (resp.status !== 200) return null;
-    const items = resp.data.items ?? resp.data.data?.items ?? [];
-    if (items.length > 0 && items[0].seller) {
-      return items[0].seller.name ?? null;
+    if (resp.status === 200) {
+      const items = resp.data.items ?? resp.data.data?.items ?? [];
+      if (items.length > 0 && items[0].seller) {
+        return items[0].seller.name ?? null;
+      }
+    }
+    // 401/403 の場合は HTML フォールバック
+    if (resp.status === 401 || resp.status === 403) {
+      return fetchSellerNameFromHtml(userId);
     }
   } catch (_) { /* 失敗は無視 */ }
   return null;
+}
+
+/**
+ * 公開プロフィールページ（HTML）からセラー名を取得する。
+ * @param {string} userId
+ * @returns {Promise<string|null>}
+ */
+async function fetchSellerNameFromHtml(userId) {
+  try {
+    const resp = await httpsGet(PROFILE_PAGE_URL + userId);
+    if (resp.status !== 200) return null;
+    const match = resp.text.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+    if (!match) return null;
+    const nextData = JSON.parse(match[1]);
+    const pageProps = nextData?.props?.pageProps ?? {};
+    return pageProps.seller?.name ?? pageProps.profile?.name ?? null;
+  } catch (_) {
+    return null;
+  }
 }

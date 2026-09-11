@@ -42,6 +42,10 @@ export function addWorkRecord(db, {
   commission_amount = 0,
   platform          = null,
   purchase_place    = null,
+  // Phase 34: 出品日・売却日・仕入日
+  listed_date       = null,
+  sold_date         = null,
+  purchased_date    = null,
 }) {
   if (!date || typeof date !== 'string') throw new Error('date is required (YYYY-MM-DD)');
   if (!category) throw new Error('category is required');
@@ -75,15 +79,17 @@ export function addWorkRecord(db, {
        income, expense, work_hours, travel_hours,
        is_full_day, invoice_status, payment_status, memo,
        cost_purchase, cost_shipping, commission_rate, commission_amount,
-       platform, purchase_place)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       platform, purchase_place,
+       listed_date, sold_date, purchased_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const result = stmt.run(
     effectiveJobId, date, category, work_type, content, client,
     income, expense, work_hours, travel_hours,
     effectiveIsFullDay, invoice_status, payment_status, memo,
     cp, cs, commission_rate ?? null, ca,
-    platform ?? null, purchase_place ?? null
+    platform ?? null, purchase_place ?? null,
+    listed_date ?? null, sold_date ?? null, purchased_date ?? null
   );
   return { rowid: result.lastInsertRowid, job_id: effectiveJobId };
 }
@@ -116,6 +122,8 @@ export function updateWorkRecordFull(db, id, fields = {}) {
     // Phase 33: 物販詳細フィールド
     cost_purchase, cost_shipping, commission_rate,
     commission_amount, platform, purchase_place,
+    // Phase 34: 出品日・売却日・仕入日
+    listed_date, sold_date, purchased_date,
   } = fields;
 
   if (date !== undefined && date !== null) {
@@ -186,6 +194,10 @@ export function updateWorkRecordFull(db, id, fields = {}) {
   if (commission_amount !== undefined) add('commission_amount', parseInt(commission_amount ?? 0, 10) || 0);
   if (platform          !== undefined) add('platform',          platform          ?? null);
   if (purchase_place    !== undefined) add('purchase_place',    purchase_place    ?? null);
+  // Phase 34
+  if (listed_date       !== undefined) add('listed_date',       listed_date       ?? null);
+  if (sold_date         !== undefined) add('sold_date',         sold_date         ?? null);
+  if (purchased_date    !== undefined) add('purchased_date',    purchased_date    ?? null);
   if (sets.length === 0) return;
 
   params.push(id);

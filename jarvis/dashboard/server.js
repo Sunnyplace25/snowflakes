@@ -461,21 +461,15 @@ const server = createServer(async (req, res) => {
     if (relativePath === '/index.html') {
       let html = content.toString('utf8');
 
+      // タブ表示順: 音声 → 物販 → 保育園シフト
+      // ※ 各スクリプトが business-tabs にボタンを appendChild する順序でタブが並ぶ
+
       const customScript = '<script src="business-custom.js"></script>';
       if (!html.includes('business-custom.js')) {
         html = html.replace('</body>', `${customScript}\n</body>`);
       }
 
-      const nurseryScript = '<script src="business-nursery-tab.js"></script>';
-      if (!html.includes('business-nursery-tab.js')) {
-        html = html.replace('</body>', `${nurseryScript}\n</body>`);
-      }
-
-      const nurseryPayslipScript = '<script src="business-nursery-payslip.js"></script>';
-      if (!html.includes('business-nursery-payslip.js')) {
-        html = html.replace('</body>', `${nurseryPayslipScript}\n</body>`);
-      }
-
+      // 物販関連（保育園より先に注入 → 物販タブが先に並ぶ）
       const merchScript = '<script src="business-merch.js"></script>';
       if (!html.includes('business-merch.js')) {
         html = html.replace('</body>', `${merchScript}\n</body>`);
@@ -494,6 +488,17 @@ const server = createServer(async (req, res) => {
       const merchCompetitorScript = '<script src="business-merch-competitor.js"></script>';
       if (!html.includes('business-merch-competitor.js')) {
         html = html.replace('</body>', `${merchCompetitorScript}\n</body>`);
+      }
+
+      // 保育園関連（物販より後に注入 → 保育園タブが最後に並ぶ）
+      const nurseryScript = '<script src="business-nursery-tab.js"></script>';
+      if (!html.includes('business-nursery-tab.js')) {
+        html = html.replace('</body>', `${nurseryScript}\n</body>`);
+      }
+
+      const nurseryPayslipScript = '<script src="business-nursery-payslip.js"></script>';
+      if (!html.includes('business-nursery-payslip.js')) {
+        html = html.replace('</body>', `${nurseryPayslipScript}\n</body>`);
       }
 
       const uiFixesScript = '<script src="business-ui-fixes.js"></script>';

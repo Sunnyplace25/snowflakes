@@ -781,6 +781,9 @@ function runMigrations(db, dbPath = ':memory:') {
   // 既存 expense カラムは保持・既存データは破壊しない。
   phase33Migration(db);
 
+  // Phase 34: work_records 出品日・売却日・仕入日カラム追加
+  phase34Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -1609,6 +1612,22 @@ const PHASE33_COLUMNS = [
 export function phase33Migration(db) {
   for (const sql of PHASE33_COLUMNS) {
     try { db.exec(sql); } catch (_) { /* column already exists */ }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 34: work_records 出品日・売却日・仕入日カラム追加
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const PHASE34_COLUMNS = [
+  "ALTER TABLE work_records ADD COLUMN listed_date    TEXT",
+  "ALTER TABLE work_records ADD COLUMN sold_date      TEXT",
+  "ALTER TABLE work_records ADD COLUMN purchased_date TEXT",
+];
+
+export function phase34Migration(db) {
+  for (const sql of PHASE34_COLUMNS) {
+    try { db.exec(sql); } catch (_) { /* already exists */ }
   }
 }
 

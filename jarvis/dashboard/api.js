@@ -146,6 +146,7 @@ import {
 import {
   extractUserIdFromProfileUrl,
 } from '../data/merch_competitor_scraper.js';
+import { scanAllAccounts, scanSingleAccount } from '../data/merch_competitor_scan.js';
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
@@ -319,6 +320,9 @@ function parseHours(val) {
  * @param {import('node:sqlite').DatabaseSync} db
  * @returns {Function} (req, res, url) => void
  */
+// 二重実行防止: スキャン中のアカウントIDセット ('all' で全体スキャン中)
+const _scanningAccounts = new Set();
+
 export function createApiHandler(db) {
   return async function apiHandler(req, res, url) {
     const method = req.method;
@@ -422,6 +426,10 @@ export function createApiHandler(db) {
             commission_amount: body.commission_amount ?? 0,
             platform:          body.platform          ?? null,
             purchase_place:    body.purchase_place    ?? null,
+            // Phase 34
+            listed_date:       body.listed_date       ?? null,
+            sold_date:         body.sold_date         ?? null,
+            purchased_date:    body.purchased_date    ?? null,
           });
           // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
           hookWorkCreated(db, rowid);
@@ -462,6 +470,10 @@ export function createApiHandler(db) {
             commission_amount: body.commission_amount,
             platform:          body.platform,
             purchase_place:    body.purchase_place,
+            // Phase 34
+            listed_date:       body.listed_date,
+            sold_date:         body.sold_date,
+            purchased_date:    body.purchased_date,
           });
           // Calendar 連動（非同期・失敗しても HTTP 応答には影響しない）
           hookWorkUpdated(db, id);
@@ -3362,6 +3374,39 @@ export function createApiHandler(db) {
         if (!body.date) return errRes(res, 400, 'date は必須です');
         markNotificationRead(db, body.date);
         return jsonRes(res, 200, { ok: true });
+      }
+
+      // POST /api/competitor/scan — 手動スキャン（日次スキャンと同一ロジック）
+      if (method === 'POST' && path === '/api/competitor/scan') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        const accountId = body.account_id; // number | 'all'
+        const lockKey   = accountId === 'all' ? 'all' : Number(accountId);
+
+        // 二重実行防止
+        if (_scanningAccounts.has(lockKey) || _scanningAccounts.has('all')) {
+          const who = _scanningAccounts.has('all') ? '全アカウント' : `アカウント ${lockKey}`;
+          return errRes(res, 409, `${who} のスキャンがすでに実行中です。完了後に再試行してください。`);
+        }
+
+        _scanningAccounts.add(lockKey);
+        try {
+          let scanResult;
+          if (accountId === 'all') {
+            scanResult = await scanAllAccounts(db);
+          } else {
+            const id = parseInt(accountId, 10);
+            if (!id || id <= 0) return errRes(res, 400, 'account_id は正の整数または "all" を指定してください');
+            scanResult = await scanSingleAccount(db, id);
+          }
+          return jsonRes(res, 200, { ok: true, ...scanResult });
+        } catch (e) {
+          console.error('[competitor/scan]', e.message);
+          return errRes(res, 500, e.message);
+        } finally {
+          _scanningAccounts.delete(lockKey);
+        }
       }
 
       // GET /api/competitor/settings — 分析設定

@@ -36,9 +36,102 @@
     return new Date(y, m - 1, d);
   }
 
+  function isoStr(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
   function shortDate(iso) {
     const [, m, d] = String(iso).split('-').map(Number);
     return `${m}/${d}（${WEEKDAYS[parseIsoDate(iso).getDay()]}）`;
+  }
+
+  // ─── 日本の祝日計算（アルゴリズムベース・年をまたいでも対応）──────────────
+  const _holidayCache = new Map();
+
+  function getJapaneseHolidays(year) {
+    if (_holidayCache.has(year)) return _holidayCache.get(year);
+    const holidays = new Set();
+
+    function addYMD(m, d) {
+      const dt = new Date(year, m - 1, d);
+      if (dt.getFullYear() === year && dt.getMonth() === m - 1 && dt.getDate() === d) {
+        holidays.add(isoStr(dt));
+      }
+    }
+
+    // Nth 月曜日 (1-indexed)
+    function nthMonday(m, n) {
+      const first = new Date(year, m - 1, 1);
+      const diff = (8 - first.getDay()) % 7; // 第1月曜日の日付オフセット
+      return 1 + diff + (n - 1) * 7;
+    }
+
+    // 春分・秋分の近似式（佐藤寿保 氏の方式）
+    const dy = year - 1980;
+    const springDay  = Math.floor(20.8431 + 0.242194 * dy - Math.floor(dy / 4));
+    const autumnDay  = Math.floor(23.2488 + 0.242194 * dy - Math.floor(dy / 4));
+
+    // 固定祝日
+    addYMD(1, 1);              // 元旦
+    addYMD(2, 11);             // 建国記念の日
+    if (year >= 2020) addYMD(2, 23); // 天皇誕生日
+    addYMD(3, springDay);      // 春分の日
+    addYMD(4, 29);             // 昭和の日
+    addYMD(5, 3);              // 憲法記念日
+    addYMD(5, 4);              // みどりの日
+    addYMD(5, 5);              // こどもの日
+    if (year >= 2016) addYMD(8, 11); // 山の日
+    addYMD(9, autumnDay);      // 秋分の日
+    addYMD(11, 3);             // 文化の日
+    addYMD(11, 23);            // 勤労感謝の日
+
+    // ハッピーマンデー
+    addYMD(1,  nthMonday(1, 2));  // 成人の日（1月第2月曜）
+    addYMD(7,  nthMonday(7, 3));  // 海の日（7月第3月曜）
+    addYMD(9,  nthMonday(9, 3));  // 敬老の日（9月第3月曜）
+    addYMD(10, nthMonday(10, 2)); // スポーツの日（10月第2月曜）
+
+    // 振替休日（日曜日の祝日 → 翌月曜日に振替）
+    const base = [...holidays].sort();
+    for (const hStr of base) {
+      const d = parseIsoDate(hStr);
+      if (d.getDay() === 0) {
+        let next = new Date(d);
+        next.setDate(next.getDate() + 1);
+        while (next.getDay() === 0 || holidays.has(isoStr(next))) {
+          next.setDate(next.getDate() + 1);
+        }
+        holidays.add(isoStr(next));
+      }
+    }
+
+    // 国民の休日（祝日に挟まれた平日）
+    const sorted = [...holidays].sort();
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const a = parseIsoDate(sorted[i]);
+      const b = parseIsoDate(sorted[i + 1]);
+      const diff = (b - a) / 86400000;
+      if (diff === 2) {
+        const mid = new Date(a);
+        mid.setDate(a.getDate() + 1);
+        if (mid.getDay() !== 0 && mid.getDay() !== 6) {
+          holidays.add(isoStr(mid));
+        }
+      }
+    }
+
+    _holidayCache.set(year, holidays);
+    return holidays;
+  }
+
+  // 日付文字列から土日祝スタイルを返す
+  function dateStyles(iso) {
+    const d   = parseIsoDate(iso);
+    const dow = d.getDay();
+    const isH = getJapaneseHolidays(d.getFullYear()).has(iso);
+    if (dow === 0 || isH) return { row: 'background:rgba(248,113,113,.08)', text: 'color:#f87171' };
+    if (dow === 6)        return { row: 'background:rgba(96,165,250,.08)',   text: 'color:#60a5fa' };
+    return { row: '', text: '' };
   }
 
   function monthDates(ym) {
@@ -322,8 +415,9 @@
     const rows = monthDates(ym).map(date => {
       const saved = byDate.get(date);
       const selected = shiftToPreset(saved);
-      return `<tr>
-        <td style="white-space:nowrap">${esc(shortDate(date))}</td>
+      const ds = dateStyles(date);
+      return `<tr${ds.row ? ` style="${ds.row}"` : ''}>
+        <td style="white-space:nowrap${ds.text ? ';' + ds.text : ''}">${esc(shortDate(date))}</td>
         <td><select data-bulk-date="${date}" data-weekday="${parseIsoDate(date).getDay()}">${presetOptions(selected)}</select></td>
         <td><span data-unsaved-marker></span>${saved && !selected ? '<span style="font-size:11px;color:#64748b">詳細設定あり</span>' : ''}</td>
       </tr>`;
