@@ -154,6 +154,49 @@ export function finishScan(db, scanId, counts) {
 }
 
 /**
+ * 手動取り込み用: 既存スキャンを再利用せず、常に新規スキャンレコードを作成する。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @param {string} scanDate - YYYY-MM-DD
+ * @returns {number} scan_id
+ */
+export function startManualImportScan(db, accountId, scanDate) {
+  // 同日に複数回手動取り込みできるよう、UNIQUE衝突時は時刻サフィックスを付与
+  const tryInsert = (date) => db.prepare(`
+    INSERT INTO merch_competitor_scans (account_id, scan_date, status, started_at)
+    VALUES (?, ?, 'running', datetime('now','localtime'))
+  `).run(accountId, date);
+
+  try {
+    return Number(tryInsert(scanDate).lastInsertRowid);
+  } catch (e) {
+    if (e.errcode === 2067) {
+      // UNIQUE(account_id, scan_date) 衝突 → 時刻を付加して再試行
+      const now = new Date();
+      const suffix = now.toTimeString().slice(0, 8).replace(/:/g, '');
+      return Number(tryInsert(`${scanDate}#${suffix}`).lastInsertRowid);
+    }
+    throw e;
+  }
+}
+
+/**
+ * プロフィール URL から mercari_user_id を抽出する。
+ * @param {string} profileUrl
+ * @returns {string}
+ * @throws {Error} URL が不正な場合
+ */
+export function extractUserIdFromProfileUrl(profileUrl) {
+  const parts = String(profileUrl || '').replace(/\/$/, '').split('/');
+  const pIdx = parts.indexOf('profile');
+  const userId = pIdx >= 0 && parts[pIdx + 1] ? parts[pIdx + 1] : '';
+  if (!userId || !/^\d+$/.test(userId)) {
+    throw new Error(`不正なプロフィール URL: ${profileUrl}`);
+  }
+  return userId;
+}
+
+/**
  * 最新スキャンを返す。
  * @param {import('node:sqlite').DatabaseSync} db
  * @param {number} accountId

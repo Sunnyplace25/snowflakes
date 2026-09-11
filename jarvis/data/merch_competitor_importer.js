@@ -12,8 +12,9 @@
  */
 
 import {
-  startScan, finishScan, upsertItem,
+  startManualImportScan, finishScan, upsertItem,
   touchAccountScan, getSettings, updateItemClassification,
+  getAccountByUserId, insertAccount, getAccount,
 } from './merch_competitor_manager.js';
 import { batchClassify } from './merch_competitor_analyzer.js';
 
@@ -243,7 +244,8 @@ function parseCsvLine(line) {
  */
 export function importItemsToDB(db, accountId, items) {
   const scanDate = jstToday();
-  const scanId   = startScan(db, accountId, scanDate);
+  // 手動取り込みは常に新規スキャンレコードを作成（同日の自動スキャンと混在させない）
+  const scanId = startManualImportScan(db, accountId, scanDate);
 
   const counts = {
     status:              'completed',
@@ -259,6 +261,8 @@ export function importItemsToDB(db, accountId, items) {
   const errors = [];
   let unchanged = 0;
 
+  // トランザクション: 途中失敗時に既存データを変更しない
+  db.exec('BEGIN');
   try {
     for (const item of items) {
       if (!item.mercari_item_id) {
@@ -267,8 +271,8 @@ export function importItemsToDB(db, accountId, items) {
       }
       try {
         const result = upsertItem(db, accountId, scanId, item);
-        if (result.isNew)            counts.items_new++;
-        else if (result.isSold)      counts.items_sold++;
+        if (result.isNew)              counts.items_new++;
+        else if (result.isSold)        counts.items_sold++;
         else if (result.isPriceChange) counts.items_price_changed++;
         else if (result.isReappeared)  counts.items_reappeared++;
         else                           unchanged++;
@@ -285,9 +289,17 @@ export function importItemsToDB(db, accountId, items) {
     if (counts.items_new + counts.items_sold + counts.items_price_changed + unchanged + counts.items_reappeared > 0) {
       touchAccountScan(db, accountId);
     }
+
+    db.exec('COMMIT');
   } catch (e) {
-    counts.status       = 'failed';
+    db.exec('ROLLBACK');
+    counts.status        = 'failed';
     counts.error_message = e.message;
+    finishScan(db, scanId, counts);
+    return {
+      total: items.length, new: 0, price_changed: 0,
+      sold: 0, reappeared: 0, unchanged: 0, errors: [{ error: e.message }],
+    };
   }
 
   finishScan(db, scanId, counts);
@@ -300,6 +312,43 @@ export function importItemsToDB(db, accountId, items) {
     reappeared:    counts.items_reappeared,
     unchanged,
     errors,
+  };
+}
+
+// ─── seller_id によるアカウント自動解決 ──────────────────────────────────────
+
+/**
+ * seller_id（mercari_user_id）からアカウントを解決し、商品を取り込む。
+ * - 登録済みアカウント（is_active 問わず）が見つかれば使用
+ * - 未登録なら seller_name / profile_url から新規アカウントを自動作成（is_active=1）
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {{ sellerId: string, sellerName?: string, profileUrl?: string }} seller
+ * @param {object[]} items - normalizeItem 済みアイテム配列
+ * @returns {{ accountId: number, accountName: string, isNewAccount: boolean } & ReturnType<importItemsToDB>}
+ */
+export function importItemsForSeller(db, { sellerId, sellerName, profileUrl }, items) {
+  let account = getAccountByUserId(db, sellerId);
+  let isNewAccount = false;
+
+  if (!account) {
+    const name = sellerName?.trim() || `出品者 ${sellerId}`;
+    const url  = profileUrl || `https://jp.mercari.com/user/profile/${sellerId}`;
+    const { id } = insertAccount(db, {
+      mercari_user_id: sellerId,
+      display_name:    name,
+      profile_url:     url,
+    });
+    account = getAccount(db, id);
+    isNewAccount = true;
+  }
+
+  const result = importItemsToDB(db, account.id, items);
+  return {
+    accountId:    account.id,
+    accountName:  account.display_name,
+    isNewAccount,
+    ...result,
   };
 }
 

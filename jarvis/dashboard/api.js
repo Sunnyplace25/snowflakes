@@ -142,13 +142,9 @@ import {
   getSettings as getAnalysisSettings, setSetting,
   listUnreadNotifications, markNotificationRead,
   listReports as listCompetitorReports,
-} from '../data/merch_competitor_manager.js';
-import {
   extractUserIdFromProfileUrl,
-} from '../data/merch_competitor_scraper.js';
-// scanAllAccounts / scanSingleAccount は HTTP 401 のため停止（自動スキャン無効）
-// import { scanAllAccounts, scanSingleAccount } from '../data/merch_competitor_scan.js';
-import { parseJsonItems, parseCsvItems, importItemsToDB, csvTemplate } from '../data/merch_competitor_importer.js';
+} from '../data/merch_competitor_manager.js';
+import { parseJsonItems, parseCsvItems, importItemsToDB, importItemsForSeller, csvTemplate } from '../data/merch_competitor_importer.js';
 
 // ── Phase 28: 作品公開URL・原稿アーカイブ管理 ─────────────────────────────────
 import {
@@ -3378,30 +3374,32 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true });
       }
 
-      // POST /api/competitor/scan — 自動スキャンは HTTP 401 のため無効化
-      if (method === 'POST' && path === '/api/competitor/scan') {
-        return errRes(res, 410,
-          'メルカリ自動取得は HTTP 401 により停止しています。' +
-          '競合分析画面の「手動取り込み」タブからブックマークレットで取得したJSONをインポートしてください。'
-        );
-      }
-
       // POST /api/competitor/import — ブックマークレット経由の手動取り込み
       if (method === 'POST' && path === '/api/competitor/import') {
         let body;
         try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
 
-        const accountId = parseInt(body.account_id, 10);
-        if (!accountId || accountId <= 0) {
-          return errRes(res, 400, 'account_id は正の整数を指定してください');
-        }
         const format  = String(body.format ?? 'json').toLowerCase();  // 'json' | 'csv'
         const rawData = body.data;
         if (!rawData) return errRes(res, 400, 'data フィールドが必要です');
 
         let items;
+        let sellerId = body.seller_id ?? '';
+        let sellerName = body.seller_name ?? '';
+        let profileUrl = body.profile_url ?? '';
+
         try {
-          items = format === 'csv' ? parseCsvItems(rawData) : parseJsonItems(rawData);
+          if (format === 'csv') {
+            items = parseCsvItems(rawData);
+          } else {
+            // JSON から seller_id 等を取り出す
+            let parsed;
+            try { parsed = JSON.parse(rawData); } catch (e) { throw new Error(`JSON 解析エラー: ${e.message}`); }
+            sellerId    = sellerId    || parsed.seller_id    || '';
+            sellerName  = sellerName  || parsed.seller_name  || '';
+            profileUrl  = profileUrl  || parsed.profile_url  || '';
+            items = parseJsonItems(rawData);
+          }
         } catch (e) {
           return errRes(res, 422, `データ解析エラー: ${e.message}`);
         }
@@ -3410,13 +3408,37 @@ export function createApiHandler(db) {
           return errRes(res, 422, '取り込み対象のアイテムが0件です');
         }
 
+        // seller_id が不明な場合: account_id が指定されていれば使用、なければエラー
+        if (!sellerId || sellerId === 'unknown') {
+          const accountId = parseInt(body.account_id, 10);
+          if (!accountId || accountId <= 0) {
+            return errRes(res, 400, JSON.stringify({
+              needsAccountSelect: true,
+              error: 'seller_id が取得できませんでした。取り込み先アカウントを手動で選択してください。',
+            }));
+          }
+          try {
+            const result = importItemsToDB(db, accountId, items);
+            const accounts = listCompetitorAccounts(db);
+            const acc = accounts.find(a => a.id === accountId);
+            return jsonRes(res, 200, { ok: true, accountId, accountName: acc?.display_name ?? '', isNewAccount: false, ...result });
+          } catch (e) {
+            return errRes(res, 500, e.message);
+          }
+        }
+
         try {
-          const result = importItemsToDB(db, accountId, items);
+          const result = importItemsForSeller(db, { sellerId, sellerName, profileUrl }, items);
           return jsonRes(res, 200, { ok: true, ...result });
         } catch (e) {
           console.error('[competitor/import]', e.message);
           return errRes(res, 500, e.message);
         }
+      }
+
+      // POST /api/competitor/scan — 廃止済み (自動スキャン機能削除のため)
+      if (method === 'POST' && path === '/api/competitor/scan') {
+        return jsonRes(res, 410, { ok: false, error: '自動スキャン機能は廃止されました。手動取り込みをご利用ください。' });
       }
 
       // GET /api/competitor/import/template — CSV テンプレートダウンロード
