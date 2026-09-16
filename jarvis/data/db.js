@@ -777,6 +777,10 @@ function runMigrations(db, dbPath = ':memory:') {
   // schema.sql に CREATE TABLE IF NOT EXISTS 済み。既存 DB への適用 + 初期設定データ投入用。
   phase32Migration(db);
 
+  // Phase 32+: merch_competitor_items — trading ステータス追加 + API 由来フィールド追加
+  // CHECK 制約変更のためテーブル再構築。created_api 列の有無で適用済み判定。
+  phase32PlusMigration(db);
+
   // Phase 33: work_records 物販詳細カラム追加
   // 既存 expense カラムは保持・既存データは破壊しない。
   phase33Migration(db);
@@ -1650,5 +1654,121 @@ export function phase32Migration(db) {
   );
   for (const [uid, name, url] of PHASE32_INITIAL_ACCOUNTS) {
     try { accountStmt.run(uid, name, url); } catch (_) {}
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 32+: merch_competitor_items — trading 追加 + API 由来フィールド追加
+// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * merch_competitor_items テーブルを再構築して以下を適用する。
+ *
+ * 変更点:
+ *   - status CHECK 制約に 'trading' を追加
+ *   - API 由来フィールドを追加:
+ *       created_api, updated_api, num_likes, num_comments,
+ *       shipping_from_area, is_archived
+ *
+ * 冪等判定: created_api 列の有無で適用済みを判断。
+ * 関連テーブル（price_history / scan_events / classification_overrides）は
+ * item_id で参照しており、id を保持したままコピーするため FK 整合性は維持される。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase32PlusMigration(db) {
+  // 適用済み確認
+  const cols = db.prepare('PRAGMA table_info(merch_competitor_items)').all();
+  if (cols.some(c => c.name === 'created_api')) return;  // 既に適用済み
+
+  db.exec('PRAGMA foreign_keys = OFF');
+  let committed = false;
+  try {
+    db.exec('BEGIN TRANSACTION');
+
+    // 新テーブル作成（trading 追加・新規フィールド追加）
+    db.exec(`
+      CREATE TABLE merch_competitor_items_v2 (
+        id                INTEGER PRIMARY KEY AUTOINCREMENT,
+        account_id        INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+        mercari_item_id   TEXT    NOT NULL,
+        name              TEXT    NOT NULL,
+        price             INTEGER NOT NULL DEFAULT 0,
+        status            TEXT    NOT NULL DEFAULT 'unknown'
+          CHECK (status IN ('on_sale','trading','sold','missing','unknown')),
+        brand             TEXT,
+        category          TEXT,
+        color             TEXT,
+        material          TEXT,
+        size              TEXT,
+        condition_text    TEXT,
+        target_gender     TEXT
+          CHECK (target_gender IN ('male','female','unisex','unknown') OR target_gender IS NULL),
+        season            TEXT,
+        image_url         TEXT,
+        raw_data          TEXT,
+        classified_brand  TEXT,
+        classified_category TEXT,
+        classified_color  TEXT,
+        classified_season TEXT,
+        classified_target TEXT,
+        classification_confidence TEXT
+          CHECK (classification_confidence IN ('high','medium','low') OR classification_confidence IS NULL),
+        buying_limit      INTEGER,
+        first_seen_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+        last_seen_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+        sold_at           TEXT,
+        status_changed_at TEXT,
+        created_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+        updated_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+        -- Phase 32+ 追加フィールド
+        created_api       TEXT,
+        updated_api       TEXT,
+        num_likes         INTEGER,
+        num_comments      INTEGER,
+        shipping_from_area TEXT,
+        is_archived       INTEGER NOT NULL DEFAULT 0 CHECK (is_archived IN (0, 1)),
+        UNIQUE(account_id, mercari_item_id)
+      )
+    `);
+
+    // 既存データをコピー（新規フィールドは NULL / DEFAULT で埋まる）
+    db.exec(`
+      INSERT INTO merch_competitor_items_v2 (
+        id, account_id, mercari_item_id, name, price, status,
+        brand, category, color, material, size,
+        condition_text, target_gender, season, image_url, raw_data,
+        classified_brand, classified_category, classified_color,
+        classified_season, classified_target, classification_confidence,
+        buying_limit, first_seen_at, last_seen_at, sold_at,
+        status_changed_at, created_at, updated_at
+      )
+      SELECT
+        id, account_id, mercari_item_id, name, price, status,
+        brand, category, color, material, size,
+        condition_text, target_gender, season, image_url, raw_data,
+        classified_brand, classified_category, classified_color,
+        classified_season, classified_target, classification_confidence,
+        buying_limit, first_seen_at, last_seen_at, sold_at,
+        status_changed_at, created_at, updated_at
+      FROM merch_competitor_items
+    `);
+
+    db.exec('DROP TABLE merch_competitor_items');
+    db.exec('ALTER TABLE merch_competitor_items_v2 RENAME TO merch_competitor_items');
+
+    // インデックス再作成
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mci_account   ON merch_competitor_items(account_id)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mci_status    ON merch_competitor_items(status)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mci_brand     ON merch_competitor_items(classified_brand)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mci_category  ON merch_competitor_items(classified_category)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mci_last_seen ON merch_competitor_items(last_seen_at)');
+
+    db.exec('COMMIT');
+    committed = true;
+  } finally {
+    if (!committed) {
+      try { db.exec('ROLLBACK'); } catch (_) {}
+    }
+    db.exec('PRAGMA foreign_keys = ON');
   }
 }

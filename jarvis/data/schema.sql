@@ -1317,7 +1317,9 @@ CREATE TABLE IF NOT EXISTS merch_competitor_items (
   name              TEXT    NOT NULL,
   price             INTEGER NOT NULL DEFAULT 0,
   status            TEXT    NOT NULL DEFAULT 'unknown'
-    CHECK (status IN ('on_sale','sold','missing','unknown')),
+    CHECK (status IN ('on_sale','trading','sold','missing','unknown')),
+    -- on_sale: 出品中 / trading: 取引中 / sold: 売却済み / missing: スキャン未検出 / unknown: 不明
+    -- API の sold_out は manager で sold にマッピングして保存する
   brand             TEXT,
   category          TEXT,
   color             TEXT,
@@ -1340,10 +1342,18 @@ CREATE TABLE IF NOT EXISTS merch_competitor_items (
   -- 管理フィールド
   first_seen_at     TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
   last_seen_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
-  sold_at           TEXT,
+  sold_at           TEXT,                       -- sold_out 初回確認時のみ設定。re-upsert で更新しない
   status_changed_at TEXT,
   created_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
   updated_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+  -- API 由来フィールド（Phase 32+）
+  created_api       TEXT,                       -- 出品日時 JST (YYYY-MM-DD HH:MM:SS)
+  updated_api       TEXT,                       -- Mercari 側最終更新日時 JST
+  num_likes         INTEGER,                    -- いいね数
+  num_comments      INTEGER,                    -- コメント数
+  shipping_from_area TEXT,                      -- 発送元地域
+  is_archived       INTEGER NOT NULL DEFAULT 0  -- アーカイブフラグ (0/1)
+    CHECK (is_archived IN (0, 1)),
   UNIQUE(account_id, mercari_item_id)
 );
 

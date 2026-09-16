@@ -220,11 +220,22 @@ export function getRecentScans(db, accountId, limit = 30) {
  * - 存在すれば価格・ステータス・分類情報を UPDATE
  * - 価格変更時は merch_competitor_price_history に記録し、scan_event を追加
  *
+ * status マッピング（API 生値 → DB 保存値）:
+ *   'on_sale'  → 'on_sale'  （そのまま）
+ *   'trading'  → 'trading'  （そのまま・独立ステータス）
+ *   'sold_out' → 'sold'     （変換）
+ *   その他     → そのまま
+ *
+ * sold_at 設定ルール:
+ *   - sold_out（→ sold）を初めて確認した時点でのみ設定
+ *   - trading 遷移では sold_at を設定しない
+ *   - 再 upsert（既に sold_at あり）では上書きしない
+ *
  * @param {import('node:sqlite').DatabaseSync} db
  * @param {number} accountId
  * @param {number} scanId
  * @param {object} item - スクレイパーが返すアイテムオブジェクト
- * @returns {{ isNew: boolean, isSold: boolean, isPriceChange: boolean, isReappeared: boolean }}
+ * @returns {{ isNew: boolean, isSold: boolean, isPriceChange: boolean, isReappeared: boolean, itemId: number }}
  */
 export function upsertItem(db, accountId, scanId, item) {
   const existing = db.prepare(
@@ -235,23 +246,39 @@ export function upsertItem(db, accountId, scanId, item) {
     ? JSON.stringify(item.raw_data)
     : (item.raw_data ?? null);
 
+  // API の sold_out → DB の sold にマッピング
+  const apiStatus = item.status ?? 'on_sale';
+  const dbStatus  = apiStatus === 'sold_out' ? 'sold' : apiStatus;
+
   if (!existing) {
-    // 新規
+    // 新規（初回登録時点で sold なら sold_at を記録。trading は設定しない）
     const result = db.prepare(`
       INSERT INTO merch_competitor_items
         (account_id, mercari_item_id, name, price, status,
          brand, category, color, material, size,
-         condition_text, target_gender, season, image_url, raw_data)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         condition_text, target_gender, season, image_url, raw_data,
+         created_api, updated_api, num_likes, num_comments,
+         shipping_from_area, is_archived,
+         sold_at)
+      VALUES (?, ?, ?, ?, ?,
+              ?, ?, ?, ?, ?,
+              ?, ?, ?, ?, ?,
+              ?, ?, ?, ?,
+              ?, ?,
+              CASE WHEN ? = 'sold' THEN datetime('now','localtime') ELSE NULL END)
     `).run(
-      accountId, item.mercari_item_id, item.name, item.price, item.status ?? 'on_sale',
+      accountId, item.mercari_item_id, item.name ?? '', item.price ?? 0, dbStatus,
       item.brand ?? null, item.category ?? null, item.color ?? null,
       item.material ?? null, item.size ?? null,
       item.condition_text ?? null, item.target_gender ?? null,
-      item.season ?? null, item.image_url ?? null, rawData
+      item.season ?? null, item.image_url ?? null, rawData,
+      item.created_api ?? null, item.updated_api ?? null,
+      item.num_likes ?? null, item.num_comments ?? null,
+      item.shipping_from_area ?? null, item.is_archived ?? 0,
+      dbStatus
     );
     const itemId = Number(result.lastInsertRowid);
-    addScanEvent(db, scanId, itemId, 'new', null, item.price);
+    addScanEvent(db, scanId, itemId, 'new', null, item.price ?? 0);
     return { isNew: true, isSold: false, isPriceChange: false, isReappeared: false, itemId };
   }
 
@@ -260,12 +287,10 @@ export function upsertItem(db, accountId, scanId, item) {
   let isPriceChange = false;
   let isReappeared = false;
   const itemId = existing.id;
+  const newPrice = item.price ?? 0;
 
-  const newStatus = item.status ?? 'on_sale';
-  const newPrice  = item.price;
-
-  // 価格変更検知
-  if (newStatus === 'on_sale' && newPrice !== existing.price) {
+  // 価格変更検知（on_sale かつ前回価格と異なる場合のみ）
+  if (dbStatus === 'on_sale' && newPrice !== existing.price) {
     isPriceChange = true;
     db.prepare(`
       INSERT INTO merch_competitor_price_history (item_id, price_from, price_to, scan_id)
@@ -275,39 +300,64 @@ export function upsertItem(db, accountId, scanId, item) {
   }
 
   // 再出品検知（missing/unknown → on_sale）
-  if (['missing', 'unknown'].includes(existing.status) && newStatus === 'on_sale') {
+  if (['missing', 'unknown'].includes(existing.status) && dbStatus === 'on_sale') {
     isReappeared = true;
     addScanEvent(db, scanId, itemId, 'reappeared', null, newPrice);
   }
 
-  // 売却検知
-  if (existing.status !== 'sold' && newStatus === 'sold') {
+  // 売却検知（sold_out → sold への変化。trading は売却扱いにしない）
+  if (existing.status !== 'sold' && dbStatus === 'sold') {
     isSold = true;
     addScanEvent(db, scanId, itemId, 'sold', existing.price, null);
   }
 
   // UPDATE
+  // sold_at: dbStatus='sold' かつ初回のみ設定（既存 sold_at は上書きしない）
+  // status_changed_at: dbStatus が変化した場合のみ更新
   db.prepare(`
     UPDATE merch_competitor_items
        SET name = ?, price = ?, status = ?,
            brand = ?, category = ?, color = ?, material = ?, size = ?,
            condition_text = ?, target_gender = ?, season = ?,
            image_url = ?, raw_data = ?,
+           created_api = COALESCE(created_api, ?),
+           updated_api = ?,
+           num_likes = ?,
+           num_comments = ?,
+           shipping_from_area = COALESCE(shipping_from_area, ?),
+           is_archived = ?,
            last_seen_at = datetime('now','localtime'),
-           sold_at = CASE WHEN ? = 'sold' AND sold_at IS NULL THEN datetime('now','localtime') ELSE sold_at END,
-           status_changed_at = CASE WHEN ? != status THEN datetime('now','localtime') ELSE status_changed_at END,
+           sold_at = CASE
+             WHEN ? = 'sold' AND sold_at IS NULL THEN datetime('now','localtime')
+             ELSE sold_at
+           END,
+           status_changed_at = CASE
+             WHEN ? != status THEN datetime('now','localtime')
+             ELSE status_changed_at
+           END,
            updated_at = datetime('now','localtime')
      WHERE id = ?
   `).run(
-    item.name, newPrice, newStatus,
-    item.brand ?? existing.brand, item.category ?? existing.category,
-    item.color ?? existing.color, item.material ?? existing.material,
-    item.size ?? existing.size,
-    item.condition_text ?? existing.condition_text,
-    item.target_gender ?? existing.target_gender,
-    item.season ?? existing.season,
+    item.name ?? existing.name, newPrice, dbStatus,
+    item.brand    ?? existing.brand,    item.category    ?? existing.category,
+    item.color    ?? existing.color,    item.material    ?? existing.material,
+    item.size     ?? existing.size,
+    item.condition_text  ?? existing.condition_text,
+    item.target_gender   ?? existing.target_gender,
+    item.season          ?? existing.season,
     item.image_url ?? existing.image_url, rawData,
-    newStatus, newStatus,
+    // created_api: COALESCE で初回のみ書き込み（null 以外のときは更新しない）
+    item.created_api ?? null,
+    // updated_api: 毎回上書き（Mercari 側更新を追跡）
+    item.updated_api ?? null,
+    item.num_likes    ?? null,
+    item.num_comments ?? null,
+    item.shipping_from_area ?? null,
+    item.is_archived ?? 0,
+    // sold_at 判定用
+    dbStatus,
+    // status_changed_at 判定用
+    dbStatus,
     itemId
   );
 
@@ -323,9 +373,10 @@ export function upsertItem(db, accountId, scanId, item) {
  * @returns {number} missing にしたアイテム数
  */
 export function markMissingItems(db, accountId, scanId, seenIds) {
+  // on_sale と trading の両方が対象（sold は missing 扱いしない）
   const onSaleItems = db.prepare(`
     SELECT id, mercari_item_id FROM merch_competitor_items
-     WHERE account_id = ? AND status = 'on_sale'
+     WHERE account_id = ? AND status IN ('on_sale', 'trading')
   `).all(accountId);
 
   let count = 0;
