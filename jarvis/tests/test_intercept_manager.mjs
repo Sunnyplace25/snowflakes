@@ -9,12 +9,20 @@
  *   3. trading の独立保持
  *   4. sold_at の初回設定（sold_out → sold 時のみ）
  *   5. sold_at の再スキャン時不変
- *   6. trading では sold_at が設定されないこと
+ *   6. trading → sold_out 遷移で sold_at が設定される
  *   7. 新規商品登録（全フィールド）
  *   8. 既存商品の更新（price, status, updated_api 等）
  *   9. price_history の挙動（on_sale→価格変化時のみ記録）
  *  10. 同一スキャン再実行で重複・不正履歴が発生しないこと
  *  11. markMissingItems が trading も対象に含めること
+ *  12. ベースライン補正: 新規 sold_out アイテムの sold_at = NULL
+ *  13. ベースライン補正: 既存 on_sale → sold_out 遷移で sold_at = NULL
+ *  14. ベースライン sold と追跡後 sold を sold_at IS NULL で区別できる
+ *  15. ベースライン補正では price_history が生成されない
+ *  16. ベースライン中の on_sale アイテムは通常通り保存される
+ *  17. incomplete スキャン → 既存 on_sale が missing にならない
+ *  18. 1回目 incomplete・2回目 complete → リトライ成功・正常 markMissing
+ *  19. 全試行 incomplete → エラースロー・スキャンログ incomplete・upsert は実施済み
  *
  * 実行: node tests/test_intercept_manager.mjs
  */
@@ -22,7 +30,7 @@
 import { createDb } from '../data/db.js';
 import {
   insertAccount, startScan, finishScan,
-  upsertItem, markMissingItems,
+  upsertItem, markMissingItems, runSellerScan,
 } from '../data/merch_competitor_manager.js';
 
 // ─── テストユーティリティ ──────────────────────────────────────────────────────
@@ -432,9 +440,323 @@ function test11_markMissingTrading(db) {
   assertEqual(soldRow?.status, 'sold', 'sold は missing にならない');
 }
 
+// ─── ベースライン補正テスト ────────────────────────────────────────────────────
+
+function test12_baselineNewSoldItem(db, accountId) {
+  console.log('\n【テスト 12: ベースライン補正 — 新規 sold_out アイテムの sold_at = NULL】');
+
+  const scanId = startScan(db, accountId, '2026-10-01');
+  const r = upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'BASELINE_NEW_001',
+    name:  'ベースライン新規sold商品',
+    price: 1000,
+    status: 'sold_out',
+  }, { baseline: true });
+
+  assert(r.isNew, '新規登録として扱われる');
+
+  const row = db.prepare(
+    `SELECT status, sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('BASELINE_NEW_001');
+  assertEqual(row?.status, 'sold',  'status が sold に変換されている');
+  assert(row?.sold_at === null, 'sold_at が NULL（ベースライン補正）');
+}
+
+function test13_baselineExistingToSold(db, accountId) {
+  console.log('\n【テスト 13: ベースライン補正 — 既存 on_sale → sold_out で sold_at = NULL】');
+
+  // まず通常モードで on_sale 登録
+  const scanId = startScan(db, accountId, '2026-10-02');
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'BASELINE_EXISTING_001',
+    name:  'ベースライン既存商品',
+    price: 2000,
+    status: 'on_sale',
+  });
+
+  // ベースラインスキャンで sold_out に変化
+  const scanId2 = startScan(db, accountId, '2026-10-03');
+  const r = upsertItem(db, accountId, scanId2, {
+    mercari_item_id: 'BASELINE_EXISTING_001',
+    name:  'ベースライン既存商品',
+    price: 2000,
+    status: 'sold_out',
+  }, { baseline: true });
+
+  assert(r.isSold, 'isSold=true（売却イベントは記録される）');
+
+  const row = db.prepare(
+    `SELECT status, sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('BASELINE_EXISTING_001');
+  assertEqual(row?.status, 'sold', 'status が sold に更新されている');
+  assert(row?.sold_at === null, 'sold_at = NULL（ベースライン補正）');
+}
+
+function test14_baselineVsNormalDistinction(db, accountId) {
+  console.log('\n【テスト 14: ベースライン sold（sold_at=NULL）と追跡後 sold（sold_at あり）の区別】');
+
+  const scanId = startScan(db, accountId, '2026-10-04');
+
+  // ベースラインで sold_out → sold_at = NULL
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'DISTINC_BASELINE_001',
+    name:  'ベースラインsold',
+    price: 500,
+    status: 'sold_out',
+  }, { baseline: true });
+
+  // 通常モードで on_sale → 次スキャンで sold_out → sold_at が設定される
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'DISTINC_NORMAL_001',
+    name:  '追跡後sold',
+    price: 600,
+    status: 'on_sale',
+  });
+  const scanId2 = startScan(db, accountId, '2026-10-05');
+  upsertItem(db, accountId, scanId2, {
+    mercari_item_id: 'DISTINC_NORMAL_001',
+    name:  '追跡後sold',
+    price: 600,
+    status: 'sold_out',
+  });
+
+  const baselineRow = db.prepare(
+    `SELECT sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('DISTINC_BASELINE_001');
+  const normalRow = db.prepare(
+    `SELECT sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('DISTINC_NORMAL_001');
+
+  assert(baselineRow?.sold_at === null, 'ベースライン sold: sold_at = NULL');
+  assert(normalRow?.sold_at !== null,   '追跡後 sold: sold_at が設定されている');
+
+  // status='sold' AND sold_at IS NULL でベースライン商品だけ絞り込める
+  const baselineCount = db.prepare(
+    `SELECT COUNT(*) AS cnt FROM merch_competitor_items
+      WHERE account_id = ? AND status = 'sold' AND sold_at IS NULL`
+  ).get(accountId).cnt;
+  const trackedCount = db.prepare(
+    `SELECT COUNT(*) AS cnt FROM merch_competitor_items
+      WHERE account_id = ? AND status = 'sold' AND sold_at IS NOT NULL`
+  ).get(accountId).cnt;
+
+  assert(baselineCount >= 1, "sold_at IS NULL で過去 sold を特定できる");
+  assert(trackedCount  >= 1, "sold_at IS NOT NULL で追跡後 sold を特定できる");
+}
+
+function test15_baselineNoPriceHistory(db, accountId) {
+  console.log('\n【テスト 15: ベースライン補正では price_history が生成されない】');
+
+  const scanId = startScan(db, accountId, '2026-10-06');
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'BASELINE_NOHIST_001',
+    name:  'ベースラインprice_historyなし',
+    price: 3000,
+    status: 'on_sale',
+  });
+
+  // ベースラインで sold_out に変化（価格も変化）
+  const scanId2 = startScan(db, accountId, '2026-10-07');
+  const r = upsertItem(db, accountId, scanId2, {
+    mercari_item_id: 'BASELINE_NOHIST_001',
+    name:  'ベースラインprice_historyなし',
+    price: 2500,   // 価格変化があっても sold なので記録しない
+    status: 'sold_out',
+  }, { baseline: true });
+
+  const hist = db.prepare(
+    `SELECT COUNT(*) AS cnt FROM merch_competitor_price_history WHERE item_id = ?`
+  ).get(r.itemId);
+  assert(!r.isPriceChange,  'isPriceChange=false（sold は価格変化対象外）');
+  assertEqual(hist?.cnt, 0, 'price_history に記録なし');
+}
+
+function test16_baselineOnSaleUnaffected(db, accountId) {
+  console.log('\n【テスト 16: ベースライン中の on_sale アイテムは通常通り保存される】');
+
+  const scanId = startScan(db, accountId, '2026-10-08');
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'BASELINE_ONSALE_001',
+    name:  'ベースライン中のon_sale',
+    price: 800,
+    status: 'on_sale',
+  }, { baseline: true });
+
+  const row = db.prepare(
+    `SELECT status, sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('BASELINE_ONSALE_001');
+  assertEqual(row?.status,  'on_sale', 'on_sale として保存される');
+  assert(row?.sold_at === null, 'on_sale の sold_at は NULL（影響なし）');
+}
+
+// ─── incomplete スキャン / runSellerScan テスト ────────────────────────────────
+
+async function test17_incompleteSkipsMarkMissing(db) {
+  console.log('\n【テスト 17: incomplete スキャン → 既存 on_sale が missing にならない】');
+
+  // 専用アカウントで独立して検証
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'INC_SKIP_ACCT',
+    display_name:    'incomplete skip test',
+    profile_url:     'https://jp.mercari.com/user/profile/INC_SKIP_ACCT',
+  });
+
+  // 初期データ: 3件を on_sale で登録
+  const scanId0 = startScan(db, accountId, '2026-10-20');
+  upsertItem(db, accountId, scanId0, { mercari_item_id: 'INC_A', price: 100, status: 'on_sale' });
+  upsertItem(db, accountId, scanId0, { mercari_item_id: 'INC_B', price: 200, status: 'on_sale' });
+  upsertItem(db, accountId, scanId0, { mercari_item_id: 'INC_C', price: 300, status: 'on_sale' });
+
+  // incomplete な fetchFn: INC_A と INC_B のみ、scanComplete=false
+  const mockFetch = async () => ({
+    items: [
+      { mercari_item_id: 'INC_A', price: 100, status: 'on_sale' },
+      { mercari_item_id: 'INC_B', price: 200, status: 'on_sale' },
+    ],
+    scanComplete:     false,
+    incompleteReason: 'test: has_next=false not received',
+  });
+
+  let threw = false;
+  try {
+    await runSellerScan(db, accountId, mockFetch, {
+      maxRetries: 1, retryDelay: 0, scanDate: '2026-10-21',
+    });
+  } catch {
+    threw = true;
+  }
+
+  assert(threw, 'incomplete scan でエラーがスローされる');
+
+  // INC_C はスキャン結果に含まれなかったが missing にはならない
+  const c = db.prepare(
+    `SELECT status FROM merch_competitor_items WHERE mercari_item_id = ?`
+  ).get('INC_C');
+  assertEqual(c?.status, 'on_sale', 'INC_C が missing にならない（incomplete scan）');
+
+  // INC_A は upsert されている
+  const a = db.prepare(`SELECT status FROM merch_competitor_items WHERE mercari_item_id = ?`).get('INC_A');
+  assertEqual(a?.status, 'on_sale', 'INC_A は upsert済み');
+
+  // スキャンログが incomplete で記録されている
+  const scan = db.prepare(
+    `SELECT status, error_message FROM merch_competitor_scans WHERE scan_date = '2026-10-21' AND account_id = ?`
+  ).get(accountId);
+  assertEqual(scan?.status, 'incomplete', 'スキャンログに incomplete が記録されている');
+  assert(scan?.error_message !== null, 'error_message が記録されている');
+}
+
+async function test18_retrySucceeds(db) {
+  console.log('\n【テスト 18: 1回目 incomplete・2回目 complete → リトライ成功】');
+
+  // 専用アカウント
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'RETRY_SUCC_ACCT',
+    display_name:    'retry success test',
+    profile_url:     'https://jp.mercari.com/user/profile/RETRY_SUCC_ACCT',
+  });
+
+  // 初期データ: 2件 on_sale
+  const scanId0 = startScan(db, accountId, '2026-10-22');
+  upsertItem(db, accountId, scanId0, { mercari_item_id: 'RETRY_A', price: 500, status: 'on_sale' });
+  upsertItem(db, accountId, scanId0, { mercari_item_id: 'RETRY_B', price: 600, status: 'on_sale' });
+
+  let callCount = 0;
+  const mockFetch = async () => {
+    callCount++;
+    if (callCount === 1) {
+      // 1回目: incomplete（RETRY_A のみ）
+      return {
+        items: [{ mercari_item_id: 'RETRY_A', price: 500, status: 'on_sale' }],
+        scanComplete:     false,
+        incompleteReason: 'test: first attempt incomplete',
+      };
+    }
+    // 2回目: complete（全件 + 新規 RETRY_C、RETRY_B は sold_out）
+    return {
+      items: [
+        { mercari_item_id: 'RETRY_A', price: 500, status: 'on_sale' },
+        { mercari_item_id: 'RETRY_B', price: 600, status: 'sold_out' },
+        { mercari_item_id: 'RETRY_C', price: 700, status: 'on_sale'  },
+      ],
+      scanComplete:     true,
+      incompleteReason: null,
+    };
+  };
+
+  const result = await runSellerScan(db, accountId, mockFetch, {
+    maxRetries: 2, retryDelay: 0, scanDate: '2026-10-23',
+  });
+
+  assertEqual(callCount,        2, '2回試行された');
+  assertEqual(result.itemCount, 3, '3件取得');
+  // RETRY_A=on_sale(seenIds), RETRY_B=sold(not targeted), RETRY_C=on_sale(seenIds) → missing=0
+  assertEqual(result.counts.missing, 0, 'missing 0件（完了スキャン・全件 seenIds 内）');
+
+  const b = db.prepare(`SELECT status, sold_at FROM merch_competitor_items WHERE mercari_item_id = ?`).get('RETRY_B');
+  assertEqual(b?.status, 'sold', 'RETRY_B が sold になった');
+  assert(b?.sold_at !== null, 'RETRY_B の sold_at が設定されている');
+
+  const c = db.prepare(`SELECT status FROM merch_competitor_items WHERE mercari_item_id = ?`).get('RETRY_C');
+  assertEqual(c?.status, 'on_sale', 'RETRY_C が新規登録された');
+
+  const scan = db.prepare(
+    `SELECT status FROM merch_competitor_scans WHERE scan_date = '2026-10-23' AND account_id = ?`
+  ).get(accountId);
+  assertEqual(scan?.status, 'completed', 'スキャンログが completed');
+}
+
+async function test19_allRetriesIncomplete(db) {
+  console.log('\n【テスト 19: 全試行 incomplete → エラースロー・incomplete 記録・upsert 実施済み】');
+
+  // 専用アカウント
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'ALL_INC_ACCT',
+    display_name:    'all retries incomplete test',
+    profile_url:     'https://jp.mercari.com/user/profile/ALL_INC_ACCT',
+  });
+
+  let callCount = 0;
+  const mockFetch = async () => {
+    callCount++;
+    return {
+      items: [{ mercari_item_id: `ALLRETRY_${callCount}`, price: 100, status: 'on_sale' }],
+      scanComplete:     false,
+      incompleteReason: 'test: always incomplete',
+    };
+  };
+
+  let threw = false;
+  let thrownMsg = '';
+  try {
+    await runSellerScan(db, accountId, mockFetch, {
+      maxRetries: 2, retryDelay: 0, scanDate: '2026-10-24',
+    });
+  } catch (e) {
+    threw     = true;
+    thrownMsg = e.message ?? '';
+  }
+
+  assertEqual(callCount, 2, '2回（maxRetries）試行された');
+  assert(threw, 'エラーがスローされる');
+  assert(thrownMsg.includes('incomplete'), 'エラーメッセージに incomplete が含まれる');
+
+  const scan = db.prepare(
+    `SELECT status, error_message FROM merch_competitor_scans WHERE scan_date = '2026-10-24' AND account_id = ?`
+  ).get(accountId);
+  assertEqual(scan?.status, 'incomplete', 'スキャンログが incomplete');
+  assert(scan?.error_message !== null, 'error_message が記録されている');
+
+  // 最後の試行の商品 (ALLRETRY_2) が upsert されている
+  const item = db.prepare(
+    `SELECT status FROM merch_competitor_items WHERE mercari_item_id = 'ALLRETRY_2'`
+  ).get();
+  assert(item !== undefined, '最後の試行分がupsert済み (ALLRETRY_2)');
+}
+
 // ─── メイン ──────────────────────────────────────────────────────────────────
 
-function main() {
+async function main() {
   console.log('\n' + '='.repeat(60));
   console.log('Phase 32+ 本実装テスト（インターセプト方式 + manager）');
   console.log('='.repeat(60));
@@ -456,6 +778,20 @@ function main() {
   test10_noduplicateOnRescan(db, accountId);
   test11_markMissingTrading(db);
 
+  // テスト 12-16: ベースライン補正モードの検証（専用 DB）
+  const { db: db3, accountId: accountId3 } = setup();
+  test12_baselineNewSoldItem(db3, accountId3);
+  test13_baselineExistingToSold(db3, accountId3);
+  test14_baselineVsNormalDistinction(db3, accountId3);
+  test15_baselineNoPriceHistory(db3, accountId3);
+  test16_baselineOnSaleUnaffected(db3, accountId3);
+
+  // テスト 17-19: incomplete スキャン / runSellerScan の検証（専用 DB）
+  const { db: db4, accountId: accountId4 } = setup();
+  await test17_incompleteSkipsMarkMissing(db4, accountId4);
+  await test18_retrySucceeds(db4, accountId4);
+  await test19_allRetriesIncomplete(db4, accountId4);
+
   // ─── 結果サマリー ─────────────────────────────────────────────────────────
   console.log('\n' + '='.repeat(60));
   console.log(`テスト完了: ${passed + failed}件`);
@@ -471,4 +807,4 @@ function main() {
   }
 }
 
-main();
+main().catch(e => { console.error(e); process.exit(1); });

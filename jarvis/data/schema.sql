@@ -1294,7 +1294,7 @@ CREATE TABLE IF NOT EXISTS merch_competitor_scans (
   started_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
   finished_at       TEXT,
   status            TEXT    NOT NULL DEFAULT 'running'
-    CHECK (status IN ('running','completed','failed','partial')),
+    CHECK (status IN ('running','completed','failed','partial','incomplete')),
   items_fetched     INTEGER NOT NULL DEFAULT 0,
   items_new         INTEGER NOT NULL DEFAULT 0,
   items_sold        INTEGER NOT NULL DEFAULT 0,

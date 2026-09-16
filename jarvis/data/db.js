@@ -788,6 +788,9 @@ function runMigrations(db, dbPath = ':memory:') {
   // Phase 34: work_records 出品日・売却日・仕入日カラム追加
   phase34Migration(db);
 
+  // Phase 35: merch_competitor_scans.status に 'incomplete' を追加
+  phase35Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -1469,7 +1472,7 @@ const PHASE32_TABLES = [
     started_at        TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
     finished_at       TEXT,
     status            TEXT    NOT NULL DEFAULT 'running'
-      CHECK (status IN ('running','completed','failed','partial')),
+      CHECK (status IN ('running','completed','failed','partial','incomplete')),
     items_fetched     INTEGER NOT NULL DEFAULT 0,
     items_new         INTEGER NOT NULL DEFAULT 0,
     items_sold        INTEGER NOT NULL DEFAULT 0,
@@ -1765,6 +1768,90 @@ export function phase32PlusMigration(db) {
 
     db.exec('COMMIT');
     committed = true;
+  } finally {
+    if (!committed) {
+      try { db.exec('ROLLBACK'); } catch (_) {}
+    }
+    db.exec('PRAGMA foreign_keys = ON');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 35: merch_competitor_scans — status CHECK に 'incomplete' 追加
+// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * merch_competitor_scans テーブルを再構築して status CHECK 制約に 'incomplete' を追加する。
+ *
+ * 追加背景:
+ *   スキャンが has_next=false を受信せずに終了した場合（ボタン消失・タイムアウト等）を
+ *   'incomplete' として記録するために必要。
+ *   既存の 'running'/'completed'/'failed'/'partial' は保持。
+ *
+ * 冪等判定: sqlite_master の CREATE TABLE 文に "'incomplete'" が含まれているか確認。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase35Migration(db) {
+  // 適用済み確認
+  const tableSql = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='merch_competitor_scans'"
+  ).get()?.sql ?? '';
+  if (tableSql.includes("'incomplete'")) return;
+
+  console.log('[migration] phase35: merch_competitor_scans.status に incomplete を追加');
+
+  db.exec('PRAGMA foreign_keys = OFF');
+  let committed = false;
+  try {
+    db.exec('BEGIN TRANSACTION');
+
+    // 旧テーブルをリネーム
+    db.exec('ALTER TABLE merch_competitor_scans RENAME TO merch_competitor_scans_old');
+
+    // 新テーブル（'incomplete' を追加）
+    db.exec(`
+      CREATE TABLE merch_competitor_scans (
+        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+        account_id          INTEGER NOT NULL REFERENCES merch_competitor_accounts(id),
+        scan_date           TEXT    NOT NULL,
+        started_at          TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
+        finished_at         TEXT,
+        status              TEXT    NOT NULL DEFAULT 'running'
+          CHECK (status IN ('running','completed','failed','partial','incomplete')),
+        items_fetched       INTEGER NOT NULL DEFAULT 0,
+        items_new           INTEGER NOT NULL DEFAULT 0,
+        items_sold          INTEGER NOT NULL DEFAULT 0,
+        items_price_changed INTEGER NOT NULL DEFAULT 0,
+        items_missing       INTEGER NOT NULL DEFAULT 0,
+        items_reappeared    INTEGER NOT NULL DEFAULT 0,
+        error_message       TEXT,
+        UNIQUE(account_id, scan_date)
+      )
+    `);
+
+    // データ移行（id を維持して全カラムを明示コピー）
+    db.exec(`
+      INSERT INTO merch_competitor_scans
+        (id, account_id, scan_date, started_at, finished_at, status,
+         items_fetched, items_new, items_sold, items_price_changed,
+         items_missing, items_reappeared, error_message)
+      SELECT
+        id, account_id, scan_date, started_at, finished_at, status,
+        items_fetched, items_new, items_sold, items_price_changed,
+        items_missing, items_reappeared, error_message
+      FROM merch_competitor_scans_old
+    `);
+
+    db.exec('DROP TABLE merch_competitor_scans_old');
+
+    // インデックス再作成
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mcs_account ON merch_competitor_scans(account_id)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mcs_date    ON merch_competitor_scans(scan_date)');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_mcs_status  ON merch_competitor_scans(status)');
+
+    db.exec('COMMIT');
+    committed = true;
+    console.log('[migration] phase35: 完了');
   } finally {
     if (!committed) {
       try { db.exec('ROLLBACK'); } catch (_) {}

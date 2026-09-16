@@ -162,25 +162,34 @@ export async function fetchSellerName(mercariUserId) {
  * 取得方式:
  *   通常のプロフィールページ閲覧 + 「もっと見る」クリックを繰り返し、
  *   ブラウザが受信した /items/get_items レスポンスを蓄積する。
- *   meta.has_next=false またはボタン消失で終了。
+ *
+ * 正常完了判定:
+ *   APIレスポンス内の meta.has_next=false を受信した場合のみ scanComplete=true。
+ *   「もっと見る」ボタン消失のみでは正常完了と判定しない。
+ *   has_next=true のままボタン消失・タイムアウトが発生した場合は
+ *   scanComplete=false（incomplete）となる。
  *
  * @param {string} mercariUserId
  * @param {number} [maxItems=0] - 0 = 無制限
- * @returns {Promise<Array<{
- *   mercari_item_id: string,
- *   name: string|null,
- *   price: number,
- *   status: 'on_sale'|'trading'|'sold_out',
- *   image_url: string|null,
- *   brand: string|null,
- *   category: string|null,
- *   created_api: string|null,
- *   updated_api: string|null,
- *   num_likes: number|null,
- *   num_comments: number|null,
- *   shipping_from_area: string|null,
- *   is_archived: number,
- * }>>}
+ * @returns {Promise<{
+ *   items: Array<{
+ *     mercari_item_id: string,
+ *     name: string|null,
+ *     price: number,
+ *     status: 'on_sale'|'trading'|'sold_out',
+ *     image_url: string|null,
+ *     brand: string|null,
+ *     category: string|null,
+ *     created_api: string|null,
+ *     updated_api: string|null,
+ *     num_likes: number|null,
+ *     num_comments: number|null,
+ *     shipping_from_area: string|null,
+ *     is_archived: number,
+ *   }>,
+ *   scanComplete: boolean,
+ *   incompleteReason: string|null,
+ * }>}
  */
 export async function fetchSellerItems(mercariUserId, maxItems = 0) {
   const url = `${PROFILE_BASE}${mercariUserId}`;
@@ -188,8 +197,9 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
 
   return withBrowser(async (page) => {
     const items = new Map();   // mercari_item_id → item
-    let callCount  = 0;
-    let dupCount   = 0;
+    let callCount       = 0;
+    let dupCount        = 0;
+    let hasNextFalseSeen = false;  // meta.has_next=false を受信したか
 
     // /items/get_items レスポンスをインターセプト
     page.on('response', async (response) => {
@@ -200,6 +210,12 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
       try { body = await response.json(); } catch { return; }
 
       callCount++;
+
+      // スキャン完了判定: meta.has_next=false を確認
+      if (body?.meta?.has_next === false) {
+        hasNextFalseSeen = true;
+      }
+
       const rawItems = extractItemsFromBody(body);
 
       for (const raw of rawItems) {
@@ -231,9 +247,12 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
       .first();
 
     let clickCount = 0;
+    let stopReason = null;
+
     while (true) {
       // maxItems 到達チェック
       if (maxItems > 0 && items.size >= maxItems) {
+        stopReason = `maxItems(${maxItems})到達`;
         console.log(`[scraper] maxItems(${maxItems})到達 → 終了`);
         break;
       }
@@ -243,7 +262,8 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
 
       const visible = await moreBtnLoc.isVisible().catch(() => false);
       if (!visible) {
-        console.log(`[scraper] 「もっと見る」ボタンなし → 完了 (click=${clickCount})`);
+        stopReason = `「もっと見る」ボタン消失 (click=${clickCount})`;
+        console.log(`[scraper] 「もっと見る」ボタンなし → 終了 (click=${clickCount})`);
         break;
       }
 
@@ -259,11 +279,19 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
     const onSale   = result.filter(i => i.status === 'on_sale').length;
     const trading  = result.filter(i => i.status === 'trading').length;
     const soldOut  = result.filter(i => i.status === 'sold_out').length;
+
+    const scanComplete = hasNextFalseSeen;
+    const incompleteReason = scanComplete
+      ? null
+      : `has_next=false 未確認（${stopReason ?? '理由不明'}で終了）`;
+
     console.log(
-      `[scraper] 取得完了: ${result.length}件` +
+      `[scraper] 取得${scanComplete ? '完了' : '不完全'}: ${result.length}件` +
       ` (on_sale=${onSale}, trading=${trading}, sold_out=${soldOut})` +
-      ` APIコール=${callCount}, dup排除=${dupCount}`
+      ` APIコール=${callCount}, dup排除=${dupCount}` +
+      (scanComplete ? '' : ` [INCOMPLETE: ${incompleteReason}]`)
     );
-    return result;
+
+    return { items: result, scanComplete, incompleteReason };
   });
 }

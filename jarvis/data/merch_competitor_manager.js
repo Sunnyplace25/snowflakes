@@ -212,6 +212,122 @@ export function getRecentScans(db, accountId, limit = 30) {
   `).all(accountId, limit);
 }
 
+/**
+ * セラーのフルスキャンを実行し、DB に反映する。
+ *
+ * スキャン完了判定:
+ *   fetchFn が返す scanComplete=true（APIレスポンスで has_next=false 確認済み）の場合のみ
+ *   markMissingItems を実行する。
+ *   scanComplete=false（incomplete）の場合は取得済み商品の upsert のみ行い、
+ *   markMissingItems はスキップする。
+ *
+ * リトライ:
+ *   maxRetries 回試みて全て incomplete の場合は scanLog に 'incomplete' を記録し
+ *   エラーをスローする。upsert は最後の取得結果で実行済み。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @param {() => Promise<{ items: object[], scanComplete: boolean, incompleteReason: string|null }>} fetchFn
+ *   スクレイパー呼び出し関数。テスト時はモック関数を渡せる。
+ * @param {{
+ *   maxRetries?:  number,   - 最大試行回数（デフォルト 3）
+ *   retryDelay?:  number,   - 再試行間隔 ms（デフォルト 10000）
+ *   baseline?:    boolean,  - ベースライン補正モード（sold_at を設定しない）
+ *   scanDate?:    string,   - スキャン日付 YYYY-MM-DD（省略時は今日。テスト用）
+ * }} [opts]
+ * @returns {Promise<{
+ *   scanId:    number,
+ *   itemCount: number,
+ *   counts:    { new: number, sold: number, priceChange: number, missing: number, reappeared: number },
+ * }>}
+ * @throws {Error} maxRetries 回全て incomplete の場合
+ */
+export async function runSellerScan(db, accountId, fetchFn, {
+  maxRetries  = 3,
+  retryDelay  = 10000,
+  baseline    = false,
+  scanDate    = new Date().toISOString().slice(0, 10),
+} = {}) {
+  let completeFetch = null;   // 最初に scanComplete=true だった結果
+  let lastFetch     = null;   // 最後の試行結果（incomplete 時の upsert 用）
+  let lastReason    = '不明';
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    console.log(`[runSellerScan] 試行 ${attempt}/${maxRetries}`);
+    const r = await fetchFn();
+    lastFetch = r;
+
+    if (r.scanComplete) {
+      completeFetch = r;
+      break;
+    }
+
+    lastReason = r.incompleteReason ?? '不明';
+    console.warn(`[runSellerScan] incomplete (試行${attempt}): ${lastReason}`);
+
+    if (attempt < maxRetries) {
+      console.log(`[runSellerScan] ${retryDelay}ms 後に再試行...`);
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+    }
+  }
+
+  const scanId     = startScan(db, accountId, scanDate);
+  const isComplete = completeFetch !== null;
+  const { items }  = (completeFetch ?? lastFetch);
+
+  // upsert（完了・incomplete 問わず実行）
+  let cntNew = 0, cntSold = 0, cntPriceChange = 0, cntReappeared = 0;
+  for (const item of items) {
+    const r = upsertItem(db, accountId, scanId, item, { baseline });
+    if (r.isNew)         cntNew++;
+    if (r.isSold)        cntSold++;
+    if (r.isPriceChange) cntPriceChange++;
+    if (r.isReappeared)  cntReappeared++;
+  }
+
+  let missingCount = 0;
+
+  if (isComplete) {
+    // 正常完了時のみ markMissingItems を実行
+    const seenIds = new Set(items.map(i => i.mercari_item_id));
+    missingCount  = markMissingItems(db, accountId, scanId, seenIds);
+
+    finishScan(db, scanId, {
+      status:              'completed',
+      items_fetched:       items.length,
+      items_new:           cntNew,
+      items_sold:          cntSold,
+      items_price_changed: cntPriceChange,
+      items_missing:       missingCount,
+      items_reappeared:    cntReappeared,
+    });
+    touchAccountScan(db, accountId);
+
+    return {
+      scanId,
+      itemCount: items.length,
+      counts: {
+        new: cntNew, sold: cntSold,
+        priceChange: cntPriceChange, missing: missingCount, reappeared: cntReappeared,
+      },
+    };
+  } else {
+    // incomplete: markMissingItems はスキップ
+    const reason = `${maxRetries}回試行後もスキャン未完了: ${lastReason}`;
+    finishScan(db, scanId, {
+      status:              'incomplete',
+      items_fetched:       items.length,
+      items_new:           cntNew,
+      items_sold:          cntSold,
+      items_price_changed: cntPriceChange,
+      items_missing:       0,
+      items_reappeared:    cntReappeared,
+      error_message:       reason,
+    });
+    throw new Error(`Scan incomplete: ${reason}`);
+  }
+}
+
 // ─── 商品管理 ──────────────────────────────────────────────────────────────────
 
 /**
@@ -226,18 +342,24 @@ export function getRecentScans(db, accountId, limit = 30) {
  *   'sold_out' → 'sold'     （変換）
  *   その他     → そのまま
  *
- * sold_at 設定ルール:
+ * sold_at 設定ルール（通常モード）:
  *   - sold_out（→ sold）を初めて確認した時点でのみ設定
  *   - trading 遷移では sold_at を設定しない
  *   - 再 upsert（既に sold_at あり）では上書きしない
+ *
+ * sold_at 設定ルール（ベースライン補正モード: baseline=true）:
+ *   - 追跡開始前に既に sold 状態の商品を初回登録する際に使用
+ *   - sold_out → sold への変換は行うが sold_at は常に NULL のまま
+ *   - sold_at IS NULL AND status='sold' で追跡後の sold と区別できる
  *
  * @param {import('node:sqlite').DatabaseSync} db
  * @param {number} accountId
  * @param {number} scanId
  * @param {object} item - スクレイパーが返すアイテムオブジェクト
+ * @param {{ baseline?: boolean }} [opts]
  * @returns {{ isNew: boolean, isSold: boolean, isPriceChange: boolean, isReappeared: boolean, itemId: number }}
  */
-export function upsertItem(db, accountId, scanId, item) {
+export function upsertItem(db, accountId, scanId, item, { baseline = false } = {}) {
   const existing = db.prepare(
     `SELECT * FROM merch_competitor_items WHERE account_id = ? AND mercari_item_id = ?`
   ).get(accountId, item.mercari_item_id);
@@ -251,7 +373,25 @@ export function upsertItem(db, accountId, scanId, item) {
   const dbStatus  = apiStatus === 'sold_out' ? 'sold' : apiStatus;
 
   if (!existing) {
-    // 新規（初回登録時点で sold なら sold_at を記録。trading は設定しない）
+    // 新規 INSERT
+    // sold_at: baseline モードは NULL 固定、通常モードは sold 時のみ設定
+    const soldAtClause = baseline
+      ? 'NULL'
+      : "CASE WHEN ? = 'sold' THEN datetime('now','localtime') ELSE NULL END";
+
+    const insertBaseParams = [
+      accountId, item.mercari_item_id, item.name ?? '', item.price ?? 0, dbStatus,
+      item.brand ?? null, item.category ?? null, item.color ?? null,
+      item.material ?? null, item.size ?? null,
+      item.condition_text ?? null, item.target_gender ?? null,
+      item.season ?? null, item.image_url ?? null, rawData,
+      item.created_api ?? null, item.updated_api ?? null,
+      item.num_likes ?? null, item.num_comments ?? null,
+      item.shipping_from_area ?? null, item.is_archived ?? 0,
+    ];
+    // 通常モードのみ sold_at CASE 式のパラメータ（dbStatus）を追加
+    const insertParams = baseline ? insertBaseParams : [...insertBaseParams, dbStatus];
+
     const result = db.prepare(`
       INSERT INTO merch_competitor_items
         (account_id, mercari_item_id, name, price, status,
@@ -265,18 +405,8 @@ export function upsertItem(db, accountId, scanId, item) {
               ?, ?, ?, ?, ?,
               ?, ?, ?, ?,
               ?, ?,
-              CASE WHEN ? = 'sold' THEN datetime('now','localtime') ELSE NULL END)
-    `).run(
-      accountId, item.mercari_item_id, item.name ?? '', item.price ?? 0, dbStatus,
-      item.brand ?? null, item.category ?? null, item.color ?? null,
-      item.material ?? null, item.size ?? null,
-      item.condition_text ?? null, item.target_gender ?? null,
-      item.season ?? null, item.image_url ?? null, rawData,
-      item.created_api ?? null, item.updated_api ?? null,
-      item.num_likes ?? null, item.num_comments ?? null,
-      item.shipping_from_area ?? null, item.is_archived ?? 0,
-      dbStatus
-    );
+              ${soldAtClause})
+    `).run(...insertParams);
     const itemId = Number(result.lastInsertRowid);
     addScanEvent(db, scanId, itemId, 'new', null, item.price ?? 0);
     return { isNew: true, isSold: false, isPriceChange: false, isReappeared: false, itemId };
@@ -312,8 +442,35 @@ export function upsertItem(db, accountId, scanId, item) {
   }
 
   // UPDATE
-  // sold_at: dbStatus='sold' かつ初回のみ設定（既存 sold_at は上書きしない）
+  // sold_at: baseline モードは常に現状維持（NULL のまま）、通常モードは初回設定のみ
   // status_changed_at: dbStatus が変化した場合のみ更新
+  const soldAtUpdateClause = baseline
+    ? 'sold_at'
+    : "CASE WHEN ? = 'sold' AND sold_at IS NULL THEN datetime('now','localtime') ELSE sold_at END";
+
+  const updateBaseParams = [
+    item.name ?? existing.name, newPrice, dbStatus,
+    item.brand    ?? existing.brand,    item.category    ?? existing.category,
+    item.color    ?? existing.color,    item.material    ?? existing.material,
+    item.size     ?? existing.size,
+    item.condition_text  ?? existing.condition_text,
+    item.target_gender   ?? existing.target_gender,
+    item.season          ?? existing.season,
+    item.image_url ?? existing.image_url, rawData,
+    // created_api: COALESCE で初回のみ書き込み
+    item.created_api ?? null,
+    // updated_api: 毎回上書き（Mercari 側更新を追跡）
+    item.updated_api ?? null,
+    item.num_likes    ?? null,
+    item.num_comments ?? null,
+    item.shipping_from_area ?? null,
+    item.is_archived ?? 0,
+  ];
+  // baseline: sold_at clause にパラメータ不要。通常: sold_at CASE 用 dbStatus を追加
+  const updateParams = baseline
+    ? [...updateBaseParams, dbStatus, itemId]          // status_changed_at 用, id
+    : [...updateBaseParams, dbStatus, dbStatus, itemId]; // sold_at 用, status_changed_at 用, id
+
   db.prepare(`
     UPDATE merch_competitor_items
        SET name = ?, price = ?, status = ?,
@@ -327,39 +484,14 @@ export function upsertItem(db, accountId, scanId, item) {
            shipping_from_area = COALESCE(shipping_from_area, ?),
            is_archived = ?,
            last_seen_at = datetime('now','localtime'),
-           sold_at = CASE
-             WHEN ? = 'sold' AND sold_at IS NULL THEN datetime('now','localtime')
-             ELSE sold_at
-           END,
+           sold_at = ${soldAtUpdateClause},
            status_changed_at = CASE
              WHEN ? != status THEN datetime('now','localtime')
              ELSE status_changed_at
            END,
            updated_at = datetime('now','localtime')
      WHERE id = ?
-  `).run(
-    item.name ?? existing.name, newPrice, dbStatus,
-    item.brand    ?? existing.brand,    item.category    ?? existing.category,
-    item.color    ?? existing.color,    item.material    ?? existing.material,
-    item.size     ?? existing.size,
-    item.condition_text  ?? existing.condition_text,
-    item.target_gender   ?? existing.target_gender,
-    item.season          ?? existing.season,
-    item.image_url ?? existing.image_url, rawData,
-    // created_api: COALESCE で初回のみ書き込み（null 以外のときは更新しない）
-    item.created_api ?? null,
-    // updated_api: 毎回上書き（Mercari 側更新を追跡）
-    item.updated_api ?? null,
-    item.num_likes    ?? null,
-    item.num_comments ?? null,
-    item.shipping_from_area ?? null,
-    item.is_archived ?? 0,
-    // sold_at 判定用
-    dbStatus,
-    // status_changed_at 判定用
-    dbStatus,
-    itemId
-  );
+  `).run(...updateParams);
 
   return { isNew, isSold, isPriceChange, isReappeared, itemId };
 }
