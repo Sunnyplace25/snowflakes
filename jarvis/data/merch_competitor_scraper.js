@@ -169,6 +169,8 @@ export async function fetchSellerName(mercariUserId) {
  *   has_next=true のままボタン消失・タイムアウトが発生した場合は
  *   scanComplete=false（incomplete）となる。
  *
+ * セラー名も同一ブラウザセッション内で取得して返す（fetchSellerName の別ブラウザ起動が不要）。
+ *
  * @param {string} mercariUserId
  * @param {number} [maxItems=0] - 0 = 無制限
  * @returns {Promise<{
@@ -189,6 +191,7 @@ export async function fetchSellerName(mercariUserId) {
  *   }>,
  *   scanComplete: boolean,
  *   incompleteReason: string|null,
+ *   sellerName: string|null,
  * }>}
  */
 export async function fetchSellerItems(mercariUserId, maxItems = 0) {
@@ -237,6 +240,25 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
 
     // ページ読み込み
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    // セラー名を同一セッションで取得（fetchSellerName の別ブラウザ起動が不要になる）
+    let sellerName = null;
+    try {
+      sellerName = await page.evaluate(() => {
+        const candidates = [
+          document.querySelector('[data-testid="profile-name"]'),
+          document.querySelector('[class*="userName"]'),
+          document.querySelector('[class*="user-name"]'),
+          document.querySelector('h1'),
+        ];
+        for (const el of candidates) {
+          const t = el?.textContent?.trim();
+          if (t) return t;
+        }
+        return null;
+      });
+    } catch { /* 取得失敗は無視 */ }
+
     await page.waitForSelector("[data-testid='item-cell']", { timeout: 30000 }).catch(() => {});
     await page.waitForTimeout(1500);
 
@@ -292,6 +314,6 @@ export async function fetchSellerItems(mercariUserId, maxItems = 0) {
       (scanComplete ? '' : ` [INCOMPLETE: ${incompleteReason}]`)
     );
 
-    return { items: result, scanComplete, incompleteReason };
+    return { items: result, scanComplete, incompleteReason, sellerName };
   });
 }

@@ -483,15 +483,14 @@ await testAsync('S01 — scanOneAccount: scanComplete=false のとき商品ス�
   const account  = { id: accountId, mercari_user_id: 'S01_USER', display_name: 'テスト' };
   const settings = { max_items_per_scan: 300, fee_rate: '0.1', shipping_cost: '500', min_profit: '100', min_profit_rate: '0.1' };
 
-  const mockFetchName  = async () => 'テスト';
   const mockFetchItems = async () => ({
     items: [{ mercari_item_id: 'S01_ITEM', name: '新商品', price: 2000, status: 'on_sale' }],
     scanComplete: false,
     incompleteReason: 'スキャン途中で中断',
+    sellerName: 'テスト',
   });
 
   const result = await scanOneAccount(db, account, settings, '2026-09-11', {
-    _fetchNameFn:  mockFetchName,
     _fetchItemsFn: mockFetchItems,
   });
 
@@ -519,7 +518,6 @@ await testAsync('S02 — scanOneAccount: scanComplete=true のとき正常完了
   const account  = { id: accountId, mercari_user_id: 'S02_USER', display_name: 'テスト' };
   const settings = { max_items_per_scan: 300, fee_rate: '0.1', shipping_cost: '500', min_profit: '100', min_profit_rate: '0.1' };
 
-  const mockFetchName  = async () => 'テスト';
   const mockFetchItems = async () => ({
     items: [
       { mercari_item_id: 'S02_ITEM1', name: '商品A', price: 1000, status: 'on_sale' },
@@ -527,10 +525,10 @@ await testAsync('S02 — scanOneAccount: scanComplete=true のとき正常完了
     ],
     scanComplete: true,
     incompleteReason: null,
+    sellerName: 'テスト',
   });
 
   const result = await scanOneAccount(db, account, settings, '2026-09-11', {
-    _fetchNameFn:  mockFetchName,
     _fetchItemsFn: mockFetchItems,
   });
 
@@ -566,7 +564,6 @@ await testAsync('S03 — scanComplete=false では markMissingItems が実行さ
   });
 
   await scanOneAccount(db, account, settings, '2026-09-11', {
-    _fetchNameFn:  async () => 'テスト',
     _fetchItemsFn: mockFetchItems,
   });
 

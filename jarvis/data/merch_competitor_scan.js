@@ -11,8 +11,11 @@ import {
   upsertNotification, getSettings, getDailyScanSummary,
   updateItemClassification,
 } from './merch_competitor_manager.js';
-import { fetchSellerItems, fetchSellerName } from './merch_competitor_scraper.js';
+import { fetchSellerItems } from './merch_competitor_scraper.js';
 import { classifyItem, calcBuyingLimit, batchClassify } from './merch_competitor_analyzer.js';
+
+/** セラー間待機用スリープ */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function jstToday() {
   const now = new Date();
@@ -26,12 +29,11 @@ function jstToday() {
  * @param {object} account - { id, mercari_user_id, display_name }
  * @param {object} settings
  * @param {string} scanDate - YYYY-MM-DD
- * @param {{ _fetchItemsFn?: Function, _fetchNameFn?: Function }} [_opts] - テスト用DI
+ * @param {{ _fetchItemsFn?: Function }} [_opts] - テスト用DI
  * @returns {{ ok:boolean, items_fetched:number, items_new:number, items_sold:number,
  *             items_price_changed:number, items_missing:number, error:string|null }}
  */
-export async function scanOneAccount(db, account, settings, scanDate, { _fetchItemsFn, _fetchNameFn } = {}) {
-  const doFetchName  = _fetchNameFn  ?? fetchSellerName;
+export async function scanOneAccount(db, account, settings, scanDate, { _fetchItemsFn } = {}) {
   const doFetchItems = _fetchItemsFn ?? fetchSellerItems;
   const maxItems = parseInt(settings.max_items_per_scan ?? 300, 10);
   const scanId = startScan(db, account.id, scanDate);
@@ -44,16 +46,15 @@ export async function scanOneAccount(db, account, settings, scanDate, { _fetchIt
   };
 
   try {
+    // 商品一覧取得（sellerName も同一ブラウザセッションで取得される）
+    const { items, scanComplete, incompleteReason, sellerName } = await doFetchItems(account.mercari_user_id, maxItems);
+
     // セラー名を最新に更新
-    const sellerName = await doFetchName(account.mercari_user_id);
     if (sellerName && sellerName !== account.display_name) {
       db.prepare(
         `UPDATE merch_competitor_accounts SET display_name = ?, updated_at = datetime('now','localtime') WHERE id = ?`
       ).run(sellerName, account.id);
     }
-
-    // 商品一覧取得（Phase 35: { items, scanComplete, incompleteReason } を返す）
-    const { items, scanComplete, incompleteReason } = await doFetchItems(account.mercari_user_id, maxItems);
     counts.items_fetched = items.length;
 
     // upsert
@@ -105,13 +106,18 @@ export async function scanOneAccount(db, account, settings, scanDate, { _fetchIt
  * @returns {{ results: object[], summary: object }}
  */
 export async function scanAllAccounts(db, scanDate) {
-  const date     = scanDate || jstToday();
-  const settings = getSettings(db);
-  const accounts = listAccounts(db);
+  const date        = scanDate || jstToday();
+  const settings    = getSettings(db);
+  const accounts    = listAccounts(db);
+  const intervalSec = parseInt(settings.account_interval_sec ?? '30', 10);
 
   const results = [];
-  for (const account of accounts) {
-    const r = await scanOneAccount(db, account, settings, date);
+  for (let i = 0; i < accounts.length; i++) {
+    if (i > 0 && intervalSec > 0) {
+      console.log(`[scan] 次のアカウントまで ${intervalSec}秒 待機...`);
+      await sleep(intervalSec * 1000);
+    }
+    const r = await scanOneAccount(db, accounts[i], settings, date);
     results.push(r);
   }
 

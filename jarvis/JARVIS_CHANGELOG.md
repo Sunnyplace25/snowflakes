@@ -13,6 +13,33 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-17 — メルカリ競合分析 P0/P1 改善（CLI追加・ブラウザ1回化・待機時間）
+
+### 目的
+自動スキャンを正式運用可能にするための P0/P1 実装
+
+### 変更ファイル
+- `tools/run_competitor_scan.mjs` (新規) — CLIエントリーポイント
+- `data/merch_competitor_scraper.js` — `fetchSellerItems` にセラー名取得を統合、`sellerName` を返す
+- `data/merch_competitor_scan.js` — `fetchSellerName` 廃止（ブラウザ起動1回化）、セラー間待機追加
+- `data/db.js` — `account_interval_sec`（デフォルト30秒）をデフォルト設定に追加
+- `tests/test_mercari_competitor.js` — `_fetchNameFn` DI削除・モック更新
+
+### 実装内容
+- `fetchSellerItems` の `page.goto` 直後にセラー名を `page.evaluate` で取得して `sellerName` として返す
+- `scanOneAccount` は `fetchSellerName` を呼ばなくなり、1セラーにつきブラウザ起動が1回に
+- `scanAllAccounts` にセラー間 `sleep(intervalSec * 1000)` を追加（`account_interval_sec` 設定で調整可）
+- `run_competitor_scan.mjs`: `node tools/run_competitor_scan.mjs` で全セラースキャン、`node tools/run_competitor_scan.mjs 1` で特定アカウントのみ
+
+### 確認内容
+- `node tests/test_mercari_competitor.js`: 37/37 PASS
+
+### 未確認
+- 実ブラウザでの動作確認未実施
+- commit/push 未実施
+
+---
+
 ## 2026-09-17 — メルカリ競合分析 Phase 35+ 修正・統計クエリ追加
 
 ### 目的
@@ -38,7 +65,9 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ### 未確認
 - ブラウザ UI 目視確認未実施（ダッシュボード起動必要）
-- commit/push 未実施
+
+### commit SHA
+`81a66cd`
 
 ---
 

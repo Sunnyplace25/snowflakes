@@ -1594,6 +1594,7 @@ const PHASE32_DEFAULT_SETTINGS = [
   ['max_items_per_scan',  '300',   '1スキャンで取得する最大商品数'],
   ['confidence_high_min', '10',    'high判定の最低サンプル数'],
   ['confidence_med_min',  '3',     'medium判定の最低サンプル数'],
+  ['account_interval_sec','30',   'セラー間のスキャン待機秒数'],
 ];
 
 /** 初期アカウント（はーと♡セール開催中） */
