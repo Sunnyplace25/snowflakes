@@ -766,6 +766,7 @@ export function saveReport(db, { report_type, period_start, period_end, account_
  * @returns {object[]}
  */
 export function getSoldDaysStats(db, accountId) {
+  // ベースラインインポート商品（sold_at = NULL）は売却日不明のため除外する
   return db.prepare(`
     SELECT classified_brand, classified_category,
            COUNT(*) AS sold_count,

@@ -525,7 +525,7 @@
   }
 
   function renderSoldDaysTable(rows) {
-    if (!rows || rows.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
+    if (!rows || rows.length === 0) return '<p style="color:var(--text-sec);font-size:13px">売却日数は次回以降の売却検知後に表示されます。</p>';
     return `
       <table class="sf-table" style="width:100%;font-size:12px">
         <thead><tr><th>ブランド</th><th>カテゴリ</th><th>売却数</th><th>平均日数</th><th>最短</th><th>最長</th></tr></thead>

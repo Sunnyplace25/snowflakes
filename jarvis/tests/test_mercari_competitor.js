@@ -573,7 +573,7 @@ await testAsync('S03 — scanComplete=false では markMissingItems が実行さ
   db.close();
 });
 
-test('D01 — getSoldDaysStats: 売却商品の日数統計を返す', () => {
+test('D01 — getSoldDaysStats: sold_at ありの商品のみ集計する', () => {
   const db = createDb(':memory:');
   const { id: accountId } = insertAccount(db, {
     mercari_user_id: 'D01_USER',
@@ -596,6 +596,76 @@ test('D01 — getSoldDaysStats: 売却商品の日数統計を返す', () => {
   assert.ok(stats.length > 0, '統計が返る');
   assert.equal(stats[0].classified_brand, 'テストブランド');
   assert.ok(stats[0].avg_days != null, 'avg_days が存在する');
+  db.close();
+});
+
+test('D03 — getSoldDaysStats: sold_at NULL（ベースライン）商品は集計しない', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'D03_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/D03_USER',
+  });
+  const scanId = startScan(db, accountId, '2026-09-11');
+  // ベースラインインポート商品（sold_at = NULL）
+  upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'D03_BASELINE',
+    name: 'ベースライン商品',
+    price: 2000,
+    status: 'sold',
+    created_api: '2026-08-01 00:00:00',
+  }, { baseline: true });
+
+  const stats = getSoldDaysStats(db, accountId);
+  assert.equal(stats.length, 0, 'sold_at NULL のベースライン商品は集計されない');
+  db.close();
+});
+
+test('D04 — getSoldDaysStats: sold_at あり・なし混在時は sold_at ありのみ集計', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'D04_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/D04_USER',
+  });
+  const scanId = startScan(db, accountId, '2026-09-11');
+
+  // ベースライン商品（sold_at = NULL） × 5件
+  for (let i = 0; i < 5; i++) {
+    upsertItem(db, accountId, scanId, {
+      mercari_item_id: `D04_BASE_${i}`,
+      name: `ベースライン ${i}`,
+      price: 1000,
+      status: 'sold',
+      created_api: '2026-08-01 00:00:00',
+    }, { baseline: true });
+  }
+
+  // 追跡売却商品（sold_at あり） × 2件
+  const r1 = upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'D04_TRACKED_1',
+    name: '追跡商品1',
+    price: 3000,
+    status: 'sold',
+    created_api: '2026-09-01 00:00:00',
+  });
+  db.prepare(`UPDATE merch_competitor_items SET sold_at = '2026-09-11 00:00:00' WHERE id = ?`).run(r1.itemId);
+  updateItemClassification(db, r1.itemId, { classified_brand: 'ブランドA', classified_category: 'トップス' });
+
+  const r2 = upsertItem(db, accountId, scanId, {
+    mercari_item_id: 'D04_TRACKED_2',
+    name: '追跡商品2',
+    price: 4000,
+    status: 'sold',
+    created_api: '2026-09-03 00:00:00',
+  });
+  db.prepare(`UPDATE merch_competitor_items SET sold_at = '2026-09-11 00:00:00' WHERE id = ?`).run(r2.itemId);
+  updateItemClassification(db, r2.itemId, { classified_brand: 'ブランドA', classified_category: 'トップス' });
+
+  const stats = getSoldDaysStats(db, accountId);
+  assert.equal(stats.length, 1, '集計行は sold_at ありの 1グループのみ');
+  assert.equal(stats[0].sold_count, 2, 'sold_at ありの 2件だけ集計される（ベースライン5件は除外）');
+  assert.equal(stats[0].classified_brand, 'ブランドA');
   db.close();
 });
 

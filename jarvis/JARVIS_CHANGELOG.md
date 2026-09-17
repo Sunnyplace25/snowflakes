@@ -13,6 +13,26 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-17 — getSoldDaysStats: ベースライン商品除外・テスト追加
+
+### 目的
+売却所要日数統計でベースラインインポート商品（sold_at = NULL）が混入し、
+1000日超の不正な日数が表示されていた問題を修正。
+
+### 変更ファイル
+- `data/merch_competitor_manager.js` — getSoldDaysStats の COALESCE を削除、sold_at IS NOT NULL のみ集計に戻す
+- `dashboard/public/business-merch-competitor.js` — データなし時のメッセージを「売却日数は次回以降の売却検知後に表示されます。」に変更
+- `tests/test_mercari_competitor.js` — D01 を「sold_at ありのみ集計」に修正、D03・D04 を新規追加
+
+### 確認内容
+- テスト 39件 全合格（D03: baseline除外、D04: 混在時の選別）
+- 実DB（business_data.db）では sold_at が全件 NULL のため統計は空。次回スキャン後に表示される
+
+### 未確認
+- サーバー再起動後のブラウザ動作（ユーザーに要再起動依頼）
+
+---
+
 ## 2026-09-17 — メルカリ競合分析 P0/P1 改善（CLI追加・ブラウザ1回化・待機時間）
 
 ### 目的
@@ -35,8 +55,10 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 - `node tests/test_mercari_competitor.js`: 37/37 PASS
 
 ### 未確認
-- 実ブラウザでの動作確認未実施
-- commit/push 未実施
+- なし
+
+### commit SHA
+`cb3f49d`
 
 ---
 
