@@ -459,6 +459,8 @@
 
       const brands    = d.brand_ranking   ?? [];
       const cats      = d.category_stats  ?? [];
+      const soldDays  = d.sold_days       ?? [];
+      const unsoldAge = d.unsold_age      ?? [];
 
       el.innerHTML = `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
@@ -470,6 +472,14 @@
             <h4 style="margin:0 0 10px;font-size:14px">カテゴリ別統計</h4>
             ${renderCategoryTable(cats)}
           </div>
+        </div>
+        <div style="margin-top:24px">
+          <h4 style="margin:0 0 10px;font-size:14px">売却所要日数（ブランド別）</h4>
+          ${renderSoldDaysTable(soldDays)}
+        </div>
+        <div style="margin-top:24px">
+          <h4 style="margin:0 0 10px;font-size:14px">滞留在庫（出品中・日数順）</h4>
+          ${renderUnsoldAgeTable(unsoldAge)}
         </div>
       `;
     } catch (e) {
@@ -507,6 +517,48 @@
               <td>${c.on_sale_count}</td>
               <td>${c.sold_count}</td>
               <td>${c.avg_sold_price ? yen(c.avg_sold_price) : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function renderSoldDaysTable(rows) {
+    if (!rows || rows.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
+    return `
+      <table class="sf-table" style="width:100%;font-size:12px">
+        <thead><tr><th>ブランド</th><th>カテゴリ</th><th>売却数</th><th>平均日数</th><th>最短</th><th>最長</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td>${esc(r.classified_brand ?? '—')}</td>
+              <td>${esc(r.classified_category ?? '—')}</td>
+              <td>${r.sold_count}件</td>
+              <td>${r.avg_days != null ? r.avg_days + '日' : '—'}</td>
+              <td>${r.min_days != null ? r.min_days + '日' : '—'}</td>
+              <td>${r.max_days != null ? r.max_days + '日' : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function renderUnsoldAgeTable(rows) {
+    if (!rows || rows.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
+    return `
+      <table class="sf-table" style="width:100%;font-size:12px">
+        <thead><tr><th>商品名</th><th>ブランド</th><th>カテゴリ</th><th>価格</th><th>掲載日数</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+                title="${esc(r.name)}">${esc(r.name)}</td>
+              <td>${esc(r.classified_brand ?? '—')}</td>
+              <td>${esc(r.classified_category ?? '—')}</td>
+              <td>${yen(r.price)}</td>
+              <td style="color:${(r.days_listed ?? 0) >= 30 ? 'var(--danger)' : 'inherit'}">${r.days_listed != null ? r.days_listed + '日' : '—'}</td>
             </tr>
           `).join('')}
         </tbody>

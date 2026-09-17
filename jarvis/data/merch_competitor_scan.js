@@ -26,10 +26,13 @@ function jstToday() {
  * @param {object} account - { id, mercari_user_id, display_name }
  * @param {object} settings
  * @param {string} scanDate - YYYY-MM-DD
+ * @param {{ _fetchItemsFn?: Function, _fetchNameFn?: Function }} [_opts] - テスト用DI
  * @returns {{ ok:boolean, items_fetched:number, items_new:number, items_sold:number,
  *             items_price_changed:number, items_missing:number, error:string|null }}
  */
-export async function scanOneAccount(db, account, settings, scanDate) {
+export async function scanOneAccount(db, account, settings, scanDate, { _fetchItemsFn, _fetchNameFn } = {}) {
+  const doFetchName  = _fetchNameFn  ?? fetchSellerName;
+  const doFetchItems = _fetchItemsFn ?? fetchSellerItems;
   const maxItems = parseInt(settings.max_items_per_scan ?? 300, 10);
   const scanId = startScan(db, account.id, scanDate);
 
@@ -42,15 +45,15 @@ export async function scanOneAccount(db, account, settings, scanDate) {
 
   try {
     // セラー名を最新に更新
-    const sellerName = await fetchSellerName(account.mercari_user_id);
+    const sellerName = await doFetchName(account.mercari_user_id);
     if (sellerName && sellerName !== account.display_name) {
       db.prepare(
         `UPDATE merch_competitor_accounts SET display_name = ?, updated_at = datetime('now','localtime') WHERE id = ?`
       ).run(sellerName, account.id);
     }
 
-    // 商品一覧取得
-    const items = await fetchSellerItems(account.mercari_user_id, maxItems);
+    // 商品一覧取得（Phase 35: { items, scanComplete, incompleteReason } を返す）
+    const { items, scanComplete, incompleteReason } = await doFetchItems(account.mercari_user_id, maxItems);
     counts.items_fetched = items.length;
 
     // upsert
@@ -64,11 +67,15 @@ export async function scanOneAccount(db, account, settings, scanDate) {
       if (result.isReappeared)  counts.items_reappeared++;
     }
 
-    // missing 判定
-    counts.items_missing = markMissingItems(db, account.id, scanId, seenIds);
-
-    // 分類・買付け上限更新
-    batchClassify(db, account.id, settings, updateItemClassification);
+    if (scanComplete) {
+      // スキャン完了時のみ missing 判定・分類実行
+      counts.items_missing = markMissingItems(db, account.id, scanId, seenIds);
+      batchClassify(db, account.id, settings, updateItemClassification);
+    } else {
+      // スキャン不完全: スキャン履歴にのみ記録。商品ステータスは変更しない。
+      counts.status = 'incomplete';
+      counts.error_message = incompleteReason ?? 'スキャン未完了';
+    }
 
     touchAccountScan(db, account.id);
 

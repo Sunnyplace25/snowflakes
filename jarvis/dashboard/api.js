@@ -137,7 +137,7 @@ import {
   updateAccount as updateCompetitorAccount,
   listItems as listCompetitorItems,
   getBrandSoldRanking, getCategoryStats,
-  getBuyingCandidates,
+  getBuyingCandidates, getSoldDaysStats, getUnsoldItemsWithAge,
   getRecentScans as getCompetitorScans,
   getSettings as getAnalysisSettings, setSetting,
   listUnreadNotifications, markNotificationRead,
@@ -3349,6 +3349,8 @@ export function createApiHandler(db) {
           brand_ranking:     getBrandSoldRanking(db, id),
           category_stats:    getCategoryStats(db, id),
           buying_candidates: getBuyingCandidates(db, id, 50),
+          sold_days:         getSoldDaysStats(db, id),
+          unsold_age:        getUnsoldItemsWithAge(db, id, 50),
         });
       }
 

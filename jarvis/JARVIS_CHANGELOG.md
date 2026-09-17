@@ -13,6 +13,35 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-17 — メルカリ競合分析 Phase 35+ 修正・統計クエリ追加
+
+### 目的
+師匠レビューに基づく P1/P2 実装: Phase 35 スキャン不完全対応・sold_at 中間値推定・統計クエリ・UI セクション追加
+
+### 変更ファイル
+- `data/merch_competitor_scraper.js` — `headless: false` に変更（ブラウザが表示されるようにする）
+- `data/merch_competitor_scan.js` — Phase 35 return type 対応・テスト DI 注入・incomplete 時の商品ステータス保護
+- `data/merch_competitor_manager.js` — sold_at 中間値 JS 計算・`getSoldDaysStats()`・`getUnsoldItemsWithAge()` 追加
+- `dashboard/api.js` — 新関数インポート・`sold_days`/`unsold_age` をレスポンスに追加
+- `dashboard/public/business-merch-competitor.js` — `renderSoldDaysTable()` / `renderUnsoldAgeTable()` 追加・空データ対応
+- `tests/test_mercari_competitor.js` — Section 7 追加（M01/M02/S01/S02/S03/D01/D02 計7テスト）
+
+### 実装内容
+- `scanOneAccount`: `{ _fetchItemsFn, _fetchNameFn }` DI 対応。`fetchSellerItems` の返り値 `{ items, scanComplete, incompleteReason }` を正しく処理。`scanComplete=false` 時は `markMissingItems`・`batchClassify` をスキップし、商品ステータスを変更せず、スキャン履歴のみ `incomplete` に記録
+- `upsertItem` UPDATE: sold 検知時に `last_seen_at` と `Date.now()` の中間値を JST 文字列に変換し `sold_at` に設定
+- `getSoldDaysStats`: ブランド×カテゴリ別の売却所要日数（avg/min/max）を `julianday()` で計算
+- `getUnsoldItemsWithAge`: `status='on_sale'` の商品を `days_listed` 降順で返す（`COALESCE(created_api, first_seen_at)` 基準）
+- UI: `loadBrands()` に「売却所要日数」「滞留在庫」セクション追加。空の場合は「データがありません」表示
+
+### 確認内容
+- `node tests/test_mercari_competitor.js`: 37/37 PASS（Section 7 の 7 テスト含む全テスト通過）
+
+### 未確認
+- ブラウザ UI 目視確認未実施（ダッシュボード起動必要）
+- commit/push 未実施
+
+---
+
 ## 2026-09-16 — Soundrop インポーター ISRC マッチ修正
 
 ### 目的

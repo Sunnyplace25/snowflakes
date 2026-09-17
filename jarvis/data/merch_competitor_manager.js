@@ -442,11 +442,24 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
   }
 
   // UPDATE
-  // sold_at: baseline モードは常に現状維持（NULL のまま）、通常モードは初回設定のみ
-  // status_changed_at: dbStatus が変化した場合のみ更新
+  // sold_at: baseline モードは常に現状維持（NULL のまま）
+  // 通常モードは、sold 検知時に last_seen_at と現在時刻の中間値（JST）を JS 側で計算して渡す
+  let estimatedSoldAt = null;
+  if (isSold && !baseline) {
+    if (existing.last_seen_at) {
+      const prevMs = new Date(existing.last_seen_at).getTime();
+      const midMs  = Math.round((prevMs + Date.now()) / 2);
+      const jstMid = new Date(midMs + 9 * 60 * 60 * 1000);
+      estimatedSoldAt = jstMid.toISOString().slice(0, 19).replace('T', ' ');
+    } else {
+      const jstNow = new Date(Date.now() + 9 * 60 * 60 * 1000);
+      estimatedSoldAt = jstNow.toISOString().slice(0, 19).replace('T', ' ');
+    }
+  }
+
   const soldAtUpdateClause = baseline
     ? 'sold_at'
-    : "CASE WHEN ? = 'sold' AND sold_at IS NULL THEN datetime('now','localtime') ELSE sold_at END";
+    : 'CASE WHEN sold_at IS NULL AND ? IS NOT NULL THEN ? ELSE sold_at END';
 
   const updateBaseParams = [
     item.name ?? existing.name, newPrice, dbStatus,
@@ -466,10 +479,10 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
     item.shipping_from_area ?? null,
     item.is_archived ?? 0,
   ];
-  // baseline: sold_at clause にパラメータ不要。通常: sold_at CASE 用 dbStatus を追加
+  // baseline: sold_at clause にパラメータ不要。通常: estimatedSoldAt ×2 を sold_at CASE 式に渡す
   const updateParams = baseline
-    ? [...updateBaseParams, dbStatus, itemId]          // status_changed_at 用, id
-    : [...updateBaseParams, dbStatus, dbStatus, itemId]; // sold_at 用, status_changed_at 用, id
+    ? [...updateBaseParams, dbStatus, itemId]
+    : [...updateBaseParams, estimatedSoldAt, estimatedSoldAt, dbStatus, itemId];
 
   db.prepare(`
     UPDATE merch_competitor_items
@@ -744,6 +757,47 @@ export function saveReport(db, { report_type, period_start, period_end, account_
     VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(report_type, period_start, account_id) DO UPDATE SET body = excluded.body
   `).run(report_type, period_start, period_end, account_id ?? null, JSON.stringify(body));
+}
+
+/**
+ * アカウント別の売却所要日数統計を返す（ブランド×カテゴリ集計）。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @returns {object[]}
+ */
+export function getSoldDaysStats(db, accountId) {
+  return db.prepare(`
+    SELECT classified_brand, classified_category,
+           COUNT(*) AS sold_count,
+           CAST(AVG(julianday(sold_at) - julianday(created_api)) AS INTEGER) AS avg_days,
+           MIN(CAST(julianday(sold_at) - julianday(created_api) AS INTEGER)) AS min_days,
+           MAX(CAST(julianday(sold_at) - julianday(created_api) AS INTEGER)) AS max_days
+      FROM merch_competitor_items
+     WHERE account_id = ? AND status = 'sold'
+       AND sold_at IS NOT NULL AND created_api IS NOT NULL
+     GROUP BY classified_brand, classified_category
+     ORDER BY sold_count DESC
+  `).all(accountId);
+}
+
+/**
+ * 出品中で掲載日数が長い商品を返す（滞留在庫）。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @param {number} [limit=50]
+ * @returns {object[]}
+ */
+export function getUnsoldItemsWithAge(db, accountId, limit = 50) {
+  return db.prepare(`
+    SELECT id, mercari_item_id, name, price, classified_brand, classified_category,
+           created_api, first_seen_at, last_seen_at,
+           CAST(julianday(datetime('now','localtime'))
+                - julianday(COALESCE(created_api, first_seen_at)) AS INTEGER) AS days_listed
+      FROM merch_competitor_items
+     WHERE account_id = ? AND status = 'on_sale'
+     ORDER BY days_listed DESC
+     LIMIT ?
+  `).all(accountId, limit);
 }
 
 /**
