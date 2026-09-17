@@ -13,6 +13,31 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-17 — 競合スキャン Windows タスクスケジューラ自動実行
+
+### 目的
+`node tools/run_competitor_scan.mjs 1` を1日1回自動実行するための
+タスクスケジューラ登録スクリプトを追加。
+
+### 変更ファイル
+- `automation/install_competitor_scan_task.ps1`（新規）
+
+### 実装内容
+- タスク名: `JarvisCompetitorScan`
+- 毎朝 02:00 実行 / StartWhenAvailable（PC OFF で逃した場合はログイン後実行）
+- LogonType Interactive（ユーザーログオン時のみ = headless:false ブラウザ対応）
+- ログ: `logs/competitor-scan.log` へ追記（開始・終了タイムスタンプ付き）
+- 既存タスク・ダッシュボード・手動スキャンに無影響
+
+### 確認内容
+- パス解決・変数展開を PowerShell ドライランで確認済み
+- PS5 互換構文（`?.Source` 不使用）
+
+### 未確認
+- 実際のタスク登録・実行（ユーザーがスクリプトを実行して確認）
+
+---
+
 ## 2026-09-17 — getSoldDaysStats: ベースライン商品除外・テスト追加
 
 ### 目的
