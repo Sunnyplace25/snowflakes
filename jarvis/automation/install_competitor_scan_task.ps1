@@ -1,134 +1,80 @@
 # ============================================================
 # install_competitor_scan_task.ps1
-# Jarvis — メルカリ競合スキャン 1日1回自動実行タスク
+# Jarvis Mercari Competitor Scan - Task Scheduler Setup
 # ============================================================
 #
-# 目的:
-#   node tools/run_competitor_scan.mjs 1 を Windows Task Scheduler で
-#   毎朝 02:00 に実行する。
-#   headless:false のブラウザを使うため Interactive ログオン必須。
-#   ログは logs/competitor-scan.log へ追記。
-#
-# 使用方法（管理者権限不要）:
+# Usage (no admin required):
 #   powershell -ExecutionPolicy Bypass -File ".\jarvis\automation\install_competitor_scan_task.ps1"
 #
-# 停止・削除方法:
-#   Unregister-ScheduledTask -TaskName "JarvisCompetitorScan" -Confirm:$false
+# Stop (disable without deleting):
+#   schtasks /Change /TN "JarvisCompetitorScan" /DISABLE
 #
-# 一時的に無効化（削除せず止める）:
-#   Disable-ScheduledTask -TaskName "JarvisCompetitorScan"
-#   # 再開
-#   Enable-ScheduledTask  -TaskName "JarvisCompetitorScan"
+# Resume:
+#   schtasks /Change /TN "JarvisCompetitorScan" /ENABLE
 #
-# 注意:
-#   - このスクリプトが操作するのは "JarvisCompetitorScan" タスクのみ
-#   - 既存の他タスク・ダッシュボード・手動スキャンには一切触れない
-#   - 安全に再実行可能（既存タスクは上書き）
-#   - PC が 02:00 に OFF だった場合: 次回ログイン後に自動実行
+# Delete completely:
+#   schtasks /Delete /TN "JarvisCompetitorScan" /F
 #
+# Notes:
+#   - Only operates on "JarvisCompetitorScan" task
+#   - Does not touch any other tasks, dashboard, or manual scans
+#   - Safe to re-run (overwrites existing task)
+#   - If PC is OFF at 02:00, runs after next login (StartWhenAvailable)
 # ============================================================
 
-$TaskName  = "JarvisCompetitorScan"
-$TaskDescr = "Jarvis - Daily Mercari Competitor Scan at 02:00"
-$RunHour   = 2   # 実行時刻（24h）
+$TaskName = "JarvisCompetitorScan"
 
-# ─── パス解決 ────────────────────────────────────────────────
 $ScriptDir  = Split-Path -Parent $MyInvocation.MyCommand.Path
 $JarvisRoot = Split-Path -Parent $ScriptDir
+$BatFile    = Join-Path $ScriptDir "run_competitor_scan_logged.bat"
+$LogFile    = Join-Path $JarvisRoot "logs\competitor-scan.log"
 
-$NodeCmd  = Get-Command node -ErrorAction SilentlyContinue
-$NodePath = if ($NodeCmd) { $NodeCmd.Source } else { $null }
-if (-not $NodePath) {
-    Write-Error "node が見つかりません。Node.js をインストールしてから再実行してください。"
+if (-not (Test-Path $BatFile)) {
+    Write-Error "Not found: $BatFile"
     exit 1
 }
 
-$ScanScript = Join-Path $JarvisRoot "tools\run_competitor_scan.mjs"
-if (-not (Test-Path $ScanScript)) {
-    Write-Error "run_competitor_scan.mjs が見つかりません: $ScanScript"
-    exit 1
-}
-
-$LogDir = Join-Path $JarvisRoot "logs"
-if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory -Path $LogDir | Out-Null }
-$LogFile = Join-Path $LogDir "competitor-scan.log"
-
-# ─── cmd ラッパーでログ出力 ──────────────────────────────────
-# タイムスタンプをログ先頭に付けて追記する
-$CmdArg = "/c echo [%DATE% %TIME%] START >> `"$LogFile`" 2>&1 & `"$NodePath`" `"$ScanScript`" 1 >> `"$LogFile`" 2>&1 & echo [%DATE% %TIME%] END >> `"$LogFile`" 2>&1"
-
 Write-Host "============================================================"
-Write-Host " Jarvis Competitor Scan — Task Scheduler セットアップ"
+Write-Host " Jarvis Competitor Scan - Task Scheduler Setup"
 Write-Host "============================================================"
-Write-Host " タスク名   : $TaskName"
-Write-Host " Node       : $NodePath"
-Write-Host " スクリプト : $ScanScript"
-Write-Host " ログ       : $LogFile"
-Write-Host " 実行時刻   : 毎朝 0$RunHour`:00"
-Write-Host " 逃した場合 : 次回ログイン後に実行"
+Write-Host " Task     : $TaskName"
+Write-Host " Bat file : $BatFile"
+Write-Host " Log file : $LogFile"
+Write-Host " Time     : 02:00 daily"
+Write-Host " Miss     : runs after next login"
 Write-Host "============================================================"
 
-# ─── Action ─────────────────────────────────────────────────
-$Action = New-ScheduledTaskAction `
-    -Execute          "cmd.exe" `
-    -Argument         $CmdArg `
-    -WorkingDirectory $JarvisRoot
+# Delete existing task if present
+schtasks /Delete /TN $TaskName /F 2>$null | Out-Null
 
-# ─── Trigger: 毎朝 02:00 ────────────────────────────────────
-$TriggerDaily = New-ScheduledTaskTrigger -Daily -At "$RunHour`:00"
+# Register task via schtasks.exe
+# /IT = only run when user is logged on (required for headless:false browser)
+# /F  = force overwrite
+# /RL LIMITED = run as normal user (not elevated)
+$tr = '"' + $BatFile + '"'
+$result = schtasks /Create /TN $TaskName /TR $tr /SC DAILY /ST 02:00 /IT /RL LIMITED /F 2>&1
 
-# ─── Settings ───────────────────────────────────────────────
-$Settings = New-ScheduledTaskSettingsSet `
-    -StartWhenAvailable `
-    -RunOnlyIfNetworkAvailable:$false `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 30) `
-    -MultipleInstances IgnoreNew
-
-# ─── Principal（現在のユーザー・ログオン時のみ実行）─────────
-# LogonType Interactive = ユーザーがログオンしている場合のみ実行
-# → headless:false のブラウザが動く条件を満たす
-$Principal = New-ScheduledTaskPrincipal `
-    -UserId    ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) `
-    -LogonType Interactive `
-    -RunLevel  Normal
-
-# ─── 既存タスクの確認・上書き ────────────────────────────────
-$Existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-if ($Existing) {
-    Write-Host " 既存タスク '$TaskName' を上書き登録します..."
-    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
-}
-
-# ─── タスク登録 ──────────────────────────────────────────────
-try {
-    Register-ScheduledTask `
-        -TaskName    $TaskName `
-        -Description $TaskDescr `
-        -Action      $Action `
-        -Trigger     $TriggerDaily `
-        -Settings    $Settings `
-        -Principal   $Principal `
-        -Force | Out-Null
-
+if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Host " [OK] タスク '$TaskName' を毎朝 02:00 で登録しました。"
+    Write-Host " [OK] Task registered: $TaskName at 02:00 daily"
     Write-Host ""
-    Write-Host " 確認:"
-    Write-Host "   Get-ScheduledTask -TaskName '$TaskName' | Get-ScheduledTaskInfo"
+    Write-Host " Check:"
+    Write-Host "   schtasks /Query /TN JarvisCompetitorScan /FO LIST"
     Write-Host ""
-    Write-Host " 手動テスト実行:"
-    Write-Host "   Start-ScheduledTask -TaskName '$TaskName'"
-    Write-Host "   # ログ確認"
-    Write-Host "   Get-Content `"$LogFile`" -Tail 30"
+    Write-Host " Test run (manual):"
+    Write-Host "   schtasks /Run /TN JarvisCompetitorScan"
+    Write-Host "   # Check log:"
+    Write-Host "   Get-Content '$LogFile' -Tail 30"
     Write-Host ""
-    Write-Host " 一時停止:"
-    Write-Host "   Disable-ScheduledTask -TaskName '$TaskName'"
-    Write-Host " 再開:"
-    Write-Host "   Enable-ScheduledTask  -TaskName '$TaskName'"
-    Write-Host " 完全削除:"
-    Write-Host "   Unregister-ScheduledTask -TaskName '$TaskName' -Confirm:`$false"
+    Write-Host " Pause:"
+    Write-Host "   schtasks /Change /TN JarvisCompetitorScan /DISABLE"
+    Write-Host " Resume:"
+    Write-Host "   schtasks /Change /TN JarvisCompetitorScan /ENABLE"
+    Write-Host " Delete:"
+    Write-Host "   schtasks /Delete /TN JarvisCompetitorScan /F"
     Write-Host ""
-} catch {
-    Write-Error "タスク登録に失敗しました: $_"
+} else {
+    Write-Host " Result: $result"
+    Write-Error "Task registration failed (exit $LASTEXITCODE)"
     exit 1
 }

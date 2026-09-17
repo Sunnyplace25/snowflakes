@@ -24,14 +24,15 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ### 実装内容
 - タスク名: `JarvisCompetitorScan`
-- 毎朝 02:00 実行 / StartWhenAvailable（PC OFF で逃した場合はログイン後実行）
-- LogonType Interactive（ユーザーログオン時のみ = headless:false ブラウザ対応）
+- 毎朝 02:00 実行 / `/IT` フラグ（PC OFF で逃した場合はログイン後実行）
+- `/IT` = ユーザーログオン時のみ（headless:false ブラウザ対応）
 - ログ: `logs/competitor-scan.log` へ追記（開始・終了タイムスタンプ付き）
 - 既存タスク・ダッシュボード・手動スキャンに無影響
+- インストーラーは `New-ScheduledTask*` ではなく `schtasks.exe` を使用（PS5 パース問題を回避）
 
 ### 確認内容
 - パス解決・変数展開を PowerShell ドライランで確認済み
-- PS5 互換構文（`?.Source` 不使用）
+- ParseFile による構文チェック OK（エラーなし）
 
 ### 未確認
 - 実際のタスク登録・実行（ユーザーがスクリプトを実行して確認）
