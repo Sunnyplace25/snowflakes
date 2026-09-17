@@ -791,6 +791,9 @@ function runMigrations(db, dbPath = ':memory:') {
   // Phase 35: merch_competitor_scans.status に 'incomplete' を追加
   phase35Migration(db);
 
+  // Phase 36: merch_competitor_items に is_auction カラム追加
+  phase36Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -1859,4 +1862,32 @@ export function phase35Migration(db) {
     }
     db.exec('PRAGMA foreign_keys = ON');
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 36: merch_competitor_items — is_auction カラム追加
+// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * merch_competitor_items に is_auction カラムを追加する。
+ *
+ * 変更点:
+ *   - is_auction INTEGER NOT NULL DEFAULT 0 CHECK (is_auction IN (0, 1))
+ *     0 = 通常商品、1 = オークション商品（auction_info あり）
+ *
+ * 既存データは DEFAULT 0 のため全件「通常商品」として扱われる。
+ * 冪等判定: is_auction 列の有無で適用済みを確認。
+ *
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase36Migration(db) {
+  const cols = db.prepare('PRAGMA table_info(merch_competitor_items)').all();
+  if (cols.some(c => c.name === 'is_auction')) return;  // 適用済み
+
+  console.log('[migration] phase36: merch_competitor_items に is_auction を追加');
+  db.exec(`
+    ALTER TABLE merch_competitor_items
+      ADD COLUMN is_auction INTEGER NOT NULL DEFAULT 0
+      CHECK (is_auction IN (0, 1))
+  `);
+  console.log('[migration] phase36: 完了');
 }

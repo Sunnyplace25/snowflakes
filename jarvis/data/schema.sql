@@ -1354,6 +1354,8 @@ CREATE TABLE IF NOT EXISTS merch_competitor_items (
   shipping_from_area TEXT,                      -- 発送元地域
   is_archived       INTEGER NOT NULL DEFAULT 0  -- アーカイブフラグ (0/1)
     CHECK (is_archived IN (0, 1)),
+  is_auction        INTEGER NOT NULL DEFAULT 0  -- オークション商品フラグ (0/1) auction_info あり
+    CHECK (is_auction IN (0, 1)),
   UNIQUE(account_id, mercari_item_id)
 );
 

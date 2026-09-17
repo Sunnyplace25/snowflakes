@@ -388,6 +388,7 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
       item.created_api ?? null, item.updated_api ?? null,
       item.num_likes ?? null, item.num_comments ?? null,
       item.shipping_from_area ?? null, item.is_archived ?? 0,
+      item.is_auction ?? 0,
     ];
     // 通常モードのみ sold_at CASE 式のパラメータ（dbStatus）を追加
     const insertParams = baseline ? insertBaseParams : [...insertBaseParams, dbStatus];
@@ -398,13 +399,13 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
          brand, category, color, material, size,
          condition_text, target_gender, season, image_url, raw_data,
          created_api, updated_api, num_likes, num_comments,
-         shipping_from_area, is_archived,
+         shipping_from_area, is_archived, is_auction,
          sold_at)
       VALUES (?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?,
               ?, ?, ?, ?, ?,
               ?, ?, ?, ?,
-              ?, ?,
+              ?, ?, ?,
               ${soldAtClause})
     `).run(...insertParams);
     const itemId = Number(result.lastInsertRowid);
@@ -420,7 +421,8 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
   const newPrice = item.price ?? 0;
 
   // 価格変更検知（on_sale かつ前回価格と異なる場合のみ）
-  if (dbStatus === 'on_sale' && newPrice !== existing.price) {
+  // オークション商品は入札による価格変動を通常の値下げ・値上げイベントとして記録しない
+  if (dbStatus === 'on_sale' && newPrice !== existing.price && !existing.is_auction) {
     isPriceChange = true;
     db.prepare(`
       INSERT INTO merch_competitor_price_history (item_id, price_from, price_to, scan_id)
@@ -478,6 +480,7 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
     item.num_comments ?? null,
     item.shipping_from_area ?? null,
     item.is_archived ?? 0,
+    item.is_auction ?? existing.is_auction ?? 0,
   ];
   // baseline: sold_at clause にパラメータ不要。通常: estimatedSoldAt ×2 を sold_at CASE 式に渡す
   const updateParams = baseline
@@ -496,6 +499,7 @@ export function upsertItem(db, accountId, scanId, item, { baseline = false } = {
            num_comments = ?,
            shipping_from_area = COALESCE(shipping_from_area, ?),
            is_archived = ?,
+           is_auction = ?,
            last_seen_at = datetime('now','localtime'),
            sold_at = ${soldAtUpdateClause},
            status_changed_at = CASE
@@ -799,6 +803,28 @@ export function getUnsoldItemsWithAge(db, accountId, limit = 50) {
      ORDER BY days_listed DESC
      LIMIT ?
   `).all(accountId, limit);
+}
+
+/**
+ * オークション商品数をステータス別に返す。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @returns {{ on_sale: number, sold: number, total: number }}
+ */
+export function getAuctionCount(db, accountId) {
+  const rows = db.prepare(`
+    SELECT status, COUNT(*) AS cnt
+      FROM merch_competitor_items
+     WHERE account_id = ? AND is_auction = 1
+     GROUP BY status
+  `).all(accountId);
+  const result = { on_sale: 0, sold: 0, total: 0 };
+  for (const r of rows) {
+    if (r.status === 'on_sale') result.on_sale = r.cnt;
+    if (r.status === 'sold')    result.sold    = r.cnt;
+    result.total += r.cnt;
+  }
+  return result;
 }
 
 /**

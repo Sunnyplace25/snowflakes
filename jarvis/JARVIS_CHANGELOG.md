@@ -13,6 +13,36 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-17 — is_auction: オークション商品の分離対応
+
+### 目的
+メルカリの `auction_info` 付き商品を通常商品と分離し、
+入札による価格変動を誤って値下げ・値上げイベントとして記録しないようにする。
+
+### 変更ファイル
+- `data/merch_competitor_scraper.js` — normalizeItem に `is_auction: raw.auction_info != null ? 1 : 0` を追加
+- `data/merch_competitor_manager.js`
+  - upsertItem の INSERT/UPDATE に `is_auction` を追加
+  - 価格変化検知の guard に `&& !existing.is_auction` を追加
+  - `getAuctionCount(db, accountId)` 関数を新規追加（on_sale / sold / total）
+- `data/db.js` — `phase36Migration`: `merch_competitor_items` に `is_auction INTEGER NOT NULL DEFAULT 0` を追加
+- `data/schema.sql` — `is_auction` カラム定義を追加
+- `dashboard/api.js` — `/api/competitor/accounts/:id/analysis` に `auction_count: getAuctionCount(db, id)` を追加
+- `tests/test_mercari_competitor.js` — Section 8 (A01–A04) を追加
+
+### 確認内容
+- テスト 43件 全合格
+  - A01: オークション商品の価格変化が price_history に記録されないことを確認
+  - A02: 通常商品の価格変化は引き続き記録される（回帰確認）
+  - A03: getAuctionCount の on_sale/sold/total が正しく集計される
+  - A04: オークションなしアカウントは全て 0
+- `business_data.db` マイグレーション済み（phase36: is_auction カラム追加、INTEGER NOT NULL DEFAULT 0）
+
+### 未確認
+- 実スキャンで auction_info ありの商品を取得した際の動作（次回スキャンで確認）
+
+---
+
 ## 2026-09-17 — 競合スキャン Windows タスクスケジューラ自動実行
 
 ### 目的

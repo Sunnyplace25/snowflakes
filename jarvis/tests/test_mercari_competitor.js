@@ -21,7 +21,7 @@ import {
   upsertNotification, listUnreadNotifications, markNotificationRead,
   getSettings, setSetting,
   getBrandSoldRanking, getCategoryStats, getBuyingCandidates,
-  getSoldDaysStats, getUnsoldItemsWithAge,
+  getSoldDaysStats, getUnsoldItemsWithAge, getAuctionCount,
   getDailyScanSummary,
   extractUserIdFromProfileUrl,
 } from '../data/merch_competitor_manager.js';
@@ -697,6 +697,115 @@ test('D02 — getUnsoldItemsWithAge: 出品中商品を掲載日数順で返す'
   // データがない場合は空配列
   const empty = getUnsoldItemsWithAge(db, 99999);
   assert.equal(empty.length, 0, '存在しない accountId は空配列');
+  db.close();
+});
+
+// ─── Section 8: is_auction ────────────────────────────────────────────────────
+
+console.log('\nSection 8: is_auction');
+
+test('A01 — オークション商品の価格変化は price_history に記録しない', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'A01_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/A01_USER',
+  });
+  const scanId1 = startScan(db, accountId, '2026-09-10');
+  const r1 = upsertItem(db, accountId, scanId1, {
+    mercari_item_id: 'A01_ITEM',
+    name:            'オークション商品',
+    price:           5000,
+    status:          'on_sale',
+    is_auction:      1,
+  });
+
+  const scanId2 = startScan(db, accountId, '2026-09-11');
+  const r2 = upsertItem(db, accountId, scanId2, {
+    mercari_item_id: 'A01_ITEM',
+    name:            'オークション商品',
+    price:           6500,  // 入札による価格上昇
+    status:          'on_sale',
+    is_auction:      1,
+  });
+
+  assert.ok(!r2.isPriceChange, 'オークション商品: isPriceChange = false');
+  const history = db.prepare('SELECT * FROM merch_competitor_price_history WHERE item_id = ?').all(r1.itemId);
+  assert.equal(history.length, 0, 'オークション商品の price_history は 0 件');
+  db.close();
+});
+
+test('A02 — 通常商品の価格変化は引き続き price_history に記録する（回帰）', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'A02_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/A02_USER',
+  });
+  const scanId1 = startScan(db, accountId, '2026-09-10');
+  const r1 = upsertItem(db, accountId, scanId1, {
+    mercari_item_id: 'A02_ITEM',
+    name:            '通常商品',
+    price:           5000,
+    status:          'on_sale',
+    is_auction:      0,
+  });
+
+  const scanId2 = startScan(db, accountId, '2026-09-11');
+  const r2 = upsertItem(db, accountId, scanId2, {
+    mercari_item_id: 'A02_ITEM',
+    name:            '通常商品',
+    price:           4000,  // 値下げ
+    status:          'on_sale',
+    is_auction:      0,
+  });
+
+  assert.ok(r2.isPriceChange, '通常商品: isPriceChange = true');
+  const history = db.prepare('SELECT * FROM merch_competitor_price_history WHERE item_id = ?').all(r1.itemId);
+  assert.equal(history.length, 1, '通常商品の price_history は 1 件');
+  assert.equal(history[0].price_from, 5000);
+  assert.equal(history[0].price_to, 4000);
+  db.close();
+});
+
+test('A03 — getAuctionCount: on_sale/sold/total を正しく返す', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'A03_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/A03_USER',
+  });
+  const scanId = startScan(db, accountId, '2026-09-11');
+
+  // オークション出品中 2件
+  upsertItem(db, accountId, scanId, { mercari_item_id: 'A03_AUC1', name: 'オークション1', price: 1000, status: 'on_sale', is_auction: 1 });
+  upsertItem(db, accountId, scanId, { mercari_item_id: 'A03_AUC2', name: 'オークション2', price: 2000, status: 'on_sale', is_auction: 1 });
+  // オークション売却済み 1件
+  upsertItem(db, accountId, scanId, { mercari_item_id: 'A03_AUC3', name: 'オークション3', price: 3000, status: 'sold', is_auction: 1 });
+  // 通常商品（カウントに含まない）
+  upsertItem(db, accountId, scanId, { mercari_item_id: 'A03_NORMAL', name: '通常商品', price: 4000, status: 'on_sale', is_auction: 0 });
+
+  const count = getAuctionCount(db, accountId);
+  assert.equal(count.on_sale, 2, 'on_sale = 2');
+  assert.equal(count.sold,    1, 'sold = 1');
+  assert.equal(count.total,   3, 'total = 3');
+  db.close();
+});
+
+test('A04 — getAuctionCount: オークションなしのアカウントは全て 0', () => {
+  const db = createDb(':memory:');
+  const { id: accountId } = insertAccount(db, {
+    mercari_user_id: 'A04_USER',
+    display_name:   'テスト',
+    profile_url:    'https://jp.mercari.com/user/profile/A04_USER',
+  });
+  const scanId = startScan(db, accountId, '2026-09-11');
+  upsertItem(db, accountId, scanId, { mercari_item_id: 'A04_ITEM', name: '通常商品', price: 1000, status: 'on_sale', is_auction: 0 });
+
+  const count = getAuctionCount(db, accountId);
+  assert.equal(count.on_sale, 0, 'on_sale = 0');
+  assert.equal(count.sold,    0, 'sold = 0');
+  assert.equal(count.total,   0, 'total = 0');
   db.close();
 });
 

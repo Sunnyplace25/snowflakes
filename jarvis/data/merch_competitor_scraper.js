@@ -117,6 +117,7 @@ function normalizeItem(raw) {
     num_comments:       typeof raw.num_comments === 'number' ? raw.num_comments : null,
     shipping_from_area: raw.shipping_from_area?.name ?? raw.shipping_from_area ?? null,
     is_archived:        raw.is_archived ? 1 : 0,
+    is_auction:         raw.auction_info != null ? 1 : 0,
   };
 }
 
