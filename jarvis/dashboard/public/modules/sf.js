@@ -2565,6 +2565,18 @@ const SfModule = (() => {
 
   // ─── Soundrop Stats ───────────────────────────────────────────────────────
 
+  /** 通貨設定（localStorage で永続化） */
+  let sdCurrency = localStorage.getItem('sd_currency') || 'USD';
+  let sdRate     = parseFloat(localStorage.getItem('sd_rate') || '150');
+
+  /** USD 金額を現在の通貨設定でフォーマット */
+  function fmtAmt(usd, digits = 5) {
+    if (sdCurrency === 'JPY') {
+      return '¥' + Math.round((usd || 0) * sdRate).toLocaleString();
+    }
+    return '$' + (usd || 0).toFixed(digits);
+  }
+
   /** パイチャート用カラーパレット */
   const PIE_COLORS = [
     '#58a6ff', '#3fb950', '#d29922', '#f85149', '#a371f7',
@@ -2634,7 +2646,7 @@ const SfModule = (() => {
           <div class="sd-legend-dot" style="background:${color}"></div>
           <div class="sd-legend-name" title="${esc(label)}">${esc(label)}</div>
           <div class="sd-legend-pct">${r.pct.toFixed(1)}%</div>
-          <div class="sd-legend-usd">$${(r.total_usd || 0).toFixed(4)}</div>
+          <div class="sd-legend-usd">${fmtAmt(r.total_usd, 4)}</div>
         </div>
       `;
     }).join('');
@@ -2662,7 +2674,7 @@ const SfModule = (() => {
           <div class="sd-legend-dot" style="background:${color}"></div>
           <div class="sd-legend-name" title="${esc(label)}">${esc(label)}</div>
           <div class="sd-legend-pct">${r.pct.toFixed(1)}%</div>
-          <div class="sd-legend-usd">$${(r.total_usd || 0).toFixed(4)}</div>
+          <div class="sd-legend-usd">${fmtAmt(r.total_usd, 4)}</div>
         </div>
       `;
     }).join('');
@@ -2689,7 +2701,7 @@ const SfModule = (() => {
               <div class="sd-rank-bar" style="width:${barW}%"></div>
             </div>
           </td>
-          <td class="sd-rank-usd">$${(r.total_usd || 0).toFixed(5)}</td>
+          <td class="sd-rank-usd">${fmtAmt(r.total_usd)}</td>
           <td class="sd-rank-pct">${(r.pct || 0).toFixed(1)}%</td>
           <td class="sd-rank-qty">${(r.total_quantity || 0).toLocaleString()}</td>
         </tr>
@@ -2702,7 +2714,7 @@ const SfModule = (() => {
             <th>#</th>
             <th>タイトル</th>
             <th></th>
-            <th>Revenue (USD)</th>
+            <th>Revenue (${sdCurrency})</th>
             <th>%</th>
             <th>Units</th>
           </tr>
@@ -2721,9 +2733,9 @@ const SfModule = (() => {
       const label = (r.month || '').slice(2); // YY-MM 表示
       return `
         <div class="sd-bar-col">
-          <div class="sd-bar-value">$${(r.total_usd || 0).toFixed(3)}</div>
+          <div class="sd-bar-value">${fmtAmt(r.total_usd, 3)}</div>
           <div class="sd-bar-wrap">
-            <div class="sd-bar" style="height:${h}px" title="${r.month}: $${(r.total_usd || 0).toFixed(5)} / ${(r.total_quantity || 0).toLocaleString()} units"></div>
+            <div class="sd-bar" style="height:${h}px" title="${r.month}: ${fmtAmt(r.total_usd)} / ${(r.total_quantity || 0).toLocaleString()} units"></div>
           </div>
           <div class="sd-bar-label">${esc(label)}</div>
         </div>
@@ -2776,8 +2788,8 @@ const SfModule = (() => {
       totalsEl.innerHTML = `
         <div class="sd-totals-card">
           <div>
-            <div class="sd-total-usd">$${(res.totals.total_usd || 0).toFixed(5)}</div>
-            <div class="sd-total-label">Net Revenue (USD)</div>
+            <div class="sd-total-usd">${fmtAmt(res.totals.total_usd)}</div>
+            <div class="sd-total-label">Net Revenue (${sdCurrency})</div>
           </div>
           <div>
             <div class="sd-total-units">${(res.totals.total_quantity || 0).toLocaleString()}</div>
@@ -2801,6 +2813,42 @@ const SfModule = (() => {
       sel.dataset.initialized = '1';
       sel.addEventListener('change', () => loadSoundropStats(sel.value));
     }
+
+    // USD/JPY トグル初期化
+    const curBtns  = document.querySelectorAll('.sd-cur-btn');
+    const rateWrap = document.getElementById('sd-rate-wrap');
+    const rateInput = document.getElementById('sd-rate-input');
+
+    if (curBtns.length && !document.querySelector('.sd-cur-btn[data-initialized]')) {
+      if (rateInput) rateInput.value = sdRate;
+
+      // 初期アクティブ状態
+      curBtns.forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.cur === sdCurrency);
+        btn.dataset.initialized = '1';
+        btn.addEventListener('click', () => {
+          sdCurrency = btn.dataset.cur;
+          localStorage.setItem('sd_currency', sdCurrency);
+          curBtns.forEach(b => b.classList.toggle('is-active', b.dataset.cur === sdCurrency));
+          if (rateWrap) rateWrap.hidden = sdCurrency !== 'JPY';
+          loadSoundropStats(sel?.value || '');
+        });
+      });
+
+      if (rateWrap) rateWrap.hidden = sdCurrency !== 'JPY';
+
+      if (rateInput) {
+        rateInput.addEventListener('change', () => {
+          const v = parseFloat(rateInput.value);
+          if (v > 0) {
+            sdRate = v;
+            localStorage.setItem('sd_rate', String(sdRate));
+            if (sdCurrency === 'JPY') loadSoundropStats(sel?.value || '');
+          }
+        });
+      }
+    }
+
     loadSoundropStats(sel?.value || '');
   }
 

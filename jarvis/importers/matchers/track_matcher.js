@@ -23,17 +23,18 @@
  */
 export function matchTrack(db, row) {
   // 1. ISRC マッチ
-  if (row.isrc && row.isrc.trim()) {
+  const isrc = row.isrc || row.ISRC || '';
+  if (isrc && isrc.trim()) {
     const track = db.prepare(
       'SELECT id FROM sf_tracks WHERE isrc = ? LIMIT 1'
-    ).get(row.isrc.trim());
+    ).get(isrc.trim());
     if (track) {
       return { track_id: track.id, release_id: null, method: 'isrc' };
     }
   }
 
   // 2. UPC/EAN マッチ
-  const upc = row.upc || row.upc_ean || row['UPC/EAN'] || '';
+  const upc = row.upc || row.UPC || row.upc_ean || row['UPC/EAN'] || '';
   if (upc && upc.trim()) {
     const release = db.prepare(
       'SELECT id FROM sf_releases WHERE upc_ean = ? LIMIT 1'

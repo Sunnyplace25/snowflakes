@@ -13,9 +13,9 @@
  * 実行: node tools/import_soundrop_csv.mjs [--dry-run]
  */
 
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { DatabaseSync } from 'node:sqlite';
-import { basename } from 'path';
+import { basename, join } from 'path';
 
 const DRY_RUN = process.argv.includes('--dry-run');
 
@@ -70,12 +70,11 @@ function parseSoundropCsv(text) {
 }
 
 // ── メイン ────────────────────────────────────────────────────────────────
-const CSV_FILES = [
-  'imports/soundrop/747661_2026-05_Soundrop_2026 May.csv',
-  'imports/soundrop/747661_2026-06_Soundrop_2026 Jun.csv',
-  'imports/soundrop/747661_2026-07_Soundrop_2026 Jul.csv',
-  'imports/soundrop/747661_2026-08_Soundrop_2026 Aug.csv',
-];
+const IMPORT_DIR = 'imports/soundrop';
+const CSV_FILES = readdirSync(IMPORT_DIR)
+  .filter(f => f.toLowerCase().endsWith('.csv'))
+  .sort()
+  .map(f => join(IMPORT_DIR, f));
 
 if (DRY_RUN) console.log('[DRY-RUN] DBへの書き込みは行いません\n');
 

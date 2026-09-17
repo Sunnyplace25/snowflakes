@@ -1070,6 +1070,45 @@ a:not(.sf-btn):not(.sf-tab):not(.pub-open-btn):not(.wd-back):not([role="button"]
   font-size: 13px;
   cursor: pointer;
 }
+.sd-currency-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-left: 6px;
+}
+.sd-cur-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-sec);
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sd-cur-btn:hover { background: var(--bg-hover, rgba(255,255,255,0.06)); }
+.sd-cur-btn.is-active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.sd-rate-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-sec);
+}
+.sd-rate-wrap input {
+  width: 60px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-pri);
+  padding: 3px 6px;
+  font-size: 12px;
+  text-align: right;
+}
 
 .sd-totals-card {
   display: flex;

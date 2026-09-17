@@ -13,6 +13,69 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-09-16 — Soundrop インポーター ISRC マッチ修正
+
+### 目的
+ダッシュボードからの Soundrop CSV アップロード時に全行アンマッチになるバグを修正
+
+### 変更ファイル
+- `importers/matchers/track_matcher.js`
+- `tools/import_soundrop_csv.mjs`（9月分CSVをリストに追加）
+
+### 実装内容
+- `track_matcher.js`: ISRC フィールドを `row.isrc || row.ISRC` で参照するよう修正（CSV パーサーがヘッダー名をそのまま保持するため大文字 `ISRC` になっていた）
+- UPC も同様に `row.upc || row.UPC || row.upc_ean || row['UPC/EAN']` に修正
+
+### 確認内容
+- 9月分 169行 → 169件マッチ、sf_revenue +79、sf_music_metrics +51
+
+### 未確認
+- commit/push 未実施
+
+## 2026-09-16 — Soundrop Stats USD/JPY 切り替えトグル追加
+
+### 目的
+Soundrop Stats タブで収益を USD / JPY で切り替え表示できるようにする
+
+### 変更ファイル
+- `dashboard/public/index.html`（フィルタバーに USD/JPY トグル + レート入力追加）
+- `dashboard/public/modules/sf.js`（`fmtAmt()` ヘルパー追加・全 USD 表示箇所を更新・トグル初期化）
+- `dashboard/public/style.css`（`.sd-currency-toggle` / `.sd-cur-btn` / `.sd-rate-wrap` スタイル追加）
+
+### 実装内容
+- `sdCurrency`（USD/JPY）と `sdRate`（円レート、デフォルト150）を localStorage で永続化
+- トグルクリックまたはレート変更で即再レンダリング
+- Total Revenue / 月別バー / Services / Channels / Tracks / Releases すべて対応
+
+### 確認内容
+- APIレスポンス正常を確認（total_usd: 2.876）
+- UIは画面で要確認
+
+### 未確認
+- commit/push 未実施
+
+---
+
+## 2026-09-16 — Soundrop インポーター CSV 自動スキャン対応
+
+### 目的
+毎月新しいCSVが届くたびにスクリプトを編集しなくて済むようにする
+
+### 変更ファイル
+- `tools/import_soundrop_csv.mjs`
+
+### 実装内容
+- `CSV_FILES` のハードコードをやめ、`imports/soundrop/` フォルダ内の `.csv` をすべて自動スキャン（ソート順）
+- 既インポート済みファイルはスキップ済み
+
+### 確認内容
+- 全既存ファイルがスキップ、新規0件で正常終了を確認
+
+### 未確認
+- commit/push 未実施
+
+---
+
 ## 2026-08-24 — ダッシュボード不具合修正（黒画面 / データ未反映 / グラフ競合）
 
 ### 目的

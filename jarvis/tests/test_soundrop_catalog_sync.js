@@ -63,8 +63,8 @@ const RELEASE_DETAIL = {
   name: 'In One Sky',
   upc: '199999709107',
   catalog: '199999709107',
-  releaseDate: '2026-08-30T00:00:00',
-  saleStartDate: '2026-08-31T00:00:00',
+  releaseDate: '2028-12-31T00:00:00',
+  saleStartDate: '2029-01-01T00:00:00',
   isDraft: false,
   isReleaseCanceledFromDistribution: false,
   isLockedForDistribution: true,
@@ -183,14 +183,13 @@ test('N05: normalizeReleaseDetail — releaseDate 確定・除外フィールド
   const result = normalizeReleaseDetail(RELEASE_DETAIL);
 
   // release_date は releaseDate から
-  assert.equal(result.release_date, '2026-08-30');
+  assert.equal(result.release_date, '2028-12-31');
 
   // soundrop_sale_start_date は saleStartDate（release_date には影響しない）
-  assert.equal(result.soundrop_sale_start_date, '2026-08-31');
+  assert.equal(result.soundrop_sale_start_date, '2029-01-01');
 
-  // soundrop_status は日付から導出（2026-08-30 > 今日→ scheduled）
+  // soundrop_status は日付から導出（2028-12-31 > 今日 → scheduled）
   // deriveReleaseStatus は today=new Date() で呼ばれるので今日基準
-  // 本テスト実行時（2026-08-16）では scheduled になる
   assert.equal(result.soundrop_status, 'scheduled');
 
   assert.equal(result.soundrop_is_draft,    0);
