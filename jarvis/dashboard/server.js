@@ -10,6 +10,7 @@
  */
 
 import { createServer } from 'http';
+import { exec } from 'child_process';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
 import { resolve, extname, dirname, sep, basename } from 'path';
 import { fileURLToPath } from 'url';
@@ -525,6 +526,7 @@ const server = createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`JARVIS Dashboard 起動: http://${HOST}:${PORT}`);
   console.log('終了するには Ctrl+C を押してください');
+  exec(`start http://${HOST}:${PORT}`);
 });
 
 process.on('SIGINT', () => {
