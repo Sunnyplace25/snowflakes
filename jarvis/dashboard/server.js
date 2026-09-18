@@ -11,7 +11,7 @@
 
 import { createServer } from 'http';
 import { exec } from 'child_process';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, statSync } from 'fs';
 import { resolve, extname, dirname, sep, basename } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -442,7 +442,12 @@ const server = createServer(async (req, res) => {
   }
 
   let relativePath = url.pathname === '/' ? '/index.html' : url.pathname;
-  const filePath = resolve(PUBLIC_DIR, '.' + relativePath);
+  let filePath = resolve(PUBLIC_DIR, '.' + relativePath);
+  // ディレクトリの場合は index.html を返す
+  if (existsSync(filePath) && statSync(filePath).isDirectory()) {
+    const idx = resolve(filePath, 'index.html');
+    if (existsSync(idx)) { filePath = idx; relativePath = relativePath.replace(/\/?$/, '/index.html'); }
+  }
   if (!filePath.startsWith(PUBLIC_DIR + sep) && filePath !== PUBLIC_DIR) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     return res.end('Forbidden');

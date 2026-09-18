@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SF Task Notify — JARVIS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="sftn-app">
+
+    <header class="sftn-header">
+      <div class="sftn-header-left">
+        <span class="sftn-logo">❄ Task Notify</span>
+        <span class="sftn-date" id="sftn-date">—</span>
+      </div>
+      <div class="sftn-header-right">
+        <span class="sftn-notify-status" id="sftn-notify-status">通知: 未設定</span>
+        <button class="sftn-btn sftn-btn-outline" id="sftn-notify-btn">通知を許可</button>
+        <a class="sftn-btn sftn-btn-ghost" href="/">← JARVIS</a>
+      </div>
+    </header>
+
+    <main class="sftn-main">
+
+      <section class="sftn-section">
+        <div class="sftn-section-header">
+          <h2 class="sftn-section-title">今日のタスク</h2>
+          <button class="sftn-btn sftn-btn-primary" id="sftn-add-btn">＋ 追加</button>
+        </div>
+        <div id="sftn-task-list" class="sftn-task-list">
+          <p class="sftn-empty">タスクはありません</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 追加・編集フォーム -->
+    <div class="sftn-overlay" id="sftn-form-overlay" hidden>
+      <div class="sftn-modal">
+        <h3 class="sftn-modal-title" id="sftn-form-title">タスクを追加</h3>
+        <form id="sftn-task-form" autocomplete="off">
+          <div class="sftn-field">
+            <label class="sftn-label">タスク名 <span class="sftn-req">*</span></label>
+            <input class="sftn-input" type="text" id="sftn-f-name" placeholder="例：歌詞を書く" required>
+          </div>
+          <div class="sftn-field">
+            <label class="sftn-label">内容・メモ</label>
+            <textarea class="sftn-input sftn-textarea" id="sftn-f-content" placeholder="詳細・メモ"></textarea>
+          </div>
+          <div class="sftn-field-row">
+            <div class="sftn-field">
+              <label class="sftn-label">開始日時 <span class="sftn-req">*</span></label>
+              <input class="sftn-input" type="datetime-local" id="sftn-f-startat" required>
+            </div>
+            <div class="sftn-field">
+              <label class="sftn-label">カテゴリ</label>
+              <select class="sftn-input sftn-select" id="sftn-f-category">
+                <option value="音楽">音楽</option>
+                <option value="小説">小説</option>
+                <option value="SNS">SNS</option>
+                <option value="イラスト">イラスト</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+          </div>
+          <div class="sftn-form-actions">
+            <button type="button" class="sftn-btn sftn-btn-ghost" id="sftn-form-cancel">キャンセル</button>
+            <button type="submit" class="sftn-btn sftn-btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 通知ポップアップ -->
+    <div class="sftn-overlay sftn-notify-overlay" id="sftn-notify-overlay" hidden>
+      <div class="sftn-modal sftn-notify-modal">
+        <div class="sftn-notify-icon">⏰</div>
+        <h3 class="sftn-notify-name" id="sftn-notify-name">—</h3>
+        <p class="sftn-notify-meta" id="sftn-notify-meta"></p>
+        <p class="sftn-notify-content" id="sftn-notify-content"></p>
+        <div class="sftn-notify-actions">
+          <button class="sftn-btn sftn-btn-primary" id="sftn-notify-done">✓ 完了</button>
+          <button class="sftn-btn sftn-btn-secondary" id="sftn-notify-snooze">あと10分</button>
+          <button class="sftn-btn sftn-btn-ghost" id="sftn-notify-skip">スキップ</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
