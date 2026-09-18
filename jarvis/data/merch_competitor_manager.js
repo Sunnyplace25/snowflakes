@@ -681,13 +681,30 @@ export function setSetting(db, key, value) {
  * @returns {object[]} - { brand, sold_count, avg_price }
  */
 export function getBrandSoldRanking(db, accountId, limit = 20) {
+  // is_auction=1 を除外。ベースライン商品（sold_at=NULL）は sold 件数カウントから除外する。
   return db.prepare(`
     SELECT classified_brand AS brand,
-           COUNT(*) AS sold_count,
-           CAST(AVG(price) AS INTEGER) AS avg_price
+           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
+           COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
+           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN price END) AS INTEGER) AS avg_price,
+           ROUND(
+             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+             / NULLIF(
+                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
+               + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+               0
+             ),
+             1
+           ) AS sell_rate,
+           CAST(AVG(
+             CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+             THEN julianday(sold_at) - julianday(created_api)
+             END
+           ) AS INTEGER) AS avg_sold_days
       FROM merch_competitor_items
-     WHERE account_id = ? AND status = 'sold' AND classified_brand IS NOT NULL
+     WHERE account_id = ? AND is_auction = 0 AND classified_brand IS NOT NULL
      GROUP BY classified_brand
+    HAVING sold_count > 0
      ORDER BY sold_count DESC
      LIMIT ?
   `).all(accountId, limit);
@@ -700,13 +717,28 @@ export function getBrandSoldRanking(db, accountId, limit = 20) {
  * @returns {object[]} - { category, on_sale_count, sold_count, avg_sold_price }
  */
 export function getCategoryStats(db, accountId) {
+  // is_auction=1 を除外。sold 件数は sold_at IS NOT NULL でベースライン除外する。
   return db.prepare(`
     SELECT classified_category AS category,
-           SUM(CASE WHEN status = 'on_sale' THEN 1 ELSE 0 END) AS on_sale_count,
-           SUM(CASE WHEN status = 'sold'    THEN 1 ELSE 0 END) AS sold_count,
-           CAST(AVG(CASE WHEN status = 'sold' THEN price END) AS INTEGER) AS avg_sold_price
+           COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
+           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
+           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN price END) AS INTEGER) AS avg_sold_price,
+           ROUND(
+             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+             / NULLIF(
+                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
+               + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+               0
+             ),
+             1
+           ) AS sell_rate,
+           CAST(AVG(
+             CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+             THEN julianday(sold_at) - julianday(created_api)
+             END
+           ) AS INTEGER) AS avg_sold_days
       FROM merch_competitor_items
-     WHERE account_id = ? AND classified_category IS NOT NULL
+     WHERE account_id = ? AND is_auction = 0 AND classified_category IS NOT NULL
      GROUP BY classified_category
      ORDER BY sold_count DESC
   `).all(accountId);
@@ -770,7 +802,7 @@ export function saveReport(db, { report_type, period_start, period_end, account_
  * @returns {object[]}
  */
 export function getSoldDaysStats(db, accountId) {
-  // ベースラインインポート商品（sold_at = NULL）は売却日不明のため除外する
+  // ベースラインインポート商品（sold_at = NULL）は売却日不明のため除外する。is_auction=1 も除外。
   return db.prepare(`
     SELECT classified_brand, classified_category,
            COUNT(*) AS sold_count,
@@ -778,7 +810,7 @@ export function getSoldDaysStats(db, accountId) {
            MIN(CAST(julianday(sold_at) - julianday(created_api) AS INTEGER)) AS min_days,
            MAX(CAST(julianday(sold_at) - julianday(created_api) AS INTEGER)) AS max_days
       FROM merch_competitor_items
-     WHERE account_id = ? AND status = 'sold'
+     WHERE account_id = ? AND status = 'sold' AND is_auction = 0
        AND sold_at IS NOT NULL AND created_api IS NOT NULL
      GROUP BY classified_brand, classified_category
      ORDER BY sold_count DESC
@@ -793,14 +825,102 @@ export function getSoldDaysStats(db, accountId) {
  * @returns {object[]}
  */
 export function getUnsoldItemsWithAge(db, accountId, limit = 50) {
+  // is_auction=1 を除外する。
   return db.prepare(`
     SELECT id, mercari_item_id, name, price, classified_brand, classified_category,
            created_api, first_seen_at, last_seen_at,
            CAST(julianday(datetime('now','localtime'))
                 - julianday(COALESCE(created_api, first_seen_at)) AS INTEGER) AS days_listed
       FROM merch_competitor_items
-     WHERE account_id = ? AND status = 'on_sale'
+     WHERE account_id = ? AND status = 'on_sale' AND is_auction = 0
      ORDER BY days_listed DESC
+     LIMIT ?
+  `).all(accountId, limit);
+}
+
+/**
+ * 価格帯別の売却件数・売却率を返す。
+ * is_auction=1 とベースライン商品（sold_at=NULL）を除外する。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @returns {object[]} - { price_range, sold_count, on_sale_count, sell_rate }
+ */
+export function getPriceRangeStats(db, accountId) {
+  return db.prepare(`
+    SELECT
+      CASE
+        WHEN price <  1000  THEN '〜999円'
+        WHEN price <  3000  THEN '1,000〜2,999円'
+        WHEN price <  5000  THEN '3,000〜4,999円'
+        WHEN price < 10000  THEN '5,000〜9,999円'
+        ELSE                     '10,000円〜'
+      END AS price_range,
+      MIN(price) AS price_range_min,
+      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
+      COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
+      ROUND(
+        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+        / NULLIF(
+            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
+          + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+          0
+        ),
+        1
+      ) AS sell_rate
+      FROM merch_competitor_items
+     WHERE account_id = ? AND is_auction = 0
+     GROUP BY price_range
+     ORDER BY price_range_min
+  `).all(accountId);
+}
+
+/**
+ * 全体サマリー（販売中件数・売却済件数・売却率・平均売却日数）を返す。
+ * is_auction=1 とベースライン商品（sold_at=NULL）を除外する。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @returns {{ on_sale_count: number, sold_count: number, overall_sell_rate: number|null, overall_avg_days: number|null }}
+ */
+export function getSummaryStats(db, accountId) {
+  return db.prepare(`
+    SELECT
+      COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
+      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
+      ROUND(
+        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+        / NULLIF(
+            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
+          + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+          0
+        ),
+        1
+      ) AS overall_sell_rate,
+      CAST(AVG(
+        CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+        THEN julianday(sold_at) - julianday(created_api)
+        END
+      ) AS INTEGER) AS overall_avg_days
+      FROM merch_competitor_items
+     WHERE account_id = ? AND is_auction = 0
+  `).get(accountId);
+}
+
+/**
+ * 最近売却された商品一覧を返す。
+ * is_auction=1 とベースライン商品（sold_at=NULL）を除外する。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} accountId
+ * @param {number} [limit=20]
+ * @returns {object[]} - { name, classified_brand, classified_category, price, sold_days, sold_at }
+ */
+export function getSoldItemsList(db, accountId, limit = 20) {
+  return db.prepare(`
+    SELECT name, classified_brand, classified_category, price,
+           CAST(julianday(sold_at) - julianday(created_api) AS INTEGER) AS sold_days,
+           sold_at
+      FROM merch_competitor_items
+     WHERE account_id = ? AND is_auction = 0 AND status = 'sold' AND sold_at IS NOT NULL
+     ORDER BY sold_at DESC
      LIMIT ?
   `).all(accountId, limit);
 }

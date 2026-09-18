@@ -137,6 +137,7 @@ import {
   updateAccount as updateCompetitorAccount,
   listItems as listCompetitorItems,
   getBrandSoldRanking, getCategoryStats,
+  getPriceRangeStats, getSummaryStats, getSoldItemsList,
   getBuyingCandidates, getSoldDaysStats, getUnsoldItemsWithAge, getAuctionCount,
   getRecentScans as getCompetitorScans,
   getSettings as getAnalysisSettings, setSetting,
@@ -3346,8 +3347,11 @@ export function createApiHandler(db) {
         const id = parseInt(path.split('/')[4], 10);
         return jsonRes(res, 200, {
           ok: true,
+          summary:           getSummaryStats(db, id),
           brand_ranking:     getBrandSoldRanking(db, id),
           category_stats:    getCategoryStats(db, id),
+          price_range_stats: getPriceRangeStats(db, id),
+          sold_items_list:   getSoldItemsList(db, id, 20),
           buying_candidates: getBuyingCandidates(db, id, 50),
           sold_days:         getSoldDaysStats(db, id),
           unsold_age:        getUnsoldItemsWithAge(db, id, 50),
