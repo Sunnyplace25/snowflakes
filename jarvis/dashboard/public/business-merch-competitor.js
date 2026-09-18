@@ -17,6 +17,7 @@
   // ─── 状態 ───────────────────────────────────────────────────────────────────
 
   let currentAccountId = null;
+  let currentPeriodDays = null; // null=全期間 / 7 / 30
   let accounts = [];
   let competitorSubTab = 'import';
 
@@ -162,9 +163,15 @@
 
         <!-- 売れ筋分析 -->
         <div id="comp-tab-brands" class="sf-tab-panel" hidden style="padding-top:16px">
-          <div id="comp-brands-selector" style="margin-bottom:12px">
+          <div id="comp-brands-selector" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
             <label style="font-size:13px;color:var(--text-sec)">アカウント: </label>
             <select id="comp-brands-account-select" class="sf-input" style="width:auto;display:inline-block"></select>
+            <span style="font-size:13px;color:var(--text-sec);margin-left:8px">期間:</span>
+            <div id="comp-period-btns" style="display:inline-flex;gap:4px">
+              <button class="comp-period-btn active" data-days="" style="padding:4px 12px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--accent,#3b82f6);color:#fff;cursor:pointer">全期間</button>
+              <button class="comp-period-btn" data-days="30" style="padding:4px 12px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card,var(--card-bg));color:var(--text-sec);cursor:pointer">直近30日</button>
+              <button class="comp-period-btn" data-days="7" style="padding:4px 12px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card,var(--card-bg));color:var(--text-sec);cursor:pointer">直近7日</button>
+            </div>
           </div>
           <div id="comp-brands-content" class="loading">読み込み中...</div>
         </div>
@@ -235,6 +242,18 @@
     });
     document.getElementById('comp-brands-account-select').addEventListener('change', e => {
       currentAccountId = parseInt(e.target.value, 10) || null;
+      loadBrands();
+    });
+    document.getElementById('comp-period-btns').addEventListener('click', e => {
+      const btn = e.target.closest('.comp-period-btn');
+      if (!btn) return;
+      currentPeriodDays = btn.dataset.days ? parseInt(btn.dataset.days, 10) : null;
+      document.querySelectorAll('.comp-period-btn').forEach(b => {
+        const isActive = b === btn;
+        b.style.background    = isActive ? 'var(--accent,#3b82f6)' : 'var(--bg-card,var(--card-bg))';
+        b.style.color         = isActive ? '#fff' : 'var(--text-sec)';
+        b.style.borderColor   = isActive ? 'transparent' : 'var(--border)';
+      });
       loadBrands();
     });
     document.getElementById('comp-candidates-account-select').addEventListener('change', e => {
@@ -453,17 +472,24 @@
     }
     el.innerHTML = '<div class="loading">読み込み中...</div>';
     try {
-      const res = await fetch(`/api/competitor/accounts/${currentAccountId}/analysis`);
+      const qs  = currentPeriodDays ? `?days=${currentPeriodDays}` : '';
+      const res = await fetch(`/api/competitor/accounts/${currentAccountId}/analysis${qs}`);
       const d   = await res.json();
       if (!d.ok) throw new Error(d.error);
 
-      const summary    = d.summary          ?? {};
-      const brands     = d.brand_ranking    ?? [];
-      const cats       = d.category_stats   ?? [];
+      const summary    = d.summary           ?? {};
+      const brands     = d.brand_ranking     ?? [];
+      const cats       = d.category_stats    ?? [];
       const priceRange = d.price_range_stats ?? [];
-      const soldItems  = d.sold_items_list  ?? [];
-      const soldDays   = d.sold_days        ?? [];
-      const unsoldAge  = d.unsold_age       ?? [];
+      const soldItems  = d.sold_items_list   ?? [];
+      const soldDays   = d.sold_days         ?? [];
+      const unsoldAge  = d.unsold_age        ?? [];
+      const isPeriod   = currentPeriodDays != null;
+
+      // 最も売れた価格帯をフロント側で算出
+      const topRange = priceRange.reduce(
+        (best, r) => (r.sold_count > (best?.sold_count ?? -1) ? r : best), null
+      );
 
       el.innerHTML = `
         <p style="font-size:12px;color:var(--text-sec);margin:0 0 16px;line-height:1.6">
@@ -471,35 +497,38 @@
           オークション商品・追跡開始前に売却済みの商品は集計から除外されています。
         </p>
 
-        ${renderSummaryBar(summary)}
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px">
-          <div>
-            <h4 style="margin:0 0 10px;font-size:14px">売れ筋ブランド（上位）</h4>
-            ${renderBrandTable(brands)}
-          </div>
-          <div>
-            <h4 style="margin:0 0 10px;font-size:14px">カテゴリ別統計</h4>
-            ${renderCategoryTable(cats)}
-          </div>
-        </div>
+        ${renderSummaryBar(summary, topRange, isPeriod)}
 
         <div style="margin-top:24px">
-          <h4 style="margin:0 0 10px;font-size:14px">価格帯別の売却状況</h4>
-          ${renderPriceRangeTable(priceRange)}
-        </div>
-
-        <div style="margin-top:24px">
-          <h4 style="margin:0 0 10px;font-size:14px">売れ筋商品一覧（最近の売却）</h4>
+          <h4 style="margin:0 0 10px;font-size:14px">期間内に売れた商品</h4>
           ${renderSoldItemsTable(soldItems)}
         </div>
 
         <div style="margin-top:24px">
-          <h4 style="margin:0 0 10px;font-size:14px">売却所要日数（ブランド別）</h4>
+          <h4 style="margin:0 0 10px;font-size:14px">価格帯別の売却件数</h4>
+          ${renderPriceRangeTable(priceRange)}
+        </div>
+
+        <div style="margin-top:32px;padding-top:16px;border-top:1px solid var(--border)">
+          <p style="font-size:11px;color:var(--text-sec);margin:0 0 14px">補助データ</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div>
+              <h4 style="margin:0 0 10px;font-size:13px">売れ筋ブランド（上位）</h4>
+              ${renderBrandTable(brands, isPeriod)}
+            </div>
+            <div>
+              <h4 style="margin:0 0 10px;font-size:13px">カテゴリ別統計</h4>
+              ${renderCategoryTable(cats, isPeriod)}
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px">
+          <h4 style="margin:0 0 10px;font-size:13px">売却所要日数（ブランド別・全期間）</h4>
           ${renderSoldDaysTable(soldDays)}
         </div>
         <div style="margin-top:24px">
-          <h4 style="margin:0 0 10px;font-size:14px">滞留在庫（出品中・日数順）</h4>
+          <h4 style="margin:0 0 10px;font-size:13px">滞留在庫（出品中・日数順）</h4>
           ${renderUnsoldAgeTable(unsoldAge)}
         </div>
       `;
@@ -508,12 +537,15 @@
     }
   }
 
-  function renderSummaryBar(s) {
+  function renderSummaryBar(s, topRange, isPeriod) {
+    const periodLabel = currentPeriodDays === 7  ? '直近7日'
+                      : currentPeriodDays === 30 ? '直近30日'
+                      : '全期間';
     const items = [
-      { label: '販売中',       value: s.on_sale_count  != null ? `${s.on_sale_count}件`  : '—' },
-      { label: '売却済み',     value: s.sold_count     != null ? `${s.sold_count}件`     : '—' },
-      { label: '売却率',       value: s.overall_sell_rate != null ? `${s.overall_sell_rate}%` : '—' },
-      { label: '平均売却日数', value: s.overall_avg_days  != null ? `${s.overall_avg_days}日` : '—' },
+      { label: '期間',           value: periodLabel },
+      { label: '売却件数',       value: s.sold_count    != null ? `${s.sold_count}件`    : '—' },
+      { label: '平均売却価格',   value: s.avg_sold_price != null ? yen(s.avg_sold_price) : '—' },
+      { label: '最も売れた価格帯', value: (topRange && topRange.sold_count > 0) ? esc(topRange.price_range) : '—' },
     ];
     return `
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
@@ -521,26 +553,29 @@
           <div style="background:var(--bg-card,var(--card-bg));border:1px solid var(--border);
                       border-radius:8px;padding:12px 16px;text-align:center">
             <div style="font-size:11px;color:var(--text-sec);margin-bottom:4px">${it.label}</div>
-            <div style="font-size:20px;font-weight:700">${it.value}</div>
+            <div style="font-size:18px;font-weight:700;word-break:break-word">${it.value}</div>
           </div>
         `).join('')}
       </div>
     `;
   }
 
-  function renderBrandTable(brands) {
+  // isPeriod=true のとき sell_rate・on_sale_count カラムを省略する
+  function renderBrandTable(brands, isPeriod) {
     if (brands.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
     return `
       <table class="sf-table" style="width:100%;font-size:12px">
         <thead><tr>
-          <th>ブランド</th><th>売却数</th><th>売却率</th><th>平均売却日数</th><th>平均価格</th>
+          <th>ブランド</th><th>売却数</th>
+          ${isPeriod ? '' : '<th>売却率</th>'}
+          <th>平均売却日数</th><th>平均価格</th>
         </tr></thead>
         <tbody>
           ${brands.map(b => `
             <tr>
               <td>${esc(b.brand)}</td>
               <td>${b.sold_count}件</td>
-              <td>${b.sell_rate != null ? b.sell_rate + '%' : '—'}</td>
+              ${isPeriod ? '' : `<td>${b.sell_rate != null ? b.sell_rate + '%' : '—'}</td>`}
               <td>${b.avg_sold_days != null ? b.avg_sold_days + '日' : '—'}</td>
               <td>${yen(b.avg_price)}</td>
             </tr>
@@ -550,20 +585,21 @@
     `;
   }
 
-  function renderCategoryTable(cats) {
+  function renderCategoryTable(cats, isPeriod) {
     if (cats.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
     return `
       <table class="sf-table" style="width:100%;font-size:12px">
         <thead><tr>
-          <th>カテゴリ</th><th>出品中</th><th>売却</th><th>売却率</th><th>平均売却日数</th><th>平均売値</th>
+          <th>カテゴリ</th>
+          ${isPeriod ? '' : '<th>出品中</th><th>売却率</th>'}
+          <th>売却</th><th>平均売却日数</th><th>平均売値</th>
         </tr></thead>
         <tbody>
           ${cats.map(c => `
             <tr>
               <td>${esc(c.category)}</td>
-              <td>${c.on_sale_count}</td>
+              ${isPeriod ? '' : `<td>${c.on_sale_count}</td><td>${c.sell_rate != null ? c.sell_rate + '%' : '—'}</td>`}
               <td>${c.sold_count}</td>
-              <td>${c.sell_rate != null ? c.sell_rate + '%' : '—'}</td>
               <td>${c.avg_sold_days != null ? c.avg_sold_days + '日' : '—'}</td>
               <td>${c.avg_sold_price ? yen(c.avg_sold_price) : '—'}</td>
             </tr>
@@ -575,16 +611,17 @@
 
   function renderPriceRangeTable(rows) {
     if (!rows || rows.length === 0) return '<p style="color:var(--text-sec);font-size:13px">データがありません。</p>';
+    const total = rows.reduce((s, r) => s + (r.sold_count ?? 0), 0);
     return `
       <table class="sf-table" style="width:100%;font-size:12px">
-        <thead><tr><th>価格帯</th><th>売却数</th><th>販売中</th><th>売却率</th></tr></thead>
+        <thead><tr><th>価格帯</th><th>売却数</th><th>割合</th><th>販売中</th></tr></thead>
         <tbody>
           ${rows.map(r => `
             <tr>
               <td>${esc(r.price_range)}</td>
               <td>${r.sold_count}件</td>
+              <td>${total > 0 ? Math.round(r.sold_count / total * 100) + '%' : '—'}</td>
               <td>${r.on_sale_count}件</td>
-              <td>${r.sell_rate != null ? r.sell_rate + '%' : '—'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -597,7 +634,7 @@
     return `
       <table class="sf-table" style="width:100%;font-size:12px">
         <thead><tr>
-          <th>商品名</th><th>ブランド</th><th>カテゴリ</th><th>価格</th><th>売却日数</th><th>売却日</th>
+          <th>商品名</th><th>ブランド</th><th>カテゴリ</th><th>売却価格</th><th>売却日数</th><th>売却日</th>
         </tr></thead>
         <tbody>
           ${rows.map(r => `

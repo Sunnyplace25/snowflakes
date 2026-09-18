@@ -3343,15 +3343,19 @@ export function createApiHandler(db) {
       }
 
       // GET /api/competitor/accounts/:id/analysis — 分析データ
+      // ?days=7 または ?days=30 で期間フィルター（省略時は全期間）
       if (method === 'GET' && /^\/api\/competitor\/accounts\/\d+\/analysis$/.test(path)) {
         const id = parseInt(path.split('/')[4], 10);
+        const daysParam = parseInt(url.searchParams.get('days'), 10);
+        const days = [7, 30].includes(daysParam) ? daysParam : null;
         return jsonRes(res, 200, {
           ok: true,
-          summary:           getSummaryStats(db, id),
-          brand_ranking:     getBrandSoldRanking(db, id),
-          category_stats:    getCategoryStats(db, id),
-          price_range_stats: getPriceRangeStats(db, id),
-          sold_items_list:   getSoldItemsList(db, id, 20),
+          days,
+          summary:           getSummaryStats(db, id, days),
+          brand_ranking:     getBrandSoldRanking(db, id, 20, days),
+          category_stats:    getCategoryStats(db, id, days),
+          price_range_stats: getPriceRangeStats(db, id, days),
+          sold_items_list:   getSoldItemsList(db, id, 50, days),
           buying_candidates: getBuyingCandidates(db, id, 50),
           sold_days:         getSoldDaysStats(db, id),
           unsold_age:        getUnsoldItemsWithAge(db, id, 50),

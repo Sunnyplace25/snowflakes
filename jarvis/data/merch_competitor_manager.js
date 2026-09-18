@@ -680,24 +680,36 @@ export function setSetting(db, key, value) {
  * @param {number} [limit=20]
  * @returns {object[]} - { brand, sold_count, avg_price }
  */
-export function getBrandSoldRanking(db, accountId, limit = 20) {
+/**
+ * 期間フィルター SQL フラグメント（sold_at に適用）。
+ * days は 7 or 30 のみ想定（API 側でバリデーション済み）。
+ * @param {number|null} days
+ * @returns {string}
+ */
+function soldInPeriod(days) {
+  return days ? `AND sold_at >= datetime('now', 'localtime', '-${days} days')` : '';
+}
+
+export function getBrandSoldRanking(db, accountId, limit = 20, days = null) {
   // is_auction=1 を除外。ベースライン商品（sold_at=NULL）は sold 件数カウントから除外する。
+  // sold 集計は sold_at の期間フィルターを適用。on_sale_count は現時点スナップショット。
+  const p = soldInPeriod(days);
   return db.prepare(`
     SELECT classified_brand AS brand,
-           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
-           COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
-           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN price END) AS INTEGER) AS avg_price,
+           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END) AS sold_count,
+           COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END) AS on_sale_count,
+           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN price END) AS INTEGER) AS avg_price,
            ROUND(
-             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN 1 END) * 100.0
              / NULLIF(
-                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
-               + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END)
+               + COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END),
                0
              ),
              1
            ) AS sell_rate,
            CAST(AVG(
-             CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+             CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} AND created_api IS NOT NULL
              THEN julianday(sold_at) - julianday(created_api)
              END
            ) AS INTEGER) AS avg_sold_days
@@ -716,24 +728,26 @@ export function getBrandSoldRanking(db, accountId, limit = 20) {
  * @param {number} accountId
  * @returns {object[]} - { category, on_sale_count, sold_count, avg_sold_price }
  */
-export function getCategoryStats(db, accountId) {
+export function getCategoryStats(db, accountId, days = null) {
   // is_auction=1 を除外。sold 件数は sold_at IS NOT NULL でベースライン除外する。
+  // sold 集計は sold_at の期間フィルターを適用。on_sale_count は現時点スナップショット。
+  const p = soldInPeriod(days);
   return db.prepare(`
     SELECT classified_category AS category,
-           COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
-           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
-           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN price END) AS INTEGER) AS avg_sold_price,
+           COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END) AS on_sale_count,
+           COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END) AS sold_count,
+           CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN price END) AS INTEGER) AS avg_sold_price,
            ROUND(
-             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+             COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN 1 END) * 100.0
              / NULLIF(
-                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
-               + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+                 COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END)
+               + COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END),
                0
              ),
              1
            ) AS sell_rate,
            CAST(AVG(
-             CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+             CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} AND created_api IS NOT NULL
              THEN julianday(sold_at) - julianday(created_api)
              END
            ) AS INTEGER) AS avg_sold_days
@@ -845,7 +859,9 @@ export function getUnsoldItemsWithAge(db, accountId, limit = 50) {
  * @param {number} accountId
  * @returns {object[]} - { price_range, sold_count, on_sale_count, sell_rate }
  */
-export function getPriceRangeStats(db, accountId) {
+export function getPriceRangeStats(db, accountId, days = null) {
+  // sold 集計は sold_at の期間フィルターを適用。on_sale_count は現時点スナップショット。
+  const p = soldInPeriod(days);
   return db.prepare(`
     SELECT
       CASE
@@ -856,13 +872,13 @@ export function getPriceRangeStats(db, accountId) {
         ELSE                     '10,000円〜'
       END AS price_range,
       MIN(price) AS price_range_min,
-      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
-      COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
+      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END) AS sold_count,
+      COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END) AS on_sale_count,
       ROUND(
-        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN 1 END) * 100.0
         / NULLIF(
-            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
-          + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END)
+          + COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END),
           0
         ),
         1
@@ -879,24 +895,30 @@ export function getPriceRangeStats(db, accountId) {
  * is_auction=1 とベースライン商品（sold_at=NULL）を除外する。
  * @param {import('node:sqlite').DatabaseSync} db
  * @param {number} accountId
- * @returns {{ on_sale_count: number, sold_count: number, overall_sell_rate: number|null, overall_avg_days: number|null }}
+ * @param {number|null} [days] - 期間フィルター（7 / 30 / null=全期間）
+ * @returns {{ on_sale_count, sold_count, avg_sold_price, overall_sell_rate, overall_avg_days }}
  */
-export function getSummaryStats(db, accountId) {
+export function getSummaryStats(db, accountId, days = null) {
+  // sold 集計・avg_sold_price は sold_at の期間フィルターを適用。
+  // on_sale_count は現時点スナップショット。
+  // avg_sold_price には売却時点の price（items.price）を使用する。sold 後は再スキャンされないため凍結済み。
+  const p = soldInPeriod(days);
   return db.prepare(`
     SELECT
-      COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END) AS on_sale_count,
-      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END) AS sold_count,
+      COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END) AS on_sale_count,
+      COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END) AS sold_count,
+      CAST(AVG(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN price END) AS INTEGER) AS avg_sold_price,
       ROUND(
-        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL THEN 1 END) * 100.0
+        COUNT(CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} THEN 1 END) * 100.0
         / NULLIF(
-            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL THEN 1 END)
-          + COUNT(CASE WHEN status = 'on_sale'                         THEN 1 END),
+            COUNT(CASE WHEN status = 'sold'    AND sold_at IS NOT NULL ${p} THEN 1 END)
+          + COUNT(CASE WHEN status = 'on_sale'                               THEN 1 END),
           0
         ),
         1
       ) AS overall_sell_rate,
       CAST(AVG(
-        CASE WHEN status = 'sold' AND sold_at IS NOT NULL AND created_api IS NOT NULL
+        CASE WHEN status = 'sold' AND sold_at IS NOT NULL ${p} AND created_api IS NOT NULL
         THEN julianday(sold_at) - julianday(created_api)
         END
       ) AS INTEGER) AS overall_avg_days
@@ -913,13 +935,15 @@ export function getSummaryStats(db, accountId) {
  * @param {number} [limit=20]
  * @returns {object[]} - { name, classified_brand, classified_category, price, sold_days, sold_at }
  */
-export function getSoldItemsList(db, accountId, limit = 20) {
+export function getSoldItemsList(db, accountId, limit = 20, days = null) {
+  // price は sold 後に再スキャンされないため売却時点の価格として扱える。
+  const p = soldInPeriod(days);
   return db.prepare(`
     SELECT name, classified_brand, classified_category, price,
            CAST(julianday(sold_at) - julianday(created_api) AS INTEGER) AS sold_days,
            sold_at
       FROM merch_competitor_items
-     WHERE account_id = ? AND is_auction = 0 AND status = 'sold' AND sold_at IS NOT NULL
+     WHERE account_id = ? AND is_auction = 0 AND status = 'sold' AND sold_at IS NOT NULL ${p}
      ORDER BY sold_at DESC
      LIMIT ?
   `).all(accountId, limit);
