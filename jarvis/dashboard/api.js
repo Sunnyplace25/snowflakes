@@ -7,6 +7,30 @@
  * - ConflictError（完全休日への仕事登録）は 409 で返す
  */
 
+// ── 出版事業部 (Content Business v2) ─────────────────────────────────────────
+import {
+  createProject, getProject, listProjects, listSeries, getWeeklySummary,
+  getCbEmployeeStatuses,
+  runFullAutoUntilIdeaApproval, runFullAutoUntilApproval, runFullAutoFromDraft,
+  runEditingOnce, advanceToApproval,
+  runWriterRevisionOnly,
+  runWriting,
+  selectIdea, approvePublication, requestRevision, holdProject, markPublished,
+  addResearchUrl, addSalesRecord, pinProject, startMeasuring,
+  getOrCreateChatSession, createMeetingSession, getChatHistory,
+  saveChatMessage, processChatMessage, processEditorialMeeting,
+  buildEmployeeContext,
+  getChatDraft, listChatDrafts, reviseChatDraft, sendDraftToEditor,
+  softDeleteProject, softDeleteAllErrorProjects,
+  runOwnerReview, runDirectPlan,
+  runIdeaFactCheckFromIdea, runIdeaOutlineOnly,
+  listKnowledge, createKnowledge, updateKnowledge, deleteKnowledge,
+  getSeriesProgress, startNextSeriesArticle,
+  saveMetrics, listMetrics, getMetricsSummary, importMetricsCSV,
+  markPublishedWithInfo, analyzeMetrics, setPublishedAt,
+} from '../content_business/engine.mjs';
+
+
 import { addWorkRecord, getWorkRecords, updateWorkRecord, updateWorkRecordFull, deleteWorkRecord }
   from '../data/work_record_manager.js';
 import { upsertDailyStatus, getDailyStatus, getFullDayOffCount }
@@ -64,9 +88,18 @@ import {
   getScheduledArticles,
   getDashboardSummary,
   generateExport,
+  rejectArticle,
+  restoreArticle,
+  getRejectionHistory,
+  bulkReject,
+  createSalesRecord,
+  getSalesRecords,
+  updateSalesRecord,
+  deleteSalesRecord,
   VALID_STATUSES,
   VALID_EXPORT_FORMATS,
 } from '../data/note_manager.js';
+import { runRevenuePlanner, runReproposal } from '../note/note_ai.mjs';
 
 // ── 配信サイト問題管理 (Phase 24) ─────────────────────────────────────────────
 import {
@@ -128,6 +161,23 @@ import { importTikTokCSV }  from '../importers/tiktok_csv_importer.js';
 import { importXCSV }       from '../importers/x_csv_importer.js';
 import { importKdpReport }  from '../importers/kdp_report_importer.js';
 import { writeNarouSnapshot } from '../importers/narou_writer.js';
+import { punch, getStatus, getPunches, getAggregate, formatDuration, getDailyHistory, deletePunch } from '../timecard/tc_manager.js';
+import {
+  getBudgetStatus, updateBudgetConfig,
+  BudgetDisabledError, BudgetExceededError,
+} from '../shared/claude_router.mjs';
+import {
+  getInstagramConfig,
+  fetchAccountInsights,
+  buildAccountSnapshot,
+} from '../importers/instagram_collector.js';
+import {
+  findMissingAccountDates,
+  insertAccountDailyIfMissing,
+  createBackup as createInstagramBackup,
+  backfillOneDate,
+  MAX_DATES_PER_RUN,
+} from '../scripts/instagram_backfill.mjs';
 
 // ── Phase 32: 競合アカウント分析 ─────────────────────────────────────────────
 import {
@@ -188,14 +238,19 @@ function errRes(res, status, message) {
 /** POST ボディを JSON として読み込む（最大 10 MB — Excel base64 対応） */
 function readBody(req) {
   return new Promise((resolve, reject) => {
-    let body = '';
+    const chunks = [];
+    let total = 0;
     req.on('data', chunk => {
-      body += chunk;
-      if (body.length > 10_485_760) reject(new Error('Request body too large'));
+      total += chunk.length;
+      if (total > 10_485_760) return reject(new Error('Request body too large'));
+      chunks.push(chunk);
     });
     req.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); }
-      catch  { reject(new Error('Invalid JSON')); }
+      try {
+        // Buffer.concat → UTF-8 decode（チャンク境界での多バイト文字分断を防ぐ）
+        const body = Buffer.concat(chunks).toString('utf8');
+        resolve(body ? JSON.parse(body) : {});
+      } catch { reject(new Error('Invalid JSON')); }
     });
     req.on('error', reject);
   });
@@ -1350,25 +1405,31 @@ export function createApiHandler(db) {
 
         const [summary] = db.prepare(`
           SELECT
-            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS current_reach,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS previous_reach,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE 0 END) AS current_views,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE 0 END) AS previous_views,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE 0 END) AS current_interactions,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE 0 END) AS previous_interactions,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE 0 END) AS current_follows_delta,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE 0 END) AS previous_follows_delta
+            -- 期間内の実データ行数（0行 = データなし）
+            COUNT(CASE WHEN date >= ? AND date <= ? THEN 1 ELSE NULL END) AS current_data_days,
+            COUNT(CASE WHEN date >= ? AND date <= ? THEN 1 ELSE NULL END) AS previous_data_days,
+            -- 各指標の合計（データなし期間は NULL を返す → フロントで "—" 表示）
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE NULL END) AS current_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE NULL END) AS previous_reach,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE NULL END) AS current_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN views             ELSE NULL END) AS previous_views,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE NULL END) AS current_interactions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN total_interactions ELSE NULL END) AS previous_interactions,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE NULL END) AS current_follows_delta,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN follows_and_unfollows ELSE NULL END) AS previous_follows_delta
           FROM sf_instagram_account_daily
           WHERE date >= ? AND date <= ?
         `).all(
-          currentStart,  currentEnd,
-          previousStart, previousEnd,
-          currentStart,  currentEnd,
-          previousStart, previousEnd,
-          currentStart,  currentEnd,
-          previousStart, previousEnd,
-          currentStart,  currentEnd,
-          previousStart, previousEnd,
+          currentStart,  currentEnd,   // current_data_days
+          previousStart, previousEnd,  // previous_data_days
+          currentStart,  currentEnd,   // current_reach
+          previousStart, previousEnd,  // previous_reach
+          currentStart,  currentEnd,   // current_views
+          previousStart, previousEnd,  // previous_views
+          currentStart,  currentEnd,   // current_interactions
+          previousStart, previousEnd,  // previous_interactions
+          currentStart,  currentEnd,   // current_follows_delta
+          previousStart, previousEnd,  // previous_follows_delta
           previousStart, currentEnd,
         );
 
@@ -1387,11 +1448,20 @@ export function createApiHandler(db) {
           days,
           current:  { start: currentStart,  end: currentEnd },
           previous: { start: previousStart, end: previousEnd },
+          current_data_days:  summary.current_data_days  ?? 0,
+          previous_data_days: summary.previous_data_days ?? 0,
           followers_count: {
             current:  followersCurrent?.followers_count  ?? null,
             previous: followersPrevEnd?.followers_count  ?? null,
           },
-          ...summary,
+          current_reach:       summary.current_reach       ?? null,
+          previous_reach:      summary.previous_reach      ?? null,
+          current_views:       summary.current_views       ?? null,
+          previous_views:      summary.previous_views      ?? null,
+          current_interactions:  summary.current_interactions  ?? null,
+          previous_interactions: summary.previous_interactions ?? null,
+          current_follows_delta:  summary.current_follows_delta  ?? null,
+          previous_follows_delta: summary.previous_follows_delta ?? null,
         });
       }
 
@@ -1468,6 +1538,83 @@ export function createApiHandler(db) {
           LIMIT ?
         `).all(productType, productType, limit);
         return jsonRes(res, 200, { ok: true, metric, limit, rows });
+      }
+
+      // ── GET /api/sf/instagram/backfill/check ─────────────────────────────
+      // 欠損日チェック（API 呼び出しなし・DB 参照のみ）
+      if (path === '/api/sf/instagram/backfill/check' && method === 'GET') {
+        const { scanRange, missing, nullDates } = findMissingAccountDates(db);
+        return jsonRes(res, 200, {
+          ok: true,
+          scan_range: scanRange,
+          missing,
+          null_dates: nullDates,
+          api_calls_estimate: missing.length,
+          max_per_run: MAX_DATES_PER_RUN,
+        });
+      }
+
+      // ── POST /api/sf/instagram/backfill/run ──────────────────────────────
+      // 欠損日補完実行（バックアップ → API 取得 → INSERT）
+      // Body: { dates: ['YYYY-MM-DD', ...] }  最大 MAX_DATES_PER_RUN 件
+      if (path === '/api/sf/instagram/backfill/run' && method === 'POST') {
+        const body = await readBody(req);
+        const dates = body?.dates;
+        if (!Array.isArray(dates) || dates.length === 0) {
+          return errRes(res, 400, 'dates 配列が必要です');
+        }
+        if (dates.length > MAX_DATES_PER_RUN) {
+          return errRes(res, 400, `1回の補完は最大 ${MAX_DATES_PER_RUN} 件までです`);
+        }
+        // 日付フォーマット検証
+        const bad = dates.filter(d => !/^\d{4}-\d{2}-\d{2}$/.test(d));
+        if (bad.length > 0) {
+          return errRes(res, 400, `不正な日付形式: ${bad.join(', ')}`);
+        }
+        // 欠損日リストと照合（既存行への誤補完を防ぐ）
+        const { missing } = findMissingAccountDates(db);
+        const missingSet  = new Set(missing);
+        const notMissing  = dates.filter(d => !missingSet.has(d));
+        if (notMissing.length > 0) {
+          return errRes(res, 400, `以下の日付は既存行があるため補完できません: ${notMissing.join(', ')}`);
+        }
+        // Instagram 環境変数確認
+        let igConfig;
+        try {
+          igConfig = getInstagramConfig();
+        } catch (e) {
+          return errRes(res, 503, `Instagram API 設定エラー: ${e.message}`);
+        }
+        // バックアップ作成
+        let backupPath;
+        try {
+          backupPath = createInstagramBackup();
+        } catch (e) {
+          return errRes(res, 500, `バックアップ失敗: ${e.message}`);
+        }
+        // 日付ごとに補完
+        const results = [];
+        for (const date of dates) {
+          try {
+            const r = await backfillOneDate(igConfig, db, date);
+            results.push(r);
+          } catch (e) {
+            results.push({ date, inserted: false, apiError: e.message, values: {} });
+          }
+        }
+        // DB 整合性確認
+        const integrity = db.prepare('PRAGMA integrity_check').get()?.integrity_check ?? 'unknown';
+        return jsonRes(res, 200, {
+          ok: true,
+          backup_path: backupPath,
+          integrity,
+          results,
+          summary: {
+            inserted: results.filter(r => r.inserted).length,
+            skipped:  results.filter(r => !r.inserted && !r.apiError).length,
+            errors:   results.filter(r => r.apiError).length,
+          },
+        });
       }
 
       // ══════════════════════════════════════════════════════════════════════
@@ -2687,6 +2834,156 @@ export function createApiHandler(db) {
         return res.end(content);
       }
 
+      // ── POST /api/note/article/reject ────────────────────────────────────
+      // 企画を却下（ソフト削除）。body: { id, reason?, note? }
+      if (path === '/api/note/article/reject' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const id = parseInt(body.id, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let article;
+        try {
+          article = rejectArticle(db, id, { reason: body.reason, note: body.note });
+        } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── POST /api/note/article/restore ───────────────────────────────────
+      // 却下済み企画を復元。body: { id }
+      if (path === '/api/note/article/restore' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const id = parseInt(body.id, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let article;
+        try { article = restoreArticle(db, id); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, article });
+      }
+
+      // ── GET /api/note/rejections ──────────────────────────────────────────
+      // 却下履歴一覧。?limit=N&offset=N
+      if (path === '/api/note/rejections' && method === 'GET') {
+        const limit  = parseInt(url.searchParams.get('limit') ?? '50', 10);
+        const offset = parseInt(url.searchParams.get('offset') ?? '0', 10);
+        const articles = getRejectionHistory(db, { limit, offset });
+        return jsonRes(res, 200, { ok: true, count: articles.length, articles });
+      }
+
+      // ── POST /api/note/bulk-reject ────────────────────────────────────────
+      // 一括却下。body: { ids: number[], reason? }
+      if (path === '/api/note/bulk-reject' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!Array.isArray(body.ids) || body.ids.length === 0) {
+          return errRes(res, 400, 'ids は空でない配列が必要です');
+        }
+        let result;
+        try { result = bulkReject(db, body.ids, { reason: body.reason }); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, result);
+      }
+
+      // ── POST /api/note/generate-plans ─────────────────────────────────────
+      // AI 収益企画生成。body: { theme, experience?, target?, notes? }
+      if (path === '/api/note/generate-plans' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.theme || !body.theme.trim()) return errRes(res, 400, 'theme は必須です');
+        let result;
+        try {
+          result = await runRevenuePlanner({
+            theme:      body.theme.trim(),
+            experience: body.experience ?? '',
+            target:     body.target     ?? '',
+            notes:      body.notes      ?? '',
+          });
+        } catch (e) { return errRes(res, 500, `AI企画生成エラー: ${e.message}`); }
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── POST /api/note/article/repropose ─────────────────────────────────
+      // 再提案生成。body: { theme, experience?, target?, notes?, rejection_ids?: number[] }
+      if (path === '/api/note/article/repropose' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.theme || !body.theme.trim()) return errRes(res, 400, 'theme は必須です');
+
+        // 却下履歴を取得（rejection_ids 指定があればその記事のみ）
+        let rejectionHistory = [];
+        if (Array.isArray(body.rejection_ids) && body.rejection_ids.length > 0) {
+          rejectionHistory = body.rejection_ids.map(rid => {
+            const art = getArticle(db, rid);
+            return art ? { title: art.title, rejection_reason: art.rejection_reason, rejection_note: art.rejection_note } : null;
+          }).filter(Boolean);
+        } else {
+          // 直近の却下記事を参照（最大10件）
+          rejectionHistory = getRejectionHistory(db, { limit: 10 }).map(a => ({
+            title:            a.title,
+            rejection_reason: a.rejection_reason,
+            rejection_note:   a.rejection_note,
+          }));
+        }
+
+        let result;
+        try {
+          result = await runReproposal({
+            theme:      body.theme.trim(),
+            experience: body.experience ?? '',
+            target:     body.target     ?? '',
+            notes:      body.notes      ?? '',
+          }, rejectionHistory);
+        } catch (e) { return errRes(res, 500, `AI再提案エラー: ${e.message}`); }
+        return jsonRes(res, 200, { ok: true, ...result });
+      }
+
+      // ── GET /api/note/sales ───────────────────────────────────────────────
+      // 販売データ一覧。?article_id=N&period=YYYY-MM&limit=N
+      if (path === '/api/note/sales' && method === 'GET') {
+        const articleIdParam = url.searchParams.get('article_id');
+        const periodParam    = url.searchParams.get('period');
+        const limitParam     = url.searchParams.get('limit');
+        const records = getSalesRecords(db, {
+          article_id: articleIdParam ? parseInt(articleIdParam, 10) : undefined,
+          period:     periodParam    ?? undefined,
+          limit:      limitParam     ? parseInt(limitParam, 10) : 200,
+        });
+        return jsonRes(res, 200, { ok: true, count: records.length, records });
+      }
+
+      // ── POST /api/note/sales ──────────────────────────────────────────────
+      // 販売データ新規作成。body: { article_id, period, pv?, ... }
+      if (path === '/api/note/sales' && method === 'POST') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        let id;
+        try { id = createSalesRecord(db, body); } catch (e) { return errRes(res, 400, e.message); }
+        const record = db.prepare('SELECT * FROM sf_note_sales WHERE id=?').get(id);
+        return jsonRes(res, 201, { ok: true, id, record });
+      }
+
+      // ── PATCH /api/note/sales/record ──────────────────────────────────────
+      // 販売データ更新。?id=N
+      if (path === '/api/note/sales/record' && method === 'PATCH') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const idRaw = url.searchParams.get('id') ?? String(body.id ?? '');
+        const id    = parseInt(idRaw, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let record;
+        try { record = updateSalesRecord(db, id, body); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, { ok: true, record });
+      }
+
+      // ── DELETE /api/note/sales/record ─────────────────────────────────────
+      // 販売データ削除。?id=N
+      if (path === '/api/note/sales/record' && method === 'DELETE') {
+        const idRaw = url.searchParams.get('id');
+        const id    = parseInt(idRaw, 10);
+        if (!Number.isFinite(id) || id <= 0) return errRes(res, 400, 'id は正の整数が必要です');
+        let result;
+        try { result = deleteSalesRecord(db, id); } catch (e) { return errRes(res, 400, e.message); }
+        return jsonRes(res, 200, result);
+      }
+
       // ══════════════════════════════════════════════════════════════════════
       // HP Analytics Dashboard エンドポイント（Phase 15）
       // ══════════════════════════════════════════════════════════════════════
@@ -3482,9 +3779,962 @@ export function createApiHandler(db) {
         return jsonRes(res, 200, { ok: true, settings: getAnalysisSettings(db) });
       }
 
+      // ═══════════════════════════════════════════════════════════════════════
+      // 出版事業部 API (Content Business v2)
+      // ═══════════════════════════════════════════════════════════════════════
+
+      // GET /api/cb/config — 出版事業部設定（フロントエンド用公開設定のみ）
+      if (method === 'GET' && path === '/api/cb/config') {
+        try {
+          const cfg = JSON.parse(readFileSync(
+            new URL('../../config/content_business.json', import.meta.url), 'utf8'
+          ));
+          return jsonRes(res, 200, { ok: true, note_create_url: cfg.note?.create_url ?? 'https://note.com/new' });
+        } catch (e) {
+          return jsonRes(res, 200, { ok: true, note_create_url: 'https://note.com/new' });
+        }
+      }
+
+      // GET /api/cb/summary — 週次サマリー（ダッシュボードカード用）
+      if (method === 'GET' && path === '/api/cb/summary') {
+        return jsonRes(res, 200, { ok: true, summary: getWeeklySummary(db) });
+      }
+
+      // GET /api/cb/employees/status — AI社員ステータス一覧
+      if (method === 'GET' && path === '/api/cb/employees/status') {
+        return jsonRes(res, 200, { ok: true, employees: getCbEmployeeStatuses(db) });
+      }
+
+      // GET /api/cb/projects — プロジェクト一覧
+      if (method === 'GET' && path === '/api/cb/projects') {
+        return jsonRes(res, 200, { ok: true, projects: listProjects(db) });
+      }
+
+      // GET /api/cb/series — シリーズ一覧（プロジェクト含む）
+      if (method === 'GET' && path === '/api/cb/series') {
+        return jsonRes(res, 200, { ok: true, series: listSeries(db) });
+      }
+
+      // POST /api/cb/projects — 新規プロジェクト作成（フローはまだ開始しない）
+      // URLを body.urls[] に含めることで、URL登録も同時に行える
+      if (method === 'POST' && path === '/api/cb/projects') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const seriesId = body.series_id ? parseInt(body.series_id) : null;
+        // series_id=1（山吹ことりについて）は常に NONE モード
+        const researchMode = seriesId === 1 ? 'NONE'
+          : (['NONE', 'LIGHT', 'FULL'].includes(body.research_mode) ? body.research_mode : 'LIGHT');
+        const projectId = createProject(db, {
+          theme: body.theme || null,
+          genre: body.genre || null,
+          targetReader: body.target_reader || null,
+          priceRange: body.price_range || null,
+          researchMode,
+          seriesId,
+          seriesOrder: body.series_order ? parseInt(body.series_order) : null,
+        });
+
+        // URLがリクエストに含まれていれば同時登録
+        if (Array.isArray(body.urls) && body.urls.length > 0) {
+          for (const u of body.urls) {
+            if (u?.url) addResearchUrl(db, projectId, u);
+          }
+        }
+
+        return jsonRes(res, 201, { ok: true, project_id: projectId, status: 'RESEARCH' });
+      }
+
+      // POST /api/cb/projects/:id/start — フロー開始（URLが登録済みであること）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/start$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        setImmediate(async () => {
+          try {
+            await runFullAutoUntilIdeaApproval(db, id);
+          } catch (err) {
+            console.error('[CB] フロー実行エラー:', err.message);
+          }
+        });
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'RESEARCH' });
+      }
+
+      // POST /api/cb/projects/:id/owner-review — 本人レビュー反映
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/owner-review$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.instruction?.trim()) return errRes(res, 400, '修正指示（instruction）が必要です');
+        const reviewMode = body.review_mode === 'fact_check' ? 'fact_check' : 'revise';
+
+        // バックグラウンドで実行（時間がかかるため）
+        setImmediate(async () => {
+          try {
+            await runOwnerReview(db, id, body.instruction, { reviewMode });
+          } catch (err) {
+            console.error('[CB] owner-review エラー:', err.message);
+            // エラー内容をDBに保存してUIに表示できるようにする
+            try {
+              db.prepare(`UPDATE cb_projects
+                SET status='APPROVAL_WAIT', owner_review_error=?, updated_at=datetime('now','localtime')
+                WHERE id=?`).run(err.message.slice(0, 500), id);
+            } catch (_) {}
+          }
+        });
+        return jsonRes(res, 200, { ok: true, project_id: id, status: reviewMode === 'fact_check' ? 'APPROVAL_WAIT' : 'WRITING' });
+      }
+
+      // POST /api/cb/projects/:id/drop — 没にする
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/drop$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const proj = db.prepare('SELECT status, is_dropped FROM cb_projects WHERE id=?').get(id);
+        if (!proj) return errRes(res, 404, 'プロジェクトが見つかりません');
+        if (proj.is_dropped) return errRes(res, 400, 'すでに没になっています');
+        db.prepare(`UPDATE cb_projects
+          SET is_dropped=1, dropped_at=datetime('now','localtime'), prev_status=status,
+              updated_at=datetime('now','localtime')
+          WHERE id=?`).run(id);
+        return jsonRes(res, 200, { ok: true, project_id: id });
+      }
+
+      // POST /api/cb/projects/:id/restore — 制作に戻す
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/restore$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const proj = db.prepare('SELECT is_dropped, prev_status FROM cb_projects WHERE id=?').get(id);
+        if (!proj) return errRes(res, 404, 'プロジェクトが見つかりません');
+        if (!proj.is_dropped) return errRes(res, 400, '没になっていません');
+        const restoreStatus = proj.prev_status || 'APPROVAL_WAIT';
+        db.prepare(`UPDATE cb_projects
+          SET is_dropped=0, dropped_at=NULL, prev_status=NULL,
+              status=?, updated_at=datetime('now','localtime')
+          WHERE id=?`).run(restoreStatus, id);
+        return jsonRes(res, 200, { ok: true, project_id: id, restored_status: restoreStatus });
+      }
+
+      // POST /api/cb/direct-plan — アサヒへの直接企画依頼
+      if (method === 'POST' && path === '/api/cb/direct-plan') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.theme?.trim()) return errRes(res, 400, 'theme が必要です');
+        try {
+          const result = await runDirectPlan(db, {
+            theme: body.theme.trim(),
+            purpose: body.purpose ?? null,
+            usableFacts: body.usable_facts ?? null,
+            avoid: body.avoid ?? null,
+            notes: body.notes ?? null,
+          });
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (err) {
+          console.error('[CB] direct-plan エラー:', err.message);
+          return errRes(res, 500, err.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/direct-save — 本人が直接編集した内容を保存（AI呼び出しなし）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/direct-save$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        const baseDraft = db.prepare(
+          'SELECT * FROM cb_article_drafts WHERE project_id = ? ORDER BY version DESC LIMIT 1'
+        ).get(id);
+        if (!baseDraft) return errRes(res, 400, 'ドラフトが見つかりません');
+
+        const maxV = db.prepare('SELECT MAX(version) as v FROM cb_article_drafts WHERE project_id = ?').get(id)?.v ?? 0;
+        const newVersion = maxV + 1;
+
+        // 差分をサーバーサイドで生成（AI不使用・単純行比較）
+        function lineDiff(oldText, newText) {
+          if (!oldText && !newText) return null;
+          const oldLines = (oldText ?? '').split('\n').filter(l => l.trim());
+          const newLines = (newText ?? '').split('\n').filter(l => l.trim());
+          const oldSet = new Set(oldLines);
+          const newSet = new Set(newLines);
+          return {
+            removed: oldLines.filter(l => !newSet.has(l)),
+            added:   newLines.filter(l => !oldSet.has(l)),
+          };
+        }
+
+        const diff = {
+          lead:      lineDiff(baseDraft.lead,      body.lead),
+          free_part: lineDiff(baseDraft.free_part, body.free_part),
+          paid_part: lineDiff(baseDraft.paid_part, body.paid_part),
+          summary:   lineDiff(baseDraft.summary,   body.summary),
+        };
+
+        db.prepare(`
+          INSERT INTO cb_article_drafts
+            (project_id, version, title_candidates, lead, free_part, paid_part, summary,
+             review_by, changes_summary, owner_edited, diff_json, editor_verdict)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 'Owner', '本人による直接編集', 1, ?, NULL)
+        `).run(
+          id, newVersion,
+          body.title_candidates ?? baseDraft.title_candidates,
+          body.lead      ?? baseDraft.lead,
+          body.free_part ?? baseDraft.free_part,
+          body.paid_part ?? baseDraft.paid_part,
+          body.summary   ?? baseDraft.summary,
+          JSON.stringify(diff)
+        );
+
+        db.prepare("UPDATE cb_projects SET updated_at=datetime('now','localtime') WHERE id=?").run(id);
+        return jsonRes(res, 200, { ok: true, project_id: id, new_version: newVersion, diff });
+      }
+
+      // POST /api/cb/projects/:id/revert-draft — 旧バージョンをベースに新バージョン作成
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/revert-draft$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const targetVersion = parseInt(body.target_version);
+        if (!targetVersion) return errRes(res, 400, 'target_version が必要です');
+
+        const targetDraft = db.prepare(
+          'SELECT * FROM cb_article_drafts WHERE project_id = ? AND version = ?'
+        ).get(id, targetVersion);
+        if (!targetDraft) return errRes(res, 400, `v${targetVersion} が見つかりません`);
+
+        const maxV = db.prepare('SELECT MAX(version) as v FROM cb_article_drafts WHERE project_id = ?').get(id)?.v ?? 0;
+        const newVersion = maxV + 1;
+
+        db.prepare(`
+          INSERT INTO cb_article_drafts
+            (project_id, version, title_candidates, lead, free_part, paid_part, summary,
+             owner_review_instruction, review_type, review_by, changes_summary, editor_verdict)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'REVERT', 'Owner', ?, 'READY')
+        `).run(
+          id, newVersion,
+          targetDraft.title_candidates, targetDraft.lead, targetDraft.free_part,
+          targetDraft.paid_part, targetDraft.summary,
+          `v${targetVersion}からの差し戻し（元に戻す操作）`,
+          `v${targetVersion}に差し戻し（本人操作）`
+        );
+
+        db.prepare("UPDATE cb_projects SET status='APPROVAL_WAIT', updated_at=datetime('now','localtime') WHERE id=?").run(id);
+        return jsonRes(res, 200, { ok: true, project_id: id, new_version: newVersion });
+      }
+
+      // PATCH /api/cb/projects/:id — research_mode を変更（noResults → skipToPlanning で使用）
+      if (method === 'PATCH' && path.match(/^\/api\/cb\/projects\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const updates = [];
+        const vals = [];
+        if (body.research_mode && ['NONE', 'LIGHT', 'FULL'].includes(body.research_mode)) {
+          updates.push('research_mode = ?');
+          vals.push(body.research_mode);
+        }
+        if (body.final_title !== undefined) {
+          updates.push('final_title = ?');
+          vals.push(body.final_title || null);
+        }
+        if (updates.length === 0) return errRes(res, 400, '更新するフィールドがありません');
+        updates.push("updated_at = datetime('now','localtime')");
+        vals.push(id);
+        db.prepare(`UPDATE cb_projects SET ${updates.join(', ')} WHERE id = ?`).run(...vals);
+        return jsonRes(res, 200, { ok: true, project_id: id });
+      }
+
+      // DELETE /api/cb/projects/error-all — ERRORプロジェクトをまとめて論理削除
+      if (method === 'DELETE' && path === '/api/cb/projects/error-all') {
+        try {
+          const result = softDeleteAllErrorProjects(db);
+          return jsonRes(res, 200, result);
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // DELETE /api/cb/projects/:id — ERRORプロジェクトを1件論理削除
+      if (method === 'DELETE' && path.match(/^\/api\/cb\/projects\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)$/)[1]);
+        try {
+          const result = softDeleteProject(db, id);
+          return jsonRes(res, 200, result);
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // GET /api/cb/projects/:id — プロジェクト詳細
+      if (method === 'GET' && path.match(/^\/api\/cb\/projects\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)$/)[1]);
+        const data = getProject(db, id);
+        if (!data) return errRes(res, 404, 'プロジェクトが見つかりません');
+        // DROPPED フラグと owner_review_error を追加
+        const proj = db.prepare('SELECT is_dropped, dropped_at, prev_status, owner_review_error FROM cb_projects WHERE id=?').get(id);
+        // 最新の事実確認結果（PENDING）を追加
+        const factCheck = db.prepare(
+          'SELECT id, fact_list, instruction, created_at FROM cb_fact_check_results WHERE project_id=? AND status=? ORDER BY id DESC LIMIT 1'
+        ).get(id, 'PENDING');
+        return jsonRes(res, 200, {
+          ok: true, ...data,
+          is_dropped: proj?.is_dropped ?? 0,
+          dropped_at: proj?.dropped_at ?? null,
+          prev_status: proj?.prev_status ?? null,
+          owner_review_error: proj?.owner_review_error ?? null,
+          fact_check_result: factCheck ?? null,
+        });
+      }
+
+      // POST /api/cb/projects/:id/select-idea — 案採用（selected_idea の保存のみ・執筆は開始しない）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/select-idea$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (body.idea_index == null) return errRes(res, 400, 'idea_index が必要です');
+
+        try {
+          selectIdea(db, id, body.idea_index);
+        } catch (e) {
+          return errRes(res, 409, e.message);
+        }
+
+        // 執筆フローは開始しない。社長が「ソラに下書きを依頼」を選んだときに /start-writing を呼ぶ
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'OWNER_IDEA_APPROVAL' });
+      }
+
+      // POST /api/cb/projects/:id/start-writing — ソラが下書きを作成するだけ（キイロ編集は自動起動しない）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/start-writing$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const proj = db.prepare('SELECT status, selected_idea_index FROM cb_projects WHERE id=?').get(id);
+        if (!proj) return errRes(res, 404, 'プロジェクトが見つかりません');
+        if (proj.status !== 'OWNER_IDEA_APPROVAL') return errRes(res, 409, `執筆開始は OWNER_IDEA_APPROVAL ステータスでのみ可能です（現在: ${proj.status}）`);
+        if (proj.selected_idea_index == null) return errRes(res, 409, '先に案を採用してください（selected_idea_index が未設定です）');
+
+        // runWriting のみ非同期実行 — キイロ編集は自動起動しない
+        // 完了後は EDITING 状態で止まり、社長が次のアクションを選ぶ
+        setImmediate(async () => {
+          try {
+            await runWriting(db, id, null);
+          } catch (err) {
+            console.error('[CB] 執筆エラー:', err.message);
+            try {
+              db.prepare("UPDATE cb_projects SET status='ERROR', updated_at=datetime('now','localtime') WHERE id=?").run(id);
+            } catch (_) {}
+          }
+        });
+
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'WRITING' });
+      }
+
+      // POST /api/cb/projects/:id/start-editing — キイロが1回だけ編集チェック（自動修正しない・EDITING で止まる）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/start-editing$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const proj = db.prepare('SELECT status FROM cb_projects WHERE id=?').get(id);
+        if (!proj) return errRes(res, 404, 'プロジェクトが見つかりません');
+        if (proj.status !== 'EDITING') return errRes(res, 409, `編集依頼は EDITING ステータスでのみ可能です（現在: ${proj.status}）`);
+
+        // runEditingOnce: キイロが1回チェック → EDITING のまま停止
+        setImmediate(async () => {
+          try {
+            await runEditingOnce(db, id);
+          } catch (err) {
+            console.error('[CB] キイロ編集エラー:', err.message);
+            try {
+              db.prepare("UPDATE cb_projects SET status='ERROR', updated_at=datetime('now','localtime') WHERE id=?").run(id);
+            } catch (_) {}
+          }
+        });
+
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'EDITING' });
+      }
+
+      // POST /api/cb/projects/:id/advance-to-approval — 公開待ちへ手動昇格（社長の明示的判断）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/advance-to-approval$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          advanceToApproval(db, id);
+          return jsonRes(res, 200, { ok: true, project_id: id, status: 'APPROVAL_WAIT' });
+        } catch (e) {
+          return errRes(res, 409, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/writer-revision-only — ソラに修正依頼（キイロ編集は自動起動しない）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/writer-revision-only$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.instruction?.trim()) return errRes(res, 400, 'instruction が必要です');
+
+        const proj = db.prepare('SELECT status FROM cb_projects WHERE id=?').get(id);
+        if (!proj) return errRes(res, 404, 'プロジェクトが見つかりません');
+        if (proj.status !== 'EDITING') return errRes(res, 409, `修正依頼は EDITING ステータスでのみ可能です（現在: ${proj.status}）`);
+
+        setImmediate(async () => {
+          try {
+            await runWriterRevisionOnly(db, id, body.instruction);
+          } catch (err) {
+            console.error('[CB] ソラ修正エラー:', err.message);
+          }
+        });
+
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'WRITING' });
+      }
+
+      // POST /api/cb/projects/:id/fact-check-idea — 企画採用後の事前確認（ドラフトなし・本文生成なし）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/fact-check-idea$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          const result = await runIdeaFactCheckFromIdea(db, id);
+          return jsonRes(res, 200, { ok: true, project_id: id, fact_list: result.factList });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/outline-only — 企画採用後の構成作成（本文なし）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/outline-only$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          const result = await runIdeaOutlineOnly(db, id);
+          return jsonRes(res, 200, { ok: true, project_id: id, outline: result.outline });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/approve — 公開承認（APPROVED状態にするのみ・外部公開はしない）
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/approve$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          approvePublication(db, id);
+          return jsonRes(res, 200, { ok: true, project_id: id, status: 'APPROVED' });
+        } catch (e) {
+          return errRes(res, 409, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/request-revision — 修正依頼
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/request-revision$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+
+        const hasIdea      = db.prepare('SELECT 1 FROM cb_ideas WHERE project_id = ? LIMIT 1').get(id);
+        const hasLatestDraft = db.prepare('SELECT 1 FROM cb_article_drafts WHERE project_id = ? LIMIT 1').get(id);
+
+        // 企画案もドラフトも存在しない場合のみ 409
+        if (!hasIdea && !hasLatestDraft) {
+          return errRes(res, 409, '企画案も既存ドラフトも存在しません。先に記事を作成してください。');
+        }
+
+        requestRevision(db, id, body.note || '');
+
+        // 非同期で修正フロー開始（企画案あり → 通常フロー / なし → ドラフトベース修正）
+        setImmediate(async () => {
+          try {
+            if (hasIdea) {
+              await runFullAutoUntilApproval(db, id);
+            } else {
+              await runFullAutoFromDraft(db, id);
+            }
+          } catch (err) {
+            console.error('[CB] 修正フロー実行エラー:', err.message);
+          }
+        });
+
+        return jsonRes(res, 200, { ok: true, project_id: id, status: 'WRITING' });
+      }
+
+      // POST /api/cb/projects/:id/hold — 保留
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/hold$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        holdProject(db, id);
+        return jsonRes(res, 200, { ok: true, project_id: id });
+      }
+
+      // POST /api/cb/projects/:id/mark-published — 公開済みマーク → MEASURING 自動遷移
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/mark-published$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        try {
+          markPublishedWithInfo(db, id, {
+            noteUrl:     body.note_url     ?? null,
+            publishedAt: body.published_at ?? null,
+            price:       body.price        ?? null,
+          });
+          startMeasuring(db, id);          // PUBLISHED → MEASURING（アオ担当）
+          return jsonRes(res, 200, { ok: true, project_id: id, status: 'MEASURING' });
+        } catch (e) {
+          return errRes(res, 409, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/set-published-at — 公開日時のみ更新
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/set-published-at$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        if (!body.published_at) return errRes(res, 400, 'published_at が必要です');
+        try {
+          setPublishedAt(db, id, body.published_at);
+          const summary = getMetricsSummary(db, id);
+          return jsonRes(res, 200, { ok: true, ...summary });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // GET /api/cb/projects/:id/metrics/summary — メトリクスサマリー
+      if (method === 'GET' && path.match(/^\/api\/cb\/projects\/(\d+)\/metrics\/summary$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const summary = getMetricsSummary(db, id);
+        return jsonRes(res, 200, { ok: true, ...summary });
+      }
+
+      // GET /api/cb/projects/:id/metrics — メトリクス履歴
+      if (method === 'GET' && path.match(/^\/api\/cb\/projects\/(\d+)\/metrics$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        const records = listMetrics(db, id);
+        return jsonRes(res, 200, { ok: true, records });
+      }
+
+      // POST /api/cb/projects/:id/metrics — 日次スナップショット保存
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/metrics$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.date) return errRes(res, 400, 'date が必要です');
+        const recordId = saveMetrics(db, id, { ...body, milestone: body.milestone ?? null });
+        return jsonRes(res, 200, { ok: true, id: recordId });
+      }
+
+      // POST /api/cb/projects/:id/metrics/analyze — アオによるAI分析
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/metrics\/analyze$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          const result = await analyzeMetrics(db, id);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // POST /api/cb/metrics/import-csv — note公式CSVインポート
+      if (method === 'POST' && path === '/api/cb/metrics/import-csv') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.csv) return errRes(res, 400, 'csv が必要です');
+        try {
+          const result = importMetricsCSV(db, body.csv);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // POST /api/cb/projects/:id/pin — ピン留め（固定記事）設定/解除
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/pin$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        pinProject(db, id, body.pinned !== false);
+        return jsonRes(res, 200, { ok: true, project_id: id, is_pinned: body.pinned !== false });
+      }
+
+      // POST /api/cb/projects/:id/research-urls — 調査URL追加
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/research-urls$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.url) return errRes(res, 400, 'url が必要です');
+        const itemId = addResearchUrl(db, id, body);
+        return jsonRes(res, 201, { ok: true, id: itemId });
+      }
+
+      // POST /api/cb/projects/:id/sales — 売上データ追加
+      if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/sales$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        if (!body.record_date) return errRes(res, 400, 'record_date が必要です');
+        const recordId = addSalesRecord(db, id, body);
+        return jsonRes(res, 201, { ok: true, id: recordId });
+      }
+
+      // ── Chat API ──────────────────────────────────────────────────────────
+
+      // GET /api/cb/chat/:empId — Chatセッション取得または作成（project_idはクエリ）
+      if (method === 'GET' && path.match(/^\/api\/cb\/chat\/(\w+)$/)) {
+        const empId     = path.match(/\/chat\/(\w+)$/)[1];
+        const projectId = url.searchParams?.get('project_id');
+        const sid_param = url.searchParams?.get('session_id');
+        const pid = projectId ? parseInt(projectId) : null;
+
+        // session_id が渡された場合はそのセッションを直接使用（再作成しない）
+        let sessionId;
+        if (sid_param) {
+          const existing = db.prepare('SELECT id FROM cb_chat_sessions WHERE id = ?').get(parseInt(sid_param));
+          sessionId = existing ? parseInt(sid_param) : getOrCreateChatSession(db, pid, empId, 'EMPLOYEE');
+        } else {
+          sessionId = getOrCreateChatSession(db, pid, empId, 'EMPLOYEE');
+        }
+        const history = getChatHistory(db, sessionId, 30);
+        const context = buildEmployeeContext(db, pid, empId);
+        return jsonRes(res, 200, { ok: true, session_id: sessionId, history, context });
+      }
+
+      // POST /api/cb/chat/:empId — 社員へメッセージ送信
+      if (method === 'POST' && path.match(/^\/api\/cb\/chat\/(\w+)$/)) {
+        const empId = path.match(/\/chat\/(\w+)$/)[1];
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const { message, project_id, session_id, chat_mode = 'casual' } = body;
+        if (!message?.trim()) return errRes(res, 400, 'message が必要です');
+        const pid = project_id ? parseInt(project_id) : null;
+        const sid = session_id ?? getOrCreateChatSession(db, pid, empId, 'EMPLOYEE');
+        try {
+          const result = await processChatMessage(db, sid, empId, message.trim(), pid, { chatMode: chat_mode });
+          return jsonRes(res, 200, {
+            ok: true, reply: result.reply, session_id: sid,
+            draft_id: result.draft_id ?? null,
+            has_draft: result.has_draft ?? false,
+          });
+        } catch (e) {
+          // エラーコード分類（フロント表示用）
+          let errorCode = 'SERVER_ERROR';
+          const msg = e.message ?? '';
+          if (msg.includes('ANTHROPIC_API_KEY')) errorCode = 'AI_API_KEY_MISSING';
+          else if (msg.includes('401'))   errorCode = 'AI_API_401';
+          else if (msg.includes('402'))   errorCode = 'AI_API_BILLING';
+          else if (msg.includes('403'))   errorCode = 'AI_API_403';
+          else if (msg.includes('404'))   errorCode = 'MODEL_NOT_FOUND';
+          else if (msg.includes('429'))   errorCode = 'AI_API_RATE_LIMIT';
+          else if (msg.includes('5'))     errorCode = 'AI_API_SERVER_ERROR';
+          // サーバーログ（APIキーは絶対出力しない）
+          console.error(`[Chat POST] empId=${empId} pid=${pid ?? 'none'} errorCode=${errorCode}`);
+          console.error(`[Chat POST] error.name=${e.name} error.message=${msg.slice(0, 300)}`);
+          return errRes(res, 500, `${errorCode}: ${msg.slice(0, 200)}`);
+        }
+      }
+
+      // POST /api/cb/meeting — AI編集会議
+      if (method === 'POST' && path === '/api/cb/meeting') {
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const { topic, project_id } = body;
+        if (!topic?.trim()) return errRes(res, 400, 'topic が必要です');
+        const pid = project_id ? parseInt(project_id) : null;
+        const sessionId = createMeetingSession(db, pid, topic);
+        try {
+          const result = await processEditorialMeeting(db, sessionId, topic.trim(), pid);
+          return jsonRes(res, 200, {
+            ok: true, session_id: sessionId,
+            responses: result.responses, summary: result.summary,
+          });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // GET /api/cb/meeting/:sessionId — 会議ログ取得
+      if (method === 'GET' && path.match(/^\/api\/cb\/meeting\/(\d+)$/)) {
+        const sid = parseInt(path.match(/(\d+)$/)[1]);
+        const history = getChatHistory(db, sid, 50);
+        return jsonRes(res, 200, { ok: true, session_id: sid, history });
+      }
+
+      // ── 記事ドラフト API ────────────────────────────────────────────────────
+
+      // GET /api/cb/drafts/:id — ドラフト単件取得
+      if (method === 'GET' && path.match(/^\/api\/cb\/drafts\/(\d+)$/)) {
+        const draftId = parseInt(path.match(/(\d+)$/)[1]);
+        const draft = getChatDraft(db, draftId);
+        if (!draft) return errRes(res, 404, 'ドラフトが見つかりません');
+        // 同じ親ドラフトのバージョン一覧
+        const versions = db.prepare(`
+          WITH RECURSIVE chain(id, parent_draft_id, version, title, created_at) AS (
+            SELECT id, parent_draft_id, version, title, created_at FROM cb_chat_drafts WHERE id = ?
+            UNION ALL
+            SELECT d.id, d.parent_draft_id, d.version, d.title, d.created_at
+            FROM cb_chat_drafts d JOIN chain c ON d.id = c.parent_draft_id
+          )
+          SELECT id, version, title, created_at FROM chain ORDER BY version DESC
+        `).all(draftId);
+        return jsonRes(res, 200, { ok: true, draft, versions });
+      }
+
+      // GET /api/cb/chat/:empId/drafts — セッションのドラフト一覧
+      if (method === 'GET' && path.match(/^\/api\/cb\/chat\/(\w+)\/drafts$/)) {
+        const empId_ = path.match(/\/chat\/(\w+)\//)[1];
+        const projectId = url.searchParams?.get('project_id');
+        const sessionId_ = url.searchParams?.get('session_id');
+        const opts = sessionId_ ? { sessionId: parseInt(sessionId_) }
+                    : projectId ? { projectId: parseInt(projectId) }
+                    : {};
+        const drafts = listChatDrafts(db, opts);
+        return jsonRes(res, 200, { ok: true, drafts });
+      }
+
+      // POST /api/cb/drafts/:id/revise — 修正してv+1を作成
+      if (method === 'POST' && path.match(/^\/api\/cb\/drafts\/(\d+)\/revise$/)) {
+        const draftId = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const { instruction, session_id: sid } = body;
+        if (!instruction?.trim()) return errRes(res, 400, 'instruction が必要です');
+        try {
+          const result = await reviseChatDraft(db, draftId, instruction.trim(), sid ?? null);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          console.error('[Draft Revise]', e.message);
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // POST /api/cb/drafts/:id/send-to-editor — キイロへ送る
+      if (method === 'POST' && path.match(/^\/api\/cb\/drafts\/(\d+)\/send-to-editor$/)) {
+        const draftId = parseInt(path.match(/(\d+)/)[1]);
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        const { session_id: sid } = body;
+        try {
+          const result = await sendDraftToEditor(db, draftId, sid ?? null);
+          return jsonRes(res, 200, { ok: true, verdict: result?.verdict, notes: result?.notes });
+        } catch (e) {
+          console.error('[Draft Editor]', e.message);
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // ── シリーズ進行 API ──────────────────────────────────────────────────────
+
+      // GET /api/cb/series/:id/progress — シリーズ進行状態取得
+      if (method === 'GET' && path.match(/^\/api\/cb\/series\/(\d+)\/progress$/)) {
+        const seriesId = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          const progress = getSeriesProgress(db, seriesId);
+          return jsonRes(res, 200, { ok: true, ...progress });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // POST /api/cb/series/:id/start-next — 次の記事を開始
+      if (method === 'POST' && path.match(/^\/api\/cb\/series\/(\d+)\/start-next$/)) {
+        const seriesId = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          const result = await startNextSeriesArticle(db, seriesId);
+          return jsonRes(res, 200, { ok: true, ...result });
+        } catch (e) {
+          return errRes(res, 409, e.message);
+        }
+      }
+
+      // ── ナレッジ API ──────────────────────────────────────────────────────────
+
+      // GET /api/cb/knowledge — 一覧取得（?category=&status=&active= でフィルタ可）
+      if (method === 'GET' && path === '/api/cb/knowledge') {
+        const qs = new URL(req.url, 'http://localhost').searchParams;
+        const category        = qs.get('category')  || null;
+        const approval_status = qs.get('status')    || null;
+        const activeParam     = qs.get('active');
+        const is_active       = activeParam === null ? null : activeParam === '1';
+        const rows = listKnowledge(db, { category, approval_status, is_active });
+        return jsonRes(res, 200, { ok: true, items: rows });
+      }
+
+      // POST /api/cb/knowledge — 新規作成
+      if (method === 'POST' && path === '/api/cb/knowledge') {
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        const { category, rule_text, source_type, trust_level, approval_status } = body;
+        if (!category || !rule_text) return errRes(res, 400, 'category と rule_text は必須です');
+        try {
+          const id = createKnowledge(db, { category, rule_text, source_type, trust_level, approval_status });
+          return jsonRes(res, 201, { ok: true, id });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // PATCH /api/cb/knowledge/:id — 更新（承認 / 却下 / 無効化 / 内容修正）
+      if (method === 'PATCH' && path.match(/^\/api\/cb\/knowledge\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body = {};
+        try { body = await readBody(req); } catch (_) {}
+        const { rule_text, approval_status, is_active } = body;
+        try {
+          updateKnowledge(db, id, { rule_text, approval_status, is_active });
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+      }
+
+      // DELETE /api/cb/knowledge/:id — 削除
+      if (method === 'DELETE' && path.match(/^\/api\/cb\/knowledge\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        try {
+          deleteKnowledge(db, id);
+          return jsonRes(res, 200, { ok: true });
+        } catch (e) {
+          return errRes(res, 500, e.message);
+        }
+      }
+
+      // ── タイムカード API (/api/tc/) ─────────────────────────────────────────
+
+      // GET /api/tc/status — 現在の状態 + 今日の集計
+      if (method === 'GET' && path === '/api/tc/status') {
+        const nowMs   = Date.now();
+        const dateJst = new Date(nowMs + 9 * 3600000).toISOString().slice(0, 10);
+        const status  = getStatus(db);
+        const agg     = getAggregate(db, dateJst, nowMs);
+        return jsonRes(res, 200, {
+          ok: true,
+          state:      status.state,
+          location:   status.location,
+          lastPunch:  status.lastPunch,
+          today: {
+            date:       dateJst,
+            workMs:     agg.workMs,
+            breakMs:    agg.breakMs,
+            workLabel:  formatDuration(agg.workMs),
+            breakLabel: formatDuration(agg.breakMs),
+            firstInMs:  agg.firstInMs,
+            lastOutMs:  agg.lastOutMs,
+          },
+        });
+      }
+
+      // POST /api/tc/punch — 打刻
+      if (method === 'POST' && path === '/api/tc/punch') {
+        const body = await readBody(req);
+        const { kind, atMs, location, requestId, category } = body ?? {};
+        if (!['in','out','break_start','break_end'].includes(kind)) {
+          return errRes(res, 400, '不正な kind です');
+        }
+        if (typeof atMs !== 'number' || atMs <= 0) {
+          return errRes(res, 400, 'atMs が不正です');
+        }
+        if (!requestId || typeof requestId !== 'string') {
+          return errRes(res, 400, 'requestId が必要です');
+        }
+        const loc = typeof location === 'string' ? location.trim().slice(0, 60) : '自宅';
+        const cat = typeof category === 'string' ? category.trim().slice(0, 40) : '';
+        const result = punch(db, { kind, atMs, location: loc || '自宅', requestId, category: cat });
+        if (!result.ok) {
+          const code = result.stateConflict ? 409 : result.conflict ? 409 : 500;
+          return errRes(res, code, result.error);
+        }
+        return jsonRes(res, result.duplicate ? 200 : 201, { ok: true, punch: result.punch, duplicate: result.duplicate ?? false });
+      }
+
+      // GET /api/tc/punches — 打刻履歴
+      if (method === 'GET' && path === '/api/tc/punches') {
+        const limit  = Math.min(parseInt(url.searchParams.get('limit') || '30', 10), 200);
+        const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10), 0);
+        const rows   = getPunches(db, { limit, offset });
+        return jsonRes(res, 200, { ok: true, punches: rows, limit, offset });
+      }
+
+      // GET /api/tc/aggregate — 指定日の集計
+      if (method === 'GET' && path === '/api/tc/aggregate') {
+        const dateParam = url.searchParams.get('date');
+        const dateJst   = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
+          ? dateParam
+          : new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
+        const nowMs = Date.now();
+        const agg   = getAggregate(db, dateJst, nowMs);
+        return jsonRes(res, 200, {
+          ok: true,
+          date:       dateJst,
+          workMs:     agg.workMs,
+          breakMs:    agg.breakMs,
+          workLabel:  formatDuration(agg.workMs),
+          breakLabel: formatDuration(agg.breakMs),
+          firstInMs:  agg.firstInMs,
+          lastOutMs:  agg.lastOutMs,
+        });
+      }
+
+      // GET /api/tc/daily?days=30 — 日別集計履歴
+      if (method === 'GET' && path === '/api/tc/daily') {
+        const days    = Math.min(Math.max(parseInt(url.searchParams.get('days') || '30', 10), 1), 90);
+        const nowMs   = Date.now();
+        const history = getDailyHistory(db, days, nowMs);
+        return jsonRes(res, 200, { ok: true, history });
+      }
+
+      // DELETE /api/tc/punch/:id — 打刻削除
+      {
+        const delMatch = method === 'DELETE' && path.match(/^\/api\/tc\/punch\/(.+)$/);
+        if (delMatch) {
+          const punchId = decodeURIComponent(delMatch[1]);
+          const result  = deletePunch(db, punchId);
+          if (!result.ok) return errRes(res, 404, result.error ?? '見つかりません');
+          return jsonRes(res, 200, { ok: true });
+        }
+      }
+
+      // ── 予算管理 ──────────────────────────────────────────────────────────────
+
+      // GET /api/settings/budget — 予算状態・利用履歴取得
+      if (method === 'GET' && path === '/api/settings/budget') {
+        const status = getBudgetStatus();
+        return jsonRes(res, 200, { ok: true, ...status });
+      }
+
+      // PATCH /api/settings/budget — 予算設定変更
+      if (method === 'PATCH' && path === '/api/settings/budget') {
+        const body = await readBody(req);
+
+        // 入力バリデーション
+        const { monthly_limit_usd, warn_threshold_percent } = body;
+        if (monthly_limit_usd !== undefined && monthly_limit_usd !== null) {
+          if (typeof monthly_limit_usd !== 'number' || !isFinite(monthly_limit_usd) || monthly_limit_usd < 0) {
+            return errRes(res, 400, 'monthly_limit_usd は null または 0以上の数値で指定してください');
+          }
+        }
+        if (warn_threshold_percent !== undefined) {
+          if (typeof warn_threshold_percent !== 'number' || warn_threshold_percent < 1 || warn_threshold_percent > 99) {
+            return errRes(res, 400, 'warn_threshold_percent は 1〜99 の整数で指定してください');
+          }
+        }
+
+        // 0=禁止 設定時は明示的なフラグが必要（誤操作防止）
+        if (monthly_limit_usd === 0 && body.confirm_disable !== true) {
+          return errRes(res, 400, 'monthly_limit_usd = 0（AI禁止）に設定するには confirm_disable: true を含めてください');
+        }
+
+        try {
+          updateBudgetConfig({ monthly_limit_usd: monthly_limit_usd ?? null, warn_threshold_percent });
+        } catch (e) {
+          return errRes(res, 400, e.message);
+        }
+
+        const updated = getBudgetStatus();
+        return jsonRes(res, 200, { ok: true, ...updated });
+      }
+
       return errRes(res, 404, 'Not Found');
 
     } catch (e) {
+      // 予算エラーは業務エラーと区別して返す（プロジェクト状態は変更されていない）
+      if (e instanceof BudgetDisabledError) {
+        return jsonRes(res, 503, {
+          ok: false,
+          error: e.message,
+          error_code: 'BUDGET_DISABLED',
+          hint: '管理画面の「予算管理」から monthly_limit_usd を設定してください。',
+        });
+      }
+      if (e instanceof BudgetExceededError) {
+        return jsonRes(res, 429, {
+          ok: false,
+          error: e.message,
+          error_code: 'BUDGET_EXCEEDED',
+          projected_usd: e.projectedUsd,
+          limit_usd:     e.limitUsd,
+          hint: '管理画面の「予算管理」から月次上限を引き上げると再実行できます。',
+        });
+      }
       console.error('[API Error]', e.message);
       return errRes(res, 500, 'Internal Server Error');
     }

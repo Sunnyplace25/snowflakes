@@ -30,7 +30,9 @@
   <nav class="module-tabs">
     <button class="module-tab active" data-module="business">Business</button>
     <button class="module-tab" data-module="sf">Snow flakes</button>
-    <a class="module-tab" href="http://localhost:3001/" target="_blank" rel="noopener noreferrer">Tasks ↗</a>
+    <button class="module-tab" data-module="timecard">タイムカード</button>
+    <a class="module-tab" href="/content-business.html">出版事業部</a>
+    <a class="module-tab" href="https://sunnyplace25.github.io/taskpwa/" target="_blank" rel="noopener noreferrer">Tasks ↗</a>
   </nav>
   <div class="header-date" id="header-date">—</div>
   <nav class="month-nav">
@@ -865,6 +867,7 @@
 
   <!-- SNS sub-tabs -->
   <nav class="sf-tabs" data-group="sns" hidden>
+    <button class="sf-tab" data-sf-tab="instagram">Instagram</button>
     <button class="sf-tab" data-sf-tab="youtube">YouTube</button>
     <button class="sf-tab" data-sf-tab="tiktok">TikTok</button>
     <button class="sf-tab" data-sf-tab="hp-analytics">HP Analytics</button>
@@ -1058,6 +1061,40 @@
   </div><!-- /#sf-tab-soundrop-sync -->
 
   <!-- YouTube Analytics tab (Phase 7) -->
+  <!-- Instagram Analytics tab -->
+  <div id="sf-tab-instagram" class="sf-tab-panel" hidden>
+
+    <!-- 同期状態ミニバナー -->
+    <div id="sf-ig-sync-status" style="margin-bottom:12px"></div>
+
+    <!-- アカウント概要 + 分析 -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>アカウント概要</h2>
+        <span class="sf-note" id="sf-ig-period-label"></span>
+      </div>
+      <div id="sf-ig-account-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- ルールベース分析 -->
+    <section class="sf-section" id="sf-ig-insights-section">
+      <div class="sf-section-header">
+        <h2>分析・次の行動</h2>
+        <span class="sf-note">AI不使用 / データに基づくルールベース判断</span>
+      </div>
+      <div id="sf-ig-insights-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- 投稿パフォーマンス（上位10件） -->
+    <section class="sf-section">
+      <div class="sf-section-header">
+        <h2>投稿パフォーマンス（上位10件）</h2>
+      </div>
+      <div id="sf-ig-media-container" class="loading">読み込み中...</div>
+    </section>
+
+  </div><!-- /#sf-tab-instagram -->
+
   <div id="sf-tab-youtube" class="sf-tab-panel" hidden>
     <section class="sf-section">
       <div class="sf-section-header">
@@ -1151,6 +1188,20 @@
         <h2>MANUAL 取込</h2>
       </div>
       <div id="sf-sync-manual-container" class="loading">読み込み中...</div>
+    </section>
+
+    <!-- Instagram 欠損補完 -->
+    <section class="sf-section" id="ig-backfill-section">
+      <div class="sf-section-header">
+        <div class="sync-header-title">
+          <h2>Instagram 欠損補完</h2>
+          <span class="sync-header-sub">account_daily の欠損日を安全に再取得</span>
+        </div>
+        <div class="sync-run-area">
+          <button id="ig-backfill-check-btn" class="sf-btn">欠損チェック</button>
+        </div>
+      </div>
+      <div id="ig-backfill-container"><div class="empty-state" style="font-size:12px;color:#64748b">「欠損チェック」を押すと欠損日を確認できます</div></div>
     </section>
 
   </div><!-- /#sf-tab-sync -->
@@ -1269,6 +1320,145 @@
 </div><!-- /#module-sf -->
 
 <script src="modules/sf.js"></script>
-<script src="app.js?v=20260825c"></script>
+
+<!-- ─── Main: タイムカード (Phase 37) ───────────────────────────────────── -->
+<main id="module-timecard" class="main" hidden>
+
+  <!-- 時計 -->
+  <div class="tc-clock" id="tc-clock">—</div>
+
+  <!-- 状態バッジ -->
+  <div class="tc-state-row">
+    <span id="tc-state" class="tc-state-badge tc-state-idle">未作業</span>
+  </div>
+
+  <!-- 通知バナーエリア -->
+  <div id="tc-notif-area" class="tc-notif-area"></div>
+
+  <!-- エラー表示 -->
+  <div id="tc-error" class="tc-error"></div>
+  <button id="tc-reload-btn" class="tc-reload-btn">再読込</button>
+
+  <!-- 操作ボタン -->
+  <div class="tc-actions">
+    <button id="tc-btn-in"     class="tc-btn tc-btn-in">作業開始</button>
+    <button id="tc-btn-out"    class="tc-btn tc-btn-out">作業終了</button>
+    <button id="tc-btn-break"  class="tc-btn tc-btn-break">休憩</button>
+    <button id="tc-btn-resume" class="tc-btn tc-btn-resume">作業再開</button>
+  </div>
+
+  <!-- 作業タイマー -->
+  <div id="tc-timer-section" class="tc-timer-section">
+    <div class="tc-timer-display">
+      <span class="tc-timer-label" id="tc-timer-label">作業タイマー</span>
+      <span class="tc-timer-remaining" id="tc-timer-remaining">—</span>
+    </div>
+    <div class="tc-timer-controls">
+      <button id="tc-timer-start"  class="tc-timer-btn tc-timer-btn-start">開始</button>
+      <button id="tc-timer-pause"  class="tc-timer-btn tc-timer-btn-pause" style="display:none">一時停止</button>
+      <button id="tc-timer-resume" class="tc-timer-btn tc-timer-btn-resume" style="display:none">再開</button>
+      <button id="tc-timer-reset"  class="tc-timer-btn tc-timer-btn-reset"  style="display:none">リセット</button>
+    </div>
+    <div class="tc-timer-settings-row">
+      <label class="tc-timer-setting">
+        作業
+        <select id="tc-timer-work-sel">
+          <option value="60">60分</option>
+          <option value="90">90分</option>
+          <option value="0">自由設定</option>
+        </select>
+        <input id="tc-timer-work-custom" type="number" min="1" max="480" class="tc-timer-custom-input" style="display:none" placeholder="分">
+      </label>
+      <label class="tc-timer-setting">
+        休憩
+        <input id="tc-timer-break-input" type="number" min="1" max="120" class="tc-timer-custom-input" placeholder="分">
+      </label>
+    </div>
+  </div>
+
+  <!-- 出勤前の設定（作業場所・カテゴリ） -->
+  <div class="tc-checkin-settings">
+    <div id="tc-location-area" class="tc-location-area">
+      <div class="tc-location-label">作業場所</div>
+      <select id="tc-location-select" class="tc-location-select">
+        <option value="自宅">自宅</option>
+        <option value="オフィス">オフィス</option>
+        <option value="外出先">外出先</option>
+        <option value="__custom__">その他（直接入力）</option>
+      </select>
+      <input id="tc-location-custom" class="tc-location-custom" type="text"
+             placeholder="場所を入力（最大60字）" maxlength="60" style="display:none">
+    </div>
+    <div id="tc-category-area" class="tc-location-area">
+      <div class="tc-location-label">作業種別</div>
+      <select id="tc-category-select" class="tc-location-select">
+        <option value="スノフレ">スノフレ</option>
+        <option value="物販">物販</option>
+        <option value="__custom__">その他（直接入力）</option>
+      </select>
+      <input id="tc-category-custom" class="tc-location-custom" type="text"
+             placeholder="種別を入力（最大40字）" maxlength="40" style="display:none">
+    </div>
+  </div>
+
+  <!-- サマリー -->
+  <div class="tc-summary-grid">
+    <div class="tc-summary-card">
+      <div class="tc-summary-label">作業開始</div>
+      <div class="tc-summary-value" id="tc-first-in">—</div>
+    </div>
+    <div class="tc-summary-card">
+      <div class="tc-summary-label">作業終了</div>
+      <div class="tc-summary-value" id="tc-last-out">—</div>
+    </div>
+    <div class="tc-summary-card">
+      <div class="tc-summary-label">作業時間</div>
+      <div class="tc-summary-value" id="tc-work-time">—</div>
+    </div>
+    <div class="tc-summary-card">
+      <div class="tc-summary-label">休憩時間</div>
+      <div class="tc-summary-value" id="tc-break-time">—</div>
+    </div>
+  </div>
+
+  <!-- 期間切り替え -->
+  <div class="tc-period-tabs" id="tc-period-tabs">
+    <button class="tc-period-tab active" data-period="today">今日</button>
+    <button class="tc-period-tab" data-period="week">今週</button>
+    <button class="tc-period-tab" data-period="month">今月</button>
+    <button class="tc-period-tab" data-period="custom">指定期間</button>
+  </div>
+  <div id="tc-period-custom-row" class="tc-period-custom-row" style="display:none">
+    <input type="date" id="tc-period-from">
+    <span>〜</span>
+    <input type="date" id="tc-period-to">
+    <button id="tc-period-apply" class="tc-period-apply-btn">適用</button>
+  </div>
+
+  <!-- カテゴリ別集計 -->
+  <div id="tc-category-breakdown" class="tc-category-breakdown"></div>
+
+  <!-- 作業区間履歴 -->
+  <div class="tc-history">
+    <div class="tc-history-header tc-session-header">
+      <span>時間帯</span>
+      <span>カテゴリ</span>
+      <span>場所</span>
+      <span>作業</span>
+      <span>休憩</span>
+      <span></span>
+    </div>
+    <div id="tc-history-list" class="tc-history-list">
+      <div class="tc-history-empty">読み込み中...</div>
+    </div>
+  </div>
+
+  <!-- 通知設定パネル -->
+  <div id="tc-settings-panel" style="margin-top:24px;"></div>
+
+</main><!-- /#module-timecard -->
+
+<script src="modules/timecard.js"></script>
+<script src="app.js?v=20261010b"></script>
 </body>
 </html>

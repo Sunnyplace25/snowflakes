@@ -95,6 +95,7 @@ const SfModule = (() => {
     else if (tabName === 'import')          loadImports();
     else if (tabName === 'soundrop-stats')  initSoundropStats();
     else if (tabName === 'soundrop-sync')   loadSoundropSync();
+    else if (tabName === 'instagram')       loadInstagram();
     else if (tabName === 'youtube')         loadYouTube();
     else if (tabName === 'tiktok')          loadTikTok();
     else if (tabName === 'funnel')          loadFunnel();
@@ -1197,6 +1198,352 @@ const SfModule = (() => {
     overlay?.querySelectorAll('.modal').forEach(m => m.hidden = true);
   }
 
+  // ─── Instagram Analytics タブ ─────────────────────────────────────────────
+
+  /** Instagram アカウント概要・分析・投稿パフォーマンスを読み込む */
+  async function loadInstagram() {
+    const syncEl    = document.getElementById('sf-ig-sync-status');
+    const accountEl = document.getElementById('sf-ig-account-container');
+    const insightEl = document.getElementById('sf-ig-insights-container');
+    const mediaEl   = document.getElementById('sf-ig-media-container');
+    const periodEl  = document.getElementById('sf-ig-period-label');
+
+    if (accountEl) accountEl.innerHTML = '<div class="loading">読み込み中...</div>';
+    if (insightEl) insightEl.innerHTML = '<div class="loading">読み込み中...</div>';
+    if (mediaEl)   mediaEl.innerHTML   = '<div class="loading">読み込み中...</div>';
+
+    // 同期状態を取得してミニバナー表示
+    try {
+      const statusRes = await fetch('/api/sf/sync/status').then(r => r.json());
+      const igStatus  = statusRes.sources?.find(s => s.source === 'instagram');
+      if (syncEl && igStatus) {
+        syncEl.innerHTML = renderIgSyncBanner(igStatus);
+      }
+    } catch (_) { /* sync status 取得失敗は無視 */ }
+
+    // データ取得（compare + top media + backfill check を並列）
+    try {
+      const [compareRes, topRes, backfillRes] = await Promise.all([
+        fetch('/api/sf/instagram/account/compare?days=30').then(r => r.json()),
+        fetch('/api/sf/instagram/media/top?metric=reach&limit=10').then(r => r.json()),
+        fetch('/api/sf/instagram/backfill/check').then(r => r.json()).catch(() => null),
+      ]);
+
+      // 欠損件数をバナーに追記
+      if (syncEl && backfillRes?.ok && backfillRes.missing?.length > 0) {
+        const existing = syncEl.innerHTML;
+        syncEl.innerHTML = existing + `
+          <div style="font-size:11px;color:#f87171;margin-top:4px">
+            ⚠ 欠損 ${backfillRes.missing.length} 件 — <a href="#" onclick="event.preventDefault();document.querySelector('[data-sf-tab=sync]')?.click()" style="color:#f87171">Syncタブで補完</a>
+          </div>`;
+      }
+
+      // 期間ラベル
+      if (periodEl && compareRes?.ok) {
+        periodEl.textContent = `直近${compareRes.days}日 vs 前${compareRes.days}日`;
+      }
+
+      if (accountEl) accountEl.innerHTML = renderIgAccount(compareRes);
+      if (insightEl) insightEl.innerHTML = renderIgInsights(compareRes);
+      if (mediaEl)   mediaEl.innerHTML   = renderIgMedia(topRes.rows || []);
+    } catch (e) {
+      const msg = `<div class="empty-state">エラー: ${esc(e.message)}</div>`;
+      if (accountEl) accountEl.innerHTML = msg;
+      if (insightEl) insightEl.innerHTML = msg;
+      if (mediaEl)   mediaEl.innerHTML   = msg;
+    }
+  }
+
+  /** 同期状態ミニバナー */
+  function renderIgSyncBanner(s) {
+    const statusColor = {
+      ok:            '#4ade80',
+      fresh:         '#4ade80',
+      stale:         '#fbbf24',
+      error:         '#f87171',
+      unconfigured:  '#64748b',
+      manual_required: '#64748b',
+    };
+    const color = statusColor[s.status] || '#64748b';
+    const lastDate = s.last_data_date || '—';
+    return `
+      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#94a3b8;padding:6px 0;border-bottom:1px solid #1e293b;margin-bottom:4px">
+        <span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></span>
+        <span>最終データ: <strong style="color:#e2e8f0">${esc(lastDate)}</strong></span>
+        <span style="color:#475569">·</span>
+        <span>${esc(s.status)}</span>
+        ${s.days_since_update != null ? `<span style="color:#475569">· ${s.days_since_update}日前</span>` : ''}
+      </div>`;
+  }
+
+  /** Instagram アカウント比較カードを描画する */
+  function renderIgAccount(data) {
+    if (!data?.ok) {
+      return '<div class="empty-state">データなし — Instagram APIの設定が必要か、データが未取得です</div>';
+    }
+
+    const hasCurrent  = (data.current_data_days  ?? 0) > 0;
+    const hasPrevious = (data.previous_data_days ?? 0) > 0;
+
+    if (!hasCurrent) {
+      return `<div class="empty-state">
+        <div style="font-size:13px;color:#64748b">今期（${esc(data.current?.start)} 〜 ${esc(data.current?.end)}）のデータがありません</div>
+        <div style="font-size:11px;color:#475569;margin-top:4px">Instagram 日次同期が完了すると表示されます</div>
+      </div>`;
+    }
+
+    const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    // 前期データなし or 今期 null → 比較不可
+    const pct = (a, b, prevHasData) => {
+      if (!prevHasData || a == null || b == null || b === 0) return '';
+      const d = ((a - b) / b * 100).toFixed(1);
+      const sign = d >= 0 ? '+' : '';
+      return `<span style="color:${d >= 0 ? 'var(--green)' : 'var(--red)'}">${sign}${d}%</span>`;
+    };
+    // 前期データなしなら "—"、ありなら fmt
+    const fmtPrev = (n) => hasPrevious ? fmt(n) : '<span style="color:#475569">—</span>';
+
+    const fc  = data.followers_count;
+    const cr  = data.current_reach;
+    const pr  = data.previous_reach;
+    const cv  = data.current_views;
+    const pv  = data.previous_views;
+    const ci  = data.current_interactions;
+    const pi  = data.previous_interactions;
+    const cfd = data.current_follows_delta;
+    const pfd = data.previous_follows_delta;
+
+    // エンゲージメント率（インタラクション / リーチ）: 両方取得できた場合のみ計算
+    const engRate     = (cr != null && cr > 0 && ci != null) ? ((ci / cr) * 100).toFixed(2) + '%' : '—';
+    const engRatePrev = (hasPrevious && pr != null && pr > 0 && pi != null) ? ((pi / pr) * 100).toFixed(2) + '%' : '—';
+
+    const noPrevNote = !hasPrevious
+      ? `<div style="padding:4px 18px 8px;font-size:11px;color:#f59e0b">
+          ⚠ 前期（${esc(data.previous?.start)} 〜 ${esc(data.previous?.end)}）のデータが未取得のため比較不可
+        </div>`
+      : '';
+
+    return `
+      ${noPrevNote}
+      <table class="sf-table">
+        <thead>
+          <tr><th>指標</th><th>今期（${esc(data.current_data_days)}日分）</th><th>前期</th><th>変化</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>フォロワー数</td>
+              <td>${fmt(fc?.current)}</td>
+              <td>${hasPrevious ? fmt(fc?.previous) : '<span style="color:#475569">—</span>'}</td>
+              <td>${pct(fc?.current, fc?.previous, hasPrevious)}</td></tr>
+          <tr><td>リーチ（合計）</td>
+              <td>${fmt(cr)}</td><td>${fmtPrev(pr)}</td><td>${pct(cr, pr, hasPrevious)}</td></tr>
+          <tr><td>インプレッション</td>
+              <td>${fmt(cv)}</td><td>${fmtPrev(pv)}</td><td>${pct(cv, pv, hasPrevious)}</td></tr>
+          <tr><td>インタラクション</td>
+              <td>${fmt(ci)}</td><td>${fmtPrev(pi)}</td><td>${pct(ci, pi, hasPrevious)}</td></tr>
+          <tr><td>エンゲージメント率</td>
+              <td>${engRate}</td>
+              <td>${engRatePrev}</td>
+              <td></td></tr>
+          <tr><td>フォロー増減</td>
+              <td>${cfd != null ? (cfd >= 0 ? '+' : '') + fmt(cfd) : '—'}</td>
+              <td>${hasPrevious && pfd != null ? (pfd >= 0 ? '+' : '') + fmt(pfd) : '<span style="color:#475569">—</span>'}</td>
+              <td>${pct(cfd, pfd, hasPrevious)}</td></tr>
+        </tbody>
+      </table>
+      <div style="padding:4px 18px 12px;font-size:11px;color:var(--text-muted)">
+        ※ followers_count は日次取得時の現在値（補完不可）。reach/views/interactions は日別合計。
+      </div>`;
+  }
+
+  /**
+   * ルールベースの分析インサイトを生成する（AI API不使用）。
+   * データ不足の場合は「判断できない理由」を明示する。
+   * 前期データなし・NULL値を 0 として計算しない。
+   */
+  function renderIgInsights(data) {
+    if (!data?.ok) {
+      return `<div class="empty-state">
+        <div style="font-size:13px;color:#64748b">データ不足のため分析できません</div>
+        <div style="font-size:11px;color:#475569;margin-top:4px">Instagram APIの設定・データ取得が必要です</div>
+      </div>`;
+    }
+
+    const insights  = [];
+    const actions   = [];
+    const unclear   = [];
+
+    const hasCurrent  = (data.current_data_days  ?? 0) > 0;
+    const hasPrevious = (data.previous_data_days ?? 0) > 0;
+    const currentDays = data.current_data_days ?? 0;
+
+    if (!hasCurrent) {
+      return `<div style="padding:12px">
+        <div style="font-size:13px;font-weight:600;color:#f87171;margin-bottom:8px">今期データがありません</div>
+        <div style="font-size:12px;color:#64748b">Instagram 日次同期が完了すると分析が表示されます。</div>
+      </div>`;
+    }
+
+    const fc   = data.followers_count;
+    const cr   = data.current_reach;
+    const pr   = data.previous_reach;
+    const ci   = data.current_interactions;
+    const pi   = data.previous_interactions;
+    const cfd  = data.current_follows_delta;
+
+    // ── 前期データなしの場合は比較分析をすべてスキップ ──────────────────
+    if (!hasPrevious) {
+      unclear.push(`前期（${esc(data.previous?.start)} 〜 ${esc(data.previous?.end)}）のデータが未取得です。比較分析には前期分のデータ蓄積が必要です（データ収集を継続してください）。`);
+    }
+
+    // ── フォロワー分析（前期あり・フォロワー取得済みの場合のみ） ──────────
+    if (hasPrevious && fc?.current != null && fc?.previous != null && fc.previous > 0) {
+      const rate = (fc.current - fc.previous) / fc.previous * 100;
+      if (rate >= 5) {
+        insights.push({ type: 'good', text: `フォロワーが前期比 +${rate.toFixed(1)}% 増加しています。認知が広がっています。` });
+      } else if (rate >= 1) {
+        insights.push({ type: 'ok', text: `フォロワーが前期比 +${rate.toFixed(1)}% と緩やかに増加しています。` });
+      } else if (rate >= -1) {
+        insights.push({ type: 'neutral', text: `フォロワーは前期比 ${rate.toFixed(1)}% とほぼ横ばいです。` });
+      } else {
+        insights.push({ type: 'warn', text: `フォロワーが前期比 ${rate.toFixed(1)}% 減少しています。投稿内容・頻度を見直す時期かもしれません。` });
+      }
+    } else if (hasPrevious) {
+      unclear.push('フォロワー数は Instagram API の /me エンドポイント（現在値のみ）から取得するため、過去日付への補完ができません。増減傾向の判断にはさらなるデータ蓄積が必要です。');
+    }
+
+    // ── リーチ分析（前期あり・両方の値が取得できた場合のみ比較） ────────
+    if (hasPrevious && cr != null && pr != null && pr > 0) {
+      const reachRate = (cr - pr) / pr * 100;
+      if (reachRate >= 20) {
+        insights.push({ type: 'good', text: `リーチが前期比 +${reachRate.toFixed(1)}% 大幅増。新しい層にコンテンツが届いています。` });
+      } else if (reachRate <= -20) {
+        insights.push({ type: 'warn', text: `リーチが前期比 ${reachRate.toFixed(1)}% 減少しています。投稿頻度やタイミングを見直しましょう。` });
+        actions.push({ priority: 1, text: `直近${currentDays}日のリーチが前期より${(-reachRate).toFixed(0)}%減っています。リーチが高かった投稿（テーブル参照）の形式や時間帯を参考に次の投稿を組んでみてください。` });
+      } else if (Math.abs(reachRate) < 20) {
+        insights.push({ type: 'neutral', text: `リーチは前期比 ${reachRate >= 0 ? '+' : ''}${reachRate.toFixed(1)}% と横ばいです。` });
+      }
+    } else if (hasPrevious && (cr == null || pr == null)) {
+      unclear.push('リーチ（reach）が API から取得できていない日があります。欠損補完を行っても API が返さなかった日は NULL のまま残るため、正確な合計値が出ません。');
+    }
+
+    // ── エンゲージメント分析（今期リーチとインタラクションが揃えば計算可） ─
+    if (cr != null && cr > 0 && ci != null) {
+      const engRate = (ci / cr) * 100;
+      if (engRate >= 3) {
+        insights.push({ type: 'good', text: `エンゲージメント率 ${engRate.toFixed(2)}%（インタラクション÷リーチ）。リーチした人の反応が良好です。` });
+      } else if (engRate >= 1) {
+        insights.push({ type: 'ok', text: `エンゲージメント率 ${engRate.toFixed(2)}%。反応している人は一定数います。` });
+        actions.push({ priority: 2, text: `直近${currentDays}日でリーチした人のうち${engRate.toFixed(1)}%がアクションを取っています。投稿の最後に問いかけを入れると（「好きな曲は？」など）コメントを促しやすくなります。` });
+      } else {
+        insights.push({ type: 'warn', text: `エンゲージメント率 ${engRate.toFixed(2)}%。リーチに対してアクションが少ない状態です。` });
+        actions.push({ priority: 2, text: `リーチ ${(cr).toLocaleString()} に対してインタラクションが ${(ci).toLocaleString()} 件（${engRate.toFixed(2)}%）です。投稿ごとに保存や共有を促す一言を加えると反応率が改善しやすくなります。` });
+      }
+    } else if (cr != null && cr > 0 && ci == null) {
+      unclear.push('インタラクション（total_interactions）が API から取得できていないため、エンゲージメント率を計算できません。');
+    } else if (cr == null) {
+      unclear.push('リーチ（reach）が取得できていないため、エンゲージメント率を計算できません。');
+    }
+
+    // ── フォロー増減（今期データがあれば表示） ─────────────────────────
+    if (cfd != null && cfd !== 0) {
+      if (cfd > 0) {
+        insights.push({ type: 'ok', text: `今期 +${cfd.toLocaleString()} フォロー増加。フォローにつながる投稿が機能しています。` });
+      } else {
+        insights.push({ type: 'warn', text: `今期 ${cfd.toLocaleString()} フォロー純減。投稿ごとのフォロー状況を確認し、離脱が多い日の投稿内容を見直しましょう。` });
+      }
+    }
+
+    // ── 投稿パフォーマンスに基づくアクション（リーチ実績から） ──────────
+    if (cr != null && cr > 0 && currentDays > 0) {
+      const avgReach = Math.round(cr / currentDays);
+      actions.push({
+        priority: 3,
+        text: `直近${currentDays}日の1日あたり平均リーチは約${avgReach.toLocaleString()}です。リーチが高い投稿（下のテーブル参照）の投稿形式・時間帯・テーマを他の投稿に展開してみましょう。`,
+      });
+    }
+
+    // ── レンダリング ─────────────────────────────────────────────────
+    const typeStyle = {
+      good:    { color: '#4ade80', icon: '✓' },
+      ok:      { color: '#4ade80', icon: '·' },
+      neutral: { color: '#94a3b8', icon: '·' },
+      warn:    { color: '#fbbf24', icon: '⚠' },
+    };
+
+    const insightHtml = insights.map(it => {
+      const s = typeStyle[it.type] || typeStyle.neutral;
+      return `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e293b">
+        <span style="color:${s.color};flex-shrink:0;width:14px;text-align:center">${s.icon}</span>
+        <span style="font-size:12px;color:#cbd5e1">${esc(it.text)}</span>
+      </div>`;
+    }).join('');
+
+    // アクション（優先順位順）
+    const sortedActions = actions.sort((a, b) => a.priority - b.priority);
+    const actionHtml = sortedActions.map((a, i) => `
+      <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e293b">
+        <span style="color:#64748b;flex-shrink:0;font-size:11px;padding-top:1px">${i + 1}</span>
+        <span style="font-size:12px;color:#94a3b8">${esc(a.text)}</span>
+      </div>`).join('');
+
+    const unclearHtml = unclear.length > 0
+      ? `<div style="margin-top:12px;padding:8px;background:#0f172a;border-radius:4px;border:1px solid #1e293b">
+          <div style="font-size:11px;font-weight:600;color:#475569;margin-bottom:4px">判断できない項目</div>
+          ${unclear.map(t => `<div style="font-size:11px;color:#475569;padding:2px 0">${esc(t)}</div>`).join('')}
+        </div>`
+      : '';
+
+    return `
+      <div style="padding:0">
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid #1e293b">変化の説明</div>
+          ${insightHtml || '<div style="font-size:12px;color:#475569;padding:6px 0">変化の判断に十分なデータがありません</div>'}
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid #1e293b">次の行動（優先順）</div>
+          ${actionHtml || '<div style="font-size:12px;color:#475569;padding:6px 0">アクション提案なし</div>'}
+        </div>
+        ${unclearHtml}
+      </div>`;
+  }
+
+  /** Instagram 投稿パフォーマンステーブルを描画する */
+  function renderIgMedia(rows) {
+    if (!rows.length) {
+      return '<div class="empty-state">投稿データなし — データ未収集または認証が必要です</div>';
+    }
+    const fmt    = (n) => (n == null ? '—' : Number(n).toLocaleString());
+    const fmtSec = (ms) => {
+      if (ms == null) return '—';
+      const s = Math.round(ms / 1000);
+      return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m${s % 60}s`;
+    };
+    const rowsHtml = rows.map(r => `
+      <tr>
+        <td>${r.permalink
+          ? `<a href="${esc(r.permalink)}" target="_blank" rel="noopener">${esc((r.caption || '').slice(0, 40) || r.instagram_media_id || '—')}</a>`
+          : esc((r.caption || '').slice(0, 40) || '—')}</td>
+        <td>${esc(r.media_product_type || r.media_type || '—')}</td>
+        <td>${esc((r.published_at || '').slice(0, 10) || '—')}</td>
+        <td class="sf-col-center">${fmt(r.reach)}</td>
+        <td class="sf-col-center">${fmt(r.like_count)}</td>
+        <td class="sf-col-center">${fmt(r.comments_count)}</td>
+        <td class="sf-col-center">${fmt(r.saved_count)}</td>
+        <td class="sf-col-center">${fmtSec(r.avg_watch_time_ms)}</td>
+      </tr>
+    `).join('');
+    return `
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>キャプション</th><th>種別</th><th>投稿日</th>
+            <th>リーチ</th><th>いいね</th><th>コメント</th><th>保存</th><th>平均視聴</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>`;
+  }
+
   // ─── YouTube Analytics タブ ────────────────────────────────────────────────
 
   /** YouTube チャンネル概要と動画トップ10を読み込む（Phase 7） */
@@ -1489,20 +1836,27 @@ const SfModule = (() => {
     if (timelineEl)  timelineEl.innerHTML  = '<div class="loading">読み込み中...</div>';
 
     try {
-      const [overviewRes, eventsRes] = await Promise.all([
+      const safe = fn => fn.catch(() => null);
+      const [overviewRes, igCompare, igDaily, ytCompare, ytDaily, gaDaily, eventsRes] = await Promise.all([
         fetch('/api/sf/funnel/overview').then(r => r.json()),
+        safe(fetch('/api/sf/instagram/account/compare?days=30').then(r => r.json())),
+        safe(fetch('/api/sf/instagram/account/daily').then(r => r.json())),
+        safe(fetch('/api/sf/youtube/channel/compare?days=30').then(r => r.json())),
+        safe(fetch('/api/sf/youtube/channel/daily').then(r => r.json())),
+        safe(fetch('/api/sf/ga/daily').then(r => r.json())),
         fetch('/api/sf/funnel/events').then(r => r.json()),
       ]);
 
       if (overviewEl) {
-        overviewEl.innerHTML = renderFunnelOverview(overviewRes.ok ? overviewRes : null);
+        overviewEl.innerHTML = renderFunnelOverview(
+          overviewRes.ok ? overviewRes : null,
+          { igCompare, igDaily, ytCompare, ytDaily, gaDaily }
+        );
       }
       if (timelineEl) {
         timelineEl.innerHTML = renderEventTimeline(eventsRes.ok ? (eventsRes.events || []) : []);
       }
 
-      // notice: データ欠損や警告がある場合に軽度の注意喚起
-      // 「確認した方がよい変化があります」程度に留める
       const dq = overviewRes?.data_quality;
       if (dq && (dq.missing_sources?.length > 0 || dq.warnings?.length > 0)) {
         setState('notice', '確認した方がよいデータがあります');
@@ -1517,129 +1871,184 @@ const SfModule = (() => {
     }
   }
 
+  /** SVGスパークラインを生成する */
+  function renderSparkline(values, opts = {}) {
+    const { width = 160, height = 36, color = '#60a5fa' } = opts;
+    const valid = (values || []).filter(v => v != null && !isNaN(v));
+    if (valid.length < 2) {
+      return `<svg width="${width}" height="${height}" class="sf-mv-sparkline"><line x1="0" y1="${height/2}" x2="${width}" y2="${height/2}" stroke="#374151" stroke-width="1.5" stroke-dasharray="4,3"/></svg>`;
+    }
+    const min = Math.min(...valid);
+    const max = Math.max(...valid);
+    const range = max - min || 1;
+    const pad = 3;
+    const pts = valid.map((v, i) => {
+      const x = (i / (valid.length - 1)) * width;
+      const y = height - pad - ((v - min) / range) * (height - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    return `<svg width="${width}" height="${height}" class="sf-mv-sparkline"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  }
+
+  /** 前期比バッジを生成する */
+  function renderDelta(current, previous) {
+    if (current == null || previous == null) return '';
+    if (previous === 0) return current > 0 ? '<span class="sf-mv-delta up">新規</span>' : '';
+    const pct = ((current - previous) / previous * 100);
+    const sign = pct >= 0 ? '▲' : '▼';
+    const cls  = pct >= 0 ? 'up' : 'down';
+    return `<span class="sf-mv-delta ${cls}">${sign}${Math.abs(pct).toFixed(1)}%</span>`;
+  }
+
+  /** 指標ブロック（ラベル・大きい数字・前期比・スパークライン）を生成する */
+  function renderMetric(label, value, prev, sparkValues, opts = {}) {
+    const { color = '#60a5fa', unit = '' } = opts;
+    const noData = value == null;
+    const valHtml = noData
+      ? '<span class="sf-mv-value no-data">データなし</span>'
+      : `<span class="sf-mv-value">${value.toLocaleString()}${unit}</span>`;
+    const deltaHtml = noData ? '' : renderDelta(value, prev);
+    const sparkHtml = noData ? '' : renderSparkline(sparkValues, { color });
+    return `
+      <div class="sf-mv-metric">
+        <div class="sf-mv-metric-label">${esc(label)}</div>
+        <div class="sf-mv-metric-main">${valHtml}${deltaHtml}</div>
+        ${sparkHtml}
+      </div>`;
+  }
+
   /**
-   * Funnel Overview を 4 Stage カード形式でレンダリングする。
-   *
-   * !! 人数の漏斗図として描かない !!
-   *    異種データを 1 本の人数として表現しない。
-   *    source 別の指標カードを表示する。
-   *
+   * Funnel Overview を媒体別カード形式でレンダリングする。
    * @param {object|null} data - /api/sf/funnel/overview レスポンス
+   * @param {object} extra - 追加データ（compare / daily）
    * @returns {string} HTML
    */
-  function renderFunnelOverview(data) {
+  function renderFunnelOverview(data, extra = {}) {
     if (!data) return '<div class="empty-state">データを取得できませんでした</div>';
 
-    const { stages, data_quality, from, to } = data;
+    const { stages, from, to } = data;
+    const { igCompare, igDaily, ytCompare, ytDaily, gaDaily } = extra;
 
-    const fmtNum = (v) => (v == null) ? '—' : v.toLocaleString();
-    const fmtPct = (v) => (v == null) ? '—' : `${(v * 100).toFixed(1)}%`;
+    // 日次データから指標ごとの時系列を抽出
+    const igDailyRows  = igDaily?.ok  ? (igDaily.rows  ?? []) : [];
+    const ytDailyRows  = ytDaily?.ok  ? (ytDaily.rows  ?? []) : [];
+    const gaDailyRows  = gaDaily?.ok  ? (gaDaily.rows  ?? []) : [];
 
-    const dqHtml = (() => {
-      if (!data_quality) return '';
-      const parts = [];
-      if (data_quality.missing_sources?.length > 0) {
-        parts.push(`データなし: ${data_quality.missing_sources.join(', ')}`);
+    const igSpark = key => igDailyRows.map(r => r[key] ?? null);
+    const ytSpark = key => ytDailyRows.map(r => r[key] ?? null);
+    const gaSpark = key => {
+      // GA4はpage_path別のためdate単位で集計
+      const byDate = {};
+      for (const r of gaDailyRows) {
+        byDate[r.date] = (byDate[r.date] ?? 0) + (r[key] ?? 0);
       }
-      if (data_quality.monthly_only_sources?.length > 0) {
-        parts.push(`月次のみ: ${data_quality.monthly_only_sources.join(', ')}`);
-      }
-      if (data_quality.unlinked_content_count > 0) {
-        parts.push(`未紐付けコンテンツ: ${data_quality.unlinked_content_count}件`);
-      }
-      if (data_quality.warnings?.length > 0) {
-        parts.push(...data_quality.warnings);
-      }
-      if (parts.length === 0) return '';
-      return `<div class="sf-funnel-dq">${parts.map(p => `<span>${esc(p)}</span>`).join(' / ')}</div>`;
+      return Object.values(byDate);
+    };
+
+    // Instagramの比較値
+    const ig = igCompare?.ok ? igCompare : null;
+    const yt = ytCompare?.ok ? ytCompare : null;
+
+    // GA前期比（日次データから手動計算）
+    const gaCalc = (() => {
+      if (gaDailyRows.length === 0) return {};
+      const days = 30;
+      const dates = [...new Set(gaDailyRows.map(r => r.date))].sort();
+      const half = Math.ceil(dates.length / 2);
+      const curDates = new Set(dates.slice(-half));
+      const preDates = new Set(dates.slice(0, half));
+      const sum = (set, key) => gaDailyRows.filter(r => set.has(r.date)).reduce((a, r) => a + (r[key] ?? 0), 0);
+      return {
+        cur_sessions: sum(curDates, 'sessions'),
+        pre_sessions: sum(preDates, 'sessions'),
+        cur_users:    sum(curDates, 'users'),
+        pre_users:    sum(preDates, 'users'),
+        cur_pv:       sum(curDates, 'page_views'),
+        pre_pv:       sum(preDates, 'page_views'),
+      };
     })();
 
-    const d = stages?.discovery?.social ?? {};
-    const e = stages?.engagement?.social ?? {};
+    // フォロワー前期比バッジ
+    const igFollowerBadge = (() => {
+      const cur = ig?.followers_count?.current;
+      const pre = ig?.followers_count?.previous;
+      if (cur == null) return '';
+      const diff = cur - (pre ?? cur);
+      const sign = diff >= 0 ? '+' : '';
+      const cls  = diff >= 0 ? 'up' : 'down';
+      return `<span class="sf-mv-delta ${cls}">${sign}${diff.toLocaleString()}</span>`;
+    })();
+    const ytSubBadge = (() => {
+      const cur = yt?.subscribers_count?.current;
+      const pre = yt?.subscribers_count?.previous;
+      if (cur == null) return '';
+      const diff = cur - (pre ?? cur);
+      const sign = diff >= 0 ? '+' : '';
+      const cls  = diff >= 0 ? 'up' : 'down';
+      return `<span class="sf-mv-delta ${cls}">${sign}${diff.toLocaleString()}</span>`;
+    })();
+
+    const igFollowers = ig?.followers_count?.current ?? null;
+    const ytSubs      = yt?.subscribers_count?.current ?? null;
 
     return `
-      <div class="sf-funnel-period">集計期間: ${esc(from ?? '—')} 〜 ${esc(to ?? '—')}</div>
-      ${dqHtml}
-      <div class="sf-funnel-stages">
+      <div class="sf-mv-period">集計期間（直近30日）: ${esc(from ?? '—')} 〜 ${esc(to ?? '—')}</div>
+      <div class="sf-mv-grid">
 
-        <div class="sf-funnel-stage">
-          <div class="sf-funnel-stage-label">Stage 1: DISCOVERY</div>
-          <div class="sf-funnel-cards">
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">Instagram</div>
-              <div class="sf-funnel-row"><span>Reach</span><span>${fmtNum(d.instagram?.reach)}</span></div>
-              <div class="sf-funnel-row"><span>Views</span><span>${fmtNum(d.instagram?.views)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">YouTube</div>
-              <div class="sf-funnel-row"><span>Views</span><span>${fmtNum(d.youtube?.views)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">TikTok</div>
-              <div class="sf-funnel-row"><span>Reach</span><span>${fmtNum(d.tiktok?.reach)}</span></div>
-              <div class="sf-funnel-row"><span>Impressions</span><span>${fmtNum(d.tiktok?.impressions)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">サイト (GA4)</div>
-              <div class="sf-funnel-row"><span>Sessions</span><span>${fmtNum(stages?.discovery?.site?.sessions)}</span></div>
-              <div class="sf-funnel-row"><span>Users</span><span>${fmtNum(stages?.discovery?.site?.users)}</span></div>
-            </div>
+        <!-- Instagram -->
+        <div class="sf-mv-card">
+          <div class="sf-mv-card-header">
+            <span class="sf-mv-platform-name">📷 Instagram</span>
+            ${igFollowers != null ? `<span class="sf-mv-followers">フォロワー ${igFollowers.toLocaleString()} ${igFollowerBadge}</span>` : ''}
+          </div>
+          <div class="sf-mv-date-range">${esc(ig?.current?.start ?? from ?? '—')} 〜 ${esc(ig?.current?.end ?? to ?? '—')}</div>
+          <div class="sf-mv-metrics">
+            ${renderMetric('届いた人数', ig?.current_reach ?? null, ig?.previous_reach ?? null, igSpark('reach'), { color: '#f472b6' })}
+            ${renderMetric('いいね', ig?.current_likes ?? null, ig?.previous_likes ?? null, igSpark('likes'), { color: '#fb7185' })}
+            ${renderMetric('保存', ig?.current_saves ?? null, ig?.previous_saves ?? null, igSpark('saves'), { color: '#a78bfa' })}
           </div>
         </div>
 
-        <div class="sf-funnel-stage">
-          <div class="sf-funnel-stage-label">Stage 2: ENGAGEMENT</div>
-          <div class="sf-funnel-cards">
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">Instagram</div>
-              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.instagram?.likes)}</span></div>
-              <div class="sf-funnel-row"><span>Comments</span><span>${fmtNum(e.instagram?.comments)}</span></div>
-              <div class="sf-funnel-row"><span>Saves</span><span>${fmtNum(e.instagram?.saves)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">YouTube</div>
-              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.youtube?.likes)}</span></div>
-              <div class="sf-funnel-row"><span>Watch time</span><span>${fmtNum(e.youtube?.watch_time_min)} min</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">TikTok</div>
-              <div class="sf-funnel-row"><span>Likes</span><span>${fmtNum(e.tiktok?.likes)}</span></div>
-              <div class="sf-funnel-row"><span>Completion</span><span>${fmtPct(e.tiktok?.completion_rate)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">サイト (GA4)</div>
-              <div class="sf-funnel-row"><span>Page Views</span><span>${fmtNum(stages?.engagement?.site?.page_views)}</span></div>
-              <div class="sf-funnel-row"><span>Engaged Sessions</span><span>${fmtNum(stages?.engagement?.site?.engaged_sessions)}</span></div>
-            </div>
+        <!-- YouTube -->
+        <div class="sf-mv-card">
+          <div class="sf-mv-card-header">
+            <span class="sf-mv-platform-name">▶ YouTube</span>
+            ${ytSubs != null ? `<span class="sf-mv-followers">登録者 ${ytSubs.toLocaleString()} ${ytSubBadge}</span>` : ''}
+          </div>
+          <div class="sf-mv-date-range">${esc(yt?.current?.start ?? from ?? '—')} 〜 ${esc(yt?.current?.end ?? to ?? '—')}</div>
+          <div class="sf-mv-metrics">
+            ${renderMetric('再生回数', yt?.current_views ?? null, yt?.previous_views ?? null, ytSpark('views'), { color: '#f87171' })}
+            ${renderMetric('視聴時間（分）', yt?.current_watch_min ?? null, yt?.previous_watch_min ?? null, ytSpark('estimated_minutes_watched'), { color: '#fb923c' })}
+            ${renderMetric('新規登録者', yt?.current_subs_gained ?? null, yt?.previous_subs_gained ?? null, ytSpark('subscribers_gained'), { color: '#34d399' })}
           </div>
         </div>
 
-        <div class="sf-funnel-stage">
-          <div class="sf-funnel-stage-label">Stage 3: DEEP INTEREST</div>
-          <div class="sf-funnel-cards">
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">なろう <span class="sf-funnel-monthly">月次</span></div>
-              <div class="sf-funnel-row"><span>月間PV</span><span>${fmtNum(stages?.deep_interest?.narou?.pv_monthly)}</span></div>
-              <div class="sf-funnel-row"><span>ブックマーク</span><span>${fmtNum(stages?.deep_interest?.narou?.bookmark_count)}</span></div>
-              <div class="sf-funnel-row"><span>レビュー</span><span>${fmtNum(stages?.deep_interest?.narou?.review_count)}</span></div>
-            </div>
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">Music</div>
-              <div class="sf-funnel-row"><span>Streams</span><span>${fmtNum(stages?.deep_interest?.music?.streams)}</span></div>
-              <div class="sf-funnel-row"><span>Listeners</span><span>${fmtNum(stages?.deep_interest?.music?.listeners)}</span></div>
-              <div class="sf-funnel-row"><span>Saves</span><span>${fmtNum(stages?.deep_interest?.music?.saves)}</span></div>
-            </div>
+        <!-- サイト (GA4) -->
+        <div class="sf-mv-card">
+          <div class="sf-mv-card-header">
+            <span class="sf-mv-platform-name">🌐 サイト</span>
+          </div>
+          <div class="sf-mv-date-range">${esc(from ?? '—')} 〜 ${esc(to ?? '—')}</div>
+          <div class="sf-mv-metrics">
+            ${renderMetric('訪問者数', gaCalc.cur_users || null, gaCalc.pre_users || null, gaSpark('users'), { color: '#60a5fa' })}
+            ${renderMetric('ページビュー', gaCalc.cur_pv || null, gaCalc.pre_pv || null, gaSpark('page_views'), { color: '#38bdf8' })}
           </div>
         </div>
 
-        <div class="sf-funnel-stage">
-          <div class="sf-funnel-stage-label">Stage 4: VALUE</div>
-          <div class="sf-funnel-cards">
-            <div class="sf-funnel-card">
-              <div class="sf-funnel-source">収益 <span class="sf-funnel-monthly">月次</span></div>
-              <div class="sf-funnel-row"><span>収益（JPY）</span><span>${fmtNum(stages?.value?.revenue?.amount_jpy)}</span></div>
-              <div class="sf-funnel-row"><span>数量</span><span>${fmtNum(stages?.value?.revenue?.quantity)}</span></div>
-            </div>
+        <!-- なろう・収益（月次） -->
+        <div class="sf-mv-card sf-mv-card-monthly">
+          <div class="sf-mv-card-header">
+            <span class="sf-mv-platform-name">📖 なろう <span class="sf-mv-monthly-badge">月次</span></span>
+          </div>
+          <div class="sf-mv-metrics">
+            ${renderMetric('月間PV', stages?.deep_interest?.narou?.pv_monthly ?? null, null, [], { color: '#fbbf24' })}
+            ${renderMetric('ブックマーク', stages?.deep_interest?.narou?.bookmark_count ?? null, null, [], { color: '#fbbf24' })}
+          </div>
+          <div class="sf-mv-card-header" style="margin-top:12px">
+            <span class="sf-mv-platform-name">💴 収益 <span class="sf-mv-monthly-badge">月次</span></span>
+          </div>
+          <div class="sf-mv-metrics">
+            ${renderMetric('収益（円）', stages?.value?.revenue?.amount_jpy ?? null, null, [], { color: '#34d399' })}
           </div>
         </div>
 
@@ -1767,7 +2176,7 @@ const SfModule = (() => {
 
   // ─── Sync / Ops（Phase 10 / Phase 31 改修）──────────────────────────────
 
-  async function loadSync() {
+  async function loadSync({ autoBackfill = false } = {}) {
     setState('analyzing');
     const bannerEl = document.getElementById('sf-sync-attention-banner');
     const autoEl   = document.getElementById('sf-sync-auto-container');
@@ -1815,9 +2224,179 @@ const SfModule = (() => {
         finally {
           runBtn.disabled = false;
           runBtn.textContent = '今すぐ同期';
-          loadSync();
+          // AUTO同期後: 欠損チェックし 3 件以内なら自動補完（安全範囲）
+          await loadSync({ autoBackfill: true });
         }
       };
+    }
+
+    // Instagram 欠損補完セクションの初期化
+    // autoBackfill=true のとき欠損 ≤3 件なら自動補完（AUTO同期後のみ）
+    loadInstagramBackfill(autoBackfill);
+  }
+
+  // ─── Instagram 欠損補完 UI ────────────────────────────────────────────────
+
+  /**
+   * Instagram 欠損補完セクションを初期化し、ボタンイベントを登録する。
+   * loadSync() 内から呼び出す。
+   * @param {boolean} [autoRunIfSafe] - 欠損が 3 件以下の場合に自動補完を実行するか
+   */
+  async function loadInstagramBackfill(autoRunIfSafe = false) {
+    const container = document.getElementById('ig-backfill-container');
+    const checkBtn  = document.getElementById('ig-backfill-check-btn');
+    if (!container || !checkBtn) return;
+
+    // チェックボタン
+    checkBtn.onclick = async () => {
+      checkBtn.disabled = true;
+      checkBtn.textContent = '確認中...';
+      container.innerHTML = '<div class="loading" style="font-size:12px">欠損日を確認しています...</div>';
+      try {
+        const res  = await fetch('/api/sf/instagram/backfill/check');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || '不明なエラー');
+        renderBackfillCheckResult(container, data);
+      } catch (e) {
+        container.innerHTML = `<div class="error-state" style="font-size:12px">エラー: ${esc(e.message)}</div>`;
+      } finally {
+        checkBtn.disabled = false;
+        checkBtn.textContent = '欠損チェック';
+      }
+    };
+
+    // 自動チェック（タブを開いたとき / 同期後）
+    try {
+      const res  = await fetch('/api/sf/instagram/backfill/check');
+      const data = await res.json();
+      if (!data.ok) return;
+      renderBackfillCheckResult(container, data);
+
+      // 安全な自動補完: 欠損 ≤ 3 件かつ autoRunIfSafe=true のとき自動実行
+      if (autoRunIfSafe && data.missing && data.missing.length > 0 && data.missing.length <= 3) {
+        await runInstagramBackfill(container, data.missing, true);
+      }
+    } catch (_) { /* API 未起動時は無視 */ }
+  }
+
+  /** 欠損チェック結果を描画する */
+  function renderBackfillCheckResult(container, data) {
+    if (!container) return;
+    const { missing = [], null_dates = [], scan_range } = data;
+    const rangeStr = scan_range ? `${scan_range.start} 〜 ${scan_range.end}` : '—';
+
+    if (missing.length === 0 && null_dates.length === 0) {
+      container.innerHTML = `
+        <div class="sync-summary-line sync-summary-ok" style="font-size:12px;margin:0">
+          欠損なし — スキャン範囲: ${esc(rangeStr)}
+        </div>`;
+      return;
+    }
+
+    let html = `<div style="font-size:12px;color:#94a3b8;margin-bottom:6px">スキャン範囲: ${esc(rangeStr)}</div>`;
+
+    if (missing.length > 0) {
+      const rows = missing.map(d =>
+        `<div class="sync-source-row" style="padding:6px 0;border-bottom:1px solid #1e293b">
+          <span class="sync-status-dot sync-dot-error"></span>
+          <span class="sync-source-name">${esc(d)}</span>
+          <span class="sync-state-label sync-label-error">行なし</span>
+        </div>`
+      ).join('');
+      html += `
+        <div style="margin-bottom:8px">
+          <div style="font-size:11px;font-weight:600;color:#f87171;margin-bottom:4px">欠損日 ${missing.length} 件</div>
+          ${rows}
+        </div>`;
+
+      html += `
+        <button id="ig-backfill-run-btn" class="sf-btn" style="margin-top:8px">
+          ${missing.length} 件を補完実行
+        </button>
+        <div id="ig-backfill-run-result" style="margin-top:8px"></div>`;
+    }
+
+    if (null_dates.length > 0) {
+      const rows = null_dates.map(({ date, nullCols }) =>
+        `<div style="padding:4px 0;font-size:11px;color:#94a3b8">
+          ${esc(date)}: ${esc(nullCols.join(', '))} = NULL（API が返さなかった値）
+        </div>`
+      ).join('');
+      html += `
+        <div style="margin-top:8px;padding:8px;background:#0f172a;border-radius:4px;border:1px solid #1e293b">
+          <div style="font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px">既存行でNULLの指標（参考）</div>
+          ${rows}
+          <div style="font-size:10px;color:#475569;margin-top:4px">
+            ※ Instagram API が対象日のデータを返さなかったため NULL です。推測補完は行いません。
+          </div>
+        </div>`;
+    }
+
+    container.innerHTML = html;
+
+    // 補完実行ボタンのイベント登録
+    const runBtn = container.querySelector('#ig-backfill-run-btn');
+    if (runBtn) {
+      runBtn.addEventListener('click', () => {
+        runInstagramBackfill(container, missing, false);
+      });
+    }
+  }
+
+  /** 補完を実行し結果を描画する */
+  async function runInstagramBackfill(container, dates, isAuto) {
+    const runBtn    = container.querySelector('#ig-backfill-run-btn');
+    const resultDiv = container.querySelector('#ig-backfill-run-result') || container;
+    if (runBtn) { runBtn.disabled = true; runBtn.textContent = '補完中...'; }
+
+    try {
+      const res  = await fetch('/api/sf/instagram/backfill/run', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ dates }),
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        resultDiv.innerHTML = `<div class="error-state" style="font-size:12px">エラー: ${esc(data.error || '不明')}</div>`;
+        return;
+      }
+
+      const { summary, results, integrity } = data;
+      const tag = isAuto ? '自動補完完了' : '補完完了';
+      const rows = (results || []).map(r => {
+        const icon = r.inserted ? '✓' : r.apiError ? '✗' : '—';
+        const cls  = r.inserted ? 'sync-label-fresh' : r.apiError ? 'sync-label-error' : 'sync-label-disabled';
+        const vals = Object.entries(r.values || {})
+          .filter(([, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join(', ');
+        const detail = r.apiError
+          ? `<span style="color:#f87171;font-size:10px">${esc(r.apiError)}</span>`
+          : vals ? `<span style="color:#64748b;font-size:10px">${esc(vals)}</span>` : '';
+        return `<div style="padding:4px 0;font-size:12px">
+          ${icon} <span class="sync-state-label ${cls}" style="margin-right:6px">${r.date}</span>${detail}
+        </div>`;
+      }).join('');
+
+      resultDiv.innerHTML = `
+        <div class="sync-summary-line ${summary.errors > 0 ? 'sync-summary-waiting' : 'sync-summary-ok'}" style="font-size:12px;margin-bottom:6px">
+          ${tag}: INSERT ${summary.inserted} 件 / エラー ${summary.errors} 件 / DB ${esc(integrity)}
+        </div>
+        ${rows}`;
+
+      // 補完後に再チェック（最新状態を反映）
+      if (summary.inserted > 0) {
+        setTimeout(async () => {
+          try {
+            const r2   = await fetch('/api/sf/instagram/backfill/check');
+            const d2   = await r2.json();
+            if (d2.ok) renderBackfillCheckResult(container, d2);
+          } catch (_) {}
+        }, 1000);
+      }
+    } catch (e) {
+      resultDiv.innerHTML = `<div class="error-state" style="font-size:12px">エラー: ${esc(e.message)}</div>`;
+    } finally {
+      if (runBtn) { runBtn.disabled = false; runBtn.textContent = '補完実行'; }
     }
   }
 
@@ -1920,7 +2499,7 @@ const SfModule = (() => {
         }
       }
 
-      const lastDate   = s.last_data_date ?? '—';
+      const lastDate   = s.last_data_date ? `最終取得：${s.last_data_date}` : '—';
       // segmented toggle: 「利用中」と「未使用」の2択ピル
       const toggleStateCls = isDisabled ? 'state-disabled' : 'state-enabled';
       const segToggle = `
@@ -4179,8 +4758,8 @@ const SfModule = (() => {
   return {
     activate,
     setState, setStatus, setCharState, setAllCharsState,
-    loadLibrary, loadProfiles, loadImports, loadYouTube, loadTikTok,
-    loadFunnel, loadEventImpact, loadSync, loadHpAnalytics,
+    loadLibrary, loadProfiles, loadImports, loadInstagram, loadYouTube, loadTikTok,
+    loadFunnel, loadEventImpact, loadSync, loadInstagramBackfill, loadHpAnalytics,
     loadSoundropStats, initSoundropStats, loadSoundropSync,
     loadDistribution,
     renderDistPlatforms, renderDistIssues,

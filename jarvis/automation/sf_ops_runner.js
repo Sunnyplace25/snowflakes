@@ -32,6 +32,13 @@ import {
   AUTO_SOURCES,
   MANUAL_SOURCES,
 } from '../data/sf_sync_manager.js';
+import {
+  findMissingAccountDates,
+  backfillOneDate,
+  verifyLatestBackup,
+  createBackup as createInstagramBackup,
+  MAX_DATES_PER_RUN,
+} from '../scripts/instagram_backfill.mjs';
 
 // ─── 引数パース ──────────────────────────────────────────────────────────────
 
@@ -68,6 +75,54 @@ async function runGa4DailySync() {
     // GA4だけ失敗しても YouTube / Instagram 等の同期は続行する。
     console.error(`  ✗ ga4: 失敗 — ${err.message}`);
     return { success: false, error: err.message };
+  }
+}
+
+// ─── Instagram 欠損補完（自動・安全） ────────────────────────────────────────
+
+/**
+ * AUTO sync 後に Instagram account_daily の欠損日を安全に補完する。
+ * 補完対象: MAX_SAFE_BACKFILL 件以内の欠損のみ自動実行。
+ * それ以上の場合はスキップしてログに件数を出力するだけ（手動補完を促す）。
+ */
+const MAX_SAFE_BACKFILL = 3;
+
+async function runInstagramBackfillIfNeeded() {
+  const { missing } = findMissingAccountDates(db);
+
+  if (missing.length === 0) {
+    console.log('[sf_ops_runner] Instagram backfill: 欠損なし');
+    return;
+  }
+
+  if (missing.length > MAX_SAFE_BACKFILL) {
+    console.log(`[sf_ops_runner] Instagram backfill: 欠損 ${missing.length} 件 — 自動補完は ${MAX_SAFE_BACKFILL} 件以下のみ。管理画面から手動補完してください`);
+    return;
+  }
+
+  console.log(`[sf_ops_runner] Instagram backfill: 欠損 ${missing.length} 件 → 自動補完開始`);
+
+  // バックアップ確認（なければ作成）
+  try {
+    verifyLatestBackup();
+  } catch (_) {
+    const dest = createInstagramBackup();
+    console.log(`[sf_ops_runner] Instagram backfill: バックアップ作成 ${dest}`);
+  }
+
+  // Instagram API 設定確認
+  const { INSTAGRAM_ACCESS_TOKEN, INSTAGRAM_USER_ID } = process.env;
+  if (!INSTAGRAM_ACCESS_TOKEN || !INSTAGRAM_USER_ID) {
+    console.log('[sf_ops_runner] Instagram backfill: API 設定なし — スキップ');
+    return;
+  }
+  const config = { accessToken: INSTAGRAM_ACCESS_TOKEN, userId: INSTAGRAM_USER_ID };
+
+  for (const date of missing) {
+    const result = await backfillOneDate(config, db, date);
+    const tag = result.inserted ? '✓ INSERT' : '- SKIP';
+    const err = result.apiError ? ` [APIエラー: ${result.apiError}]` : '';
+    console.log(`  [backfill] ${date}: ${tag}${err}`);
   }
 }
 
@@ -144,6 +199,16 @@ async function main() {
       }
     }
     console.log(`[sf_ops_runner] 同期結果: ${syncResult.overall} (${syncResult.succeeded.length}/${syncResult.succeeded.length + syncResult.failed.length})`);
+  }
+
+  // Instagram 欠損補完（AUTO sync 後・dry-run / report-only / --source 指定時はスキップ）
+  if (!isDryRun && !isReportOnly && !targetSource) {
+    try {
+      await runInstagramBackfillIfNeeded();
+    } catch (e) {
+      console.error(`[sf_ops_runner] Instagram backfill エラー: ${e.message}`);
+      // backfill 失敗はメイン処理を止めない
+    }
   }
 
   // freshness 評価 + attention
