@@ -2,8 +2,8 @@
 
 ## 現在地
 
-**最新到達点：Phase 34 ダッシュボード復元・カレンダー祝日色分け・競合API 401対応**
-commit: `7ab15af` / branch: `jarvis-development`
+**最新到達点：Phase 40 TikTok 自動同期（Metricool MCP 経由）**
+commit: TBD / branch: `jarvis-development`
 
 ---
 
@@ -49,6 +49,9 @@ jarvis-development
 | Phase 30/31 物販 Phase 33 | work_records 新フィールド（原価/送料/手数料率/プラットフォーム等）・物販サブタブ再構成 | ✅ 完了 | `3e94266` |
 | Phase 34 ダッシュボード・色分け・401対応 | 物販ダッシュボード復元（年度別集計）・カレンダー土日祝色分け・競合API 401フォールバック（公開HTML）・手動取り込み案内 | ✅ 完了 | `7ab15af` |
 | 競合分析 手動取り込み | ブックマークレット＋ドラッグ＆ドロップ取り込み・自動スキャン無効化・JSON/CSV対応・分類自動更新 | ✅ 完了 | `65efca1` |
+| Phase 38 SNS Instagram自動同期 | Instagram Metricool MCP 経由自動同期・欠損補完・compare API NULL修正・SNSタブ追加 | ✅ 完了 | 前回commit |
+| Phase 39 note収益企画 | note収益化スキーム設計・AI社員計画書受領 | ✅ 完了 | 前回commit |
+| Phase 40 TikTok自動同期 | Metricool MCP OAuth → TikTok実データ取得・metricool_tiktok_collector.js・sf_sync_manager tiktok auto化・API修正・dashboard表示更新 | ✅ 完了 | TBD |
 
 ---
 

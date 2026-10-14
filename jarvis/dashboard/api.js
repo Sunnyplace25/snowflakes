@@ -1675,19 +1675,15 @@ export function createApiHandler(db) {
 
         const [summary] = db.prepare(`
           SELECT
-            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS current_reach,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN reach             ELSE 0 END) AS previous_reach,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions       ELSE 0 END) AS current_impressions,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN impressions       ELSE 0 END) AS previous_impressions,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits    ELSE 0 END) AS current_profile_visits,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits    ELSE 0 END) AS previous_profile_visits,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta   ELSE 0 END) AS current_followers_delta,
-            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta   ELSE 0 END) AS previous_followers_delta
+            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits  ELSE NULL END) AS current_profile_visits,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN profile_visits  ELSE NULL END) AS previous_profile_visits,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta ELSE NULL END) AS current_followers_delta,
+            SUM(CASE WHEN date >= ? AND date <= ? THEN followers_delta ELSE NULL END) AS previous_followers_delta,
+            COUNT(CASE WHEN date >= ? AND date <= ? THEN 1 ELSE NULL END) AS current_data_days,
+            COUNT(CASE WHEN date >= ? AND date <= ? THEN 1 ELSE NULL END) AS previous_data_days
           FROM sf_account_daily
           WHERE platform = 'tiktok' AND date >= ? AND date <= ?
         `).all(
-          currentStart,  currentEnd,
-          previousStart, previousEnd,
           currentStart,  currentEnd,
           previousStart, previousEnd,
           currentStart,  currentEnd,
@@ -1699,11 +1695,13 @@ export function createApiHandler(db) {
 
         const [followersCurrent] = db.prepare(`
           SELECT followers FROM sf_account_daily
-          WHERE platform = 'tiktok' AND date <= ? ORDER BY date DESC LIMIT 1
+          WHERE platform = 'tiktok' AND date <= ? AND followers IS NOT NULL
+          ORDER BY date DESC LIMIT 1
         `).all(currentEnd);
         const [followersPrevEnd] = db.prepare(`
           SELECT followers FROM sf_account_daily
-          WHERE platform = 'tiktok' AND date <= ? ORDER BY date DESC LIMIT 1
+          WHERE platform = 'tiktok' AND date <= ? AND followers IS NOT NULL
+          ORDER BY date DESC LIMIT 1
         `).all(previousEnd);
 
         return jsonRes(res, 200, {
@@ -1711,11 +1709,16 @@ export function createApiHandler(db) {
           days,
           current:  { start: currentStart,  end: currentEnd },
           previous: { start: previousStart, end: previousEnd },
+          current_data_days:  summary?.current_data_days  ?? 0,
+          previous_data_days: summary?.previous_data_days ?? 0,
           followers_count: {
-            current:  followersCurrent?.followers  ?? null,
-            previous: followersPrevEnd?.followers  ?? null,
+            current:  followersCurrent?.followers ?? null,
+            previous: followersPrevEnd?.followers ?? null,
           },
-          ...summary,
+          current_profile_visits:  summary?.current_profile_visits  ?? null,
+          previous_profile_visits: summary?.previous_profile_visits ?? null,
+          current_followers_delta:  summary?.current_followers_delta  ?? null,
+          previous_followers_delta: summary?.previous_followers_delta ?? null,
         });
       }
 

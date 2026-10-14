@@ -119,15 +119,15 @@ export const SOURCE_REGISTRY = {
   },
   tiktok: {
     source:      'tiktok',
-    mode:        'manual',
+    mode:        'auto',
     label:       'TikTok',
     granularity: 'daily',
     dataTable:   'sf_account_daily',
     dateCol:     'date',
     dateFilter:  "platform = 'tiktok'",
-    envVars:     [],
-    collectorModule: null,
-    actionMessage: 'TikTok Studio の CSV を importTikTokCSV() で取込してください',
+    envVars:     ['METRICOOL_CLIENT_ID'],
+    collectorModule: '../importers/metricool_tiktok_collector.js',
+    actionMessage: null,
   },
   x: {
     source:      'x',
@@ -681,9 +681,9 @@ export async function runSourceSync(db, source, opts = {}) {
   if (!collectFn) {
     try {
       const mod = await import(def.collectorModule);
-      collectFn = source === 'instagram'
-        ? mod.collectInstagramDaily
-        : mod.collectYouTubeChannel;
+      collectFn = source === 'instagram' ? mod.collectInstagramDaily
+               : source === 'tiktok'    ? mod.collectTikTok
+               : mod.collectYouTubeChannel;
     } catch (e) {
       return { source, success: false, error: `collector import failed: ${e.message}`, data_date: null };
     }
