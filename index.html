@@ -923,14 +923,19 @@ function sfShare() {
   <div style="max-width:900px;margin:0 auto 40px;display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;">
 
     <!-- 神様はバンド名がダサいと言った -->
-    <a href="https://ncode.syosetu.com/n3833mv/" target="_blank" rel="noopener"
-       style="flex:1;min-width:180px;display:flex;flex-direction:column;justify-content:center;text-decoration:none;border-radius:20px;padding:24px 20px;background:rgba(167,139,250,0.03);border:1px solid rgba(167,139,250,0.15);transition:all 0.4s;position:relative;overflow:hidden;"
-       onmouseenter="this.style.background='rgba(167,139,250,0.07)';this.style.transform='translateY(-1px)'"
-       onmouseleave="this.style.background='rgba(167,139,250,0.03)';this.style.transform=''">
-      <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#a78bfa;margin-bottom:10px;">SERIAL</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,1.3vw,14px);font-weight:300;color:#c4b5fd;line-height:1.8;letter-spacing:0.04em;">神様はバンド名が<br>ダサいと言った</p>
-      <p style="font-family:'Noto Serif JP',serif;font-size:9px;color:#7c6faa;margin-top:10px;line-height:1.8;">解散寸前のバンドに、<br>音を聞く神様がついてきた。</p>
-      <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:2px;color:#a78bfa;margin-top:14px;">小説家になろう →</p>
+    <a id="kamisama-banner" href="https://ncode.syosetu.com/n3833mv/" target="_blank" rel="noopener"
+       style="flex:1;min-width:180px;display:flex;flex-direction:column;justify-content:center;text-decoration:none;border-radius:20px;padding:24px 20px;background:rgba(167,139,250,0.03);border:1px solid rgba(167,139,250,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
+      <div id="kamisama-shine" style="pointer-events:none;position:absolute;inset:0;opacity:0;transition:opacity 0.8s;background:radial-gradient(ellipse at 50% 50%, rgba(167,139,250,0.10) 0%, transparent 70%);"></div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:5px;color:#a78bfa;margin-bottom:10px;position:relative;">SERIAL</p>
+      <div style="position:relative;">
+        <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,1.3vw,14px);font-weight:300;color:#c4b5fd;line-height:1.8;letter-spacing:0.04em;">神様はバンド名が<br>ダサいと言った</p>
+        <span id="kamisama-ep" style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8b6fcc;letter-spacing:1px;margin-top:2px;display:block;"></span>
+      </div>
+      <p id="kamisama-sub" style="font-family:'Noto Serif JP',serif;font-size:9px;color:#7c6faa;margin-top:10px;line-height:1.8;position:relative;transition:color 0.5s;">解散寸前のバンドに、<br>音を聞く神様がついてきた。</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;position:relative;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:8px;letter-spacing:2px;color:#a78bfa;">小説家になろう →</p>
+        <p id="kamisama-status" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#7c6faa;transition:color 0.5s;"></p>
+      </div>
     </a>
 
     <!-- Snow flakes（既存バナー） -->
@@ -1103,6 +1108,26 @@ function sfShare() {
     #update-banner.active #update-status  { color: #93c5fd !important; }
     #update-banner.active #update-arrow   { color: #93c5fd !important; animation: arrowSlide 1.6s ease-in-out infinite; }
     #update-banner:hover                  { background: rgba(147,197,253,0.07) !important; transform: translateY(-1px); }
+
+    /* 神様バナー */
+    @keyframes kamisamaGlow {
+      0%,100% { box-shadow: 0 0 24px rgba(167,139,250,0.25), 0 0 60px rgba(139,92,246,0.08); border-color: rgba(167,139,250,0.35); }
+      50%      { box-shadow: 0 0 44px rgba(167,139,250,0.50), 0 0 100px rgba(139,92,246,0.18); border-color: rgba(167,139,250,0.75); }
+    }
+    @keyframes kamisamaGlowActive {
+      0%,100% { box-shadow: 0 0 28px rgba(167,139,250,0.45), 0 0 80px rgba(139,92,246,0.15); border-color: rgba(167,139,250,0.60); }
+      50%      { box-shadow: 0 0 56px rgba(167,139,250,0.70), 0 0 130px rgba(139,92,246,0.28), inset 0 0 40px rgba(167,139,250,0.06); border-color: rgba(167,139,250,1.00); }
+    }
+    #kamisama-banner { animation: kamisamaGlow 3s ease-in-out infinite; }
+    #kamisama-banner.active {
+      animation: kamisamaGlowActive 2.2s ease-in-out infinite;
+      background: rgba(167,139,250,0.06) !important;
+    }
+    #kamisama-banner.active #kamisama-shine  { opacity: 1 !important; }
+    #kamisama-banner.active #kamisama-ep     { color: #c4b5fd !important; }
+    #kamisama-banner.active #kamisama-sub    { color: #c4b5fd !important; }
+    #kamisama-banner.active #kamisama-status { color: #a78bfa !important; }
+    #kamisama-banner:hover                   { background: rgba(167,139,250,0.08) !important; transform: translateY(-1px); }
 
     @keyframes sealedGlow {
       0%,100% { box-shadow: 0 0 8px rgba(196,181,253,0.15); border-color: rgba(196,181,253,0.25); }
@@ -1288,6 +1313,79 @@ function sfShare() {
 
       update();
       setInterval(update, 30000); // 30秒ごとに確認
+    })();
+  </script>
+
+  <script>
+    // 神様はバンド名がダサいと言った — エピソード別更新スケジュール
+    (function() {
+      // { ep: 話数, time: 公開日時 } を時刻順に追加していく
+      var KAMISAMA_EPISODES = [
+        { ep: 12, time: new Date('2026-10-16T20:30:00') },
+      ];
+
+      function updateKamisama() {
+        var now    = new Date();
+        var banner = document.getElementById('kamisama-banner');
+        var epEl   = document.getElementById('kamisama-ep');
+        var status = document.getElementById('kamisama-status');
+        var sub    = document.getElementById('kamisama-sub');
+        if (!banner) return;
+
+        // 現在時刻以下で最新のエピソードを探す
+        var current = null;
+        var next    = null;
+        for (var i = 0; i < KAMISAMA_EPISODES.length; i++) {
+          if (now >= KAMISAMA_EPISODES[i].time) {
+            current = KAMISAMA_EPISODES[i];
+          } else if (!next) {
+            next = KAMISAMA_EPISODES[i];
+          }
+        }
+
+        if (current) {
+          // 公開済みエピソードあり
+          banner.href = 'https://ncode.syosetu.com/n3833mv/' + current.ep;
+          if (epEl) epEl.textContent = '#' + current.ep;
+
+          var diffMs  = now - current.time;
+          var diffMin = Math.floor(diffMs / 60000);
+
+          if (diffMin < 60) {
+            // 更新直後1時間はアクティブ
+            banner.classList.add('active');
+            var hh = String(current.time.getHours()).padStart(2, '0');
+            var mm = String(current.time.getMinutes()).padStart(2, '0');
+            if (status) status.textContent = hh + ' : ' + mm;
+            if (sub)    sub.textContent = '更新しました ✦';
+          } else {
+            banner.classList.remove('active');
+            if (next) {
+              // 次の話が予定されている
+              var nh = String(next.time.getHours()).padStart(2, '0');
+              var nm = String(next.time.getMinutes()).padStart(2, '0');
+              if (status) status.textContent = nh + ' : ' + nm;
+              if (sub)    sub.textContent = '次回 #' + next.ep + ' 更新予定';
+            } else {
+              var hh = String(current.time.getHours()).padStart(2, '0');
+              var mm = String(current.time.getMinutes()).padStart(2, '0');
+              if (status) status.textContent = hh + ' : ' + mm;
+              if (sub)    sub.textContent = '最新話を読む';
+            }
+          }
+        } else if (next) {
+          // まだ公開前
+          banner.href = 'https://ncode.syosetu.com/n3833mv/';
+          if (epEl) epEl.textContent = '#' + next.ep + ' まもなく';
+          var nh = String(next.time.getHours()).padStart(2, '0');
+          var nm = String(next.time.getMinutes()).padStart(2, '0');
+          if (status) status.textContent = nh + ' : ' + nm;
+          if (sub)    sub.textContent = '本日' + next.time.getHours() + '時' + (next.time.getMinutes() ? next.time.getMinutes() + '分' : '') + '更新';
+        }
+      }
+
+      updateKamisama();
+      setInterval(updateKamisama, 30000);
     })();
   </script>
 
