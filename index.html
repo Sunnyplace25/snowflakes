@@ -4636,8 +4636,8 @@ document.addEventListener('visibilitychange', function() {
   #kamisama-side-ad {
     position:fixed;
     left:12px;
-    top:50%;
-    transform:translateY(-50%) translateX(-12px);
+    bottom:24px;
+    transform:translateX(-12px);
     z-index:190;
     width:156px;
     opacity:0;
@@ -4650,7 +4650,7 @@ document.addEventListener('visibilitychange', function() {
   #kamisama-side-ad.kamisama-visible {
     opacity:1;
     pointer-events:auto;
-    transform:translateY(-50%) translateX(0);
+    transform:translateX(0);
   }
   #kamisama-side-ad .kamisama-card {
     display:block;
