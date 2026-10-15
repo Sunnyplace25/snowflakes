@@ -52,6 +52,7 @@ jarvis-development
 | Phase 38 SNS Instagram自動同期 | Instagram Metricool MCP 経由自動同期・欠損補完・compare API NULL修正・SNSタブ追加 | ✅ 完了 | 前回commit |
 | Phase 39 note収益企画 | note収益化スキーム設計・AI社員計画書受領 | ✅ 完了 | 前回commit |
 | Phase 40 TikTok自動同期 | Metricool MCP OAuth → TikTok実データ取得・metricool_tiktok_collector.js・sf_sync_manager tiktok auto化・API修正・dashboard表示更新 | ✅ 完了 | TBD |
+| Phase 41 Soundrop収益DBバグ修正 | CSVフォーマット変更（Title Case→小文字）対応・revenue_writer/metrics_writer 二重計上防止・インポートエンドポイント writeRevenue 連携・channels/releases JSON pathデュアル対応・DB再処理（2026-10: 100件/$0.95追加） | ✅ 完了 | TBD |
 
 ---
 

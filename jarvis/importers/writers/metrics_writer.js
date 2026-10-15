@@ -53,21 +53,6 @@ export function writeMetrics(db, importRow, matchResult) {
     // 制約違反などは無視して続行
   }
 
-  // 収益がある場合は sf_revenue へも書き込む
-  if (revenue > 0) {
-    try {
-      db.prepare(`
-        INSERT OR IGNORE INTO sf_revenue
-          (date, month, source, platform, track_id, amount, currency, amount_jpy, import_source)
-        VALUES (?, ?, '音楽配信', ?, ?, ?, ?, ?, 'csv')
-      `).run(
-        date, month, platform, track_id,
-        revenue,
-        currency,
-        currency === 'JPY' ? Math.round(revenue) : 0,
-      );
-    } catch (e) {
-      // 制約違反などは無視して続行
-    }
-  }
+  // sf_revenue への書き込みは revenue_writer.js が担う。
+  // ここで書くと writeRevenue と二重計上になるため省略。
 }

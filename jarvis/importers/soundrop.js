@@ -74,6 +74,19 @@ export async function importFile(db, filePath, options = {}) {
         matchedCount++;
       }
 
+      // フィールド正規化（旧: lowercase snake_case / 新: Title Case + スペース）
+      const rowPlatform = row.platform     || row.Platform     || row.service           || row.Service   || null;
+      const rowPeriod   = row.period       || row.Period       || row.transaction_month  || row['Transaction Month'] || report_period || null;
+      const rowStreams   = row.streams   != null ? Number(row.streams)
+                        : row.quantity  != null ? Number(row.quantity)
+                        : row.Quantity  != null ? Number(row.Quantity) : null;
+      const rowRevenue  = row.revenue    != null ? Number(row.revenue)
+                        : row.revenue_usd != null ? Number(row.revenue_usd)
+                        : row.revenue_amount != null ? Number(row.revenue_amount)
+                        : row['Net Revenue in USD'] != null ? Number(row['Net Revenue in USD'])
+                        : row['Amount Due in USD']  != null ? Number(row['Amount Due in USD']) : null;
+      const rowCurrency = row.currency || row.Currency || 'USD';
+
       // sf_distribution_import_rows に保存
       db.prepare(`
         INSERT INTO sf_distribution_import_rows
@@ -89,24 +102,22 @@ export async function importFile(db, filePath, options = {}) {
         matchResult.track_id   ?? null,
         matchResult.release_id ?? null,
         matchResult.method,
-        row.platform   || row.Platform   || null,
-        row.period     || row.Period     || report_period || null,
-        row.streams    != null ? Number(row.streams)         : null,
-        row.revenue    != null ? Number(row.revenue)         :
-          row.revenue_amount != null ? Number(row.revenue_amount) : null,
-        row.currency   || row.Currency   || null,
+        rowPlatform,
+        rowPeriod,
+        rowStreams,
+        rowRevenue,
+        rowCurrency,
         isUnmatched ? 1 : 0,
       );
 
-      // マッチ済み行をメトリクスへ書き込む
+      // マッチ済み行を sf_music_metrics へ書き込む
       if (!isUnmatched) {
         const importRowForWriter = {
-          platform:       row.platform       || row.Platform       || null,
-          period:         row.period         || row.Period         || report_period || null,
-          streams:        row.streams        != null ? Number(row.streams) : 0,
-          revenue_amount: row.revenue        != null ? Number(row.revenue) :
-                          row.revenue_amount != null ? Number(row.revenue_amount) : 0,
-          currency:       row.currency       || row.Currency       || 'JPY',
+          platform:       rowPlatform,
+          period:         rowPeriod,
+          streams:        rowStreams  ?? 0,
+          revenue_amount: rowRevenue  ?? 0,
+          currency:       rowCurrency,
         };
         writeMetrics(db, importRowForWriter, matchResult);
       }

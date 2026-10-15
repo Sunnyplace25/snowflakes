@@ -44,7 +44,8 @@ import {
   getPreviews, upsertPreview,
   getImportHistory, getUnreviewedImportRows,
 } from '../data/sf_manager.js';
-import { importFile } from '../importers/soundrop.js';
+import { importFile }   from '../importers/soundrop.js';
+import { writeRevenue } from '../importers/revenue_writer.js';
 import {
   getFunnelEvents,
   createFunnelEvent,
@@ -2163,17 +2164,20 @@ export function createApiHandler(db) {
         if (typeof csv !== 'string' || !csv.trim()) {
           return errRes(res, 400, 'csv フィールドに CSV テキストを指定してください');
         }
-        // 一時ファイルに書き込んで既存 importFile() を利用
+        // 一時ファイルに書き込んで既存 importFile() を利用（sf_distribution_imports 追跡）
         const tmpPath = pathResolve(tmpdir(), `soundrop_import_${Date.now()}.csv`);
+        let importResult;
         try {
           writeFileSync(tmpPath, csv, 'utf8');
-          const result = importFile(db, tmpPath);
-          notifyImportSuccess(db, 'soundrop');
-          notifyImportSuccess(db, 'revenue');
-          return jsonRes(res, 200, { ok: true, result });
+          importResult = await importFile(db, tmpPath);
         } finally {
           try { unlinkSync(tmpPath); } catch {}
         }
+        // sf_revenue への書き込みは revenue_writer で行う（新旧 CSV フォーマット対応）
+        const revenueResult = writeRevenue(db, csv);
+        notifyImportSuccess(db, 'soundrop');
+        notifyImportSuccess(db, 'revenue');
+        return jsonRes(res, 200, { ok: true, result: importResult, revenue: revenueResult });
       }
 
       // POST /api/sf/sync/import/csv — TikTok / X / KDP CSV を取り込む
@@ -3095,13 +3099,14 @@ export function createApiHandler(db) {
         `).all(...revArgs);
 
         // ── channels (チャンネル別 from import_rows) ──
+        // 旧フォーマット (lowercase snake_case) と新フォーマット (Title Case) の両方に対応
         const chWhere = stmt
-          ? "AND json_extract(raw_data, '$.statement_period') = ?"
+          ? "AND COALESCE(json_extract(raw_data, '$.statement_period'), json_extract(raw_data, '$[\"Statement Period\"]')) = ?"
           : '';
         const channelRows = db.prepare(`
-          SELECT json_extract(raw_data, '$.channel') AS channel,
-                 ROUND(SUM(CAST(json_extract(raw_data, '$.revenue_usd') AS REAL)), 8) AS total_usd,
-                 SUM(CAST(json_extract(raw_data, '$.quantity') AS INTEGER)) AS total_quantity
+          SELECT COALESCE(json_extract(raw_data, '$.channel'), json_extract(raw_data, '$.Channel')) AS channel,
+                 ROUND(SUM(CAST(COALESCE(json_extract(raw_data, '$.revenue_usd'), json_extract(raw_data, '$["Net Revenue in USD"]'), '0') AS REAL)), 8) AS total_usd,
+                 SUM(CAST(COALESCE(json_extract(raw_data, '$.quantity'), json_extract(raw_data, '$.Quantity'), '0') AS INTEGER)) AS total_quantity
           FROM sf_distribution_import_rows
           WHERE matched_track_id IS NOT NULL ${chWhere}
           GROUP BY channel
@@ -3123,13 +3128,13 @@ export function createApiHandler(db) {
 
         // ── releases (リリース別 from import_rows) ──
         const releaseRows = db.prepare(`
-          SELECT json_extract(raw_data, '$.release_title') AS release_title,
-                 json_extract(raw_data, '$.upc') AS upc,
-                 ROUND(SUM(CAST(json_extract(raw_data, '$.revenue_usd') AS REAL)), 8) AS total_usd,
-                 SUM(CAST(json_extract(raw_data, '$.quantity') AS INTEGER)) AS total_quantity
+          SELECT COALESCE(json_extract(raw_data, '$.release_title'), json_extract(raw_data, '$["Release Title"]')) AS release_title,
+                 COALESCE(json_extract(raw_data, '$.upc'), json_extract(raw_data, '$.UPC')) AS upc,
+                 ROUND(SUM(CAST(COALESCE(json_extract(raw_data, '$.revenue_usd'), json_extract(raw_data, '$["Net Revenue in USD"]'), '0') AS REAL)), 8) AS total_usd,
+                 SUM(CAST(COALESCE(json_extract(raw_data, '$.quantity'), json_extract(raw_data, '$.Quantity'), '0') AS INTEGER)) AS total_quantity
           FROM sf_distribution_import_rows
           WHERE matched_track_id IS NOT NULL ${chWhere}
-          GROUP BY json_extract(raw_data, '$.upc')
+          GROUP BY COALESCE(json_extract(raw_data, '$.upc'), json_extract(raw_data, '$.UPC'))
           ORDER BY total_usd DESC
         `).all(...(stmt ? [stmt] : []));
 

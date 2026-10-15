@@ -45,12 +45,13 @@ export function writeRevenue(db, csvText) {
   const aggMap = new Map();
 
   for (const row of rows) {
-    const statementPeriod  = (row['Statement Period']   ?? '').trim();
-    const transactionMonth = (row['Transaction Month']  ?? '').trim();
-    const isrc             = (row['ISRC']               ?? '').trim();
-    const service          = (row['Service']            ?? '').trim();
-    const netRevenue       = parseFloat(row['Net Revenue in USD'] ?? '0') || 0;
-    const quantity         = parseInt(row['Quantity']   ?? '0', 10) || 0;
+    // 新フォーマット (Title Case) と旧フォーマット (lowercase snake_case) の両方に対応
+    const statementPeriod  = (row['Statement Period']   || row['statement_period']   || '').trim();
+    const transactionMonth = (row['Transaction Month']  || row['transaction_month']  || '').trim();
+    const isrc             = (row['ISRC']               || row['isrc']               || '').trim();
+    const service          = (row['Service']            || row['service']            || '').trim();
+    const netRevenue       = parseFloat(row['Net Revenue in USD'] ?? row['revenue_usd'] ?? '0') || 0;
+    const quantity         = parseInt(row['Quantity']   ?? row['quantity'] ?? '0', 10) || 0;
 
     if (!statementPeriod || !transactionMonth || !isrc || !service) continue;
 
