@@ -939,7 +939,7 @@ function sfShare() {
     </a>
 
     <!-- Snow flakes（既存バナー） -->
-    <div style="flex:2;min-width:260px;display:flex;flex-direction:column;">
+    <div id="sf-banner-wrap" style="flex:2;min-width:260px;display:flex;flex-direction:column;">
       <a id="update-banner" href="#" target="_blank"
          style="display:flex;flex-direction:column;justify-content:center;flex:1;text-decoration:none;border-radius:20px;padding:32px 36px;background:rgba(147,197,253,0.03);border:1px solid rgba(147,197,253,0.15);transition:all 0.4s;position:relative;overflow:hidden;">
 
@@ -1128,6 +1128,20 @@ function sfShare() {
     #kamisama-banner.active #kamisama-sub    { color: #c4b5fd !important; }
     #kamisama-banner.active #kamisama-status { color: #a78bfa !important; }
     #kamisama-banner:hover                   { background: rgba(167,139,250,0.08) !important; transform: translateY(-1px); }
+    /* 神様 完結スタイル */
+    @keyframes kamisamaCompleteGlow {
+      0%,100% { box-shadow: 0 0 32px rgba(196,181,253,0.35), 0 0 90px rgba(139,92,246,0.15); border-color: rgba(196,181,253,0.55); }
+      50%      { box-shadow: 0 0 60px rgba(196,181,253,0.65), 0 0 140px rgba(139,92,246,0.30), inset 0 0 50px rgba(196,181,253,0.06); border-color: rgba(196,181,253,1.00); }
+    }
+    #kamisama-banner.complete {
+      animation: kamisamaCompleteGlow 2.6s ease-in-out infinite;
+      background: rgba(196,181,253,0.05) !important;
+      border-color: rgba(196,181,253,0.50) !important;
+    }
+    #kamisama-banner.complete #kamisama-shine  { opacity: 1 !important; }
+    #kamisama-banner.complete #kamisama-ep     { color: #e9d5ff !important; font-size:13px; letter-spacing:1.5px; }
+    #kamisama-banner.complete #kamisama-sub    { color: #c4b5fd !important; }
+    #kamisama-banner.complete #kamisama-status { color: #a78bfa !important; font-size:11px; letter-spacing:3px; }
 
     @keyframes sealedGlow {
       0%,100% { box-shadow: 0 0 8px rgba(196,181,253,0.15); border-color: rgba(196,181,253,0.25); }
@@ -1319,18 +1333,65 @@ function sfShare() {
   <script>
     // 神様はバンド名がダサいと言った — エピソード別更新スケジュール
     (function() {
-      // { ep: 話数, time: 公開日時 } を時刻順に追加していく
       var KAMISAMA_EPISODES = [
+        { ep:  1, time: new Date('2026-10-05T20:30:00') },
+        { ep:  2, time: new Date('2026-10-06T20:30:00') },
+        { ep:  3, time: new Date('2026-10-07T20:30:00') },
+        { ep:  4, time: new Date('2026-10-08T20:30:00') },
+        { ep:  5, time: new Date('2026-10-09T20:30:00') },
+        { ep:  6, time: new Date('2026-10-10T20:30:00') },
+        { ep:  7, time: new Date('2026-10-11T20:30:00') },
+        { ep:  8, time: new Date('2026-10-12T20:30:00') },
+        { ep:  9, time: new Date('2026-10-13T20:30:00') },
+        { ep: 10, time: new Date('2026-10-14T20:30:00') },
+        { ep: 11, time: new Date('2026-10-15T20:30:00') },
         { ep: 12, time: new Date('2026-10-16T20:30:00') },
+        { ep: 13, time: new Date('2026-10-17T20:30:00') },
+        { ep: 14, time: new Date('2026-10-18T20:30:00') },
+        { ep: 15, time: new Date('2026-10-19T20:30:00') },
+        { ep: 16, time: new Date('2026-10-20T20:30:00') },
+        { ep: 17, time: new Date('2026-10-21T20:30:00') },
+        { ep: 18, time: new Date('2026-10-22T20:30:00') },
+        { ep: 19, time: new Date('2026-10-23T20:30:00') },
+        { ep: 20, time: new Date('2026-10-24T20:30:00') },
+        { ep: 21, time: new Date('2026-10-25T20:30:00') },
+        { ep: 22, time: new Date('2026-10-26T20:30:00') },
+        { ep: 23, time: new Date('2026-10-27T20:30:00') },
+        { ep: 24, time: new Date('2026-10-28T20:30:00') },
+        { ep: 25, time: new Date('2026-10-29T20:30:00') },
       ];
+      // 第2章が始まる日（それまで完結表示のままトップに）
+      var CH2_START = null; // 例: new Date('2026-11-XX T20:30:00');
+
+      var COMPLETE_DATE = new Date('2026-10-30T00:00:00'); // ep.25 翌日から完結表示
 
       function updateKamisama() {
         var now    = new Date();
         var banner = document.getElementById('kamisama-banner');
+        var sfWrap = document.getElementById('sf-banner-wrap');
         var epEl   = document.getElementById('kamisama-ep');
         var status = document.getElementById('kamisama-status');
         var sub    = document.getElementById('kamisama-sub');
         if (!banner) return;
+
+        // ── 完結フェーズ（10/30以降・第2章開始前）──────────────────────
+        var isComplete = now >= COMPLETE_DATE && (!CH2_START || now < CH2_START);
+        if (isComplete) {
+          banner.classList.remove('active');
+          banner.classList.add('complete');
+          banner.href = 'https://ncode.syosetu.com/n3833mv/';
+          banner.style.flex = '2';
+          if (sfWrap) sfWrap.style.flex = '1';
+          if (epEl)   epEl.textContent  = '第一章 全25話';
+          if (status) status.textContent = '完　結';
+          if (sub)    sub.textContent    = '解散寸前のバンドに、\n音を聞く神様がついてきた。';
+          return;
+        }
+
+        // 完結前：通常の連載表示に戻す
+        banner.classList.remove('complete');
+        banner.style.flex = '1';
+        if (sfWrap) sfWrap.style.flex = '2';
 
         // 現在時刻以下で最新のエピソードを探す
         var current = null;
@@ -1344,43 +1405,38 @@ function sfShare() {
         }
 
         if (current) {
-          // 公開済みエピソードあり
           banner.href = 'https://ncode.syosetu.com/n3833mv/' + current.ep;
           if (epEl) epEl.textContent = '#' + current.ep;
 
-          var diffMs  = now - current.time;
-          var diffMin = Math.floor(diffMs / 60000);
-
+          var diffMin = Math.floor((now - current.time) / 60000);
           if (diffMin < 60) {
             // 更新直後1時間はアクティブ
             banner.classList.add('active');
             var hh = String(current.time.getHours()).padStart(2, '0');
             var mm = String(current.time.getMinutes()).padStart(2, '0');
             if (status) status.textContent = hh + ' : ' + mm;
-            if (sub)    sub.textContent = '更新しました ✦';
+            if (sub)    sub.textContent    = '更新しました ✦';
           } else {
             banner.classList.remove('active');
             if (next) {
-              // 次の話が予定されている
               var nh = String(next.time.getHours()).padStart(2, '0');
               var nm = String(next.time.getMinutes()).padStart(2, '0');
               if (status) status.textContent = nh + ' : ' + nm;
-              if (sub)    sub.textContent = '次回 #' + next.ep + ' 更新予定';
+              if (sub)    sub.textContent    = '次回 #' + next.ep + ' 更新予定';
             } else {
               var hh = String(current.time.getHours()).padStart(2, '0');
               var mm = String(current.time.getMinutes()).padStart(2, '0');
               if (status) status.textContent = hh + ' : ' + mm;
-              if (sub)    sub.textContent = '最新話を読む';
+              if (sub)    sub.textContent    = '最新話を読む';
             }
           }
         } else if (next) {
-          // まだ公開前
           banner.href = 'https://ncode.syosetu.com/n3833mv/';
           if (epEl) epEl.textContent = '#' + next.ep + ' まもなく';
           var nh = String(next.time.getHours()).padStart(2, '0');
           var nm = String(next.time.getMinutes()).padStart(2, '0');
           if (status) status.textContent = nh + ' : ' + nm;
-          if (sub)    sub.textContent = '本日' + next.time.getHours() + '時' + (next.time.getMinutes() ? next.time.getMinutes() + '分' : '') + '更新';
+          if (sub)    sub.textContent    = '本日' + next.time.getHours() + '時' + (next.time.getMinutes() ? next.time.getMinutes() + '分' : '') + '更新';
         }
       }
 
