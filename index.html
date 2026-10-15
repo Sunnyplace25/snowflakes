@@ -4910,8 +4910,8 @@ document.addEventListener('visibilitychange', function() {
   #novel-side-ad {
     position:fixed;
     right:12px;
-    bottom:215px;
-    transform:translateX(12px);
+    top:min(30%, calc(100vh - 420px));
+    transform:translateY(-50%) translateX(12px);
     z-index:190;
     width:156px;
     opacity:0;
@@ -4922,7 +4922,7 @@ document.addEventListener('visibilitychange', function() {
   #novel-side-ad.ad-visible {
     opacity:1;
     pointer-events:auto;
-    transform:translateX(0);
+    transform:translateY(-50%) translateX(0);
   }
   /* 2枚のパネルを同じ位置に重ねる */
   #novel-ad-wrap {
