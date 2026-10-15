@@ -4630,6 +4630,118 @@ document.addEventListener('visibilitychange', function() {
 })();
 </script>
 
+<!-- KAMISAMA Side Ad (Desktop) -->
+<style>
+  @media (max-width:1279px) { #kamisama-side-ad { display:none !important; } }
+  #kamisama-side-ad {
+    position:fixed;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%) translateX(-12px);
+    z-index:190;
+    width:156px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.45s ease, transform 0.45s ease;
+  }
+  @media (min-width:1500px) {
+    #kamisama-side-ad { width:180px; left:22px; }
+  }
+  #kamisama-side-ad.kamisama-visible {
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(-50%) translateX(0);
+  }
+  #kamisama-side-ad .kamisama-card {
+    display:block;
+    overflow:hidden;
+    border-radius:14px;
+    background:rgba(7,13,25,0.96);
+    border:1px solid rgba(167,139,250,0.20);
+    box-shadow:0 10px 34px rgba(0,0,0,0.45),0 0 24px rgba(139,92,246,0.08);
+    text-decoration:none;
+    backdrop-filter:blur(14px);
+  }
+  #kamisama-side-ad img {
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  #kamisama-side-ad .kamisama-copy {
+    padding:12px 12px 4px;
+  }
+  #kamisama-side-ad .kamisama-label {
+    font-family:'Cormorant Garamond',serif;
+    font-size:8px;
+    letter-spacing:4px;
+    color:#a78bfa;
+    margin:0 0 7px;
+  }
+  #kamisama-side-ad .kamisama-tagline {
+    font-family:'Noto Serif JP',serif;
+    font-size:10px;
+    line-height:1.9;
+    letter-spacing:0.4px;
+    color:#cbd5e1;
+    margin:0 0 10px;
+  }
+  #kamisama-side-ad .kamisama-links {
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    padding:0 12px 12px;
+  }
+  #kamisama-side-ad .kamisama-links a {
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-size:8px;
+    letter-spacing:1.5px;
+    text-align:center;
+    padding:5px 4px;
+    border-radius:6px;
+    text-decoration:none;
+    transition:opacity 0.2s;
+  }
+  #kamisama-side-ad .kamisama-links a:hover { opacity:0.75; }
+  #kamisama-side-ad .kamisama-links .kamisama-kakuyomu {
+    background:rgba(139,92,246,0.20);
+    border:1px solid rgba(139,92,246,0.40);
+    color:#c4b5fd;
+  }
+  #kamisama-side-ad .kamisama-links .kamisama-narou {
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.12);
+    color:#94a3b8;
+  }
+</style>
+<aside id="kamisama-side-ad" aria-label="神様はバンド名がダサいと言った 新連載">
+  <div class="kamisama-card">
+    <img src="kamisama_ad.webp" alt="神様はバンド名がダサいと言った">
+    <div class="kamisama-copy">
+      <p class="kamisama-label">NEW SERIAL</p>
+      <p class="kamisama-tagline">解散寸前のバンドに、<br>音を聞く神様が<br>ついてきた。</p>
+    </div>
+    <div class="kamisama-links">
+      <a href="https://kakuyomu.jp/works/11054822663783655461" target="_blank" rel="noopener" class="kamisama-kakuyomu">カクヨムで1話先行 →</a>
+      <a href="https://ncode.syosetu.com/n3833mv/" target="_blank" rel="noopener" class="kamisama-narou">なろうで読む →</a>
+    </div>
+  </div>
+</aside>
+<script>
+(function() {
+  var ad = document.getElementById('kamisama-side-ad');
+  var hero = document.querySelector('.hero');
+  if (!ad) return;
+  if (!hero) {
+    ad.classList.add('kamisama-visible');
+    return;
+  }
+  new IntersectionObserver(function(entries) {
+    ad.classList.toggle('kamisama-visible', !entries[0].isIntersecting);
+  }, { threshold: 0 }).observe(hero);
+})();
+</script>
+
 <!-- Mobile Menu -->
 <style>
   @media (min-width: 720px) { #sf-mob-btn, #sf-mob-overlay, #sf-mob-panel { display: none !important; } }
