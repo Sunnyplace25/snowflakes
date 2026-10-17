@@ -746,6 +746,60 @@ function closeTowaMvPopup() {
 }
 </script>
 
+<!-- NEW SINGLE Popup — プリズム -->
+<div id="prism-single-popup"
+     role="dialog" aria-modal="true" aria-label="NEW SINGLE プリズム"
+     style="display:none;position:fixed;inset:0;z-index:10002;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:16px;">
+  <div style="max-width:320px;width:100%;background:#0a1221;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 0 60px rgba(186,230,253,0.1);">
+    <button onclick="closePrismSinglePopup()" aria-label="閉じる"
+            style="position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border:none;color:#cbd5e1;font-size:20px;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:8px;z-index:2;">×</button>
+    <img id="prism-single-jacket" src=""
+         alt="Snow flakes NEW SINGLE プリズム / Prism ジャケット"
+         width="320" height="320"
+         style="width:100%;height:auto;display:block;">
+    <div style="padding:18px 20px 20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">NEW SINGLE</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#f1f5f9;letter-spacing:4px;margin-bottom:2px;">Prism</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:2px;color:#475569;margin-bottom:18px;">Snow flakes</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="https://music.amazon.co.jp/albums/B0HN9KYH3G" target="_blank" rel="noopener noreferrer" onclick="closePrismSinglePopup()"
+           style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,153,0,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;border-radius:100px;padding:11px 20px;">
+          <i class="fa-brands fa-amazon" style="font-size:14px;"></i> Amazon Music
+        </a>
+        <a id="prism-spotify-btn" href="#" target="_blank" rel="noopener noreferrer" onclick="closePrismSinglePopup()"
+           style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(29,185,84,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.3);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;border-radius:100px;padding:11px 20px;">
+          <i class="fa-brands fa-spotify" style="font-size:14px;"></i> Spotify
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var START = new Date('2026-10-17T00:00:00+09:00').getTime();
+  var END   = new Date('2026-10-26T23:59:59+09:00').getTime();
+  if (Date.now() < START || Date.now() > END) return;
+  if (sessionStorage.getItem('sf_prism_single_closed') === '1') return;
+  var img = document.getElementById('prism-single-jacket');
+  if (img) img.src = 'Discography/prism.webp';
+  var el = document.getElementById('prism-single-popup');
+  el.style.display = 'flex';
+  if (typeof gtag === 'function') {
+    gtag('event', 'popup_view', { campaign: 'prism_single_2026', source: 'homepage_popup' });
+  }
+  document.addEventListener('keydown', function prismEsc(e) {
+    if (e.key === 'Escape') { closePrismSinglePopup(); document.removeEventListener('keydown', prismEsc); }
+  });
+  el.addEventListener('click', function(e) { if (e.target === el) closePrismSinglePopup(); });
+})();
+function closePrismSinglePopup() {
+  var el = document.getElementById('prism-single-popup');
+  if (!el || el.style.display === 'none') return;
+  el.style.display = 'none';
+  sessionStorage.setItem('sf_prism_single_closed', '1');
+}
+</script>
+
 <canvas id="snow"></canvas>
 
 <nav>
