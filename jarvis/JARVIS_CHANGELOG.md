@@ -13,6 +13,133 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-10-18 — AI社員 関係性変動ロジック実装（Phase 42-B）
+
+### 目的
+6名の AI 社員が業務イベントを通じて自然に関係を築き、スコアの積み重ねが次の会話・仕事に反映されるシステムの構築
+
+### 変更ファイル
+- `content_business/relationship_manager.mjs`（新規） — スコア変動・二重処理防止・秘密管理・予算連携
+  - `updateRelationship()`: 感度係数（SENSITIVITY）×関係近さ修正（computeRelationModifier）でリアルな変動量を計算・スコア上下限クランプ・インタラクションログ記録
+  - `applyJobEvent()`: source_job_id による二重処理防止・fwd/rev 方向の非対称デルタ適用
+  - `getRelationships()`: 通常モード（is_secret=1 行の romantic_interest=0・private_feeling=null マスク） / 管理モード（全件）
+  - `getRelationshipContext()`: プロンプト注入用テキスト生成（秘密感情含む閾値判定）
+  - `hasBudgetForInteraction()`: ai_budget_settings / usage_percent 連携
+- `content_business/engine.mjs` — 業務フック追加（setImmediate で非同期）
+  - RESEARCH 完了 → `research_handoff`（Scout→Analyst）
+  - ANALYSIS 完了 → `analysis_handoff`（Analyst→Planner）
+  - WRITING 完了 → `writing_handoff`（Planner→Writer）
+  - EDITING READY → `editing_ready`（Writer→Editor）
+  - EDITING BLOCKED → `editing_blocked`（Writer→Editor）
+  - EDITING REVISION_REQUIRED → `editing_revision`（Writer→Editor）
+- `content_business/db_migration.mjs` — source_job_id カラム追加・シードデータ Phase1 承認値へ修正
+
+### 設計仕様
+- 感度係数: Scout/Growth=0.7, Analyst=0.9, Editor=0.8, Writer=1.1, Planner=1.2
+- 関係近さ修正: 親密度 >70 で正イベント×0.7（逓減）・負イベント×1.3（裏切り効果）
+- 秘密感情ペア: Scout→Analyst（romantic_interest=80）、Writer↔Editor（romantic_interest=20/15）
+- 予算閾値: usage_percent ≥ budget_threshold_percent（デフォルト50%）で自律交流停止
+
+### 確認内容
+- テストA READY方向性: Writer→Editor trust↑affection↑discomfort↓ ✓、Editor→Writer trust↑respect↑affection↑ ✓
+- テストB REVISION方向性: Writer→Editor trust↓discomfort↑ ✓、Editor→Writer respect微小↑ ✓
+- テストC 通常/管理モード: Scout→Analyst normal ro=0/pf=null、mgmt ro=80/pf=actual ✓
+- テストE 既存テーブル: cb_projects:15 cb_jobs:40 cb_chat_messages:69（変化なし）✓
+
+### commit SHA：未採番（承認待ち）
+
+---
+
+## 2026-10-16 — タイムカード 深夜作業時間バッジ追加
+
+### 目的
+0:00〜5:00 JST の作業時間を「深夜」バッジで視覚化
+
+### 変更ファイル
+- `dashboard/public/modules/timecard.js` — `calcNightOverlap` / `sessionNightWorkMs` / `calcNightWorkMs` 追加・合計作業時間横に🌙バッジ（60秒以上）・セッション行にも🌙バッジ個別表示
+- `dashboard/public/style.css` — `.tc-night-badge` / `.tc-night-session-badge` 追加（赤色）
+
+### commit SHA：`0cdb5fb`
+
+---
+
+## 2026-10-16 — Soundrop 収益 DB 書き込みバグ修正（Phase 41）
+
+### 目的
+Soundrop が 2026-10 CSV から列名を変更（小文字 snake_case → Title Case＋スペース）したため importFile() のフィールドマッピングが機能せず sf_revenue への書き込みが全件スキップされていた問題を修正
+
+### 変更ファイル
+- `importers/revenue_writer.js` — 旧フォーマット（statement_period / revenue_usd 等）へのフォールバック追加・新旧両対応
+- `importers/writers/metrics_writer.js` — sf_revenue への直接書き込みを削除（writeRevenue との二重計上防止）・sf_music_metrics 専任に変更
+- `importers/soundrop.js` — sf_distribution_import_rows 保存・writeMetrics フィールド抽出を新旧両フォーマット対応（Service / Transaction Month / Quantity / Amount 等）
+- `dashboard/api.js` — POST /api/sf/sync/import/soundrop に writeRevenue() 追加呼び出し・GET /api/sf/soundrop/stats の channels/releases json_extract を COALESCE で新旧両パス（$.Channel / $.channel）対応
+
+### DB 処置（スクリプト実行済み）
+- sf_revenue: 2026-10 ステートメント 100 件・$0.9499872 追加（累計 $3.83）
+- sf_music_metrics: 1970-01-01 不正データ 25 件を削除
+
+### commit SHA：`514c6f2`
+
+---
+
+## 2026-10-15 — TikTok 自動同期（Metricool MCP 経由）（Phase 40）
+
+### 目的
+Metricool MCP の OAuth 接続を使い TikTok データを毎朝 06:00 の SnowflakesOpsRunner から自動取得
+
+### 変更ファイル
+- `importers/metricool_tiktok_collector.js`（新規） — refresh_token → access_token ローテーション対応・原子的保存 / TKEV07/08/09 でアカウント日次データを sf_account_daily に UPSERT / TKPO01/03/05-11/13-15 で動画データを sf_content_registry + sf_social_metrics に UPSERT（冪等・COALESCE 保護）/ completion_rate は API null → 必ず NULL 保存（計算値補完禁止）
+- `data/sf_sync_manager.js` — tiktok ソースを manual → auto に変更・AUTO_SOURCES に tiktok を追加（instagram/youtube と並列）・runSourceSync の collectFn ルーティングに tiktok ケースを追加
+- `dashboard/api.js` — /api/sf/tiktok/account/compare: SUM の ELSE 0 → ELSE NULL に修正・followers クエリに AND followers IS NOT NULL を追加・レスポンスを明示フィールドに変更
+- `dashboard/public/modules/sf.js` — renderTikTokAccount: 前期データなし警告・hasCurrent/hasPrevious ガード / 動画再生数行を削除（TikTok API では日次リーチ取得不可）/ 取得元注釈を「Metricool MCP 経由・自動取得」に更新 / renderTikTokVideos: 完走率 null → "—"（計算値代入禁止）
+
+### commit SHA：`77f1504`
+
+---
+
+## 2026-10-11 — タイムカード改善 + note収益企画を出版事業部へ統合（Phase 39）
+
+### 目的
+- タイムカードのラベル変更・作業終了通知・カスタム通知・ワークタイマー・セッション別集計表示を追加
+- note収益企画の独立タブを廃止し、出版事業部（content-business.html）へ統合
+- note記事の収益優先スコアリング・AI企画生成・却下/復元・売上記録機能を出版事業部ページで利用可能にする
+
+### 変更ファイル（タイムカード）
+- `dashboard/public/index.html` — ラベル変更（出勤→作業開始、退勤→作業終了、再開→作業再開）、タイマーUI追加、期間切替UI追加、カテゴリ別集計UI追加
+- `dashboard/public/modules/timecard.js` — KIND_LABEL/renderState 更新、work_end通知追加、カスタム通知機能、ワークタイマー、computeSessions/filterHistoryByPeriod/renderCategoryBreakdown実装
+- `dashboard/public/style.css` — タイマー・カスタム通知モーダル・期間タブ・カテゴリ集計・セッション行 スタイル追加
+
+### 変更ファイル（Phase 39: note収益企画DB/API）
+- `data/db.js` — phase39Migration: sf_note_articleに15カラム追加・sf_note_salesテーブル作成
+- `data/note_manager.js` — rejectArticle/restoreArticle/getRejectionHistory/bulkReject/createSalesRecord/getSalesRecords/updateSalesRecord/deleteSalesRecord 追加
+- `dashboard/api.js` — note系エンドポイント11本追加（reject/restore/rejections/bulk-reject/generate-plans/repropose/sales CRUD）
+- `note/note_ai.mjs` — runRevenuePlanner/runReproposal 新規作成
+- `prompts/03_planner.md` — 収益優先スコアリング（100点/5基準）・JSON出力形式に全面改訂
+- `prompts/04_writer.md` — 有料記事品質チェックリスト追加
+
+### 変更ファイル（note統合）
+- `dashboard/public/index.html` — note企画タブ削除・module-noteセクション削除・modules/note.js削除、v=20261010b
+- `dashboard/public/app.js` — MODULES.note エントリ削除
+- `dashboard/public/content-business.html` — np-* CSS追加・note収益企画セクション（4タブ）追加・却下/販売データモーダル追加・noteApi()/npLoadPlans()/npGenerate()/npDoReject()/npSaveSalesRecord() 等追加・cb-toast追加
+
+### 確認内容
+- index.htmlにnote関連残留: 0件（button/module/script全撤去）
+- app.jsのnote moduleエントリ: 削除済み
+- content-business.htmlのnp-tab: 4個、nptab-panels: 4個（plans/generate/rejected/sales）
+- api()関数定義: 1件（既存cb用と衝突なし）、noteApi()呼び出し: 15件
+- API疎通: /api/note/articles, /api/note/dashboard, /api/note/rejections — 全OK
+- 既存出版事業部機能（loadSummary/loadProjects/openApprovalModal等）: 影響なし
+
+### 未確認 / 残課題
+- ブラウザ実機テスト（UI表示・タブ切替・ボタン動作）は承認後
+- 文字化けについて: business_data.dbのid=1〜3の cb_projects は2026-09-29のテストデータ作成時に文字化けが混入している（既存問題、今回の変更とは無関係）
+- gitコミット: D:\JARVIS\jarvis は .git 未設定のため、snowflakes リポジトリへの手動マージが必要
+
+### commit SHA
+— （jarvis/ ファイルは D:\JARVIS\jarvis\ にローカル保存・snowflakes リポジトリへの統合待ち）
+
+---
+
 ## 2026-09-17 — is_auction: オークション商品の分離対応
 
 ### 目的
