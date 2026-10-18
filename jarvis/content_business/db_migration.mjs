@@ -311,6 +311,82 @@ CREATE TABLE IF NOT EXISTS cb_autonomous_settings (
 );
 `;
 
+// ── Phase 43-A: オフィス観察記録テーブル ─────────────────────────────────────
+
+/**
+ * cb_story_events — 社員の活動・感情変化をすべて記録するオフィス観察ログ
+ *
+ * 設計原則:
+ *   - ログは事実のみ記録。is_fictional は常に 0。
+ *   - event_uuid で重複を防ぐ（INSERT OR IGNORE）。
+ *   - is_secret=1 の行は社長権限（APIレイヤーで認証）のみ閲覧可。
+ *   - 既存ログは小説化・要約によって上書き禁止。
+ *
+ * event_type:
+ *   BUSINESS_HANDOFF   : 業務フェーズ引き継ぎ・完了
+ *   AUTONOMOUS_CHAT    : 自律交流（P42-C で記録）
+ *   RELATIONSHIP_CHANGE: 関係性スコア変化
+ *   PERSONALITY_UPDATE : 人格設定変更（将来用）
+ *   SYSTEM             : システムイベント
+ */
+const CB_STORY_TABLES_SQL = `
+CREATE TABLE IF NOT EXISTS cb_story_events (
+  id           INTEGER  PRIMARY KEY AUTOINCREMENT,
+  event_uuid   TEXT     NOT NULL,
+  event_date   TEXT     NOT NULL,
+  event_time   TEXT     NOT NULL,
+  event_type   TEXT     NOT NULL
+    CHECK (event_type IN (
+      'BUSINESS_HANDOFF','AUTONOMOUS_CHAT','RELATIONSHIP_CHANGE',
+      'PERSONALITY_UPDATE','SYSTEM'
+    )),
+  from_emp     TEXT,
+  to_emp       TEXT,
+  content_text TEXT     NOT NULL,
+  delta_json   TEXT,
+  source_type  TEXT,
+  source_id    INTEGER,
+  is_secret    INTEGER  NOT NULL DEFAULT 0 CHECK (is_secret IN (0,1)),
+  is_fictional INTEGER  NOT NULL DEFAULT 0 CHECK (is_fictional IN (0,1)),
+  created_at   DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+  UNIQUE(event_uuid)
+);
+CREATE INDEX IF NOT EXISTS idx_story_ev_date ON cb_story_events(event_date);
+CREATE INDEX IF NOT EXISTS idx_story_ev_emp  ON cb_story_events(from_emp);
+CREATE INDEX IF NOT EXISTS idx_story_ev_type ON cb_story_events(event_type);
+
+-- 元イベントIDに基づく安定した重複防止インデックス
+-- （UUID + INSERT OR IGNORE だけでは再起動・リトライ時の再処理を防げないため）
+-- source_id が NULL の行（きっかけ不明のイベント等）はこの制約の対象外
+CREATE UNIQUE INDEX IF NOT EXISTS idx_story_ev_src_dedup
+  ON cb_story_events(event_type, source_type, source_id, from_emp, to_emp)
+  WHERE source_id IS NOT NULL;
+
+-- 小説執筆制御設定（P43-A/B で参照）
+CREATE TABLE IF NOT EXISTS cb_story_settings (
+  key   TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+`;
+
+/**
+ * cb_story_settings の初期値を挿入（冪等）
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+function seedStorySettings(db) {
+  const stmt = db.prepare(`INSERT OR IGNORE INTO cb_story_settings (key, value) VALUES (?, ?)`);
+  const defaults = [
+    ['logging_enabled',          '1'],       // ログ収集 全体 ON/OFF
+    ['auto_write_enabled',       '0'],       // 自動執筆 ON/OFF（P43-B 実装後に有効化）
+    ['auto_write_frequency',     'manual'],  // daily / weekly / manual
+    ['min_events_per_episode',   '3'],       // 最低イベント数（これ未満なら執筆を見送り）
+    ['max_chars_per_episode',    '3000'],    // 1話あたりの目安文字数
+    ['max_revision_rounds',      '2'],       // ソラ↔キイロの修正上限回数
+    ['budget_threshold_percent', '30'],      // 残予算がこの%未満なら執筆を保留
+  ];
+  for (const [k, v] of defaults) stmt.run(k, v);
+}
+
 /**
  * cb_employee_relationships の初期データを挿入（冪等）
  *
@@ -526,6 +602,16 @@ export function applyCbMigration(db) {
   try { db.exec(CB_RELATIONSHIP_TABLES_SQL); } catch (_) { /* 既存テーブルはスキップ */ }
   try { seedEmployeeRelationships(db); }      catch (e) { console.warn('[P42] 関係性シード失敗:', e.message); }
   try { seedAutonomousSettings(db); }         catch (e) { console.warn('[P42] 設定シード失敗:', e.message); }
+
+  // ── Phase 43-A: オフィス観察記録テーブル ─────────────────────────────────
+  try { db.exec(CB_STORY_TABLES_SQL); }       catch (_) { /* 既存テーブルはスキップ */ }
+  try { seedStorySettings(db); }              catch (e) { console.warn('[P43] 記録設定シード失敗:', e.message); }
+  // source_id 安定キー重複防止インデックス（既存DBへの追加マイグレーション）
+  try {
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_story_ev_src_dedup
+      ON cb_story_events(event_type, source_type, source_id, from_emp, to_emp)
+      WHERE source_id IS NOT NULL`);
+  } catch (_) { /* 既存インデックスはスキップ */ }
 
   // Phase 42-B: cb_employee_interactions に source_job_id カラム追加（冪等）
   try {

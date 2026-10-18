@@ -2,7 +2,7 @@
 
 ## 現在地
 
-**最新到達点：Phase 42-B AI社員 関係性変動ロジック実装**
+**最新到達点：Phase 43-A オフィス観察記録ログ収集基盤**
 commit: 未採番（承認待ち） / branch: `jarvis-development`
 
 ---
@@ -54,8 +54,9 @@ jarvis-development
 | Phase 40 TikTok自動同期 | Metricool MCP OAuth → TikTok実データ取得・metricool_tiktok_collector.js・sf_sync_manager tiktok auto化・API修正・dashboard表示更新 | ✅ 完了 | `77f1504` |
 | Phase 41 Soundrop収益DBバグ修正 | CSVフォーマット変更（Title Case→小文字）対応・revenue_writer/metrics_writer 二重計上防止・インポートエンドポイント writeRevenue 連携・channels/releases JSON pathデュアル対応・DB再処理（2026-10: 100件/$0.95追加） | ✅ 完了 | `514c6f2` |
 | タイムカード 深夜バッジ | 0:00〜5:00 JST を「深夜」バッジで表示 | ✅ 完了 | `0cdb5fb` |
-| Phase 42-A AI社員関係DB | cb_employee_relationships(30件)・cb_employee_interactions・cb_autonomous_settings 追加 | ✅ 完了 | 未採番 |
-| Phase 42-B AI社員関係変動 | relationship_manager.mjs（スコア変動・秘密管理・二重処理防止・予算連携）・engine.mjs 業務フックx6 | ✅ 完了 | 未採番 |
+| Phase 42-A AI社員関係DB | cb_employee_relationships(30件)・cb_employee_interactions・cb_autonomous_settings 追加 | ✅ 完了 | `66d6780` |
+| Phase 42-B AI社員関係変動 | relationship_manager.mjs（スコア変動・秘密管理・二重処理防止・予算連携）・engine.mjs 業務フックx6 | ✅ 完了 | `66d6780` |
+| Phase 43-A オフィス観察記録 | story_logger.mjs（logEvent/取得/エクスポート）・cb_story_events/settings・engine.mjs+relationship_manager.mjs フック | ✅ 完了 | 未採番 |
 
 ---
 

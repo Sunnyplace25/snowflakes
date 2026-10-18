@@ -13,6 +13,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BudgetDisabledError, BudgetExceededError } from '../shared/claude_router.mjs';
 import { applyJobEvent } from './relationship_manager.mjs';
+import { logEvent }      from './story_logger.mjs';
 import {
   runScout, runScreening, runAnalyst, runPlanner,
   runWriter, runWriterRevision, runEditor, runGrowth,
@@ -285,10 +286,18 @@ export async function runResearch(db, projectId) {
     updateProjectStatus(db, projectId, 'ANALYSIS', { researchCount: successCount });
   }
 
-  // P42-B: ヒカゲがヒノデへ調査データを引き継いだ（setImmediate で非同期）
-  setImmediate(() => applyJobEvent(db, 'research_handoff', {
-    fromEmp: 'Scout', toEmp: 'Analyst', jobId, projectId,
-  }));
+  // P42-B + P43-A: 調査完了・引き継ぎ（setImmediate で非同期 / 業務フロー非ブロック）
+  setImmediate(() => {
+    logEvent(db, {
+      eventType:   'BUSINESS_HANDOFF',
+      fromEmp:     'Scout',
+      toEmp:       'Analyst',
+      contentText: `ヒカゲが市場調査を完了した。テーマ「${project.theme ?? '（未設定）'}」、取得件数${successCount}件。ヒノデへデータを引き継ぐ。`,
+      sourceType:  'cb_jobs',
+      sourceId:    jobId,
+    });
+    applyJobEvent(db, 'research_handoff', { fromEmp: 'Scout', toEmp: 'Analyst', jobId, projectId });
+  });
 
   return { jobId, lowSample: result.low_sample, count: result.count, fetchSummary: result.fetch_summary, mode: researchMode };
 }
@@ -359,10 +368,19 @@ export async function runAnalysis(db, projectId) {
 
   updateProjectStatus(db, projectId, 'IDEA_REVIEW');
 
-  // P42-B: ヒノデがアサヒへ分析結果を引き継いだ
-  setImmediate(() => applyJobEvent(db, 'analysis_handoff', {
-    fromEmp: 'Analyst', toEmp: 'Planner', jobId, projectId,
-  }));
+  // P42-B + P43-A: 分析完了・引き継ぎ
+  setImmediate(() => {
+    const _proj = db.prepare('SELECT theme FROM cb_projects WHERE id=?').get(projectId);
+    logEvent(db, {
+      eventType:   'BUSINESS_HANDOFF',
+      fromEmp:     'Analyst',
+      toEmp:       'Planner',
+      contentText: `ヒノデが市場分析を完了した。テーマ「${_proj?.theme ?? '（未設定）'}」。アサヒへ分析レポートを引き継ぐ。${lowSample ? '（サンプル数が不足している）' : ''}`,
+      sourceType:  'cb_jobs',
+      sourceId:    jobId,
+    });
+    applyJobEvent(db, 'analysis_handoff', { fromEmp: 'Analyst', toEmp: 'Planner', jobId, projectId });
+  });
 
   return { jobId, analysis: result, lowSample };
 }
@@ -450,10 +468,19 @@ export async function runWriting(db, projectId, revisionRequest = null) {
 
   updateProjectStatus(db, projectId, 'EDITING');
 
-  // P42-B: アサヒがソラへ執筆を依頼した（選択案確定後）
-  setImmediate(() => applyJobEvent(db, 'writing_handoff', {
-    fromEmp: 'Planner', toEmp: 'Writer', jobId, projectId,
-  }));
+  // P42-B + P43-A: 企画確定・執筆依頼
+  setImmediate(() => {
+    const _title = ideaData?.title ?? project.theme ?? '（タイトル未定）';
+    logEvent(db, {
+      eventType:   'BUSINESS_HANDOFF',
+      fromEmp:     'Planner',
+      toEmp:       'Writer',
+      contentText: `アサヒの企画案が確定した。タイトル案「${_title}」でソラへ執筆依頼が出された。`,
+      sourceType:  'cb_jobs',
+      sourceId:    jobId,
+    });
+    applyJobEvent(db, 'writing_handoff', { fromEmp: 'Planner', toEmp: 'Writer', jobId, projectId });
+  });
 
   return { jobId, version: newVersion };
 }
@@ -511,19 +538,35 @@ export async function runEditing(db, projectId) {
   if (result.verdict === 'READY') {
     // APPROVAL_WAIT で停止（社長確認待ち）
     updateProjectStatus(db, projectId, 'APPROVAL_WAIT');
-    // P42-B: キイロがソラの原稿をREADYと判定 → 双方にポジティブな変化
-    setImmediate(() => applyJobEvent(db, 'editing_ready', {
-      fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId,
-    }));
+    // P42-B + P43-A: READY判定
+    setImmediate(() => {
+      logEvent(db, {
+        eventType:   'BUSINESS_HANDOFF',
+        fromEmp:     'Writer',
+        toEmp:       'Editor',
+        contentText: `キイロがソラの原稿をREADYと判定した。テーマ「${project.theme ?? ''}」。承認待ちへ移行。`,
+        sourceType:  'cb_jobs',
+        sourceId:    jobId,
+      });
+      applyJobEvent(db, 'editing_ready', { fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId });
+    });
     return { jobId, verdict: 'READY', nextStatus: 'APPROVAL_WAIT' };
   }
 
   if (result.verdict === 'BLOCKED') {
     updateProjectStatus(db, projectId, 'NEEDS_HUMAN_REVIEW');
-    // P42-B: BLOCKED → 双方に不快感・信頼低下
-    setImmediate(() => applyJobEvent(db, 'editing_blocked', {
-      fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId,
-    }));
+    // P42-B + P43-A: BLOCKED判定
+    setImmediate(() => {
+      logEvent(db, {
+        eventType:   'BUSINESS_HANDOFF',
+        fromEmp:     'Writer',
+        toEmp:       'Editor',
+        contentText: `キイロがソラの原稿をBLOCKEDと判定した。テーマ「${project.theme ?? ''}」。人間によるレビューが必要。`,
+        sourceType:  'cb_jobs',
+        sourceId:    jobId,
+      });
+      applyJobEvent(db, 'editing_blocked', { fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId });
+    });
     return { jobId, verdict: 'BLOCKED', nextStatus: 'NEEDS_HUMAN_REVIEW' };
   }
 
@@ -531,18 +574,34 @@ export async function runEditing(db, projectId) {
   if (project.revision_count >= maxRevisions) {
     // 最大修正回数超過
     updateProjectStatus(db, projectId, 'NEEDS_HUMAN_REVIEW');
-    // P42-B: 繰り返しREVISION → 累積不快感
-    setImmediate(() => applyJobEvent(db, 'editing_revision', {
-      fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId,
-    }));
+    // P42-B + P43-A: REVISION（最大回数超過）
+    setImmediate(() => {
+      logEvent(db, {
+        eventType:   'BUSINESS_HANDOFF',
+        fromEmp:     'Writer',
+        toEmp:       'Editor',
+        contentText: `キイロがソラの原稿にREVISION_REQUIREDを出した（最大修正回数${maxRevisions}回超過）。テーマ「${project.theme ?? ''}」。人間によるレビューが必要。`,
+        sourceType:  'cb_jobs',
+        sourceId:    jobId,
+      });
+      applyJobEvent(db, 'editing_revision', { fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId });
+    });
     return { jobId, verdict: 'REVISION_REQUIRED', nextStatus: 'NEEDS_HUMAN_REVIEW', maxReached: true };
   }
 
   // 自動修正へ
-  // P42-B: REVISION_REQUIRED（通常）
-  setImmediate(() => applyJobEvent(db, 'editing_revision', {
-    fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId,
-  }));
+  // P42-B + P43-A: REVISION（通常）
+  setImmediate(() => {
+    logEvent(db, {
+      eventType:   'BUSINESS_HANDOFF',
+      fromEmp:     'Writer',
+      toEmp:       'Editor',
+      contentText: `キイロがソラの原稿にREVISION_REQUIREDを出した（${project.revision_count + 1}回目）。テーマ「${project.theme ?? ''}」。ソラへ差し戻し。`,
+      sourceType:  'cb_jobs',
+      sourceId:    jobId,
+    });
+    applyJobEvent(db, 'editing_revision', { fromEmp: 'Writer', toEmp: 'Editor', jobId, projectId });
+  });
   updateProjectStatus(db, projectId, 'AUTO_REVISION', {
     revisionCount: project.revision_count + 1,
   });

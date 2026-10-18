@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getBudgetStatus } from '../shared/claude_router.mjs';
+import { logEvent }       from './story_logger.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PERSONALITIES_PATH = resolve(__dirname, '../config/employee_personalities.json');
@@ -326,6 +327,25 @@ export function applyJobEvent(db, eventKey, { fromEmp, toEmp, jobId = null, proj
         projectId,
       });
     }
+
+    // P43-A: 関係変化をオフィス観察記録に保存
+    // is_secret フラグを確認してから記録する（恋愛感情を含む場合は秘密扱い）
+    const fwdRow = db.prepare(
+      'SELECT is_secret FROM cb_employee_relationships WHERE from_emp=? AND to_emp=?'
+    ).get(fromEmp, toEmp);
+    const revRow = db.prepare(
+      'SELECT is_secret FROM cb_employee_relationships WHERE from_emp=? AND to_emp=?'
+    ).get(toEmp, fromEmp);
+    logEvent(db, {
+      eventType:   'RELATIONSHIP_CHANGE',
+      fromEmp,
+      toEmp,
+      contentText: message,
+      deltaJson:   { eventKey, fwdDelta: fwdDelta ?? null, revDelta: revDelta ?? null },
+      sourceType:  'cb_employee_interactions',
+      sourceId:    jobId,
+      isSecret:    fwdRow?.is_secret === 1 || revRow?.is_secret === 1,
+    });
   } catch (e) {
     console.warn(`[P42-B] applyJobEvent(${eventKey}) エラー:`, e.message);
   }

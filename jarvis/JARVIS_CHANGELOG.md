@@ -13,6 +13,44 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 
 ---
 
+## 2026-10-19 — オフィス観察記録ログ収集基盤（Phase 43-A）
+
+### 目的
+AI社員6名の自律活動を連載小説の原案として記録・保存するための基盤を構築。
+自律交流（P42-C）開始前に、全業務イベントをログ収集できる状態にする。
+
+### 変更ファイル
+- `content_business/story_logger.mjs`（新規） — ログ収集・取得・エクスポートモジュール
+  - `logEvent()`: UUID生成・事実記録・is_secret フィルタ・INSERT OR IGNORE 冪等保証
+  - `getDailyEvents()` / `getEventsByDateRange()`: 日付・社員・秘密フィルタ対応取得
+  - `getEventCount()` / `getEventByUuid()`: 執筆可否判断・参照元確認
+  - `exportMarkdown()` / `exportMarkdownToFile()` / `exportTxtToFile()`: Markdown/TXT出力（story_archive/に保存）
+  - `getStorySetting()` / `updateStorySetting()`: 執筆制御設定管理
+- `content_business/db_migration.mjs` — cb_story_events・cb_story_settings テーブル追加・設定シード
+- `content_business/relationship_manager.mjs` — applyJobEvent に RELATIONSHIP_CHANGE ログ自動記録追加
+- `content_business/engine.mjs` — 業務フック6箇所に BUSINESS_HANDOFF ログ追加
+
+### 設計方針
+- ログは事実のみ（is_fictional=0固定。AIによる要約・改変・上書き禁止）
+- 各ログに UUID を付与（重複防止・小説からの参照元確認用）
+- is_secret=1 の行は社長権限のみ閲覧可（APIレイヤーで認証必須。P43-C で実装）
+- 元データとの対応を source_type / source_id で維持
+- story_archive/ ディレクトリに Markdown/TXT エクスポート可能
+
+### 確認内容（全35チェック通過）
+- テーブル存在・インデックス・UNIQUE制約 ✓
+- デフォルト設定7件シード ✓
+- logEvent: UUID返却・不正eventType=null・重複保護 ✓
+- includeSecret フィルタ（通常/管理モード）✓
+- Scout フィルタ・UUID検索 ✓
+- Markdown/TXT ファイルエクスポート ✓
+- applyJobEvent → RELATIONSHIP_CHANGE 自動記録 ✓
+- 既存テーブル変化なし（cb_projects:15/cb_jobs:40/cb_chat_messages:69/cb_relationships:30）✓
+
+### commit SHA：未採番（承認待ち）
+
+---
+
 ## 2026-10-18 — AI社員 関係性変動ロジック実装（Phase 42-B）
 
 ### 目的
@@ -46,7 +84,7 @@ JARVIS 本体の変更記録。今後の JARVIS コード変更は必ずここ�
 - テストC 通常/管理モード: Scout→Analyst normal ro=0/pf=null、mgmt ro=80/pf=actual ✓
 - テストE 既存テーブル: cb_projects:15 cb_jobs:40 cb_chat_messages:69（変化なし）✓
 
-### commit SHA：未採番（承認待ち）
+### commit SHA：`66d6780`
 
 ---
 
