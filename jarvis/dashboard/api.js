@@ -7,6 +7,11 @@
  * - ConflictError（完全休日への仕事登録）は 409 で返す
  */
 
+// ── 出版事業部 自律ワーカー (P42-C) ──────────────────────────────────────────
+import {
+  runManualAdvance, getAdvanceStatus, listPendingApprovals, resolveApproval,
+} from '../content_business/autonomous_worker.mjs';
+
 // ── 出版事業部 (Content Business v2) ─────────────────────────────────────────
 import {
   createProject, getProject, listProjects, listSeries, getWeeklySummary,
@@ -4160,6 +4165,46 @@ export function createApiHandler(db) {
           return errRes(res, 409, e.message);
         }
       }
+
+      // ── P42-C: 自律交流 手動進行 API ──────────────────────────────────────────
+
+      // POST /api/cb/autonomous/advance — 「少し進める」1回実行
+      if (method === 'POST' && path === '/api/cb/autonomous/advance') {
+        const result = await runManualAdvance(db);
+        if (!result.ok) {
+          const statusCode = result.reason === 'already_running' ? 429
+                           : result.reason === 'budget'          ? 402
+                           : 500;
+          return errRes(res, statusCode, result.reason + (result.message ? ': ' + result.message : ''));
+        }
+        return jsonRes(res, 200, result);
+      }
+
+      // GET /api/cb/autonomous/status — 状態確認
+      if (method === 'GET' && path === '/api/cb/autonomous/status') {
+        return jsonRes(res, 200, { ok: true, ...getAdvanceStatus(db) });
+      }
+
+      // GET /api/cb/autonomous/approvals — 承認待ち一覧
+      if (method === 'GET' && path === '/api/cb/autonomous/approvals') {
+        return jsonRes(res, 200, { ok: true, approvals: listPendingApprovals(db) });
+      }
+
+      // POST /api/cb/autonomous/approvals/:id — 承認または却下
+      if (method === 'POST' && path.match(/^\/api\/cb\/autonomous\/approvals\/(\d+)$/)) {
+        const id = parseInt(path.match(/(\d+)/)[1]);
+        let body;
+        try { body = await readBody(req); } catch (e) { return errRes(res, 400, e.message); }
+        const action = body?.action;
+        if (!['approve','reject'].includes(action)) {
+          return errRes(res, 400, 'action は "approve" または "reject" を指定してください');
+        }
+        const result = resolveApproval(db, id, action);
+        if (!result.ok) return errRes(res, 404, result.reason);
+        return jsonRes(res, 200, result);
+      }
+
+      // ── P42-C ここまで ──────────────────────────────────────────────────────
 
       // POST /api/cb/projects/:id/writer-revision-only — ソラに修正依頼（キイロ編集は自動起動しない）
       if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/writer-revision-only$/)) {

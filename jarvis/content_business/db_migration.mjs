@@ -383,6 +383,7 @@ function seedStorySettings(db) {
     ['max_chars_per_episode',    '3000'],    // 1話あたりの目安文字数
     ['max_revision_rounds',      '2'],       // ソラ↔キイロの修正上限回数
     ['budget_threshold_percent', '30'],      // 残予算がこの%未満なら執筆を保留
+    ['advance_lock',             ''],        // P42-C: 手動進行の排他ロック（空=未ロック、ISO日時=ロック中）
   ];
   for (const [k, v] of defaults) stmt.run(k, v);
 }
@@ -621,6 +622,27 @@ export function applyCbMigration(db) {
     db.exec(`CREATE INDEX IF NOT EXISTS idx_cb_interact_job
       ON cb_employee_interactions(source_job_id)
       WHERE source_job_id IS NOT NULL`);
+  } catch (_) { /* 既存はスキップ */ }
+
+  // ── Phase 42-C: 承認待ちイベントテーブル ────────────────────────────────────
+  try {
+    db.exec(`
+CREATE TABLE IF NOT EXISTS cb_pending_approvals (
+  id            INTEGER  PRIMARY KEY AUTOINCREMENT,
+  type          TEXT     NOT NULL,       -- 'relationship_change' | 'story_event'
+  from_emp      TEXT,                    -- 関係者A（任意）
+  to_emp        TEXT,                    -- 関係者B（任意）
+  description   TEXT     NOT NULL,       -- オーナーへの説明文
+  data_json     TEXT     NOT NULL,       -- 保留中のデータ（JSON）
+  source_interaction_id INTEGER,         -- 起因した cb_employee_interactions.id
+  status        TEXT     NOT NULL DEFAULT 'pending'
+                  CHECK (status IN ('pending','approved','rejected')),
+  created_at    DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+  resolved_at   DATETIME
+);
+CREATE INDEX IF NOT EXISTS idx_cb_pending_status
+  ON cb_pending_approvals(status);
+    `);
   } catch (_) { /* 既存はスキップ */ }
 }
 
