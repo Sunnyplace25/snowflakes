@@ -12,6 +12,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync }  from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { applyCbMigration } from '../content_business/db_migration.mjs';
+import { setLogDb } from '../shared/claude_router.mjs';
 
 const __dirname   = dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = resolve(__dirname, 'schema.sql');
@@ -794,6 +796,15 @@ function runMigrations(db, dbPath = ':memory:') {
   // Phase 36: merch_competitor_items に is_auction カラム追加
   phase36Migration(db);
 
+  // Phase 37: タイムカード（tc_punches テーブル）
+  phase37Migration(db);
+
+  // Phase 38: tc_punches に category カラム追加
+  phase38Migration(db);
+
+  // Phase 39: sf_note_article に収益企画カラム追加 + sf_note_sales テーブル作成
+  phase39Migration(db);
+
   // Phase 25: sf_artist_profiles platform CHECK 拡張 (deezer 等 22 platform 追加)
   // 冪等判定: sqlite_master の CREATE TABLE 文に 'deezer' が含まれているか確認する。
   try {
@@ -854,6 +865,12 @@ export function createDb(dbPath = DEFAULT_DB_PATH) {
   db.exec(schema);
 
   runMigrations(db, dbPath);
+
+  // 出版事業部テーブル（冪等）
+  applyCbMigration(db);
+
+  // Claude API 使用量ログDBをルーターに渡す
+  setLogDb(db);
 
   return db;
 }
@@ -1890,4 +1907,113 @@ export function phase36Migration(db) {
       CHECK (is_auction IN (0, 1))
   `);
   console.log('[migration] phase36: 完了');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 37: タイムカード（tc_punches テーブル）
+// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * tc_punches テーブルとインデックスを作成する。
+ * schema.sql で CREATE TABLE IF NOT EXISTS されているため、
+ * ここでは必要なインデックスの補完のみ行う（冪等）。
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase37Migration(db) {
+  // schema.sql で作成済みの場合はスキップ
+  const tbl = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='tc_punches'").get();
+  if (!tbl) {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS tc_punches (
+        id         TEXT    NOT NULL PRIMARY KEY,
+        owner_id   INTEGER NOT NULL DEFAULT 1,
+        kind       TEXT    NOT NULL CHECK (kind IN ('in','out','break_start','break_end')),
+        at_ms      INTEGER NOT NULL,
+        seq        INTEGER NOT NULL,
+        request_id TEXT    NOT NULL UNIQUE,
+        location   TEXT    NOT NULL DEFAULT '自宅',
+        created_at TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+      );
+      CREATE INDEX IF NOT EXISTS idx_tc_punches_owner_ms ON tc_punches (owner_id, at_ms);
+    `);
+    console.log('[migration] phase37: tc_punches テーブルを作成しました');
+  }
+}
+
+export function phase38Migration(db) {
+  // tc_punches に category カラムを追加（冪等）
+  const row = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='tc_punches'").get();
+  if (row && !row.sql.includes('category')) {
+    db.exec("ALTER TABLE tc_punches ADD COLUMN category TEXT NOT NULL DEFAULT ''");
+    console.log('[migration] phase38: tc_punches に category カラムを追加しました');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Phase 39: note 収益企画（sf_note_article カラム追加 + sf_note_sales テーブル）
+// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * sf_note_article に収益企画用カラムを15本追加し、
+ * sf_note_sales テーブルを作成する（冪等）。
+ * @param {import('node:sqlite').DatabaseSync} db
+ */
+export function phase39Migration(db) {
+  // ── sf_note_article へのカラム追加（15本） ──────────────────────────────
+  const articleRow = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND name='sf_note_article'"
+  ).get();
+
+  if (articleRow) {
+    const sql = articleRow.sql;
+    const columns = [
+      ["buyer_target",    "TEXT"],
+      ["buyer_problem",   "TEXT"],
+      ["solution",        "TEXT"],
+      ["purchase_reason", "TEXT"],
+      ["differentiation", "TEXT"],
+      ["required_info",   "TEXT"],
+      ["recommended_price", "INTEGER"],
+      ["is_paid",         "INTEGER NOT NULL DEFAULT 0"],
+      ["revenue_score",   "INTEGER"],
+      ["score_detail",    "TEXT"],
+      ["plan_status",     "TEXT NOT NULL DEFAULT 'active'"],
+      ["rejected_at",     "TEXT"],
+      ["rejection_reason","TEXT"],
+      ["rejection_note",  "TEXT"],
+      ["source_article_id", "INTEGER"],
+    ];
+    for (const [col, type] of columns) {
+      if (!sql.includes(col)) {
+        db.exec(`ALTER TABLE sf_note_article ADD COLUMN ${col} ${type}`);
+        console.log(`[migration] phase39: sf_note_article に ${col} カラムを追加しました`);
+      }
+    }
+  }
+
+  // ── sf_note_sales テーブル作成（冪等） ─────────────────────────────────
+  const salesTbl = db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='sf_note_sales'"
+  ).get();
+  if (!salesTbl) {
+    db.exec(`
+      CREATE TABLE sf_note_sales (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        article_id   INTEGER NOT NULL,
+        period       TEXT    NOT NULL,
+        pv           INTEGER,
+        likes        INTEGER,
+        sales_count  INTEGER,
+        revenue      INTEGER,
+        purchase_rate REAL,
+        source       TEXT,
+        price        INTEGER,
+        note         TEXT,
+        created_at   TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+        updated_at   TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+        UNIQUE(article_id, period),
+        FOREIGN KEY(article_id) REFERENCES sf_note_article(id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_sf_note_sales_article ON sf_note_sales(article_id);
+    `);
+    console.log('[migration] phase39: sf_note_sales テーブルを作成しました');
+  }
 }

@@ -1442,3 +1442,20 @@ CREATE TABLE IF NOT EXISTS merch_classification_overrides (
   created_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime')),
   updated_at      TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
 );
+
+-- ── タイムカード (Phase 37) ──────────────────────────────────────────────────
+-- 打刻記録テーブル
+-- kind: in / out / break_start / break_end
+-- at_ms: UTC epoch ミリ秒（打刻時刻の正本）
+-- request_id: べき等キー（同一IDの二重保存を防ぐ）
+CREATE TABLE IF NOT EXISTS tc_punches (
+  id         TEXT    NOT NULL PRIMARY KEY,
+  owner_id   INTEGER NOT NULL DEFAULT 1,
+  kind       TEXT    NOT NULL CHECK (kind IN ('in','out','break_start','break_end')),
+  at_ms      INTEGER NOT NULL,
+  seq        INTEGER NOT NULL,
+  request_id TEXT    NOT NULL UNIQUE,
+  location   TEXT    NOT NULL DEFAULT '自宅',
+  created_at TEXT    NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_tc_punches_owner_ms ON tc_punches (owner_id, at_ms);

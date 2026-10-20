@@ -58,3 +58,22 @@ jarvis/exports/note/*
 jarvis/knowledge/
 # JARVIS 原稿アーカイブ（個人の未公開原稿はgit管理しない）
 jarvis/manuscripts/
+# JARVIS 出版事業部 実データDB（cb_database, cb.db）
+jarvis/content_business/*.db
+jarvis/content_business/*.db-wal
+jarvis/content_business/*.db-shm
+# JARVIS 出版事業部 生成ログ・オフィス観察記録
+jarvis/content_business/story_archive/
+# JARVIS 認証トークン一時ファイル（Metricool等）
+jarvis/.metricool_tokens_TEMP.txt
+jarvis/data/.metricool_creds.json
+# JARVIS バックアップ・旧バージョン
+jarvis/data/backups/
+jarvis/backups/
+jarvis/jarvis.db
+jarvis/jarvis.db.backup_*
+jarvis_c_backup/
+jarvis_old/
+# JARVIS AI Bridge 実行タスク・サンドボックス
+jarvis/ai/sandbox/
+jarvis/ai/tasks/

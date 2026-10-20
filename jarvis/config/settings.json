@@ -1,7 +1,6 @@
 {
   "_comment": "Snow flakes JARVIS 設定ファイル。秘密情報・アクセストークンは絶対に書かないこと。",
   "_version": "0.4.0",
-
   "site": {
     "name": "Snow flakes",
     "url": "https://sunnyplace25.github.io/snowflakes/",
@@ -12,14 +11,12 @@
       "work": "jarvis-development"
     }
   },
-
   "git": {
     "auto_commit": false,
     "auto_push": false,
     "individual_add_only": true,
     "_note": "git add は対象ファイルを個別指定すること。git add . は使用禁止。"
   },
-
   "sns": {
     "x": {
       "enabled": false,
@@ -34,22 +31,21 @@
       "_note": "Instagram Graph APIはFacebookページとの接続確認後に設定する"
     }
   },
-
   "api": {
     "anthropic": {
       "enabled": false,
       "_note": "第1段階では未使用。基本動作確認後に別途承認を得て有効化する。"
     }
   },
-
   "budget": {
     "currency": "JPY",
     "monthly_limit": 0,
+    "_monthly_limit_note": "旧設定（参照しない）。claude_router.mjs は monthly_limit_usd または ai_budget_settings テーブルを使用する。",
+    "monthly_limit_usd": 2,
     "warn_threshold_percent": 80,
     "auto_stop_at_limit": true,
-    "_note": "monthly_limitが0の場合は上限なし（初期設定）。SNS API料金は変動するため、使用前に必ず確認する。"
+    "_note": "monthly_limit_usd: null=無制限, 0=AI呼び出し禁止, 正数=USD月間上限。管理画面で変更するとDBと同期される。初期値 $2.00/月（現状の約10倍マージン）。SNS API料金は変動するため使用前に必ず確認する。"
   },
-
   "safety": {
     "require_approval_for_site_publish": true,
     "require_approval_for_sns_post": true,
@@ -57,7 +53,6 @@
     "show_cost_estimate_before_post": true,
     "prevent_duplicate_post": true
   },
-
   "exclude_from_processing": [
     "music/kaeranai_streaming.mp3",
     "music/kaeranai_streaming.wav",
@@ -70,25 +65,30 @@
     "sweets/sf2026ncr_g3d28.mp3",
     "sweets/sf2026ncr_h9b4e.mp3"
   ],
-
   "draft": {
-    "types": ["site_update", "sns_x", "sns_instagram", "youtube_video", "tiktok_video", "note_article", "news", "activity_report"],
+    "types": [
+      "site_update",
+      "sns_x",
+      "sns_instagram",
+      "youtube_video",
+      "tiktok_video",
+      "note_article",
+      "news",
+      "activity_report"
+    ],
     "pending_dir": "drafts/pending",
     "approved_dir": "drafts/approved",
     "published_dir": "drafts/published"
   },
-
   "instagram": {
     "bio_link_note": "プロフィールのリンクからご確認いただけます。",
     "bio_link_note_en": "Check the link in bio for details."
   },
-
   "platform_limits": {
     "x_warning_length": 280,
     "instagram_warning_length": 2200,
     "x_hashtag_recommended_max": 3
   },
-
   "scheduling": {
     "timezone": "Asia/Tokyo",
     "allow_past_schedule": false,
@@ -97,7 +97,6 @@
     "external_posting_enabled": false,
     "dry_run_only": true
   },
-
   "platform_posting": {
     "x": {
       "enabled": false,
@@ -120,7 +119,6 @@
       "provider": null
     }
   },
-
   "youtube": {
     "default_privacy_status": "private",
     "default_publish_mode": "scheduled",
@@ -133,7 +131,6 @@
     "_api_note": "第4段階後半では、YouTube Data API v3 のインストール済みアプリ向け OAuth 2.0 認証を採用する。具体的な認証方式は、実装時点の Google 公式仕様を確認して決定する。",
     "_publish_at_note": "将来API接続時: content.scheduled_at → status.publishAt、同時に status.privacyStatus = 'private' を設定する。公開済み動画は予約公開の対象にしない。"
   },
-
   "tiktok": {
     "default_post_mode": "media_upload",
     "direct_post_enabled": false,
@@ -142,7 +139,6 @@
     "caption_warning_length": 2200,
     "_api_note": "初期接続は MEDIA_UPLOAD を優先する。DIRECT_POST はアプリ審査と公開権限の確認後に別途実装する。TikTok Content Posting API の OAuth 2.0 認証方式は、実装時点の TikTok 公式仕様を確認して決定する。"
   },
-
   "note": {
     "external_posting_enabled": false,
     "minimum_body_length": 100,
