@@ -72,8 +72,10 @@ export function createArticle(db, data) {
     INSERT INTO sf_note_article
       (title, internal_key, article_type, status, summary, body_markdown, tags, magazine,
        related_work_id, related_track_id, related_release_id,
-       scheduled_date, published_date, note_url)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       scheduled_date, published_date, note_url,
+       buyer_target, buyer_problem, solution, purchase_reason, differentiation,
+       required_info, recommended_price, is_paid, revenue_score, score_detail)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(
     data.title.trim(),
     data.internal_key   ?? null,
@@ -89,6 +91,16 @@ export function createArticle(db, data) {
     data.scheduled_date ?? null,
     data.published_date ?? null,
     data.note_url       ?? null,
+    data.buyer_target    ?? null,
+    data.buyer_problem   ?? null,
+    data.solution        ?? null,
+    data.purchase_reason ?? null,
+    data.differentiation ?? null,
+    data.required_info   ?? null,
+    data.recommended_price !== undefined ? (data.recommended_price === null ? null : Number(data.recommended_price)) : null,
+    data.is_paid         !== undefined ? (data.is_paid === null ? null : Number(data.is_paid)) : null,
+    data.revenue_score   !== undefined ? (data.revenue_score === null ? null : Number(data.revenue_score)) : null,
+    data.score_detail    ?? null,
   );
   return Number(result.lastInsertRowid);
 }
@@ -336,6 +348,231 @@ export function generateExport(article, format) {
   if (article.body_markdown) lines.push(article.body_markdown);
   return lines.join('\n');
 }
+
+// ─── 企画 ステータス管理 ──────────────────────────────────────────────────────
+
+export const VALID_PLAN_STATUSES = ['active', 'rejected'];
+
+/**
+ * 記事企画を却下する（ソフト削除）。
+ * plan_status を 'rejected' に変更し、却下日時・理由・メモを記録する。
+ * 物理削除は行わない。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {number} id
+ * @param {{ reason?: string, note?: string }} opts
+ * @returns {object} 更新後の記事
+ */
+export function rejectArticle(db, id, { reason = '', note = '' } = {}) {
+  const article = getArticle(db, id);
+  if (!article) throw new Error(`記事が見つかりません: id=${id}`);
+  if (article.plan_status === 'rejected') throw new Error('すでに却下済みです');
+
+  db.prepare(`
+    UPDATE sf_note_article SET
+      plan_status='rejected',
+      rejected_at=datetime('now','localtime'),
+      rejection_reason=?,
+      rejection_note=?,
+      updated_at=datetime('now','localtime')
+    WHERE id=?
+  `).run(reason || null, note || null, id);
+  return getArticle(db, id);
+}
+
+/**
+ * 却下済み企画を復元する（plan_status を 'active' に戻す）。
+ * @returns {object} 更新後の記事
+ */
+export function restoreArticle(db, id) {
+  const article = getArticle(db, id);
+  if (!article) throw new Error(`記事が見つかりません: id=${id}`);
+  if (article.plan_status !== 'rejected') throw new Error('却下済みではありません');
+
+  db.prepare(`
+    UPDATE sf_note_article SET
+      plan_status='active',
+      rejected_at=NULL,
+      rejection_reason=NULL,
+      rejection_note=NULL,
+      updated_at=datetime('now','localtime')
+    WHERE id=?
+  `).run(id);
+  return getArticle(db, id);
+}
+
+/**
+ * 却下履歴を取得する（plan_status='rejected' の記事一覧）。
+ * @param {{ limit?: number, offset?: number }} opts
+ * @returns {object[]}
+ */
+export function getRejectionHistory(db, { limit = 50, offset = 0 } = {}) {
+  const rawLimit = parseInt(limit, 10);
+  const safeLimit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 200) : 50;
+  const rows = db.prepare(`
+    SELECT * FROM sf_note_article
+    WHERE plan_status='rejected'
+    ORDER BY rejected_at DESC, id DESC
+    LIMIT ? OFFSET ?
+  `).all(safeLimit, offset);
+  return rows.map(parseRow);
+}
+
+/**
+ * 複数記事を一括却下する（トランザクション）。
+ * @param {number[]} ids
+ * @param {{ reason?: string }} opts
+ * @returns {{ ok: boolean, count: number }}
+ */
+export function bulkReject(db, ids, { reason = '' } = {}) {
+  if (!Array.isArray(ids) || ids.length === 0) throw new Error('ids は空でない配列が必要です');
+
+  try {
+    db.exec('BEGIN IMMEDIATE');
+    let count = 0;
+    for (const id of ids) {
+      const article = db.prepare('SELECT id, plan_status FROM sf_note_article WHERE id=?').get(id);
+      if (!article || article.plan_status === 'rejected') continue;
+      db.prepare(`
+        UPDATE sf_note_article SET
+          plan_status='rejected',
+          rejected_at=datetime('now','localtime'),
+          rejection_reason=?,
+          updated_at=datetime('now','localtime')
+        WHERE id=?
+      `).run(reason || null, id);
+      count++;
+    }
+    db.exec('COMMIT');
+    return { ok: true, count };
+  } catch (e) {
+    try { db.exec('ROLLBACK'); } catch (_) {}
+    throw e;
+  }
+}
+
+// ─── 販売データ ───────────────────────────────────────────────────────────────
+
+/**
+ * 販売データを新規作成する。
+ * @param {import('node:sqlite').DatabaseSync} db
+ * @param {object} data - { article_id, period, pv?, likes?, sales_count?, revenue?,
+ *                          purchase_rate?, source?, price?, note? }
+ * @returns {number} 新規 id
+ */
+export function createSalesRecord(db, data) {
+  if (!data.article_id || !Number.isFinite(Number(data.article_id))) {
+    throw new Error('article_id は必須です');
+  }
+  if (!data.period || !/^\d{4}-\d{2}$/.test(data.period)) {
+    throw new Error('period は YYYY-MM 形式が必要です');
+  }
+  const article = db.prepare('SELECT id FROM sf_note_article WHERE id=?').get(Number(data.article_id));
+  if (!article) throw new Error(`記事が見つかりません: article_id=${data.article_id}`);
+
+  const result = db.prepare(`
+    INSERT INTO sf_note_sales
+      (article_id, period, pv, likes, sales_count, revenue, purchase_rate, source, price, note)
+    VALUES (?,?,?,?,?,?,?,?,?,?)
+  `).run(
+    Number(data.article_id),
+    data.period,
+    data.pv          ?? null,
+    data.likes       ?? null,
+    data.sales_count ?? null,
+    data.revenue     ?? null,
+    data.purchase_rate ?? null,
+    data.source      ?? null,
+    data.price       ?? null,
+    data.note        ?? null,
+  );
+  return Number(result.lastInsertRowid);
+}
+
+/**
+ * 販売データ一覧を取得する。
+ * @param {{ article_id?: number, period?: string, limit?: number }} opts
+ * @returns {object[]}
+ */
+export function getSalesRecords(db, opts = {}) {
+  const conditions = [];
+  const params = [];
+
+  if (opts.article_id) {
+    conditions.push('article_id=?');
+    params.push(Number(opts.article_id));
+  }
+  if (opts.period) {
+    conditions.push('period=?');
+    params.push(opts.period);
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const rawLimit = parseInt(opts.limit ?? 200, 10);
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 1000) : 200;
+
+  return db.prepare(`
+    SELECT * FROM sf_note_sales ${where}
+    ORDER BY period DESC, article_id ASC LIMIT ?
+  `).all(...params, limit);
+}
+
+/**
+ * 販売データを更新する。
+ * @returns {object} 更新後のレコード
+ */
+export function updateSalesRecord(db, id, data) {
+  const record = db.prepare('SELECT * FROM sf_note_sales WHERE id=?').get(Number(id));
+  if (!record) throw new Error(`販売データが見つかりません: id=${id}`);
+
+  // period 変更は UNIQUE 制約チェックが必要
+  if (data.period && data.period !== record.period) {
+    if (!/^\d{4}-\d{2}$/.test(data.period)) throw new Error('period は YYYY-MM 形式が必要です');
+    const dup = db.prepare(
+      'SELECT id FROM sf_note_sales WHERE article_id=? AND period=? AND id!=?'
+    ).get(record.article_id, data.period, Number(id));
+    if (dup) throw new Error(`同じ記事の ${data.period} のデータがすでに存在します`);
+  }
+
+  db.prepare(`
+    UPDATE sf_note_sales SET
+      period=COALESCE(?,period),
+      pv=COALESCE(?,pv),
+      likes=COALESCE(?,likes),
+      sales_count=COALESCE(?,sales_count),
+      revenue=COALESCE(?,revenue),
+      purchase_rate=COALESCE(?,purchase_rate),
+      source=COALESCE(?,source),
+      price=COALESCE(?,price),
+      note=COALESCE(?,note),
+      updated_at=datetime('now','localtime')
+    WHERE id=?
+  `).run(
+    data.period       ?? null,
+    data.pv           !== undefined ? data.pv           : null,
+    data.likes        !== undefined ? data.likes        : null,
+    data.sales_count  !== undefined ? data.sales_count  : null,
+    data.revenue      !== undefined ? data.revenue      : null,
+    data.purchase_rate !== undefined ? data.purchase_rate : null,
+    data.source       !== undefined ? data.source       : null,
+    data.price        !== undefined ? data.price        : null,
+    data.note         !== undefined ? data.note         : null,
+    Number(id),
+  );
+  return db.prepare('SELECT * FROM sf_note_sales WHERE id=?').get(Number(id));
+}
+
+/**
+ * 販売データを削除する。
+ * @returns {{ ok: boolean }}
+ */
+export function deleteSalesRecord(db, id) {
+  const record = db.prepare('SELECT id FROM sf_note_sales WHERE id=?').get(Number(id));
+  if (!record) throw new Error(`販売データが見つかりません: id=${id}`);
+  db.prepare('DELETE FROM sf_note_sales WHERE id=?').run(Number(id));
+  return { ok: true };
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
 
 /**
  * 記事をファイルとして書き出す。
