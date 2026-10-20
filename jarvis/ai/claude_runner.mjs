@@ -217,7 +217,8 @@ export async function runClaude(prompt, {
   }
 
   return {
-    result:     parsed.result     ?? '',
-    session_id: parsed.session_id ?? null,
+    result:     parsed.result         ?? '',
+    session_id: parsed.session_id     ?? null,
+    cost_usd:   parsed.total_cost_usd ?? 0,
   };
 }

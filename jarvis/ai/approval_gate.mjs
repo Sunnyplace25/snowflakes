@@ -76,9 +76,12 @@ export function createApprovalGate({
 
   // ── COMMIT APPROVAL ────────────────────────────────────────────────────────
 
-  async function promptCommit({ task, review, testResult, files, commitMessage }) {
+  async function promptCommit({ task, review, testResult, files, commitMessage, claudeCostUsd, openaiCostUsd }) {
     const testSummary = `${testResult?.passed ?? '?'} passed / ${testResult?.failed ?? '?'} failed`;
     const fileList    = (files ?? []).map(f => `  ・${f}`).join('\n') || '  (none)';
+    const costSummary = (claudeCostUsd != null || openaiCostUsd != null)
+      ? `Claude: $${(claudeCostUsd ?? 0).toFixed(4)} / OpenAI: $${(openaiCostUsd ?? 0).toFixed(4)}`
+      : null;
 
     console.log(`\n${'='.repeat(64)}`);
     console.log('COMMIT APPROVAL REQUIRED');
@@ -88,11 +91,12 @@ export function createApprovalGate({
     console.log(`Tests:\n${testSummary}\n`);
     console.log(`Files:\n${fileList}\n`);
     console.log(`Commit message:\n${commitMessage}\n`);
+    if (costSummary) console.log(`API コスト: ${costSummary}\n`);
 
     const answer = await _ask('Commitしてよいですか？ [y/N]: ');
 
     if (answer === null) {
-      savePendingApproval({ type: 'COMMIT_APPROVAL', task, review, testResult, files, commitMessage });
+      savePendingApproval({ type: 'COMMIT_APPROVAL', task, review, testResult, files, commitMessage, claudeCostUsd, openaiCostUsd });
       console.log('\n承認待ちを pending_approval.json に保存しました。次回起動時に再開します。');
       return { approved: false };
     }
@@ -102,17 +106,24 @@ export function createApprovalGate({
 
   // ── PUSH APPROVAL ──────────────────────────────────────────────────────────
 
-  async function promptPush({ hash, branch }) {
+  async function promptPush({ hash, branch, files = [], claudeCostUsd, openaiCostUsd }) {
+    const fileList   = files.length ? files.map(f => `  ・${f}`).join('\n') : '  (なし)';
+    const costSummary = (claudeCostUsd != null || openaiCostUsd != null)
+      ? `Claude: $${(claudeCostUsd ?? 0).toFixed(4)} / OpenAI: $${(openaiCostUsd ?? 0).toFixed(4)}`
+      : null;
+
     console.log(`\n${'='.repeat(64)}`);
     console.log('PUSH APPROVAL REQUIRED');
     console.log('='.repeat(64));
     console.log(`\ncommit:\n${hash}\n`);
     console.log(`branch:\n${branch}\n`);
+    console.log(`committed files:\n${fileList}\n`);
+    if (costSummary) console.log(`API コスト: ${costSummary}\n`);
 
     const answer = await _ask(`origin/${branch} へ push しますか？ [y/N]: `);
 
     if (answer === null) {
-      savePendingApproval({ type: 'PUSH_APPROVAL', hash, branch });
+      savePendingApproval({ type: 'PUSH_APPROVAL', hash, branch, files, claudeCostUsd, openaiCostUsd });
       console.log('\n承認待ちを pending_approval.json に保存しました。');
       return { approved: false };
     }

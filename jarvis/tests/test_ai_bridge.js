@@ -114,10 +114,82 @@ function mockExecGitNoViolation(branch = ALLOWED_BRANCH) {
   return (cmd) => {
     if (cmd === 'git branch --show-current')   return branch;
     if (cmd.includes('--porcelain'))           return baseStatus;
+    if (cmd.includes('hash-object'))           return 'aabbcc1122';
+    if (cmd.includes('ls-files'))              return '';
     if (cmd.includes('--cached --name-only'))  return '';
     if (cmd.includes('--name-only'))           return '';
     if (cmd.includes('--stat'))                return '';
     if (cmd.startsWith('git diff'))            return '(mock diff)';
+    if (cmd.startsWith('git rev-parse'))       return 'abc1234';
+    if (cmd.startsWith('git add'))             return '';
+    if (cmd.startsWith('git push'))            return '';
+    return '';
+  };
+}
+
+/**
+ * テスト用 execGit: Claude がファイルを追加したことをシミュレート。
+ * --porcelain の 3 回目以降（after スナップショット）に新規ファイルを返す。
+ * 呼び出し順: (1) recordBaseline, (2) captureWorkingTreeSnapshot(before),
+ *             (3) checkViolations, (4) captureWorkingTreeSnapshot(after)
+ */
+function mockExecGitWithClaudeChanges(branch = ALLOWED_BRANCH) {
+  const CLAUDE_FILE = 'jarvis/ai/_test_claude_output.mjs';
+  const baseStatus = [
+    '?? jarvis/data/business_data.db-shm',
+    '?? jarvis/data/business_data.db-wal',
+  ].join('\n');
+  let porcelainCount = 0;
+
+  return (cmd) => {
+    if (cmd === 'git branch --show-current') return branch;
+    if (cmd.includes('--porcelain')) {
+      porcelainCount++;
+      // 4回目以降 = after スナップショット → Claude の新規ファイルを含む
+      if (porcelainCount >= 4) return baseStatus + `\n?? ${CLAUDE_FILE}`;
+      return baseStatus;
+    }
+    if (cmd.includes('hash-object')) return 'aabbcc1122';
+    if (cmd.includes('ls-files'))    return '';  // untracked 扱い
+    if (cmd.includes('--cached --name-only')) return '';
+    if (cmd.includes('--name-only'))          return '';
+    if (cmd.includes('--stat'))               return '';
+    if (cmd.startsWith('git diff'))           return '+new line by claude';
+    if (cmd.startsWith('git rev-parse'))      return 'abc1234';
+    if (cmd.startsWith('git add'))            return '';
+    if (cmd.startsWith('git push'))           return '';
+    return '';
+  };
+}
+
+/**
+ * テスト用 execGit: 事前 dirty ファイルを Claude が追加編集したシナリオ（オーバーラップ）。
+ * OVERLAP_FILE は before スナップショットにも after スナップショットにも出現するが、
+ * after では hash が変わっている（Claude が編集した）ことをシミュレートする。
+ *
+ * 呼び出し順: (1) recordBaseline, (2) captureWorkingTreeSnapshot(before),
+ *             (3) checkViolations, (4) captureWorkingTreeSnapshot(after)
+ */
+function mockExecGitWithOverlap(branch = ALLOWED_BRANCH) {
+  const OVERLAP_FILE = 'jarvis/dashboard/api.js';  // 事前 dirty かつ Claude も編集
+  // before/after どちらも同じ 1 ファイル。hash-object の返値だけが変わる。
+  const baseStatus   = `M  ${OVERLAP_FILE}`;
+  let hashCallCount  = 0;  // hash-object 呼び出し回数でフェーズを判断
+
+  return (cmd) => {
+    if (cmd === 'git branch --show-current') return branch;
+    if (cmd.includes('--porcelain'))         return baseStatus;
+    if (cmd.includes('hash-object')) {
+      hashCallCount++;
+      // 1回目 = before スナップショット → 'oldhash111'
+      // 2回目以降 = after スナップショット → 'newhash222'（Claudeが編集）
+      return hashCallCount === 1 ? 'oldhash111' : 'newhash222';
+    }
+    if (cmd.includes('ls-files'))              return OVERLAP_FILE;  // tracked
+    if (cmd.includes('--cached --name-only'))  return '';
+    if (cmd.includes('--name-only'))           return '';
+    if (cmd.includes('--stat'))                return '';
+    if (cmd.startsWith('git diff'))            return '+overlap diff';
     if (cmd.startsWith('git rev-parse'))       return 'abc1234';
     if (cmd.startsWith('git add'))             return '';
     if (cmd.startsWith('git push'))            return '';
@@ -322,9 +394,26 @@ await testAsync('API キーがログに出力されない', async () => {
 
 console.log('\n▶ Orchestrator: 正常フロー');
 
-await testAsync('approve → gate.promptCommit が呼ばれる', async () => {
+await testAsync('approve + Claude変更ファイルあり → gate.promptCommit が呼ばれる', async () => {
   clearPendingApproval();
   const gate   = mockGate({ commitApproved: false });
+  // mockExecGitWithClaudeChanges: after スナップショットで新規ファイルが現れる
+  const result = await runBridge('task text', {
+    runner:   mockRunner(['実装しました']),
+    reviewer: mockReviewer([approve('OK')]),
+    gate,
+    execGit:  mockExecGitWithClaudeChanges(),
+    runTests: async () => passTestResult,
+    cwd:      BRIDGE_CWD,
+  });
+  // commitApproved=false なので approved ではなく approved（gate は呼ばれるが approved:false）
+  assert.equal(result.decision, 'approved');
+  assert.ok(gate.calls.some(c => c.type === 'commit'), 'promptCommit が呼ばれていない');
+});
+
+await testAsync('approve + Claude変更なし → no_changes を返す', async () => {
+  clearPendingApproval();
+  const gate   = mockGate();
   const result = await runBridge('task text', {
     runner:   mockRunner(['実装しました']),
     reviewer: mockReviewer([approve('OK')]),
@@ -333,8 +422,8 @@ await testAsync('approve → gate.promptCommit が呼ばれる', async () => {
     runTests: async () => passTestResult,
     cwd:      BRIDGE_CWD,
   });
-  assert.equal(result.decision, 'approved');
-  assert.ok(gate.calls.some(c => c.type === 'commit'), 'promptCommit が呼ばれていない');
+  assert.equal(result.decision, 'no_changes');
+  assert.ok(!gate.calls.some(c => c.type === 'commit'), 'Claude変更なしなのに promptCommit が呼ばれた');
 });
 
 await testAsync('revise → Claude が再度呼ばれる (2サイクル)', async () => {
@@ -343,9 +432,10 @@ await testAsync('revise → Claude が再度呼ばれる (2サイクル)', async
   const reviewer = mockReviewer([revise('修正A'), approve('OK')]);
   const gate     = mockGate({ commitApproved: false });
 
+  // Claude がファイルを変更したことをシミュレート（変更なしだと no_changes で終わる）
   await runBridge('task', {
     runner, reviewer, gate,
-    execGit:  mockExecGitNoViolation(),
+    execGit:  mockExecGitWithClaudeChanges(),
     runTests: async () => passTestResult,
     cwd:      BRIDGE_CWD,
   });
@@ -362,7 +452,7 @@ await testAsync('4回 revise → max_cycles_reached', async () => {
 
   const result = await runBridge('task', {
     runner, reviewer, gate,
-    execGit:   mockExecGitNoViolation(),
+    execGit:   mockExecGitWithClaudeChanges(),
     runTests:  async () => passTestResult,
     maxCycles: 4,
     cwd:       BRIDGE_CWD,
@@ -378,7 +468,7 @@ await testAsync('needs_user → gate.promptUser が呼ばれ needs_user を返�
     runner:   mockRunner(['実装しました']),
     reviewer: mockReviewer([needsUser('実 DB を変更してよいですか？')]),
     gate,
-    execGit:  mockExecGitNoViolation(),
+    execGit:  mockExecGitWithClaudeChanges(),
     runTests: async () => passTestResult,
     cwd:      BRIDGE_CWD,
   });
@@ -408,7 +498,7 @@ await testAsync('OpenAI API エラー → throw (安全停止)', async () => {
       runner:   mockRunner(['done']),
       reviewer: async () => { throw new Error('API 接続失敗'); },
       gate:     mockGate(),
-      execGit:  mockExecGitNoViolation(),
+      execGit:  mockExecGitWithClaudeChanges(),
       runTests: async () => passTestResult,
       cwd:      BRIDGE_CWD,
     }),
@@ -425,7 +515,7 @@ await testAsync('テスト失敗 + approve → revise として継続 (Claude 2�
 
   await runBridge('task', {
     runner, reviewer, gate,
-    execGit:  mockExecGitNoViolation(),
+    execGit:  mockExecGitWithClaudeChanges(),
     runTests: async () => {
       runCount++;
       return runCount === 1 ? failTestResult : passTestResult;
@@ -436,16 +526,85 @@ await testAsync('テスト失敗 + approve → revise として継続 (Claude 2�
   assert.equal(runner.callCount(), 2, 'Claude は 2 回呼ばれるべき');
 });
 
+// ─── オーバーラップ検出テスト ───────────────────────────────────────────────
+console.log('\n▶ Orchestrator: オーバーラップ検出');
+
+await testAsync('オーバーラップ → OpenAIを呼ばずに overlap_detected で停止', async () => {
+  clearPendingApproval();
+  const reviewer = mockReviewer([approve('OK')]);
+  const gate     = mockGate();
+
+  const result = await runBridge('task', {
+    runner:   mockRunner(['実装しました']),
+    reviewer,
+    gate,
+    execGit:  mockExecGitWithOverlap(),
+    runTests: async () => passTestResult,
+    cwd:      BRIDGE_CWD,
+  });
+
+  assert.equal(result.decision, 'overlap_detected', `expected overlap_detected, got: ${result.decision}`);
+  assert.ok(result.overlapFiles.length > 0, 'overlapFiles が空');
+  assert.equal(reviewer.callCount(), 0, `OpenAI が呼ばれた: ${reviewer.callCount()}回`);
+  assert.ok(!gate.calls.some(c => c.type === 'commit'), 'commit gate が呼ばれた');
+});
+
+await testAsync('オーバーラップ → pending_approval.json に OVERLAP_DETECTED が保存される', async () => {
+  clearPendingApproval();
+
+  await runBridge('task', {
+    runner:   mockRunner(['実装しました']),
+    reviewer: mockReviewer([approve('OK')]),
+    gate:     mockGate(),
+    execGit:  mockExecGitWithOverlap(),
+    runTests: async () => passTestResult,
+    cwd:      BRIDGE_CWD,
+  });
+
+  const { loadPendingApproval } = await import('../ai/approval_gate.mjs');
+  const pending = loadPendingApproval();
+  assert.ok(pending !== null, 'pending_approval.json が null');
+  assert.equal(pending.type, 'OVERLAP_DETECTED', `pending type: ${pending.type}`);
+  assert.ok(Array.isArray(pending.overlapFiles) && pending.overlapFiles.length > 0, 'overlapFiles が空');
+  clearPendingApproval();  // cleanup
+});
+
+await testAsync('オーバーラップなし → OpenAI が呼ばれる', async () => {
+  clearPendingApproval();
+  const reviewer = mockReviewer([approve('OK')]);
+
+  await runBridge('task', {
+    runner:   mockRunner(['実装しました']),
+    reviewer,
+    gate:     mockGate({ commitApproved: false }),
+    execGit:  mockExecGitWithClaudeChanges(),
+    runTests: async () => passTestResult,
+    cwd:      BRIDGE_CWD,
+  });
+
+  assert.ok(reviewer.callCount() >= 1, `OpenAI が呼ばれなかった: ${reviewer.callCount()}回`);
+});
+
 await testAsync('git add . / -A / --all はソースコード内で使われない (commit helper)', async () => {
   // commitApproved=true で実行し、execGit への呼び出しを記録する
   clearPendingApproval();
   const gitCalls = [];
+  // このテスト用 execGit: Claude が新規ファイルを作成（オーバーラップなし）
+  const CLAUDE_NEW_FILE = 'jarvis/ai/_commit_test.mjs';
+  let pgCount = 0;
   const execGit = (cmd) => {
     gitCalls.push(cmd);
     if (cmd === 'git branch --show-current')  return 'jarvis-development';
-    if (cmd.includes('--porcelain'))          return '?? jarvis/data/business_data.db-shm';
+    if (cmd.includes('--porcelain')) {
+      pgCount++;
+      // 4回目以降 = after スナップショット → Claude 新規ファイル追加
+      if (pgCount >= 4) return `?? jarvis/data/business_data.db-shm\n?? ${CLAUDE_NEW_FILE}`;
+      return '?? jarvis/data/business_data.db-shm';
+    }
+    if (cmd.includes('hash-object'))          return 'aabbcc1122';
+    if (cmd.includes('ls-files'))             return '';  // untracked
     if (cmd.includes('--cached --name-only')) return '';
-    if (cmd.includes('--name-only'))          return 'jarvis/ai/orchestrator.mjs';
+    if (cmd.includes('--name-only'))          return CLAUDE_NEW_FILE;
     if (cmd.includes('--stat'))               return '';
     if (cmd.startsWith('git diff'))           return '(diff)';
     if (cmd.startsWith('git rev-parse'))      return 'abc1234';

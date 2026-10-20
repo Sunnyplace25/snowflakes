@@ -7,6 +7,7 @@
  * - Structured Output (json_schema) で必ず決められた JSON を返す
  * - 入力サイズ上限: 120,000 文字
  * - API失敗時の最大リトライ: 2回
+ * - BRIDGE_MAX_COST_USD: セッション合計コストが上限を超えたら BudgetExceededError を throw
  */
 
 import { readFileSync } from 'node:fs';
@@ -20,6 +21,63 @@ const DEFAULT_MODEL        = process.env.OPENAI_REVIEW_MODEL ?? 'gpt-5.6-terra';
 const OPENAI_RESPONSES_URL = 'https://api.openai.com/v1/responses';
 const INPUT_SIZE_LIMIT     = 120_000;
 const MAX_RETRIES          = 2;
+
+// ── モデルごとのトークン単価（USD/1K tokens, 2026-10 時点の概算）──────────────
+// 実際の課金は usage.total_tokens から推算する（Responses API は usage を返す）
+const TOKEN_COST_PER_1K = {
+  'gpt-4.1':       { input: 0.002,  output: 0.008  },
+  'gpt-4o':        { input: 0.0025, output: 0.01   },
+  'gpt-4o-mini':   { input: 0.00015,output: 0.0006 },
+  'gpt-5':         { input: 0.015,  output: 0.06   },
+  'gpt-5.6-terra': { input: 0.015,  output: 0.06   },
+};
+
+/** モデル名のプレフィックスで単価を取得（未知モデルは gpt-5 相当で概算） */
+function getCostPer1K(model) {
+  for (const [prefix, cost] of Object.entries(TOKEN_COST_PER_1K)) {
+    if (model.startsWith(prefix)) return cost;
+  }
+  return { input: 0.015, output: 0.06 };  // 未知モデルは高め概算
+}
+
+// ── セッション内コスト累積トラッカー ──────────────────────────────────────────
+// runBridge() の1回の呼び出し中は同じ SessionBudget インスタンスを使い回す。
+
+export class SessionBudget {
+  #limit;
+  #spent = 0;
+
+  /** @param {number|null} limitUSD — null なら無制限 */
+  constructor(limitUSD = null) {
+    this.#limit = limitUSD;
+  }
+
+  /** 消費額を記録し、上限超過なら BudgetExceededError を throw */
+  add(costUSD) {
+    this.#spent += costUSD;
+    if (this.#limit !== null && this.#spent > this.#limit) {
+      throw new BudgetExceededError(this.#spent, this.#limit);
+    }
+  }
+
+  get spent() { return this.#spent; }
+  get limit() { return this.#limit; }
+
+  summary() {
+    const s = `$${this.#spent.toFixed(4)}`;
+    const l = this.#limit !== null ? ` / 上限 $${this.#limit.toFixed(2)}` : '';
+    return `OpenAI コスト: ${s}${l}`;
+  }
+}
+
+export class BudgetExceededError extends Error {
+  constructor(spent, limit) {
+    super(`OpenAI API 料金上限 $${limit.toFixed(2)} を超えました (消費 $${spent.toFixed(4)})`);
+    this.name = 'BudgetExceededError';
+    this.spent = spent;
+    this.limit = limit;
+  }
+}
 
 /** OpenAI Structured Output 用 JSON Schema */
 export const REVIEW_SCHEMA = {
@@ -105,6 +163,7 @@ export async function reviewCode(payload, {
   fetchFn = fetch,
   apiKey  = null,
   model   = null,
+  budget  = null,   // SessionBudget インスタンス（省略時はコスト追跡なし）
 } = {}) {
   const key = apiKey ?? process.env.OPENAI_API_KEY;
   if (!key) throw new Error('OPENAI_API_KEY が設定されていません');
@@ -164,6 +223,15 @@ export async function reviewCode(payload, {
         throw new Error(`Responses API status: ${data.status} — ${JSON.stringify(data.error ?? data.incomplete_details)}`);
       }
 
+      // ── コスト計上 ────────────────────────────────────────────────────────
+      // Responses API は usage.input_tokens / usage.output_tokens を返す
+      if (budget && data?.usage) {
+        const costPer1K   = getCostPer1K(reviewModel);
+        const inputCost   = ((data.usage.input_tokens  ?? 0) / 1000) * costPer1K.input;
+        const outputCost  = ((data.usage.output_tokens ?? 0) / 1000) * costPer1K.output;
+        budget.add(inputCost + outputCost);  // 上限超過時は BudgetExceededError を throw
+      }
+
       // Responses API: output 配列の中から type:"message" ブロックを探す
       // reasoning モード時は output[0] が reasoning ブロックになるため
       // output[0] を決め打ちにせず find で取得し、見つからなければ output[0] にフォールバック
@@ -200,6 +268,8 @@ export async function reviewCode(payload, {
 
       return parsed;
     } catch (e) {
+      // BudgetExceededError は即座に再 throw（リトライしない）
+      if (e.name === 'BudgetExceededError') throw e;
       lastError = e;
       if (attempt < MAX_RETRIES - 1) {
         await new Promise(r => setTimeout(r, 1_000));
