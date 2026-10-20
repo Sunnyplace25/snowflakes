@@ -4206,6 +4206,39 @@ export function createApiHandler(db) {
 
       // ── P42-C ここまで ──────────────────────────────────────────────────────
 
+      // ── P43-C: 人間関係管理 API ─────────────────────────────────────────────
+
+      // GET /api/cb/relationships — 全ペアの関係スコア一覧
+      if (method === 'GET' && path === '/api/cb/relationships') {
+        const rows = db.prepare('SELECT from_emp, to_emp, trust, affection, respect, rivalry, discomfort, romantic_interest, is_secret, updated_at FROM cb_employee_relationships ORDER BY from_emp, to_emp').all();
+        return jsonRes(res, 200, { ok: true, relationships: rows });
+      }
+
+      // GET /api/cb/interactions — ページ送り付き会話履歴
+      if (method === 'GET' && path === '/api/cb/interactions') {
+        const page  = Math.max(1, parseInt(url.searchParams.get('page')  ?? '1',  10));
+        const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') ?? '10', 10)));
+        const offset = (page - 1) * limit;
+        const total = db.prepare('SELECT COUNT(*) AS c FROM cb_employee_interactions').get().c;
+        const rows  = db.prepare('SELECT id, session_date, from_emp, to_emp, trigger_type, message, reply, token_count, created_at FROM cb_employee_interactions ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+        return jsonRes(res, 200, { ok: true, interactions: rows, total, page, limit, pages: Math.ceil(total / limit) });
+      }
+
+      // GET /api/cb/autonomous/approvals/:id — 承認待ち詳細（会話全文・スコア変動プレビュー）
+      if (method === 'GET' && path.match(/^\/api\/cb\/autonomous\/approvals\/(\d+)$/)) {
+        const id  = parseInt(path.match(/(\d+)/)[1], 10);
+        const row = db.prepare('SELECT id, type, from_emp, to_emp, description, data_json, status, created_at FROM cb_pending_approvals WHERE id=?').get(id);
+        if (!row) return errRes(res, 404, '承認待ちレコードが見つかりません');
+        let data = {};
+        try { data = JSON.parse(row.data_json ?? '{}'); } catch(_) {}
+        const currentScores = db.prepare('SELECT trust, affection, respect, rivalry, discomfort, romantic_interest FROM cb_employee_relationships WHERE from_emp=? AND to_emp=?').get(row.from_emp, row.to_emp);
+        // score_delta_preview は autonomous_worker.mjs の approvalDelta 定数と同期させる
+        const scoreDeltaPreview = { trust: +2, affection: +1 };
+        return jsonRes(res, 200, { ok: true, approval: { ...row, turns: data.turns ?? [], triggerReason: data.triggerReason ?? '', current_scores: currentScores ?? null, score_delta_preview: scoreDeltaPreview } });
+      }
+
+      // ── P43-C ここまで ──────────────────────────────────────────────────────
+
       // POST /api/cb/projects/:id/writer-revision-only — ソラに修正依頼（キイロ編集は自動起動しない）
       if (method === 'POST' && path.match(/^\/api\/cb\/projects\/(\d+)\/writer-revision-only$/)) {
         const id = parseInt(path.match(/(\d+)/)[1]);

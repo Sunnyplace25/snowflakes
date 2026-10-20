@@ -15,6 +15,27 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, statS
 import { resolve, extname, dirname, sep, basename } from 'path';
 import { fileURLToPath } from 'url';
 
+// ── .env ファイル自動ロード（--env-file なしで起動した場合も動作）─────────────
+const __dirnameServer = dirname(fileURLToPath(import.meta.url));
+const ENV_FILE = resolve(__dirnameServer, '../.env');
+if (existsSync(ENV_FILE)) {
+  try {
+    const envLines = readFileSync(ENV_FILE, 'utf8').split('\n');
+    for (const line of envLines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx === -1) continue;
+      const key = trimmed.slice(0, eqIdx).trim();
+      const val = trimmed.slice(eqIdx + 1).trim();
+      if (key && !(key in process.env)) process.env[key] = val;
+    }
+    console.log('[server] .env ロード完了');
+  } catch (e) {
+    console.warn('[server] .env ロードスキップ:', e.message);
+  }
+}
+
 import { createDb, DEFAULT_DB_PATH } from '../data/db.js';
 import { createApiHandler } from './api.js';
 import { importFile as importSoundropFile } from '../importers/soundrop.js';
@@ -46,8 +67,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = resolve(__dirname, 'public');
 const BACKUP_DIR = resolve(__dirname, '../backups');
 const SOUNDROP_IMPORT_DIR = resolve(__dirname, '../imports/soundrop');
-const PORT = 3000;
-const HOST = '127.0.0.1';
+const PORT = 3001;
+const HOST = 'localhost';
 
 const db = createDb(DEFAULT_DB_PATH);
 const apiHandler = createApiHandler(db);
@@ -72,14 +93,19 @@ function jsonRes(res, status, data) {
 
 function readJsonBody(req, maxBytes = 10_485_760) {
   return new Promise((resolveBody, reject) => {
-    let body = '';
+    const chunks = [];
+    let total = 0;
     req.on('data', chunk => {
-      body += chunk;
-      if (body.length > maxBytes) reject(new Error('Request body too large'));
+      total += chunk.length;
+      if (total > maxBytes) return reject(new Error('Request body too large'));
+      chunks.push(chunk);
     });
     req.on('end', () => {
-      try { resolveBody(body ? JSON.parse(body) : {}); }
-      catch { reject(new Error('Invalid JSON')); }
+      try {
+        // Buffer.concat → UTF-8 decode（チャンク境界での多バイト文字分断を防ぐ）
+        const body = Buffer.concat(chunks).toString('utf8');
+        resolveBody(body ? JSON.parse(body) : {});
+      } catch { reject(new Error('Invalid JSON')); }
     });
     req.on('error', reject);
   });

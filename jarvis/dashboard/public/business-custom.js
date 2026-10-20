@@ -71,6 +71,9 @@
     const style = document.createElement('style');
     style.id = 'business-custom-styles';
     style.textContent = `
+      #invoice-gen-month {
+        color-scheme: dark;
+      }
       #module-business input[type="number"] {
         -moz-appearance: textfield;
         appearance: textfield;
@@ -703,6 +706,11 @@ let updatingCards = false;
     });
     document.getElementById('invoice-template-file').addEventListener('change', handleInvoiceTemplateFile);
     document.getElementById('invoice-gen-preview-btn').addEventListener('click', loadInvoiceGenerationPreview);
+    // ユーザーが手動で月を変更したらフラグを立てる
+    // （syncInvoiceMonthInput による自動上書きを防ぐため）
+    document.getElementById('invoice-gen-month').addEventListener('change', () => {
+      document.getElementById('invoice-gen-month').dataset.userModified = '1';
+    });
     loadInvoiceTemplateStatus();
   }
 
@@ -905,6 +913,8 @@ let updatingCards = false;
   function syncInvoiceMonthInput() {
     const input = document.getElementById('invoice-gen-month');
     if (!input || document.activeElement === input) return;
+    // ユーザーが手動で月を変更済みの場合は上書きしない
+    if (input.dataset.userModified === '1') return;
     if (typeof currentMonth !== 'undefined' && /^\d{4}-\d{2}$/.test(currentMonth)) {
       input.value = currentMonth;
     }

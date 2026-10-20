@@ -638,6 +638,17 @@ const MODULES = {
     },
   },
   sf: SfModule,   // modules/sf.js で定義
+  timecard: {
+    _initialized: false,
+    activate() {
+      if (!this._initialized) {
+        this._initialized = true;
+        if (typeof window.initTimecard === 'function') window.initTimecard();
+      } else {
+        if (typeof window.reloadTimecard === 'function') window.reloadTimecard();
+      }
+    },
+  },
 };
 
 /**
