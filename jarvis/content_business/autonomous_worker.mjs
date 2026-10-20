@@ -680,6 +680,8 @@ export function listPendingApprovals(db) {
   `).all().map(r => ({
     id:          r.id,
     type:        r.type,
+    from_emp:    r.from_emp,
+    to_emp:      r.to_emp,
     from:        EMP_NAME[r.from_emp] ?? r.from_emp,
     to:          EMP_NAME[r.to_emp]   ?? r.to_emp,
     description: r.description,

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山吹ことりナレッジ — JARVIS</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0a0a0f; color: #e0e0e0; margin: 0; }
+
+    .kn-header {
+      background: #0d0d18; border-bottom: 1px solid #1e1e3a;
+      padding: 14px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    .kn-header .logo { font-size: 18px; font-weight: 700; color: #7c6fcd; letter-spacing: 2px; }
+    .kn-header .back-link {
+      color: #888; text-decoration: none; font-size: 13px;
+      border: 1px solid #333; padding: 4px 12px; border-radius: 4px;
+    }
+    .kn-header .back-link:hover { color: #aaa; border-color: #555; }
+    .kn-header h1 { font-size: 15px; color: #ccc; font-weight: 500; margin: 0 0 0 auto; }
+
+    .kn-main { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+    /* サマリーカード */
+    .kn-summary-cards {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;
+    }
+    .kn-card {
+      background: #111120; border: 1px solid #1e1e3a; border-radius: 8px;
+      padding: 14px 12px; text-align: center;
+    }
+    .kn-card .label { font-size: 11px; color: #666; margin-bottom: 6px; }
+    .kn-card .value { font-size: 22px; font-weight: 700; color: #7c6fcd; }
+    .kn-card .value.green  { color: #4caf7d; }
+    .kn-card .value.yellow { color: #f0c832; }
+    .kn-card .value.red    { color: #e06060; }
+    .kn-card .value.gray   { color: #555; }
+
+    /* フィルターバー */
+    .kn-filter-bar {
+      background: #111120; border: 1px solid #1e1e3a; border-radius: 8px;
+      padding: 14px 18px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .kn-filter-bar label { font-size: 12px; color: #666; }
+    .kn-filter-bar select {
+      background: #0a0a18; border: 1px solid #2a2a4a; border-radius: 6px;
+      color: #e0e0e0; padding: 6px 10px; font-size: 12px;
+    }
+    .kn-filter-bar .btn-new {
+      margin-left: auto;
+      background: linear-gradient(135deg, #5a4fad, #7c6fcd);
+      color: #fff; border: none; border-radius: 6px;
+      padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .kn-filter-bar .btn-new:hover { opacity: .85; }
+
+    /* カテゴリタブ */
+    .kn-cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .kn-cat-tab {
+      padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer; transition: all .15s;
+    }
+    .kn-cat-tab.active { border-color: currentColor; }
+
+    .tab-ALL           { color: #9c8fdd; }
+    .tab-ALL.active    { background: rgba(156,143,221,.12); }
+    .tab-FACT          { color: #5ab4e8; }
+    .tab-FACT.active   { background: rgba(90,180,232,.12); }
+    .tab-PRIVACY       { color: #e06060; }
+    .tab-PRIVACY.active{ background: rgba(224,96,96,.12); }
+    .tab-STYLE         { color: #4caf7d; }
+    .tab-STYLE.active  { background: rgba(76,175,125,.12); }
+    .tab-EDITORIAL_RULE{ color: #f0a832; }
+    .tab-EDITORIAL_RULE.active{ background: rgba(240,168,50,.12); }
+    .tab-ARTICLE_SPECIFIC{ color: #c87dd0; }
+    .tab-ARTICLE_SPECIFIC.active{ background: rgba(200,125,208,.12); }
+    .tab-REJECTED      { color: #555; }
+    .tab-REJECTED.active{ background: rgba(80,80,80,.12); }
+
+    /* テーブル */
+    .kn-table-wrap { overflow-x: auto; }
+    .kn-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .kn-table th {
+      font-size: 11px; color: #666; font-weight: 600; text-align: left;
+      padding: 8px 12px; border-bottom: 1px solid #1e1e3a; letter-spacing: .5px;
+    }
+    .kn-table td {
+      padding: 12px 12px; border-bottom: 1px solid #161626; vertical-align: top;
+    }
+    .kn-table tr:hover td { background: #111130; }
+    .kn-table tr.disabled td { opacity: .45; }
+
+    /* カテゴリバッジ */
+    .cat-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .cat-FACT           { background: rgba(90,180,232,.15); color: #5ab4e8; }
+    .cat-PRIVACY        { background: rgba(224,96,96,.15);  color: #e06060; }
+    .cat-STYLE          { background: rgba(76,175,125,.15); color: #4caf7d; }
+    .cat-EDITORIAL_RULE { background: rgba(240,168,50,.15); color: #f0a832; }
+    .cat-ARTICLE_SPECIFIC{background: rgba(200,125,208,.15);color: #c87dd0; }
+    .cat-REJECTED       { background: rgba(80,80,80,.15);   color: #888; }
+
+    /* ステータスバッジ */
+    .status-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .status-approved        { background: rgba(76,175,125,.18); color: #4caf7d; }
+    .status-pending         { background: rgba(240,200,50,.15);  color: #f0c832; }
+    .status-rejected_by_owner{ background: rgba(224,96,96,.15); color: #e06060; }
+
+    /* 有効/無効バッジ */
+    .active-badge   { font-size: 10px; color: #4caf7d; }
+    .disabled-badge { font-size: 10px; color: #555; }
+
+    /* アクションボタン */
+    .kn-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+    .kn-btn {
+      padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+      transition: opacity .15s;
+    }
+    .kn-btn:hover { opacity: .75; }
+    .kn-btn.approve  { background: rgba(76,175,125,.18); color: #4caf7d; border-color: rgba(76,175,125,.3); }
+    .kn-btn.reject   { background: rgba(224,96,96,.15);  color: #e06060; border-color: rgba(224,96,96,.3); }
+    .kn-btn.disable  { background: rgba(80,80,80,.15);   color: #888;    border-color: #333; }
+    .kn-btn.enable   { background: rgba(156,143,221,.15);color: #9c8fdd; border-color: rgba(156,143,221,.3); }
+    .kn-btn.edit     { background: rgba(90,180,232,.12); color: #5ab4e8; border-color: rgba(90,180,232,.3); }
+    .kn-btn.delete   { background: rgba(200,50,50,.12);  color: #c05050; border-color: rgba(200,50,50,.3); }
+
+    /* rule_text 表示 */
+    .rule-text { color: #ccc; line-height: 1.5; }
+    .rule-text-edit {
+      width: 100%; background: #0a0a18; border: 1px solid #5a4fad; border-radius: 4px;
+      color: #e0e0e0; padding: 6px 8px; font-size: 13px; resize: vertical;
+      box-sizing: border-box;
+    }
+
+    /* 空状態 */
+    .kn-empty { text-align: center; padding: 48px; color: #444; font-size: 14px; }
+
+    /* 新規作成モーダル */
+    .kn-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .kn-modal {
+      background: #111120; border: 1px solid #2a2a4a; border-radius: 12px;
+      padding: 28px; width: 540px; max-width: 95vw; position: relative;
+    }
+    .kn-modal h3 { font-size: 15px; color: #9c8fdd; margin: 0 0 20px 0; }
+    .kn-modal-close {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; color: #666; font-size: 18px; cursor: pointer;
+    }
+    .kn-form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .kn-form-row label { font-size: 12px; color: #777; }
+    .kn-form-row select, .kn-form-row textarea {
+      background: #0a0a18; border: 1px solid #2a2a4a; border-radius: 6px;
+      color: #e0e0e0; padding: 8px 10px; font-size: 13px;
+    }
+    .kn-form-row textarea { resize: vertical; }
+    .btn-primary {
+      background: linear-gradient(135deg, #5a4fad, #7c6fcd);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 12px 24px; font-size: 14px; font-weight: 600;
+      cursor: pointer; width: 100%; margin-top: 4px;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* トースト */
+    .kn-toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: #1a2a1a; border: 1px solid #2a5a2a; border-radius: 8px;
+      padding: 12px 18px; font-size: 13px; color: #4caf7d;
+      opacity: 0; transition: opacity .3s; pointer-events: none;
+    }
+    .kn-toast.error { background: #2a1a1a; border-color: #5a2a2a; color: #e06060; }
+    .kn-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="kn-header">
+  <span class="logo">JARVIS</span>
+  <a class="back-link" href="content-business.html">← 出版事業部</a>
+  <h1>山吹ことりナレッジ</h1>
+</div>
+
+<div class="kn-main">
+
+  <!-- サマリーカード -->
+  <div class="kn-summary-cards" id="kn-summary-cards">
+    <div class="kn-card"><div class="label">合計</div><div class="value" id="card-total">—</div></div>
+    <div class="kn-card"><div class="label">承認済み</div><div class="value green" id="card-approved">—</div></div>
+    <div class="kn-card"><div class="label">承認待ち</div><div class="value yellow" id="card-pending">—</div></div>
+    <div class="kn-card"><div class="label">却下済み</div><div class="value red" id="card-rejected">—</div></div>
+    <div class="kn-card"><div class="label">無効化中</div><div class="value gray" id="card-disabled">—</div></div>
+  </div>
+
+  <!-- フィルターバー -->
+  <div class="kn-filter-bar">
+    <label>ステータス</label>
+    <select id="filter-status" onchange="applyFilters()">
+      <option value="">すべて</option>
+      <option value="approved">承認済み</option>
+      <option value="pending">承認待ち</option>
+      <option value="rejected_by_owner">却下済み</option>
+    </select>
+    <label>有効/無効</label>
+    <select id="filter-active" onchange="applyFilters()">
+      <option value="">すべて</option>
+      <option value="1">有効のみ</option>
+      <option value="0">無効のみ</option>
+    </select>
+    <label>信頼度</label>
+    <select id="filter-trust" onchange="applyFilters()">
+      <option value="">すべて</option>
+      <option value="owner_explicit">owner_explicit</option>
+      <option value="owner_approved">owner_approved</option>
+      <option value="ai_suggested">ai_suggested</option>
+    </select>
+    <button class="btn-new" onclick="openCreateModal()">＋ 新規ルール追加</button>
+  </div>
+
+  <!-- カテゴリタブ -->
+  <div class="kn-cat-tabs">
+    <span class="kn-cat-tab tab-ALL active" data-cat="" onclick="selectCat(this)">すべて</span>
+    <span class="kn-cat-tab tab-FACT" data-cat="FACT" onclick="selectCat(this)">FACT 事実</span>
+    <span class="kn-cat-tab tab-PRIVACY" data-cat="PRIVACY" onclick="selectCat(this)">PRIVACY プライバシー</span>
+    <span class="kn-cat-tab tab-STYLE" data-cat="STYLE" onclick="selectCat(this)">STYLE 表記</span>
+    <span class="kn-cat-tab tab-EDITORIAL_RULE" data-cat="EDITORIAL_RULE" onclick="selectCat(this)">EDITORIAL_RULE 編集</span>
+    <span class="kn-cat-tab tab-ARTICLE_SPECIFIC" data-cat="ARTICLE_SPECIFIC" onclick="selectCat(this)">ARTICLE_SPECIFIC 記事固有</span>
+    <span class="kn-cat-tab tab-REJECTED" data-cat="REJECTED" onclick="selectCat(this)">REJECTED 廃棄</span>
+  </div>
+
+  <!-- テーブル -->
+  <div class="kn-table-wrap">
+    <table class="kn-table">
+      <thead>
+        <tr>
+          <th style="width:120px">カテゴリ</th>
+          <th>ルール内容</th>
+          <th style="width:100px">ステータス</th>
+          <th style="width:80px">有効</th>
+          <th style="width:90px">信頼度</th>
+          <th style="width:90px">参照元</th>
+          <th style="width:130px">更新日時</th>
+          <th style="width:200px">操作</th>
+        </tr>
+      </thead>
+      <tbody id="kn-tbody">
+        <tr><td colspan="8" class="kn-empty">読み込み中...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- 新規作成モーダル -->
+<div class="kn-modal-overlay" id="modal-create" onclick="closeCreate()">
+  <div class="kn-modal" onclick="event.stopPropagation()">
+    <button class="kn-modal-close" onclick="closeCreate()">×</button>
+    <h3>新規ナレッジ追加</h3>
+
+    <div class="kn-form-row">
+      <label>カテゴリ <span style="color:#e06060">*</span></label>
+      <select id="new-category">
+        <option value="">-- 選択してください --</option>
+        <option value="FACT">FACT — 事実情報</option>
+        <option value="PRIVACY">PRIVACY — プライバシー保護</option>
+        <option value="STYLE">STYLE — 表記ルール</option>
+        <option value="EDITORIAL_RULE">EDITORIAL_RULE — 編集ルール</option>
+        <option value="ARTICLE_SPECIFIC">ARTICLE_SPECIFIC — 記事固有ルール</option>
+        <option value="REJECTED">REJECTED — 廃棄</option>
+      </select>
+    </div>
+
+    <div class="kn-form-row">
+      <label>ルール内容 <span style="color:#e06060">*</span></label>
+      <textarea id="new-rule-text" rows="4" placeholder="例: 具体的な職業名（保育士など）を記事本文に記載しない"></textarea>
+    </div>
+
+    <div class="kn-form-row">
+      <label>初期ステータス</label>
+      <select id="new-approval-status">
+        <option value="approved">承認済み（immediately active）</option>
+        <option value="pending">承認待ち（要確認）</option>
+      </select>
+    </div>
+
+    <div class="kn-form-row">
+      <label>信頼度</label>
+      <select id="new-trust-level">
+        <option value="owner_explicit">owner_explicit（本人が明示）</option>
+        <option value="owner_approved">owner_approved（本人承認済み）</option>
+        <option value="ai_suggested">ai_suggested（AI提案・未承認）</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" id="btn-create-submit" onclick="submitCreate()">追加する</button>
+  </div>
+</div>
+
+<div class="kn-toast" id="kn-toast"></div>
+
+<script>
+// ── 状態 ─────────────────────────────────────────────────────────────────────
+let allItems   = [];
+let currentCat = '';
+let editingId  = null;  // インライン編集中のID
+
+const CATEGORY_LABELS = {
+  FACT:             '事実情報',
+  PRIVACY:          'プライバシー',
+  STYLE:            '表記ルール',
+  EDITORIAL_RULE:   '編集ルール',
+  ARTICLE_SPECIFIC: '記事固有',
+  REJECTED:         '廃棄',
+};
+
+const TRUST_LABELS = {
+  owner_explicit: '本人明示',
+  owner_approved: '本人承認',
+  ai_suggested:   'AI提案',
+};
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const res = await fetch('/api/cb' + path, opts);
+  try { return await res.json(); } catch { return { ok: false, error: res.statusText }; }
+}
+
+// ── 初期ロード ────────────────────────────────────────────────────────────────
+async function loadKnowledge() {
+  const d = await api('GET', '/knowledge');
+  if (!d.ok) { showToast('読み込みエラー: ' + (d.error ?? ''), true); return; }
+  allItems = d.items ?? [];
+  updateCards();
+  renderTable();
+}
+
+function updateCards() {
+  document.getElementById('card-total').textContent    = allItems.length;
+  document.getElementById('card-approved').textContent = allItems.filter(i => i.approval_status === 'approved').length;
+  document.getElementById('card-pending').textContent  = allItems.filter(i => i.approval_status === 'pending').length;
+  document.getElementById('card-rejected').textContent = allItems.filter(i => i.approval_status === 'rejected_by_owner').length;
+  document.getElementById('card-disabled').textContent = allItems.filter(i => !i.is_active).length;
+}
+
+// ── フィルター ────────────────────────────────────────────────────────────────
+function selectCat(el) {
+  document.querySelectorAll('.kn-cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentCat = el.dataset.cat;
+  renderTable();
+}
+
+function applyFilters() { renderTable(); }
+
+function getFilteredItems() {
+  const status  = document.getElementById('filter-status').value;
+  const active  = document.getElementById('filter-active').value;
+  const trust   = document.getElementById('filter-trust').value;
+  return allItems.filter(item => {
+    if (currentCat && item.category !== currentCat) return false;
+    if (status  && item.approval_status !== status)   return false;
+    if (active !== '' && String(item.is_active) !== active) return false;
+    if (trust   && item.trust_level !== trust)         return false;
+    return true;
+  });
+}
+
+// ── テーブル描画 ──────────────────────────────────────────────────────────────
+function renderTable() {
+  const items = getFilteredItems();
+  const tbody = document.getElementById('kn-tbody');
+
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="kn-empty">該当するナレッジがありません</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = items.map(item => renderRow(item)).join('');
+}
+
+function renderRow(item) {
+  const isEditing = item.id === editingId;
+  const isDisabled = !item.is_active;
+
+  const ruleCell = isEditing
+    ? `<textarea class="rule-text-edit" id="edit-text-${item.id}" rows="3">${escHtml(item.rule_text)}</textarea>`
+    : `<span class="rule-text">${escHtml(item.rule_text)}</span>`;
+
+  const statusBadge = `<span class="status-badge status-${item.approval_status}">${statusLabel(item.approval_status)}</span>`;
+  const activeBadge = item.is_active
+    ? `<span class="active-badge">● 有効</span>`
+    : `<span class="disabled-badge">○ 無効</span>`;
+
+  const sourceText = item.source_project_id ? `P#${item.source_project_id}` : (item.source_type === 'owner_explicit' ? '本人設定' : item.source_type ?? '—');
+
+  const actions = buildActions(item, isEditing);
+
+  return `<tr class="${isDisabled ? 'disabled' : ''}" id="row-${item.id}">
+    <td><span class="cat-badge cat-${item.category}">${CATEGORY_LABELS[item.category] ?? item.category}</span></td>
+    <td>${ruleCell}</td>
+    <td>${statusBadge}</td>
+    <td>${activeBadge}</td>
+    <td style="font-size:11px;color:#666">${TRUST_LABELS[item.trust_level] ?? item.trust_level}</td>
+    <td style="font-size:11px;color:#555">${escHtml(sourceText)}</td>
+    <td style="font-size:11px;color:#555">${(item.updated_at ?? '').slice(0, 16)}</td>
+    <td><div class="kn-actions">${actions}</div></td>
+  </tr>`;
+}
+
+function buildActions(item, isEditing) {
+  const btns = [];
+  if (isEditing) {
+    btns.push(`<button class="kn-btn approve" onclick="saveEdit(${item.id})">保存</button>`);
+    btns.push(`<button class="kn-btn disable" onclick="cancelEdit()">キャンセル</button>`);
+    return btns.join('');
+  }
+
+  if (item.approval_status !== 'approved') {
+    btns.push(`<button class="kn-btn approve" onclick="doApprove(${item.id})">承認</button>`);
+  }
+  if (item.approval_status !== 'rejected_by_owner') {
+    btns.push(`<button class="kn-btn reject" onclick="doReject(${item.id})">却下</button>`);
+  }
+  if (item.is_active) {
+    btns.push(`<button class="kn-btn disable" onclick="doDisable(${item.id})">無効化</button>`);
+  } else {
+    btns.push(`<button class="kn-btn enable" onclick="doEnable(${item.id})">有効化</button>`);
+  }
+  btns.push(`<button class="kn-btn edit" onclick="startEdit(${item.id})">編集</button>`);
+  btns.push(`<button class="kn-btn delete" onclick="doDelete(${item.id})">削除</button>`);
+  return btns.join('');
+}
+
+function statusLabel(s) {
+  if (s === 'approved')         return '承認済み';
+  if (s === 'pending')          return '承認待ち';
+  if (s === 'rejected_by_owner')return '却下済み';
+  return s;
+}
+
+// ── 操作 ──────────────────────────────────────────────────────────────────────
+async function doApprove(id) {
+  const d = await api('PATCH', `/knowledge/${id}`, { approval_status: 'approved', is_active: 1 });
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('承認しました');
+  patchLocal(id, { approval_status: 'approved', trust_level: 'owner_approved', is_active: 1 });
+  updateCards(); renderTable();
+}
+
+async function doReject(id) {
+  const d = await api('PATCH', `/knowledge/${id}`, { approval_status: 'rejected_by_owner' });
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('却下しました');
+  patchLocal(id, { approval_status: 'rejected_by_owner' });
+  updateCards(); renderTable();
+}
+
+async function doDisable(id) {
+  const d = await api('PATCH', `/knowledge/${id}`, { is_active: 0 });
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('無効化しました');
+  patchLocal(id, { is_active: 0 });
+  updateCards(); renderTable();
+}
+
+async function doEnable(id) {
+  const d = await api('PATCH', `/knowledge/${id}`, { is_active: 1 });
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('有効化しました');
+  patchLocal(id, { is_active: 1 });
+  updateCards(); renderTable();
+}
+
+async function doDelete(id) {
+  const item = allItems.find(i => i.id === id);
+  if (!confirm(`このナレッジを完全に削除しますか？\n\n「${item?.rule_text?.slice(0, 50)}…」`)) return;
+  const d = await api('DELETE', `/knowledge/${id}`);
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('削除しました');
+  allItems = allItems.filter(i => i.id !== id);
+  updateCards(); renderTable();
+}
+
+function startEdit(id) {
+  editingId = id;
+  renderTable();
+  // テキストエリアにフォーカス
+  const ta = document.getElementById(`edit-text-${id}`);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+
+function cancelEdit() {
+  editingId = null;
+  renderTable();
+}
+
+async function saveEdit(id) {
+  const ta = document.getElementById(`edit-text-${id}`);
+  if (!ta) return;
+  const newText = ta.value.trim();
+  if (!newText) return showToast('内容が空です', true);
+  const d = await api('PATCH', `/knowledge/${id}`, { rule_text: newText });
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('保存しました');
+  patchLocal(id, { rule_text: newText });
+  editingId = null;
+  renderTable();
+}
+
+function patchLocal(id, patch) {
+  const idx = allItems.findIndex(i => i.id === id);
+  if (idx !== -1) allItems[idx] = { ...allItems[idx], ...patch };
+}
+
+// ── 新規作成モーダル ──────────────────────────────────────────────────────────
+function openCreateModal() {
+  document.getElementById('new-category').value       = '';
+  document.getElementById('new-rule-text').value      = '';
+  document.getElementById('new-approval-status').value = 'approved';
+  document.getElementById('new-trust-level').value    = 'owner_explicit';
+  document.getElementById('modal-create').style.display = 'flex';
+}
+
+function closeCreate() {
+  document.getElementById('modal-create').style.display = 'none';
+}
+
+async function submitCreate() {
+  const category       = document.getElementById('new-category').value;
+  const rule_text      = document.getElementById('new-rule-text').value.trim();
+  const approval_status= document.getElementById('new-approval-status').value;
+  const trust_level    = document.getElementById('new-trust-level').value;
+
+  if (!category) return showToast('カテゴリを選択してください', true);
+  if (!rule_text) return showToast('ルール内容を入力してください', true);
+
+  const btn = document.getElementById('btn-create-submit');
+  btn.disabled = true; btn.textContent = '追加中...';
+
+  const d = await api('POST', '/knowledge', { category, rule_text, trust_level, approval_status, source_type: trust_level });
+  btn.disabled = false; btn.textContent = '追加する';
+
+  if (!d.ok) return showToast('エラー: ' + (d.error ?? ''), true);
+  showToast('ナレッジを追加しました');
+  closeCreate();
+  await loadKnowledge();
+}
+
+// ── ユーティリティ ────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, isError = false) {
+  const el = document.getElementById('kn-toast');
+  el.textContent = msg;
+  el.className = 'kn-toast' + (isError ? ' error' : '') + ' show';
+  setTimeout(() => { el.classList.remove('show'); }, 3000);
+}
+
+// ── 起動 ─────────────────────────────────────────────────────────────────────
+loadKnowledge();
+</script>
+</body>
+</html>

@@ -624,6 +624,29 @@ export function applyCbMigration(db) {
       WHERE source_job_id IS NOT NULL`);
   } catch (_) { /* 既存はスキップ */ }
 
+  // ── Phase 42-A/engine: ナレッジ管理テーブル（cb_editorial_learnings）────────
+  try {
+    db.exec(`
+CREATE TABLE IF NOT EXISTS cb_editorial_learnings (
+  id                  INTEGER  PRIMARY KEY AUTOINCREMENT,
+  category            TEXT     NOT NULL
+                        CHECK (category IN ('FACT','PRIVACY','STYLE','EDITORIAL_RULE','ARTICLE_SPECIFIC','REJECTED')),
+  rule_text           TEXT     NOT NULL,
+  source_type         TEXT     NOT NULL DEFAULT 'owner_explicit',
+  source_project_id   INTEGER,
+  source_draft_version INTEGER,
+  trust_level         TEXT     NOT NULL DEFAULT 'owner_explicit',
+  approval_status     TEXT     NOT NULL DEFAULT 'approved'
+                        CHECK (approval_status IN ('approved','pending','rejected_by_owner')),
+  is_active           INTEGER  NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),
+  created_at          DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+  updated_at          DATETIME NOT NULL DEFAULT (datetime('now','localtime'))
+);
+CREATE INDEX IF NOT EXISTS idx_cb_editorial_cat    ON cb_editorial_learnings(category);
+CREATE INDEX IF NOT EXISTS idx_cb_editorial_status ON cb_editorial_learnings(approval_status, is_active);
+    `);
+  } catch (_) { /* 既存はスキップ */ }
+
   // ── Phase 42-C: 承認待ちイベントテーブル ────────────────────────────────────
   try {
     db.exec(`

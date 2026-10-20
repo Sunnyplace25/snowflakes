@@ -1,0 +1,72 @@
+{
+  "department_name": "出版事業部",
+  "brand_label": "CONTENT BUSINESS",
+  "primary_channel": "note",
+  "author": {
+    "name": "山吹ことり",
+    "description": "小説・音楽・イラストの創作者。感情と余白を大切にした作風。Snow flakesプロジェクト主宰。",
+    "strengths": ["感情描写", "キャラクター性", "音楽×小説の融合", "ニッチな感性へのアプローチ"],
+    "avoid": ["権威性への依存", "数値根拠のない断言", "一般論の繰り返し"]
+  },
+  "automation_mode": "semi_auto",
+  "research": {
+    "target_articles": 30,
+    "minimum_articles": 10
+  },
+  "generation": {
+    "idea_count": 3,
+    "max_auto_revisions": 2
+  },
+  "approval": {
+    "idea_selection_required": true,
+    "publish_approval_required": true,
+    "auto_publish": false,
+    "external_send_requires_approval": true
+  },
+  "job": {
+    "max_retries": 1
+  },
+  "employees": [
+    "Scout",
+    "Analyst",
+    "Planner",
+    "Writer",
+    "Editor",
+    "Growth"
+  ],
+  "note": {
+    "create_url": "https://note.com/new"
+  },
+  "seed_articles": [
+    { "title": "山吹ことりとは何者なのか", "type": "profile", "priority": 1, "pinned": true, "description": "作者自身の創作観・世界観を語る自己紹介記事" },
+    { "title": "小説と音楽を同時に作るとはどういうことか", "type": "essay", "priority": 2 },
+    { "title": "キャラクターに感情を宿す書き方", "type": "howto", "priority": 3 },
+    { "title": "余白のある文章の作り方", "type": "technique", "priority": 4 },
+    { "title": "創作で大切にしている「逃げ場」というテーマ", "type": "essay", "priority": 5 },
+    { "title": "Snow flakesプロジェクトが生まれた理由", "type": "behind_scenes", "priority": 6 },
+    { "title": "音楽制作と小説執筆を両立するルーティン", "type": "process", "priority": 7 },
+    { "title": "セリフに感情を乗せる技術", "type": "technique", "priority": 8 },
+    { "title": "短編小説の構成の組み方", "type": "howto", "priority": 9 },
+    { "title": "創作者の「スランプ」との付き合い方", "type": "essay", "priority": 10 },
+    { "title": "読者に伝わる情景描写の作り方", "type": "technique", "priority": 11 },
+    { "title": "自分の作風を言語化するまでにやったこと", "type": "essay", "priority": 12 },
+    { "title": "noteで有料記事を書くときに考えること", "type": "strategy", "priority": 13 },
+    { "title": "BGM付きで読む小説体験をどうデザインするか", "type": "concept", "priority": 14 },
+    { "title": "キャラクターが「生きている」と感じる瞬間", "type": "essay", "priority": 15 },
+    { "title": "創作の「没入感」はどこから来るのか", "type": "essay", "priority": 16 },
+    { "title": "ひとつのテーマから複数の媒体（小説・音楽・イラスト）を展開する方法", "type": "process", "priority": 17 },
+    { "title": "ライトユーザーに刺さるタイトルの付け方", "type": "howto", "priority": 18 },
+    { "title": "自己開示と創作の距離感をどう保つか", "type": "essay", "priority": 19 },
+    { "title": "短編をシリーズ化するときの設計思考", "type": "technique", "priority": 20 },
+    { "title": "読者コメントと作品の「正史」をどう扱うか", "type": "essay", "priority": 21 },
+    { "title": "キャラクターのギャップが読者を引き付ける理由", "type": "analysis", "priority": 22 },
+    { "title": "創作物を「公開する」ことの怖さと向き合い方", "type": "essay", "priority": 23 },
+    { "title": "音楽の歌詞と小説の文体を統一するコツ", "type": "technique", "priority": 24 },
+    { "title": "ファンとの関係性を育てるSNSの使い方", "type": "strategy", "priority": 25 },
+    { "title": "創作に「日常の感情」を持ち込む方法", "type": "technique", "priority": 26 },
+    { "title": "完成しない作品との付き合い方", "type": "essay", "priority": 27 },
+    { "title": "「売れる」と「好き」の間で揺れる創作者の選択", "type": "essay", "priority": 28 },
+    { "title": "無料公開と有料公開の判断基準", "type": "strategy", "priority": 29 },
+    { "title": "2年後の自分のために今書いておきたいこと", "type": "essay", "priority": 30 }
+  ]
+}

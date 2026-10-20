@@ -1,0 +1,44 @@
+[
+  {
+    "id": "Scout",
+    "display_name": "ヒカゲ",
+    "role": "市場調査",
+    "image": "/content-business-assets/employees/hikage.png",
+    "short_message": "市場を見てきます。"
+  },
+  {
+    "id": "Analyst",
+    "display_name": "ヒノデ",
+    "role": "市場分析",
+    "image": "/content-business-assets/employees/hinode.png",
+    "short_message": "傾向を整理します。"
+  },
+  {
+    "id": "Planner",
+    "display_name": "アサヒ",
+    "role": "商品企画",
+    "image": "/content-business-assets/employees/asahi.png",
+    "short_message": "企画を3案に絞ります。"
+  },
+  {
+    "id": "Writer",
+    "display_name": "ソラ",
+    "role": "執筆",
+    "image": "/content-business-assets/employees/sora.png",
+    "short_message": "本文を書きます。"
+  },
+  {
+    "id": "Editor",
+    "display_name": "キイロ",
+    "role": "編集長",
+    "image": "/content-business-assets/employees/kiiro.png",
+    "short_message": "公開前に確認します。"
+  },
+  {
+    "id": "Growth",
+    "display_name": "アオ",
+    "role": "販売分析",
+    "image": "/content-business-assets/employees/ao.png",
+    "short_message": "数字を次の企画につなげます。"
+  }
+]
