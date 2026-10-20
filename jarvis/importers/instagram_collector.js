@@ -198,7 +198,7 @@ export async function fetchMediaList({ accessToken, userId }, { limit = 25, afte
  * @returns {Promise<Object>}
  */
 export async function fetchMediaInsights({ accessToken }, mediaId, mediaProductType) {
-  const baseMetrics = ['reach', 'profile_visits', 'total_interactions'];
+  const baseMetrics = ['reach', 'total_interactions'];
   if (mediaProductType === 'REELS') {
     baseMetrics.push('ig_reels_avg_watch_time');
   }

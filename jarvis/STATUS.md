@@ -2,7 +2,7 @@
 
 ## 現在地
 
-**最新到達点：Phase 43-A オフィス観察記録ログ収集基盤**
+**最新到達点：Phase 43-C/D 人間関係管理API・ナレッジ管理画面（実装完了・commit承認待ち）**
 commit: 未採番（承認待ち） / branch: `jarvis-development`
 
 ---
@@ -56,7 +56,7 @@ jarvis-development
 | タイムカード 深夜バッジ | 0:00〜5:00 JST を「深夜」バッジで表示 | ✅ 完了 | `0cdb5fb` |
 | Phase 42-A AI社員関係DB | cb_employee_relationships(30件)・cb_employee_interactions・cb_autonomous_settings 追加 | ✅ 完了 | `66d6780` |
 | Phase 42-B AI社員関係変動 | relationship_manager.mjs（スコア変動・秘密管理・二重処理防止・予算連携）・engine.mjs 業務フックx6 | ✅ 完了 | `66d6780` |
-| Phase 43-A オフィス観察記録 | story_logger.mjs（logEvent/取得/エクスポート）・cb_story_events/settings・engine.mjs+relationship_manager.mjs フック | ✅ 完了 | 未採番 |
+| Phase 43-A オフィス観察記録 | story_logger.mjs（logEvent/取得/エクスポート）・cb_story_events/settings・engine.mjs+relationship_manager.mjs フック | ✅ 完了 | `73c3219` |
 
 ---
 
