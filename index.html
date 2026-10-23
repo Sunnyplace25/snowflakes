@@ -822,10 +822,10 @@ function closePrismSinglePopup() {
   </div>
 </div>
 <script>
-// 表示期間はプリズムと同じ。プリズム表示中は待ち、closePrismSinglePopup() から表示する
+// 表示期間は 10/31 まで（プリズムは 10/26 まで）。プリズム表示中は待ち、closePrismSinglePopup() から表示する
 function showTowaSpotifyPopup() {
   var START = new Date('2026-10-17T00:00:00+09:00').getTime();
-  var END   = new Date('2026-10-26T23:59:59+09:00').getTime();
+  var END   = new Date('2026-10-31T23:59:59+09:00').getTime();
   if (Date.now() < START || Date.now() > END) return;
   if (sessionStorage.getItem('sf_towa_spotify_closed') === '1') return;
   var el = document.getElementById('towa-spotify-popup');
