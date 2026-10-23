@@ -797,6 +797,59 @@ function closePrismSinglePopup() {
   if (!el || el.style.display === 'none') return;
   el.style.display = 'none';
   sessionStorage.setItem('sf_prism_single_closed', '1');
+  if (typeof showTowaSpotifyPopup === 'function') showTowaSpotifyPopup();
+}
+</script>
+
+<!-- Artist Popup — TOWA Spotify（プリズムのポップアップを閉じた後に表示） -->
+<div id="towa-spotify-popup"
+     role="dialog" aria-modal="true" aria-label="TOWA Spotify"
+     style="display:none;position:fixed;inset:0;z-index:10002;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:16px;">
+  <div style="max-width:320px;width:100%;background:#0a1221;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 0 60px rgba(186,230,253,0.1);">
+    <button onclick="closeTowaSpotifyPopup()" aria-label="閉じる"
+            style="position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border:none;color:#cbd5e1;font-size:20px;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:8px;z-index:2;">×</button>
+    <div style="padding:52px 20px 20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">ARTIST</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#f1f5f9;letter-spacing:4px;margin-bottom:2px;">TOWA</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#475569;margin-bottom:18px;">produced by Snow flakes</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a id="towa-spotify-btn" href="https://open.spotify.com/artist/5DF0aoLhEJIba1vHU1ClrL" target="_blank" rel="noopener noreferrer" onclick="closeTowaSpotifyPopup()"
+           style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(29,185,84,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.3);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;border-radius:100px;padding:11px 20px;">
+          <i class="fa-brands fa-spotify" style="font-size:14px;"></i> Spotify
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// 表示期間はプリズムと同じ。プリズム表示中は待ち、closePrismSinglePopup() から表示する
+function showTowaSpotifyPopup() {
+  var START = new Date('2026-10-17T00:00:00+09:00').getTime();
+  var END   = new Date('2026-10-26T23:59:59+09:00').getTime();
+  if (Date.now() < START || Date.now() > END) return;
+  if (sessionStorage.getItem('sf_towa_spotify_closed') === '1') return;
+  var el = document.getElementById('towa-spotify-popup');
+  if (!el || el.style.display === 'flex') return;
+  el.style.display = 'flex';
+  if (typeof gtag === 'function') {
+    gtag('event', 'popup_view', { campaign: 'towa_spotify_2026', source: 'homepage_popup' });
+  }
+  document.addEventListener('keydown', function towaSpotifyEsc(e) {
+    if (e.key === 'Escape') { closeTowaSpotifyPopup(); document.removeEventListener('keydown', towaSpotifyEsc); }
+  });
+}
+(function() {
+  var el = document.getElementById('towa-spotify-popup');
+  el.addEventListener('click', function(e) { if (e.target === el) closeTowaSpotifyPopup(); });
+  var prism = document.getElementById('prism-single-popup');
+  if (prism && prism.style.display === 'flex') return;
+  showTowaSpotifyPopup();
+})();
+function closeTowaSpotifyPopup() {
+  var el = document.getElementById('towa-spotify-popup');
+  if (!el || el.style.display === 'none') return;
+  el.style.display = 'none';
+  sessionStorage.setItem('sf_towa_spotify_closed', '1');
 }
 </script>
 
