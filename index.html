@@ -801,6 +801,58 @@ function closePrismSinglePopup() {
 }
 </script>
 
+<!-- NEW SINGLE Popup — まだ鳴ってる（2026-10-27 リリース。表示は 11/15 まで。Spotify は配信後に追加） -->
+<div id="madanatteru-single-popup"
+     role="dialog" aria-modal="true" aria-label="NEW SINGLE まだ鳴ってる"
+     style="display:none;position:fixed;inset:0;z-index:10002;background:rgba(8,13,24,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:16px;">
+  <div style="max-width:320px;width:100%;background:#0a1221;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 0 60px rgba(186,230,253,0.1);">
+    <button onclick="closeMadaNatteruPopup()" aria-label="閉じる"
+            style="position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border:none;color:#cbd5e1;font-size:20px;line-height:1;width:32px;height:32px;cursor:pointer;border-radius:8px;z-index:2;">×</button>
+    <img id="madanatteru-single-jacket" src=""
+         alt="Snow flakes NEW SINGLE まだ鳴ってる ジャケット"
+         width="320" height="320"
+         style="width:100%;height:auto;display:block;">
+    <div style="padding:18px 20px 20px;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#93c5fd;margin-bottom:6px;">NEW SINGLE</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:300;color:#f1f5f9;letter-spacing:3px;margin-bottom:2px;">まだ鳴ってる</p>
+      <p style="font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:2px;color:#475569;margin-bottom:18px;">Snow flakes ／ c/w 苦いプリン</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="https://music.amazon.co.jp/albums/B0HPGMNF4M" target="_blank" rel="noopener noreferrer" onclick="closeMadaNatteruPopup()"
+           style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,153,0,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;border-radius:100px;padding:11px 20px;">
+          <i class="fa-brands fa-amazon" style="font-size:14px;"></i> Amazon Music
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var START = new Date('2026-10-27T00:00:00+09:00').getTime();
+  var END   = new Date('2026-11-15T23:59:59+09:00').getTime();
+  if (Date.now() < START || Date.now() > END) return;
+  if (sessionStorage.getItem('sf_madanatteru_single_closed') === '1') return;
+  var img = document.getElementById('madanatteru-single-jacket');
+  if (img) img.src = 'Discography/mada_natteru.webp';
+  var el = document.getElementById('madanatteru-single-popup');
+  el.style.display = 'flex';
+  if (typeof gtag === 'function') {
+    gtag('event', 'popup_view', { campaign: 'madanatteru_single_2026', source: 'homepage_popup' });
+  }
+  document.addEventListener('keydown', function madaEsc(e) {
+    if (e.key === 'Escape') { closeMadaNatteruPopup(); document.removeEventListener('keydown', madaEsc); }
+  });
+  el.addEventListener('click', function(e) { if (e.target === el) closeMadaNatteruPopup(); });
+})();
+function closeMadaNatteruPopup() {
+  var el = document.getElementById('madanatteru-single-popup');
+  if (!el || el.style.display === 'none') return;
+  el.style.display = 'none';
+  sessionStorage.setItem('sf_madanatteru_single_closed', '1');
+  // 閉じたあと、期間中なら TOWA のポップアップを出す（10/31 まで）
+  if (typeof showTowaSpotifyPopup === 'function') showTowaSpotifyPopup();
+}
+</script>
+
 <!-- Artist Popup — TOWA Spotify（プリズムのポップアップを閉じた後に表示） -->
 <div id="towa-spotify-popup"
      role="dialog" aria-modal="true" aria-label="TOWA Spotify"
@@ -849,6 +901,8 @@ function showTowaSpotifyPopup() {
   el.addEventListener('click', function(e) { if (e.target === el) closeTowaSpotifyPopup(); });
   var prism = document.getElementById('prism-single-popup');
   if (prism && prism.style.display === 'flex') return;
+  var mada = document.getElementById('madanatteru-single-popup');
+  if (mada && mada.style.display === 'flex') return;
   showTowaSpotifyPopup();
 })();
 function closeTowaSpotifyPopup() {
@@ -2408,6 +2462,11 @@ function sfShare() {
       (function() {
         // ★ シングル追加はここに追記
         var SF_SINGLES = [
+          { img:'Discography/mada_natteru.webp', title:'まだ鳴ってる /<br class="sp-mb-br">苦いプリン', status:'配信中',
+            // Spotify は配信後に差し替え（それまでは Amazon Music）
+            musicUrl:'https://music.amazon.co.jp/albums/B0HPGMNF4M',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0HPGMNF4M',
+            links:[] },
           { img:'Discography/prism.webp', title:'プリズム /<br class="sp-mb-br">ここにいる', status:'配信中',
             musicUrl:'https://open.spotify.com/intl-ja/album/3MHaDHM9tm1IiDtvWwMYzt?si=ZosgZy0FS02uEGZeqR8edQ',
             amazonUrl:'https://music.amazon.co.jp/albums/B0HN9KYH3G',
