@@ -1225,7 +1225,7 @@
         itemEl.style.display = 'block';
         itemEl.innerHTML =
           '<div style="font-size:9px;letter-spacing:3px;color:#6ee7b7;margin-bottom:6px;">― ごはん ゲット！ ―</div>' +
-          '<img src="item_onigiri.webp" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;">' +
+          '<img src="item_onigiri.webp" style="width:56px;height:56px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px;" alt="ハヤテっち アイテム「おにぎり」">' +
           '<div style="font-size:13px;color:#e2e8f0;">おにぎり</div>' +
           '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">所持: ×' + st.onigiriCount + '</div>';
       } else {
@@ -1425,7 +1425,7 @@
         var _ctotal = Object.keys(OC_RECIPES).length + 1;
         checkCollectionComplete('cocktail', 'カクテル図鑑', '🍸', Object.keys(st.zukanLog || {}).length, _ctotal);
       } else {
-        glassEl.innerHTML = '<img src="cocktail_mystery.webp" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;">';
+        glassEl.innerHTML = '<img src="cocktail_mystery.webp" style="width:min(200px,55vw);image-rendering:pixelated;display:block;margin:0 auto;" alt="ハヤテっち カクテル「Mystery Blend」">';
         document.getElementById('oc-result-name').textContent = 'Mystery Blend';
         document.getElementById('oc-result-kotoba').textContent = '「まだ名前のない、あなただけの一杯」';
         document.getElementById('oc-result-desc').textContent = 'まだ誰も知らない、未知のカクテル。';
@@ -2070,7 +2070,7 @@
       <div id="oc-welcome" style="display:none;text-align:center;padding:8px 0;">
         <button onclick="closeMiniGame()" style="position:absolute;top:-4px;right:0;background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent;">✕</button>
         <div style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:6px;color:#94a3b8;margin-bottom:20px;">― BAR STARS ―</div>
-        <img src="rin_stars.webp" alt="りん" style="width:min(200px,55vw);margin-bottom:20px;border-radius:12px;">
+        <img src="rin_stars.webp" alt="りん。バー STARS のカウンターで" style="width:min(200px,55vw);margin-bottom:20px;border-radius:12px;">
         <div style="font-family:'Noto Serif JP',serif;font-size:18px;color:#fde68a;letter-spacing:3px;margin-bottom:12px;">STARSへようこそ！</div>
         <div style="font-size:12px;color:#cbd5e1;line-height:2;margin-bottom:28px;">今夜も一杯、作っていこう。</div>
         <button onclick="ocGoIntro()" style="padding:14px 48px;background:rgba(253,230,138,0.1);border:1px solid rgba(253,230,138,0.3);border-radius:12px;color:#fde68a;font-family:'Noto Serif JP',serif;font-size:13px;letter-spacing:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">入店する</button>
@@ -2421,7 +2421,7 @@
           <span class="action-cd" id="cd-bar"></span>
         </button>
         <button class="action-btn" id="btn-sweets" onclick="doAction('sweets')">
-          <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;"></span>
+          <span class="action-icon"><img src="sweets.webp" style="width:22px;height:22px;object-fit:contain;image-rendering:pixelated;vertical-align:middle;" alt="ハヤテっち アイテム（ドーナツ）"></span>
           <span>SWEETs</span>
           <span class="action-cd" id="sweets-count">×0</span>
         </button>

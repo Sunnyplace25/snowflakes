@@ -1,0 +1,60 @@
+/* ============================================================
+   typography.css — Snow flakes 公式サイト共通の文字組み・余白（読み物用）
+   ------------------------------------------------------------
+   方針
+   ・見出し（ラベル＋タイトル）は中央、説明文・プロフィールなど2文以上の本文は左揃え
+   ・本文は最大 680px の1段組み。文字サイズ・行間・段落間隔はここで統一する
+   ・意図的に改行した短い詩・キャッチコピー（トップページの物語の一節など）は .sf-poem で中央のまま
+   ・色・フォントは各ページの既存の変数（--muted, --border, --accent など）を使う
+   使い方
+   ・本文のまとまり：<div class="sf-prose"><p>…</p><p>…</p></div>
+   ・本文の下のボタン群：<div class="sf-actions">…</div>
+   ・強調したい一節（引用）：<blockquote class="sf-quote">…</blockquote>
+   読み込み：artists/artist.css が @import している（アーティスト・リリース・制作理念ページ）。
+             独自スタイルのページ（kotori.html など）は <link rel="stylesheet" href="typography.css"> で読む
+   ============================================================ */
+:root {
+  --sf-prose-max:  680px;   /* 本文の最大幅（全角 40 字前後） */
+  --sf-prose-size: 16px;
+  --sf-prose-lh:   2;
+  --sf-prose-gap:  1.1em;   /* 段落の間隔 */
+  --sf-prose-color: #c3cedb;
+  --sf-head-gap:   32px;    /* 見出しから本文まで */
+  --sf-actions-gap: 40px;   /* 本文からボタンまで */
+}
+@media (max-width: 680px) {
+  :root { --sf-prose-size: 15px; --sf-prose-lh: 1.95; --sf-head-gap: 24px; --sf-actions-gap: 32px; }
+}
+
+/* 本文（左揃え・1段組み・日本語の自然な折り返し） */
+.sf-prose {
+  max-width: var(--sf-prose-max); margin-left: auto; margin-right: auto;
+  text-align: left; font-size: var(--sf-prose-size); line-height: var(--sf-prose-lh);
+  letter-spacing: .04em; color: var(--sf-prose-color); font-weight: 400;
+  line-break: strict; word-break: normal; overflow-wrap: anywhere; text-wrap: pretty;
+}
+.sf-prose p { margin: 0; }
+.sf-prose p + p { margin-top: var(--sf-prose-gap); }
+.sf-prose ul { margin: var(--sf-prose-gap) 0 0; padding-left: 1.2em; }
+.sf-prose li + li { margin-top: .3em; }
+.sf-prose strong, .sf-prose .sf-em { color: #fff; font-weight: 400; }
+@media (max-width: 680px) { .sf-prose { letter-spacing: .02em; } }
+
+/* 引用・強調の一節（左に細い線。本文と同じ幅・左揃え） */
+.sf-quote {
+  max-width: var(--sf-prose-max); margin: 0 auto var(--sf-head-gap); padding: 4px 0 4px 22px;
+  border-left: 2px solid var(--accent-line, rgba(147,197,253,0.35));
+  text-align: left; font-size: calc(var(--sf-prose-size) + 2px); line-height: 2; letter-spacing: .04em;
+  color: #fff; font-weight: 300;
+}
+@media (max-width: 680px) { .sf-quote { padding-left: 16px; } }
+
+/* 意図的に改行した短い詩・キャッチコピー（中央のまま、行間だけ統一） */
+.sf-poem { text-align: center; line-height: 2.2; }
+
+/* 見出しと本文の距離・本文とボタンの距離 */
+.sf-head-gap { margin-bottom: var(--sf-head-gap) !important; }
+.sf-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: var(--sf-actions-gap); }
+
+/* 見出し：2行になるときは行の長さをそろえて折り返す（「について / いて」のような泣き別れを防ぐ） */
+.sec-title, .hero-title, .sf-heading { text-wrap: balance; word-break: auto-phrase; }   /* auto-phrase：日本語を文節で折り返す（対応ブラウザのみ） */

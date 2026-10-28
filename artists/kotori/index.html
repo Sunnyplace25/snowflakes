@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>山吹ことり｜Creator 制作者紹介｜Snow flakes 公式</title>
+  <meta name="description" content="山吹ことり — 小説・音楽・映像を制作するクロスメディアクリエイター。世界観連動型プロジェクト「Snow flakes」を主宰。">
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="山吹ことり｜Snow flakes">
+  <meta property="og:description" content="小説・音楽・映像を制作するクロスメディアクリエイター。「Snow flakes」を主宰。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/artists/kotori/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/artists/kotori/img/ogp.jpg">
+  <meta property="og:image:alt" content="山吹ことり">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://sunnyplace25.github.io/snowflakes/artists/kotori/img/ogp.jpg">
+  <link rel="icon" type="image/svg+xml" href="../../favicon-kotori.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../artist.css">
+  <link rel="stylesheet" href="../artist-cards.css">
+</head>
+<body class="theme-kotori" data-artist="kotori">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../../music.html">← Music</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill" href="../../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 1. メインビジュアル（縦長 1122×1402。PC は切らずに中央・左右は同じ画像のぼかし、スマートフォンは画像の比率で全幅） -->
+  <header class="hero">
+    <div class="hero-media is-contain" style="--hero-ratio:21/9;--hero-ratio-sp:1122/1402;" data-ph-box>
+      <img src="img/main.webp" data-ph alt="山吹ことり（ヘッドホンを当てて微笑む、雪と音符のポートレート）" width="1122" height="1402">
+      <span class="ph-label">MAIN VISUAL COMING SOON</span>
+    </div>
+    <div class="hero-text">
+      <p class="hero-label">CREATOR｜制作者紹介</p>
+      <h1 class="hero-title">山吹ことり</h1>
+      <p class="hero-kana">Yamabuki Kotori</p>
+      <p class="hero-sub">言葉にならない感情を、音に。</p>
+      <div class="hero-actions">
+        <a class="pill youtube" href="https://www.youtube.com/@Snowflakes_channel" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> YouTube</a>
+        <button class="share-btn" onclick="sfArtistShare()" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          share
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. プロフィール（正式なプロフィールは ABOUT に集約。ここは音楽アーティストページとして短い紹介のみ・2026-10-26） -->
+  <section class="a-section" id="profile">
+    <span class="sec-label">PROFILE</span>
+    <h2 class="sec-title">プロフィール</h2>
+    <!-- 紹介文は小さめに（2026-10-29 ユーザー指示） -->
+    <div class="profile-text" style="font-size:14px;line-height:1.9;text-align:center;">
+      <p>山吹ことりは、小説・音楽・映像・ゲームを横断して創作活動を行うクロスメディアクリエイター。</p>
+    </div>
+    <div class="hero-actions" style="margin-top:28px;">
+      <a class="pill" href="../../about/#profile">プロフィール・経歴（ABOUT）→</a>
+      <a class="pill" href="../../creative-process/">制作理念・AI技術の活用について →</a>
+    </div>
+  </section>
+
+  <!-- 3. 手がけるアーティスト（artists.js のデータから自動生成） -->
+  <section class="a-section" id="artists">
+    <span class="sec-label">ARTISTS</span>
+    <h2 class="sec-title">手がけるアーティスト</h2>
+    <div id="kotori-artists" class="ac-grid"></div>
+  </section>
+
+  <!-- 4. 山吹ことり名義の楽曲・MV（★ 追加は下の .video-list に1件ずつ追記） -->
+  <section class="a-section" id="videos">
+    <span class="sec-label">MUSIC VIDEO</span>
+    <h2 class="sec-title">セルフカバー・MV</h2>
+    <div class="video-list">
+      <figure class="video-item">
+        <div class="mv-frame">
+          <iframe src="https://www.youtube.com/embed/rwRNOYh6kNA" title="ここからまたね｜山吹ことり" loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <figcaption class="mv-caption">「ここからまたね」</figcaption>
+      </figure>
+      <figure class="video-item">
+        <div class="mv-frame">
+          <iframe src="https://www.youtube.com/embed/sqnFkL1rR5Q" title="Snow flakes「置いた音」｜山吹ことり セルフカバー" loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <figcaption class="mv-caption">Snow flakes「置いた音」セルフカバー<br>アコースティックギター弾き語り</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ことりファクトリー（2026-10-29 旧「山吹ことりの部屋」kotori.html から移植。文言は元のまま、サイト内リンクは相対パスに） -->
+  <section class="a-section" id="factory">
+    <span class="sec-label">KOTORI FACTORY</span>
+    <h2 class="sec-title">ことりファクトリー</h2>
+    <p class="kf-lead">山吹ことりがつくったもの、全部。</p>
+    <div class="kf-wrap">
+      <div class="kf-line"><span class="kf-line-label kf-premium">PREMIUM</span><hr></div>
+      <div class="kf-grid">
+        <a class="kf-card kf-glow" style="--g:249,168,212" href="../../support-lp.html">
+          <p class="kf-type">SUPPORT</p>
+          <p class="kf-name">Snow flakes をそっと応援する</p>
+          <p class="kf-desc">月額100円で Snow flakes の制作を支援できます。楽屋裏話のおまけつき。</p>
+        </a>
+        <a class="kf-card kf-glow" style="--g:253,230,138" href="../../hayatecchi-lp.html">
+          <span class="kf-badge" style="color:#fde68a;border-color:rgba(253,230,138,0.35);">買い切り ¥100</span>
+          <p class="kf-type">GAME</p>
+          <p class="kf-name">ハヤテっち</p>
+          <p class="kf-desc">ハヤテの日常に入り込むキャラクター育成ゲーム。話しかけて、ごはんを届けて、ドラムを聴いて。ハヤテと過ごすほど、語録や図鑑が埋まっていく。</p>
+        </a>
+        <a class="kf-card kf-glow" style="--g:147,197,253" href="../../hinata-chat/lp.html">
+          <span class="kf-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.35);">ベータ版</span>
+          <p class="kf-type">WEB APP</p>
+          <p class="kf-name">放課後のヒナタ</p>
+          <p class="kf-desc">誰もいない放課後の音楽室で、高校時代のヒナタと少しだけ話せるAIチャットアプリです。</p>
+        </a>
+      </div>
+
+      <div class="kf-line"><span class="kf-line-label kf-shipped">SHIPPED</span><hr></div>
+      <div class="kf-grid">
+        <a class="kf-card" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer">
+          <p class="kf-type">NOVEL</p>
+          <p class="kf-name">Snow flakes</p>
+          <p class="kf-desc">長編小説。連載中。三人組バンドの物語。山吹ことりの核。</p>
+        </a>
+        <a class="kf-card" href="../../music.html">
+          <p class="kf-type">MUSIC</p>
+          <p class="kf-name">楽曲制作・配信</p>
+          <p class="kf-desc">Spotify・Apple Musicほか配信中。公開していない整えていない曲もたくさんある。MIXして公開する前にまた曲が増える。沼。</p>
+        </a>
+        <a class="kf-card" href="https://sunnyplace25.github.io/rhythm/" target="_blank" rel="noopener noreferrer">
+          <p class="kf-type">GAME</p>
+          <p class="kf-name">リズムゲーム</p>
+          <p class="kf-desc">Snow flakesの楽曲で遊べるブラウザゲーム。途中で飽きてデモのまま。ヒナタがRabbitのデモを適当に歌っているので声がひっくり返ったままになっている。</p>
+        </a>
+        <a class="kf-card" href="../../">
+          <p class="kf-type">WEBSITE</p>
+          <p class="kf-name">Snow flakes 公式サイト</p>
+          <p class="kf-desc">小説・音楽・キャラ・ガチャ・ゲーム・SWEETsが全部ここに。毎日アプデ。</p>
+        </a>
+        <a class="kf-card" href="../../intro_video.html">
+          <p class="kf-type">VIDEO</p>
+          <p class="kf-name">サイト紹介デモ映像</p>
+          <p class="kf-desc">Snow flakesってなに？を映像で伝えるページ。作ったけどほぼ使っていない。</p>
+        </a>
+        <a class="kf-card" href="https://sunnyplace25.github.io/taskpwa/" target="_blank" rel="noopener noreferrer">
+          <p class="kf-type">WEB APP</p>
+          <p class="kf-name">タスク管理アプリ</p>
+          <p class="kf-desc">PWA対応のシンプルなタスク管理アプリ。スノフレ落ちゲーや限定ストーリーあり。地味にゲームにこだわっている。ぜひ遊んでほしい。</p>
+        </a>
+      </div>
+
+      <div class="kf-line"><span class="kf-line-label kf-planned">PLANNED</span><hr></div>
+      <div class="kf-grid">
+        <div class="kf-card is-static">
+          <span class="kf-badge" style="color:#93c5fd;border-color:rgba(147,197,253,0.35);">実装予定</span>
+          <p class="kf-type">GAME</p>
+          <p class="kf-name">音診断</p>
+          <p class="kf-desc">Under tone 占いコンテンツ実装予定。SWEETs 2026Autumn お楽しみに。</p>
+        </div>
+      </div>
+
+      <div class="kf-line"><span class="kf-line-label kf-archive">ARCHIVE</span><hr></div>
+      <div class="kf-grid">
+        <div class="kf-card is-static is-archive">
+          <span class="kf-badge">没</span>
+          <p class="kf-type">GAME</p>
+          <p class="kf-name">Weaving Words</p>
+          <p class="kf-desc">残した言葉は、やがて音になる。キーワードを使ってスノフレ的な文章をつくれるアプリのデモ。つくったけど、なんか全然ちがったので没。</p>
+        </div>
+      </div>
+
+      <div class="kf-credit">
+        <span class="kf-credit-label">CREDIT</span>
+        <p class="kf-credit-title">Snow flakes Story &amp; Music Project</p>
+        <ul>
+          <li>世界観設計　<b>山吹ことり</b></li>
+          <li>キャラクターデザイン　<b>山吹ことり</b></li>
+          <li>原作・小説　<b>山吹ことり</b></li>
+          <li>編集・校正　<b>山吹ことり</b></li>
+          <li>作詞　<b>山吹ことり</b></li>
+          <li>楽曲制作　<b>山吹ことり</b></li>
+          <li>デモ制作　<b>山吹ことり</b>（with SUNO）</li>
+          <li>楽器　Morris アコギ　<b>山吹ことり</b></li>
+          <li>映像編集　<b>山吹ことり</b>（with EDIUS 8）</li>
+          <li>ゲームデザイン　<b>山吹ことり</b></li>
+          <li>占い　<b>山吹ことり</b></li>
+          <li>イラスト生成　<b>山吹ことり</b>（with ChatGPT）</li>
+          <li>コーディング　<b>山吹ことり</b>（with Claude）</li>
+          <li>サイト運営　<b>山吹ことり</b></li>
+          <li>SNS運用　<b>山吹ことり</b></li>
+        </ul>
+        <p class="kf-credit-all">全部　山吹ことり</p>
+      </div>
+    </div>
+  </section>
+  <style>
+    /* ことりファクトリー（kotori.html から移植・2026-10-29）。説明文は読みやすい明るさに */
+    #factory .kf-lead { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 2px; color: #cbd5e1; margin: -8px 0 36px; }
+    #factory .kf-wrap { max-width: 760px; margin: 0 auto; }
+    #factory .kf-line { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+    #factory .kf-line hr { flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.08); }
+    #factory .kf-line-label { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; white-space: nowrap; padding: 4px 14px; border-radius: 100px; }
+    #factory .kf-premium { color: #fde68a; border: 1px solid rgba(253,230,138,0.35); background: rgba(253,230,138,0.06); }
+    #factory .kf-shipped { color: #6ee7b7; border: 1px solid rgba(110,231,183,0.35); background: rgba(110,231,183,0.06); }
+    #factory .kf-planned { color: #93c5fd; border: 1px solid rgba(147,197,253,0.35); background: rgba(147,197,253,0.06); }
+    #factory .kf-archive { color: #cbd5e1; border: 1px solid rgba(203,213,225,0.3); background: rgba(203,213,225,0.05); }
+    #factory .kf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; margin-bottom: 44px; }
+    #factory .kf-card { position: relative; display: block; padding: 22px 20px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: inherit; text-decoration: none; transition: transform .2s, border-color .2s; }
+    #factory a.kf-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+    #factory .kf-glow { border-color: rgba(var(--g), 0.45); box-shadow: 0 0 18px rgba(var(--g), 0.16), 0 0 40px rgba(var(--g), 0.07); }
+    #factory .kf-card.is-archive { filter: grayscale(0.3); }
+    #factory .kf-type { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: #94a3b8; margin: 0 0 10px; }
+    #factory .kf-name { font-size: 15px; color: #fff; font-weight: 300; line-height: 1.5; margin: 0 0 8px; }
+    #factory .kf-desc { font-size: 12.5px; color: #cbd5e1; line-height: 1.85; margin: 0; }
+    #factory .kf-badge { position: absolute; top: 14px; right: 14px; font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 2px; padding: 2px 9px; border-radius: 100px; color: #cbd5e1; border: 1px solid rgba(203,213,225,0.3); }
+    #factory .kf-credit { padding-top: 44px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; }
+    #factory .kf-credit-label { display: block; font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 6px; color: #94a3b8; margin-bottom: 4px; }
+    #factory .kf-credit-title { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; color: #cbd5e1; margin: 0 0 24px; }
+    #factory .kf-credit ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13px; color: #b8c5d4; letter-spacing: 1px; }
+    #factory .kf-credit b { font-weight: 400; color: #e2e8f0; }
+    #factory .kf-credit-all { margin: 18px 0 0; font-family: 'Noto Serif JP', serif; font-size: 15px; font-weight: 300; letter-spacing: 2px; color: #fff; }
+  </style>
+
+  <!-- 5. 公式リンク（kotori.html の公式リンクから） -->
+  <section class="a-section" id="streaming">
+    <span class="sec-label">LINKS</span>
+    <h2 class="sec-title">公式リンク</h2>
+    <div class="svc-list">
+      <a class="service-btn youtube" href="https://www.youtube.com/@Snowflakes_channel" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-youtube"></i></span>
+        <span class="service-info"><span class="service-name">YouTube</span><br><span class="service-note">山吹ことり | Snow flakes</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn x" href="https://x.com/Snowflakes_news" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-x-twitter"></i></span>
+        <span class="service-info"><span class="service-name">X｜Snow flakesプロジェクト公式</span><br><span class="service-note">@Snowflakes_news</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn instagram" href="https://www.instagram.com/snowflakes_story/" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-instagram"></i></span>
+        <span class="service-info"><span class="service-name">Instagram｜Snow flakesプロジェクト公式</span><br><span class="service-note">@snowflakes_story</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn instagram" href="https://www.instagram.com/yamabuki.kirie/" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-instagram"></i></span>
+        <span class="service-info"><span class="service-name">切り絵作品｜Instagram</span><br><span class="service-note">@yamabuki.kirie</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn amazon" href="https://www.amazon.co.jp/stores/%E5%B1%B1%E5%90%B9%E3%81%93%E3%81%A8%E3%82%8A/author/B0GPJX645L" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-amazon"></i></span>
+        <span class="service-info"><span class="service-name">Amazon 著者ページ</span><br><span class="service-note">Kindle 電子書籍</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn live" href="https://17.live/ja/live/16806621" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
+        <span class="service-info"><span class="service-name">17LIVE｜ハムスターの24時間配信</span><br><span class="service-note">ハムスターの日常をのんびり配信中。ごくたまに、山吹ことりの雑談もあります。</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 6. 小説 -->
+  <section class="a-section" id="novels">
+    <span class="sec-label">STORY</span>
+    <h2 class="sec-title">小説</h2>
+    <div class="novels">
+      <a class="novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">NOVEL · 連載</span>
+        <span class="novel-title">Snow flakes</span>
+        <span class="novel-sub">代表作</span>
+        <span class="novel-go">読む →</span>
+      </a>
+      <a class="novel" href="https://mypage.syosetu.com/mypage/novellist/userid/2212173/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">小説家になろう</span>
+        <span class="novel-title">作品一覧</span>
+        <span class="novel-sub">山吹ことり</span>
+        <span class="novel-go">見る →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="a-footer" style="padding-top:72px;">
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+<div id="share-toast">リンクをコピーしました</div>
+
+<script src="../artists.js"></script>
+<script src="../artist.js"></script>
+<script>SfArtists.render(document.getElementById('kotori-artists'), { base: '../../', exclude: 'kotori' });</script>
+<!-- 旧「山吹ことりの部屋」（kotori.html）で行っていた訪問特典を引き継ぐ（2026-10-29）。条件・記録のキーは同じ：
+     毎日の Snow（visit_kotori_room）／月1回のプロテインコーヒー（visit_kotori_coffee → proteincoffee・お知らせから自分で開く方式） -->
+<script src="../../snow.js"></script>
+<script>
+(function () {
+  if (typeof SfSnow === 'undefined') return;
+  SfSnow.addWithToast('visit_kotori_room', '山吹ことりのページを訪問');
+  if (SfSnow.isMonthlyDone('visit_kotori_coffee')) return;
+  SfSnow.addMonthlyItem('visit_kotori_coffee', 'proteincoffee');
+  setTimeout(function () {
+    var n = document.createElement('div');
+    n.id = 'item-notice';
+    n.setAttribute('role', 'status');
+    n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:900;display:flex;align-items:center;gap:14px;'
+      + 'max-width:calc(100vw - 32px);padding:12px 14px 12px 18px;border-radius:14px;background:rgba(12,18,32,.96);border:1px solid rgba(147,197,253,.35);'
+      + 'box-shadow:0 8px 28px rgba(0,0,0,.45);font-family:\'Noto Serif JP\',serif;font-size:13px;line-height:1.7;color:#e2e8f0;';
+    n.innerHTML = '<img src="../../item/proteincoffee.webp" alt="" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;">'
+      + '<span>今月のアイテム「プロテインコーヒー」が届きました</span>'
+      + '<a href="../../item/?item=proteincoffee" style="color:#93c5fd;text-decoration:none;white-space:nowrap;">見る →</a>'
+      + '<button type="button" aria-label="閉じる" style="background:none;border:none;color:#cbd5e1;font-size:16px;cursor:pointer;padding:4px 6px;">×</button>';
+    n.querySelector('button').addEventListener('click', function () { n.remove(); });
+    document.body.appendChild(n);
+  }, 1200);
+})();
+</script>
+</body>
+</html>

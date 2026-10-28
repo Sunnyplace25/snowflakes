@@ -1,0 +1,174 @@
+/* ============================================================
+   site/site.css — トップ・STORIES・GAME・VIDEO・ABOUT の共通部品
+   ・色・フォント・雪の演出は既存（index.html / artists/artist.css）のまま。本文は typography.css
+   ・画像枠（.sf-media）は画像がなくても成り立つ：グラデーションと英字ラベルで表示し、画像を設定すると差し替わる
+   ============================================================ */
+.sf-wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.sf-sec { position: relative; z-index: 1; padding: 88px 0 0; }
+.sf-sec:last-of-type { padding-bottom: 96px; }
+.sf-sec-label { display: block; font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 7px; color: var(--muted, #cbd5e1); text-align: center; margin-bottom: 12px; }
+.sf-sec-title { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 3.2vw, 30px); font-weight: 300; color: #fff; text-align: center; margin-bottom: 14px;
+  text-wrap: balance; word-break: auto-phrase; }
+.sf-sec-lead { max-width: 640px; margin: 0 auto 36px; text-align: center; font-size: 14px; color: #94a3b8; line-height: 1.9; }
+.sf-more { text-align: center; margin-top: 28px; }
+.sf-more a { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; color: var(--accent, #93c5fd); text-decoration: none; }
+.sf-more a:hover { text-decoration: underline; }
+
+/* カード（全体がリンク） */
+.sf-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.sf-cards.is-two { grid-template-columns: repeat(2, 1fr); }
+.sf-cards.is-one { grid-template-columns: minmax(0, 560px); justify-content: center; }   /* カードが1枚だけのとき中央に（2026-10-29・SWEETs のみ） */
+.sf-card { --c: #93c5fd; display: flex; flex-direction: column; background: var(--card, rgba(255,255,255,0.04)); border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: 18px; overflow: hidden; color: inherit; text-decoration: none; transition: border-color .25s, transform .25s, background .25s; }
+.sf-card:hover, .sf-card:focus-visible { border-color: color-mix(in srgb, var(--c) 55%, transparent); transform: translateY(-2px); background: rgba(255,255,255,0.06); outline: none; }
+.sf-card-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.sf-card-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 5px; color: var(--c); }
+.sf-card-title { font-family: 'Noto Serif JP', serif; font-size: 18px; font-weight: 400; color: #fff; line-height: 1.6; text-wrap: pretty; }
+.sf-card-text { font-size: 14px; line-height: 1.9; color: #b8c5d4; text-align: left; line-break: strict; text-wrap: pretty; white-space: pre-line; }   /* pre-line：説明文の 
+ を改行として表示（2026-10-29・SWEETs）。ほかの説明文は改行なしなので見た目は変わらない */
+.sf-card-note { font-size: 12px; color: #94a3b8; }
+.sf-card-go { margin-top: auto; padding-top: 6px; font-size: 13px; letter-spacing: 1px; color: var(--c); }
+
+/* 画像枠：画像がなければグラデーション＋英字ラベル（仮画像は使わない） */
+.sf-media { position: relative; aspect-ratio: var(--ratio, 16 / 10); overflow: hidden;
+  background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--c) 22%, transparent), transparent 60%),
+              radial-gradient(ellipse at 80% 90%, color-mix(in srgb, var(--c) 14%, transparent), transparent 55%), #0f1828; }
+.sf-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sf-media-mark { position: absolute; left: 22px; bottom: 16px; font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 3vw, 34px); font-weight: 300;
+  letter-spacing: 6px; color: color-mix(in srgb, var(--c) 70%, #fff); opacity: .85; }
+.sf-media-sub { position: absolute; left: 24px; top: 16px; font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: #64748b; }
+.sf-media.has-img .sf-media-mark, .sf-media.has-img .sf-media-sub { display: none; }
+/* 画像の上に英字ラベルを重ねるカード（markOnImage）：下側を暗くして文字を読みやすく、色は他のカードの文字と同じ系統で明るめに */
+.sf-media.mark-on::after { content: ''; position: absolute; inset: 45% 0 0 0; background: linear-gradient(to bottom, transparent, rgba(8,12,22,.78)); pointer-events: none; }
+.sf-media.has-img.mark-on .sf-media-mark { display: block; z-index: 1; opacity: 1; color: color-mix(in srgb, var(--c) 45%, #fff); text-shadow: 0 2px 14px rgba(0,0,0,.65); }
+/* markPos: top … 文字を上端に置き、暗くするのも上側（2026-10-29・Under tone） */
+.sf-media.mark-on.mark-top::after { inset: 0 0 45% 0; background: linear-gradient(to top, transparent, rgba(8,12,22,.78)); }
+.sf-media.has-img.mark-on.mark-top .sf-media-mark { top: 16px; bottom: auto; }
+
+/* 代表作品（タイトルが長い作品にも対応） */
+.sf-works .sf-card-title { font-size: 17px; }
+.sf-works .sf-media-mark { font-family: 'Noto Serif JP', serif; font-size: clamp(18px, 2vw, 22px); letter-spacing: 3px; right: 22px; line-height: 1.5; }
+
+/* 最新情報の一覧 */
+.sf-news { max-width: 760px; margin: 28px auto 0; list-style: none; padding: 0; border-top: 1px solid var(--border, rgba(255,255,255,0.08)); }
+.sf-news li { border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); }
+.sf-news a, .sf-news .sf-news-row { display: grid; grid-template-columns: 96px 76px 1fr auto; gap: 14px; align-items: baseline; padding: 14px 6px; color: inherit; text-decoration: none; font-size: 14px; line-height: 1.7; }
+.sf-news a:hover { background: rgba(255,255,255,0.03); }
+.sf-news-date { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 1px; color: #94a3b8; }
+.sf-news-cat { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 3px; color: var(--accent, #93c5fd); }
+.sf-news-title { color: #e2e8f0; text-wrap: pretty; }
+.sf-news-go { color: #64748b; }
+
+/* 作品ページ */
+.sf-work-hero { padding: 120px 24px 0; text-align: center; position: relative; z-index: 1; }
+.sf-work-hero .sf-media { max-width: 880px; margin: 32px auto 0; border-radius: 18px; border: 1px solid var(--border); --ratio: 16 / 9; }
+.sf-work-title { font-family: 'Noto Serif JP', serif; font-size: clamp(22px, 3.8vw, 34px); font-weight: 300; color: #fff; line-height: 1.6; text-wrap: balance; word-break: auto-phrase; }
+.sf-work-kind { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 6px; color: var(--muted); margin-bottom: 12px; }
+.sf-work-lead { margin-top: 14px; font-size: 15px; color: var(--accent, #93c5fd); line-height: 1.9; }
+/* 作品ページ冒頭の紹介文（Snow flakes・2026-10-28）。短い段落なのでヒーローに合わせて中央揃え、読みやすい明るさ */
+.sf-work-intro { max-width: 36em; margin: 18px auto 0; font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 2; color: #dbe3ee; text-wrap: pretty; word-break: auto-phrase; }
+.sf-work-intro p { margin: 0; }
+.sf-work-intro p + p { margin-top: .9em; }
+@media (max-width: 600px) { .sf-work-intro { font-size: 14px; line-height: 1.95; } }
+.sf-links { display: flex; flex-direction: column; gap: 10px; max-width: 520px; margin: 0 auto; }
+.sf-link-row { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: 14px; background: var(--card); border: 1px solid var(--border); color: inherit; text-decoration: none; transition: border-color .2s; }
+.sf-link-row:hover { border-color: var(--accent-line, rgba(147,197,253,0.35)); }
+.sf-link-name { flex: 1; font-size: 15px; color: #fff; }
+.sf-link-note { font-size: 12px; color: #94a3b8; }
+.sf-update { max-width: 520px; margin: 0 auto; padding: 18px 20px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); font-size: 14px; line-height: 1.9; color: #b8c5d4; }
+.sf-update b { color: #fff; font-weight: 400; }
+.sf-update .is-today { color: var(--accent, #93c5fd); }
+
+/* タブ（Snow flakes シリーズページ） */
+.sf-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 32px auto 0; max-width: 680px; }
+.sf-tab { font-family: 'Cormorant Garamond', serif; font-size: 13px; line-height: 1; letter-spacing: 3px; color: var(--muted); background: transparent;
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; padding: 10px 18px 9px; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+.sf-tab:hover { color: #fff; }
+.sf-tab[aria-selected="true"] { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+.sf-tab-panel[hidden] { display: none; }
+
+/* 小さな一覧（短編・QF・書籍など） */
+.sf-list { list-style: none; padding: 0; max-width: 680px; margin: 0 auto; border-top: 1px solid var(--border); }
+.sf-list li { border-bottom: 1px solid var(--border); }
+.sf-list a { display: flex; gap: 14px; align-items: baseline; padding: 14px 4px; color: inherit; text-decoration: none; }
+.sf-list a:hover { background: rgba(255,255,255,0.03); }
+.sf-list-meta { flex-shrink: 0; width: 92px; font-family: 'Cormorant Garamond', serif; font-size: 13px; color: #94a3b8; letter-spacing: 1px; }
+.sf-list-main { flex: 1; min-width: 0; }
+.sf-list-title { display: block; color: #fff; font-size: 15px; }
+.sf-list-sub { display: block; font-size: 13px; color: #94a3b8; line-height: 1.8; margin-top: 2px; }
+.sf-list-go { color: #64748b; flex-shrink: 0; }
+
+/* 書籍 */
+.sf-books { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; max-width: 880px; margin: 0 auto; }
+.sf-book { display: flex; flex-direction: column; gap: 8px; color: inherit; text-decoration: none; }
+.sf-book img { width: 100%; aspect-ratio: 1 / 1.5; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+.sf-book-title { font-size: 14px; color: #fff; line-height: 1.6; }
+.sf-book-text { font-size: 12.5px; color: #94a3b8; line-height: 1.8; }
+.sf-book-go { font-size: 12px; color: var(--accent); }
+
+/* キャラクター */
+.sf-chars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 880px; margin: 0 auto; }
+.sf-char { --c: #93c5fd; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--card); color: inherit; text-decoration: none; }
+.sf-char img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: top; display: block; }
+.sf-char-body { padding: 14px 18px 18px; border-top: 2px solid color-mix(in srgb, var(--c) 55%, transparent); }
+.sf-char-role { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: var(--muted); }
+.sf-char-name { font-size: 19px; color: var(--c); font-weight: 300; letter-spacing: 2px; }
+.sf-char-desc { font-size: 13px; color: #b8c5d4; margin-top: 6px; line-height: 1.8; }
+
+/* 映像 */
+.sf-videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 980px; margin: 0 auto; }
+.sf-video .mv-frame { margin-bottom: 10px; }
+.sf-video-title { font-size: 14px; color: #cbd5e1; line-height: 1.7; }
+.sf-video-artist { font-size: 12px; color: #94a3b8; }
+.sf-video-artist a { color: var(--accent); text-decoration: none; }
+
+.sf-empty { text-align: center; font-size: 13px; color: #94a3b8; }
+
+@media (max-width: 900px) {
+  .sf-cards { grid-template-columns: repeat(2, 1fr); }
+  .sf-books { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .sf-wrap { padding: 0 20px; }
+  .sf-sec { padding-top: 64px; }
+  .sf-cards, .sf-cards.is-two, .sf-chars, .sf-videos { grid-template-columns: 1fr; }
+  .sf-chars { max-width: 360px; }
+  .sf-news a, .sf-news .sf-news-row { grid-template-columns: 82px 1fr auto; row-gap: 2px; padding: 12px 4px; }
+  .sf-news-cat { grid-column: 2; grid-row: 1; }
+  .sf-news-title { grid-column: 1 / -1; grid-row: 2; }
+  .sf-news-go { grid-column: 3; grid-row: 1; }
+  .sf-work-hero { padding-top: 100px; }
+}
+
+/* 共通フッターのリンク（site-footer.js が入れる） */
+.sf-footer-links { display: flex; justify-content: center; gap: 10px 18px; flex-wrap: wrap; max-width: 760px; margin: 0 auto 18px; padding: 0 20px; }
+.sf-footer-links a { font-size: 12px; color: #64748b; text-decoration: none; letter-spacing: 2px; transition: color .2s; }
+.sf-footer-links a:hover { color: #cbd5e1; }
+
+/* お問い合わせカードのリンク（ABOUT） */
+.sf-contact-links { display: flex; gap: 18px; margin-top: 6px; }
+.sf-contact-links a { font-size: 13px; letter-spacing: 1px; color: var(--c); text-decoration: none; }
+.sf-contact-links a:hover { text-decoration: underline; }
+.sf-card:has(.sf-contact-links):hover { transform: none; }
+
+/* 縦長の画像を切り抜かずに見せる（imageFit:'contain'）：背景にぼかした同じ画像、前面に全体 */
+.sf-media img.sf-media-bg { filter: blur(22px) brightness(.55); transform: scale(1.15); }
+.sf-media img.sf-media-fg { object-fit: contain; }
+
+/* キャラクターの「いいね」（旧トップと同じ見た目） */
+.sf-char[data-room] { cursor: pointer; transition: border-color .2s, transform .2s; }
+.sf-char[data-room]:hover { border-color: color-mix(in srgb, var(--c) 55%, transparent); transform: translateY(-2px); }
+.like-btn { margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 100px; cursor: pointer;
+  background: transparent; border: 1px solid rgba(255,255,255,0.12); color: #94a3b8; font-size: 12px; font-family: inherit; transition: all .2s; }
+.like-btn:hover { border-color: rgba(255,255,255,0.25); color: #cbd5e1; }
+.like-btn.liked.h { color: var(--hinata); border-color: rgba(147,197,253,0.45); background: rgba(147,197,253,0.06); }
+.like-btn.liked.k { color: var(--kouta); border-color: rgba(252,165,165,0.45); background: rgba(252,165,165,0.06); }
+.like-btn.liked.y { color: var(--hayate); border-color: rgba(253,230,138,0.45); background: rgba(253,230,138,0.04); }
+.like-heart { font-size: 15px; transition: transform 0.15s; display: inline-block; }
+.like-btn:active .like-heart { transform: scale(1.5); }
+
+/* トップ「PROJECT」の紹介文：ABOUT・制作理念と同じく少し小さく読みやすく（2026-10-29 ユーザー指示） */
+#project .sf-prose { --sf-prose-size: 14.5px; --sf-prose-lh: 1.95; --sf-prose-max: 640px; --sf-prose-gap: 1em; --sf-prose-color: #d3dce7; }
+@media (max-width: 680px) { #project .sf-prose { --sf-prose-size: 14px; --sf-prose-lh: 1.9; } }
+/* 改行を整える：文の途中で折り返すときは文節で切り、行末の数文字だけが次の行に残らないようにする（2026-10-29） */
+#project .sf-prose p { word-break: auto-phrase; text-wrap: pretty; }

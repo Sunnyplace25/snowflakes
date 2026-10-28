@@ -19,9 +19,53 @@
   </url>
   <url>
     <loc>https://sunnyplace25.github.io/snowflakes/music.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/artists/snowflakes/</loc>
+    <lastmod>2026-10-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/artists/towa/</loc>
+    <lastmod>2026-10-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/artists/amaoto-club/</loc>
+    <lastmod>2026-10-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/artists/kotori/</loc>
+    <lastmod>2026-10-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/creative-process/</loc>
+    <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <!-- 総合トップの各入口（2026-10-26。SHOP は公開まで載せない） -->
+  <url><loc>https://sunnyplace25.github.io/snowflakes/stories/</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/stories/snowflakes/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/stories/kamisama/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/stories/otohazu/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/game/</loc><lastmod>2026-10-26</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/video/</loc><lastmod>2026-10-26</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/about/</loc><lastmod>2026-10-26</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url>
+    <loc>https://sunnyplace25.github.io/snowflakes/artists/moonveil/</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://sunnyplace25.github.io/snowflakes/sweets/</loc>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>制作理念・AI技術の活用について｜Snow flakes 公式</title>
+  <meta name="description" content="Snow flakes Story &amp; Music Project の制作理念と、小説・音楽・映像・ビジュアル制作におけるAI技術の活用について。企画・世界観・人物設定から作詞、MIX、映像編集、仕上げまで、山吹ことりが主体となって制作しています。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="制作理念・AI技術の活用について｜Snow flakes">
+  <meta property="og:description" content="自分の中にある物語を、AIとともに現実の音や映像へ。Snow flakes Story &amp; Music Project の制作理念。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/creative-process/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- artist.css が typography.css（サイト共通の本文・引用・ボタン群の文字組み）を読み込む -->
+  <link rel="stylesheet" href="../artists/artist.css">
+  <style>
+    /* 制作理念ページ専用はレイアウトだけ。本文の文字組みは typography.css（.sf-prose / .sf-quote / .sf-actions） */
+    .cp-hero { padding: 128px 24px 0; text-align: center; position: relative; z-index: 1; }
+    .cp-hero .hero-label { margin-bottom: 14px; }
+    .cp-hero .hero-title { font-size: clamp(24px, 4.2vw, 36px); line-height: 1.6; letter-spacing: 2px; }
+    .cp-hero .hero-sub { font-size: 13px; letter-spacing: 3px; margin-top: 12px; }
+    /* 目次：artist.css は nav 要素を上部に固定するため、nav ではなく div で作る（固定ナビに重ならない） */
+    .cp-toc { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 680px; margin: 32px auto 0; }
+    .cp-toc a { font-family: 'Cormorant Garamond', serif; font-size: 12px; line-height: 1; letter-spacing: 3px; color: var(--muted); text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; padding: 9px 16px 8px; transition: color .2s, border-color .2s, background .2s; }
+    .cp-toc a:hover, .cp-toc a:focus-visible { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); outline: none; }
+
+    .cp-article { max-width: 728px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .cp-section { padding-top: 80px; scroll-margin-top: 88px; }
+    .cp-section .sec-label { margin-bottom: 10px; }
+    .cp-section .sec-title { margin-bottom: var(--sf-head-gap); }
+    .cp-close { margin-top: 1.8em !important; color: #fff; }
+    .cp-footer-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 18px; }
+    .cp-footer-links a { font-size: 12px; color: #475569; text-decoration: none; letter-spacing: 2px; transition: color .2s; }
+    .cp-footer-links a:hover { color: #94a3b8; }
+    /* スクロールで静かに表示（動きを減らす設定のときは表示したまま） */
+    .cp-reveal { opacity: 0; transform: translateY(10px); transition: opacity .7s ease, transform .7s ease; }
+    .cp-reveal.is-in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .cp-reveal { opacity: 1; transform: none; transition: none; } }
+    @media (max-width: 680px) {
+      .cp-hero { padding: 104px 20px 0; }
+      .cp-hero .hero-label { letter-spacing: 5px; }
+      .cp-toc { margin-top: 24px; gap: 8px 6px; }
+      .cp-toc a { font-size: 11px; letter-spacing: 2px; padding: 8px 12px 7px; }
+      .cp-article { padding: 0 20px; }
+      .cp-section { padding-top: 64px; scroll-margin-top: 76px; }
+    }
+    /* 本文を少し小さく・読みやすく（2026-10-29 ユーザー指示）。typography.css の変数をこのページだけ上書き。色は明るめ */
+    :root { --sf-prose-size: 14.5px; --sf-prose-lh: 1.95; --sf-prose-max: 640px; --sf-prose-gap: 1em; --sf-prose-color: #d3dce7; }
+    @media (max-width: 680px) { :root { --sf-prose-size: 14px; --sf-prose-lh: 1.9; } }
+  </style>
+</head>
+<body data-artist="creative-process">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../">← Home</a>
+  <a class="nav-label" href="../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../">HOME</a>
+    <a class="nav-pill" href="../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<main>
+  <header class="cp-hero">
+    <p class="hero-label">CREATIVE PROCESS &amp; AI</p>
+    <h1 class="hero-title">制作理念・AI技術の活用について</h1>
+    <p class="hero-sub">Snow flakes Story &amp; Music Project</p>
+    <div class="cp-toc" role="navigation" aria-label="このページの目次">
+      <a href="#introduction">INTRODUCTION</a>
+      <a href="#visual">VISUAL</a>
+      <a href="#music">MUSIC</a>
+      <a href="#video">VIDEO</a>
+      <a href="#story">STORY</a>
+      <a href="#philosophy">PHILOSOPHY</a>
+    </div>
+  </header>
+
+  <article class="cp-article">
+    <section class="cp-section cp-reveal" id="introduction">
+      <span class="sec-label">INTRODUCTION</span>
+      <h2 class="sec-title">プロジェクトにおけるAIの位置づけ</h2>
+      <div class="sf-prose">
+        <p>Snow flakes Story &amp; Music Projectでは、小説・音楽・映像・ビジュアルの制作にAI技術を活用しています。</p>
+        <p>AIは作品を自動的に完成させるためのものではなく、山吹ことり自身の発想や表現を、具体的な形にするための制作ツールです。</p>
+        <p>作品の企画、世界観の構築、キャラクター設定、制作方針の決定から最終的な仕上げまで、山吹ことりが主体となって制作しています。</p>
+      </div>
+    </section>
+
+    <section class="cp-section cp-reveal" id="visual">
+      <span class="sec-label">VISUAL PRODUCTION</span>
+      <h2 class="sec-title">ビジュアル制作</h2>
+      <div class="sf-prose">
+        <p>登場人物の性格、思考、価値観、癖、感情表現、人物同士の関係性など、詳細なペルソナを構築しています。</p>
+        <p>これらの設定をもとに、容姿、表情、仕草、衣装、場面の雰囲気などをプロンプトに落とし込み、AI画像生成技術を活用しています。</p>
+        <p>生成されたビジュアルも、作品の世界観や人物設定との整合性を確認し、必要な修正や調整を重ねています。</p>
+      </div>
+    </section>
+
+    <section class="cp-section cp-reveal" id="music">
+      <span class="sec-label">MUSIC PRODUCTION</span>
+      <h2 class="sec-title">楽曲制作</h2>
+      <div class="sf-prose">
+        <p><strong>楽曲の歌詞は山吹ことり自身が執筆しています。</strong></p>
+        <p>各バンドのコンセプトや音楽性、楽曲のテーマ、構成、曲調、楽器編成、演奏スタイル、ボーカルの声質や歌唱表現などを詳細に設定し、AI音楽生成技術を活用して楽曲を制作しています。</p>
+        <p>ギターによるフレーズや、鼻歌によるメロディなど、自身で制作したデモ音源を取り入れる場合もあります。</p>
+        <p>生成した音源は必要に応じてステム分離を行い、音声技術者としての知識と経験を生かして、音量、音質、定位、空間表現などを調整し、MIXを行っています。</p>
+        <p>単に生成された音源を公開するのではなく、音楽的なディレクションと音響技術を組み合わせて完成させています。</p>
+      </div>
+    </section>
+
+    <section class="cp-section cp-reveal" id="video">
+      <span class="sec-label">VIDEO PRODUCTION</span>
+      <h2 class="sec-title">映像制作</h2>
+      <div class="sf-prose">
+        <p>ミュージックビデオやプロモーション映像では、AI生成ビジュアルなどを素材として活用しています。</p>
+        <p>映像構成、カット割り、音楽との同期、トランジション、モーション、テロップ、演出などを山吹ことり自身が編集し、映像制作の経験を生かして仕上げています。</p>
+      </div>
+    </section>
+
+    <section class="cp-section cp-reveal" id="story">
+      <span class="sec-label">STORY WRITING</span>
+      <h2 class="sec-title">小説制作</h2>
+      <div class="sf-prose">
+        <p>物語の世界観、人物設定、ストーリー展開、詳細なプロットを山吹ことり自身が構築しています。</p>
+        <p>小説の執筆も自身で行い、AIは主に文章構成の確認、表現の整理、推敲などの補助として活用しています。</p>
+        <p>登場人物の感情、行動、物語の方向性は、山吹ことり自身の創作意図を基盤としています。</p>
+        <p>最終的な文章も自身で確認・修正して完成させています。</p>
+      </div>
+    </section>
+
+    <section class="cp-section cp-reveal" id="philosophy">
+      <span class="sec-label">OUR PHILOSOPHY</span>
+      <h2 class="sec-title">創作に対する考え方</h2>
+      <blockquote class="sf-quote">「AIに物語を作ってもらうのではなく、自分の中にある物語を、AIとともに現実の音や映像へ変えていく。」</blockquote>
+      <div class="sf-prose">
+        <p>Snow flakes Story &amp; Music Projectの出発点は、山吹ことり自身の中にある物語や音楽、そして表現したい感情です。</p>
+        <p>小説で描いた登場人物たちの音楽を実際に鳴らし、その姿を映像として届ける。</p>
+        <p>自身の創作と専門技術にAI技術を組み合わせることで、一つの世界をさまざまなメディアへ広げています。</p>
+        <p class="cp-close">構想し、選び、調整し、最後まで責任を持って仕上げる。<br>これが山吹ことりの考えるAIとの創作のあり方です。</p>
+      </div>
+      <div class="sf-actions">
+        <a class="pill" href="../artists/kotori/">山吹ことり 制作者紹介 →</a>
+        <a class="pill" href="../music.html">音楽を聴く →</a>
+        <a class="pill" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer">小説を読む →</a>
+      </div>
+    </section>
+  </article>
+</main>
+
+<footer class="a-footer" style="padding-top:88px;">
+  <div class="cp-footer-links">
+    <a href="../">HOME</a>
+    <a href="../artists/kotori/">山吹ことり</a>
+    <a href="../music.html">MUSIC</a>
+  </div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../artists/artist.js"></script>
+<script>
+  // セクションをスクロールに合わせて静かに表示（目次で飛んだ・速くスクロールした場合も、通り過ぎたセクションは表示する）
+  (function () {
+    var els = [].slice.call(document.querySelectorAll('.cp-reveal'));
+    function check() {
+      var limit = innerHeight * 0.92;
+      els = els.filter(function (e) {
+        if (e.getBoundingClientRect().top < limit) { e.classList.add('is-in'); return false; }
+        return true;
+      });
+      if (!els.length) removeEventListener('scroll', onScroll);
+    }
+    var ticking = false;
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; check(); }); } }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    check();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>雨音クラブ｜Artist｜Snow flakes 公式</title>
+  <meta name="description" content="雨音クラブ — 小説『神様はバンド名がダサいと言った』に登場するガレージロックバンド。アキ・シズク・ヒロキ。">
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="雨音クラブ｜Snow flakes">
+  <meta property="og:description" content="小説『神様はバンド名がダサいと言った』に登場するガレージロックバンド。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/artists/amaoto-club/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/artists/amaoto-club/img/ogp.jpg">
+  <meta property="og:image:alt" content="雨音クラブ アーティスト写真">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://sunnyplace25.github.io/snowflakes/artists/amaoto-club/img/ogp.jpg">
+  <link rel="icon" type="image/svg+xml" href="../../favicon-music.svg">
+  <meta name="theme-color" content="#0e1116">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../artist.css">
+  <link rel="stylesheet" href="../artist-cards.css">
+</head>
+<body class="theme-amaoto" data-artist="amaoto-club" data-particles="rain">
+<canvas id="snow"></canvas>
+<!-- ページ全体の背景演出（装飾のみ・名前や説明は出さない） -->
+<div class="page-cameo" aria-hidden="true"><img src="img/bg_myon.webp" alt="" width="720" height="1080" decoding="async"></div>
+
+<nav>
+  <a class="nav-back" href="../../music.html">← Music</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill is-current" href="../../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 1. メインビジュアル（アーティスト写真 4:3。切らずに中央へ置き、左右は同じ画像をぼかして敷く） -->
+  <header class="hero">
+    <div class="hero-media is-contain" style="--hero-ratio:16/9;--hero-ratio-sp:1448/1086;" data-ph-box>
+      <img src="img/main.webp" data-ph alt="雨音クラブ アーティスト写真" width="1448" height="1086">
+      <span class="ph-label">MAIN VISUAL COMING SOON</span>
+    </div>
+    <div class="hero-text">
+      <span class="tape">GARAGE ROCK BAND</span>
+      <h1 class="hero-title">雨音クラブ</h1>
+      <p class="hero-sub">from 『神様はバンド名がダサいと言った』</p>
+      <div class="hero-actions">
+        <a class="pill youtube" href="https://youtube.com/shorts/tRBHxBTfBUA" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> 雨天決行</a>
+        <button class="share-btn" onclick="sfArtistShare()" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          share
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. プロフィール -->
+  <section class="a-section" id="profile">
+    <span class="sec-label">PROFILE</span>
+    <h2 class="sec-title">プロフィール</h2>
+    <div class="profile-text">
+      <!-- 仮：正式なプロフィール文が届いたら差し替え -->
+      <p>小説『神様はバンド名がダサいと言った』に登場するガレージロックバンド。</p>
+    </div>
+  </section>
+
+  <!-- 3. メンバー（現在の3人） -->
+  <section class="a-section" id="members">
+    <span class="sec-label">MEMBERS</span>
+    <h2 class="sec-title">メンバー</h2>
+    <div class="members">
+      <article class="member" style="--m:#e5a07a;">
+        <!-- 顔の大きさをシズクの写真にそろえるため、縦横比を保ったまま拡大して顔を中心に表示 -->
+        <div class="member-photo is-cropped" data-ph-box data-initial="ア" style="--crop-w:230.5%;--crop-x:-86.0%;--crop-y:-1.2%;"><img src="img/member_aki.webp" data-ph alt="アキ" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">GUITAR / VOCAL</p>
+          <p class="member-name">アキ<span class="member-kana">Aki</span></p>
+          <p class="member-desc">雨音クラブのギター＆ボーカル。<br>勢いで突っ走っては空回りすることも多いが、音楽と仲間への思いは人一倍。どこか憎めない、バンドの中心人物。</p>
+        </div>
+      </article>
+      <article class="member" style="--m:#a8b5c4;">
+        <div class="member-photo" data-ph-box data-initial="シ"><img src="img/member_shizuku.webp" data-ph alt="シズク" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">BASS</p>
+          <p class="member-name">シズク<span class="member-kana">Shizuku</span></p>
+          <p class="member-desc">雨音クラブのベーシスト。<br>クールで淡々とした性格ながら、芯の強さを持つ。存在感のあるベースプレイでバンドを支える。</p>
+        </div>
+      </article>
+      <article class="member" style="--m:#d6cfc7;">
+        <!-- 顔の大きさをシズクの写真にそろえるため、縦横比を保ったまま拡大して顔を中心に表示 -->
+        <div class="member-photo is-cropped" data-ph-box data-initial="ヒ" style="--crop-w:147.7%;--crop-x:-21.9%;--crop-y:-8.4%;"><img src="img/member_hiroki.webp" data-ph alt="ヒロキ" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">DRUMS</p>
+          <p class="member-name">ヒロキ<span class="member-kana">Hiroki</span></p>
+          <p class="member-desc">雨音クラブのドラマー。<br>いつも眠そうで面倒くさがり。飄々とした態度とは裏腹に、確かな演奏技術と冷静な判断力を持つ。</p>
+        </div>
+      </article>
+    </div>
+    <p class="former">元メンバー：<button type="button" class="former-name" aria-expanded="false" aria-controls="former-ren" onclick="sfToggleFormer(this)">レン</button>（ボーカル）</p>
+    <img id="former-ren" class="former-photo" data-src="img/ren.webp" alt="レン（元ボーカル）" width="140" height="175" hidden>
+  </section>
+
+  <!-- 4. Discography -->
+  <section class="a-section" id="discography">
+    <span class="sec-label">DISCOGRAPHY</span>
+    <h2 class="sec-title">ディスコグラフィ</h2>
+    <div class="rel-card">
+      <!-- アートワーク（仮配置：img/utenkekkou.webp を置くと自動で表示） -->
+      <a class="rel-jacket" href="https://youtube.com/shorts/tRBHxBTfBUA" target="_blank" rel="noopener noreferrer" data-ph-box>
+        <img src="img/utenkekkou.webp" data-ph alt="雨音クラブ「雨天決行」" loading="lazy">
+        <span class="ph-label">雨天決行<small>SHORT VER.</small></span>
+      </a>
+      <div class="rel-body">
+        <p class="rel-type">SONG</p>
+        <p class="rel-title">雨天決行（Short ver.）</p>
+        <p class="rel-note">ストリーミング配信は準備中です。</p>
+        <div class="rel-links">
+          <a class="pill youtube" href="https://youtube.com/shorts/tRBHxBTfBUA" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> YouTube Shorts</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Streaming / MV -->
+  <section class="a-section" id="streaming">
+    <span class="sec-label">LISTEN</span>
+    <h2 class="sec-title">聴く</h2>
+    <!-- 縦動画（9:16）を PC では横並び、スマートフォンでは縦並び -->
+    <div class="shorts-grid">
+      <figure class="short-item">
+        <div class="mv-frame is-short">
+          <iframe src="https://www.youtube.com/embed/tRBHxBTfBUA" title="雨音クラブ「雨天決行」｜山吹ことり" loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <figcaption class="mv-caption">「雨天決行」Short ver.</figcaption>
+      </figure>
+      <figure class="short-item">
+        <div class="mv-frame is-short">
+          <iframe src="https://www.youtube.com/embed/_kqpiETerlo" title="雨音クラブ｜午前零時のサイン" loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <figcaption class="mv-caption">「午前零時のサイン」Short ver.</figcaption>
+      </figure>
+      <figure class="short-item">
+        <div class="mv-frame is-short">
+          <iframe src="https://www.youtube.com/embed/yjxA-WjvcaI" title="雨音クラブ｜昨日までの音" loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <figcaption class="mv-caption">「昨日までの音」Short ver.</figcaption>
+      </figure>
+    </div>
+    <p class="sec-note">ストリーミング配信は、配信開始後にこちらへ追加します。</p>
+  </section>
+
+  <!-- 6. 関連小説 -->
+  <section class="a-section" id="novels">
+    <span class="sec-label">STORY</span>
+    <h2 class="sec-title">関連する物語</h2>
+    <div class="novels">
+      <a class="novel" href="https://ncode.syosetu.com/n3833mv/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">NOVEL</span>
+        <span class="novel-title">神様はバンド名がダサいと言った</span>
+        <span class="novel-desc">メンバー同士の恋愛トラブルで、解散寸前の雨音クラブ。<br>それでもバンドを諦めきれないギタリスト・アキの前に、音にうるさい妙な神様が現れる。</span>
+        <span class="novel-desc">神様が来たところで、何もかも上手くいくわけじゃない。<br>それでも鳴らし続ける、不器用な若者たちのバンド青春コメディ。</span>
+        <span class="novel-go">NOVEL｜物語を読む →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="a-footer" style="padding-top:72px;">
+  <span class="sec-label">OTHER ARTISTS</span>
+  <div id="other-artists" class="ac-grid" style="margin:24px auto 40px;"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+<div id="share-toast">リンクをコピーしました</div>
+
+<script src="../artists.js"></script>
+<script src="../artist.js"></script>
+<script>SfArtists.render(document.getElementById('other-artists'), { base: '../../', exclude: 'amaoto-club', compact: true });</script>
+</body>
+</html>

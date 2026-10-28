@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>Snow flakes｜Artist｜Snow flakes 公式</title>
+  <meta name="description" content="Snow flakes（スノーフレークス）— 繊細なメロディと力強いバンドサウンドを響かせる、3人組インディー・ロックバンド。ディスコグラフィ・配信サービス・関連する物語。">
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Snow flakes｜Artist">
+  <meta property="og:description" content="繊細なメロディと力強いバンドサウンドを響かせる、3人組インディー・ロックバンド。物語とともに、その音楽は広がっていく。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/artists/snowflakes/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/artists/snowflakes/img/ogp.jpg">
+  <meta property="og:image:alt" content="Snow flakes（ヒナタ・コウタ・ハヤテ）">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://sunnyplace25.github.io/snowflakes/artists/snowflakes/img/ogp.jpg">
+  <link rel="icon" type="image/svg+xml" href="../../favicon-music.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../artist.css">
+  <link rel="stylesheet" href="../artist-cards.css">
+  <link rel="stylesheet" href="../../releases/disco.css">
+</head>
+<body class="theme-snowflakes" data-artist="snowflakes">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../../music.html">← Music</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill is-current" href="../../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 1. メインビジュアル（アーティスト写真 1672×941。比率どおり全体を表示。画面が低く高さ上限にかかる場合の左右の余白は同じ画像のぼかしで埋める） -->
+  <header class="hero">
+    <div class="hero-media is-contain" style="--hero-ratio:1672/941;" data-ph-box>
+      <img src="img/main.webp" data-ph alt="Snow flakes アーティスト写真（ヒナタ・コウタ・ハヤテ）" width="1672" height="941">
+      <span class="ph-label">MAIN VISUAL COMING SOON</span>
+    </div>
+    <div class="hero-text">
+      <p class="hero-label">ARTIST</p>
+      <h1 class="hero-title">Snow flakes</h1>
+      <p class="hero-kana">スノーフレークス</p>
+      <p class="hero-sub">Story &amp; Music Project</p>
+      <div class="hero-actions">
+        <button class="share-btn" onclick="sfArtistShare()" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          share
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. プロフィール -->
+  <section class="a-section" id="profile">
+    <span class="sec-label">PROFILE</span>
+    <h2 class="sec-title">プロフィール</h2>
+    <div class="profile-text">
+      <!-- 仮：既存サイトの文言を使用。正式なプロフィール文が届いたら差し替え -->
+      <p class="profile-tagline">言葉にならない感情を、音に。</p>
+      <p>ヒナタ・コウタ・ハヤテの3人によるバンド。<br>音楽と小説でできた物語プロジェクト「Snow flakes」。</p>
+    </div>
+  </section>
+
+  <!-- 3. メンバー（画像は既存素材。ハヤテの横長画像は縦横比を保ったまま中央に配置） -->
+  <section class="a-section" id="members">
+    <span class="sec-label">MEMBERS</span>
+    <h2 class="sec-title">メンバー</h2>
+    <div class="members">
+      <article class="member" style="--m:var(--hinata);">
+        <div class="member-photo" data-ph-box data-initial="ヒ"><img src="../../portfolio/hinata.webp" data-ph alt="ヒナタ ギター／ボーカル" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">GUITAR / VOCAL</p>
+          <p class="member-name">ヒナタ<span class="member-kana">Hinata</span></p>
+          <p class="member-desc">Snow flakesのギター＆ボーカル。<br>口数が少なく、感情を表に出すことも少ない。自分の中にある思いを、繊細かつ力強い歌声とギターで表現する。</p>
+          <a class="member-link" href="../../room/hinata/">ヒナタの部屋 →</a>
+        </div>
+      </article>
+      <article class="member" style="--m:var(--kouta);">
+        <div class="member-photo" data-ph-box data-initial="コ"><img src="../../portfolio/kouta.webp" data-ph alt="コウタ ベース" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">BASS</p>
+          <p class="member-name">コウタ<span class="member-kana">Kouta</span></p>
+          <p class="member-desc">Snow flakesのベーシスト。<br>物事を慎重に考え、周囲とのバランスを大切にする性格。確かな演奏技術と音楽への深い理解で、バンドのサウンドを形づくる。</p>
+          <a class="member-link" href="../../room/kouta/">コウタの部屋 →</a>
+        </div>
+      </article>
+      <article class="member" style="--m:var(--hayate);">
+        <!-- 2026-10-28 メンバー画像をポートフォリオと同じ3枚（portfolio/*.webp）に差し替え（ユーザー指示）。旧画像 plofile/chara_hinata・kouta・chara_hayate はファイルを残している -->
+        <div class="member-photo" data-ph-box data-initial="ハ"><img src="../../portfolio/hayate.webp" data-ph alt="ハヤテ ドラム" loading="lazy"></div>
+        <div class="member-body">
+          <p class="member-part">DRUMS</p>
+          <p class="member-name">ハヤテ<span class="member-kana">Hayate</span></p>
+          <p class="member-desc">Snow flakesのドラマー。<br>明るく表情豊かで、場の空気を動かす存在。仲間とのつながりを大切にし、豊かな表現力とリズム感でバンドに躍動感を与える。</p>
+          <a class="member-link" href="../../room/hayate/">ハヤテの部屋 →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 4. Discography（index.html の #music から移設。カルーセル・Spotify／Amazon切り替え・小説リンクを含む） -->
+  <section class="a-section" id="discography">
+    <span class="sec-label">DISCOGRAPHY</span>
+    <h2 class="sec-title">ディスコグラフィ</h2>
+    <!-- 共通ディスコグラフィ（releases/data.js）から、このアーティストの作品だけを新しい順に最大4件表示 -->
+    <div class="dc-grid" id="artist-works"></div>
+    <p class="disco-more"><a class="pill ghost" href="../../releases/?artist=snowflakes">すべての作品を見る →</a></p>
+    <!-- 旧ディスコグラフィ（共通カードへ切り替え済み。削除せず非表示で保持：hidden を外すと元に戻る） -->
+    <div class="disco-legacy" hidden>
+  <div style="text-align:center;margin-bottom:16px;">
+    <div style="display:inline-flex;border-radius:100px;border:1px solid rgba(255,255,255,0.1);overflow:hidden;">
+      <button id="svc-btn-sp" onclick="setSfMusicSvc('spotify')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;padding:6px 18px;border:none;background:rgba(30,215,96,0.18);color:#1db954;cursor:pointer;transition:all 0.2s;">Spotify</button>
+      <button id="svc-btn-am" onclick="setSfMusicSvc('amazon')" style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;padding:6px 18px;border:none;background:transparent;color:#475569;cursor:pointer;transition:all 0.2s;border-left:1px solid rgba(255,255,255,0.1);">Amazon</button>
+    </div>
+  </div>
+  <script>
+  window.sfMusicSvc = localStorage.getItem('sf_music_service') || 'spotify';
+  window.sfMusicSvcCbs = [];
+  window.setSfMusicSvc = function(svc) {
+    window.sfMusicSvc = svc;
+    localStorage.setItem('sf_music_service', svc);
+    var sp = document.getElementById('svc-btn-sp'), am = document.getElementById('svc-btn-am');
+    if (sp) { sp.style.background = svc==='spotify'?'rgba(30,215,96,0.18)':'transparent'; sp.style.color = svc==='spotify'?'#1db954':'#475569'; }
+    if (am) { am.style.background = svc==='amazon'?'rgba(90,143,168,0.18)':'transparent'; am.style.color = svc==='amazon'?'#5a8fa8':'#475569'; }
+    document.querySelectorAll('[data-sp]').forEach(function(a) {
+      a.href = svc==='amazon' ? (a.getAttribute('data-am')||a.getAttribute('data-sp')) : a.getAttribute('data-sp');
+    });
+    window.sfMusicSvcCbs.forEach(function(fn){fn(svc);});
+  };
+  (function(){var svc=window.sfMusicSvc;var sp=document.getElementById('svc-btn-sp'),am=document.getElementById('svc-btn-am');if(sp){sp.style.background=svc==='spotify'?'rgba(30,215,96,0.18)':'transparent';sp.style.color=svc==='spotify'?'#1db954':'#475569';}if(am){am.style.background=svc==='amazon'?'rgba(90,143,168,0.18)':'transparent';am.style.color=svc==='amazon'?'#5a8fa8':'#475569';}})();
+  document.addEventListener('DOMContentLoaded',function(){setSfMusicSvc(window.sfMusicSvc);});
+  </script>
+  <p style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:48px;">各楽曲カードから、関連する物語のエピソードを読むことができます。</p>
+  <div class="disco-inner">
+
+    <!-- Singles -->
+    <!-- Singles carousel -->
+    <div class="disco-group">
+      <p class="disco-group-label">SINGLES</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:clamp(100px,28vw,160px);flex-shrink:0;overflow:hidden;">
+            <a id="sp-jacket-link" href="#" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="sp-jacket" src="../../Discography/undertone.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            </a>
+          </div>
+          <div style="padding:clamp(14px,4vw,24px);flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+            <p id="sp-label" style="font-size:10px;letter-spacing:4px;color:var(--muted);font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SINGLE</p>
+            <p id="sp-title" style="font-size:clamp(14px,4vw,20px);font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">Undertone<br><span style="font-size:0.72em;color:#94a3b8;letter-spacing:1px;">Spring Waltz / Aftertone</span></p>
+            <p id="sp-status" style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:16px;">配信中</p>
+            <div id="sp-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+        <div id="sp-strip" style="border-top:1px solid var(--border);padding:14px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;"></div>
+      </div>
+      <script>
+      (function() {
+        // ★ シングル追加はここに追記
+        var SF_SINGLES = [
+          { img:'../../Discography/prism.webp', title:'プリズム /<br class="sp-mb-br">ここにいる', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/3MHaDHM9tm1IiDtvWwMYzt?si=ZosgZy0FS02uEGZeqR8edQ',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0HN9KYH3G',
+            links:[] },
+          { img:'../../Discography/in_one_sky.webp', title:'In One Sky /<br class="sp-mb-br">帰らないほどでもない', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/4ZB3NH6YOUIPmRcy0h8yX7?si=dTO8gAKtQUaGazBwD-Oabw',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0HBFMD4Y3?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_ZZ5CnT5YOl2fPZAgTXtnHnluQ',
+            links:[] },
+          { img:'../../Discography/undertone.webp', title:'Undertone<br><span style="font-size:0.72em;color:#94a3b8;letter-spacing:1px;">Spring Waltz / Aftertone</span>', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/3cY9qIWkcj3S5veSYjx351?si=xwjg26RZQLKmPbssgQHERw',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0HBFLP371?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&ref=dm_sh_LmhZ9iODcOC3DvaIE2F2H5kNB',
+            links:[] },
+          { img:'../../Discography/Little Snow.webp', title:'Little Snow /<br class="sp-mb-br">音が消えるまでは', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/5I4Ge2faqF3Yfk0YhnSxO7',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H5L1R8L8?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
+            links:[{ text:'ep.200 →', url:'https://ncode.syosetu.com/n9009lo/200', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'../../Discography/Signal.webp', title:'Signal /<br class="sp-mb-br">グラスの縁', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/4fpqDOsUjdcS1lpHbacdKr',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H42LTTCM?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
+            links:[{ text:'ep.178 →', url:'https://ncode.syosetu.com/n9009lo/178', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },{ text:'ep.133 →', url:'https://ncode.syosetu.com/n9009lo/133', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'../../Discography/Rabbit.webp', title:'Rabbit /<br class="sp-mb-br">ハッピーエンドはいらない', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/album/44dOQWscvSwLartZT8UBsJ?si=bU4e5_FpQoqfzC8t2HKELA',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0H38962NT?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
+            links:[
+              { text:'ep.155 →', url:'https://ncode.syosetu.com/n9009lo/155', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' },
+              { text:'ep.76 →', url:'https://ncode.syosetu.com/n9009lo/76', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }
+            ] },
+          { img:'../../Discography/置いた音.webp', title:'置いた音', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG?si=8beb9ec1c5ba442c',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GVPRQL4F?marketplaceId=A1VC38T7YXB528&musicTerritory=JP',
+            links:[{ text:'ep.34 →', url:'https://ncode.syosetu.com/n9009lo/34', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'../../Discography/SWEETs.webp', title:'SWEETs', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/4fj4pzm4EsrNS1gjvD0VjU?si=cc8af429c2854931',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GTWS1MWZ?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GTWQLWH3',
+            links:[{ text:'ep.80 →', url:'https://ncode.syosetu.com/n9009lo/80', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] },
+          { img:'../../Discography/Round Bounce.webp', title:'Round Bounce', status:'配信中',
+            musicUrl:'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf?si=83c9e035f6f443a7',
+            amazonUrl:'https://music.amazon.co.jp/albums/B0GT7CKP47?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GT793GCM',
+            links:[{ text:'ep.82 →', url:'https://ncode.syosetu.com/n9009lo/82', color:'var(--hinata)', b:'rgba(147,197,253,0.4)', bg:'rgba(147,197,253,0.07)' }] }
+        ];
+        var jacketLink=document.getElementById('sp-jacket-link'), jacket=document.getElementById('sp-jacket'),
+            titleEl=document.getElementById('sp-title'), statusEl=document.getElementById('sp-status'),
+            linksEl=document.getElementById('sp-links'), strip=document.getElementById('sp-strip');
+        function selectSingle(idx) {
+          var s=SF_SINGLES[idx];
+          jacket.style.opacity='0';
+          setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
+          jacketLink.href=((window.sfMusicSvc==='amazon'&&s.amazonUrl)?s.amazonUrl:(s.musicUrl||'#'));
+          titleEl.innerHTML=s.title; statusEl.textContent=s.status;
+          statusEl.style.color=s.statusColor||'var(--muted)';
+          linksEl.innerHTML=s.links.map(function(l){
+            return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
+          }).join('');
+          strip.querySelectorAll('.sp-thumb').forEach(function(el,i){
+            el.style.opacity=i===idx?'1':'0.4';
+            el.style.borderColor=i===idx?'rgba(255,255,255,0.55)':'transparent';
+          });
+        }
+        SF_SINGLES.forEach(function(s,i){
+          var btn=document.createElement('button');
+          btn.className='sp-thumb';
+          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s;opacity:0.4;';
+          btn.innerHTML='<img src="'+s.img+'" style="width:100%;height:100%;object-fit:cover;display:block;">';
+          btn.addEventListener('click',function(){
+            current=i;
+            selectSingle(i);
+            resetTimer();
+          });
+          strip.appendChild(btn);
+        });
+        var current=0;
+        selectSingle(0);
+        var autoTimer=setInterval(function(){
+          current=(current+1)%SF_SINGLES.length;
+          selectSingle(current);
+        },10000);
+        function resetTimer(){
+          clearInterval(autoTimer);
+          autoTimer=setInterval(function(){
+            current=(current+1)%SF_SINGLES.length;
+            selectSingle(current);
+          },10000);
+        }
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { selectSingle(current); });
+      })();
+      </script>
+    </div>
+
+    <!-- EP -->
+    <div class="disco-group">
+      <p class="disco-group-label">EP</p>
+      <!-- PC: tracklist -->
+      <div class="sf-pc-only ep-card">
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-sp="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()">
+          <img class="ep-jacket" src="../../Discography/early_snow.webp" alt="Early Snow Snow flakes スノーフレークス スノフレ 山吹ことり EP" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+        </a>
+        <div class="ep-body">
+          <p class="ep-type">EP</p>
+          <p class="ep-title">Early Snow</p>
+          <ol class="ep-tracklist">
+            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" data-sp="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZCXJX" target="_blank" style="text-decoration:none;color:inherit;">約束はしない</a><span style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;margin-left:6px;white-space:nowrap;">Locked</span></li>
+            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f" data-sp="https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFXHKXP" target="_blank" style="text-decoration:none;color:inherit;">透明のまま</a><a href="https://ncode.syosetu.com/n5484lz/" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">透明なリズム →</a></li>
+            <li class="ep-track">
+              <span class="ep-track-num">03</span>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" data-sp="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZBHQJ" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Near）</a>
+              <a href="https://ncode.syosetu.com/n0679lx/" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">白い音 →</a>
+            </li>
+            <li class="ep-track">
+              <span class="ep-track-num">04</span>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6" data-sp="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFWZT26" target="_blank" style="text-decoration:none;color:inherit;">Still（Untitled）</a>
+              <a href="https://amzn.asia/d/03DKJjbm" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">Kindle 3 →</a>
+            </li>
+            <li class="ep-track">
+              <span class="ep-track-num">05</span>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc" data-sp="https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFRL382" target="_blank" style="text-decoration:none;color:inherit;">名前のない歌</a>
+              <a href="https://ncode.syosetu.com/n9009lo/19" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">ep.19 →</a>
+            </li>
+            <li class="ep-track">
+              <span class="ep-track-num">06</span>
+              <a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" data-sp="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFQHQF2" target="_blank" style="text-decoration:none;color:inherit;">Little Snow（Raw）</a>
+              <a href="https://ncode.syosetu.com/n9009lo/53" target="_blank" style="margin-left:auto;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);white-space:nowrap;flex-shrink:0;">ep.53 →</a>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <!-- Mobile: carousel -->
+      <div class="sf-mobile-only ep-card" style="padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="flex-shrink:0;overflow:hidden;width:clamp(100px,28vw,160px);">
+            <a id="ep-jacket-link" href="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-sp="https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q" data-am="https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()" style="display:block;">
+              <img class="ep-jacket" src="../../Discography/early_snow.webp" alt="Early Snow Snow flakes スノーフレークス スノフレ 山吹ことり EP" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </a>
+          </div>
+          <div class="ep-body" style="display:flex;flex-direction:column;justify-content:center;">
+            <p class="ep-type">EP</p>
+            <p class="ep-title" style="margin-bottom:16px;">Early Snow</p>
+            <p id="ep-num" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:4px;">01</p>
+            <a id="ep-title-link" href="https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;">
+              <p id="ep-track-title" style="font-family:'Noto Serif JP',serif;font-size:clamp(13px,3.5vw,17px);font-weight:300;color:#e2e8f0;line-height:1.5;margin-bottom:6px;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#e2e8f0'">約束はしない</p>
+            </a>
+            <span id="ep-locked" style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#475569;border:1px solid rgba(71,85,105,0.35);border-radius:100px;padding:2px 8px;display:inline-block;width:fit-content;margin-bottom:4px;">Locked</span>
+            <a id="ep-extra" href="#" target="_blank" onclick="event.stopPropagation()" style="display:none;font-size:11px;color:var(--hinata);text-decoration:none;padding:3px 10px;border-radius:100px;border:1px solid rgba(147,197,253,0.35);background:rgba(147,197,253,0.07);width:fit-content;"></a>
+          </div>
+        </div>
+        <div id="ep-strip" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
+      </div>
+      <script>
+      (function() {
+        var EP_AM = 'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        var EP_SP = 'https://open.spotify.com/intl-ja/album/4aOj61cIiQ9qc7uWebq2Kx?si=oMPrGa0lSrqfOXE0OwLJ6Q';
+        var EP = [
+          { num:'01', title:'約束はしない',       href:'https://open.spotify.com/intl-ja/track/4zq4FMTEfQ6Kb1dwf1egBP?si=185e6092638249a7', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZCXJX', locked:true,  extra:null },
+          { num:'02', title:'透明のまま',          href:'https://open.spotify.com/intl-ja/track/0xJ6A7mdJvC1IvjFf5dnyi?si=f87fc662c1de472f', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFXHKXP', locked:false, extra:{label:'透明なリズム →', href:'https://ncode.syosetu.com/n5484lz/'} },
+          { num:'03', title:'Little Snow（Near）', href:'https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFZBHQJ', locked:false, extra:{label:'白い音 →',  href:'https://ncode.syosetu.com/n0679lx/'} },
+          { num:'04', title:'Still（Untitled）',   href:'https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=7f05d2a2ae9644c6', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFWZT26', locked:false, extra:{label:'Kindle 3 →', href:'https://amzn.asia/d/03DKJjbm'} },
+          { num:'05', title:'名前のない歌',        href:'https://open.spotify.com/intl-ja/track/6NOZewWG99R1nhgVljsziN?si=4bc35936831c4fbc', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFRL382', locked:false, extra:{label:'ep.19 →',    href:'https://ncode.syosetu.com/n9009lo/19'} },
+          { num:'06', title:'Little Snow（Raw）',  href:'https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903', amazonHref:'https://music.amazon.co.jp/albums/B0GYG1KV9H?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GYFQHQF2', locked:false, extra:{label:'ep.53 →',    href:'https://ncode.syosetu.com/n9009lo/53'} },
+        ];
+        var numEl    = document.getElementById('ep-num'),
+            titleEl  = document.getElementById('ep-track-title'),
+            titleLnk = document.getElementById('ep-title-link'),
+            lockedEl = document.getElementById('ep-locked'),
+            extraEl  = document.getElementById('ep-extra'),
+            epJkLnk  = document.getElementById('ep-jacket-link'),
+            strip    = document.getElementById('ep-strip');
+        var current = 0;
+        function select(idx) {
+          current = idx;
+          var s = EP[idx];
+          var svc = window.sfMusicSvc || 'spotify';
+          numEl.textContent   = s.num;
+          titleEl.textContent = s.title;
+          titleLnk.href       = svc === 'amazon' ? (s.amazonHref || EP_AM) : s.href;
+          if (epJkLnk) epJkLnk.href = svc === 'amazon' ? EP_AM : EP_SP;
+          lockedEl.style.display = s.locked ? 'inline-block' : 'none';
+          if (s.extra) {
+            extraEl.style.display = 'inline-block';
+            extraEl.textContent   = s.extra.label;
+            extraEl.href          = s.extra.href;
+          } else {
+            extraEl.style.display = 'none';
+          }
+          strip.querySelectorAll('.ep-th').forEach(function(el, i) {
+            el.style.opacity     = i === idx ? '1' : '0.4';
+            el.style.borderColor = i === idx ? 'rgba(255,255,255,0.55)' : 'transparent';
+            el.style.color       = i === idx ? '#e2e8f0' : '#475569';
+          });
+        }
+        EP.forEach(function(s, i) {
+          var btn = document.createElement('button');
+          btn.className = 'ep-th';
+          btn.style.cssText = 'min-width:32px;height:32px;border-radius:6px;border:1px solid transparent;cursor:pointer;background:rgba(255,255,255,0.04);padding:0 6px;flex-shrink:0;transition:all 0.2s;opacity:0.4;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:#475569;';
+          btn.textContent = s.num;
+          btn.addEventListener('click', function() { select(i); });
+          strip.appendChild(btn);
+        });
+        select(0);
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { select(current); });
+      })();
+      </script>
+    </div>
+
+    <!-- Album: 瞬間に残る -->
+    <div class="disco-group" style="margin-top:8px;">
+      <p class="disco-group-label">ALBUM</p>
+      <!-- PC: tracklist -->
+      <div class="sf-pc-only ep-card">
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-sp="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()">
+          <img class="ep-jacket" src="../../Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes スノーフレークス スノフレ 山吹ことり アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+        </a>
+        <div class="ep-body">
+          <p class="ep-type">ALBUM</p>
+          <p class="ep-title">瞬間に残る</p>
+          <ol class="ep-tracklist">
+            <li class="ep-track"><span class="ep-track-num">01</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" data-sp="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Signal</a></li>
+            <li class="ep-track"><span class="ep-track-num">02</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe" data-sp="https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Round Bounce</a></li>
+            <li class="ep-track"><span class="ep-track-num">03</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv" data-sp="https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Rabbit (Full Moon Version)</a></li>
+            <li class="ep-track"><span class="ep-track-num">04</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF" data-sp="https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">置いた音</a></li>
+            <li class="ep-track"><span class="ep-track-num">05</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6" data-sp="https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">SWEETs (Brass Band Version)</a></li>
+            <li class="ep-track"><span class="ep-track-num">06</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm" data-sp="https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">祝奏</a></li>
+            <li class="ep-track"><span class="ep-track-num">07</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B" data-sp="https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">呼吸の距離</a></li>
+            <li class="ep-track"><span class="ep-track-num">08</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG" data-sp="https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">瞬間に残る</a></li>
+            <li class="ep-track"><span class="ep-track-num">09</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs" data-sp="https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">花の名前を忘れても</a></li>
+            <li class="ep-track"><span class="ep-track-num">10</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg" data-sp="https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Low Light</a></li>
+            <li class="ep-track"><span class="ep-track-num">11</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC" data-sp="https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">音が消えるまでは</a></li>
+            <li class="ep-track"><span class="ep-track-num">12</span><a class="ep-track-name" href="https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw" data-sp="https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" style="text-decoration:none;color:inherit;">Little Snow</a></li>
+          </ol>
+        </div>
+      </div>
+      <!-- Mobile: carousel -->
+      <div class="sf-mobile-only ep-card" style="padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:stretch;">
+          <div style="flex-shrink:0;overflow:hidden;width:clamp(100px,28vw,160px);">
+            <a id="al-jacket-link" href="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-sp="https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g" data-am="https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP" target="_blank" onclick="event.stopPropagation()" style="display:block;">
+              <img class="ep-jacket" src="../../Discography/瞬間に残る.webp" alt="瞬間に残る Snow flakes アルバム" style="transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </a>
+          </div>
+          <div class="ep-body" style="display:flex;flex-direction:column;justify-content:center;">
+            <p class="ep-type">ALBUM</p>
+            <p class="ep-title" style="margin-bottom:16px;">瞬間に残る</p>
+            <p id="al-num" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:4px;">01</p>
+            <a id="al-title-link" href="https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;">
+              <p id="al-title" style="font-family:'Noto Serif JP',serif;font-size:clamp(13px,3.5vw,17px);font-weight:300;color:#e2e8f0;line-height:1.5;margin-bottom:4px;transition:color 0.2s;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#e2e8f0'">Signal</p>
+            </a>
+          </div>
+        </div>
+        <div id="al-strip" style="border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;"></div>
+      </div>
+      <script>
+      (function() {
+        var AL_AM = 'https://music.amazon.co.jp/albums/B0H77RVBD2?marketplaceId=A1VC38T7YXB528&musicTerritory=JP';
+        var AL_SP = 'https://open.spotify.com/intl-ja/album/1owH28KblGMMsC9AtQ5seZ?si=LvgGSOPpSDWd3Ia4fYTG_g';
+        var AL = [
+          { num:'01', title:'Signal',                      href:'https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg' },
+          { num:'02', title:'Round Bounce',                href:'https://open.spotify.com/intl-ja/track/2Uy1JEx2dySbypInC0frTe' },
+          { num:'03', title:'Rabbit (Full Moon Version)',  href:'https://open.spotify.com/intl-ja/track/6cMYdScQVqsmjjpuH9ykUv' },
+          { num:'04', title:'置いた音',                    href:'https://open.spotify.com/intl-ja/track/1L9I3exBnw8Fg3YlYNRpnF' },
+          { num:'05', title:'SWEETs (Brass Band Version)', href:'https://open.spotify.com/intl-ja/track/0tThknA9X9JOQwI9VeMec6' },
+          { num:'06', title:'祝奏',                        href:'https://open.spotify.com/intl-ja/track/0rZVIYnO4eqCBUgwwftfZm' },
+          { num:'07', title:'呼吸の距離',                  href:'https://open.spotify.com/intl-ja/track/7JMBejlryPC4L4biF7661B' },
+          { num:'08', title:'瞬間に残る',                  href:'https://open.spotify.com/intl-ja/track/2SH2RzviQh6OjjIoUPxEiG' },
+          { num:'09', title:'花の名前を忘れても',          href:'https://open.spotify.com/intl-ja/track/3kItLq8qo4x30Muq6czaNs' },
+          { num:'10', title:'Low Light',                   href:'https://open.spotify.com/intl-ja/track/2s7RTt9gAPHnQHyCR6dIsg' },
+          { num:'11', title:'音が消えるまでは',            href:'https://open.spotify.com/intl-ja/track/5dPzNXMgEAgmQVjEaNwthC' },
+          { num:'12', title:'Little Snow',                 href:'https://open.spotify.com/intl-ja/track/0bUCsMWqBHC1JPJZaC4TGw' },
+        ];
+        var numEl    = document.getElementById('al-num'),
+            titleEl  = document.getElementById('al-title'),
+            titleLnk = document.getElementById('al-title-link'),
+            jacketLnk= document.getElementById('al-jacket-link'),
+            strip    = document.getElementById('al-strip');
+        var current = 0;
+        function select(idx) {
+          current = idx;
+          var s = AL[idx];
+          var svc = window.sfMusicSvc || 'spotify';
+          numEl.textContent   = s.num;
+          titleEl.textContent = s.title;
+          titleLnk.href  = svc === 'amazon' ? AL_AM : s.href;
+          jacketLnk.href = svc === 'amazon' ? AL_AM : AL_SP;
+          strip.querySelectorAll('.al-th').forEach(function(el, i) {
+            el.style.opacity     = i === idx ? '1' : '0.4';
+            el.style.borderColor = i === idx ? 'rgba(255,255,255,0.55)' : 'transparent';
+            el.style.color       = i === idx ? '#e2e8f0' : '#475569';
+          });
+        }
+        AL.forEach(function(s, i) {
+          var btn = document.createElement('button');
+          btn.className = 'al-th';
+          btn.style.cssText = 'min-width:32px;height:32px;border-radius:6px;border:1px solid transparent;cursor:pointer;background:rgba(255,255,255,0.04);padding:0 6px;flex-shrink:0;transition:all 0.2s;opacity:0.4;font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:#475569;';
+          btn.textContent = s.num;
+          btn.addEventListener('click', function() { select(i); });
+          strip.appendChild(btn);
+        });
+        select(0);
+        if (window.sfMusicSvcCbs) window.sfMusicSvcCbs.push(function() { select(current); });
+      })();
+      </script>
+    </div>
+
+    <!-- SWEETs Limited (removed) -->
+    <div class="disco-group" id="sweets-limited-section" style="display:none;">
+      <p class="disco-group-label" style="color:#f9a8d4;">SWEETs LIMITED</p>
+      <div style="background:var(--card);border:1px solid rgba(249,168,212,0.18);border-radius:18px;overflow:hidden;box-shadow:0 0 18px rgba(249,168,212,0.06);">
+        <div style="display:flex;align-items:stretch;">
+          <div style="width:160px;flex-shrink:0;overflow:hidden;">
+            <a id="sl-jacket-link" href="../../sweets/" target="_blank" style="display:block;width:100%;height:100%;">
+              <img id="sl-jacket" src="../../music/cover_sweets_brass.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.18s;">
+            </a>
+          </div>
+          <div style="padding:24px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+            <p id="sl-label" style="font-size:10px;letter-spacing:4px;color:#f9a8d4;font-family:'Cormorant Garamond',serif;margin-bottom:8px;">SPECIAL</p>
+            <p id="sl-title" style="font-size:20px;font-weight:300;color:white;font-family:'Noto Serif JP',serif;margin-bottom:6px;line-height:1.4;">SWEETs</p>
+            <p id="sl-sub" style="font-size:12px;color:#f9a8d4;margin-bottom:10px;">Brass Band Ver.</p>
+            <span id="sl-item-badge" style="display:none;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:3px;color:#fde68a;border:1px solid rgba(253,230,138,0.4);border-radius:100px;padding:3px 10px;margin-bottom:12px;width:fit-content;">アイテムあり</span>
+            <div id="sl-links" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          </div>
+        </div>
+        <div id="sl-strip" style="border-top:1px solid rgba(249,168,212,0.12);padding:14px 16px;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;"></div>
+      </div>
+      <script>
+      (function() {
+        // ★ 限定追加はここに追記
+        var SF_LIMITED = [
+          { img:'../../music/cover_sweets_brass.webp', title:'SWEETs', sub:'Brass Band Ver.',
+            url:'../../sweets/', glow:'#f9a8d4', badge:true,
+            links:[{ text:'SWEETs →', url:'../../sweets/', color:'#f9a8d4', b:'rgba(249,168,212,0.4)', bg:'rgba(249,168,212,0.07)' }] },
+          { img:'../../music/cover_shukusou.webp', title:'祝奏', sub:'Snow flakes · Wedding Session',
+            url:'../../sweets/', glow:'#fde68a', badge:true, itemKey:'boutonniere_hayate',
+            links:[{ text:'SWEETs で聴く →', url:'../../sweets/', color:'#fde68a', b:'rgba(253,230,138,0.4)', bg:'rgba(253,230,138,0.07)' }] },
+        ];
+        var jacketLink=document.getElementById('sl-jacket-link'), jacket=document.getElementById('sl-jacket'),
+            titleEl=document.getElementById('sl-title'), subEl=document.getElementById('sl-sub'),
+            linksEl=document.getElementById('sl-links'), strip=document.getElementById('sl-strip');
+        var _slCard=strip.closest('div[style*="border-radius:18px"]');
+        function selectLimited(idx) {
+          var s=SF_LIMITED[idx];
+          var gc=s.glow||'#f9a8d4';
+          var gcA=gc==='#fde68a'?'rgba(253,230,138,':'rgba(249,168,212,';
+          jacket.style.opacity='0';
+          setTimeout(function(){jacket.src=s.img;jacket.style.opacity='1';},160);
+          jacketLink.href=s.url||'#';
+          titleEl.textContent=s.title; subEl.textContent=s.sub||'';
+          linksEl.innerHTML=s.links.map(function(l){
+            return '<a href="'+l.url+'" target="_blank" style="font-size:12px;color:'+l.color+';text-decoration:none;padding:5px 12px;border-radius:100px;border:1px solid '+l.b+';background:'+l.bg+';transition:opacity 0.2s;" onmouseover="this.style.opacity=\'0.7\'" onmouseout="this.style.opacity=\'1\'">'+l.text+'</a>';
+          }).join('');
+          var badge=document.getElementById('sl-item-badge');
+          if(badge){
+            var hasItem=s.itemKey&&typeof SfSnow!=='undefined'&&!SfSnow.isUnlocked(s.itemKey);
+            badge.style.display=hasItem?'inline-block':'none';
+          }
+          if(_slCard){
+            _slCard.style.borderColor=gcA+'0.35)';
+            _slCard.style.boxShadow='0 0 18px '+gcA+'0.12)';
+          }
+          strip.querySelectorAll('.sl-thumb').forEach(function(el,i){
+            var ig=SF_LIMITED[i].glow||'#f9a8d4';
+            var igA=ig==='#fde68a'?'rgba(253,230,138,':'rgba(249,168,212,';
+            el.style.opacity=i===idx?'1':'0.4';
+            el.style.borderColor=i===idx?igA+'0.7)':'transparent';
+            el.style.boxShadow=i===idx?'0 0 8px '+igA+'0.5)':'none';
+          });
+        }
+        SF_LIMITED.forEach(function(s,i){
+          var btn=document.createElement('button');
+          btn.className='sl-thumb';
+          btn.style.cssText='width:52px;height:52px;border-radius:8px;overflow:visible;border:2px solid transparent;cursor:pointer;background:none;padding:0;flex-shrink:0;transition:border-color 0.2s,opacity 0.2s,box-shadow 0.2s;opacity:0.4;position:relative;';
+          var bdg=s.badge?'<span style="position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:'+(s.glow||'#f9a8d4')+';box-shadow:0 0 6px '+(s.glow||'#f9a8d4')+';display:block;z-index:2;"></span>':'';
+          btn.innerHTML='<img src="'+s.img+'" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;">'+bdg;
+          btn.addEventListener('click',function(){selectLimited(i);});
+          strip.appendChild(btn);
+        });
+        selectLimited(0);
+      })();
+      </script>
+    </div>
+
+
+  </div>
+    </div>
+  </section>
+
+  <!-- 5. Streaming（music.html から移設） -->
+  <section class="a-section" id="streaming">
+    <span class="sec-label">STREAMING</span>
+    <h2 class="sec-title">聴く</h2>
+    <div class="svc-list">
+      <a class="service-btn spotify" href="https://open.spotify.com/artist/0nOz1pWptKtNtav9yDoQwN" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-spotify"></i></span>
+        <span class="service-info"><span class="service-name">Spotify</span><br><span class="service-note">配信中</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn apple" href="https://music.apple.com/jp/artist/snow-flakes/1895094537" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-apple"></i></span>
+        <span class="service-info"><span class="service-name">Apple Music</span><br><span class="service-note">配信中</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn amazon" href="https://music.amazon.co.jp/artists/B0GT9K7NND/snow-flakes" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-amazon"></i></span>
+        <span class="service-info"><span class="service-name">Amazon Music</span><br><span class="service-note">配信中</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn youtube" href="https://music.youtube.com/channel/UCac5FTmiZPeFuTa_bYI0Kjw" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-brands fa-youtube"></i></span>
+        <span class="service-info"><span class="service-name">YouTube Music</span><br><span class="service-note">配信中</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+      <a class="service-btn qobuz" href="https://play.qobuz.com/label/10071545" target="_blank" rel="noopener noreferrer">
+        <span class="service-icon"><i class="fa-solid fa-compact-disc"></i></span>
+        <span class="service-info"><span class="service-name">Qobuz</span><br><span class="service-note">9月よりハイレゾ配信</span></span>
+        <span class="service-arrow">→</span>
+      </a>
+    </div>
+    <p class="sec-note">他各ストリーミングにて配信中！</p>
+  </section>
+
+  <!-- 6. 関連小説（既存HPのリンクを使用） -->
+  <section class="a-section" id="novels">
+    <span class="sec-label">STORY</span>
+    <h2 class="sec-title">関連する物語</h2>
+    <div class="novels">
+      <a class="novel" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">NOVEL · 連載</span>
+        <span class="novel-title">Snow flakes</span>
+        <span class="novel-sub">本編</span>
+        <span class="novel-go">読む →</span>
+      </a>
+      <a class="novel" href="https://ncode.syosetu.com/n2115mf/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">SHORT STORY</span>
+        <span class="novel-title">一本だけのドラムスティック</span>
+        <span class="novel-sub">短篇</span>
+        <span class="novel-go">読む →</span>
+      </a>
+      <a class="novel" href="https://ncode.syosetu.com/n0679lx/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">SHORT STORY</span>
+        <span class="novel-title">白い音</span>
+        <span class="novel-sub">短篇｜Little Snow（Near）</span>
+        <span class="novel-go">読む →</span>
+      </a>
+      <a class="novel" href="https://ncode.syosetu.com/n5484lz/" target="_blank" rel="noopener noreferrer">
+        <span class="novel-kind">SHORT STORY</span>
+        <span class="novel-title">透明なリズム</span>
+        <span class="novel-sub">短篇｜透明のまま</span>
+        <span class="novel-go">読む →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 7. 短編作品（トップページから移設。カードの中身はそのまま） -->
+  <section class="a-section" id="short-stories">
+    <span class="sec-label">SHORT STORIES</span>
+    <h2 class="sec-title">短編作品</h2>
+    <div class="short-grid">
+
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(253,230,138,0.5);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n2115mf/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.09.05 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">一本だけのドラムスティック</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">「今の音を、もう一度聴きたいと思った。」</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n2115mf/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(253,230,138,0.35);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n5484lz/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.07.05 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">透明なリズム</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">「おれも、コンサートやってみたい」</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n5484lz/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+      </div>
+    </div>
+
+    <div id="short-moonveil-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(167,139,250,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n9832lr/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.18 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">Moon Veil</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">終わりが決まっているから、触れられなかった。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n9832lr/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <a class="short-extra-link" href="https://www.instagram.com/reel/DZuqfqwxpNs/" target="_blank"
+           style="font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);" onclick="event.stopPropagation()"><i class="fa-brands fa-instagram"></i> Instagram</a>
+      </div>
+    </div>
+
+    <div id="short-kouta-card" style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.25);flex-direction:column;gap:0;display:flex;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n5432lz/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.06.13 / 短篇</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">始まりのベース</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">低い音が、まだ耳の奥に残っていた。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n5432lz/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/2SruInzN6ml3bRX4tPpT0T?si=0450b39334c146b5" target="_blank"
+           style="font-size:13px;color:#1db954;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(29,185,84,0.25);background:rgba(29,185,84,0.05);" onclick="event.stopPropagation()">Still（Untitled） →</a>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(248,113,113,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0964mc/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.05.15 / 短編</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:6px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short1-title">ひとつ多い音</p>
+      <p style="font-size:10px;letter-spacing:2px;color:#f87171;font-family:'Noto Serif JP',serif;margin-bottom:12px;opacity:0.85;">文芸 ホラー日間ランキング最高２位</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short1-quote">「音だけ残ってる、みたいな」</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n0964mc/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <div style="display:flex;gap:8px;">
+          <a class="short-extra-link" href="https://www.instagram.com/reel/DY-cg2zhJty/" target="_blank"
+             style="flex:1;font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 10px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);text-align:center;" onclick="event.stopPropagation()"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a class="short-extra-link" id="undertone-link-from-hitotsu" href="../../room/undertone/"
+             style="flex:1;font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 10px;border-radius:100px;border:1px solid rgba(196,181,253,0.3);background:rgba(196,181,253,0.06);text-align:center;display:none;" onclick="event.stopPropagation()">Under tone →</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0082lu/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.03.28 / 短編</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short2-title">整えない音</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short2-quote">整えた瞬間、<br>これはきっと、別のものになる。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n0082lu/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <div style="display:flex;gap:8px;">
+          <a class="short-extra-link" href="https://www.instagram.com/reel/DYG03F6JOnC/" target="_blank"
+             style="flex:1;font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 10px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);text-align:center;" onclick="event.stopPropagation()"><i class="fa-brands fa-instagram"></i> Instagram</a>
+          <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/2Fo3lO8znQ2OqswOhbupXa?si=45c3357f294e4903" target="_blank"
+             style="flex:1;font-size:13px;color:#1ed760;text-decoration:none;padding:7px 10px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);text-align:center;" onclick="event.stopPropagation()">Little Snow（Raw）</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0327lw/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.09 / 短編</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short3-title">半分のまま</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short3-quote">この夜は、確かに何かを残している。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n0327lw/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <a class="short-extra-link" href="https://suno.com/s/GZb0yhVHmCQBmohG" target="_blank"
+           style="font-size:13px;color:#c4b5fd;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(196,181,253,0.35);background:rgba(196,181,253,0.07);" onclick="event.stopPropagation()">🎵 呼吸の距離</a>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(147,197,253,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0679lx/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.30 / 短編</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short4-title">白い音</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short4-quote">行ってしまった。向こう側に。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n0679lx/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <a class="short-extra-link" href="https://open.spotify.com/intl-ja/track/08rEcBRTnq4S5GyOYRLR8F?si=cf70a27e614e477d" target="_blank"
+           style="font-size:13px;color:#1ed760;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(30,215,96,0.35);background:rgba(30,215,96,0.07);" onclick="event.stopPropagation()">🎵 Little Snow（Near）</a>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid rgba(52,211,153,0.4);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n0498ly/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;" data-i18n="short5-title">正しい距離より、<br>触れている方がいい</p>
+      <p style="font-size:13px;color:var(--text);font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;" data-i18n="short5-quote">「……こっちのほうがいい」</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n0498ly/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);" onclick="event.stopPropagation()">読む →</a>
+        <a class="short-extra-link" href="https://www.instagram.com/p/DWkPHH_GCaF/" target="_blank"
+           style="font-size:13px;color:#f0abfc;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(240,171,252,0.35);background:rgba(240,171,252,0.07);" onclick="event.stopPropagation()"><i class="fa-brands fa-instagram"></i> Instagram リール</a>
+      </div>
+    </div>
+
+    <div style="padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:0;cursor:pointer;" onclick="if(window.innerWidth<=768&&!event.target.closest('a,button'))window.open('https://ncode.syosetu.com/n9797ls/','_blank')">
+      <p style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026.04.01 / 番外編<br>Another Peace</p>
+      <p style="font-size:20px;font-weight:400;color:white;margin-bottom:14px;font-family:'Cormorant Garamond',serif;line-height:1.5;letter-spacing:2px;">ICE BREAKER</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid var(--border);">
+        <a href="https://ncode.syosetu.com/n9797ls/" target="_blank" class="short-read-link" style="font-size:13px;color:var(--text);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);">読む →</a>
+      </div>
+    </div>
+
+    <!-- 夏のホラー特集 -->
+    <div style="padding:32px;border-radius:18px;background:rgba(15,5,5,0.6);border:1px solid rgba(239,68,68,0.35);display:flex;flex-direction:column;gap:0;">
+      <p style="font-size:11px;letter-spacing:3px;color:rgba(239,68,68,0.6);margin-bottom:10px;font-family:'Cormorant Garamond',serif;">2026 SUMMER / 特集</p>
+      <p style="font-size:20px;font-weight:400;color:#fecaca;margin-bottom:10px;font-family:'Noto Serif JP',serif;line-height:1.5;">夏のホラー特集</p>
+      <p style="font-size:13px;color:#cbd5e1;font-style:italic;margin-bottom:14px;font-family:'Noto Serif JP',serif;line-height:1.7;opacity:0.75;">音のある場所で、何かが起きる。</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding-top:16px;border-top:1px solid rgba(239,68,68,0.2);">
+        <a href="../../horror.html" style="font-size:13px;color:#fecaca;text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.07);">読む →</a>
+      </div>
+    </div>
+    </div>
+  </section>
+  <script>
+    // SWEETs を開放済みなら「ひとつ多い音」カードに Under tone への入口を出す（トップページと同じ条件）
+    (function () {
+      var btn = document.getElementById('undertone-link-from-hitotsu');
+      if (btn && (localStorage.getItem('sf_sweets_unlocked') === '1' || sessionStorage.getItem('sf_sweets_session') === '1')) btn.style.display = 'block';
+      // カード内のリンクを押してもカード全体のクリック（スマホでは作品を開く）が重ならないようにする
+      document.querySelectorAll('#short-stories a, #short-stories button').forEach(function (el) {
+        el.addEventListener('click', function (e) { e.stopPropagation(); });
+      });
+    })();
+  </script>
+</main>
+
+<footer class="a-footer" style="padding-top:72px;">
+  <span class="sec-label">OTHER ARTISTS</span>
+  <div id="other-artists" class="ac-grid" style="margin:24px auto 40px;"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+<div id="share-toast">リンクをコピーしました</div>
+
+<script src="../artists.js"></script>
+<script src="../../releases/data.js"></script>
+<script src="../../releases/disco.js"></script>
+<script>SfDisco.renderArtist(document.getElementById('artist-works'), { artist: 'snowflakes', root: '../../', limit: 4 });</script>
+<script src="../artist.js"></script>
+<script>SfArtists.render(document.getElementById('other-artists'), { base: '../../', exclude: 'snowflakes', compact: true });</script>
+</body>
+</html>

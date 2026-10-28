@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>楽曲｜Discography｜Snow flakes 公式</title>
+  <meta name="description" content="Snow flakes Story & Music Project の楽曲ページ。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Discography｜Snow flakes">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/artists/snowflakes/img/ogp.jpg">
+  <link rel="icon" type="image/svg+xml" href="../favicon-music.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../artists/artist.css">
+  <link rel="stylesheet" href="disco.css">
+</head>
+<body class="disco-page">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="./">← Discography</a>
+  <a class="nav-label" href="../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../">HOME</a>
+    <a class="nav-pill is-current" href="../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<!-- 中身は disco.js が data.js から描画する（共通テンプレート） -->
+<main id="disco-root" data-page="song"></main>
+
+<footer class="a-footer">
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../artists/artists.js"></script>
+<script src="data.js"></script>
+<script src="disco.js"></script>
+<script>SfDisco.render();</script>
+<script src="../artists/artist.js"></script>
+</body>
+</html>

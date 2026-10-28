@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>Snow flakes｜STORIES｜Snow flakes 公式</title>
+  <meta name="description" content="連載小説「Snow flakes」のシリーズページ。ギターボーカルのヒナタ、ベースのコウタ、ドラムのハヤテ。三人のバンドの時間を追う物語と、本編・QF・短編・電子書籍の案内。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Snow flakes｜STORIES">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/snowflakes/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../artists/artist.css">
+  <link rel="stylesheet" href="../../site/site.css">
+</head>
+<body data-artist="stories-snowflakes">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../">← Stories</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill" href="../../music.html">MUSIC</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 作品の顔（画像は site-data.js の works[snowflakes].image を設定すると表示） -->
+  <header class="sf-work-hero" id="sf-hero" style="--c:#93c5fd">
+    <p class="sf-work-kind">連載小説・シリーズ</p>
+    <h1 class="sf-work-title">Snow flakes</h1>
+    <!-- 小説の紹介文（2026-10-28 ユーザー指定の文のまま） -->
+    <p class="sf-work-lead">約束なんてしていない。それでも、三人の音は続いていく。</p>
+    <div class="sf-work-intro">
+      <p>高校時代に始まったバンド、Snow flakes。</p>
+      <p>見ている景色も、歩く速さも違う三人。時には立ち止まり、振り返りながら、それでも同じ道を進んでいく。</p>
+      <p>友情、恋愛、夢、そして人生。</p>
+      <p>変わっていく日々の中で、変わらずに続いていくものを描く音楽群像劇。</p>
+    </div>
+    <div id="sf-hero-media"></div>
+  </header>
+
+  <!-- トップページから移した Snow flakes の紹介文（文言は旧トップの Opening・CONCEPT・Core のまま） -->
+  <section class="sf-sec" id="about">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">CONCEPT</span>
+      <h2 class="sf-sec-title sf-head-gap">Snow flakes について</h2>
+      <div class="sf-prose">
+        <p>うまく言えなかったこと。<br>伝えきれなかった距離。<br>そのままにした感情が、少しだけ残っている。</p>
+        <p>Snow flakesは、物語・音楽・体験が連動するプロジェクトです。</p>
+        <p>ギターボーカルのヒナタ、<br>ベースのコウタ、<br>ドラムのハヤテ。</p>
+        <p>三人の時間を追いながら、<br>その瞬間に生まれた感情が、実際の楽曲として残っていきます。</p>
+        <p>物語を読むことで、音が少し違って聴こえる。<br>音を聴くことで、言葉の温度が変わる。<br>そして時には、その世界へ触れることができる。</p>
+        <p>どれかひとつだけでは終わらない。</p>
+        <p>言葉、音、そして残った感情が、<br>行き来し続ける作品です。</p>
+      </div>
+      <blockquote class="sf-quote" style="margin-top:40px">大きな出来事は、起きません。<br>ただ、少しの間や、目を逸らした瞬間や、言わなかった言葉が、残る。<br>その残ったものを、音にしています。</blockquote>
+    </div>
+  </section>
+
+  <!-- 本編・QF・短編・書籍の切り替え（第2部以降は公開が決まってから追加する） -->
+  <section class="sf-sec" id="stories">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">STORIES</span>
+      <h2 class="sf-sec-title">物語を読む</h2>
+      <div class="sf-tabs" role="tablist" aria-label="Snow flakes の物語">
+        <button class="sf-tab" role="tab" aria-selected="true" aria-controls="tab-main" id="t-main">本編</button>
+        <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-qf" id="t-qf">QF</button>
+        <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-short" id="t-short">短編</button>
+        <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-books" id="t-books">書籍</button>
+      </div>
+
+      <div class="sf-tab-panel" role="tabpanel" id="tab-main" aria-labelledby="t-main" style="margin-top:36px">
+        <div class="sf-prose">
+          <p><strong>「未完成でも、下手でも」</strong><br><strong>「それでも続けたいって思った時が、名乗るタイミングなんじゃないか」</strong></p>
+          <p>ヒナタ、コウタ、ハヤテ。</p>
+          <p>三人がバンドを組んだのは、高校生のころ。</p>
+          <p>ただ音を鳴らして、同じ時間を過ごして、<br>少しずつ、何かが変わっていく。</p>
+          <p>言えなかったことも、うまくいかなかった日も、置き去りにした音も。</p>
+          <p>そのまま抱えながら、三人は進んでいく。</p>
+          <p>未完成なまま、それでも音を鳴らし続ける。</p>
+        </div>
+        <div class="sf-update" id="sf-update" style="margin-top:32px">最新の更新：取得中…</div>
+        <div class="sf-links" style="margin-top:14px">
+          <a class="sf-link-row" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">小説家になろう</span><span class="sf-link-note">毎日21時更新</span><span>→</span></a>
+          <a class="sf-link-row" href="https://ncode.syosetu.com/n9009lo/1/" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">第1話から読む</span><span>→</span></a>
+        </div>
+      </div>
+
+      <div class="sf-tab-panel" role="tabpanel" id="tab-qf" aria-labelledby="t-qf" hidden style="margin-top:36px">
+        <p class="sf-sec-label" style="letter-spacing:5px">INSTAGRAM ／ 書き下ろしシリーズ</p>
+        <h3 class="sf-sec-title" style="font-size:22px">Snow flakes ‐ Quietly Falling ‐</h3>
+        <div class="sf-prose" style="margin-bottom:28px">
+          <p>Instagramで連載中の書き下ろし短編シリーズ。<br>映像と音楽を添えて、日常のひとこまを静かに切り取る、小さな物語たち。</p>
+          <p>通称、QF。</p>
+        </div>
+        <ul class="sf-list" id="qf-list"></ul>
+        <div class="sf-actions"><a class="pill" href="https://www.instagram.com/reel/DZ_4P6aFFHs/" target="_blank" rel="noopener noreferrer">最新話を Instagram で見る →</a></div>
+      </div>
+
+      <div class="sf-tab-panel" role="tabpanel" id="tab-short" aria-labelledby="t-short" hidden style="margin-top:36px">
+        <p class="sf-sec-lead">Snow flakes の世界の短編・番外編です。（新しい順）</p>
+        <ul class="sf-list" id="short-list"></ul>
+      </div>
+
+      <div class="sf-tab-panel" role="tabpanel" id="tab-books" aria-labelledby="t-books" hidden style="margin-top:36px">
+        <p class="sf-sec-lead">Amazon Kindle にて好評配信中</p>
+        <div class="sf-books" id="book-list"></div>
+        <p class="sf-sec-lead" style="margin-top:24px;margin-bottom:0">以下続刊</p>
+        <div class="sf-actions"><a class="pill" href="https://www.amazon.co.jp/stores/author/B0GPJX645L/allbooks" target="_blank" rel="noopener noreferrer">Amazon 著者ページ →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- トップページから移したキャラクター紹介（文言は旧トップの CHARACTERS のまま） -->
+  <section class="sf-sec" id="characters">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">CHARACTERS</span>
+      <h2 class="sf-sec-title sf-head-gap">登場人物</h2>
+      <!-- カードを押すと各自の部屋へ（旧トップの goRoom と同じ：STUDIO 解放済みなら部屋、未解放なら SWEETs）。
+           いいね（♡）は旧トップから移設（Firebase の likes/{id} と localStorage の liked_{id} をそのまま使う → site/likes.js） -->
+      <div class="sf-chars">
+        <div class="sf-char" style="--c:var(--hinata)" data-room="room_hinata" data-room-url="../../room/hinata/" role="link" tabindex="0" aria-label="ヒナタの部屋へ">
+          <img src="../../plofile/chara_hinata.webp" alt="ヒナタ（環陽向）Snow flakes ギターボーカル" loading="lazy">
+          <div class="sf-char-body"><p class="sf-char-role">Guitar &amp; Vocal</p><p class="sf-char-name">ヒナタ</p><p class="sf-char-desc">言葉にしないまま、音に向かう。</p>
+            <button class="like-btn h" id="btn-hinata" data-like="hinata" type="button" aria-label="ヒナタにいいね"><span class="like-heart">♡</span><span id="count-hinata">—</span></button></div>
+        </div>
+        <div class="sf-char" style="--c:var(--kouta)" data-room="room_kouta" data-room-url="../../room/kouta/" role="link" tabindex="0" aria-label="コウタの部屋へ">
+          <!-- 2026-10-28 ユーザー指定の画像に差し替え（元画像は制作用の保管場所。対応は引き継ぎ資料）。旧 plofile/kouta.webp は残している -->
+          <img src="../../plofile/novel_kouta.webp" alt="コウタ（橘航太）Snow flakes ベース。窓辺のスタジオでギターを抱えて笑う" loading="lazy">
+          <div class="sf-char-body"><p class="sf-char-role">Bass</p><p class="sf-char-name">コウタ</p><p class="sf-char-desc">揺れを受け止め、形にする。</p>
+            <button class="like-btn k" id="btn-kouta" data-like="kouta" type="button" aria-label="コウタにいいね"><span class="like-heart">♡</span><span id="count-kouta">—</span></button></div>
+        </div>
+        <div class="sf-char" style="--c:var(--hayate)" data-room="room_hayate" data-room-url="../../room/hayate/" role="link" tabindex="0" aria-label="ハヤテの部屋へ">
+          <!-- 2026-10-28 ユーザー指定の画像に差し替え（元画像：同上）。旧 plofile/chara_hayate.webp は残している -->
+          <img src="../../plofile/novel_hayate.webp" alt="ハヤテ（楠木颯）Snow flakes ドラム。スタジオのドラムセットで笑う" loading="lazy">
+          <div class="sf-char-body"><p class="sf-char-role">Drums</p><p class="sf-char-name">ハヤテ</p><p class="sf-char-desc">迷いごと鳴らして、前へ進む。</p>
+            <button class="like-btn y" id="btn-hayate" data-like="hayate" type="button" aria-label="ハヤテにいいね"><span class="like-heart">♡</span><span id="count-hayate">—</span></button></div>
+        </div>
+      </div>
+      <p class="sf-sec-note" style="text-align:center;font-size:12px;color:#94a3b8;margin-top:18px">SWEETs STUDIO を解放すると、三人の部屋に入れます。<br>メンバーの詳しいプロフィールは <a href="../../artists/snowflakes/#members" style="color:var(--accent)">Snow flakes のアーティストページ</a>で紹介しています。</p>
+    </div>
+  </section>
+
+  <!-- 関連（音楽・ゲーム・SWEETs）。追加のコンテンツはここに足す -->
+  <section class="sf-sec" id="related">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">RELATED</span>
+      <h2 class="sf-sec-title sf-head-gap">関連コンテンツ</h2>
+      <div class="sf-links">
+        <a class="sf-link-row" href="../../artists/snowflakes/"><span class="sf-link-name">Snow flakes の音楽</span><span class="sf-link-note">アーティスト・ディスコグラフィ</span><span>→</span></a>
+        <a class="sf-link-row" href="../../game/"><span class="sf-link-name">ゲーム</span><span class="sf-link-note">ハヤテっち・Under tone など</span><span>→</span></a>
+        <a class="sf-link-row" href="../../sweets/"><span class="sf-link-name">SWEETs ROOM</span><span class="sf-link-note">限定エピソードなど</span><span>→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="a-footer" style="padding-top:88px;">
+  <div class="cp-footer-links sf-footer-links"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../../artists/artists.js"></script>
+<script src="../../artists/artist.js"></script>
+<script src="../../site/site-data.js"></script>
+<script src="../../site/site.js"></script>
+<script src="../../site/site-footer.js" data-root="../../"></script>
+<script src="../../snow.js"></script>
+<script src="../../site/reading-rewards.js" data-root="../../"></script>
+<script type="module" src="../../site/likes.js"></script>
+<script>
+  // キャラクターカード → 部屋（旧トップの goRoom と同じ判定。部屋の既読日 sf_room_last_seen も同じキーで更新）
+  (function () {
+    var DOOR = { room_hinata: 'door-hinata', room_kouta: 'door-kouta', room_hayate: 'door-hayate' };
+    function go(card) {
+      var id = card.getAttribute('data-room'), url = card.getAttribute('data-room-url');
+      if (window.SfSnow && SfSnow.isUnlocked(id)) {
+        try { var seen = JSON.parse(localStorage.getItem('sf_room_last_seen') || '{}'); seen[DOOR[id]] = new Date().toISOString().slice(0, 10); localStorage.setItem('sf_room_last_seen', JSON.stringify(seen)); } catch (e) {}
+        location.href = url;
+      } else {
+        location.href = '../../sweets/';
+      }
+    }
+    document.querySelectorAll('.sf-char[data-room]').forEach(function (c) {
+      c.addEventListener('click', function (e) { if (!e.target.closest('.like-btn, a')) go(c); });
+      c.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.target.closest('.like-btn')) go(c); });
+    });
+  })();
+</script>
+<script>
+  // ── 本編・QF・短編・書籍のデータ（旧トップ・Snow flakes アーティストページの掲載内容から転記） ──
+  var QF_EPISODES = [
+    { ep: 'ep.01', title: '節分',               url: 'https://www.instagram.com/p/DUiTkqXiZnX/',   note: '' },
+    { ep: 'ep.02', title: 'バレンタイン / ヒナタ', url: 'https://www.instagram.com/p/DUuSVSgCZdL/',   note: '' },
+    { ep: 'ep.03', title: 'バレンタイン / コウタ', url: 'https://www.instagram.com/p/DUuS_7CCZAr/',   note: '' },
+    { ep: 'ep.04', title: 'バレンタイン / ハヤテ', url: 'https://www.instagram.com/p/DUuTdtFiUm-/',   note: '' },
+    { ep: 'ep.05', title: 'SWEETs',              url: 'https://www.instagram.com/p/DVNsuIeF2D-/',    note: 'ショーケース編 ep.79 前段' },
+    { ep: 'ep.06', title: 'Spring Waltz',        url: 'https://www.instagram.com/reel/DWjSdMCEZP-/', note: '' },
+    { ep: 'ep.07', title: 'いつかのホワイトデー',  url: 'https://www.instagram.com/p/DV4BOSdkvo4/',   note: '' },
+    { ep: 'ep.08', title: '置いた音',             url: 'https://www.instagram.com/reel/DWoEzizDheI/', note: '大学編 ep.27.5' },
+    { ep: 'ep.09', title: 'うまかった',           url: 'https://www.instagram.com/reel/DW8zbStCd1p/', note: '' },
+    { ep: 'ep.10', title: '帰り道',               url: 'https://www.instagram.com/reel/DW_b7avjmf0/', note: 'ポジション編 ep.124.5' },
+    { ep: 'ep.11', title: 'プリン',               url: 'https://www.instagram.com/reel/DXHBLwmCBVd/', note: '' },
+    { ep: 'ep.12', title: 'デート',               url: 'https://www.instagram.com/reel/DXMhjm3mj5T/', note: 'カクテル編 ep.136.5' },
+    { ep: 'ep.13', title: '予備の傘',             url: 'https://www.instagram.com/reel/DXhJx4QDybN/', note: '短篇「白い音」前段' },
+    { ep: 'ep.14', title: '柏餅食ってから',        url: 'https://www.instagram.com/reel/DYCuIrXJJoU/', note: '' },
+    { ep: 'ep.15', title: '母の日',               url: 'https://www.instagram.com/p/DYKRPW7sfN6/',   note: '' },
+    { ep: 'ep.16', title: '懐かしい写真',          url: 'https://www.instagram.com/p/DYfVsFWHGmS/',   note: '' },
+    { ep: 'ep.17', title: 'セッション',            url: 'https://www.instagram.com/p/DYpMK0JvPg8/',   note: '' },
+    { ep: 'ep.18', title: '夏の雪',               url: 'https://www.instagram.com/reel/DY2LFY2Px0W/', note: '' },
+    { ep: 'ep.19', title: 'SWEETs Summer',         url: 'https://www.instagram.com/reel/DZXpxWRsxlt/', note: '' },
+    { ep: 'ep.20', title: '多分、ちゃんと覚えてる',   url: 'https://www.instagram.com/reel/DZ5NvucB6Sx/', note: '' },
+    { ep: 'ep.21', title: 'いつも通りの時間',         url: 'https://www.instagram.com/reel/DZ_4P6aFFHs/', note: '' }
+  ];
+  var SHORTS = [
+    { date: '2026.09.05', kind: '短篇',  title: '一本だけのドラムスティック', sub: '「今の音を、もう一度聴きたいと思った。」', url: 'https://ncode.syosetu.com/n2115mf/' },
+    { date: '2026.07.05', kind: '短篇',  title: '透明なリズム',       sub: '「おれも、コンサートやってみたい」',       url: 'https://ncode.syosetu.com/n5484lz/' },
+    { date: '2026.06.18', kind: '短篇',  title: 'Moon Veil',          sub: '終わりが決まっているから、触れられなかった。', url: 'https://ncode.syosetu.com/n9832lr/' },
+    { date: '2026.06.13', kind: '短篇',  title: '始まりのベース',     sub: '低い音が、まだ耳の奥に残っていた。',       url: 'https://ncode.syosetu.com/n5432lz/' },
+    { date: '2026.05.15', kind: '短編',  title: 'ひとつ多い音',       sub: '「音だけ残ってる、みたいな」（文芸 ホラー日間ランキング最高２位）', url: 'https://ncode.syosetu.com/n0964mc/' },
+    { date: '2026.04.30', kind: '短編',  title: '白い音',             sub: '行ってしまった。向こう側に。',             url: 'https://ncode.syosetu.com/n0679lx/' },
+    { date: '2026.04.09', kind: '短編',  title: '半分のまま',         sub: 'この夜は、確かに何かを残している。',       url: 'https://ncode.syosetu.com/n0327lw/' },
+    { date: '2026.04.01', kind: '番外編', title: 'Another Peace',     sub: '正しい距離より、触れている方がいい',       url: 'https://ncode.syosetu.com/n0498ly/' },
+    { date: '2026.04.01', kind: '番外編', title: 'Another Peace ICE BREAKER', sub: '',                         url: 'https://ncode.syosetu.com/n9797ls/' },
+    { date: '2026.03.28', kind: '短編',  title: '整えない音',         sub: '整えた瞬間、これはきっと、別のものになる。', url: 'https://ncode.syosetu.com/n0082lu/' }
+  ];
+  // 書籍の紹介文は旧トップの BOOKS の文言をすべてそのまま（1行目がキャッチ）
+  var BOOKS = [
+    { img: 'Kindle/１.jpg', title: '1: 戻る場所', url: 'https://amzn.asia/d/03cNGgk3',
+      text: ['気づけば同じ音の中にいる。', '「続ける」と決める前の時間を描く。'] },
+    { img: 'Kindle/２.jpg', title: '2: リトルスノー', url: 'https://amzn.asia/d/0brELpId',
+      text: ['小さくて、溶けそうで、でも消えなかった。', '形にならない音。言葉にするには、まだ早い感情。', '確かさはない。それでも、手放さなかった。', '触れすぎず、壊さず、距離を測りながら。', '小さな音は、静かに残り続ける。'] },
+    { img: 'Kindle/３.jpg', title: '3: ショーケース/夏の月', url: 'https://amzn.asia/d/03DKJjbm',
+      text: ['小説家になろう ep.69–89収録　描き下ろし「名前のない歌」', '音は、答えをくれない。ただ残り、続いていく。', '――音だけが、置かれたまま。'] },
+    { img: 'Kindle/４.jpg', title: '4: ポジション', url: 'https://amzn.asia/d/0fYRq3BS',
+      text: ['小説家になろう ep.90–125収録　描き下ろし1編', '前に出る音。支える音。残す音。', 'それぞれのポジションで、三人は同じ流れに乗っている。', '音は続く。役割を引き受けたまま。'] }
+  ];
+  (function () {
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var row = function (meta, title, sub, url) {
+      return '<li><a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer"><span class="sf-list-meta">' + esc(meta) + '</span>' +
+        '<span class="sf-list-main"><span class="sf-list-title">' + esc(title) + '</span>' + (sub ? '<span class="sf-list-sub">' + esc(sub) + '</span>' : '') + '</span><span class="sf-list-go">→</span></a></li>';
+    };
+    document.getElementById('qf-list').innerHTML = QF_EPISODES.slice().reverse().map(function (e) { return row(e.ep, e.title, e.note, e.url); }).join('');
+    // QF を読みに行って戻ると、1日1回アイテム（旧トップと同じ判定・同じ履歴 → site/reading-rewards.js）
+    if (window.SfReadingRewards) SfReadingRewards.watchQF(document.querySelectorAll('#qf-list a, #tab-qf .sf-actions a'));
+    document.getElementById('short-list').innerHTML = SHORTS.map(function (s) { return row(s.date, s.title, (s.kind ? s.kind + '｜' : '') + s.sub, s.url); }).join('');
+    document.getElementById('book-list').innerHTML = BOOKS.map(function (b) {
+      return '<a class="sf-book" href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer"><img src="../../' + encodeURI(b.img) + '" alt="Snow flakes ' + esc(b.title) + '" loading="lazy">' +
+        '<span class="sf-book-title">Snow flakes<br>' + esc(b.title) + '</span><span class="sf-book-text">' + b.text.map(esc).join('<br>') + '</span><span class="sf-book-go">Kindleで読む →</span></a>';
+    }).join('');
+
+    // タブ切り替え（URL の #qf / #short / #books でも開ける）
+    var tabs = [].slice.call(document.querySelectorAll('.sf-tab'));
+    function open(id) {
+      tabs.forEach(function (t) {
+        var on = t.getAttribute('aria-controls') === id;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { open(t.getAttribute('aria-controls')); }); });
+    var h = { '#qf': 'tab-qf', '#short-stories': 'tab-short', '#short': 'tab-short', '#books': 'tab-books', '#novel': 'tab-main' }[location.hash];
+    if (h) { open(h); setTimeout(function () { document.getElementById('stories').scrollIntoView(); }, 50); }
+
+    // 作品の画像（site-data.js）と最新の更新（小説家になろう API。取得できなければ未取得）
+    var w = (window.SF_SITE.works || []).filter(function (x) { return x.id === 'snowflakes'; })[0];
+    if (w && w.image) document.getElementById('sf-hero-media').innerHTML = '<div class="sf-media has-img" style="--ratio:16 / 9;max-width:880px;margin:32px auto 0;border-radius:18px"><img src="../../' + encodeURI(w.image) + '" alt="Snow flakes"></div>';
+    SfSite.narou(function (map) {
+      var n = !map.error && map.n9009lo, box = document.getElementById('sf-update');
+      if (!n || !n.lastup) { box.innerHTML = '最新の更新：<b>未取得</b>（連載ページで最新話をご確認ください）'; return; }
+      var today = n.lastup.slice(0, 10) === new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
+      box.innerHTML = '最新の更新：<b>第' + n.episodes + '話</b>まで公開　最終更新 ' + esc(n.lastup.slice(0, 16).replace(/-/g, '/')) + (today ? ' <span class="is-today">今日更新</span>' : '');
+    });
+  })();
+</script>
+</body>
+</html>

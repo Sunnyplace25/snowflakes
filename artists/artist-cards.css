@@ -1,0 +1,73 @@
+/* ============================================================
+   artists/artist-cards.css — アーティストカード（music.html / トップページ / 各アーティストページ下部）
+   クラスは ac- 接頭辞で、index.html の既存スタイルと衝突しない
+   ============================================================ */
+.ac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 900px; margin: 0 auto; }
+.ac-card {
+  --ac: #93c5fd;
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 18px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.ac-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--ac) 45%, transparent); box-shadow: 0 10px 40px color-mix(in srgb, var(--ac) 10%, transparent); }
+.ac-media { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--ac-glow), #0a1020; }
+.ac-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+.ac-card:hover .ac-media img { transform: scale(1.03); }
+.ac-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, rgba(12,18,32,0.7)), var(--ac-glow); pointer-events: none; }
+.ac-ph {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'Noto Serif JP', serif; font-size: 22px; letter-spacing: 6px; color: color-mix(in srgb, var(--ac) 60%, transparent);
+}
+.ac-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+.ac-kind { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: var(--ac); margin-bottom: 6px; }
+.ac-name { font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-weight: 300; font-size: 26px; letter-spacing: 3px; line-height: 1.3; }
+.ac-name a { color: #fff; text-decoration: none; }
+.ac-members { font-size: 11px; color: #64748b; letter-spacing: 2px; margin-top: 4px; }
+.ac-intro { font-size: 13px; color: #cbd5e1; line-height: 1.9; margin-top: 12px; flex: 1; }
+.ac-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.ac-go {
+  font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 3px; text-decoration: none; color: var(--ac);
+  border: 1px solid color-mix(in srgb, var(--ac) 40%, transparent); border-radius: 100px; padding: 8px 16px; transition: background 0.2s;
+}
+.ac-go:hover { background: color-mix(in srgb, var(--ac) 12%, transparent); }
+.ac-svcs { display: flex; gap: 6px; }
+.ac-svc {
+  width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; text-decoration: none; border: 1px solid rgba(255,255,255,0.12); color: #94a3b8; transition: color 0.2s, border-color 0.2s;
+}
+.ac-svc.ac-spotify:hover { color: #1db954; border-color: rgba(29,185,84,0.5); }
+.ac-svc.ac-apple:hover   { color: #b07070; border-color: rgba(176,112,112,0.5); }
+.ac-svc.ac-amazon:hover  { color: #5a8fa8; border-color: rgba(90,143,168,0.5); }
+.ac-svc.ac-youtube:hover { color: #f87171; border-color: rgba(248,113,113,0.5); }
+.ac-svc.ac-qobuz:hover   { color: #5aa0c8; border-color: rgba(90,160,200,0.5); }
+
+/* カードごとの雰囲気 */
+.ac-amaoto-club { border-radius: 6px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px), rgba(255,255,255,0.03); }
+.ac-amaoto-club .ac-name { font-family: 'Noto Serif JP', serif; font-weight: 500; letter-spacing: 6px; font-size: 22px; }
+.ac-towa .ac-name a { background: linear-gradient(90deg, #f9a8d4, #93c5fd 50%, #c4b5fd); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+@media (max-width: 860px) { .ac-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .ac-grid { grid-template-columns: 1fr; max-width: 420px; } }
+
+/* 枚数に応じた並べ方（PC）。4枚は 2×2 にしてカードが1枚だけ取り残されないようにする */
+.ac-grid.ac-count-2 { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
+.ac-grid.ac-count-4 { grid-template-columns: repeat(2, 1fr); max-width: 760px; }
+@media (max-width: 600px) { .ac-grid.ac-count-2, .ac-grid.ac-count-4 { grid-template-columns: 1fr; max-width: 420px; } }
+.ac-kotori .ac-name { font-family: 'Noto Serif JP', serif; letter-spacing: 6px; font-size: 22px; }
+
+/* カードごとの雰囲気：MoonVeil（月明かりの青紫） */
+.ac-moonveil .ac-name a { background: linear-gradient(90deg, #e2e8f0, #a5b4fc 60%, #c4b5fd); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ac-svc.ac-instagram:hover { color: #e1306c; border-color: rgba(225,48,108,0.5); }
+
+/* Creator｜制作者紹介（アーティスト一覧の下に置く案内） */
+.creator-link {
+  display: flex; align-items: center; gap: 16px; max-width: 420px; margin: 28px auto 0; padding: 12px 18px 12px 12px;
+  border-radius: 100px; border: 1px solid rgba(243,201,107,0.3); background: rgba(243,201,107,0.05);
+  text-decoration: none; color: #e2e8f0; transition: background 0.2s, border-color 0.2s;
+}
+.creator-link:hover { background: rgba(243,201,107,0.1); border-color: rgba(243,201,107,0.5); }
+.creator-link img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; object-position: 50% 30%; flex-shrink: 0; }
+.creator-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.creator-kind { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 3px; color: #f3c96b; }
+.creator-name { font-family: 'Noto Serif JP', serif; font-size: 16px; letter-spacing: 3px; }
+.creator-arrow { color: #f3c96b; }

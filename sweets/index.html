@@ -812,9 +812,9 @@
     <div onclick="event.stopPropagation()" style="text-align:center;max-width:320px;padding:0 24px;transform:translateY(16px) scale(0.94);transition:transform 0.4s cubic-bezier(.18,1.2,.45,1);" id="summer-candy-box">
       <p style="font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:5px;color:#7dd3fc;margin-bottom:20px;">SWEETs 2026 Summer</p>
       <div style="display:flex;justify-content:center;gap:14px;margin-bottom:20px;">
-        <img src="../item/candy_cassis.webp" style="width:52px;height:52px;object-fit:contain;">
-        <img src="../item/candy_milk.webp"   style="width:52px;height:52px;object-fit:contain;">
-        <img src="../item/candy_honey.webp"  style="width:52px;height:52px;object-fit:contain;">
+        <img src="../item/candy_cassis.webp" style="width:52px;height:52px;object-fit:contain;" alt="アイテム「カシスキャンディー」">
+        <img src="../item/candy_milk.webp"   style="width:52px;height:52px;object-fit:contain;" alt="アイテム「ミルクキャンディー」">
+        <img src="../item/candy_honey.webp"  style="width:52px;height:52px;object-fit:contain;" alt="アイテム「ハニーレモンキャンディー」">
       </div>
       <p style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:3px;color:#e2e8f0;margin-bottom:8px;">Summer プレゼント</p>
       <p style="font-size:11px;color:#94a3b8;letter-spacing:1px;line-height:2;margin-bottom:28px;">キャンディを各 80 個お届けします。<br>残り 20 個はガチャで集めてみよう。</p>
@@ -893,9 +893,10 @@
         <div style="flex:1;min-width:200px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden;">
           <button onclick="(function(){var body=document.getElementById('notice-acc-body');var arrow=document.getElementById('notice-acc-arrow');var open=body.style.display==='none'||body.style.display==='';body.style.display=open?'block':'none';arrow.style.transform=open?'rotate(180deg)':'rotate(0deg)';})()" style="width:100%;background:none;border:none;padding:20px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
             <span style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:4px;color:#94a3b8;">NOTICE</span>
-            <span id="notice-acc-arrow" style="color:#94a3b8;font-size:10px;transition:transform 0.3s;display:inline-block;transform:rotate(180deg);">▼</span>
+            <span id="notice-acc-arrow" style="color:#94a3b8;font-size:10px;transition:transform 0.3s;display:inline-block;transform:rotate(0deg);">▼</span>
           </button>
-          <div id="notice-acc-body" style="display:block;padding:0 20px 20px;flex-direction:column;gap:12px;">
+          <!-- 2026-10-29 ユーザー指示：最初は閉じた状態（▼で開く） -->
+          <div id="notice-acc-body" style="display:none;padding:0 20px 20px;flex-direction:column;gap:12px;">
             <a href="../gacha/" style="text-decoration:none;display:block;border-left:2px solid rgba(226,232,240,0.3);padding-left:12px;margin-bottom:8px;">
               <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#e2e8f0;margin-bottom:4px;">GACHA</p>
               <p style="font-family:'Noto Serif JP',serif;font-size:12px;color:#cbd5e1;line-height:1.9;">積もった ❄ Snow でガチャを引いてアイテムを集めよう。集めたアイテムはコンテンツ解放に使えます。</p>
@@ -938,18 +939,18 @@
             <span id="backup-acc-arrow" style="color:#94a3b8;font-size:10px;transition:transform 0.3s;display:inline-block;">▼</span>
           </button>
           <div id="backup-acc-body" style="display:none;padding:0 16px 20px;text-align:center;">
-            <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">IDとPINを設定すると<br>データを保存できます。<br>必ずメモしておいてください。</p>
-            <input type="text" id="backup-id-input" placeholder="バックアップID" autocomplete="off"
-              style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:1px;outline:none;text-align:center;margin-bottom:6px;"
-              onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
-            <input type="password" id="backup-pin-input" placeholder="PIN（数字4桁）" autocomplete="off" maxlength="4" inputmode="numeric"
-              style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px 10px;color:#94a3b8;font-family:'Noto Serif JP',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:4px;outline:none;text-align:center;margin-bottom:12px;"
-              onfocus="this.style.borderColor='rgba(249,168,212,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <!-- ファイル保存方式（サーバー不要）：処理は ../site/data-backup.js -->
+            <p style="font-family:'Noto Serif JP',serif;font-size:clamp(11px,3vw,13px);color:#cbd5e1;line-height:2;margin-bottom:14px;">Snow・アイテム・解放した内容を<br>ファイルに保存できます。<br>機種変更やデータが消えたときに<br>そのファイルから復元できます。</p>
             <div style="display:flex;gap:6px;">
-              <button onclick="sfBackupSave()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(249,168,212,0.3);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#f9a8d4;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(249,168,212,0.08)'" onmouseout="this.style.background='none'">保存する</button>
-              <button onclick="sfBackupRestore()" style="flex:1;padding:8px 4px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2.8vw,12px);letter-spacing:2px;color:#94a3b8;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">復元する</button>
+              <button type="button" id="sfbk-export" class="sfbk-btn sfbk-btn-main">データを書き出す</button>
+              <button type="button" id="sfbk-import" class="sfbk-btn">ファイルから復元</button>
             </div>
-            <p id="backup-msg" style="font-size:clamp(10px,2.8vw,12px);color:#94a3b8;letter-spacing:1px;margin-top:10px;min-height:16px;"></p>
+            <input type="file" id="sfbk-file" accept=".json,application/json" hidden>
+            <div id="sfbk-panel" hidden></div>
+            <p id="sfbk-msg" role="status" class="sfbk-msg"></p>
+            <button type="button" id="sfbk-undo" class="sfbk-link" hidden>復元する前の状態に戻す</button>
+            <p class="sfbk-note">保存したファイルには、このサイトでの遊びの記録だけが入ります（名前やメールアドレスは入りません）。</p>
+            <p class="sfbk-note sfbk-stopped">IDとPINによるクラウド保存は、安全確認のため現在停止しています。</p>
           </div>
         </div>
 
@@ -1002,9 +1003,9 @@
     <div class="section" id="sw-exchange">
       <div class="section-label">exchange</div>
       <p class="section-req" id="exch-req">
-        <span><img src="../item/candy_milk.webp"> ミルク × 50</span>
-        <span><img src="../item/candy_honey.webp"> ハニーレモン × 50</span>
-        <span><img src="../item/candy_cassis.webp"> カシス × 50</span>
+        <span><img src="../item/candy_milk.webp" alt="アイテム「ミルクキャンディー」"> ミルク × 50</span>
+        <span><img src="../item/candy_honey.webp" alt="アイテム「ハニーレモンキャンディー」"> ハニーレモン × 50</span>
+        <span><img src="../item/candy_cassis.webp" alt="アイテム「カシスキャンディー」"> カシス × 50</span>
       </p>
       <div style="max-width:480px;margin:0 auto;" id="exch-wrap"></div>
 
@@ -1072,7 +1073,7 @@
               <div id="se-overlay-1" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
                 <span style="font-size:18px;color:#475569;">🔒</span>
                 <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
-                  <img src="../item/drinkcoin_hinata.webp" style="width:20px;"> × 2
+                  <img src="../item/drinkcoin_hinata.webp" style="width:20px;" alt="アイテム「ドリンクコイン」"> × 2
                 </div>
                 <button class="se-unlock-btn" style="border-color:rgba(147,197,253,0.35);color:#93c5fd;" onclick="seUnlock(1)">解放する</button>
               </div>
@@ -1090,7 +1091,7 @@
               <div id="se-overlay-2" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
                 <span style="font-size:18px;color:#475569;">🔒</span>
                 <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
-                  <img src="../item/shiori_kouta.webp" style="width:20px;"> × 2
+                  <img src="../item/shiori_kouta.webp" style="width:20px;" alt="アイテム「本のしおり」"> × 2
                 </div>
                 <button class="se-unlock-btn" style="border-color:rgba(252,165,165,0.35);color:#fca5a5;" onclick="seUnlock(2)">解放する</button>
               </div>
@@ -1108,7 +1109,7 @@
               <div id="se-overlay-3" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,13,24,0.55);gap:8px;">
                 <span style="font-size:18px;color:#475569;">🔒</span>
                 <div style="display:flex;align-items:center;gap:4px;font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:2px;color:#64748b;">
-                  <img src="../item/coaster_hayate.webp" style="width:20px;"> × 2
+                  <img src="../item/coaster_hayate.webp" style="width:20px;" alt="アイテム「STARSの紙製コースター」"> × 2
                 </div>
                 <button class="se-unlock-btn" style="border-color:rgba(253,230,138,0.35);color:#fde68a;" onclick="seUnlock(3)">解放する</button>
               </div>
@@ -2075,7 +2076,7 @@
                       <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
                       <p class="itv-acc-status" id="itv-s-status-hayate">LOCKED</p>
                       <div id="itv-s-locked-hayate">
-                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp" alt="アイテム「カシスキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvSummerModal('hayate')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-s-unlocked-hayate" href="itv_hayate_s.html" style="display:none;">
@@ -2086,7 +2087,7 @@
                       <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
                       <p class="itv-acc-status" id="itv-s-status-hinata">LOCKED</p>
                       <div id="itv-s-locked-hinata">
-                        <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_milk.webp" alt="アイテム「ミルクキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvSummerModal('hinata')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-s-unlocked-hinata" href="itv_hinata_s.html" style="display:none;">
@@ -2097,7 +2098,7 @@
                       <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
                       <p class="itv-acc-status" id="itv-s-status-kouta">LOCKED</p>
                       <div id="itv-s-locked-kouta">
-                        <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_honey.webp" alt="アイテム「ハニーレモンキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvSummerModal('kouta')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-s-unlocked-kouta" href="itv_kouta_s.html" style="display:none;">
@@ -2124,7 +2125,7 @@
                       <p class="itv-char-name" style="color:#fde68a;margin-bottom:6px;">HAYATE</p>
                       <p class="itv-acc-status" id="itv-status-hayate">LOCKED</p>
                       <div id="itv-locked-hayate">
-                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_cassis.webp" alt="アイテム「カシスキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvModal('hayate')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-unlocked-hayate" href="itv_hayate.html" style="display:none;">
@@ -2137,7 +2138,7 @@
                       <p class="itv-char-name" style="color:#93c5fd;margin-bottom:6px;">HINATA</p>
                       <p class="itv-acc-status" id="itv-status-hinata">LOCKED</p>
                       <div id="itv-locked-hinata">
-                        <div class="itv-candy-req"><img src="../item/candy_milk.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_milk.webp" alt="アイテム「ミルクキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvModal('hinata')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-unlocked-hinata" href="itv_hinata.html" style="display:none;">
@@ -2150,7 +2151,7 @@
                       <p class="itv-char-name" style="color:#fca5a5;margin-bottom:6px;">KOUTA</p>
                       <p class="itv-acc-status" id="itv-status-kouta">LOCKED</p>
                       <div id="itv-locked-kouta">
-                        <div class="itv-candy-req"><img src="../item/candy_honey.webp"> × 50</div>
+                        <div class="itv-candy-req"><img src="../item/candy_honey.webp" alt="アイテム「ハニーレモンキャンディー」"> × 50</div>
                         <button class="itv-unlock-btn" onclick="openItvModal('kouta')">解放する</button>
                       </div>
                       <a class="itv-unlocked-link" id="itv-unlocked-kouta" href="itv_kouta.html" style="display:none;">
@@ -2268,7 +2269,7 @@
           </div>
         </div>
         <p id="undertone-yt-msg" style="font-family:'Noto Serif JP',serif;font-size:11px;color:#64748b;text-align:center;margin-top:10px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <img id="undertone-yt-item-icon" src="../item/earring_hayate.webp" style="width:20px;opacity:0.5;filter:grayscale(1);flex-shrink:0;">
+          <img id="undertone-yt-item-icon" src="../item/earring_hayate.webp" style="width:20px;opacity:0.5;filter:grayscale(1);flex-shrink:0;" alt="アイテム「黄色い石のピアス」">
           <span id="undertone-yt-item-label" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">最後まで視聴でアイテム入手</span>
         </p>
       </div>
@@ -2446,7 +2447,7 @@
                   <td id="ri-boutonniere-kouta-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
                 <tr id="item-row-spinel-book" style="cursor:default;">
-                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-spinel-book-img" src="../item/spinel_book.png" alt="spinel_book" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-spinel-book-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
+                  <td style="padding:10px 4px;font-size:12px;color:#cbd5e1;letter-spacing:1px;display:flex;align-items:center;gap:10px;"><img id="ri-spinel-book-img" src="../item/spinel_book.webp" alt="spinel_book" style="width:30px;opacity:0.3;filter:grayscale(1);"> <span id="ri-spinel-book-name" style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#475569;">???</span></td>
                   <td id="ri-spinel-book-check" style="padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:11px;color:#fca5a5;text-align:right;letter-spacing:3px;"></td>
                 </tr>
                 <tr id="item-row-shiori" style="cursor:default;">
@@ -2645,7 +2646,7 @@
       </div>
 
       <div class="post-card" style="display:none;position:relative;">
-        <img id="story-pendant-icon" src="../item/pendant_hinata.webp" title="青い石のネックレス" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;z-index:1;pointer-events:none;opacity:0.22;filter:grayscale(1);">
+        <img id="story-pendant-icon" src="../item/pendant_hinata.webp" title="青い石のネックレス" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:4px;object-fit:cover;z-index:1;pointer-events:none;opacity:0.22;filter:grayscale(1);" alt="アイテム「青い石のネックレス」">
         <div class="post-header">
           <div class="post-header-left">
             <div class="post-tag">short story</div>
@@ -5763,7 +5764,7 @@
     <div class="section" id="music-section">
       <div class="section-label">music demo</div>
       <p class="section-req" id="music-req">
-        <img src="../item/pick.webp"> ギターピック　交換アイテム
+        <img src="../item/pick.webp" alt="アイテム（Snow flakes ロゴ入りピック）"> ギターピック　交換アイテム
       </p>
       <div id="music-scene" style="display:none;"><div id="music-drum"></div></div>
       <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:4px;">
@@ -5781,7 +5782,7 @@
     <div class="section" id="sw-notes">
       <div class="section-label">notes</div>
       <p class="section-req" id="notes-req">
-        <img src="../item/proteincoffee.webp"> プロテインコーヒー × 1
+        <img src="../item/proteincoffee.webp" alt="アイテム（プロテインコーヒー）"> プロテインコーヒー × 1
       </p>
 
       <!-- EXCHANGE解放コンテンツ（動的） -->
@@ -6433,11 +6434,8 @@
 
     // ページロード時：保存済みなら自動入力
     document.addEventListener('DOMContentLoaded', async function() {
-      // Supabase から復元（localStorageが空でメールが保存されている場合）
+      // クラウドバックアップの自動復元は停止（2026-10-27）：開くたびに手元の進行を上書きしてしまうため
       var _savedEmail = localStorage.getItem('sf_sweets_email');
-      if (_savedEmail && typeof sfSyncRestore === 'function') {
-        await sfSyncRestore(_savedEmail);
-      }
 
       // Autumn (2026-09-01〜): ゲート常時オープン・自動入場
       if (_isAutumn) {
@@ -6656,7 +6654,7 @@
       },
       spinel_book: {
         noteCardId: 'note_kyori_1',
-        img: '../item/spinel_book.png',
+        img: '../item/spinel_book.webp',
         name: '赤い石が嵌め込まれた古書',
         desc: '赤い石が嵌め込まれた古書。古い本のようだが、傷みは少ない。表紙の石だけが、妙にはっきりと光を返している。',
         color: '#fca5a5',
@@ -7032,7 +7030,7 @@
       { name: 'KOUTA', img: '../plofile/chibi_kouta.webp', color: '#fca5a5',
         line: '<span style="color:#fde68a">ギターピック</span>でSWEETs限定楽曲が聴けるぞ！' },
       { name: 'HINATA', img: '../plofile/chibi_hinata.webp', color: '#93c5fd',
-        line: '山吹ことりの部屋、いってみた？', href: '../kotori.html' },
+        line: '山吹ことりのページ、いってみた？', href: '../artists/kotori/' },
       { name: 'HAYATE', img: '../plofile/chibi_hayate.webp', color: '#fde68a',
         line: 'レアアイテムは<span style="color:#fde68a">SWEETs</span>の中にあるぞ！' },
       { name: 'KOUTA', img: '../plofile/chibi_kouta.webp', color: '#fca5a5',
@@ -8065,8 +8063,8 @@
         var ready = hasEarring && haveCassis >= item.cost.amount;
         html += '<p style="font-family:\'Cormorant Garamond\',serif;font-size:9px;letter-spacing:3px;color:#fde68a;margin-bottom:12px;text-align:center;">ハヤテっち</p>';
         html += '<div style="font-size:10px;letter-spacing:1px;margin-bottom:12px;display:flex;flex-direction:column;gap:5px;">';
-        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (hasEarring ? '#94a3b8' : '#ef4444') + ';"><img src="../item/earring_hayate.webp" style="width:14px;opacity:0.8;"> 黄色い石のピアス' + (hasEarring ? '' : '&nbsp;―&nbsp;<a href="../room/hayate/" style="color:#fde68a66;text-decoration:none;font-size:9px;letter-spacing:1px;">Under tone で入手</a>') + '</div>';
-        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;"> カシスキャンディー × ' + item.cost.amount + '</div>';
+        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (hasEarring ? '#94a3b8' : '#ef4444') + ';"><img src="../item/earring_hayate.webp" style="width:14px;opacity:0.8;" alt="アイテム「黄色い石のピアス」"> 黄色い石のピアス' + (hasEarring ? '' : '&nbsp;―&nbsp;<a href="../room/hayate/" style="color:#fde68a66;text-decoration:none;font-size:9px;letter-spacing:1px;">Under tone で入手</a>') + '</div>';
+        html += '<div style="display:flex;align-items:center;gap:6px;color:' + (haveCassis >= item.cost.amount ? '#94a3b8' : '#ef4444') + ';"><img src="../item/candy_cassis.webp" style="width:14px;opacity:0.8;" alt="アイテム「カシスキャンディー」"> カシスキャンディー × ' + item.cost.amount + '</div>';
         html += '</div>';
         html += '<button class="exch-btn" style="' + (ready ? 'border-color:#fde68a55;color:#fde68a;' : '') + '" onclick="doUnlock(\'' + item.id + '\')">解放する</button>';
       }
@@ -8254,7 +8252,7 @@
             + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:10px;letter-spacing:1px;color:' + tagColor + ';">' + entry.tag + '</span>'
             + niBtnHtml
             + '</div></div>'
-            + '<div style="position:absolute;top:8px;right:8px;width:18px;height:18px;"><img src="../item/usb_hinata.webp" style="width:100%;height:100%;object-fit:contain;display:block;' + (_noteRewardGot['note_hinata_1'] ? 'opacity:1;' : 'opacity:0.4;filter:grayscale(1);') + '"></div>'
+            + '<div style="position:absolute;top:8px;right:8px;width:18px;height:18px;"><img src="../item/usb_hinata.webp" style="width:100%;height:100%;object-fit:contain;display:block;' + (_noteRewardGot['note_hinata_1'] ? 'opacity:1;' : 'opacity:0.4;filter:grayscale(1);') + '" alt="アイテム「古いUSBメモリ」"></div>'
             + '</div>';
           return;
         }
@@ -8269,7 +8267,7 @@
         var _noteItemImgs = {
           'note_hinata_2':  '../item/umbrella_hinata.webp',
           'note_sf_1':      '../item/white_pick_hinata.webp',
-          'note_kyori_1':   '../item/spinel_book.png',
+          'note_kyori_1':   '../item/spinel_book.webp',
           'note_kouta_1':   '../item/zippo_kouta.webp',
           'note_hayate_1':  '../item/wristband_hayate.webp',
           'note_prism_1':   '../item/loupe.webp',
@@ -8758,7 +8756,7 @@
     { action: 'like_chara_hinata', label: 'ヒナタをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
     { action: 'like_chara_kouta',  label: 'コウタをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
     { action: 'like_chara_hayate',  label: 'ハヤテをお気に入り',          pts: 5,  href: '../',                                                            ext: false },
-    { action: 'visit_kotori_room',  label: '山吹ことりの部屋を見る',      pts: 5,  href: '../kotori.html',                                                 ext: false },
+    { action: 'visit_kotori_room',  label: '山吹ことりのページを見る',    pts: 5,  href: '../artists/kotori/',                                                 ext: false },
     { action: 'share_site',         label: 'サイトをシェアする',           pts: 10, href: null,                                                            shareBtn: true },
   ];
 
@@ -9432,6 +9430,9 @@
 // ── Supabase データ同期（APIルート経由）────────────────
 (function() {
   var API = '/api/backup';
+  // 停止中（2026-10-27）：ID+PIN方式に第三者が閲覧・上書きできる問題があるため、通信しない。
+  // 再開する場合は方式を作り直してから。データの保存はファイル方式（../site/data-backup.js）を使う
+  var SERVER_BACKUP_STOPPED = true;
 
   var _email = null;
   var _syncTimer = null;
@@ -9461,6 +9462,7 @@
   }
 
   async function apiPost(body) {
+    if (SERVER_BACKUP_STOPPED) return null;
     try {
       var res = await fetch(API, {
         method: 'POST',
@@ -9598,6 +9600,150 @@
       if (document.hidden) sfSyncSave(_email);
     });
   };
+})();
+</script>
+
+<!-- DATA BACKUP：ファイルへの書き出し・復元 -->
+<style>
+  .sfbk-btn { flex:1; padding:9px 4px; background:none; border:1px solid rgba(255,255,255,0.12); border-radius:8px; font-family:'Noto Serif JP',serif; font-size:clamp(10px,2.8vw,12px); letter-spacing:1px; color:#cbd5e1; cursor:pointer; transition:background 0.2s; }
+  .sfbk-btn:hover { background:rgba(255,255,255,0.05); }
+  .sfbk-btn-main { border-color:rgba(249,168,212,0.35); color:#f9a8d4; }
+  .sfbk-btn-danger { border-color:rgba(252,165,165,0.45); color:#fca5a5; }
+  .sfbk-msg { font-size:clamp(10px,2.8vw,12px); color:#94a3b8; letter-spacing:1px; line-height:1.8; margin-top:10px; min-height:16px; }
+  .sfbk-msg[data-kind="ok"] { color:#6ee7b7; }
+  .sfbk-msg[data-kind="err"] { color:#fca5a5; }
+  .sfbk-note { font-family:'Noto Serif JP',serif; font-size:clamp(9px,2.5vw,11px); color:#64748b; line-height:1.8; margin-top:10px; text-align:left; }
+  .sfbk-stopped { color:#94a3b8; }
+  .sfbk-link { background:none; border:none; color:#94a3b8; font-size:clamp(10px,2.8vw,11px); text-decoration:underline; cursor:pointer; margin-top:4px; }
+  #sfbk-panel { margin-top:14px; padding:12px; border:1px solid rgba(249,168,212,0.25); border-radius:12px; background:rgba(249,168,212,0.04); text-align:left; }
+  #sfbk-panel h4 { font-family:'Noto Serif JP',serif; font-size:12px; color:#f9a8d4; font-weight:500; margin:0 0 8px; letter-spacing:1px; }
+  .sfbk-table { width:100%; border-collapse:collapse; font-size:clamp(10px,2.8vw,12px); color:#cbd5e1; }
+  .sfbk-table th, .sfbk-table td { padding:5px 4px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:right; font-weight:400; }
+  .sfbk-table th:first-child, .sfbk-table td:first-child { text-align:left; }
+  .sfbk-table thead th { color:#94a3b8; font-size:10px; letter-spacing:1px; }
+  .sfbk-table td.sfbk-up { color:#6ee7b7; }
+  .sfbk-table td.sfbk-down { color:#fca5a5; }
+  .sfbk-list { font-size:clamp(10px,2.7vw,11px); color:#94a3b8; line-height:1.8; margin:10px 0 0; padding-left:1.2em; }
+  .sfbk-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+</style>
+<script src="../site/data-backup.js"></script>
+<script>
+(function () {
+  if (!window.SfBackup) return;
+  function $(id) { return document.getElementById(id); }
+  var exp = $('sfbk-export'), imp = $('sfbk-import'), fileIn = $('sfbk-file'),
+      panel = $('sfbk-panel'), msg = $('sfbk-msg'), undoBtn = $('sfbk-undo');
+  if (!exp || !imp || !fileIn || !panel || !msg || !undoBtn) return;
+
+  var MONTHLY_LABEL = { beer: 'ビール', chocolate_hayate: 'チョコレート', cookie: 'クッキー', proteincoffee: 'プロテインコーヒー' };
+  function say(text, kind) { msg.textContent = text; msg.setAttribute('data-kind', kind || ''); }
+  function fmt(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '日時不明';
+    return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function refreshUndo() {
+    var p = SfBackup.getPrev();
+    undoBtn.hidden = !p;
+    if (p) undoBtn.textContent = '復元する前の状態に戻す（' + fmt(p.savedAt) + ' の控え）';
+  }
+  function reloadSoon() { setTimeout(function () { location.reload(); }, 1500); }
+
+  exp.addEventListener('click', function () {
+    SfBackup.exportFile().then(function (f) {
+      say('書き出しました（' + f.count + '件）。ファイルは大切に保管してください', 'ok');
+    }).catch(function () { say('書き出せませんでした。時間をおいてお試しください', 'err'); });
+  });
+  imp.addEventListener('click', function () { fileIn.value = ''; fileIn.click(); });
+  fileIn.addEventListener('change', function () {
+    var f = fileIn.files && fileIn.files[0];
+    if (!f) return;
+    panel.hidden = true;
+    if (f.size > 3 * 1024 * 1024) { say('ファイルが大きすぎます', 'err'); return; }
+    f.text().then(SfBackup.parse).then(showDiff).catch(function (e) {
+      say(e && e.backupError ? e.message : 'ファイルを読み込めませんでした', 'err');
+    });
+  });
+
+  function showDiff(parsed) {
+    var d = SfBackup.diff(SfBackup.readCurrent(), parsed.data);
+    var a = d.current, b = d.incoming;
+    panel.textContent = '';
+    panel.appendChild(el('h4', null, 'このファイルで復元すると'));
+    panel.appendChild(el('p', { class: 'sfbk-note', style: 'margin:0 0 8px' }, 'ファイルの保存日時：' + fmt(parsed.createdAt)));
+    var table = el('table', { class: 'sfbk-table' });
+    var head = el('thead'), hr = el('tr');
+    ['', 'いま', '復元後'].forEach(function (t) { hr.appendChild(el('th', null, t)); });
+    head.appendChild(hr); table.appendChild(head);
+    var body = el('tbody');
+    function row(label, x, y) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, label));
+      tr.appendChild(el('td', null, String(x)));
+      tr.appendChild(el('td', { class: y > x ? 'sfbk-up' : (y < x ? 'sfbk-down' : '') }, String(y)));
+      body.appendChild(tr);
+    }
+    row('Snow', a.snow, b.snow);
+    Object.keys(SfBackup.CANDY_LABEL).forEach(function (k) { row(SfBackup.CANDY_LABEL[k], a.candy[k] || 0, b.candy[k] || 0); });
+    row('ギターピック', a.picks, b.picks);
+    var mk = {};
+    Object.keys(a.monthly).concat(Object.keys(b.monthly)).forEach(function (k) { mk[k] = 1; });
+    Object.keys(mk).forEach(function (k) { row(MONTHLY_LABEL[k] || k, a.monthly[k] || 0, b.monthly[k] || 0); });
+    row('解放済みのアイテム・内容', a.unlocked.length, b.unlocked.length);
+    table.appendChild(body);
+    panel.appendChild(table);
+
+    var ul = el('ul', { class: 'sfbk-list' });
+    ul.appendChild(el('li', null, '記録の件数：いま ' + a.keys + '件 → 復元後 ' + b.keys + '件（変わる ' + d.changed.length + '件・増える ' + d.added.length + '件・消える ' + d.removed.length + '件）'));
+    if (d.unlockedLoss.length) ul.appendChild(el('li', null, 'この端末でだけ解放している内容が ' + d.unlockedLoss.length + '件あり、復元すると未解放に戻ります'));
+    if (d.kept.length) ul.appendChild(el('li', null, 'キャラクターの「いいね」の記録はそのまま残します'));
+    ul.appendChild(el('li', null, 'いまのデータは控えとして保存され、「復元する前の状態に戻す」で戻せます'));
+    panel.appendChild(ul);
+
+    var actions = el('div', { class: 'sfbk-actions' });
+    var pre = el('button', { type: 'button', class: 'sfbk-btn' }, 'いまのデータを先に書き出す');
+    var go = el('button', { type: 'button', class: 'sfbk-btn sfbk-btn-danger', id: 'sfbk-confirm' }, '置き換えて復元する');
+    var cancel = el('button', { type: 'button', class: 'sfbk-btn', id: 'sfbk-cancel' }, 'やめる');
+    pre.addEventListener('click', function () { exp.click(); });
+    cancel.addEventListener('click', function () { panel.hidden = true; panel.textContent = ''; say('復元をやめました'); });
+    go.addEventListener('click', function () {
+      if (!confirm('いまのデータを、このファイルの内容に置き換えます。\n（いまのデータは控えに保存され、あとで戻せます）\nよろしいですか？')) return;
+      try {
+        SfBackup.restore(parsed);
+        panel.hidden = true;
+        say('復元しました。ページを読み込み直します…', 'ok');
+        reloadSoon();
+      } catch (e) {
+        say(e && e.backupError ? e.message : '復元できませんでした', 'err');
+        refreshUndo();
+      }
+    });
+    actions.appendChild(pre); actions.appendChild(go); actions.appendChild(cancel);
+    panel.appendChild(actions);
+    panel.hidden = false;
+    say('内容を確認してください。まだ何も変わっていません');
+  }
+
+  undoBtn.addEventListener('click', function () {
+    var p = SfBackup.getPrev();
+    if (!p) { refreshUndo(); return; }
+    if (!confirm(fmt(p.savedAt) + ' に保存した控えの状態に戻します。\n（いまのデータは新しい控えになります）\nよろしいですか？')) return;
+    try {
+      SfBackup.undo();
+      say('元の状態に戻しました。ページを読み込み直します…', 'ok');
+      reloadSoon();
+    } catch (e) {
+      say(e && e.backupError ? e.message : '戻せませんでした', 'err');
+    }
+  });
+
+  refreshUndo();
 })();
 </script>
 

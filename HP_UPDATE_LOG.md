@@ -19,6 +19,27 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 
 ---
 
+## 2026-10-29 HP全体リニューアル（新HPへ切り替え）
+
+### 内容
+
+- 総合トップを新構成に（プロジェクト紹介・初めての方へ・代表作品・SPECIAL CONTENTS・制作者紹介・制作理念・SUPPORT）。カード・作品・画像は `site/site-data.js` で管理
+- 旧トップの Snow flakes 専用部分は `index.html` 内の `.sf-legacy` に非表示で保管（データは削除していない）
+- アーティストページ `artists/`（Snow flakes・TOWA・雨音クラブ・MoonVeil・山吹ことり）
+- ディスコグラフィ `releases/`（作品・楽曲ページ・歌詞・Hi-Res バッジ）。まだ鳴ってる・届く場所・プリズムに Hi-Res
+- `stories/`・`game/`・`about/`・`creative-process/`・`video/`・`shop/` を追加。共通の文字組み `typography.css`
+- `kotori.html` は `artists/kotori/` へ移動するだけのページに（ことりファクトリー・訪問特典は移植）
+- ガチャの自動ポップアップ停止・連続ログイン廃止・Under tone のアイテム必須を解除（いずれもフラグで停止、データは保持）
+- 画像の差し替え・追加、公開ファイルから内部パスを記したコメントを除去
+
+### 未対応（おいおい追加）
+
+- まだ鳴ってるのジャケット（仮）・Spotify リンク
+- 曲ごとの配信URL（一部未登録）
+- 夏の月の歌詞・MoonVeil の追加楽曲 など
+
+---
+
 ## 2026-09-05 追記
 
 ### 配信先管理HTMLを追加

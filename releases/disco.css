@@ -1,0 +1,394 @@
+/* ============================================================
+   releases/disco.css — ディスコグラフィ（一覧・作品詳細・楽曲詳細）
+   基本の配色・ナビ・セクション見出しは artists/artist.css を使い、ここでは追加分のみ
+   ============================================================ */
+/* releases/ の3ページだけ（アーティストページでもカード部分にこの CSS を読み込むため、ページ全体の指定は限定する） */
+.disco-page main { padding-top: 64px; }
+/* 見出し部分は header 要素のため artist.css の .a-section:last-of-type（下余白 96px）が当たる。ここで打ち消す */
+.a-section.dl-head, .a-section.dd-head { padding-bottom: 0; }
+
+/* ── 仮ジャケット（画像未登録・読み込み失敗） ─────────────── */
+.dj {
+  position: relative; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 120%, var(--accent-soft), transparent 70%), linear-gradient(160deg, #111a2c, #0a0f1a);
+  border: 1px solid var(--border);
+}
+.dj img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dj.is-ph::before {
+  content: '❄'; position: absolute; top: 38%; left: 0; right: 0; transform: translateY(-50%);
+  text-align: center; font-size: 28px; color: var(--accent-line);
+}
+.dj.is-ph::after {
+  content: attr(data-title); position: absolute; left: 10%; right: 10%; top: 56%;
+  text-align: center; font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 2px;
+  color: var(--muted); line-height: 1.5;
+}
+
+/* ── 一覧 ─────────────────────────────────────────────────── */
+.dl-head { padding-top: 56px; }
+.dl-head .sec-title { margin-bottom: 28px; }
+.dl-controls { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.dl-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.dl-chip {
+  font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 2px;
+  padding: 6px 16px; border-radius: 100px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12); color: var(--muted);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.dl-chip:hover { color: var(--text); }
+.dl-chip.is-on { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+.dl-sort { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted); }
+.dl-sort select {
+  font-family: inherit; font-size: 12px; color: var(--text); background: #111827;
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 100px; padding: 5px 12px; cursor: pointer;
+}
+.dl-body { padding-top: 12px; }
+.dl-empty { text-align: center; color: var(--muted); font-size: 13px; grid-column: 1 / -1; padding: 32px 0; }
+
+/* 作品カード */
+.dc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 28px 20px; }
+.dc-grid.is-small { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px 16px; }
+.dc { display: flex; flex-direction: column; gap: 3px; text-decoration: none; color: var(--text); }
+.dc .dj { margin-bottom: 10px; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
+.dc:hover .dj { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
+/* 種別と Hi-Res を同じ行に（Hi-Res は右端） */
+.dc-meta  { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 18px; }
+.dc-type  { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; }
+.dc-title { font-size: 15px; color: #fff; line-height: 1.5; }
+.dc-sub   { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.dc-artist{ font-size: 12px; color: var(--muted); }
+.dc-date  { font-size: 12px; letter-spacing: 2px; color: #94a3b8; }
+
+/* ── 詳細（作品・楽曲共通） ───────────────────────────────── */
+.dd-head { display: grid; grid-template-columns: minmax(200px, 340px) 1fr; gap: 40px; align-items: center; padding-top: 56px; }
+.dd-jacket { box-shadow: 0 18px 50px rgba(0,0,0,0.45); }
+.dd-meta  { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.dd-meta .dd-type { margin-bottom: 0; }
+.dd-type  { font-size: 11px; letter-spacing: 6px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; }
+.dd-title { font-size: clamp(24px, 4vw, 36px); font-weight: 300; color: #fff; line-height: 1.4; }
+.dd-sub   { font-size: 15px; color: var(--muted); margin-top: 4px; }
+.dd-artist { font-size: 14px; color: var(--muted); margin-top: 14px; }
+.dd-artist a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+.dd-lines { margin-top: 16px; }
+.dd-line { font-size: 13px; letter-spacing: 0.08em; color: var(--muted); }
+.dd-info .dd-credit { max-width: none; margin: 6px 0 0; }
+.dd-dates { display: flex; gap: 24px; margin-top: 18px; }
+.dd-dates dt { font-family: "Cormorant Garamond", serif; font-size: 10px; letter-spacing: 4px; color: #94a3b8; }
+.dd-dates dd { font-size: 15px; letter-spacing: 2px; color: var(--text); }
+.dd-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.dd-on { font-size: 13px; color: var(--muted); margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.dd-on a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+.dd-on small { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 2px; color: var(--dim); margin-left: 6px; }
+
+.dd-sec .sec-title { margin-bottom: 28px; }
+.dd-tracks { list-style: none; max-width: 640px; margin: 0 auto; border-top: 1px solid var(--border); }
+.dd-tracks li { border-bottom: 1px solid var(--border); }
+.dd-tracks a { display: flex; align-items: center; gap: 18px; padding: 14px 8px; text-decoration: none; color: var(--text); transition: background 0.2s; }
+.dd-tracks a:hover { background: var(--accent-soft); }
+.dd-tn { font-size: 13px; letter-spacing: 2px; color: var(--dim); width: 24px; }
+.dd-tt { flex: 1; font-size: 15px; }
+.dd-tt small { display: block; font-size: 11px; color: var(--muted); }
+.dd-tg { color: var(--dim); font-size: 18px; }
+
+.dd-sub-h { max-width: 560px; margin: 32px auto 14px; font-size: 15px; font-weight: 400; color: var(--accent); }
+.dd-sub-h:first-child { margin-top: 0; }
+/* 別バージョン欄は日本語見出しがないので、英字ラベルを少し大きく */
+#versions .sec-label { font-size: clamp(22px, 3.4vw, 30px); letter-spacing: .12em; color: #fff; margin-bottom: 0; }   /* 大きさ・色は見出し「歌詞」と同じ */
+/* 別バージョンのボタンの上の一言（versionsNote） */
+.dd-ver-note { margin: 14px 0 22px; text-align: center; font-size: 13px; line-height: 1.8; letter-spacing: .04em; color: #94a3b8; }
+/* 歌詞：読みやすい幅で左揃え。行内の改行は原文どおり（pre-wrap）。
+   空行で区切られたまとまりは p 要素で、段落の間隔は行間より少し広い程度に詰める */
+.dd-lyrics {
+  max-width: 560px; margin: 0 auto; text-align: left;
+  font-size: 16px; line-height: 1.85; letter-spacing: 0.04em; color: var(--text);
+}
+.dd-lyrics p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.dd-lyrics p + p { margin-top: 1.05em; }
+.dd-lyrics p[data-gap="2"] { margin-top: 2.1em; }
+.dd-lyrics p[data-gap="3"] { margin-top: 3.15em; }
+.dd-note { max-width: 560px; margin: 0 auto; font-size: 14px; line-height: 2.2; color: var(--muted); }
+.dd-note + .dd-note { margin-top: 16px; }
+.dd-note p { margin-bottom: 1.6em; }
+.dd-note p:last-child { margin-bottom: 0; }
+.dd-note { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 30px; }
+
+.dd-story-group + .dd-story-group { margin-top: 28px; }
+.dd-story-type { font-size: 13px; color: var(--text); margin-bottom: 12px; }
+.dd-story-type span { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-left: 10px; }
+
+/* 制作クレジット：歌詞の直下に1件1行。見出し・枠なし、歌詞より小さく落ち着いた色、歌詞と同じ開始位置 */
+.dd-credit { max-width: 560px; margin: 18px auto 0; font-size: 12px; line-height: 1.8; letter-spacing: 0.04em; color: #94a3b8; }
+.dd-credit p { margin: 0; }
+.a-section.dd-credit-sec { padding-top: 24px; }
+.dd-credit-sec .dd-credit { margin-top: 0; }
+
+.dd-versions { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.dd-versions a { display: inline-block; padding: 8px 18px; border-radius: 100px; border: 1px solid var(--accent-line); color: var(--accent); text-decoration: none; font-size: 13px; }
+
+.dd-back { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding-bottom: 96px; }
+.dd-missing { text-align: center; padding-top: 120px; padding-bottom: 120px; color: var(--muted); }
+.dd-missing p { margin-bottom: 24px; }
+
+/* ── 詳細ページの新レイアウト（.dd-v2：試験適用中の作品・楽曲） ──────────────
+   歌詞が主役：コンパクトな作品情報（小さめのジャケット）→ 歌詞（PCは2段組み・常時表示）
+   → 関連エピソード・ことりノート（折りたたみ）→ 関連作品（コンパクト） */
+.dd-v2 { --dd-w: 880px; }
+.dd-v2 .a-section.dd-sec { max-width: calc(var(--dd-w) + 48px); padding-top: 44px; }
+.dd-v2 .sec-title { font-size: 20px; margin-bottom: 22px; }
+
+/* 作品情報：ジャケットは小さく、情報と横に並べる（スマホでも横並び） */
+.dd-v2 .a-section.dd-head {
+  max-width: calc(var(--dd-w) + 48px); padding-top: 40px;
+  display: grid; grid-template-columns: 148px 1fr; gap: 28px; align-items: center; text-align: left;
+}
+.dd-v2 .dd-jacket { width: 100%; max-width: none; margin: 0; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+.dd-v2 .dd-title { font-size: clamp(22px, 3vw, 30px); }
+.dd-v2 .dd-meta { margin-bottom: 6px; }
+.dd-v2 .dd-artist { margin-top: 6px; }
+.dd-v2 .dd-lines { margin-top: 10px; }
+.dd-v2 .dd-links { margin-top: 14px; }
+.dd-v2 .dd-links .pill { padding: 7px 16px; font-size: 13px; }
+.dd-v2 .dd-meta, .dd-v2 .dd-links { justify-content: flex-start; }
+
+/* 歌詞：PC は2段組み。段落（空行区切り）は段をまたがず、段の間に細い線 */
+.dd-v2 .dd-lyrics { max-width: var(--dd-w); font-size: 16.5px; line-height: 1.8; }
+/* 一覧へ戻るボタンまでの余白を詰める */
+.dd-v2 + .dd-back { padding-top: 48px; padding-bottom: 72px; }
+@media (min-width: 760px) {
+  .dd-v2 .dd-lyrics { column-count: 2; column-gap: 72px; column-rule: 1px solid var(--border); }
+  .dd-v2 .dd-lyrics p { break-inside: avoid; }
+  /* 段落の間隔は margin（段の先頭に来たときは自動で切り詰められ、左右の段の1行目がそろう） */
+}
+@media (max-width: 680px) {
+  .dd-v2 .a-section.dd-head { grid-template-columns: 96px 1fr; gap: 18px; padding-top: 28px; align-items: start; }
+  .dd-v2 .dd-meta, .dd-v2 .dd-dates, .dd-v2 .dd-links { justify-content: flex-start; }
+  .dd-v2 .dd-title { font-size: 21px; }
+  .dd-v2 .dd-links .pill { padding: 6px 12px; font-size: 12px; }
+  .dd-v2 .dd-lyrics { font-size: 16px; }
+}
+
+/* 折りたたみ（見出しを押すと開く）：歌詞と同じ中央の幅に、細い線で区切って控えめに */
+.dd-fold { padding-top: 32px; }
+.dd-fold + .dd-fold { padding-top: 0; }
+.dd-fold details { max-width: var(--dd-w, 640px); margin: 0 auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.dd-fold + .dd-fold details { border-top: none; }
+.dd-fold summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 20px 4px; cursor: pointer; list-style: none;
+}
+.dd-fold summary::-webkit-details-marker { display: none; }
+.dd-fold summary:focus-visible { outline: 1px solid var(--accent-line); outline-offset: 2px; }
+.dd-fold-label { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.dd-fold .sec-label { display: inline; margin: 0; text-align: left; }
+.dd-fold-title { font-size: 15px; color: var(--text); }
+.dd-fold-icon { width: 10px; height: 10px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg); transition: transform 0.25s; margin-right: 6px; flex-shrink: 0; }
+.dd-fold details[open] .dd-fold-icon { transform: rotate(-135deg); }
+.dd-fold summary:hover .dd-fold-title { color: var(--accent); }
+.dd-fold-body { padding: 4px 4px 28px; }
+.dd-fold .novels { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.dd-fold .dd-note { max-width: none; }
+
+/* 関連作品：小さなジャケット＋文字の横長カードでコンパクトに */
+.dd-v2 #related .dc-grid.is-small { max-width: var(--dd-w); margin: 0 auto; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px 20px; }
+.dd-v2 #related .dc { display: grid; grid-template-columns: 64px 1fr; column-gap: 14px; row-gap: 0; align-items: center; align-content: center; }
+.dd-v2 #related .dc .dj { grid-row: 1 / span 5; margin: 0; border-radius: 8px; }
+.dd-v2 #related .dc:hover .dj { transform: none; box-shadow: none; }
+.dd-v2 #related .dc-title { font-size: 14px; }
+.dd-v2 #related .dc-artist, .dd-v2 #related .dc-date { font-size: 11px; }
+
+/* Hi-Res バッジ：細い線と淡いシャンパンゴールドで控えめに */
+.hires {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  font-family: 'Cormorant Garamond', serif; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; line-height: 1;
+  padding: 3px 7px 2px; border-radius: 3px;
+  color: #d9c79a; border: 1px solid rgba(217,199,154,0.45); background: rgba(217,199,154,0.06);
+}
+.dd-meta .hires { font-size: 11px; padding: 4px 9px 3px; }
+
+@media (max-width: 680px) {
+  .dd-head { grid-template-columns: 1fr; gap: 24px; text-align: center; padding-top: 36px; }
+  .dd-jacket { max-width: 280px; margin: 0 auto; width: 100%; }
+  .dd-dates, .dd-links, .dd-on, .dd-meta { justify-content: center; }
+  .dc-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 14px; }
+  .dc-grid.is-small { grid-template-columns: repeat(2, 1fr); }
+  .dd-credit { padding: 0 4px; }
+  .dd-note { padding: 22px 20px; }
+  .dd-lyrics { font-size: 16px; line-height: 1.85; padding: 0 4px; }
+}
+
+/* 関連エピソード（新レイアウト）：1行ずつ縦に並べ、行全体がリンク。細い線で区切って控えめに */
+.dd-stories { list-style: none; max-width: var(--dd-w, 640px); margin: 0 auto; border-top: 1px solid var(--border); }
+.dd-stories li { border-bottom: 1px solid var(--border); }
+.dd-stories a {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 6px; color: var(--text); text-decoration: none; font-size: 15px; line-height: 1.6;
+  transition: background 0.2s, color 0.2s;
+}
+.dd-stories a:hover { background: var(--accent-soft); color: var(--accent); }
+.dd-story-go { color: var(--accent); flex-shrink: 0; }
+.dd-story-song { margin-left: 12px; font-size: 12px; color: var(--muted); }
+@media (max-width: 680px) { .dd-stories a { font-size: 14px; padding: 12px 4px; } }
+
+/* ── SCENE GALLERY（物語に関連する画像と制作メモ） ─────────────────
+   PC：4枚横並び／スマホ：2列。縦長画像は 2:3 の枠に上寄りで収め（顔を切らない。位置は data の focus で調整）、
+   拡大表示では切らずに全体を表示する */
+.dg-grid { list-style: none; margin: 0 auto; padding: 0; max-width: 960px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.dg-item { margin: 0; }
+.dg-open {
+  position: relative; display: block; width: 100%; aspect-ratio: 2 / 3; padding: 0; overflow: hidden; cursor: zoom-in;
+  border-radius: 12px; border: 1px solid var(--border); background: linear-gradient(160deg, #111a2c, #0a0f1a);
+  transition: transform 0.5s ease, border-color 0.4s, box-shadow 0.5s;
+}
+.dg-open img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s ease, filter 0.6s; }
+.dg-open:hover, .dg-open:focus-visible { border-color: var(--accent-line); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+.dg-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* 制作メモ：ホバー（キーボードはフォーカス）で、下から半透明の帯がふわっと出る */
+.dg-cap {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 14px 14px; text-align: left;
+  display: flex; flex-direction: column; gap: 4px;
+  background: linear-gradient(to top, rgba(6,10,20,0.88) 0%, rgba(6,10,20,0.62) 60%, rgba(6,10,20,0) 100%);
+  opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; pointer-events: none;
+}
+.dg-cap-label { font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-size: 10px; letter-spacing: 3px; color: var(--accent); }
+.dg-cap-title { font-family: 'Noto Serif JP', serif; font-size: 13px; color: var(--text); line-height: 1.6; }
+.dg-cap-memo { font-family: 'Noto Serif JP', serif; font-size: 12px; color: rgba(226,232,240,0.86); line-height: 1.8; white-space: pre-line;
+  /* 一覧のホバーは最初の段落の3行まで（長いメモでも画像からはみ出さない）。全文は拡大表示で読む */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+@media (hover: hover) {
+  .dg-open:hover img { transform: scale(1.03); filter: brightness(0.92); }
+  .dg-open:hover .dg-cap, .dg-open:focus-visible .dg-cap { opacity: 1; transform: none; }
+}
+/* タッチ端末：重ねて表示しない（タップで拡大し、そこで読む） */
+@media (hover: none) { .dg-cap { display: none; } }
+@media (max-width: 680px) { .dg-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .dg-open { border-radius: 10px; } }
+
+/* 拡大表示（ライトボックス）
+   PC：画像の右に制作メモ欄（幅 約440px）。狭い画面・スマホ：画像の下。コメントが空の画像では欄を出さず、画像を中央に置く
+   長いメモは欄の中だけスクロール（スクロールバーは出さず、下に続きがあるときだけ控えめな案内とぼかしを出す） */
+html.dg-lock { overflow: hidden; }
+.dg-lb { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: var(--text); }
+.dg-lb::backdrop { background: rgba(4,7,14,0.93); backdrop-filter: blur(6px); }
+.dg-lb[open] { animation: dgFade 0.35s ease; }
+@keyframes dgFade { from { opacity: 0; } to { opacity: 1; } }
+.dg-lb-inner { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; padding: 56px 80px 40px; box-sizing: border-box; scrollbar-width: none; }
+.dg-lb-inner::-webkit-scrollbar { display: none; }
+.dg-lb-fig { --note-w: min(460px, 40vw); margin: 0; display: flex; align-items: center; justify-content: center; gap: 44px; max-width: 1280px; width: 100%; max-height: 100%; }
+.dg-lb-media { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+/* 画像は縦横比のまま（object-fit: contain）。高さ・幅の上限だけを決める */
+.dg-lb-img { display: block; max-height: calc(100vh - 140px); max-width: min(62vw, 720px); object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.55); }
+.dg-lb.has-note .dg-lb-img { max-width: min(calc(100vw - 160px - 44px - var(--note-w)), 720px); }
+.dg-lb-count { font-size: 11px; letter-spacing: 3px; color: var(--muted); min-height: 1em; }
+
+/* 制作メモ欄：透けすぎない暗い面・細い縁取り。文字は 16px・行間 1.8・左揃え */
+.dg-lb-cap {
+  position: relative; width: var(--note-w); flex-shrink: 0; align-self: center; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 14px; text-align: left;
+  max-height: calc(100vh - 160px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 28px 32px 30px; border-radius: 14px;
+  background: rgba(11,16,27,0.94); border: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  scrollbar-width: none;   /* スクロールバーは出さない（スクロール自体はできる） */
+}
+.dg-lb-cap::-webkit-scrollbar { display: none; }
+.dg-lb-cap[hidden] { display: none; }
+.dg-lb-label { font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-size: 12px; letter-spacing: 4px; color: var(--accent); }
+.dg-lb-title { font-family: 'Noto Serif JP', serif; font-size: 17px; line-height: 1.7; color: #f1f4f9; }
+.dg-lb-memo { font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 1.8; letter-spacing: 0.02em; color: #e3e8f0; white-space: pre-line;
+  word-break: auto-phrase; line-break: strict; overflow-wrap: break-word; }   /* 単語の途中で折り返しにくく */
+.dg-lb-title, .dg-lb-label { word-break: auto-phrase; }
+.dg-lb-memo p { margin: 0; }
+.dg-lb-memo p + p { margin-top: 1.05em; }
+.dg-lb-link { align-self: flex-start; font-size: 13px; letter-spacing: 1px; color: var(--accent); text-decoration: none; margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.09); width: 100%; }
+.dg-lb-link:hover { text-decoration: underline; }
+.dg-lb-label[hidden], .dg-lb-title[hidden], .dg-lb-memo[hidden], .dg-lb-link[hidden] { display: none; }
+/* 続きの案内：欄の下端に重ねるぼかし＋小さな文字。最後まで読むと消える */
+.dg-lb-more {
+  position: sticky; bottom: 0; flex-shrink: 0; margin: -72px -32px 0; height: 72px; padding: 0 32px 12px; box-sizing: border-box;
+  display: flex; align-items: flex-end; justify-content: flex-end; pointer-events: none;
+  font-size: 11px; letter-spacing: 2px; color: rgba(203,213,225,0.75);
+  background: linear-gradient(to bottom, rgba(11,16,27,0), rgba(11,16,27,0.96) 62%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.dg-lb-cap.has-more .dg-lb-more { opacity: 1; }
+
+.dg-lb-close, .dg-lb-nav {
+  position: absolute; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: var(--text); border-radius: 50%;
+  transition: background 0.2s, border-color 0.2s;
+}
+.dg-lb-close { top: 16px; right: 16px; width: 40px; height: 40px; font-size: 22px; line-height: 1; }
+.dg-lb-nav { top: 50%; transform: translateY(-50%); width: 44px; height: 44px; font-size: 26px; line-height: 1; }
+.dg-lb-prev { left: 18px; } .dg-lb-next { right: 18px; }
+.dg-lb-close:hover, .dg-lb-nav:hover { background: var(--accent-soft); border-color: var(--accent-line); }
+.dg-lb-close:focus-visible, .dg-lb-nav:focus-visible, .dg-lb-link:focus-visible, .dg-lb-cap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dg-lb.is-single .dg-lb-nav { display: none; }
+
+/* 狭い画面・スマホ：画像の下に制作メモ。メモ欄の中ではスクロールさせず、全体を縦にスクロール */
+@media (max-width: 960px) {
+  .dg-lb-inner { padding: 60px 16px 92px; align-items: flex-start; overflow-y: auto; }
+  .dg-lb-fig { --note-w: 100%; flex-direction: column; justify-content: flex-start; gap: 16px; max-height: none; }   /* 長いメモでも画像が上にはみ出さない */
+  .dg-lb-media { width: 100%; }
+  .dg-lb-img { max-width: 100%; max-height: 66vh; }
+  .dg-lb.has-note .dg-lb-img { max-width: 100%; max-height: 58vh; }   /* コメント欄の書き出しが最初から見えるように少し小さく */
+  .dg-lb-cap { width: 100%; max-width: 600px; max-height: none; overflow: visible; align-self: center; padding: 22px 20px 24px; gap: 12px; }
+  .dg-lb-memo { line-height: 1.85; }
+  .dg-lb-more { display: none; }
+  /* ×・前後ボタンは画面に固定（スクロールしても見える）。上下端は暗いぼかしの帯にして、文字がボタンの下に重ならないように */
+  .dg-lb-close { position: fixed; z-index: 3; background: rgba(10,14,24,0.85); }
+  .dg-lb[open]::before { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 64px; z-index: 2; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(4,7,14,0.95) 50%, rgba(4,7,14,0)); }
+  .dg-lb[open]::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; height: 88px; z-index: 2; pointer-events: none;
+    background: linear-gradient(to top, rgba(4,7,14,0.97) 55%, rgba(4,7,14,0)); }
+  .dg-lb-nav { position: fixed; top: auto; bottom: 20px; transform: none; z-index: 3; background: rgba(10,14,24,0.85); }
+  .dg-lb-prev { left: calc(50% - 56px); } .dg-lb-next { right: calc(50% - 56px); }
+}
+@media (prefers-reduced-motion: reduce) { .dg-open, .dg-open img, .dg-cap, .dg-lb[open], .dg-lb-more { transition: none; animation: none; } }
+
+/* ── 歌詞モーダル（全楽曲共通）──────────────────────────────
+   ページ内は「歌詞を見る」ボタンだけ。モーダルは1カラム・左揃え。PC は画面を広く使い、本文は読みやすい幅に収める。
+   スマホは画面いっぱいで縦にスクロール。スクロールバーは細く目立たないものにする */
+.dd-lyr-open-wrap { text-align: center; margin: 4px 0 0; }
+.dd-lyr-open { cursor: pointer; font-family: inherit; font-size: 14px; letter-spacing: .08em; padding: 11px 30px; }.dd-lyr-src[hidden] { display: none !important; }
+html.dd-lyr-lock { overflow: hidden; }
+.dd-lyr { width: min(1080px, 92vw); max-width: none; height: min(92vh, 1100px); max-height: none; margin: auto; padding: 0;
+  border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; background: #0b111d; color: var(--text); box-shadow: 0 30px 90px rgba(0,0,0,0.6); overflow: hidden; }
+.dd-lyr::backdrop { background: rgba(4,7,14,0.82); backdrop-filter: blur(6px); }
+.dd-lyr[open] { display: flex; animation: ddLyrIn .3s ease; }
+@keyframes ddLyrIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dd-lyr-box { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; }
+.dd-lyr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 26px 32px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+.dd-lyr-head .sec-label { display: block; margin-bottom: 6px; text-align: left; letter-spacing: 5px; }
+.dd-lyr-title { margin: 0; font-family: 'Noto Serif JP', serif; font-weight: 400; font-size: 22px; letter-spacing: .06em; color: #f1f4f9; }
+.dd-lyr-artist { margin: 6px 0 0; font-size: 13px; letter-spacing: .1em; color: var(--muted); }
+.dd-lyr-close { flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05);
+  color: var(--text); font-size: 22px; line-height: 1; cursor: pointer; transition: background .2s, border-color .2s; }
+.dd-lyr-close:hover { background: var(--accent-soft); border-color: var(--accent-line); }
+.dd-lyr-close:focus-visible, .dd-lyr-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* 本文：スクロールは本文の枠だけ。細く目立たないスクロールバー */
+.dd-lyr-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 36px 32px 56px;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.16) transparent; }
+.dd-lyr-scroll::-webkit-scrollbar { width: 6px; }
+.dd-lyr-scroll::-webkit-scrollbar-track { background: transparent; }
+.dd-lyr-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); border-radius: 6px; }
+.dd-lyr-body { max-width: 34em; margin: 0 auto; text-align: left; font-family: 'Noto Serif JP', serif; font-size: 17px; line-height: 2.05; letter-spacing: .05em; color: #e6eaf1;
+  /* 歌詞の本文だけ、通常操作での選択・コピーを抑える（読み上げなどの支援技術には影響しない） */
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.dd-lyr-body p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere;
+  /* 長い行が折り返すとき、文節で切って1文字だけ次の行に残さない（スマホ幅・2026-10-28） */
+  word-break: auto-phrase; text-wrap-style: pretty; }
+.dd-lyr-body p + p { margin-top: 1.6em; }
+.dd-lyr-body p[data-gap="2"] { margin-top: 3.2em; }
+.dd-lyr-body p[data-gap="3"] { margin-top: 4.8em; }
+/* クレジット（見出しのアーティスト名の下に小さく・2026-10-28） */
+.dd-lyr-credit .dd-credit { max-width: none; margin: 4px 0 0; padding: 0; font-size: 12px; line-height: 1.7; letter-spacing: 0.06em; color: #94a3b8; }
+.dd-lyr-credit .dd-credit p { margin: 0; }
+@media (max-width: 680px) {
+  .dd-lyr { width: 100vw; height: 100dvh; border-radius: 0; border: 0; }
+  .dd-lyr-head { padding: 18px 18px 14px; }
+  .dd-lyr-title { font-size: 18px; }
+  .dd-lyr-close { width: 40px; height: 40px; }
+  .dd-lyr-scroll { padding: 26px 22px 64px; }
+  .dd-lyr-body { font-size: 16px; line-height: 1.95; }
+  .dd-lyr-body p + p { margin-top: 1.4em; }
+}
+@media (prefers-reduced-motion: reduce) { .dd-lyr[open] { animation: none; } }
