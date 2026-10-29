@@ -1598,7 +1598,8 @@ function sfShare() {
       // 第2章が始まる日（それまで完結表示のままトップに）
       var CH2_START = null; // 例: new Date('2026-11-XX T20:30:00');
 
-      var COMPLETE_DATE = new Date('2026-10-30T00:00:00'); // ep.25 翌日から完結表示
+      // 完結表示は使わない（2026-10-30 ユーザー指示：まだ続くため）。完結にするときは日付を入れる 例: new Date('2026-12-01T00:00:00')
+      var COMPLETE_DATE = null;
 
       function updateKamisama() {
         var now    = new Date();
@@ -1610,7 +1611,7 @@ function sfShare() {
         if (!banner) return;
 
         // ── 完結フェーズ（10/30以降・第2章開始前）──────────────────────
-        var isComplete = now >= COMPLETE_DATE && (!CH2_START || now < CH2_START);
+        var isComplete = !!COMPLETE_DATE && now >= COMPLETE_DATE && (!CH2_START || now < CH2_START);
         if (isComplete) {
           banner.classList.remove('active');
           banner.classList.add('complete');
