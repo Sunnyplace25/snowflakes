@@ -1031,8 +1031,9 @@ function sfShare() {
   </div>
 </section>
 
-<!-- 3. 楽しみ方を選ぶ（入口。旧「初めての方へ」・2026-10-29 改名。アンカー #start-here は維持） -->
-<section class="sf-sec" id="start-here">
+<!-- 3. 楽しみ方を選ぶ（入口。旧「初めての方へ」・2026-10-29 改名。アンカーも #explore に。旧 #start-here へのリンクは直前の空要素で受ける） -->
+<span id="start-here" aria-hidden="true"></span>
+<section class="sf-sec" id="explore">
   <div class="sf-wrap">
     <span class="sf-sec-label">EXPLORE</span>
     <h2 class="sf-sec-title">楽しみ方を選ぶ</h2>
@@ -4607,7 +4608,7 @@ document.addEventListener('visibilitychange', function() {
 </style>
 <nav id="page-dot-nav">
   <a href="#project"><span class="pnd"></span>PROJECT</a>
-  <a href="#start-here"><span class="pnd"></span>EXPLORE</a>
+  <a href="#explore"><span class="pnd"></span>EXPLORE</a>
   <a href="#works"><span class="pnd"></span>WORKS</a>
   <a href="#topics"><span class="pnd"></span>NEWS</a>
   <a href="#contents"><span class="pnd"></span>SPECIAL</a>
@@ -4622,7 +4623,7 @@ document.addEventListener('visibilitychange', function() {
 </nav>
 <script>
 (function() {
-  var ANCHORS = ['#project','#start-here','#works','#topics','#contents','#creator','#links'];
+  var ANCHORS = ['#project','#explore','#works','#topics','#contents','#creator','#links'];
   var links = document.querySelectorAll('#page-dot-nav a');
   function updateActive() {
     var mid = window.scrollY + window.innerHeight * 0.15;
