@@ -1598,8 +1598,8 @@ function sfShare() {
       // 第2章が始まる日（それまで完結表示のままトップに）
       var CH2_START = null; // 例: new Date('2026-11-XX T20:30:00');
 
-      // 完結表示は使わない（2026-10-30 ユーザー指示：まだ続くため）。完結にするときは日付を入れる 例: new Date('2026-12-01T00:00:00')
-      var COMPLETE_DATE = null;
+      // ep.25 翌日から「第一章 全25話」の表示（2026-10-30 ユーザー指示：まだ続くので「完結」の文字は出さない）
+      var COMPLETE_DATE = new Date('2026-10-30T00:00:00');
 
       function updateKamisama() {
         var now    = new Date();
@@ -1619,7 +1619,7 @@ function sfShare() {
           banner.style.flex = '2';
           if (sfWrap) sfWrap.style.flex = '1';
           if (epEl)   epEl.textContent  = '第一章 全25話';
-          if (status) status.textContent = '完　結';
+          if (status) status.textContent = '';   // 「完結」は出さない（連載が続くため）
           if (sub)    sub.textContent    = '解散寸前のバンドに、\n音を聞く神様がついてきた。';
           return;
         }
