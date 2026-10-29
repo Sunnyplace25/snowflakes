@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
   <script src="../snow.js"></script>
+  <script src="../site/phrase.js"></script>
   <style>
     :root {
       --hinata: #93c5fd;
@@ -314,6 +315,7 @@
       html += '<p class="section-spacer">\u3000</p>';
     });
     bodyEl.innerHTML = html;
+    if (window.SfPhrase) SfPhrase.apply(bodyEl);   // 改行を句読点の位置に寄せる
 
     // スクロール読了でアイテム付与 / 再読了でポップアップのみ
     var alreadyScrolled = !!localStorage.getItem(SCROLL_KEY);

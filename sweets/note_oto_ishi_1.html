@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
   <script src="../snow.js"></script>
+  <script src="../site/phrase.js"></script>
   <style>
     :root { --hinata:#93c5fd; --kouta:#fca5a5; --hayate:#fde68a; --bg:#0c1220; --text:#e2e8f0; --muted:#cbd5e1; --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08); --sweets:#f9a8d4; }
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -113,6 +114,7 @@
       html += '<p class="section-spacer">　</p>';
     });
     bodyEl.innerHTML = html;
+    if (window.SfPhrase) SfPhrase.apply(bodyEl);   // 改行を句読点の位置に寄せる
   });
   (function() {
     var canvas = document.getElementById('snow');
