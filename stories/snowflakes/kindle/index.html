@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>Snow flakes Kindle 版｜STORIES｜Snow flakes 公式</title>
+  <meta name="description" content="連載小説「Snow flakes」の Kindle 版。小説家になろうの連載をまとめた電子書籍（描き下ろし収録）の紹介ページです。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Snow flakes Kindle 版｜STORIES">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/snowflakes/kindle/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../artists/artist.css">
+  <link rel="stylesheet" href="../../../site/site.css">
+  <style>
+    /* Kindle 版の紹介（1巻ずつ、表紙と紹介文を横並び。スマホは縦並び） */
+    .kd-list { display: flex; flex-direction: column; gap: 28px; max-width: 760px; margin: 0 auto; }
+    .kd-vol { display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: center; padding: 24px; border-radius: 18px; border: 1px solid var(--border); background: var(--card); }
+    .kd-vol img { width: 100%; aspect-ratio: 1 / 1.5; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); display: block; }
+    .kd-no { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 5px; color: var(--accent, #93c5fd); }
+    .kd-title { font-family: 'Noto Serif JP', serif; font-weight: 400; font-size: 20px; color: #fff; line-height: 1.6; margin: 6px 0 12px; }
+    .kd-text { font-size: 13.5px; color: #b8c5d4; line-height: 1.95; }
+    .kd-text p { margin: 0; }
+    .kd-text p:first-child { color: #d3dce7; margin-bottom: 6px; }
+    .kd-go { display: inline-block; margin-top: 16px; }
+    @media (max-width: 600px) {
+      .kd-vol { grid-template-columns: 1fr; gap: 18px; padding: 20px; }
+      .kd-vol img { max-width: 220px; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body data-artist="stories-snowflakes">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../">← Snow flakes</a>
+  <a class="nav-label" href="../../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../../">HOME</a>
+    <a class="nav-pill" href="../../">STORIES</a>
+  </div>
+</nav>
+
+<main>
+  <header class="sf-work-hero" style="--c:#93c5fd">
+    <p class="sf-work-kind">電子書籍</p>
+    <h1 class="sf-work-title">Snow flakes</h1>
+    <p class="sf-work-lead">Kindle 版</p>
+  </header>
+
+  <section class="sf-sec" id="books">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">KINDLE</span>
+      <h2 class="sf-sec-title sf-head-gap">まとめて読む</h2>
+      <p class="sf-sec-lead">Amazon Kindle にて好評配信中</p>
+      <div class="kd-list" id="kd-list"></div>
+      <p class="sf-sec-lead" style="margin-top:28px;margin-bottom:0">以下続刊</p>
+      <div class="sf-actions">
+        <a class="pill" href="https://www.amazon.co.jp/stores/author/B0GPJX645L/allbooks" target="_blank" rel="noopener noreferrer">Amazon 著者ページ →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sf-sec" id="read">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">READ</span>
+      <h2 class="sf-sec-title sf-head-gap">連載で読む</h2>
+      <div class="sf-links">
+        <a class="sf-link-row" href="https://ncode.syosetu.com/n9009lo/1/" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">第1話から読む</span><span class="sf-link-note">小説家になろう</span><span>→</span></a>
+        <a class="sf-link-row" href="../"><span class="sf-link-name">Snow flakes</span><span class="sf-link-note">シリーズページ</span><span>→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="a-footer" style="padding-top:88px;">
+  <div class="cp-footer-links sf-footer-links"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../../../artists/artists.js"></script>
+<script src="../../../artists/artist.js"></script>
+<script src="../../../site/site-data.js"></script>
+<script src="../../../site/site.js"></script>
+<script src="../../../site/site-footer.js" data-root="../../../"></script>
+<script src="../../../snow.js"></script>
+<script src="../books.js"></script>
+<script>
+  // 書籍データは ../books.js（シリーズページの書籍タブと共用）。紹介文は1行目がキャッチ
+  (function () {
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    document.getElementById('kd-list').innerHTML = (window.SF_BOOKS || []).map(function (b) {
+      var no = (b.title.match(/^(\d+):/) || [])[1], name = b.title.replace(/^\d+:\s*/, '');
+      return '<article class="kd-vol"><a href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer"><img src="../../../' + encodeURI(b.img) + '" alt="Snow flakes ' + esc(b.title) + ' 表紙" loading="lazy"></a>' +
+        '<div><p class="kd-no">' + (no ? 'VOL.' + esc(no) : '') + '</p><h3 class="kd-title">' + esc(name) + '</h3>' +
+        '<div class="kd-text">' + b.text.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('') + '</div>' +
+        '<a class="pill kd-go" href="' + esc(b.url) + '" target="_blank" rel="noopener noreferrer">Kindleで読む →</a></div></article>';
+    }).join('');
+  })();
+</script>
+</body>
+</html>

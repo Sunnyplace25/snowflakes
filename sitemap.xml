@@ -56,6 +56,7 @@
   <!-- 総合トップの各入口（2026-10-26。SHOP は公開まで載せない） -->
   <url><loc>https://sunnyplace25.github.io/snowflakes/stories/</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sunnyplace25.github.io/snowflakes/stories/snowflakes/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sunnyplace25.github.io/snowflakes/stories/snowflakes/kindle/</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://sunnyplace25.github.io/snowflakes/stories/kamisama/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://sunnyplace25.github.io/snowflakes/stories/otohazu/</loc><lastmod>2026-10-26</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://sunnyplace25.github.io/snowflakes/game/</loc><lastmod>2026-10-26</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
