@@ -35,7 +35,7 @@
   var works = [
     { id: 'snowflakes', status: 'public', featured: true, order: 1,
       title: 'Snow flakes', kana: 'スノーフレークス', kind: '連載小説・シリーズ', page: 'stories/snowflakes/',
-      lead: '約束なんてしていない。それでも、三人の音は続いていく。高校時代に始まったバンド、Snow flakes。',   // 2026-10-28 ユーザー指定の紹介文の冒頭2文（全文は stories/snowflakes/ の冒頭）
+      lead: '約束なんてしていない。それでも、三人の音は続いていく。',   // 2026-10-28 ユーザー指定の紹介文の冒頭（2026-10-29「高校時代に始まったバンド…」は一覧から外す指示）（全文は stories/snowflakes/ の冒頭）
       image: 'img/works/snowflakes.webp', imageSpec: '1600×900（16:9）',   // 2026-10-28 ユーザー指定のイラストに差し替え（元画像は制作用の保管場所。対応は引き継ぎ資料）。旧：仮の Kindle 1巻表紙 snowflakes_ad.webp（ファイルは残している）
       serials: [{ label: '小説家になろう', url: NAROU + 'n9009lo/', ncode: 'n9009lo', note: '毎日21時更新' }],
       artists: ['snowflakes'] },

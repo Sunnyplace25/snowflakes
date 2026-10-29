@@ -1018,8 +1018,7 @@ function sfShare() {
 <!-- 2. プロジェクト紹介 -->
 <section class="sf-sec" id="project">
   <div class="sf-wrap">
-    <span class="sf-sec-label">PROJECT</span>
-    <h2 class="sf-sec-title sf-head-gap">言葉にならない感情を、音に。</h2>
+    <span class="sf-sec-label sf-head-gap">PROJECT</span>
     <div class="sf-prose">
       <p>Snow flakes Story &amp; Music Projectは、<br>山吹ことりが手がけるクロスメディア創作プロジェクトです。</p>
       <p>小説で描かれる人物たちの物語。<br>その世界から生まれる音楽。<br>情景を映し出す映像や、物語の中へ入り込むゲーム。</p>
@@ -2665,9 +2664,8 @@ function sfShare() {
     if (typeof sfStartHints === 'function') setTimeout(sfStartHints, 800);
   }
   document.addEventListener('DOMContentLoaded', function() {
-    var _tsSeen = parseInt(localStorage.getItem('sf_tutorial_seen') || '0', 10);
-    var _daysSince = (Date.now() - _tsSeen) / 86400000;
-    if (_daysSince > 30) {
+    // ようこそガイドは初回の1回だけ（2026-10-29 ユーザー指示。以前は30日ごとに再表示）
+    if (!localStorage.getItem('sf_tutorial_seen')) {
       var t = document.getElementById('sf-tutorial');
       var triggered = false;
       function showTutorial() {
@@ -4462,6 +4460,7 @@ document.addEventListener('visibilitychange', function() {
 
   window.sfStartHints = function() {
     if (localStorage.getItem(HINT_KEY)) return;
+    localStorage.setItem(HINT_KEY, '1');   // 表示した時点で済みにする（途中で離れても再表示しない・2026-10-29 ユーザー指示）
     showStep(0);
   };
 

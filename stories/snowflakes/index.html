@@ -89,9 +89,8 @@
           <p>そのまま抱えながら、三人は進んでいく。</p>
           <p>未完成なまま、それでも音を鳴らし続ける。</p>
         </div>
-        <div class="sf-update" id="sf-update" style="margin-top:32px">最新の更新：取得中…</div>
+        <div class="sf-update-list" id="sf-update" style="margin-top:32px"></div>
         <div class="sf-links" style="margin-top:14px">
-          <a class="sf-link-row" href="https://ncode.syosetu.com/n9009lo/" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">小説家になろう</span><span class="sf-link-note">毎日21時更新</span><span>→</span></a>
           <a class="sf-link-row" href="https://ncode.syosetu.com/n9009lo/1/" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">第1話から読む</span><span>→</span></a>
         </div>
       </div>
@@ -276,12 +275,7 @@
     // 作品の画像（site-data.js）と最新の更新（小説家になろう API。取得できなければ未取得）
     var w = (window.SF_SITE.works || []).filter(function (x) { return x.id === 'snowflakes'; })[0];
     if (w && w.image) document.getElementById('sf-hero-media').innerHTML = '<div class="sf-media has-img" style="--ratio:16 / 9;max-width:880px;margin:32px auto 0;border-radius:18px"><img src="../../' + encodeURI(w.image) + '" alt="Snow flakes"></div>';
-    SfSite.narou(function (map) {
-      var n = !map.error && map.n9009lo, box = document.getElementById('sf-update');
-      if (!n || !n.lastup) { box.innerHTML = '最新の更新：<b>未取得</b>（連載ページで最新話をご確認ください）'; return; }
-      var today = n.lastup.slice(0, 10) === new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10);
-      box.innerHTML = '最新の更新：<b>第' + n.episodes + '話</b>まで公開　最終更新 ' + esc(n.lastup.slice(0, 16).replace(/-/g, '/')) + (today ? ' <span class="is-today">今日更新</span>' : '');
-    });
+    SfSite.updateBanners(document.getElementById('sf-update'), w);
   })();
 </script>
 </body>

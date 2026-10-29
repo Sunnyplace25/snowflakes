@@ -75,6 +75,34 @@
 .sf-link-row:hover { border-color: var(--accent-line, rgba(147,197,253,0.35)); }
 .sf-link-name { flex: 1; font-size: 15px; color: #fff; }
 .sf-link-note { font-size: 12px; color: #94a3b8; }
+/* 最新の更新バナー（トップの DAILY UPDATE と同じ見た目・作品色 --c。当日更新は .is-today で光る） */
+.sf-update-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; }
+.sf-upd { position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 28px 32px; border-radius: 20px; text-decoration: none;
+  background: color-mix(in srgb, var(--c) 3%, transparent); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); transition: background .4s, transform .4s; animation: sfUpdGlow 3s ease-in-out infinite; }
+.sf-upd:hover { background: color-mix(in srgb, var(--c) 7%, transparent); transform: translateY(-1px); }
+.sf-upd-shine { pointer-events: none; position: absolute; inset: 0; opacity: 0; transition: opacity .8s; background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--c) 8%, transparent) 0%, transparent 70%); }
+.sf-upd-dot { position: relative; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: color-mix(in srgb, var(--c) 40%, #0b1220); }
+.sf-upd-body { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sf-upd-label { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 7px; margin-bottom: 8px; color: color-mix(in srgb, var(--c) 55%, #1e293b); }
+.sf-upd-title { font-family: 'Noto Serif JP', serif; font-weight: 300; font-size: clamp(20px, 4vw, 28px); letter-spacing: .06em; line-height: 1.25; color: color-mix(in srgb, var(--c) 80%, #1e293b); }
+.sf-upd-ep { font-family: 'Cormorant Garamond', serif; font-size: .85em; margin-left: 10px; color: color-mix(in srgb, var(--c) 55%, #1e293b); }
+.sf-upd-sub { font-size: 12px; letter-spacing: 1px; margin-top: 6px; color: color-mix(in srgb, var(--c) 60%, #1e293b); }
+.sf-upd-side { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
+.sf-upd-status { font-size: 12px; letter-spacing: 2px; color: color-mix(in srgb, var(--c) 60%, #1e293b); }
+.sf-upd-arrow { font-size: 20px; margin-top: 6px; color: color-mix(in srgb, var(--c) 60%, #1e293b); }
+.sf-upd.is-today { animation: sfUpdGlowActive 2.2s ease-in-out infinite; background: color-mix(in srgb, var(--c) 5%, transparent); }
+.sf-upd.is-today .sf-upd-shine { opacity: 1; }
+.sf-upd.is-today .sf-upd-dot { background: var(--c); animation: sfUpdDot 2.2s ease-in-out infinite; }
+.sf-upd.is-today .sf-upd-label { letter-spacing: 8px; }
+.sf-upd.is-today .sf-upd-title, .sf-upd.is-today .sf-upd-status, .sf-upd.is-today .sf-upd-arrow { color: var(--c); }
+.sf-upd.is-today .sf-upd-label, .sf-upd.is-today .sf-upd-ep, .sf-upd.is-today .sf-upd-sub { color: color-mix(in srgb, var(--c) 85%, #1e293b); }
+.sf-upd.is-today .sf-upd-arrow { animation: sfUpdArrow 1.6s ease-in-out infinite; }
+@keyframes sfUpdGlow { 0%,100% { box-shadow: 0 0 24px color-mix(in srgb, var(--c) 30%, transparent), 0 0 60px color-mix(in srgb, var(--c) 10%, transparent); } 50% { box-shadow: 0 0 48px color-mix(in srgb, var(--c) 60%, transparent), 0 0 110px color-mix(in srgb, var(--c) 22%, transparent); } }
+@keyframes sfUpdGlowActive { 0%,100% { box-shadow: 0 0 36px color-mix(in srgb, var(--c) 55%, transparent), 0 0 100px color-mix(in srgb, var(--c) 22%, transparent); border-color: color-mix(in srgb, var(--c) 70%, transparent); } 50% { box-shadow: 0 0 70px color-mix(in srgb, var(--c) 85%, transparent), 0 0 160px color-mix(in srgb, var(--c) 35%, transparent); border-color: var(--c); } }
+@keyframes sfUpdDot { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 60%, transparent); } 50% { transform: scale(1.3); box-shadow: 0 0 0 6px transparent; } }
+@keyframes sfUpdArrow { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+@media (max-width: 560px) { .sf-upd { padding: 22px 20px; gap: 14px; } .sf-upd-status { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sf-upd, .sf-upd * { animation: none !important; } }
 .sf-update { max-width: 520px; margin: 0 auto; padding: 18px 20px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); font-size: 14px; line-height: 1.9; color: #b8c5d4; }
 .sf-update b { color: #fff; font-weight: 400; }
 .sf-update .is-today { color: var(--accent, #93c5fd); }

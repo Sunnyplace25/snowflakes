@@ -154,10 +154,11 @@
         (w.short ? '<p class="sf-card-note" style="margin-top:6px">通称「' + esc(w.short) + '」</p>' : '') +
         '<p class="sf-work-lead">' + esc(w.lead) + '</p>' + media(root, w, w.short || w.title, w.kana || '', '16 / 9') + '</header>' +
       sec('synopsis', 'STORY', 'あらすじ', w.synopsis && w.synopsis.length ? '<div class="sf-prose">' + w.synopsis.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' : '') +
-      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update" id="sf-update">取得中…</div>') +
+      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>') +
       sec('read', 'READ', '連載先', '<div class="sf-links">' + (w.serials || []).map(function (s) {
-        return '<a class="sf-link-row" href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">' + esc(s.label) + '</span>' +
-          (s.note ? '<span class="sf-link-note">' + esc(s.note) + '</span>' : '') + '<span>→</span></a>';
+        var row = function (href, name, note) { return '<a class="sf-link-row" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">' + esc(name) + '</span>' +
+          (note ? '<span class="sf-link-note">' + esc(note) + '</span>' : '') + '<span>→</span></a>'; };
+        return s.ncode ? row(s.url + '1/', '第1話から読む', s.label) : row(s.url, s.label, s.note);
       }).join('') + '</div>') +
       sec('characters', 'CHARACTERS', '登場人物', related.length ? '<p class="sf-sec-lead">作中のバンドとメンバーは、アーティストページで紹介しています。</p><div class="sf-links">' + related.map(function (a) {
         return '<a class="sf-link-row" href="' + esc(root + a.page) + '"><span class="sf-link-name">' + esc(a.name) + '</span><span class="sf-link-note">メンバー紹介・楽曲</span><span>→</span></a>';
@@ -167,18 +168,29 @@
       }).join('') + '</div>' : '') +
       // 将来の追加コンテンツ用（site-data.js の extra に HTML を入れると表示）
       (w.extra ? '<section class="sf-sec"><div class="sf-wrap">' + w.extra + '</div></section>' : '');
-    var box = el.querySelector('#sf-update');
+    updateBanners(el.querySelector('#sf-update'), w);
+  }
+
+  // ── 最新の更新バナー（トップの DAILY UPDATE と同じ見た目・作品色。当日更新なら光る。押すと最新話へ） ──
+  function updateBanners(box, w) {
+    if (!box || !w) return;
+    var color = COLORS[w.id] || '#93c5fd';
     narou(function (map) {
-      var lines = (w.serials || []).filter(function (s) { return s.ncode; }).map(function (s) {
-        var n = !map.error && map[s.ncode];
-        if (!n || !n.lastup) return esc(s.label) + '：<b>未取得</b>（連載ページで最新話をご確認ください）';
-        var today = n.lastup.slice(0, 10) === todayJst();
-        return esc(s.label) + '：<b>第' + n.episodes + '話</b>まで公開　最終更新 ' + esc(n.lastup.slice(0, 16).replace(/-/g, '/')) + (today ? ' <span class="is-today">今日更新</span>' : '');
-      });
-      box.innerHTML = lines.join('<br>') || '未取得';
+      box.innerHTML = (w.serials || []).filter(function (s) { return s.ncode; }).map(function (s) {
+        var n = !map.error && map[s.ncode], ok = !!(n && n.lastup);
+        var today = ok && n.lastup.slice(0, 10) === todayJst();
+        var href = ok ? s.url + n.episodes + '/' : s.url;
+        var sub = !ok ? '最新話は連載ページでご確認ください' : today ? '今日更新しました ✦' : '最終更新 ' + n.lastup.slice(0, 16).replace(/-/g, '/');
+        return '<a class="sf-upd' + (today ? ' is-today' : '') + '" style="--c:' + color + '" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="sf-upd-shine"></span><span class="sf-upd-dot"></span>' +
+          '<span class="sf-upd-body"><span class="sf-upd-label">' + (today ? 'TODAY’S UPDATE' : 'LATEST UPDATE') + '</span>' +
+          '<span class="sf-upd-title">' + esc(w.short || w.title) + (ok ? '<span class="sf-upd-ep">#' + n.episodes + '</span>' : '') + '</span>' +
+          '<span class="sf-upd-sub">' + esc(s.label) + '　' + esc(sub) + '</span></span>' +
+          '<span class="sf-upd-side"><span class="sf-upd-status">' + (ok ? '第' + n.episodes + '話まで公開' : '未取得') + '</span><span class="sf-upd-arrow">→</span></span></a>';
+      }).join('');
     });
   }
 
   global.SfSite = { renderEntrances: renderEntrances, renderWorks: renderWorks, renderContents: renderContents, renderNews: renderNews,
-    renderGames: renderGames, renderVideos: renderVideos, renderWork: renderWork, narou: narou };
+    renderGames: renderGames, renderVideos: renderVideos, renderWork: renderWork, narou: narou, updateBanners: updateBanners };
 })(window);
