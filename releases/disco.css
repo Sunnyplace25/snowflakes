@@ -48,7 +48,7 @@
 /* 作品カード */
 .dc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 28px 20px; }
 .dc-grid.is-small { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px 16px; }
-.dc { display: flex; flex-direction: column; gap: 3px; text-decoration: none; color: var(--text); }
+.dc { display: flex; flex-direction: column; gap: 3px; min-width: 0; text-decoration: none; color: var(--text); }
 .dc .dj { margin-bottom: 10px; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
 .dc:hover .dj { transform: translateY(-4px); border-color: var(--accent-line); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
 /* 種別と Hi-Res を同じ行に（Hi-Res は右端） */
@@ -209,8 +209,9 @@
   .dd-head { grid-template-columns: 1fr; gap: 24px; text-align: center; padding-top: 36px; }
   .dd-jacket { max-width: 280px; margin: 0 auto; width: 100%; }
   .dd-dates, .dd-links, .dd-on, .dd-meta { justify-content: center; }
-  .dc-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 14px; }
-  .dc-grid.is-small { grid-template-columns: repeat(2, 1fr); }
+  /* minmax(0, 1fr)：中身の幅で列が画面からはみ出さないように（iPhone Safari 対策・2026-10-29） */
+  .dc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+  .dc-grid.is-small { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dd-credit { padding: 0 4px; }
   .dd-note { padding: 22px 20px; }
   .dd-lyrics { font-size: 16px; line-height: 1.85; padding: 0 4px; }
