@@ -77,6 +77,7 @@
 .sf-link-note { font-size: 12px; color: #94a3b8; }
 /* 最新の更新バナー（トップの DAILY UPDATE と同じ見た目・作品色 --c。当日更新は .is-today で光る） */
 .sf-update-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; }
+.sf-update-note { max-width: 640px; margin: 18px auto 0; text-align: center; font-size: 15px; line-height: 1.9; color: var(--accent, #e8a5c4); letter-spacing: 0.06em; }
 .sf-upd { position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 28px 32px; border-radius: 20px; text-decoration: none;
   background: color-mix(in srgb, var(--c) 3%, transparent); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); transition: background .4s, transform .4s; animation: sfUpdGlow 3s ease-in-out infinite; }
 .sf-upd:hover { background: color-mix(in srgb, var(--c) 7%, transparent); transform: translateY(-1px); }

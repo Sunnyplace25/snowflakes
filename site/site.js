@@ -154,7 +154,8 @@
         (w.short ? '<p class="sf-card-note" style="margin-top:6px">通称「' + esc(w.short) + '」</p>' : '') +
         '<p class="sf-work-lead">' + esc(w.lead) + '</p>' + media(root, w, w.short || w.title, w.kana || '', '16 / 9') + '</header>' +
       sec('synopsis', 'STORY', 'あらすじ', w.synopsis && w.synopsis.length ? '<div class="sf-prose">' + w.synopsis.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' : '') +
-      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>') +
+      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>' +
+        (w.updateNote ? '<p class="sf-update-note" style="color:' + (COLORS[w.id] || '#93c5fd') + '">' + w.updateNote.map(esc).join('<br>') + '</p>' : '')) +   // 最新の更新の下のお知らせ（site-data.js の updateNote）
       sec('read', 'READ', '連載先', '<div class="sf-links">' + (w.serials || []).map(function (s) {
         var row = function (href, name, note) { return '<a class="sf-link-row" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">' + esc(name) + '</span>' +
           (note ? '<span class="sf-link-note">' + esc(note) + '</span>' : '') + '<span>→</span></a>'; };
