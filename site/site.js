@@ -188,6 +188,16 @@
           '<span class="sf-upd-sub">' + esc(s.label) + '　' + esc(sub) + '</span></span>' +
           '<span class="sf-upd-side"><span class="sf-upd-status">' + (ok ? '第' + n.episodes + '話まで公開' : '未取得') + '</span><span class="sf-upd-arrow">→</span></span></a>';
       }).join('');
+      fitTitles(box);
+      if (!box.sfFitBound) { box.sfFitBound = true; global.addEventListener('resize', function () { fitTitles(box); }); }
+    });
+  }
+  // 長い作品名は改行せず、バナーの幅に収まるまで文字を小さくする
+  function fitTitles(box) {
+    [].forEach.call(box.querySelectorAll('.sf-upd-title'), function (t) {
+      t.style.fontSize = '';
+      var size = parseFloat(getComputedStyle(t).fontSize);
+      while (t.scrollWidth > t.clientWidth && size > 12) { size -= 1; t.style.fontSize = size + 'px'; }
     });
   }
 

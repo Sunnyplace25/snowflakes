@@ -84,7 +84,7 @@
 .sf-upd-dot { position: relative; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: color-mix(in srgb, var(--c) 40%, #0b1220); }
 .sf-upd-body { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .sf-upd-label { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 7px; margin-bottom: 8px; color: color-mix(in srgb, var(--c) 55%, #1e293b); }
-.sf-upd-title { font-family: 'Noto Serif JP', serif; font-weight: 300; font-size: clamp(20px, 4vw, 28px); letter-spacing: .06em; line-height: 1.25; color: color-mix(in srgb, var(--c) 80%, #1e293b); }
+.sf-upd-title { font-family: 'Noto Serif JP', serif; font-weight: 300; font-size: clamp(20px, 4vw, 28px); letter-spacing: .06em; line-height: 1.25; white-space: nowrap; overflow: hidden; color: color-mix(in srgb, var(--c) 80%, #1e293b); }
 .sf-upd-ep { font-family: 'Cormorant Garamond', serif; font-size: .85em; margin-left: 10px; color: color-mix(in srgb, var(--c) 55%, #1e293b); }
 .sf-upd-sub { font-size: 12px; letter-spacing: 1px; margin-top: 6px; color: color-mix(in srgb, var(--c) 60%, #1e293b); }
 .sf-upd-side { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; }
