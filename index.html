@@ -1082,19 +1082,7 @@ function sfShare(anchor) {
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:16px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
   <div style="text-align:center;margin-bottom:36px;">
     <button onclick="sfShare('topics')" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
-    <!-- SNS に貼る用：最新情報に直接飛ぶリンクをコピー（目立たせない。2026-10-30） -->
-    <div style="margin-top:10px;">
-      <button type="button" onclick="sfCopyTopicsLink(this)" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:11px;letter-spacing:1px;color:#64748b;text-decoration:underline;text-underline-offset:3px;">リンクをコピー</button>
-    </div>
   </div>
-  <script>
-  function sfCopyTopicsLink(btn) {
-    var url = 'https://sunnyplace25.github.io/snowflakes/#topics';
-    var done = function () { var t = btn.textContent; btn.textContent = 'コピーしました'; setTimeout(function () { btn.textContent = t; }, 1600); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { window.prompt('このリンクをコピーしてください', url); });
-    else window.prompt('このリンクをコピーしてください', url);
-  }
-  </script>
   <!-- 一本だけのドラムスティック 短篇バナー（2026-09-05〜2026-09-10） -->
   <div id="banner-drumstick" style="display:none;max-width:680px;margin:0 auto 12px;">
     <a href="https://ncode.syosetu.com/n2115mf/" target="_blank" rel="noopener"
@@ -2550,6 +2538,8 @@ function sfShare(anchor) {
 <div class="color-bar"><span class="cb1"></span><span class="cb2"></span><span class="cb3"></span></div>
 <footer>
   <p class="footer-brand">Snow flakes</p>
+  <!-- HP のトップのアドレス（SNS に貼る用。2026-10-30） -->
+  <p style="margin:2px 0 14px;"><a href="https://sunnyplace25.github.io/snowflakes/" style="font-size:12px;color:#64748b;text-decoration:none;letter-spacing:0.5px;word-break:break-all;">https://sunnyplace25.github.io/snowflakes/</a></p>
   <p class="footer-copy">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project</p>
   <p class="footer-copy">All rights reserved.</p>
   <p class="footer-copy">Unauthorized reproduction or AI training is prohibited.</p>
