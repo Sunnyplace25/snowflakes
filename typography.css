@@ -47,7 +47,8 @@
   text-align: left; font-size: calc(var(--sf-prose-size) + 2px); line-height: 2; letter-spacing: .04em;
   color: #fff; font-weight: 300;
 }
-@media (max-width: 680px) { .sf-quote { padding-left: 16px; } }
+/* スマホは画面幅に合わせて文字を小さく（大きいと1〜2文字だけ次の行に落ちる） */
+@media (max-width: 680px) { .sf-quote { padding-left: 16px; font-size: clamp(14px, 3.9vw, 17px); } }
 
 /* 意図的に改行した短い詩・キャッチコピー（中央のまま、行間だけ統一） */
 .sf-poem { text-align: center; line-height: 2.2; }
