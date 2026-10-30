@@ -965,11 +965,13 @@ function toggleSweetsAccordion() {
 }
 </script>
 <script>
-function sfShare() {
+// anchor を渡すと、その欄に直接飛ぶリンクをシェアする（最新情報の share は 'topics'。2026-10-30）
+function sfShare(anchor) {
+  var url = 'https://sunnyplace25.github.io/snowflakes/' + (anchor ? '#' + anchor : '');
   var shareData = {
     title: 'Snow flakes',
     text: '山吹ことりの小説・音楽・キャラクターサイト',
-    url: 'https://sunnyplace25.github.io/snowflakes/'
+    url: url
   };
   function giveReward() {
     SfSnow.addOnce('share_first', 50, '初回シェア');
@@ -978,7 +980,7 @@ function sfShare() {
   if (navigator.share) {
     navigator.share(shareData).then(giveReward).catch(function(){});
   } else {
-    var tw = 'https://x.com/intent/tweet?text=' + encodeURIComponent('山吹ことりの小説・音楽・キャラクターサイト Snow flakes') + '&url=' + encodeURIComponent('https://sunnyplace25.github.io/snowflakes/');
+    var tw = 'https://x.com/intent/tweet?text=' + encodeURIComponent('山吹ことりの小説・音楽・キャラクターサイト Snow flakes') + '&url=' + encodeURIComponent(url);
     window.open(tw, '_blank');
     giveReward();
   }
@@ -1079,7 +1081,7 @@ function sfShare() {
   <p style="font-size:11px;letter-spacing:7px;color:var(--muted);text-align:center;margin-bottom:12px;font-family:'Cormorant Garamond',serif;">TOPICS</p>
   <h2 style="font-size:clamp(24px,3.5vw,34px);font-weight:300;color:white;text-align:center;margin-bottom:16px;font-family:'Noto Serif JP',serif;" data-i18n="topics-h2">最新情報</h2>
   <div style="text-align:center;margin-bottom:36px;">
-    <button onclick="sfShare()" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
+    <button onclick="sfShare('topics')" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
   <!-- 一本だけのドラムスティック 短篇バナー（2026-09-05〜2026-09-10） -->
   <div id="banner-drumstick" style="display:none;max-width:680px;margin:0 auto 12px;">
