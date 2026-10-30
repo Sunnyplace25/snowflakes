@@ -42,14 +42,21 @@
 
   // ── share
   window.sfArtistShare = function () {
-    var url = location.href.split('#')[0].split('?')[0];
+    // 作品・楽曲の単独ページ（release.html?id=…・song.html?id=…）は id を残す。それ以外の ? と # は外す
+    var id = new URLSearchParams(location.search).get('id');
+    var url = location.href.split('#')[0].split('?')[0] + (id ? '?id=' + encodeURIComponent(id) : '');
     var title = document.title;
     if (navigator.share) {
       navigator.share({ title: title, url: url }).catch(function () {});
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(url).then(function () {
         var t = document.getElementById('share-toast');
-        if (!t) return;
+        if (!t) {   // 「コピーしました」の表示がないページでは作る
+          t = document.createElement('div');
+          t.id = 'share-toast';
+          t.textContent = 'リンクをコピーしました';
+          document.body.appendChild(t);
+        }
         t.style.display = 'block';
         setTimeout(function () { t.style.display = 'none'; }, 2000);
       });

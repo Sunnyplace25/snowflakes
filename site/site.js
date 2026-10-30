@@ -152,7 +152,7 @@
       '<header class="sf-work-hero" style="--c:' + (COLORS[w.id] || '#93c5fd') + '">' +
         '<p class="sf-work-kind">' + esc(w.kind) + '</p><h1 class="sf-work-title">' + esc(w.title) + '</h1>' +
         (w.short ? '<p class="sf-card-note" style="margin-top:6px">通称「' + esc(w.short) + '」</p>' : '') +
-        '<p class="sf-work-lead">' + esc(w.lead) + '</p>' + media(root, w, w.short || w.title, w.kana || '', '16 / 9') + '</header>' +
+        '<p class="sf-work-lead">' + esc(w.lead) + '</p>' + (global.SfArtists ? global.SfArtists.shareButton() : '') + media(root, w, w.short || w.title, w.kana || '', '16 / 9') + '</header>' +
       sec('synopsis', 'STORY', 'あらすじ', w.synopsis && w.synopsis.length ? '<div class="sf-prose">' + w.synopsis.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' : '') +
       sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>' +
         (w.updateNote ? '<p class="sf-update-note" style="color:' + (COLORS[w.id] || '#93c5fd') + '">' + w.updateNote.map(esc).join('<br>') + '</p>' : '')) +   // 最新の更新の下のお知らせ（site-data.js の updateNote）

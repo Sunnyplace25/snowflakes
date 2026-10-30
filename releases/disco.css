@@ -205,8 +205,13 @@
 }
 .dd-meta .hires { font-size: 11px; padding: 4px 9px 3px; }
 
+/* シェアボタン：作品・楽曲ページは左寄せの情報に揃える（スマホは中央） */
+.dd-info .hero-actions { justify-content: flex-start; margin-top: 20px; }
+.dl-head .hero-actions { margin: -8px 0 28px; }
+
 @media (max-width: 680px) {
   .dd-head { grid-template-columns: 1fr; gap: 24px; text-align: center; padding-top: 36px; }
+  .dd-info .hero-actions { justify-content: center; }
   .dd-jacket { max-width: 280px; margin: 0 auto; width: 100%; }
   .dd-dates, .dd-links, .dd-on, .dd-meta { justify-content: center; }
   /* minmax(0, 1fr)：中身の幅で列が画面からはみ出さないように（iPhone Safari 対策・2026-10-29） */

@@ -435,7 +435,7 @@
     }
 
     root.innerHTML =
-      '<header class="a-section dl-head"><span class="sec-label">DISCOGRAPHY</span><h1 class="sec-title">ディスコグラフィ</h1>' +
+      '<header class="a-section dl-head"><span class="sec-label">DISCOGRAPHY</span><h1 class="sec-title">ディスコグラフィ</h1>' + SfArtists.shareButton() +
       '<div class="dl-controls">' +
         (artistIds.length > 1 ? chips('artist', [['all', 'All']].concat(artistIds.map(function (id) { return [id, artist(id).name]; }))) : '') +
         chips('type', [['all', 'All'], ['single', 'Single'], ['ep', 'EP'], ['album', 'Album']]) +
@@ -482,7 +482,7 @@
       (r.sub ? '<p class="dd-sub">' + esc(r.sub) + '</p>' : '') +
       '<p class="dd-artist">' + artistLinks(r.artists) + '</p>' +
       infoLines(r.releaseDate, r.createdDate) +
-      serviceButtons(r) + '</div></header>';
+      serviceButtons(r) + SfArtists.shareButton() + '</div></header>';
 
     // 4. Tracklist（EP・Album、および2曲以上のシングル）
     var tracklist = (!single || songs.length > 1) ? '<ol class="dd-tracks">' + songs.map(function (t, i) {
@@ -546,7 +546,7 @@
       '<p class="dd-artist">' + artistLinks(s.artists) + '</p>' +
       // 「収録：」の行は下の収録作品と重なるので出さない（2026-10-28 ユーザー指示）
       infoLines(first.releaseDate, s.createdDate) +
-      serviceButtons(s) + '</div></header>';
+      serviceButtons(s) + SfArtists.shareButton() + '</div></header>';
 
     // 別バージョン（同じ元曲を持つ曲・元曲そのもの）
     var baseId = s.versionOf || id;
