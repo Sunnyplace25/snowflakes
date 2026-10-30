@@ -1152,7 +1152,7 @@ function sfShare() {
         <div id="kamisama-dot" style="width:10px;height:10px;border-radius:50%;background:#db93bc;flex-shrink:0;transition:all 0.5s;"></div>
         <div style="flex:1;min-width:0;">
           <p style="font-size:8px;letter-spacing:5px;color:#f472b6;font-family:'Cormorant Garamond',serif;margin-bottom:6px;transition:color 0.5s;">SERIAL</p>
-          <p style="font-family:'Noto Serif JP',serif;font-size:clamp(10px,1.1vw,13px);font-weight:300;color:#fbcfe8;line-height:1.7;letter-spacing:0.04em;margin-bottom:2px;">神様はバンド名が<br>ダサいと言った</p>
+          <p id="kamisama-title" style="font-family:'Noto Serif JP',serif;font-size:clamp(10px,1.1vw,13px);font-weight:300;color:#fbcfe8;line-height:1.7;letter-spacing:0.04em;margin-bottom:2px;">神様はバンド名が<br>ダサいと言った</p>
           <p id="kamisama-ep" style="font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.4vw,28px);font-weight:300;color:#d98ab0;letter-spacing:0.04em;line-height:1.2;transition:color 0.5s;"></p>
           <p id="kamisama-sub" style="font-size:10px;color:#c084a8;margin-top:4px;letter-spacing:2px;transition:color 0.5s;"></p>
         </div>
@@ -1358,8 +1358,10 @@ function sfShare() {
       border-color: rgba(249,168,212,0.50) !important;
     }
     #kamisama-banner.complete #kamisama-shine  { opacity: 1 !important; }
-    #kamisama-banner.complete #kamisama-ep     { color: #fce7f3 !important; font-size:13px; letter-spacing:1.5px; }
-    #kamisama-banner.complete #kamisama-sub    { color: #fbcfe8 !important; }
+    /* 2026-10-30：タイトルを大きく、「第一章 全25話」を小さく（あおり文は出さない） */
+    #kamisama-banner.complete #kamisama-title  { font-size: clamp(16px,1.8vw,19px) !important; font-weight:400 !important; color:#fce7f3 !important; line-height:1.6 !important; margin-bottom:6px !important; }
+    #kamisama-banner.complete #kamisama-ep     { color: #fbcfe8 !important; font-size:12px !important; letter-spacing:2px !important; font-family:'Noto Serif JP',serif !important; }
+    #kamisama-banner.complete #kamisama-sub    { display: none; }
     #kamisama-banner.complete #kamisama-status { color: #f472b6 !important; font-size:11px; letter-spacing:3px; }
     /* 音ハズバナー（緑） */
     @keyframes otohazuGlow {
@@ -1625,7 +1627,7 @@ function sfShare() {
           if (sfWrap) sfWrap.style.flex = '1';
           if (epEl)   epEl.textContent  = '第一章 全25話';
           if (status) status.textContent = '';   // 「完結」は出さない（連載が続くため）
-          if (sub)    sub.textContent    = '解散寸前のバンドに、\n音を聞く神様がついてきた。';
+          if (sub)    sub.textContent    = '';   // あおり文は出さない（2026-10-30 ユーザー指示）
           return;
         }
 
