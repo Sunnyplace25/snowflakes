@@ -32,7 +32,8 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 - 既存ページへの導線：`stories/snowflakes/` の短編タブ下、`artists/snowflakes/` の短編作品の下に「短篇・その他の作品をすべて見る →」
 - 入口カード画像：`img/works/horror.webp`（horror_bg.webp を 16:9 に切り抜き）、`img/works/shorts.webp`（高校時代の三人）
 - `sitemap.xml` に2ページ追加。新2ページに canonical・og:site_name・twitter:title 等
-- 未対応：SNS 共有画像（案のみ。今は共通バナー）、各ページの説明文は仮の文のまま公開（後日差し替え予定）
+- SNS 共有画像（同日追加）：`img/ogp/stories-horror.jpg`・`img/ogp/stories-shorts.jpg`（1200×630）を og:image・twitter:image に設定
+- 未対応：各ページの説明文は仮の文のまま公開（後日差し替え予定）
 
 ---
 
