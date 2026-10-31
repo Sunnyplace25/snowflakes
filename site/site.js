@@ -7,7 +7,7 @@
 (function (global) {
   var S = global.SF_SITE || {};
   var COLORS = { stories: '#93c5fd', music: '#c4b5fd', game: '#fde68a', video: '#f9a8d4', sweets: '#f9a8d4',
-    snowflakes: '#93c5fd', kamisama: '#e8a5c4', otohazu: '#7ccf9e', hayatecchi: '#fde68a', undertone: '#c4b5fd', gacha: '#fde68a' };
+    snowflakes: '#93c5fd', kamisama: '#e8a5c4', horror: '#f87171', shorts: '#a5b4fc', otohazu: '#7ccf9e', hayatecchi: '#fde68a', undertone: '#c4b5fd', gacha: '#fde68a' };
   var CAT = { story: 'STORY', music: 'MUSIC', game: 'GAME', book: 'BOOK', video: 'VIDEO', event: 'EVENT', info: 'INFO' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -56,6 +56,15 @@
     var root = (opts && opts.root) || '';
     el.innerHTML = '<div class="sf-cards sf-works">' + worksList(opts && opts.featuredOnly).map(function (w) {
       return card(root, { href: w.page, label: w.kind, title: w.title, text: w.lead, color: COLORS[w.id], mark: w.short || w.title, sub: w.kana || '', item: w, ratio: '16 / 9', go: '作品ページへ →' });
+    }).join('') + '</div>';
+  }
+
+  // ── STORIES の「その他の作品」（ホラー作品・短篇など。2026-10-31） ──
+  function renderStoryCollections(el, opts) {
+    var root = (opts && opts.root) || '';
+    var list = (S.storyCollections || []).filter(isPublic);
+    el.innerHTML = '<div class="sf-cards sf-works is-two">' + list.map(function (c) {
+      return card(root, { href: c.page, label: c.kind, title: c.title, text: c.lead, color: COLORS[c.id], mark: c.title, sub: c.kind, item: c, ratio: '16 / 9', go: '作品一覧へ →' });
     }).join('') + '</div>';
   }
 
@@ -202,6 +211,6 @@
     });
   }
 
-  global.SfSite = { renderEntrances: renderEntrances, renderWorks: renderWorks, renderContents: renderContents, renderNews: renderNews,
+  global.SfSite = { renderEntrances: renderEntrances, renderWorks: renderWorks, renderStoryCollections: renderStoryCollections, renderContents: renderContents, renderNews: renderNews,
     renderGames: renderGames, renderVideos: renderVideos, renderWork: renderWork, narou: narou, updateBanners: updateBanners };
 })(window);

@@ -7,10 +7,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
   <title>STORIES 小説・物語｜Snow flakes 公式</title>
-  <meta name="description" content="山吹ことりの小説・物語の一覧。Snow flakes、神様はバンド名がダサいと言った、音ハズなど、連載中の作品を紹介します。">
+  <meta name="description" content="山吹ことりの小説・物語の一覧。Snow flakes、神様はバンド名がダサいと言った、音ハズなどの連載作品と、ホラー作品・短篇を紹介します。">
   <meta property="og:type" content="website">
   <meta property="og:title" content="STORIES 小説・物語｜Snow flakes">
-  <meta property="og:description" content="山吹ことりの小説・物語の一覧。Snow flakes、神様はバンド名がダサいと言った、音ハズなど、連載中の作品を紹介します。">
+  <meta property="og:description" content="山吹ことりの小説・物語の一覧。Snow flakes、神様はバンド名がダサいと言った、音ハズなどの連載作品と、ホラー作品・短篇を紹介します。">
   <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/">
   <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -48,9 +48,17 @@
   </header>
   <section class="sf-sec" id="works">
     <div class="sf-wrap">
-      <span class="sf-sec-label">WORKS</span>
-      <h2 class="sf-sec-title sf-head-gap">作品一覧</h2>
+      <span class="sf-sec-label">SERIES</span>
+      <h2 class="sf-sec-title sf-head-gap">連載作品</h2>
       <div id="works-list"></div>
+    </div>
+  </section>
+  <!-- その他の作品（ホラー作品・短篇・その他の作品）2026-10-31 -->
+  <section class="sf-sec" id="other-works">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">OTHER WORKS</span>
+      <h2 class="sf-sec-title sf-head-gap">その他の作品</h2>
+      <div id="other-works-list"></div>
     </div>
   </section>
   <!-- 文学作品（文学賞応募作・文学フリマ作品など）：site-data.js の literature に登録したときだけ表示 -->
@@ -75,6 +83,7 @@
 <script src="../site/site-footer.js" data-root="../"></script>
 <script>
   SfSite.renderWorks(document.getElementById('works-list'), { root: '../' });
+  SfSite.renderStoryCollections(document.getElementById('other-works-list'), { root: '../' });
 </script>
 </body>
 </html>

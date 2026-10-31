@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>SHORT STORIES 短篇・その他の作品｜Snow flakes 公式</title>
+  <meta name="description" content="山吹ことりの短篇・番外編・書き下ろしシリーズの一覧。Snow flakes の三人や周りの人々を描いた物語を、関連する楽曲とあわせて紹介します。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SHORT STORIES 短篇・その他の作品｜Snow flakes">
+  <meta property="og:description" content="山吹ことりの短篇・番外編・書き下ろしシリーズの一覧。Snow flakes の三人や周りの人々を描いた物語を、関連する楽曲とあわせて紹介します。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/shorts/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <meta property="og:site_name" content="Snow flakes 公式">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image:alt" content="Snow flakes 短篇・その他の作品">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SHORT STORIES 短篇・その他の作品｜Snow flakes">
+  <meta name="twitter:description" content="山吹ことりの短篇・番外編・書き下ろしシリーズの一覧。Snow flakes の三人や周りの人々を描いた物語を、関連する楽曲とあわせて紹介します。">
+  <link rel="canonical" href="https://sunnyplace25.github.io/snowflakes/stories/shorts/">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../artists/artist.css">
+  <link rel="stylesheet" href="../../site/site.css">
+  <link rel="stylesheet" href="../collection.css">
+</head>
+<body data-artist="stories-shorts" class="sc-shorts">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../">← Stories</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill" href="../">STORIES</a>
+  </div>
+</nav>
+
+<main>
+  <header class="sf-work-hero">
+    <p class="sf-work-kind">SHORT STORIES</p>
+    <h1 class="sf-work-title">短篇・その他の作品</h1>
+    <p class="sf-work-lead" style="color:#b8c5d4">本編では描かれなかった時間と、三人のまわりにいる人たち。<br>短篇・番外編・書き下ろしシリーズをまとめています。</p>
+    <div class="hero-actions">
+      <button class="share-btn" onclick="sfArtistShare()" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        share
+      </button>
+    </div>
+    <div class="sc-jump" id="sc-jump" role="navigation" aria-label="分類"></div>
+  </header>
+
+  <div id="sc-groups"></div>
+  <div class="sf-sec" style="padding-top:72px"></div>
+</main>
+
+<footer class="a-footer" style="padding-top:88px;">
+  <div class="sf-footer-links"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../../artists/artists.js"></script>
+<script src="../../artists/artist.js"></script>
+<script src="../../site/site-data.js"></script>
+<script src="../../site/site.js"></script>
+<script src="../../site/phrase.js"></script>
+<script src="../../site/site-footer.js" data-root="../../"></script>
+<script src="../collection.js"></script>
+<script>
+  /* 作品データ（2026-10-31）
+     ・紹介文：小説家になろうのあらすじ（作者本人の文）から、続いている文をそのまま引用。推測で補わない
+     ・日付：既存の Snow flakes ページ（短編作品・短編タブ）の表記のまま
+     ・関連作品：既存の Snow flakes ページで各短篇に添えている楽曲・リンクのまま（楽曲は公式サイト内の楽曲ページへ）
+     ・公開済みの作品だけを載せる（文学賞に応募した未公開作品・非公開原稿は載せない） */
+  var NAROU = 'https://ncode.syosetu.com/';
+  var SONG = '../../releases/song.html?id=';
+  var SF = { label: 'Snow flakes 本編', href: '../snowflakes/' };
+  var GROUPS = [
+    { id: 'snowflakes', label: 'SNOW FLAKES', title: 'Snow flakes の短篇',
+      lead: 'ヒナタ、ハヤテ、コウタ。三人がバンドになる前と、そのまわりにいた人たちの物語です。',
+      items: [
+      { title: '一本だけのドラムスティック', kind: '短篇', date: '2026.09.05',
+        text: '兄から譲られた、一本だけのドラムスティック。旧家で育ったハヤテは、長兄のドラムに触れた夜、音を「前に出るもの」ではなく「誰かと誰かの間に置くもの」として知る。',
+        related: [SF],
+        links: [{ label: '読む', href: NAROU + 'n2115mf/', note: '小説家になろう' }] },
+      { title: '透明なリズム', kind: '短篇', date: '2026.07.05',
+        text: '大人に囲まれて育った少年ハヤテは、ある日、友人・朔の「透明な声」を知る。思いつきから始まった、小さなコンサート。',
+        related: [SF, { label: '♪ 透明のまま', href: SONG + 'toumei-no-mama' }],
+        links: [{ label: '読む', href: NAROU + 'n5484lz/', note: '小説家になろう' }] },
+      { title: '始まりのベース', kind: '短篇', date: '2026.06.13',
+        text: '楽器店で働くコウタは、ベースを選ぶ中学生の姿を見て、昔の自分を思い出す。それが、後にSnow flakesと呼ばれるバンドの始まりだった。',
+        related: [SF, { label: '♪ Still（Untitled）', href: SONG + 'still' }],
+        links: [{ label: '読む', href: NAROU + 'n5432lz/', note: '小説家になろう' }] },
+      { title: '白い音', kind: '短篇', date: '2026.04.30',
+        text: 'ヒナタと出会ったのは、大学の春だった。昼休みのベンチで、静かにギターを鳴らしている人。',
+        related: [SF, { label: '♪ Little Snow（Near）', href: SONG + 'little-snow-near' }],
+        links: [{ label: '読む', href: NAROU + 'n0679lx/', note: '小説家になろう' }] },
+      { title: '半分のまま', kind: '短篇', date: '2026.04.09',
+        text: '仕事で再会するヒナタと小雪。雨の夜、偶然の帰路。何も越えないまま過ぎていく時間。',
+        related: [SF, { label: '♪ 呼吸の距離', href: SONG + 'kokyu-no-kyori' }],
+        links: [{ label: '読む', href: NAROU + 'n0327lw/', note: '小説家になろう' }] },
+      { title: '整えない音', kind: '短篇', date: '2026.03.28',
+        text: '安定した仕事を持ちながら、インディーズで音楽を続けるヒナタ。会議室では「整える人」として頼られ、外の音の仕事でも指名が増えていく。',
+        related: [SF, { label: '♪ Little Snow（Raw）', href: SONG + 'little-snow-raw' }],
+        links: [{ label: '読む', href: NAROU + 'n0082lu/', note: '小説家になろう' }] }
+    ] },
+    { id: 'related', label: 'RELATED STORIES', title: 'つながる物語',
+      lead: '同じ世界の、別の場所で鳴っている音。',
+      items: [
+      { title: 'Moon Veil', kind: '短篇', date: '2026.06.18', image: 'artists/moonveil/img/main.webp', imagePos: 'center 35%',   // Moon Veil のアーティストページのメイン画像を再利用
+        text: '病院で働く検査技師・朔と看護師の宵子。夜の中庭で、ふと重なった「声」が、二人を静かに引き寄せていく。',
+        related: [{ label: 'Moon Veil（アーティスト）', href: '../../artists/moonveil/' }, { label: 'Instagram', href: 'https://www.instagram.com/reel/DZuqfqwxpNs/' }],
+        links: [{ label: '読む', href: NAROU + 'n9832lr/', note: '小説家になろう' }] }
+    ] },
+    { id: 'extra', label: 'ANOTHER PEACE', title: '番外編・外伝',
+      lead: '本編とは少し違う場所から、三人を見つめる物語です。',
+      items: [
+      { title: '正しい距離より、触れている方がいい', kind: '番外編', date: '2026.04.01',
+        text: '気づけば、玉座に座っていた。異世界の皇帝として目を覚ましたヒナタは、状況も分からないまま、華やかな舞踏会を見下ろすことになる。',
+        related: [SF, { label: 'Instagram リール', href: 'https://www.instagram.com/p/DWkPHH_GCaF/' }],
+        links: [{ label: '読む', href: NAROU + 'n0498ly/', note: '小説家になろう' }] },
+      { title: 'ICE BREAKER', kind: '番外編', date: '2026.04.01', eps: '全7話',
+        text: '本シリーズは、「Snow flakes」の外側視点から、誰かの行為や言葉が、どのように外側へ伝わっていくのかを拾っていく物語。',
+        related: [SF, { label: '覚えとくわ', href: '../../horror_oboetokuwa.html' }],   // 2026-10-31 ユーザー指定：公式サイト限定のホラー「覚えとくわ」へ
+        links: [{ label: '読む', href: NAROU + 'n9797ls/', note: '小説家になろう' }] }
+    ] },
+    { id: 'qf', label: 'INSTAGRAM', title: '書き下ろしシリーズ',
+      html: '<a class="sc-feature" href="../snowflakes/#qf">' +   // Snow flakes 作品ページの QF タブ（エピソードのまとめ）を開く
+            '<div class="sc-feature-img"><img src="../../qf_latest.webp" alt="Snow flakes ‐ Quietly Falling ‐"></div>' +
+            '<div class="sc-feature-body"><span class="sc-feature-label">QUIETLY FALLING</span>' +
+            '<span class="sc-feature-title">Snow flakes ‐ Quietly Falling ‐</span>' +
+            '<span class="sc-text">Instagramで連載中の書き下ろし短編シリーズ。映像と音楽を添えて、日常のひとこまを静かに切り取る、小さな物語たち。通称、QF。</span>' +
+            '<span class="sc-feature-go">エピソード一覧へ →</span></div></a>' },
+    { id: 'horror', label: 'HORROR', title: 'ホラー作品',
+      html: '<a class="sc-feature" href="../horror/" style="--sc:#f87171">' +
+            '<div class="sc-feature-img"><img src="../../horror_bg.webp" alt="ホラー作品"></div>' +
+            '<div class="sc-feature-body"><span class="sc-feature-label">HORROR</span>' +
+            '<span class="sc-feature-title">ホラー作品</span>' +
+            '<span class="sc-text">ひとつ多い音、閾値、出禁、まだ、鳴っている、音の鳴る石、公式サイト限定の短篇は、ホラー作品のページにまとめています。</span>' +
+            '<span class="sc-feature-go">ホラー作品へ →</span></div></a>' }
+  ];
+  SfCollection.jump(document.getElementById('sc-jump'), GROUPS);
+  SfCollection.render(document.getElementById('sc-groups'), GROUPS, { root: '../../' });
+  if (window.SfPhrase) SfPhrase.apply(document.getElementById('sc-groups'));
+</script>
+</body>
+</html>

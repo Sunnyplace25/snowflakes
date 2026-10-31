@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>HORROR ホラー作品｜Snow flakes 公式</title>
+  <meta name="description" content="山吹ことりのホラー作品の一覧。まだ、鳴っている／音の鳴る石／閾値／出禁／ひとつ多い音、公式サイト限定の短篇など、「音」をめぐるホラーを紹介します。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HORROR ホラー作品｜Snow flakes">
+  <meta property="og:description" content="山吹ことりのホラー作品の一覧。まだ、鳴っている／音の鳴る石／閾値／出禁／ひとつ多い音、公式サイト限定の短篇など、「音」をめぐるホラーを紹介します。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/horror/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/banner_snowflakes.png">
+  <meta property="og:site_name" content="Snow flakes 公式">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image:alt" content="Snow flakes ホラー作品">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HORROR ホラー作品｜Snow flakes">
+  <meta name="twitter:description" content="山吹ことりのホラー作品の一覧。まだ、鳴っている／音の鳴る石／閾値／出禁／ひとつ多い音、公式サイト限定の短篇など、「音」をめぐるホラーを紹介します。">
+  <link rel="canonical" href="https://sunnyplace25.github.io/snowflakes/stories/horror/">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../artists/artist.css">
+  <link rel="stylesheet" href="../../site/site.css">
+  <link rel="stylesheet" href="../collection.css">
+</head>
+<body data-artist="stories-horror" class="sc-horror">
+<canvas id="snow"></canvas>
+
+<nav>
+  <a class="nav-back" href="../">← Stories</a>
+  <a class="nav-label" href="../../">Snow flakes</a>
+  <div class="nav-right">
+    <a class="nav-pill" href="../../">HOME</a>
+    <a class="nav-pill" href="../">STORIES</a>
+  </div>
+</nav>
+
+<main>
+  <header class="sf-work-hero">
+    <div class="sc-hero-bg" aria-hidden="true"><img src="../../horror_bg.webp" alt=""></div>
+    <p class="sf-work-kind">HORROR</p>
+    <h1 class="sf-work-title">ホラー作品</h1>
+    <p class="sf-work-lead" style="color:#cbd5e1">聞こえるはずのない音が、まだ鳴っている。<br>「音」をめぐるホラーを、まとめて読めます。</p>
+    <div class="hero-actions">
+      <button class="share-btn" onclick="sfArtistShare()" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        share
+      </button>
+    </div>
+    <div class="sc-jump" id="sc-jump" role="navigation" aria-label="分類"></div>
+  </header>
+
+  <div id="sc-groups"></div>
+  <div class="sf-sec" style="padding-top:72px"></div>
+</main>
+
+<footer class="a-footer" style="padding-top:88px;">
+  <div class="sf-footer-links"></div>
+  <p class="footer-note">© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
+</footer>
+
+<script src="../../artists/artists.js"></script>
+<script src="../../artists/artist.js"></script>
+<script src="../../site/site-data.js"></script>
+<script src="../../site/site.js"></script>
+<script src="../../site/phrase.js"></script>
+<script src="../../site/site-footer.js" data-root="../../"></script>
+<script src="../collection.js"></script>
+<script>
+  /* 作品データ（2026-10-31）
+     ・紹介文：小説家になろうのあらすじ冒頭（作者本人の文）をそのまま。公式サイト限定作品はあらすじがないため、本文の書き出しを引用
+     ・ランキング：既存ページ（horror.html の実績欄・Snow flakes ページ）の表記のまま
+     ・日付：夏のホラー特集（horror.html）の公開日
+     ・画像：公式サイト限定の4作は、各作品ページの背景画（horror_bg_*.webp）を再利用。ほかの作品は専用の画像がないため画像なし
+     ・短篇「Under tone」（n1628mq）は、Under tone への導線を増やさない方針のため載せていない */
+  var NAROU = 'https://ncode.syosetu.com/';
+  var GROUPS = [
+    { id: 'special', label: 'SPECIAL', title: '夏のホラー特集 2026',
+      lead: '2026年7月18日から8月16日まで、毎晩23時に公開した特集です。公開順に、すべての作品を読めます。',
+      html: '<a class="sc-feature" href="../../horror.html">' +
+            '<div class="sc-feature-img"><img src="../../horror_bg5.webp" alt="夏のホラー特集"></div>' +
+            '<div class="sc-feature-body"><span class="sc-feature-label">SUMMER HORROR 2026</span>' +
+            '<span class="sc-feature-title">夏のホラー特集</span>' +
+            '<span class="sc-text">音のある場所で、何かが起きる。</span>' +
+            '<span class="sc-feature-go">特集ページへ →</span></div></a>' },
+    { id: 'series', label: 'SERIES', title: '連作・オムニバス', items: [
+      { title: 'まだ、鳴っている', kind: '連作短篇集', date: '2026.07.20', eps: '全9話', rank: '小説家になろう［日間］ヒューマンドラマ〔文芸〕 最高 18位 獲得',
+        episodes: { base: NAROU + 'n8678mk/', list: [   // サブタイトルは夏のホラー特集（horror.html）の表記
+          { ep: 1, title: '四拍目が来ない' }, { ep: 2, title: '叩き返すな' }, { ep: 3, title: '知らない音が鳴っている' },
+          { ep: 4, title: '氷が呼ぶ' }, { ep: 5, title: '返しが先に鳴る' }, { ep: 6, title: '怖' },
+          { ep: 7, title: '同じ' }, { ep: 8, title: 'もっとこわいこと' }, { ep: 9, title: '誰もいないアンコール' }] },
+        text: '聞こえるはずのない音が、まだ鳴っている。「言葉にならない感情を、音に。」をテーマに活動を続ける山吹ことりによる、Snow flakes夏のオムニバス短編集。',
+        related: [{ label: 'Snow flakes', href: '../snowflakes/' }],
+        links: [{ label: '読む', href: NAROU + 'n8678mk/', note: '小説家になろう' }] },
+      { title: '音の鳴る石', kind: '連載', date: '2026.08.10', eps: '全7話', rank: '小説家になろう［日間］ホラー文芸 最高 1位 獲得',
+        episodes: { base: NAROU + 'n5455ml/', list: [
+          { ep: 1, title: '序章　赤いランプ' }, { ep: 2, title: '第一章　煙の指輪' }, { ep: 3, title: '第二章　片耳の光' },
+          { ep: 4, title: '第三章　青い歌' }, { ep: 5, title: '第四章　取材' }, { ep: 6, title: '第五章　Under tone' },
+          { ep: 7, title: '終章　残響' }] },
+        text: 'ある日、オカルト雑誌の記者・佐伯澪のもとへ、一通の匿名の封筒が届く。中には、スモーキークオーツのリング、シトリンのピアス、カイヤナイトのネックレス。',
+        links: [{ label: '読む', href: NAROU + 'n5455ml/', note: '小説家になろう' }] }
+    ] },
+    { id: 'shorts', label: 'SHORT STORIES', title: '短篇', items: [
+      { title: '閾値', kind: '短篇', date: '2026.07.18', rank: '小説家になろう［日間］ホラー文芸 最高 10位 獲得',
+        text: '無音テストの録音に、「何もないはずの位置」がある。波形は完全にフラット。規定値も守られている。だが、0:42になるたび、彼女の身体だけがわずかに反応する。',
+        links: [{ label: '読む', href: NAROU + 'n9342lt/', note: '小説家になろう' }] },
+      { title: '出禁', kind: '短篇', date: '2026.07.19', rank: '小説家になろう［日間］ホラー文芸 最高 5位 獲得',
+        text: 'Snow flakesのライブや物販に必ず現れる、ひとりの女性ファン。プレゼントを渡すとき。写真を撮るとき。人混みですれ違うとき。コウタは、何度も身体に触れられていた。',
+        related: [{ label: 'Snow flakes', href: '../snowflakes/' }],
+        links: [{ label: '読む', href: NAROU + 'n1609mm/', note: '小説家になろう' }] },
+      { title: 'ひとつ多い音', kind: '短篇', date: '2026.05.15', rank: '小説家になろう［日間］ホラー文芸 最高 2位 獲得',
+        text: 'Snow flakesの三人は、スタジオで、いつも通り音を出す。揃っている。ズレていない。――揃いすぎている。その音は、ひとつ、多い。',
+        related: [{ label: 'Snow flakes', href: '../snowflakes/' }],
+        links: [{ label: '読む', href: NAROU + 'n0964mc/', note: '小説家になろう' }] }
+    ] },
+    { id: 'web', label: 'WEB EXCLUSIVE', title: '公式サイト限定',
+      lead: 'Snow flakes EXTRA STORY。この公式サイトだけで読める短篇です。',
+      items: [
+      { title: '関係者', kind: '公式サイト限定', date: '2026.07.30', image: 'horror_bg_kankei.webp', imagePos: 'center 18%',
+        excerpt: '搬入口のシャッターが上がる音は、いつも必要以上に大きい。',
+        links: [{ label: '読む', href: '../../horror_kankei.html' }] },
+      { title: '四人目', kind: '公式サイト限定', date: '2026.08.02', image: 'horror_bg_yoninnme.webp', imagePos: 'center 20%',
+        excerpt: 'その男は、いつもコウタの前にいた。',
+        links: [{ label: '読む', href: '../../horror_yoninnme.html' }] },
+      { title: '手引き', kind: '公式サイト限定', date: '2026.08.04', image: 'horror_bg_tebiki.webp', imagePos: 'center 18%',
+        excerpt: '「こんなに変な客が続くこと、ある？」',
+        links: [{ label: '読む', href: '../../horror_tebiki.html' }] },
+      { title: '覚えとくわ', kind: '公式サイト限定', date: '2026.08.17', image: 'horror_bg_oboetokuwa.webp', imagePos: 'center 15%',
+        excerpt: '通知がひとつ増えた。',
+        links: [{ label: '読む', href: '../../horror_oboetokuwa.html' }] }
+    ] }
+  ];
+  SfCollection.jump(document.getElementById('sc-jump'), GROUPS);
+  SfCollection.render(document.getElementById('sc-groups'), GROUPS, { root: '../../' });
+  if (window.SfPhrase) SfPhrase.apply(document.getElementById('sc-groups'));
+</script>
+</body>
+</html>

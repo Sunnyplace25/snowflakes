@@ -59,6 +59,16 @@
       artists: [] }
   ];
 
+  // ── その他の作品（STORIES の「その他の作品」の入口・2026-10-31）。画像は既存の素材を再利用（縦長なので contain） ──
+  var storyCollections = [
+    { id: 'horror', status: 'public', title: 'ホラー作品', kind: 'HORROR', page: 'stories/horror/',
+      lead: 'まだ、鳴っている／音の鳴る石／閾値／出禁／ひとつ多い音。\n「音」をめぐるホラーと、公式サイト限定の短篇。',   // \n で改行（.sf-card-text は pre-line）2026-10-31 ユーザー指定
+      image: 'img/works/horror.webp', imageSpec: '1600×900（16:9）' },   // 2026-10-31 horror_bg.webp（頭を抱えたコウタ）を 16:9 に切り抜き（上から 184px・1086×611）。ユーザー指示
+    { id: 'shorts', status: 'public', title: '短篇・その他の作品', kind: 'SHORT STORIES', page: 'stories/shorts/',
+      lead: 'Snow flakesの関連短篇を中心に、番外編や書き下ろし作品を紹介しています。',   // 2026-10-31 ユーザー指定
+      image: 'img/works/shorts.webp', imageSpec: '1600×900（16:9）' }   // 2026-10-31 ユーザー指定（元画像 ⑥画像データ/download.jpg・高校時代の三人）。旧：story_drumstick.webp（contain）
+  ];
+
   // ── ゲーム（GAME 一覧。ゲーム本体は既存の URL へ案内するだけで複製しない） ──
   var games = [
     { id: 'hayatecchi', status: 'public', title: 'ハヤテっち', kind: 'キャラクター育成ゲーム', href: 'hayatecchi-lp.html',
@@ -123,5 +133,5 @@
   // ── SUPPORT（既存の support-lp.html へ案内） ───────────────────
   var support = { href: 'support-lp.html', text: '応援プランや、アプリ・ゲームの購入で活動を応援できます。' };
 
-  global.SF_SITE = { entrances: entrances, works: works, games: games, videos: videos, contents: contents, news: news, literature: literature, shop: shop, support: support };
+  global.SF_SITE = { entrances: entrances, works: works, storyCollections: storyCollections, games: games, videos: videos, contents: contents, news: news, literature: literature, shop: shop, support: support };
 })(window);

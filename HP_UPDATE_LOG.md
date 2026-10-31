@@ -19,6 +19,23 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 
 ---
 
+## 2026-10-31 物語ページ：ホラー作品・短篇の入口を追加
+
+### 内容
+
+- `stories/`：「作品一覧」→「連載作品」。下に「その他の作品」（ホラー作品／短篇・その他の作品）を追加（`site/site-data.js` の `storyCollections`、`site/site.js` の `renderStoryCollections`）
+- 新規 `stories/horror/`：夏のホラー特集への入口、連作（まだ、鳴っている・音の鳴る石：各話一覧つき）、短篇（閾値・出禁・ひとつ多い音）、公式サイト限定4作（各作品の背景画）。控えめな演出（reduced-motion では停止）
+- 新規 `stories/shorts/`：Snow flakes の短篇6作（関連楽曲つき）、Moon Veil、番外編（Another Peace・ICE BREAKER）、QF（`stories/snowflakes/#qf` へ）、ホラー作品への入口
+- 共通：`stories/collection.css`・`stories/collection.js`。一覧では日付を出さない（データは保持）
+- 紹介文はなろうのあらすじ（連続した文）をそのまま引用。順位は「小説家になろう［日間］… 最高 ○位 獲得」に統一
+- Under tone の短篇は入口を追加しない方針
+- 既存ページへの導線：`stories/snowflakes/` の短編タブ下、`artists/snowflakes/` の短編作品の下に「短篇・その他の作品をすべて見る →」
+- 入口カード画像：`img/works/horror.webp`（horror_bg.webp を 16:9 に切り抜き）、`img/works/shorts.webp`（高校時代の三人）
+- `sitemap.xml` に2ページ追加。新2ページに canonical・og:site_name・twitter:title 等
+- 未対応：SNS 共有画像（案のみ。今は共通バナー）、各ページの説明文は仮の文のまま公開（後日差し替え予定）
+
+---
+
 ## 2026-10-29 HP全体リニューアル（新HPへ切り替え）
 
 ### 内容
