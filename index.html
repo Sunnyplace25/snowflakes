@@ -1625,8 +1625,9 @@ function sfShare(anchor) {
           banner.classList.remove('active');
           banner.classList.add('complete');
           banner.href = 'https://ncode.syosetu.com/n3833mv/';
-          banner.style.flex = '2';
-          if (sfWrap) sfWrap.style.flex = '1';
+          // 大きさは連載中と同じ（真ん中の Snow flakes を一番大きく。2026-10-30 ユーザー指示）
+          banner.style.flex = '1';
+          if (sfWrap) sfWrap.style.flex = '2';
           if (epEl)   epEl.textContent  = '第一章 全25話';
           if (status) status.textContent = '';   // 「完結」は出さない（連載が続くため）
           if (sub)    sub.textContent    = '';   // あおり文は出さない（2026-10-30 ユーザー指示）
