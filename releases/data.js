@@ -246,7 +246,14 @@
 それでも
 なぜか
 満ちていく`,
-      stories: [{ type: 'related', work: MAIN, ep: 80, epTitle: '幕間｜SWEETs', url: NOVEL + '80' }] },
+      stories: [{ type: 'related', work: MAIN, ep: 80, epTitle: '幕間｜SWEETs', url: NOVEL + '80' }],
+      // SCENE GALLERY（2026-11-01 登録・4枚・ユーザー指定の順。タイトル・制作メモはユーザーが指定するまで空欄。元画像名・登録日などは _サイト用対応表.json）
+      gallery: [
+        { order: 1, img: 'Discography/gallery/sweets/01.webp', title: '', memo: '', link: '' },
+        { order: 2, img: 'Discography/gallery/sweets/02.webp', title: '', memo: '', link: '' },
+        { order: 3, img: 'Discography/gallery/sweets/03.webp', title: '', memo: '', link: '' },
+        { order: 4, img: 'Discography/gallery/sweets/04.webp', title: '', memo: '', link: '' }
+      ] },
     'oita-oto': { title: '置いた音', artists: ['snowflakes'], isrc: 'QZPJ32545428',
       spotify: 'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG',
       // 歌詞（2026-10-28 ユーザー指定。貼り付けで各行の先頭に付いた全角空白は除いた。それ以外は原文のまま）
