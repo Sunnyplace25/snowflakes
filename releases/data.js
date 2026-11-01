@@ -247,11 +247,12 @@
 なぜか
 満ちていく`,
       stories: [{ type: 'related', work: MAIN, ep: 80, epTitle: '幕間｜SWEETs', url: NOVEL + '80' }],
-      // SCENE GALLERY（2026-11-01 登録・4枚・ユーザー指定の順。タイトル・制作メモはユーザーが指定するまで空欄。元画像名・登録日などは _サイト用対応表.json）
+      // SCENE GALLERY（2026-11-01 登録・4枚。タイトル・制作メモはユーザーが指定するまで空欄。元画像名・登録日などは _サイト用対応表.json）
+      // 並び（2026-11-02 ユーザー指示）：コウタ（赤髪）→ ヒナタ（黒髪）→ ハヤテ（金髪）→ カフェの場面
       gallery: [
-        { order: 1, img: 'Discography/gallery/sweets/01.webp', title: '', memo: '', link: '' },
-        { order: 2, img: 'Discography/gallery/sweets/02.webp', title: '', memo: '', link: '' },
-        { order: 3, img: 'Discography/gallery/sweets/03.webp', title: '', memo: '', link: '' },
+        { order: 1, img: 'Discography/gallery/sweets/02.webp', title: '', memo: '', link: '' },   // コウタ
+        { order: 2, img: 'Discography/gallery/sweets/03.webp', title: '', memo: '', link: '' },   // ヒナタ
+        { order: 3, img: 'Discography/gallery/sweets/01.webp', title: '', memo: '', link: '' },   // ハヤテ
         { order: 4, img: 'Discography/gallery/sweets/04.webp', title: '', memo: '', link: '' }
       ] },
     'oita-oto': { title: '置いた音', artists: ['snowflakes'], isrc: 'QZPJ32545428',
