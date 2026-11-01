@@ -63,6 +63,15 @@
 
   <div id="sc-groups"></div>
   <div class="sf-sec" style="padding-top:72px"></div>
+
+  <!-- BGM のクレジット（ホラー特集 horror.html と同じ曲。2026-11-01） -->
+  <div style="text-align:center;margin-top:8px;padding-bottom:8px;position:relative;z-index:1;">
+    <p style="font-family:'Cormorant Garamond',serif;font-size:10px;letter-spacing:3px;color:#64748b;line-height:2.2;">
+      BGM『Backstage』<br>
+      Music Direction &amp; Concept：山吹ことり<br>
+      Sound Production：Snow flakes
+    </p>
+  </div>
 </main>
 
 <footer class="a-footer" style="padding-top:88px;">
@@ -144,6 +153,45 @@
   SfCollection.jump(document.getElementById('sc-jump'), GROUPS);
   SfCollection.render(document.getElementById('sc-groups'), GROUPS, { root: '../../' });
   if (window.SfPhrase) SfPhrase.apply(document.getElementById('sc-groups'));
+</script>
+
+<!-- BGM（ホラー特集 horror.html と同じ2曲を交互に。音量 15%。開いたときに流せる環境では自動で流れ、右下のボタンで止める／流す） -->
+<audio id="horror-bgm" preload="none"></audio>
+<button id="bgm-btn" type="button" onclick="toggleBGM()" aria-label="BGM の再生・停止" style="position:fixed;bottom:24px;right:20px;z-index:100;background:rgba(10,10,20,0.75);border:1px solid rgba(239,68,68,0.25);border-radius:50px;padding:8px 16px;color:#f87171;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color 0.2s,color 0.2s;">♪ BGM</button>
+<script>
+var _bgmPlaying = false;
+var _bgmTracks = ['../../horror_bgm.mp3', '../../horror_bgm2.mp3'];
+var _bgmIndex = 0;
+var _bgmAudio = document.getElementById('horror-bgm');
+_bgmAudio.addEventListener('ended', function() {
+  if (_bgmPlaying) {
+    _bgmIndex = (_bgmIndex + 1) % _bgmTracks.length;
+    _bgmAudio.src = _bgmTracks[_bgmIndex];
+    _bgmAudio.play();
+  }
+});
+function bgmLook(on) {
+  var btn = document.getElementById('bgm-btn');
+  btn.style.color = on ? '#fca5a5' : '#f87171';
+  btn.style.borderColor = on ? 'rgba(239,68,68,0.6)' : 'rgba(239,68,68,0.25)';
+  btn.textContent = on ? '♪ ON' : '♪ BGM';
+}
+function toggleBGM() {
+  if (_bgmPlaying) {
+    _bgmAudio.pause();
+    _bgmPlaying = false;
+    bgmLook(false);
+  } else {
+    _bgmAudio.src = _bgmTracks[_bgmIndex];
+    _bgmAudio.volume = 0.15;
+    _bgmAudio.play().then(function() { _bgmPlaying = true; bgmLook(true); }).catch(function() {});
+  }
+}
+window.addEventListener('load', function() {
+  _bgmAudio.src = _bgmTracks[_bgmIndex];
+  _bgmAudio.volume = 0.15;
+  _bgmAudio.play().then(function() { _bgmPlaying = true; bgmLook(true); }).catch(function() {});
+});
 </script>
 </body>
 </html>
