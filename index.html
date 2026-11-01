@@ -1633,7 +1633,7 @@ function sfShare(anchor) {
           banner.href = 'https://ncode.syosetu.com/n3833mv/' + extra.ep + '/';
           banner.style.flex = '1';
           if (sfWrap) sfWrap.style.flex = '2';
-          if (epEl) epEl.textContent = extra.label;
+          if (epEl) { epEl.textContent = extra.label; epEl.style.fontSize = 'clamp(13px,1.4vw,16px)'; epEl.style.fontFamily = "'Noto Serif JP',serif"; }
           var exH = String(extra.time.getHours()).padStart(2, '0');
           var exM = String(extra.time.getMinutes()).padStart(2, '0');
           if (status) status.textContent = exH + ' : ' + exM;
@@ -1646,6 +1646,8 @@ function sfShare(anchor) {
           }
           return;
         }
+
+        if (epEl) { epEl.style.fontSize = ''; epEl.style.fontFamily = ''; }
 
         // ── 完結フェーズ（10/30以降・第2章開始前）──────────────────────
         var isComplete = !!COMPLETE_DATE && now >= COMPLETE_DATE && (!CH2_START || now < CH2_START);
