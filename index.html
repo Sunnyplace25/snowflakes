@@ -3575,6 +3575,7 @@ function sfShare(anchor) {
 </script>
 
 <!-- ── i18n: Language toggle ── -->
+<script src="site/i18n-auto.js"></script>
 <script>
 (function() {
   var T = {
@@ -3850,8 +3851,9 @@ function sfShare(anchor) {
     'footer-creative': { ja: '制作理念・AI技術の活用について', en: 'Creative Process & AI', ko: '제작 이념・AI 기술 활용에 대하여', zh: '关于创作理念与AI技术的运用' }
   };
 
-  var LANGS = ['ja', 'en', 'ko', 'zh'];
-  var LANG_LABELS = { ja: 'EN', en: 'KO', ko: 'ZH', zh: 'JP' };
+  // 2026-11-01 ユーザー指示：切り替えは 日本語⇔英語 だけ（韓国語・中国語は隠す。T の ko / zh は残してある）
+  var LANGS = ['ja', 'en'];
+  var LANG_LABELS = { ja: 'EN', en: 'JP' };
 
   var currentLang = localStorage.getItem('sf-lang') || 'ja';
   if (LANGS.indexOf(currentLang) === -1) currentLang = 'ja';
@@ -3864,6 +3866,7 @@ function sfShare(anchor) {
       }
     });
     document.documentElement.lang = lang;
+    if (window.SfAutoI18n) window.SfAutoI18n.apply(lang);   // 目印のない文も切り替える（site/i18n-auto.js）
     var btn = document.getElementById('lang-toggle');
     if (btn) btn.textContent = LANG_LABELS[lang];
     currentLang = lang;
