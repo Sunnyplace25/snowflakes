@@ -253,7 +253,7 @@
         { order: 1, img: 'Discography/gallery/sweets/02.webp', title: '', memo: '', link: '' },   // コウタ
         { order: 2, img: 'Discography/gallery/sweets/03.webp', title: '', memo: '', link: '' },   // ヒナタ
         { order: 3, img: 'Discography/gallery/sweets/01.webp', title: '', memo: '', link: '' },   // ハヤテ
-        { order: 4, img: 'Discography/gallery/sweets/04.webp', title: '', memo: '', link: '' }
+        { order: 4, img: 'Discography/gallery/sweets/05.webp', title: '', memo: '', link: '' }   // カフェの場面（2026-11-02 新しい版に差し替え。旧 04）
       ] },
     'oita-oto': { title: '置いた音', artists: ['snowflakes'], isrc: 'QZPJ32545428',
       spotify: 'https://open.spotify.com/intl-ja/track/0GwRrnME0Tn5qsEbc2w2eG',
