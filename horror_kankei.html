@@ -1285,6 +1285,20 @@ var _bgmPlaying = false;
 var _bgmTracks = ['./horror_bgm.mp3', './horror_bgm2.mp3'];
 var _bgmIndex = 0;
 var _bgmAudio = document.getElementById('horror-bgm');
+// 2つ同時に流れないように（2026-11-01）
+// ・別のタブ／ページで BGM が流れ始めたら、こちらは止める
+// ・ページを移るときは止め、曲と再生位置を覚えておいて、次のホラーのページで続きから流す（頭から流し直さない）
+var _bgmId = Math.random().toString(36).slice(2), _bgmResume = 0;
+var _bgmCh = ('BroadcastChannel' in window) ? new BroadcastChannel('sf-horror-bgm') : null;
+if (_bgmCh) _bgmCh.onmessage = function(e) { if (e.data && e.data.playing && e.data.id !== _bgmId && _bgmPlaying) toggleBGM(); };
+_bgmAudio.addEventListener('play', function() { if (_bgmCh) _bgmCh.postMessage({ playing: true, id: _bgmId }); });
+try { var _bgmSaved = JSON.parse(sessionStorage.getItem('sf_horror_bgm') || 'null'); if (_bgmSaved && Date.now() - _bgmSaved.at < 60000) { _bgmIndex = _bgmSaved.i % _bgmTracks.length; _bgmResume = _bgmSaved.t || 0; } } catch (e) {}
+_bgmAudio.addEventListener('loadedmetadata', function() { if (_bgmResume && _bgmResume < _bgmAudio.duration) _bgmAudio.currentTime = _bgmResume; _bgmResume = 0; });
+window.addEventListener('pagehide', function() {
+  try { sessionStorage.setItem('sf_horror_bgm', JSON.stringify({ i: _bgmIndex, t: _bgmAudio.currentTime || 0, at: Date.now() })); } catch (e) {}
+  _bgmAudio.pause();
+});
+window.addEventListener('pageshow', function(e) { if (e.persisted && _bgmPlaying) _bgmAudio.play().catch(function() {}); });   // 「戻る」で戻ってきたとき
 _bgmAudio.addEventListener('ended', function() {
   if (_bgmPlaying) {
     _bgmIndex = (_bgmIndex + 1) % _bgmTracks.length;
