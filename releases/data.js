@@ -1790,9 +1790,10 @@ In One Sky
       spotify: 'https://open.spotify.com/intl-ja/album/3MHaDHM9tm1IiDtvWwMYzt',
       amazon: 'https://music.amazon.co.jp/albums/B0HN9KYH3G',
       tracks: ['prism', 'koko-ni-iru'] },
-    // リリース日 2026-10-27（2026-10-28 登録）。ジャケットは仮（Amazon の 500px 画像。後でユーザーが差し替え）。Spotify は配信後に追加
+    // リリース日 2026-10-27（2026-10-28 登録）。ジャケットは仮（Amazon の 500px 画像。後でユーザーが差し替え）。Spotify は 2026-11-01 追加
     { id: 'mada-natteru', title: 'まだ鳴ってる', sub: '苦いプリン', type: 'single', artists: ['snowflakes'], status: 'public', hiRes: true,
       releaseDate: '2026-10-27', jacket: 'Discography/mada_natteru.webp',
+      spotify: 'https://open.spotify.com/intl-ja/album/38oT99du22hU22FaNHSZTc',
       amazon: 'https://music.amazon.co.jp/albums/B0HPGMNF4M',
       tracks: ['mada-natteru', 'nigai-purin'] },
 
