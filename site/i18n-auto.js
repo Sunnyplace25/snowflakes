@@ -279,7 +279,7 @@
     obs.observe(document.body, { childList: true, subtree: true, characterData: true });
     var saved = 'ja';
     try { saved = localStorage.getItem('sf-lang') || 'ja'; } catch (e) { /* 保存できない環境 */ }
-    if (saved !== 'ja') apply(saved);
+    if (saved === 'en') apply(saved);   // ko / zh を選んでいた人は日本語のまま（2026-11-01 から切り替えは日本語⇔英語だけ）
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 
