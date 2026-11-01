@@ -253,7 +253,7 @@
 
     // 作品の画像（site-data.js）と最新の更新（小説家になろう API。取得できなければ未取得）
     var w = (window.SF_SITE.works || []).filter(function (x) { return x.id === 'snowflakes'; })[0];
-    if (w && w.image) document.getElementById('sf-hero-media').innerHTML = '<div class="sf-media has-img" style="--ratio:16 / 9;max-width:880px;margin:32px auto 0;border-radius:18px"><img src="../../' + encodeURI(w.image) + '" alt="Snow flakes"></div>';
+    if (w && (w.heroImage || w.image)) document.getElementById('sf-hero-media').innerHTML = '<div class="sf-media has-img" style="--ratio:16 / 9;max-width:880px;margin:32px auto 0;border-radius:18px"><img src="../../' + encodeURI(w.heroImage || w.image) + '" alt="Snow flakes"></div>';
     SfSite.updateBanners(document.getElementById('sf-update'), w);
   })();
 </script>
