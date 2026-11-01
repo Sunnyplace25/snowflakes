@@ -1604,6 +1604,10 @@ function sfShare(anchor) {
         { ep: 24, time: new Date('2026-10-28T20:30:00') },
         { ep: 25, time: new Date('2026-10-29T20:30:00') },
       ];
+      // 第一章のあとの幕間（label があるものは「#26」ではなく題名で表示。第2章が始まるまで最新話として出す）
+      var KAMISAMA_EXTRAS = [
+        { ep: 26, time: new Date('2026-11-01T20:39:00'), label: '幕間｜対バン' },
+      ];
       // 第2章が始まる日（それまで完結表示のままトップに）
       var CH2_START = null; // 例: new Date('2026-11-XX T20:30:00');
 
@@ -1618,6 +1622,30 @@ function sfShare(anchor) {
         var status = document.getElementById('kamisama-status');
         var sub    = document.getElementById('kamisama-sub');
         if (!banner) return;
+
+        // ── 幕間（第一章のあと・第2章開始前）：更新直後1時間は光らせ、そのあとは最新話として出す ──
+        var extra = null;
+        for (var x = 0; x < KAMISAMA_EXTRAS.length; x++) {
+          if (now >= KAMISAMA_EXTRAS[x].time) extra = KAMISAMA_EXTRAS[x];
+        }
+        if (extra && (!CH2_START || now < CH2_START)) {
+          banner.classList.remove('complete');
+          banner.href = 'https://ncode.syosetu.com/n3833mv/' + extra.ep + '/';
+          banner.style.flex = '1';
+          if (sfWrap) sfWrap.style.flex = '2';
+          if (epEl) epEl.textContent = extra.label;
+          var exH = String(extra.time.getHours()).padStart(2, '0');
+          var exM = String(extra.time.getMinutes()).padStart(2, '0');
+          if (status) status.textContent = exH + ' : ' + exM;
+          if (now - extra.time < 3600000) {
+            banner.classList.add('active');
+            if (sub) sub.textContent = '更新しました ✦';
+          } else {
+            banner.classList.remove('active');
+            if (sub) sub.textContent = '最新話を読む';
+          }
+          return;
+        }
 
         // ── 完結フェーズ（10/30以降・第2章開始前）──────────────────────
         var isComplete = !!COMPLETE_DATE && now >= COMPLETE_DATE && (!CH2_START || now < CH2_START);
