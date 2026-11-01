@@ -36,7 +36,7 @@
     { id: 'snowflakes', status: 'public', featured: true, order: 1,
       title: 'Snow flakes', kana: 'スノーフレークス', kind: '連載小説・シリーズ', page: 'stories/snowflakes/',
       lead: '約束なんてしていない。それでも、三人の音は続いていく。',   // 2026-10-28 ユーザー指定の紹介文の冒頭（2026-10-29「高校時代に始まったバンド…」は一覧から外す指示）（全文は stories/snowflakes/ の冒頭）
-      image: 'img/works/snowflakes_card.webp', heroImage: 'img/works/snowflakes.webp', imageSpec: '1600×900（16:9）',   // 2026-11-01 代表作品などのカードは顔をさらにアップにした snowflakes_card.webp（900×506 を切り抜き）、Snow flakes 物語トップの大きな画像は heroImage（c759232a の全体を切り抜かずに縮小）。2026-11-01 ユーザー指定のイラスト（雪の階段に座る三人・元画像 ⑥画像データ/c759232a-….png。同日 7db91bf1-….png から差し替え。顔が見えるよう 1152×648（左262・上12）を切り抜いて拡大）に差し替え。2026-10-28 ユーザー指定のイラストに差し替え（元画像は制作用の保管場所。対応は引き継ぎ資料）。旧：仮の Kindle 1巻表紙 snowflakes_ad.webp（ファイルは残している）
+      image: 'img/works/snowflakes_card.webp', heroImage: 'img/works/snowflakes.webp', imageSpec: '1600×900（16:9）',   // 2026-11-01 代表作品などのカードは顔をさらにアップにした snowflakes_card.webp（1030×579 を左330・上38から切り抜き。最初の 900×506 から少し引いた）、Snow flakes 物語トップの大きな画像は heroImage（c759232a の全体を切り抜かずに縮小）。2026-11-01 ユーザー指定のイラスト（雪の階段に座る三人・元画像 ⑥画像データ/c759232a-….png。同日 7db91bf1-….png から差し替え。顔が見えるよう 1152×648（左262・上12）を切り抜いて拡大）に差し替え。2026-10-28 ユーザー指定のイラストに差し替え（元画像は制作用の保管場所。対応は引き継ぎ資料）。旧：仮の Kindle 1巻表紙 snowflakes_ad.webp（ファイルは残している）
       serials: [{ label: '小説家になろう', url: NAROU + 'n9009lo/', ncode: 'n9009lo', note: '毎日21時更新' }],
       artists: ['snowflakes'] },
     { id: 'kamisama', status: 'public', featured: true, order: 2,
