@@ -46,7 +46,10 @@
       <p class="hero-author">作：山吹ことり</p>
       <div class="hero-actions">
         <a class="btn main" href="#episodes">各話一覧へ ↓</a>
-        <a class="btn" id="hero-announce" href="https://www.instagram.com/p/DfPJmP5FF4L/" target="_blank" rel="noopener noreferrer">Instagram の告知</a>
+        <button class="btn" id="sc-share" type="button" aria-label="このページをシェア（share）">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          share
+        </button>
       </div>
     </div>
   </header>
@@ -61,10 +64,25 @@
     </div>
   </section>
 
+  <!-- 導入：Instagram 特別短篇（連載の前に公開済み・2026-11-02 ユーザー）。公式の埋め込みで、この欄が近づいたら読み込む -->
+  <section class="sec" id="prologue">
+    <span class="sec-label">SPECIAL EPISODE</span>
+    <h2 class="sec-title">Instagram 特別短篇<br>「一枚撮りませんか」</h2>
+    <div class="ig-wrap">
+      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DfPJmP5FF4L/" data-instgrm-version="14">
+        <a class="ig-fallback" href="https://www.instagram.com/p/DfPJmP5FF4L/" target="_blank" rel="noopener noreferrer">Instagram で読む →</a>
+      </blockquote>
+    </div>
+  </section>
+
   <!-- 3. 各話一覧（showcase-data.js から描画。公開前・URL未登録の話は押せない） -->
   <section class="sec" id="episodes">
     <span class="sec-label">EPISODES</span>
     <h2 class="sec-title">各話一覧</h2>
+    <!-- 導入：Instagram 特別短篇（連載の前に公開済み。2026-11-02 ユーザー） -->
+    <a class="ep ep-intro" href="https://www.instagram.com/p/DfPJmP5FF4L/" target="_blank" rel="noopener noreferrer">
+      <span class="ep-no">特別編</span><span class="ep-title">一枚撮りませんか<small class="ep-sub">Instagram 特別短篇</small></span><span class="ep-when">Instagram で読む</span><span class="ep-go" aria-hidden="true">→</span>
+    </a>
     <ol class="eps" id="eps"></ol>
     <p class="eps-note">毎日20時に1話ずつ公開します。</p>
   </section>
@@ -194,6 +212,33 @@
 </script>
 <script src="showcase-data.js"></script>
 <script>
+// シェア：共有メニュー（スマホなど）→ なければリンクをコピーして「コピーしました」
+document.getElementById('sc-share').addEventListener('click', function () {
+  var url = location.href.split('#')[0].split('?')[0], title = document.title;
+  if (navigator.share) { navigator.share({ title: title, url: url }).catch(function () {}); return; }
+  if (!navigator.clipboard) return;
+  navigator.clipboard.writeText(url).then(function () {
+    var t = document.getElementById('sc-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'sc-toast'; t.setAttribute('role', 'status'); t.textContent = 'リンクをコピーしました'; document.body.appendChild(t); }
+    t.classList.add('is-show');
+    setTimeout(function () { t.classList.remove('is-show'); }, 2000);
+  });
+});
+// Instagram の埋め込み：欄が近づいたら公式の embed.js を読む（1回だけ）
+(function () {
+  var sec = document.getElementById('prologue'), loaded = false;
+  function load() {
+    if (loaded) return; loaded = true;
+    if (window.instgrm && window.instgrm.Embeds) { window.instgrm.Embeds.process(); return; }
+    var s = document.createElement('script'); s.async = true; s.src = 'https://www.instagram.com/embed.js';
+    document.body.appendChild(s);
+  }
+  if (!('IntersectionObserver' in window)) { load(); return; }
+  var io = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); load(); } }, { rootMargin: '600px 0px' });
+  io.observe(sec);
+})();
+</script>
+<script>
 (function () {
   var SC = window.SfShowcase;
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -225,19 +270,21 @@
   }
 
   // ── シーンギャラリー（showFrom を書いた画像は、その日時までは出さない＝最終話のネタバレ対策） ──
+  // title：画像の下に出すタイトル（どの話の場面か）。2026-11-02 ユーザー指定：最初の4枚は Instagram 特別短篇「一枚撮りませんか」
   var SCENES = [
-    { img: 'img/cafe.webp', alt: '喫茶店で本を手に、見つめ合うコウタと宵子' },
-    { img: 'img/selfie-camera.webp', alt: '少し硬い表情のコウタと、カメラを見て笑う宵子の自撮り' },
-    { img: 'img/selfie-smile.webp', alt: '自然に笑うコウタと、その顔を見上げる宵子の自撮り' },
-    { img: 'img/train.webp', alt: '帰りの電車で、スマートフォンの写真を見返して微笑むコウタ' }
+    { img: 'img/cafe.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '喫茶店で本を手に、見つめ合うコウタと宵子' },
+    { img: 'img/selfie-camera.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '少し硬い表情のコウタと、カメラを見て笑う宵子の自撮り' },
+    { img: 'img/selfie-smile.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '自然に笑うコウタと、その顔を見上げる宵子の自撮り' },
+    { img: 'img/train.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '帰りの電車で、スマートフォンの写真を見返して微笑むコウタ' }
   ];
   var shown = [];
   function renderGallery() {
     var now = Date.now();
     shown = SCENES.filter(function (s) { return !s.showFrom || now >= new Date(s.showFrom).getTime(); });
     document.getElementById('gallery-grid').innerHTML = shown.map(function (s, i) {
-      return '<button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '">' +
-        '<img src="' + esc(s.img) + '" alt="' + esc(s.alt) + '" width="1100" height="1374" loading="lazy"></button>';
+      return '<figure class="g-card"><button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '">' +
+        '<img src="' + esc(s.img) + '" alt="' + esc(s.alt) + '" width="1100" height="1374" loading="lazy"></button>' +
+        (s.title ? '<figcaption class="g-title">' + esc(s.title).replace('「', '<br>「') + '</figcaption>' : '') + '</figure>';
     }).join('');
     updateNav();
   }
@@ -271,7 +318,7 @@
   function show(i) {
     cur = (i + shown.length) % shown.length;
     lbImg.src = shown[cur].img; lbImg.alt = shown[cur].alt;
-    lbCap.textContent = shown[cur].alt + '（' + (cur + 1) + ' / ' + shown.length + '）';
+    lbCap.textContent = (shown[cur].title ? shown[cur].title + '　' : '') + shown[cur].alt + '（' + (cur + 1) + ' / ' + shown.length + '）';
   }
   function open(i) {
     lastFocus = document.activeElement;

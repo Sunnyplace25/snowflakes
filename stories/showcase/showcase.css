@@ -70,6 +70,18 @@ main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 .intro p { margin: 0 0 1em; }
 .intro p:last-child { margin: 0; }
 
+/* ── 導入（Instagram 特別短篇の埋め込み） ── */
+.ig-wrap { max-width: 540px; margin: 0 auto; display: flex; justify-content: center; }
+.ig-wrap .instagram-media { background: var(--paper) !important; border: 1px solid var(--line) !important; border-radius: 14px !important; box-shadow: var(--shadow) !important;
+  margin: 0 auto !important; min-width: 0 !important; width: 100% !important; max-width: 540px !important; padding: 0 !important; }
+.ig-fallback { display: block; padding: 28px; text-align: center; color: var(--lav); text-decoration: none; font-size: 15px; }
+.ig-wrap iframe { border-radius: 14px !important; }
+/* シェアの「コピーしました」 */
+#sc-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 120; background: var(--ink); color: #fff; font-size: 14px;
+  padding: 8px 18px; border-radius: 100px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+#sc-toast.is-show { opacity: 1; }
+button.btn { font-family: inherit; cursor: pointer; }
+
 /* ── 3. 各話一覧 ── */
 .eps { list-style: none; margin: 0 auto; padding: 0; max-width: 640px; display: flex; flex-direction: column; gap: 10px; }
 .ep { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); text-decoration: none; min-height: 56px; }
@@ -84,6 +96,9 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
 .ep.is-locked { background: #f5f1e8; color: var(--ink-2); cursor: default; }
 .ep.is-locked .ep-no { color: var(--ink-2); }
 .ep.is-wait .ep-when { color: var(--petal); }
+.ep-intro { max-width: 640px; margin: 0 auto 10px; border-color: var(--petal); background: #fff8fa; }
+a.ep-intro:hover { border-color: var(--petal); background: var(--petal-soft); }
+.ep-intro .ep-no, .ep-intro .ep-go, .ep-intro .ep-when { color: var(--petal); }
 .eps-note { text-align: center; font-size: 14px; color: var(--ink-2); margin: 14px 0 0; }
 
 /* ── 4. 本編・関連作品 ── */
@@ -114,7 +129,10 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
 .gallery { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain;
   scrollbar-width: none; padding: 4px 2px 14px; margin: -4px -2px 0; -webkit-overflow-scrolling: touch; }
 .gallery::-webkit-scrollbar { display: none; }
-.g-item { flex: 0 0 calc((100% - 14px * 3) / 4); scroll-snap-align: start; padding: 0; border: 0; background: var(--lav-soft); border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1100 / 1374; box-shadow: var(--shadow); }
+.g-card { flex: 0 0 calc((100% - 14px * 3) / 4); scroll-snap-align: start; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.g-title { font-size: 13px; line-height: 1.6; color: var(--ink-2); text-align: center; padding: 0 4px; }
+.ep-sub { display: block; font-size: 13px; color: var(--ink-2); }
+.g-item { width: 100%; padding: 0; border: 0; background: var(--lav-soft); border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1100 / 1374; box-shadow: var(--shadow); }
 .g-nav { position: absolute; top: calc(50% - 7px); transform: translateY(-50%); z-index: 2; width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--line); background: rgba(255, 253, 248, 0.95); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer;
   display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); transition: opacity .2s; }
@@ -151,7 +169,7 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
   .hero-img { border-radius: 14px; }
   .hero-period { font-size: 15px; }
   .links { grid-template-columns: 1fr; }
-  .g-item { flex-basis: calc((100% - 14px) / 2.3); }
+  .g-card { flex-basis: calc((100% - 14px) / 2.3); }
   .g-prev { left: 4px; }
   .g-next { right: 4px; }
 }
@@ -163,6 +181,9 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
   .ep-title { flex-basis: calc(100% - 5em); }
   .ep-when { width: 100%; padding-left: calc(3.6em + 12px); }
   .ep-title:empty + .ep-when { width: auto; padding-left: 0; }
+  .ep-intro { flex-wrap: nowrap; }
+  .ep-intro .ep-when { display: none; }   /* スマホは「Instagram 特別短篇」の小さな文字と → で足りる */
+  .ep-intro .ep-title { flex-basis: auto; }
   .hp-sep { display: none !important; }
   .song { flex-direction: column; text-align: center; gap: 14px; }
   .lb { padding: 64px 12px 72px; }
