@@ -1,0 +1,158 @@
+/* ============================================================
+   stories/showcase/showcase.css — 『ショーケースの前で恋をした』特集ページ（2026-11-02）
+   アイボリーを基調に、淡いラベンダーと花の色をアクセントに。装飾は控えめ、文字は小さくしない
+   （ホラー向けの暗い背景・赤い縁・明滅は使わない）
+   ============================================================ */
+:root {
+  --ivory: #faf6ee;
+  --paper: #fffdf8;
+  --ink: #3b3340;          /* 本文（十分な濃さ） */
+  --ink-2: #5d5462;        /* 補足文 */
+  --lav: #8c7fbf;          /* ラベンダー（見出しのラベル・リンク） */
+  --lav-soft: #ece7f6;
+  --petal: #d98ba2;        /* 花の色 */
+  --petal-soft: #f8e6ec;
+  --line: #e7dfd2;
+  --shadow: 0 6px 24px rgba(92, 72, 60, 0.08);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ivory); color: var(--ink);
+  font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 1.9; letter-spacing: 0.03em;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+.en { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.25em; }
+
+/* ── ナビ ── */
+.sc-nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px; background: rgba(250, 246, 238, 0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); }
+.sc-nav a { text-decoration: none; font-size: 14px; color: var(--ink-2); }
+.sc-nav .home { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.3em; font-size: 15px; color: var(--ink); }
+.sc-nav-right { display: flex; gap: 8px; }
+.sc-nav-right a { border: 1px solid var(--line); border-radius: 100px; padding: 4px 14px; background: var(--paper); font-size: 13px; }
+
+/* ── 共通の欄 ── */
+main { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+.sec { padding: 72px 0 0; }
+.sec-label { display: block; text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.4em; color: var(--lav); margin-bottom: 6px; }
+.sec-title { text-align: center; font-size: clamp(20px, 3vw, 24px); font-weight: 400; margin: 0 0 28px; letter-spacing: 0.08em; }
+.sec-title::after { content: '❀'; display: block; font-size: 13px; color: var(--petal); margin-top: 6px; letter-spacing: 0; }
+
+/* ── 1. メインビジュアル ── */
+/* タイトル入りの横長画像（2026-11-02 ユーザー指定）を上に、公開期間などをその下に */
+.hero { padding-top: 28px; }
+.hero-img { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); background: var(--lav-soft); aspect-ratio: 16 / 9; }
+.hero-img img { width: 100%; height: 100%; object-fit: cover; }
+.hero-body { text-align: center; padding-top: 24px; }
+.hero-body p { margin: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.hero-period { display: inline-block; font-size: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 10px 18px; margin-bottom: 14px !important; line-height: 1.7; }
+.hero-status { display: inline-block; font-size: 14px; color: #fff; background: var(--lav); border-radius: 100px; padding: 3px 14px; margin-bottom: 10px; }
+.hero-status[data-phase="done"] { background: var(--petal); }
+.hero-author { font-size: 15px; color: var(--ink-2); margin: 6px 0 20px !important; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border-radius: 100px; padding: 10px 20px; font-size: 14px;
+  border: 1px solid var(--lav); color: var(--lav); background: var(--paper); transition: background .2s; }
+.btn:hover { background: var(--lav-soft); }
+.btn.main { background: var(--lav); color: #fff; }
+.btn.main:hover { background: #7a6daf; }
+
+/* ── 2. 作品紹介 ── */
+.intro { max-width: 640px; margin: 0 auto; background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 32px 28px; box-shadow: var(--shadow); }
+.intro p { margin: 0 0 1em; }
+.intro p:last-child { margin: 0; }
+
+/* ── 3. 各話一覧 ── */
+.eps { list-style: none; margin: 0 auto; padding: 0; max-width: 640px; display: flex; flex-direction: column; gap: 10px; }
+.ep { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; background: var(--paper); border: 1px solid var(--line); text-decoration: none; min-height: 56px; }
+a.ep:hover { border-color: var(--lav); background: #fdfbff; }
+.ep-no { flex-shrink: 0; font-size: 14px; color: var(--lav); min-width: 3.6em; }
+.ep-title { flex: 1; min-width: 0; font-size: 16px; }
+.ep-when { flex-shrink: 0; font-size: 13px; color: var(--ink-2); }
+.ep-go { flex-shrink: 0; color: var(--lav); }
+.ep-title:empty { display: none; }
+.ep-title:empty + .ep-when { margin-left: auto; }
+.hero-period span { display: inline-block; }
+.ep.is-locked { background: #f5f1e8; color: var(--ink-2); cursor: default; }
+.ep.is-locked .ep-no { color: var(--ink-2); }
+.ep.is-wait .ep-when { color: var(--petal); }
+.eps-note { text-align: center; font-size: 14px; color: var(--ink-2); margin: 14px 0 0; }
+
+/* ── 4. 本編・関連作品 ── */
+.links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.link-card { display: flex; flex-direction: column; gap: 6px; text-decoration: none; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: border-color .2s, transform .2s; }
+.link-card:hover { border-color: var(--lav); transform: translateY(-2px); }
+.link-img { aspect-ratio: 16 / 10; background: var(--lav-soft); overflow: hidden; }
+.link-img img { width: 100%; height: 100%; object-fit: cover; }
+.link-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.link-kind { font-size: 13px; color: var(--lav); letter-spacing: 0.1em; }
+.link-title { font-size: 17px; }
+.link-text { font-size: 14px; color: var(--ink-2); line-height: 1.8; }
+.link-go { margin-top: auto; padding-top: 8px; font-size: 14px; color: var(--lav); }
+
+/* ── 5. テーマ曲 ── */
+.song { display: flex; align-items: center; gap: 24px; max-width: 640px; margin: 0 auto; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 20px; text-decoration: none; box-shadow: var(--shadow); }
+.song:hover { border-color: var(--lav); }
+.song-jacket { width: 128px; flex-shrink: 0; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background: var(--lav-soft); }
+.song-jacket img { width: 100%; height: 100%; object-fit: cover; }
+.song-label { font-size: 13px; color: var(--petal); letter-spacing: 0.1em; margin: 0; }
+.song-title { font-size: 20px; margin: 2px 0; }
+.song-meta { font-size: 14px; color: var(--ink-2); margin: 0; }
+.song-go { font-size: 14px; color: var(--lav); margin: 8px 0 0; }
+
+/* ── 6. シーンギャラリー ── */
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.g-item { padding: 0; border: 0; background: var(--lav-soft); border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1100 / 1374; box-shadow: var(--shadow); }
+.g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.g-item:hover img { transform: scale(1.03); }
+.g-item:focus-visible { outline: 3px solid var(--lav); outline-offset: 3px; }
+.g-note { text-align: center; font-size: 14px; color: var(--ink-2); margin: 14px 0 0; }
+
+/* 拡大表示 */
+.lb { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: rgba(250, 246, 238, 0.97); padding: 56px 64px; }
+.lb.is-open { display: flex; }
+.lb-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; max-width: 100%; max-height: 100%; }
+.lb-img { max-width: 100%; max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px); width: auto; height: auto; object-fit: contain; border-radius: 12px; box-shadow: var(--shadow); touch-action: pan-y; }
+.lb-cap { font-size: 14px; color: var(--ink-2); text-align: center; }
+.lb-btn { position: absolute; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 50%; width: 46px; height: 46px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.lb-btn:hover { border-color: var(--lav); color: var(--lav); }
+.lb-close { top: 14px; right: 14px; }
+.lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+
+/* ── フッター ── */
+.sc-footer { margin-top: 88px; padding: 32px 20px 40px; border-top: 1px solid var(--line); text-align: center; font-size: 13px; color: var(--ink-2); }
+.sc-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; margin-bottom: 14px; }
+.sc-footer nav a { text-decoration: none; font-size: 14px; }
+
+/* ── スマートフォン ── */
+@media (max-width: 860px) {
+  .hero { padding-top: 16px; }
+  .hero-img { border-radius: 14px; }
+  .hero-period { font-size: 15px; }
+  .links { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  main { padding: 0 16px; }
+  .sec { padding-top: 56px; }
+  .intro { padding: 24px 20px; }
+  .ep { flex-wrap: wrap; gap: 4px 12px; padding: 12px 16px; }
+  .ep-title { flex-basis: calc(100% - 5em); }
+  .ep-when { width: 100%; padding-left: calc(3.6em + 12px); }
+  .ep-title:empty + .ep-when { width: auto; padding-left: 0; }
+  .hp-sep { display: none !important; }
+  .song { flex-direction: column; text-align: center; gap: 14px; }
+  .lb { padding: 64px 12px 72px; }
+  .lb-img { max-height: calc(100vh - 170px); max-height: calc(100dvh - 170px); }
+  .lb-prev, .lb-next { top: auto; bottom: 14px; transform: none; }
+  .lb-prev { left: calc(50% - 58px); }
+  .lb-next { right: calc(50% - 58px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-item img, .link-card, .btn { transition: none; }
+}

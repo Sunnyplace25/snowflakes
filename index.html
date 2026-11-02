@@ -1087,6 +1087,63 @@ function sfShare(anchor) {
   <div style="text-align:center;margin-bottom:36px;">
     <button onclick="sfShare('topics')" title="シェアして❄ Snowをゲット" style="background:none;border:1px solid rgba(147,197,253,0.2);cursor:pointer;padding:6px 20px;border-radius:100px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#475569;transition:all 0.2s;" onmouseenter="this.style.color='#93c5fd';this.style.borderColor='rgba(147,197,253,0.5)'" onmouseleave="this.style.color='#475569';this.style.borderColor='rgba(147,197,253,0.2)'">↗ share</button>
   </div>
+  <!-- ショーケースの前で恋をした 特集バナー（2026-11-02 指示書。表示期間・公開状況は stories/showcase/showcase-data.js） -->
+  <style>
+    #banner-showcase { display: none; max-width: 680px; margin: 0 auto 16px; }
+    /* 画像は文字なしの横長版（2026-11-02 ユーザー指定）。顔は画像の上半分にあるので、文字は下側（テーブルのあたり）に載せる */
+    #banner-showcase a { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; text-decoration: none;
+      background: #faf6ee; border: 1px solid rgba(236, 231, 246, 0.6); box-shadow: 0 6px 28px rgba(0,0,0,0.35); transition: transform .3s; }
+    #banner-showcase a:hover { transform: translateY(-2px); }
+    #banner-showcase img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+    #banner-showcase .bs-text { position: absolute; left: 0; right: 0; bottom: 0; padding: 48px 24px 16px; color: #3b3340;
+      background: linear-gradient(to bottom, rgba(250,246,238,0) 0%, rgba(250,246,238,0.86) 40%, rgba(250,246,238,0.96) 100%); }
+    #banner-showcase .bs-kind { font-family: 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 0.12em; color: #7a6daf; margin: 0 0 2px; }
+    #banner-showcase .bs-title { font-family: 'Noto Serif JP', serif; font-size: clamp(20px, 4.4vw, 28px); font-weight: 400; letter-spacing: 0.06em; line-height: 1.4; margin: 0 0 4px; }
+    #banner-showcase .bs-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; }
+    #banner-showcase .bs-when { font-family: 'Noto Serif JP', serif; font-size: 14px; color: #4a4150; margin: 0; }
+    #banner-showcase .bs-go { font-family: 'Noto Serif JP', serif; font-size: 14px; color: #fff; background: #8c7fbf; border-radius: 100px; padding: 5px 16px; white-space: nowrap; }
+    /* スマホ：画面が狭く文字が顔にかかるので、画像のすぐ下に文字を置く（画像と一体の白い帯） */
+    @media (max-width: 560px) {
+      #banner-showcase a { aspect-ratio: auto; border-radius: 16px; }
+      #banner-showcase img { position: static; aspect-ratio: 16 / 9; height: auto; }
+      #banner-showcase .bs-text { position: static; padding: 12px 16px 14px; background: #faf6ee; }
+      #banner-showcase .bs-when { font-size: 13px; }
+      #banner-showcase .bs-go { font-size: 13px; padding: 4px 14px; }
+    }
+  </style>
+  <div id="banner-showcase">
+    <a href="stories/showcase/">
+      <img src="stories/showcase/img/main-wide.webp" alt="桜の見える喫茶店で、本を手に見つめ合うコウタと宵子" loading="lazy">
+      <div class="bs-text">
+        <p class="bs-kind">Snow flakes 短編連作</p>
+        <p class="bs-title">ショーケースの前で恋をした</p>
+        <div class="bs-row">
+          <p class="bs-when" id="bs-when">11月7日〜14日／毎日20時公開・全8話</p>
+          <span class="bs-go">特集ページへ →</span>
+        </div>
+      </div>
+    </a>
+  </div>
+  <script src="stories/showcase/showcase-data.js"></script>
+  <script>
+  (function () {
+    var SC = window.SfShowcase, box = document.getElementById('banner-showcase');
+    if (!SC || !box) return;
+    // 開始前：11月7日 連載開始／連載中：期間・更新時刻／完結後：全8話公開中
+    function update() {
+      var vis = SC.bannerVisible();
+      box.style.display = vis ? 'block' : 'none';
+      if (!vis) return;
+      var st = SC.status(), el = document.getElementById('bs-when');
+      el.textContent = st.phase === 'before' ? '11月7日 連載開始 ／ 毎日20時公開・全8話'
+        : st.phase === 'running' ? '11月7日〜14日／毎日20時公開・全8話（第' + st.released + '話まで公開中）'
+        : '全8話公開中';
+    }
+    update();
+    setInterval(update, 60000);
+  })();
+  </script>
+
   <!-- 一本だけのドラムスティック 短篇バナー（2026-09-05〜2026-09-10） -->
   <div id="banner-drumstick" style="display:none;max-width:680px;margin:0 auto 12px;">
     <a href="https://ncode.syosetu.com/n2115mf/" target="_blank" rel="noopener"

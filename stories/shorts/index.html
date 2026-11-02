@@ -76,6 +76,7 @@
 <script src="../../site/phrase.js"></script>
 <script src="../../site/site-footer.js" data-root="../../"></script>
 <script src="../collection.js"></script>
+<script src="../showcase/showcase-data.js"></script>
 <script>
   /* 作品データ（2026-10-31）
      ・紹介文：小説家になろうのあらすじ（作者本人の文）から、続いている文をそのまま引用。推測で補わない
@@ -89,6 +90,13 @@
     { id: 'snowflakes', label: 'SNOW FLAKES', title: 'Snow flakes の短篇',
       lead: 'ヒナタ、ハヤテ、コウタ。三人がバンドになる前と、そのまわりにいた人たちの物語です。',
       items: [
+      // 短編連作（2026-11-02 指示書）：紹介文は指示書のまま。公開状況・各話は stories/showcase/showcase-data.js
+      { title: 'ショーケースの前で恋をした', kind: '短編連作', date: '2026.11.07',
+        eps: '全8話 · ' + SfShowcase.status().text,
+        image: 'stories/showcase/img/main-wide.webp', imagePos: 'center 30%',   // 文字なしの横長版（2026-11-02 ユーザー指定）
+        text: 'Snow flakes「ショーケース編」で描かれなかった、コウタと宵子の物語。次に会えるのが楽しみだった二人の、ささやかな日々を綴る短編連作。',
+        related: [SF, { label: '♪ 花の名前を忘れても', href: SONG + 'hana-no-namae' }],
+        links: [{ label: '特集ページへ', href: '../showcase/' }] },
       { title: '一本だけのドラムスティック', kind: '短篇', date: '2026.09.05',
         text: '兄から譲られた、一本だけのドラムスティック。旧家で育ったハヤテは、長兄のドラムに触れた夜、音を「前に出るもの」ではなく「誰かと誰かの間に置くもの」として知る。',
         related: [SF],
