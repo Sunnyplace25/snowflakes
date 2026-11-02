@@ -149,6 +149,10 @@
   </section>
 </main>
 
+<!-- BGM：『花の名前を忘れても』インスト（元 D:\❄Snow flakes\特集用BGM\。128kbps に変換）。小さな ON / OFF -->
+<audio id="sc-bgm" src="bgm.mp3" preload="none" loop></audio>
+<button class="bgm-btn" id="bgm-btn" type="button" aria-pressed="false" aria-label="BGM『花の名前を忘れても』（インスト）を流す・止める">♪ BGM <span class="bgm-state">OFF</span></button>
+
 <!-- 拡大表示 -->
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="画像の拡大表示" hidden>
   <button class="lb-btn lb-close" type="button" aria-label="閉じる">×</button>
@@ -212,6 +216,23 @@
 })();
 </script>
 <script src="showcase-data.js"></script>
+<script>
+// BGM の ON / OFF
+(function () {
+  var a = document.getElementById('sc-bgm'), btn = document.getElementById('bgm-btn'), st = btn.querySelector('.bgm-state');
+  var id = Math.random().toString(36).slice(2);
+  var ch = ('BroadcastChannel' in window) ? new BroadcastChannel('sf-showcase-bgm') : null;
+  a.volume = 0.3;
+  function set(on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.classList.toggle('is-on', on); st.textContent = on ? 'ON' : 'OFF'; }
+  btn.addEventListener('click', function () {
+    if (a.paused) {
+      a.play().then(function () { set(true); if (ch) ch.postMessage({ playing: true, id: id }); }).catch(function () { set(false); });
+    } else { a.pause(); set(false); }
+  });
+  if (ch) ch.onmessage = function (e) { if (e.data && e.data.playing && e.data.id !== id && !a.paused) { a.pause(); set(false); } };
+  window.addEventListener('pagehide', function () { a.pause(); set(false); });
+})();
+</script>
 <script>
 // シェア：共有メニュー（スマホなど）→ なければリンクをコピーして「コピーしました」
 document.getElementById('sc-share').addEventListener('click', function () {
