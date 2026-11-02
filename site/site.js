@@ -59,10 +59,21 @@
     }).join('') + '</div>';
   }
 
+  // 期間限定の画像（imageDuring: [{ from, until, image }]）があり、いまが期間内なら、その画像に差し替えた写しを返す
+  function withPeriodImage(c) {
+    var now = Date.now(), hit = (c.imageDuring || []).filter(function (p) {
+      return now >= new Date(p.from).getTime() && now <= new Date(p.until).getTime();
+    })[0];
+    if (!hit) return c;
+    var o = {}; for (var k in c) o[k] = c[k];
+    o.image = hit.image;
+    return o;
+  }
+
   // ── STORIES の「その他の作品」（ホラー作品・短篇など。2026-10-31） ──
   function renderStoryCollections(el, opts) {
     var root = (opts && opts.root) || '';
-    var list = (S.storyCollections || []).filter(isPublic);
+    var list = (S.storyCollections || []).filter(isPublic).map(withPeriodImage);
     el.innerHTML = '<div class="sf-cards sf-works is-two">' + list.map(function (c) {
       return card(root, { href: c.page, label: c.kind, title: c.title, text: c.lead, color: COLORS[c.id], mark: c.title, sub: c.kind, item: c, ratio: '16 / 9', go: '作品一覧へ →' });
     }).join('') + '</div>';

@@ -66,7 +66,9 @@
       image: 'img/works/horror.webp', imageSpec: '1600×900（16:9）' },   // 2026-10-31 horror_bg.webp（頭を抱えたコウタ）を 16:9 に切り抜き（上から 184px・1086×611）。ユーザー指示
     { id: 'shorts', status: 'public', title: '短篇・その他の作品', kind: 'SHORT STORIES', page: 'stories/shorts/',
       lead: 'Snow flakesの関連短篇を中心に、番外編や書き下ろし作品を紹介しています。',   // 2026-10-31 ユーザー指定
-      image: 'img/works/shorts.webp', imageSpec: '1600×900（16:9）' }   // 2026-10-31 ユーザー指定（元画像 ⑥画像データ/download.jpg・高校時代の三人）。旧：story_drumstick.webp（contain）
+      image: 'img/works/shorts.webp', imageSpec: '1600×900（16:9）',   // 2026-10-31 ユーザー指定（元画像 ⑥画像データ/download.jpg・高校時代の三人）。旧：story_drumstick.webp（contain）
+      // 期間限定の画像（日本時間）。期間外は上の image に戻る
+      imageDuring: [{ from: '2026-11-07T00:00:00+09:00', until: '2026-11-30T23:59:59+09:00', image: 'stories/showcase/img/main-wide.webp' }] }   // 『ショーケースの前で恋をした』連載開始〜11/30（2026-11-02 ユーザー指示）
   ];
 
   // ── ゲーム（GAME 一覧。ゲーム本体は既存の URL へ案内するだけで複製しない） ──
