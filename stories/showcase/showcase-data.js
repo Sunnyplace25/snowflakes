@@ -25,12 +25,12 @@
 
   var SC = {
     title: 'ショーケースの前で恋をした',
-    kind: 'Snow flakes 短編連作',
+    kind: 'Snow flakes 短篇連作',
     author: '山吹ことり',
     page: 'stories/showcase/',                         // サイトのルートからのパス
     announce: 'https://www.instagram.com/p/DfPJmP5FF4L/',   // Instagram の告知（2026-11-02 ユーザー指定）
     periodText: '11月7日〜14日／毎日20時公開・全8話',
-    // トップの特集バナーを出す期間（日本時間）。終わりは仮（指示書に指定なし）
+    // トップの特集バナーを出す期間（日本時間）。11/30 まで（2026-11-02 ユーザー指定）。期間後も特集ページと短篇一覧のカードは残す
     bannerFrom: '2026-11-02T00:00:00+09:00',
     bannerUntil: '2026-11-30T23:59:59+09:00',
     episodes: EPISODES
