@@ -67,7 +67,7 @@
   <!-- 導入：Instagram 特別短篇（連載の前に公開済み・2026-11-02 ユーザー）。公式の埋め込みで、この欄が近づいたら読み込む -->
   <section class="sec" id="prologue">
     <span class="sec-label">SPECIAL EPISODE</span>
-    <h2 class="sec-title">Instagram 特別短篇<br>「一枚撮りませんか」</h2>
+    <h2 class="sec-title">Instagram 特別短篇<br>「一枚、撮りませんか」</h2>
     <div class="ig-wrap">
       <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DfPJmP5FF4L/" data-instgrm-version="14">
         <a class="ig-fallback" href="https://www.instagram.com/p/DfPJmP5FF4L/" target="_blank" rel="noopener noreferrer">Instagram で読む →</a>
@@ -81,7 +81,7 @@
     <h2 class="sec-title">各話一覧</h2>
     <!-- 導入：Instagram 特別短篇（連載の前に公開済み。2026-11-02 ユーザー） -->
     <a class="ep ep-intro" href="https://www.instagram.com/p/DfPJmP5FF4L/" target="_blank" rel="noopener noreferrer">
-      <span class="ep-no">特別編</span><span class="ep-title">一枚撮りませんか<small class="ep-sub">Instagram 特別短篇</small></span><span class="ep-when">Instagram で読む</span><span class="ep-go" aria-hidden="true">→</span>
+      <span class="ep-no">特別編</span><span class="ep-title">一枚、撮りませんか<small class="ep-sub">Instagram 特別短篇</small></span><span class="ep-when">Instagram で読む</span><span class="ep-go" aria-hidden="true">→</span>
     </a>
     <ol class="eps" id="eps"></ol>
     <p class="eps-note">毎日20時に1話ずつ公開します。</p>
@@ -139,6 +139,7 @@
     <span class="sec-label">SCENE GALLERY</span>
     <h2 class="sec-title">シーンギャラリー</h2>
     <!-- カルーセル（2026-11-02 ユーザー指示：PC は4枚表示。枚数が増えて入りきらないときだけ矢印・スワイプで動く） -->
+    <p class="g-label" id="g-label" aria-live="polite">Instagram 特別短篇「一枚、撮りませんか」</p>
     <div class="g-carousel is-static" id="g-carousel">
       <button class="g-nav g-prev" type="button" aria-label="前の画像へ" disabled>‹</button>
       <div class="gallery" id="gallery-grid" tabindex="-1"></div>
@@ -269,30 +270,54 @@ document.getElementById('sc-share').addEventListener('click', function () {
     document.getElementById('eps').innerHTML = html;
   }
 
-  // ── シーンギャラリー（showFrom を書いた画像は、その日時までは出さない＝最終話のネタバレ対策） ──
-  // title：画像の下に出すタイトル（どの話の場面か）。2026-11-02 ユーザー指定：最初の4枚は Instagram 特別短篇「一枚撮りませんか」
-  var SCENES = [
-    { img: 'img/cafe.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '喫茶店で本を手に、見つめ合うコウタと宵子' },
-    { img: 'img/selfie-camera.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '少し硬い表情のコウタと、カメラを見て笑う宵子の自撮り' },
-    { img: 'img/selfie-smile.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '自然に笑うコウタと、その顔を見上げる宵子の自撮り' },
-    { img: 'img/train.webp', title: 'Instagram 特別短篇「一枚撮りませんか」', alt: '帰りの電車で、スマートフォンの写真を見返して微笑むコウタ' }
+  // ── シーンギャラリー：話ごとの組（1組4枚まで）。組を足すと、カルーセルで次の組へ進んだときに上のタイトルが変わる ──
+  //   { title: '一覧の上に出すタイトル', scenes: [{ img, alt, showFrom? }] }
+  //   showFrom を書いた画像は、その日時（日本時間）までは出さない＝最終話のネタバレ対策。組の画像が全部隠れているときは組ごと出さない
+  //   画像ごとの説明文は出さない（2026-11-02 ユーザー指示）。alt は読み上げ用
+  var SCENE_GROUPS = [
+    { title: 'Instagram 特別短篇「一枚、撮りませんか」', scenes: [
+      { img: 'img/cafe.webp', alt: '喫茶店で本を手に、見つめ合うコウタと宵子' },
+      { img: 'img/selfie-camera.webp', alt: '少し硬い表情のコウタと、カメラを見て笑う宵子の自撮り' },
+      { img: 'img/selfie-smile.webp', alt: '自然に笑うコウタと、その顔を見上げる宵子の自撮り' },
+      { img: 'img/train.webp', alt: '帰りの電車で、スマートフォンの写真を見返して微笑むコウタ' }
+    ] }
   ];
-  var shown = [];
+  var PER = 4;
+  var shown = [], groups = [];
   function renderGallery() {
-    var now = Date.now();
-    shown = SCENES.filter(function (s) { return !s.showFrom || now >= new Date(s.showFrom).getTime(); });
-    document.getElementById('gallery-grid').innerHTML = shown.map(function (s, i) {
-      return '<figure class="g-card"><button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '">' +
-        '<img src="' + esc(s.img) + '" alt="' + esc(s.alt) + '" width="1100" height="1374" loading="lazy"></button>' +
-        (s.title ? '<figcaption class="g-title">' + esc(s.title).replace('「', '<br>「') + '</figcaption>' : '') + '</figure>';
-    }).join('');
+    var now = Date.now(), html = '';
+    shown = []; groups = [];
+    SCENE_GROUPS.forEach(function (g) {
+      var list = g.scenes.filter(function (s) { return !s.showFrom || now >= new Date(s.showFrom).getTime(); }).slice(0, PER);
+      if (!list.length) return;
+      var gi = groups.length; groups.push(g.title);
+      list.forEach(function (s) {
+        var i = shown.length; shown.push({ img: s.img, alt: s.alt, group: gi });
+        html += '<figure class="g-card" data-group="' + gi + '"><button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '">' +
+          '<img src="' + esc(s.img) + '" alt="' + esc(s.alt) + '" width="1100" height="1374" loading="lazy"></button></figure>';
+      });
+      for (var k = list.length; k < PER; k++) html += '<div class="g-card g-spacer" aria-hidden="true"></div>';   // PC で次の組が混ざらないように
+    });
+    track.innerHTML = html;
     updateNav();
   }
 
-  // ── カルーセル：入りきらないときだけ矢印を出す。矢印は1画面ぶん送る ──
+  // ── カルーセル：入りきらないときだけ矢印を出す。矢印は1組（1画面）ぶん送る ──
   var car = document.getElementById('g-carousel'), track = document.getElementById('gallery-grid');
-  var gPrev = car.querySelector('.g-prev'), gNext = car.querySelector('.g-next');
+  var gPrev = car.querySelector('.g-prev'), gNext = car.querySelector('.g-next'), gLabel = document.getElementById('g-label');
+  // いま左端に見えている画像の組のタイトルを、一覧の上に出す
+  function updateLabel() {
+    var tl = track.getBoundingClientRect().left, cards = track.querySelectorAll('.g-card:not(.g-spacer)'), gi = 0;
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      if (r.left + r.width / 2 >= tl) { gi = +cards[i].getAttribute('data-group'); break; }
+    }
+    var t = groups[gi] || '';
+    if (gLabel.textContent !== t) gLabel.textContent = t;
+    gLabel.hidden = !t;
+  }
   function updateNav() {
+    updateLabel();
     var scrollable = track.scrollWidth > track.clientWidth + 2;
     car.classList.toggle('is-static', !scrollable);
     gPrev.disabled = !scrollable || track.scrollLeft <= 2;
@@ -301,15 +326,16 @@ document.getElementById('sc-share').addEventListener('click', function () {
       ? '画像をタップすると拡大します。横にスワイプ（または矢印）で、ほかの場面へ。'
       : '画像をタップすると拡大します。';
   }
-  gPrev.addEventListener('click', function () { track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }); });
-  gNext.addEventListener('click', function () { track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); });
+  function page() { return track.clientWidth + 14; }   // 4枚＋すき間4つ＝1組
+  gPrev.addEventListener('click', function () { track.scrollBy({ left: -page(), behavior: 'smooth' }); });
+  gNext.addEventListener('click', function () { track.scrollBy({ left: page(), behavior: 'smooth' }); });
   track.addEventListener('scroll', function () { window.requestAnimationFrame(updateNav); }, { passive: true });
   window.addEventListener('resize', updateNav);
   // 拡大表示で見ていた画像を、閉じたときにカルーセルの見える位置へ
   function revealInTrack(i) {
-    var el = track.children[i]; if (!el) return;
-    var l = el.offsetLeft - track.offsetLeft, r = l + el.offsetWidth;
-    if (l < track.scrollLeft || r > track.scrollLeft + track.clientWidth) track.scrollTo({ left: l, behavior: 'smooth' });
+    var b = track.querySelector('[data-i="' + i + '"]'); if (!b) return;
+    var el = b.closest('.g-card'), tr = track.getBoundingClientRect(), r = el.getBoundingClientRect();
+    if (r.left < tr.left - 1 || r.right > tr.right + 1) track.scrollTo({ left: track.scrollLeft + (r.left - tr.left), behavior: 'smooth' });
   }
 
   // ── 拡大表示（閉じる・前後・キーボード・スワイプ） ──
@@ -318,7 +344,7 @@ document.getElementById('sc-share').addEventListener('click', function () {
   function show(i) {
     cur = (i + shown.length) % shown.length;
     lbImg.src = shown[cur].img; lbImg.alt = shown[cur].alt;
-    lbCap.textContent = (shown[cur].title ? shown[cur].title + '　' : '') + shown[cur].alt + '（' + (cur + 1) + ' / ' + shown.length + '）';
+    lbCap.textContent = '';   // 説明文は出さない（2026-11-02 ユーザー指示）
   }
   function open(i) {
     lastFocus = document.activeElement;
@@ -330,7 +356,7 @@ document.getElementById('sc-share').addEventListener('click', function () {
     lb.classList.remove('is-open'); lb.hidden = true;
     document.body.style.overflow = '';
     revealInTrack(cur);
-    var item = track.children[cur];
+    var item = track.querySelector('[data-i="' + cur + '"]');
     if (item) item.focus({ preventScroll: true }); else if (lastFocus) lastFocus.focus();
   }
   document.getElementById('gallery-grid').addEventListener('click', function (e) {
