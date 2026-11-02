@@ -142,7 +142,13 @@ a.ep-intro:hover { border-color: var(--petal); background: var(--petal-soft); }
 .gallery::-webkit-scrollbar { display: none; }
 .g-card { flex: 0 0 calc((100% - 14px * 3) / 4); scroll-snap-align: start; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .g-title { font-size: 13px; line-height: 1.6; color: var(--ink-2); text-align: center; padding: 0 4px; }
-.g-label { margin: 0 0 10px; font-size: 13px; color: var(--ink-2); text-align: left; letter-spacing: 0.04em; }
+.g-label { margin: 0 0 10px; font-size: 13px; color: var(--ink-2); text-align: left; letter-spacing: 0.04em; transition: opacity .28s ease; }
+.g-label.is-fading { opacity: 0; }
+.gallery { transition: opacity .28s ease; }
+.gallery.is-fading { opacity: 0; }
+.lb-img { transition: opacity .22s ease; }
+.lb-img.is-fading { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .g-label, .gallery, .lb-img { transition: none; } }
 .g-spacer { visibility: hidden; }
 .lb-cap:empty { display: none; }
 .ep-sub { display: block; font-size: 13px; color: var(--ink-2); }
