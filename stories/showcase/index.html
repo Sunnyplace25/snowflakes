@@ -120,8 +120,13 @@
   <section class="sec" id="gallery">
     <span class="sec-label">SCENE GALLERY</span>
     <h2 class="sec-title">シーンギャラリー</h2>
-    <div class="gallery" id="gallery-grid"></div>
-    <p class="g-note">画像をタップすると拡大します。</p>
+    <!-- カルーセル（2026-11-02 ユーザー指示：PC は4枚表示。枚数が増えて入りきらないときだけ矢印・スワイプで動く） -->
+    <div class="g-carousel is-static" id="g-carousel">
+      <button class="g-nav g-prev" type="button" aria-label="前の画像へ" disabled>‹</button>
+      <div class="gallery" id="gallery-grid" tabindex="-1"></div>
+      <button class="g-nav g-next" type="button" aria-label="次の画像へ">›</button>
+    </div>
+    <p class="g-note" id="g-note">画像をタップすると拡大します。</p>
   </section>
 </main>
 
@@ -143,6 +148,50 @@
   <p>© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</p>
 </footer>
 
+<canvas id="petals" aria-hidden="true"></canvas>
+<script>
+// 桜の花びら（2026-11-02 ユーザー指示）。文字の後ろでゆっくり舞う。少なめ・淡い色
+// 動きを減らす設定の環境では出さない。タブが見えていないときは止める
+(function () {
+  var cv = document.getElementById('petals');
+  if (!cv || !cv.getContext || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) { if (cv) cv.remove(); return; }
+  var ctx = cv.getContext('2d'), W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2), ps = [], raf = 0, last = 0;
+  var COLORS = ['#f6c9d6', '#f3b8c9', '#f9dbe4', '#efc3d3'];
+  function size() { W = window.innerWidth; H = window.innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  function count() { return W < 560 ? 12 : 22; }
+  function make(top) {
+    return { x: Math.random() * W, y: top ? Math.random() * H : -20 - Math.random() * 60, r: 5 + Math.random() * 5,
+      vy: 18 + Math.random() * 22, vx: -8 + Math.random() * 16, sway: 0.6 + Math.random() * 1.2, ph: Math.random() * 6.28,
+      rot: Math.random() * 6.28, vr: -1 + Math.random() * 2, flip: Math.random() * 6.28, c: COLORS[(Math.random() * COLORS.length) | 0], a: 0.55 + Math.random() * 0.3 };
+  }
+  function petal(p) {
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, 0.55 + 0.45 * Math.abs(Math.sin(p.flip)));
+    ctx.globalAlpha = p.a; ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.moveTo(0, -p.r);
+    ctx.bezierCurveTo(p.r * 0.9, -p.r * 0.9, p.r * 0.9, p.r * 0.6, 0, p.r);
+    ctx.bezierCurveTo(-p.r * 0.9, p.r * 0.6, -p.r * 0.9, -p.r * 0.9, 0, -p.r);
+    ctx.fill(); ctx.restore();
+  }
+  function step(t) {
+    var dt = Math.min(0.05, (t - (last || t)) / 1000); last = t;
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i]; p.ph += dt * p.sway;
+      p.y += p.vy * dt; p.x += (p.vx + Math.sin(p.ph) * 14) * dt; p.rot += p.vr * dt; p.flip += dt * 1.6;
+      if (p.y > H + 20 || p.x < -30 || p.x > W + 30) ps[i] = make(false);
+      petal(ps[i]);
+    }
+    raf = requestAnimationFrame(step);
+  }
+  function start() { if (!raf) { last = 0; raf = requestAnimationFrame(step); } }
+  function stop() { cancelAnimationFrame(raf); raf = 0; }
+  size();
+  for (var i = 0; i < count(); i++) ps.push(make(true));
+  window.addEventListener('resize', function () { size(); while (ps.length < count()) ps.push(make(true)); ps.length = count(); });
+  document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+  start();
+})();
+</script>
 <script src="showcase-data.js"></script>
 <script>
 (function () {
@@ -190,6 +239,30 @@
       return '<button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '">' +
         '<img src="' + esc(s.img) + '" alt="' + esc(s.alt) + '" width="1100" height="1374" loading="lazy"></button>';
     }).join('');
+    updateNav();
+  }
+
+  // ── カルーセル：入りきらないときだけ矢印を出す。矢印は1画面ぶん送る ──
+  var car = document.getElementById('g-carousel'), track = document.getElementById('gallery-grid');
+  var gPrev = car.querySelector('.g-prev'), gNext = car.querySelector('.g-next');
+  function updateNav() {
+    var scrollable = track.scrollWidth > track.clientWidth + 2;
+    car.classList.toggle('is-static', !scrollable);
+    gPrev.disabled = !scrollable || track.scrollLeft <= 2;
+    gNext.disabled = !scrollable || track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    document.getElementById('g-note').textContent = scrollable
+      ? '画像をタップすると拡大します。横にスワイプ（または矢印）で、ほかの場面へ。'
+      : '画像をタップすると拡大します。';
+  }
+  gPrev.addEventListener('click', function () { track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }); });
+  gNext.addEventListener('click', function () { track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); });
+  track.addEventListener('scroll', function () { window.requestAnimationFrame(updateNav); }, { passive: true });
+  window.addEventListener('resize', updateNav);
+  // 拡大表示で見ていた画像を、閉じたときにカルーセルの見える位置へ
+  function revealInTrack(i) {
+    var el = track.children[i]; if (!el) return;
+    var l = el.offsetLeft - track.offsetLeft, r = l + el.offsetWidth;
+    if (l < track.scrollLeft || r > track.scrollLeft + track.clientWidth) track.scrollTo({ left: l, behavior: 'smooth' });
   }
 
   // ── 拡大表示（閉じる・前後・キーボード・スワイプ） ──
@@ -209,7 +282,9 @@
   function close() {
     lb.classList.remove('is-open'); lb.hidden = true;
     document.body.style.overflow = '';
-    if (lastFocus) lastFocus.focus();
+    revealInTrack(cur);
+    var item = track.children[cur];
+    if (item) item.focus({ preventScroll: true }); else if (lastFocus) lastFocus.focus();
   }
   document.getElementById('gallery-grid').addEventListener('click', function (e) {
     var b = e.target.closest('.g-item'); if (b) open(+b.getAttribute('data-i'));

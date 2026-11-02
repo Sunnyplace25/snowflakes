@@ -26,6 +26,10 @@ img { max-width: 100%; display: block; }
 a { color: inherit; }
 .en { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.25em; }
 
+/* 桜の花びら（文字の後ろ。カード・本文の欄は不透明なので、花びらは余白にだけ見える） */
+#petals { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+main, .sc-footer { position: relative; z-index: 1; }
+
 /* ── ナビ ── */
 .sc-nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 12px 20px; background: rgba(250, 246, 238, 0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -105,8 +109,20 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
 .song-go { font-size: 14px; color: var(--lav); margin: 8px 0 0; }
 
 /* ── 6. シーンギャラリー ── */
-.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.g-item { padding: 0; border: 0; background: var(--lav-soft); border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1100 / 1374; box-shadow: var(--shadow); }
+/* カルーセル（2026-11-02）：PC は4枚、タブレット・スマホは2枚と少し見える幅。入りきらないときだけ矢印を出す */
+.g-carousel { position: relative; }
+.gallery { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain;
+  scrollbar-width: none; padding: 4px 2px 14px; margin: -4px -2px 0; -webkit-overflow-scrolling: touch; }
+.gallery::-webkit-scrollbar { display: none; }
+.g-item { flex: 0 0 calc((100% - 14px * 3) / 4); scroll-snap-align: start; padding: 0; border: 0; background: var(--lav-soft); border-radius: 14px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1100 / 1374; box-shadow: var(--shadow); }
+.g-nav { position: absolute; top: calc(50% - 7px); transform: translateY(-50%); z-index: 2; width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line); background: rgba(255, 253, 248, 0.95); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); transition: opacity .2s; }
+.g-nav:hover { border-color: var(--lav); color: var(--lav); }
+.g-nav:disabled { opacity: 0; pointer-events: none; }
+.g-prev { left: -18px; }
+.g-next { right: -18px; }
+.g-carousel.is-static .g-nav { display: none; }
 .g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .g-item:hover img { transform: scale(1.03); }
 .g-item:focus-visible { outline: 3px solid var(--lav); outline-offset: 3px; }
@@ -135,7 +151,9 @@ a.ep:hover { border-color: var(--lav); background: #fdfbff; }
   .hero-img { border-radius: 14px; }
   .hero-period { font-size: 15px; }
   .links { grid-template-columns: 1fr; }
-  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-item { flex-basis: calc((100% - 14px) / 2.3); }
+  .g-prev { left: 4px; }
+  .g-next { right: 4px; }
 }
 @media (max-width: 560px) {
   main { padding: 0 16px; }
