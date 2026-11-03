@@ -127,6 +127,8 @@ a.ep-intro:hover { border-color: var(--petal); background: var(--petal-soft); }
 /* ── 5. テーマ曲 ── */
 .song { display: flex; align-items: center; gap: 24px; max-width: 640px; margin: 0 auto; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 20px; text-decoration: none; box-shadow: var(--shadow); }
 .song:hover { border-color: var(--lav); }
+.songs { display: grid; gap: 16px; }
+.songs .song { width: 100%; box-sizing: border-box; }
 .song-jacket { width: 128px; flex-shrink: 0; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background: var(--lav-soft); }
 .song-jacket img { width: 100%; height: 100%; object-fit: cover; }
 .song-label { font-size: 13px; color: var(--petal); letter-spacing: 0.1em; margin: 0; }
