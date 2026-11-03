@@ -246,7 +246,7 @@
 それでも
 なぜか
 満ちていく`,
-      stories: [{ type: 'related', work: MAIN, ep: 80, epTitle: '幕間｜SWEETs', url: NOVEL + '80' }, { type: 'related', label: '特集「ショーケースの前で恋をした」', url: '../stories/showcase/', internal: true }],  // 特集リンク：2026-11-03 ユーザー指示
+      stories: [{ type: 'related', work: MAIN, ep: 80, epTitle: '幕間｜SWEETs', url: NOVEL + '80' }, { type: 'related', label: 'Snow flakes 連作短編「ショーケースの前で恋をした」', url: '../stories/showcase/', internal: true }],  // 連作短編へのリンク：2026-11-03 ユーザー指示（11-04 表記を「特集」→「Snow flakes 連作短編」に）
       // SCENE GALLERY（2026-11-01 登録・4枚。タイトル・制作メモはユーザーが指定するまで空欄。元画像名・登録日などは _サイト用対応表.json）
       // 並び（2026-11-02 ユーザー指示）：コウタ（赤髪）→ ヒナタ（黒髪）→ ハヤテ（金髪）→ カフェの場面
       gallery: [
@@ -625,7 +625,7 @@
 
 この続きを
 もう少しだけ　見ていたい`,
-      stories: [{ type: 'related', label: '特集「ショーケースの前で恋をした」', url: '../stories/showcase/', internal: true }] },  // 特集リンク：2026-11-03 ユーザー指示
+      stories: [{ type: 'related', label: 'Snow flakes 連作短編「ショーケースの前で恋をした」', url: '../stories/showcase/', internal: true }] },  // 連作短編へのリンク：2026-11-03 ユーザー指示（11-04 表記を「特集」→「Snow flakes 連作短編」に）
     'signal': { title: 'Signal', artists: ['snowflakes'], isrc: 'QZPJ32556054',
       spotify: 'https://open.spotify.com/intl-ja/track/2WEmeAbnB8Lc9bMWoFlndg',
       // 歌詞（2026-10-28 登録。行頭の全角空白は貼り付け由来として除去。「あいだで」は「間で」に統一、「間で」の前の空白は2か所とも削除＝ユーザー指示）
