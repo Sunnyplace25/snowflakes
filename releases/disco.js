@@ -111,7 +111,8 @@
     return '<ul class="dd-stories">' + items.map(function (s) {
       var work = s.series || 'Snow flakes';
       var text = s.ep ? esc(work) + '｜第' + esc(s.ep) + '話' + (s.epTitle ? '「' + esc(s.epTitle) + '」' : '') : storyTitle(s);
-      return '<li><a href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' +
+      // internal: サイト内のページ（特集など）は同じタブで開く
+      return '<li><a href="' + esc(s.url) + '"' + (s.internal ? '' : ' target="_blank" rel="noopener noreferrer"') + '>' +
         '<span class="dd-story-text">' + text + (s.song ? '<span class="dd-story-song">♪ ' + esc(s.song) + '</span>' : '') + '</span>' +
         '<span class="dd-story-go" aria-hidden="true">→</span></a></li>';
     }).join('') + '</ul>';
