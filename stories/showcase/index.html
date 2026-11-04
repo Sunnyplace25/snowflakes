@@ -461,7 +461,15 @@ document.getElementById('sc-share').addEventListener('click', function () {
     if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1), true);
   });
 
-  function renderAll() { renderStatus(); renderEpisodes(); }
+  // ── 連載開始前だけ「本編・関連作品」を各話一覧の上に出す（先に本編を読んでほしい・2026-11-04 ユーザー指示）。開始後は各話一覧が先 ──
+  function placeRelated() {
+    var rel = document.getElementById('related'), eps = document.getElementById('episodes');
+    var before = SC.status().phase === 'before';
+    if (before && rel.nextElementSibling !== eps) eps.parentNode.insertBefore(rel, eps);
+    else if (!before && eps.nextElementSibling !== rel) eps.parentNode.insertBefore(rel, eps.nextElementSibling);
+  }
+
+  function renderAll() { renderStatus(); renderEpisodes(); placeRelated(); }
   renderAll();
   renderGallery();
   setInterval(renderAll, 60000);   // 開いたまま20時を過ぎたら切り替える
