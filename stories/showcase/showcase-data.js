@@ -4,7 +4,7 @@
    特集ページ（stories/showcase/）・トップの特集バナー・短篇一覧のカードが、このファイルを読む。
 
    ■ 各話の書き方
-       { ep: 1, date: '2026-11-07T20:00:00+09:00', title: '', url: '' }
+       { ep: 1, date: '2026-11-07T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/1/' }
      ・date：公開日時（日本時間。+09:00 を必ず付ける）
      ・title：正式な各話タイトル。空のあいだは「第1話」とだけ表示する
      ・url：各話のURL。空のあいだはリンクにしない（公開時刻を過ぎていても押せない）
@@ -12,15 +12,16 @@
    ■ 判定はすべて日本時間の公開日時（date）で行う（見る人の端末の時計で判定）
    ============================================================ */
 (function (global) {
+  // URL：2026-11-04 ユーザーから受領（小説家になろう n7218my。11/4 時点は予約投稿で未公開＝404。リンクは各話の公開時刻を過ぎてから押せる）
   var EPISODES = [
-    { ep: 1, date: '2026-11-07T20:00:00+09:00', title: '', url: '' },
-    { ep: 2, date: '2026-11-08T20:00:00+09:00', title: '', url: '' },
-    { ep: 3, date: '2026-11-09T20:00:00+09:00', title: '', url: '' },
-    { ep: 4, date: '2026-11-10T20:00:00+09:00', title: '', url: '' },
-    { ep: 5, date: '2026-11-11T20:00:00+09:00', title: '', url: '' },
-    { ep: 6, date: '2026-11-12T20:00:00+09:00', title: '', url: '' },
-    { ep: 7, date: '2026-11-13T20:00:00+09:00', title: '', url: '' },
-    { ep: 8, date: '2026-11-14T20:00:00+09:00', title: '', url: '' }
+    { ep: 1, date: '2026-11-07T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/1/' },
+    { ep: 2, date: '2026-11-08T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/2/' },
+    { ep: 3, date: '2026-11-09T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/3/' },
+    { ep: 4, date: '2026-11-10T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/4/' },
+    { ep: 5, date: '2026-11-11T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/5/' },
+    { ep: 6, date: '2026-11-12T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/6/' },
+    { ep: 7, date: '2026-11-13T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/7/' },
+    { ep: 8, date: '2026-11-14T20:00:00+09:00', title: '', url: 'https://ncode.syosetu.com/n7218my/8/' }
   ];
 
   var SC = {
