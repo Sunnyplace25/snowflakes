@@ -36,6 +36,14 @@
 
 <main>
   <div id="work"></div>
+  <!-- 章ごとのページ（chapter/）への入口。中身は chapter/arcs.js -->
+  <section class="sf-sec" id="chapters">
+    <div class="sf-wrap">
+      <span class="sf-sec-label">CHAPTERS</span>
+      <h2 class="sf-sec-title sf-head-gap">章から読む</h2>
+      <div class="sf-arcs" id="sf-arcs" style="margin-top:0"></div>
+    </div>
+  </section>
 </main>
 
 <footer class="a-footer" style="padding-top:88px;">
@@ -49,8 +57,25 @@
 <script src="../../site/site.js"></script>
 <script src="../../site/phrase.js"></script>
 <script src="../../site/site-footer.js" data-root="../../"></script>
+<script src="chapter/arcs.js"></script>
+<script src="chapter/episodes.js"></script>
 <script>
   SfSite.renderWork(document.getElementById('work'), 'otohazu', { root: '../../' });
+
+  // 章から読む（chapter/arcs.js）。連載中の章の話数は、なろう API の話数が増えていたらそれに合わせる
+  (function () {
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); };
+    var ARCS = window.SF_ARCS || [], lastNo = window.SF_EPISODE_LAST ? SF_EPISODE_LAST() : 0;
+    function render() {
+      document.getElementById('sf-arcs').innerHTML = '<div class="sf-arc-grid">' + ARCS.filter(function (a) { return a.parts[0].from <= lastNo; }).map(function (a) {
+        var from = a.parts[0].from, lp = a.parts[a.parts.length - 1], to = Math.min(lp.to == null ? lastNo : lp.to, lastNo);
+        return '<a class="sf-arc-card" href="chapter/' + a.id + '/"><span class="sf-arc-label">' + esc(a.label) + '</span>' +
+          '<span class="sf-arc-title">' + esc(a.title) + '</span><span class="sf-arc-range">ep.' + from + '〜' + to + (a.ongoing ? '・連載中' : '') + '</span></a>';
+      }).join('') + '</div>';
+    }
+    render();
+    SfSite.narou(function (map) { var n = map && map.n1351mq && +map.n1351mq.episodes; if (n > 0 && n !== lastNo) { lastNo = n; render(); } });
+  })();
 </script>
 </body>
 </html>

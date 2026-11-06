@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <!-- このページは .claude/handoff_tools/gen_arcs.mjs otohazu で作成。中身（あらすじ・関連など）は ../arcs.js で編集する -->
+  <title>当たり前になった音｜音ハズ 第四章｜Snow flakes 公式</title>
+  <meta name="description" content="小説「音ハズ」第四章「当たり前になった音」。各話一覧・関連短編・ギャラリー・関連曲。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="当たり前になった音｜音ハズ 第四章">
+  <meta property="og:description" content="小説「音ハズ」第四章「当たり前になった音」。各話一覧・関連短編・ギャラリー・関連曲。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/otohazu/chapter/ch4/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/img/works/otohazu.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://sunnyplace25.github.io/snowflakes/stories/otohazu/chapter/ch4/">
+  <link rel="icon" type="image/svg+xml" href="../../../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../../stories/arc/arc.css">
+  <style>:root { --accent: #a5b4fc; } body { background-image: radial-gradient(ellipse at 50% -10%, rgba(129, 140, 248, 0.2), transparent 60%); }</style>
+</head>
+<body data-arc="ch4" data-artist="stories-otohazu-ch4">
+<canvas id="snow"></canvas>
+
+<nav aria-label="サイト内">
+  <a href="../../">← 作品ページ</a>
+  <div class="nav-right">
+    <a href="../../../../">HOME</a>
+    <a href="../../../../stories/">STORIES</a>
+  </div>
+</nav>
+
+<main>
+  <div class="arc-map" id="arc-map" aria-label="章・編"></div>
+
+  <header class="hero">
+    <p class="hero-kind" id="arc-kind"></p>
+    <p class="hero-series is-long">音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい</p>
+    <p class="hero-chapter" id="arc-chapter"></p>
+    <h1 id="arc-title">当たり前になった音</h1>
+    <p class="hero-en" id="arc-en"></p>
+    <p class="hero-meta" id="arc-meta"></p>
+    <div class="hero-actions" id="arc-actions">
+      <button class="share-btn" onclick="sfArtistShare()" type="button" aria-label="このページをシェア（share）"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>share</button>
+    </div>
+  </header>
+
+  <section class="sec" id="story">
+    <span class="sec-label">STORY</span>
+    <h2 class="sec-title">あらすじ</h2>
+    <div class="synopsis" id="arc-lead"></div>
+  </section>
+
+  <section class="sec" id="episodes">
+    <span class="sec-label">EPISODES</span>
+    <h2 class="sec-title">各話一覧</h2>
+    <div id="arc-eps"></div>
+    <p class="eps-note">リンク先は「小説家になろう」です。</p>
+  </section>
+
+  <section class="sec" id="shorts">
+    <span class="sec-label">SHORT STORIES</span>
+    <h2 class="sec-title">関連短編</h2>
+    <div id="arc-shorts"></div>
+  </section>
+
+  <section class="sec" id="gallery">
+    <span class="sec-label">GALLERY</span>
+    <h2 class="sec-title">ギャラリー</h2>
+    <div id="arc-gallery"></div>
+  </section>
+
+  <section class="sec" id="songs">
+    <span class="sec-label">MUSIC</span>
+    <h2 class="sec-title">関連曲</h2>
+    <div id="arc-songs"></div>
+  </section>
+
+  <section class="sec" id="arc-book-sec" hidden>
+    <span class="sec-label">BOOK</span>
+    <h2 class="sec-title">書籍で読む</h2>
+    <div id="arc-book"></div>
+  </section>
+
+  <div class="arc-pager" id="arc-pager"></div>
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="拡大表示">
+  <button class="lb-btn lb-close" type="button" aria-label="閉じる">×</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="前へ">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-btn lb-next" type="button" aria-label="次へ">›</button>
+</div>
+
+<footer>© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</footer>
+
+<script src="../arcs.js"></script>
+<script src="../episodes.js"></script>
+<script src="../../../../stories/arc/arc.js"></script>
+<script src="../../../../artists/artist.js"></script>
+</body>
+</html>

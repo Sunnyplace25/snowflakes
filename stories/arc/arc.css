@@ -1,0 +1,131 @@
+/* Snow flakes 章・編ページ（神様 第一章ページの作りに合わせて、色だけ Snow flakes の青に） */
+:root {
+  --bg: #0c1220; --card: rgba(18, 26, 44, 0.82); --border: rgba(255, 255, 255, 0.12);
+  --text: #eef2f8; --sub: #cbd3e1; --accent: #93c5fd; --gold: #e9c27c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Serif JP', serif; line-height: 1.9; -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(ellipse at 50% -10%, rgba(147, 197, 253, 0.16), transparent 60%); background-attachment: fixed; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+
+nav { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 20px; background: rgba(12, 18, 32, 0.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); font-size: 13px; }
+nav a { text-decoration: none; color: var(--sub); }
+nav a:hover { color: var(--text); }
+.nav-right { display: flex; gap: 16px; }
+
+main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; position: relative; z-index: 3; }
+
+/* 章・編の切り替え */
+.arc-map { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+.arc-map-group { display: flex; gap: 12px; align-items: flex-start; }
+.arc-map-label { flex: none; width: 8.5em; font-size: 12px; color: var(--gold); letter-spacing: 1px; padding-top: 5px; }
+.arc-map-items { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+.arc-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px;
+  font-size: 12.5px; text-decoration: none; color: var(--sub); background: rgba(255,255,255,0.04); transition: border-color 0.2s, color 0.2s; }
+.arc-chip:hover { border-color: var(--accent); color: var(--text); }
+.arc-chip.is-current { border-color: var(--accent); background: rgba(147, 197, 253, 0.18); color: var(--text); }
+.arc-chip-no { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--accent); }
+
+.hero { text-align: center; padding: 72px 0 56px; }
+.hero-kind { font-family: 'Cormorant Garamond', serif; letter-spacing: 6px; font-size: 13px; color: var(--gold); }
+.hero-series { margin-top: 10px; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 4px; color: var(--sub); }
+.hero-chapter { display: inline-block; font-size: 15px; letter-spacing: 6px; padding: 3px 16px; border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent); margin: 14px 0 8px; }
+.hero h1 { font-size: clamp(26px, 5.4vw, 42px); font-weight: 600; letter-spacing: 2px; line-height: 1.5; text-shadow: 0 2px 18px rgba(0,0,0,0.7); }
+.hero-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--sub); letter-spacing: 2px; }
+.hero-meta { margin-top: 10px; font-size: 13px; color: var(--sub); }
+.hero-actions { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 11px 24px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.06);
+  text-decoration: none; font-size: 14px; letter-spacing: 1px; transition: background 0.2s, border-color 0.2s; }
+.btn:hover { background: rgba(255,255,255,0.12); }
+.btn.main { background: #3b6fb6; border-color: #5b8fd6; color: #fff; font-weight: 500; }
+.btn.main:hover { background: #4a80c8; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; background: none; cursor: pointer; border: 1px solid var(--border); border-radius: 999px; padding: 11px 22px; color: var(--sub); font-family: "Cormorant Garamond", serif; font-size: 13px; letter-spacing: 3px; transition: border-color 0.2s, color 0.2s; }
+.share-btn:hover { border-color: rgba(255,255,255,0.35); color: var(--text); }
+#share-toast { display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(30,41,59,0.95); border: 1px solid var(--border); border-radius: 999px; padding: 10px 24px; font-size: 13px; color: var(--text); white-space: nowrap; }
+
+.sec { padding: 52px 0 8px; }
+.sec-label { display: block; font-family: 'Cormorant Garamond', serif; letter-spacing: 6px; font-size: 12px; color: var(--gold); }
+.sec-title { font-size: 22px; font-weight: 500; letter-spacing: 2px; margin: 4px 0 22px; }
+.synopsis { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 30px; font-size: 15px; }
+.synopsis p + p { margin-top: 0.9em; }
+.arc-soon { padding: 18px 22px; border: 1px dashed var(--border); border-radius: 12px; font-size: 13px; color: var(--sub); text-align: center; letter-spacing: 2px; }
+
+.arc-part { font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 26px 0 12px; padding-left: 12px; border-left: 3px solid var(--accent); }
+.arc-part:first-child { margin-top: 0; }
+.arc-part small { margin-left: 10px; font-size: 12px; color: var(--sub); letter-spacing: 1px; }
+.eps { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.eps a { display: flex; gap: 12px; align-items: baseline; padding: 10px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  text-decoration: none; font-size: 14px; transition: border-color 0.2s, background 0.2s; }
+.eps a:hover { border-color: var(--accent); background: rgba(147, 197, 253, 0.12); }
+.eps a small { display: block; font-size: 11.5px; color: var(--sub); }
+.eps .is-interlude a { border-color: rgba(167, 139, 250, 0.45); }   /* 幕間：枠と番号の色だけ変える（背景は本編と同じ） */
+.eps .is-interlude a:hover { border-color: #b9a4ff; background: rgba(110, 86, 190, 0.18); }
+.eps .is-interlude .ep-no { color: #c9b8ff; }
+.ep-no { flex: none; width: 4.2em; white-space: nowrap; font-size: 12px; color: var(--accent); letter-spacing: 1px; }
+.eps-note { margin-top: 14px; font-size: 13px; color: var(--sub); }
+
+.arc-links { display: flex; flex-direction: column; gap: 8px; }
+.arc-link { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; transition: border-color 0.2s; }
+.arc-link:hover { border-color: var(--accent); }
+.arc-link-name { font-size: 15px; }
+.arc-link-note { flex: 1; font-size: 12px; color: var(--sub); }
+
+.arc-book { display: flex; gap: 20px; align-items: center; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; text-decoration: none; max-width: 560px; transition: border-color 0.2s; }
+.arc-book:hover { border-color: var(--accent); }
+.arc-book img { width: 96px; flex: none; border-radius: 6px; }
+.arc-book > span { display: flex; flex-direction: column; gap: 4px; }
+.arc-book-title { font-size: 15px; }
+.arc-book-text { font-size: 13px; color: var(--sub); }
+.arc-book-go { font-size: 13px; color: var(--accent); }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.g-item { border: 0; padding: 0; cursor: zoom-in; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px; background: #000; }
+.g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.g-item:hover img { transform: scale(1.04); }
+.lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(5, 7, 14, 0.94); display: none; align-items: center; justify-content: center; padding: 20px; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 88vh; border-radius: 8px; }
+.lb-btn { position: absolute; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border); border-radius: 999px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; }
+.lb-close { top: 16px; right: 16px; }
+.lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+
+.arc-pager { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.arc-pager-link { display: flex; flex-direction: column; padding: 16px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; font-size: 16px; transition: border-color 0.2s; }
+.arc-pager-link:hover { border-color: var(--accent); }
+.arc-pager-link small { font-size: 12px; color: var(--sub); }
+.arc-pager-link.is-next { text-align: right; }
+
+footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: var(--sub); border-top: 1px solid var(--border); }
+#snow { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0.5; }
+
+@media (max-width: 600px) {
+  .hero { padding: 52px 0 40px; }
+  .synopsis { padding: 22px 20px; }
+  .arc-map-group { flex-direction: column; align-items: stretch; gap: 4px; }
+  .eps { grid-template-columns: 1fr; }
+  .arc-map-label { width: auto; padding-top: 0; }
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .arc-pager { grid-template-columns: 1fr; }
+  .arc-book img { width: 72px; }
+}
+.ep-new { color: var(--sub); font-size: 13px; }
+.arc-map-label small { display: block; font-family: "Cormorant Garamond", serif; font-size: 12px; font-style: italic; color: var(--sub); }
+@media (max-width: 600px) { .arc-map-label small { display: inline; margin-left: 8px; } }
+
+/* 章・編の一覧のたたみ（スマホだけ） */
+.arc-map-toggle { display: none; }
+@media (max-width: 600px) {
+  .arc-map-toggle { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 16px; padding: 10px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text); font-family: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+  .arc-map-toggle-label { flex: none; font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+  .arc-map-toggle-cur { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .arc-map-toggle-icon { flex: none; color: var(--sub); transition: transform 0.2s; }
+  .arc-map-toggle[aria-expanded="true"] .arc-map-toggle-icon { transform: rotate(180deg); }
+  .arc-map { display: none; margin-top: 12px; }
+  .arc-map.is-open { display: flex; }
+}
+.hero-series.is-long { font-family: "Noto Serif JP", serif; font-size: 13px; letter-spacing: 1px; line-height: 1.7; max-width: 32em; margin-left: auto; margin-right: auto; }
