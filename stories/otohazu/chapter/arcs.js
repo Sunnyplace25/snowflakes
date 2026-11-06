@@ -1,7 +1,10 @@
 /* 音ハズ（音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい）の章ページのデータ
    stories/otohazu/chapter/<id>/ と作品ページの章一覧で共用。話番号は「小説家になろう」n1351mq の通し番号。各話タイトルは episodes.js
    章の区切り・章タイトルは なろうの目次のまま（2026-11-07 時点）。lead・shorts・songs・gallery は空なら「準備中」 */
-window.SF_ARC_SITE = { ncode: 'n1351mq', series: '音ハズ' };
+window.SF_ARC_SITE = { ncode: 'n1351mq', series: '音ハズ',
+  // 作品全体の関連曲（作品ページと全章の「関連曲」に出る）。yt … YouTube Shorts の動画 ID
+  songs: [{ title: '残響の先', yt: '8vlAzUBo4e4', note: 'Snow flakes／Short ver.' }]   // 2026-11-07 ユーザー指定
+};
 window.SF_ARC_GROUPS = [
   { id: 'main', label: '本編', en: 'CHAPTERS', kind: 'CHAPTER', numbered: true }
 ];

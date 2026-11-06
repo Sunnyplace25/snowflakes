@@ -44,6 +44,13 @@
       <div class="sf-arcs" id="sf-arcs" style="margin-top:0"></div>
     </div>
   </section>
+  <section class="sf-sec" id="songs" hidden>
+    <div class="sf-wrap">
+      <span class="sf-sec-label">MUSIC</span>
+      <h2 class="sf-sec-title sf-head-gap">関連楽曲</h2>
+      <div class="sf-songs" id="sf-songs"></div>
+    </div>
+  </section>
 </main>
 
 <footer class="a-footer" style="padding-top:88px;">
@@ -74,6 +81,14 @@
       }).join('') + '</div>';
     }
     render();
+    var songs = (window.SF_ARC_SITE || {}).songs || [];
+    if (songs.length) {
+      document.getElementById('songs').hidden = false;
+      document.getElementById('sf-songs').innerHTML = songs.map(function (m) {
+        return '<a class="sf-song" href="https://youtube.com/shorts/' + esc(m.yt) + '" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/' + esc(m.yt) + '/oar2.jpg" alt="' + esc(m.title) + '" loading="lazy">' +
+          '<span class="sf-song-body"><span class="sf-song-title">' + esc(m.title) + '</span><span class="sf-song-note">' + esc(m.note || '') + '</span></span></a>';
+      }).join('');
+    }
     SfSite.narou(function (map) { var n = map && map.n1351mq && +map.n1351mq.episodes; if (n > 0 && n !== lastNo) { lastNo = n; render(); } });
   })();
 </script>

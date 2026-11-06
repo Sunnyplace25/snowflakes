@@ -216,3 +216,12 @@
 .sf-arc-range { font-size: 12px; color: #cbd3e1; }
 .sf-arc-group-label small { margin-left: 10px; font-family: "Cormorant Garamond", serif; font-size: 15px; font-style: italic; color: #cbd3e1; }
 .sf-arc-label { font-size: 12px; letter-spacing: 2px; color: #a5b4fc; }
+/* 作品ページの関連楽曲（YouTube Shorts のカード・音ハズ） */
+.sf-songs { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 220px)); gap: 16px; justify-content: center; }
+.sf-song { display: block; text-decoration: none; color: #eef2f8; background: rgba(18, 26, 44, 0.7); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+.sf-song:hover { border-color: #a5b4fc; }
+.sf-song img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: #000; }
+.sf-song-body { display: block; padding: 12px 16px 16px; }
+.sf-song-title { display: block; font-size: 15px; line-height: 1.6; }
+.sf-song-note { display: block; font-size: 12px; color: #cbd3e1; }
+@media (max-width: 600px) { .sf-songs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
