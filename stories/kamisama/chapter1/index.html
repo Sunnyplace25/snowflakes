@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>第一章｜神様はバンド名がダサいと言った｜Snow flakes 公式</title>
+  <meta name="description" content="小説「神様はバンド名がダサいと言った」第一章（全25話）。あらすじ・登場人物・各話一覧・関連楽曲。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="第一章｜神様はバンド名がダサいと言った">
+  <meta property="og:description" content="解散寸前のバンドに、音を聞く神様がついてきた。第一章（全25話）のあらすじ・登場人物・各話一覧。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/stories/kamisama/chapter1/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/stories/kamisama/chapter1/img/bg-myon.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://sunnyplace25.github.io/snowflakes/stories/kamisama/chapter1/">
+  <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+  <meta name="theme-color" content="#0b0f1c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f1c; --card: rgba(18, 24, 42, 0.82); --border: rgba(255, 255, 255, 0.12);
+      --text: #efedf4; --sub: #cfd2de; --accent: #ef6a7e; --gold: #e9c27c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Noto Serif JP', serif; line-height: 1.9; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    /* 背景：アキとミョンのイラストを薄く敷く（文字は重ねない側で読みやすさを保つ） */
+    /* PC：左にミョン・右にアキ／スマホ：上の方はミョン、下へ進むとアキに切り替わる */
+    .page-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .bg-l, .bg-r { position: absolute; top: 0; bottom: 0; width: 50%; background-size: cover; background-repeat: no-repeat; opacity: 0.3; transition: opacity 1.2s ease; }
+    .bg-l { left: 0; background-image: url(img/bg-myon.webp); background-position: center 25%;
+      -webkit-mask-image: linear-gradient(90deg, #000 75%, transparent); mask-image: linear-gradient(90deg, #000 75%, transparent); }
+    .bg-r { right: 0; background-image: url(img/bg-aki.webp); background-position: center 20%;
+      -webkit-mask-image: linear-gradient(270deg, #000 75%, transparent); mask-image: linear-gradient(270deg, #000 75%, transparent); }
+    .page-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,15,28,0.35) 0%, rgba(11,15,28,0.75) 45%, rgba(11,15,28,0.92) 100%); }
+    @media (max-width: 700px) {
+      .bg-l, .bg-r { width: 100%; left: 0; right: 0; -webkit-mask-image: none; mask-image: none; }
+      .bg-r { opacity: 0; }
+      .page-bg.is-lower .bg-l { opacity: 0; }
+      .page-bg.is-lower .bg-r { opacity: 0.3; }
+    }
+
+    nav { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 12px 20px; background: rgba(11, 15, 28, 0.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); font-size: 13px; }
+    nav a { text-decoration: none; color: var(--sub); }
+    nav a:hover { color: var(--text); }
+    .nav-right { display: flex; gap: 16px; }
+
+    main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+
+    .hero { text-align: center; padding: 96px 0 72px; }
+    .hero-kind { font-family: 'Cormorant Garamond', serif; letter-spacing: 6px; font-size: 13px; color: var(--gold); }
+    .hero h1 { font-size: clamp(26px, 5.4vw, 44px); font-weight: 600; letter-spacing: 2px; line-height: 1.5; margin: 14px 0 10px; text-shadow: 0 2px 18px rgba(0,0,0,0.7); }
+    .hero-chapter { display: inline-block; font-size: 18px; letter-spacing: 6px; padding: 4px 18px; border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: 18px; }
+    .hero-lead { font-size: 15px; color: var(--sub); }
+    .hero-meta { margin-top: 10px; font-size: 13px; color: var(--sub); }
+    .hero-actions { margin-top: 30px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 11px 24px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.06);
+      text-decoration: none; font-size: 14px; letter-spacing: 1px; transition: background 0.2s, border-color 0.2s; }
+    .btn:hover { background: rgba(255,255,255,0.12); }
+    .btn.main { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+    .btn.main:hover { background: #f27f90; }
+
+    .sec { padding: 56px 0 8px; }
+    .sec-label { display: block; font-family: 'Cormorant Garamond', serif; letter-spacing: 6px; font-size: 12px; color: var(--gold); }
+    .sec-title { font-size: 22px; font-weight: 500; letter-spacing: 2px; margin: 4px 0 24px; }
+
+    .synopsis { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 30px; font-size: 15px; }
+    .synopsis p + p { margin-top: 0.9em; }
+    .synopsis .quote { color: var(--gold); }
+
+    .chars { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+    .char { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .char-photo { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: #0a1020; }
+    .char-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+    /* 雨音クラブのページと同じ切り抜き（元画像は変更しない） */
+    .char-photo.is-cropped img { position: absolute; max-width: none; height: auto; object-fit: initial; width: var(--crop-w); left: var(--crop-x); top: var(--crop-y, 0); }
+    .char-body { padding: 14px 16px 18px; border-top: 2px solid var(--c, var(--accent)); }
+    .char-part { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 3px; color: var(--c, var(--accent)); }
+    .char-name { font-size: 18px; font-weight: 500; }
+    .char-name small { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--sub); margin-left: 8px; letter-spacing: 1px; }
+    .char-desc { font-size: 13px; color: var(--sub); line-height: 1.8; margin-top: 6px; }
+
+    .eps { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+    .eps a { display: flex; gap: 12px; align-items: baseline; padding: 11px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      text-decoration: none; font-size: 14px; transition: border-color 0.2s, background 0.2s; }
+    .eps a:hover { border-color: var(--accent); background: rgba(239, 106, 126, 0.12); }
+    .ep-no { flex: none; width: 4.8em; white-space: nowrap; font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+    .eps-note { margin-top: 14px; font-size: 13px; color: var(--sub); }
+    .eps-note a { color: var(--gold); }
+
+    .songs { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 220px)); gap: 16px; }
+    .song { display: block; text-decoration: none; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+    .song:hover { border-color: var(--accent); }
+    .song-thumb { aspect-ratio: 4 / 5; overflow: hidden; background: #000; }
+    .song-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .song-body { padding: 12px 16px 16px; }
+    .song-title { font-size: 16px; font-weight: 500; }
+    .song-note { font-size: 12px; color: var(--sub); }
+    .songs-more { margin-top: 14px; font-size: 13px; }
+    .songs-more a { color: var(--gold); }
+
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .g-item { border: 0; padding: 0; cursor: zoom-in; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px; background: #000; }
+    .g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .g-item:hover img { transform: scale(1.04); }
+    .lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(5, 7, 14, 0.94); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 88vh; border-radius: 8px; }
+    .lb-btn { position: absolute; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border); border-radius: 999px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; }
+    .lb-close { top: 16px; right: 16px; }
+    .lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+    .lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+
+    footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: var(--sub); border-top: 1px solid var(--border); }
+    /* 雨（artist.js の canvas#snow・data-particles="rain"） */
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0.4; }
+    .share-btn { display: inline-flex; align-items: center; gap: 8px; background: none; cursor: pointer; border: 1px solid var(--border); border-radius: 999px; padding: 11px 22px; color: var(--sub); font-family: "Cormorant Garamond", serif; font-size: 13px; letter-spacing: 3px; transition: border-color 0.2s, color 0.2s; }
+    .share-btn:hover { border-color: rgba(255,255,255,0.35); color: var(--text); }
+    #share-toast { display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(30,41,59,0.95); border: 1px solid var(--border); border-radius: 999px; padding: 10px 24px; font-size: 13px; color: var(--text); white-space: nowrap; }
+    @media (max-width: 600px) {
+      .hero { padding: 64px 0 48px; }
+      .synopsis { padding: 22px 20px; }
+      .chars { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body data-particles="rain" data-artist="stories-kamisama-ch1">
+<canvas id="snow"></canvas>
+<div class="page-bg" id="page-bg" aria-hidden="true"><div class="bg-l"></div><div class="bg-r"></div></div>
+
+<nav aria-label="サイト内">
+  <a href="../">← 作品ページ</a>
+  <div class="nav-right">
+    <a href="../../../">HOME</a>
+    <a href="../../">STORIES</a>
+  </div>
+</nav>
+
+<main>
+  <header class="hero">
+    <p class="hero-kind">STORY</p>
+    <h1>神様はバンド名がダサいと言った</h1>
+    <p class="hero-chapter">第一章</p>
+    <p class="hero-lead">解散寸前のバンドに、音を聞く神様がついてきた。</p>
+    <p class="hero-meta">全25話／作：山吹ことり</p>
+    <div class="hero-actions">
+      <a class="btn main" href="https://ncode.syosetu.com/n3833mv/1/" target="_blank" rel="noopener">第一話から読む</a>
+      <a class="btn" href="#episodes">各話一覧 ↓</a>
+      <button class="share-btn" onclick="sfArtistShare()" type="button" aria-label="このページをシェア（share）"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>share</button>
+    </div>
+  </header>
+
+  <section class="sec" id="story">
+    <span class="sec-label">STORY</span>
+    <h2 class="sec-title">あらすじ</h2>
+    <div class="synopsis">
+      <p>四人組バンド「雨音クラブ」は、解散寸前だった。<br>ボーカルのレンとベースのシズクは、付き合って、別れて、それ以来まともに口も利かない。<br>ドラムのヒロキは「もう解散でよくない？」と完全に投げ気味。<br>それでもギターのアキだけは、この四人で続けることを諦められずにいた。</p>
+      <p>そんなある日、レンが言う。<br><span class="quote">「俺、バンドやめるわ」</span></p>
+      <p>どうにもできないまま練習帰りに立ち寄った小さな神社で、アキは柄にもなく手を合わせた。<br><span class="quote">「……解散しませんように」</span><br>賽銭を投げた拍子に、ポケットのお菓子まで賽銭箱へ落ちる。<br>拾うのも面倒になって、「それもやるよ」とそのまま帰った。</p>
+      <p>翌日。<br><span class="quote">「昨日の菓子、もうないのか？」</span><br>知らない少女がついてきた。<br>名前はミョン。どうやら音にまつわる神様らしい。</p>
+      <p>けれど、レンをバンドに戻してくれるわけでもない。シズクと仲直りさせてくれるわけでもない。<br>むしろ人間の事情などお構いなしに、アキが聞きたくなかったことばかり口にする。<br><span class="quote">「願ったのはお前だろう。なら、お前がどうにかせい」</span></p>
+      <p>解散したくないギタリストと、音にだけやたらとうるさい妙な神様。<br>壊れかけたバンドが、元には戻れないまま、それでも次の音を探していく物語。</p>
+    </div>
+  </section>
+
+  <section class="sec" id="characters">
+    <span class="sec-label">CHARACTERS</span>
+    <h2 class="sec-title">登場人物</h2>
+    <div class="chars">
+      <article class="char" style="--c:#e5a07a;">
+        <div class="char-photo is-cropped" style="--crop-w:230.5%;--crop-x:-86.0%;--crop-y:-1.2%;"><img src="../../../artists/amaoto-club/img/member_aki.webp" alt="アキ" loading="lazy"></div>
+        <div class="char-body">
+          <p class="char-part">GUITAR</p>
+          <p class="char-name">アキ<small>Aki</small></p>
+          <p class="char-desc">雨音クラブのギター。勢いで突っ走っては空回りしがち。四人で続けることを、最後まで諦められない。</p>
+        </div>
+      </article>
+      <article class="char" style="--c:#ef6a7e;">
+        <div class="char-photo"><img src="../../../artists/amaoto-club/img/bg_myon.webp" alt="ミョン" loading="lazy" style="object-position:50% 8%;"></div>
+        <div class="char-body">
+          <p class="char-part">GOD OF SOUND</p>
+          <p class="char-name">ミョン<small>Myon</small></p>
+          <p class="char-desc">音にまつわる神様。お賽銭と一緒に落ちたお菓子につられて、アキについてきた。人間の事情はお構いなしで、音にだけうるさい。</p>
+        </div>
+      </article>
+      <article class="char" style="--c:#a8b5c4;">
+        <div class="char-photo"><img src="../../../artists/amaoto-club/img/member_shizuku.webp" alt="シズク" loading="lazy"></div>
+        <div class="char-body">
+          <p class="char-part">BASS</p>
+          <p class="char-name">シズク<small>Shizuku</small></p>
+          <p class="char-desc">雨音クラブのベース。クールで淡々としているが、芯は強い。レンとは別れて以来、まともに口を利いていない。</p>
+        </div>
+      </article>
+      <article class="char" style="--c:#d6cfc7;">
+        <div class="char-photo is-cropped" style="--crop-w:147.7%;--crop-x:-21.9%;--crop-y:-8.4%;"><img src="../../../artists/amaoto-club/img/member_hiroki.webp" alt="ヒロキ" loading="lazy"></div>
+        <div class="char-body">
+          <p class="char-part">DRUMS</p>
+          <p class="char-name">ヒロキ<small>Hiroki</small></p>
+          <p class="char-desc">雨音クラブのドラム。いつも眠そうで「もう解散でよくない？」と投げ気味。でも腕は確か。</p>
+        </div>
+      </article>
+      <article class="char" style="--c:#8fa7d6;">
+        <div class="char-photo"><img src="../../../artists/amaoto-club/img/ren.webp" alt="レン" loading="lazy"></div>
+        <div class="char-body">
+          <p class="char-part">VOCAL</p>
+          <p class="char-name">レン<small>Ren</small></p>
+          <p class="char-desc">雨音クラブのボーカル。ある日、「俺、バンドやめるわ」と言い出す。</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" id="episodes">
+    <span class="sec-label">EPISODES</span>
+    <h2 class="sec-title">第一章 各話一覧</h2>
+    <ol class="eps" id="ep-list"></ol>
+    <p class="eps-note">リンク先は「小説家になろう」です。カクヨムでは1話先行で公開中 → <a href="https://kakuyomu.jp/works/11054822663783655461" target="_blank" rel="noopener">カクヨムで読む</a></p>
+  </section>
+
+  <section class="sec" id="songs">
+    <span class="sec-label">MUSIC</span>
+    <h2 class="sec-title">関連楽曲</h2>
+    <div class="songs" id="song-list"></div>
+    <p class="songs-more">作中のバンド「雨音クラブ」の楽曲です → <a href="../../../artists/amaoto-club/">雨音クラブのページへ</a></p>
+  </section>
+
+  <!-- シーンギャラリー：非公開（2026-11-06 ユーザー指示）。出すときは hidden と GALLERY_PUBLIC を外す。画像 img/g01〜g08 は未公開のためリポジトリに入れていない -->
+  <section class="sec" id="gallery" hidden>
+    <span class="sec-label">SCENE GALLERY</span>
+    <h2 class="sec-title">シーンギャラリー</h2>
+    <div class="gallery" id="gallery-grid"></div>
+  </section>
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="拡大表示">
+  <button class="lb-btn lb-close" type="button" aria-label="閉じる">×</button>
+  <button class="lb-btn lb-prev" type="button" aria-label="前へ">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-btn lb-next" type="button" aria-label="次へ">›</button>
+</div>
+
+<footer>© 2026- 山吹ことり / Snow flakes Story &amp; Music Project<br>All rights reserved. Unauthorized reproduction or AI training is prohibited.</footer>
+
+<script>
+  // ── 第一章の各話（なろう n3833mv の 1〜25 話） ──
+  var EPISODES = ['ボーカル、バンドやめるってよ', '神様、ついてくる', '三人じゃ、雨音クラブじゃない', '最後のライブまで、あと六日', '最後の四人',
+    '誰が歌うんだよ', '歌えって言ったのはそっちだろ', '三人で出る', '三人の前の日', '三人で鳴らす',
+    '俺が歌う曲', '昨日までの音', '新しい曲を、最初に聴く人', '誰かと比べなくていい', '残す音',
+    'ミョンの名前', '神様を検索してみた', '神様がいない', '聞こえない声', 'また、いなくなるのか',
+    '選ぶのは、シズクだ', '願いが叶ったあと', 'もう、元には戻らない', '願いのその先', '解散しませんように'];
+  var KANJI = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  function kanjiNum(n) { return n < 10 ? KANJI[n] : (n >= 20 ? KANJI[Math.floor(n / 10)] : '') + '十' + KANJI[n % 10]; }
+
+  // ── 関連楽曲（雨音クラブの YouTube Shorts。配信が始まったら配信ページへのリンクに差し替える） ──
+  var SONGS = [
+    { title: '雨天決行', yt: 'tRBHxBTfBUA', note: 'Short ver.' },
+    { title: '午前零時のサイン', yt: '_kqpiETerlo', note: 'Short ver.' },
+    { title: '昨日までの音', yt: 'yjxA-WjvcaI', note: 'Short ver.・第十二話' }
+  ];
+
+  // ── シーンギャラリー（img/g01〜g08） ──
+  var SCENES = [
+    { img: 'img/g01.webp', alt: 'スタジオに入る雨音クラブ' },
+    { img: 'img/g02.webp', alt: '雨の軒下で雨宿りする三人' },
+    { img: 'img/g03.webp', alt: '雨の日の楽屋で過ごす三人' },
+    { img: 'img/g04.webp', alt: '神社の石段に座るミョン' },
+    { img: 'img/g05.webp', alt: 'ステージで演奏するアキ・シズク・ヒロキ' },
+    { img: 'img/g06.webp', alt: 'ステージ裏でピースする三人' },
+    { img: 'img/g07.webp', alt: '楽屋で握手を交わすアキ' },
+    { img: 'img/g08.webp', alt: '神社の前で、ミョンと雨音クラブ' }
+  ];
+
+  // スマホの背景：登場人物の欄を過ぎたらアキに切り替える（PC は CSS で左右に並ぶので影響なし）
+  var pageBg = document.getElementById('page-bg'), charsSec = document.getElementById('characters');
+  function updateBg() { pageBg.classList.toggle('is-lower', charsSec.getBoundingClientRect().bottom < window.innerHeight * 0.5); }
+  window.addEventListener('scroll', updateBg, { passive: true });
+  updateBg();
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+
+  document.getElementById('ep-list').innerHTML = EPISODES.map(function (t, i) {
+    return '<li><a href="https://ncode.syosetu.com/n3833mv/' + (i + 1) + '/" target="_blank" rel="noopener"><span class="ep-no">第' + kanjiNum(i + 1) + '話</span><span>' + esc(t) + '</span></a></li>';
+  }).join('');
+
+  document.getElementById('song-list').innerHTML = SONGS.map(function (s) {
+    return '<a class="song" href="https://youtube.com/shorts/' + s.yt + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + s.yt + '/oar2.jpg" alt="' + esc(s.title) + '" loading="lazy"></div>' +
+      '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p><p class="song-note">雨音クラブ／' + esc(s.note) + '</p></div></a>';
+  }).join('');
+
+  var GALLERY_PUBLIC = false;
+  if (GALLERY_PUBLIC) document.getElementById('gallery-grid').innerHTML = SCENES.map(function (s, i) {
+    return '<button class="g-item" type="button" data-i="' + i + '" aria-label="拡大：' + esc(s.alt) + '"><img src="' + s.img + '" alt="' + esc(s.alt) + '" loading="lazy"></button>';
+  }).join('');
+
+  var lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img'), cur = 0;
+  function show(i) { cur = (i + SCENES.length) % SCENES.length; lbImg.src = SCENES[cur].img; lbImg.alt = SCENES[cur].alt; lb.classList.add('open'); }
+  document.getElementById('gallery-grid').addEventListener('click', function (e) { var b = e.target.closest('.g-item'); if (b) show(+b.dataset.i); });
+  lb.querySelector('.lb-close').onclick = function () { lb.classList.remove('open'); };
+  lb.querySelector('.lb-prev').onclick = function (e) { e.stopPropagation(); show(cur - 1); };
+  lb.querySelector('.lb-next').onclick = function (e) { e.stopPropagation(); show(cur + 1); };
+  lb.addEventListener('click', function (e) { if (e.target === lb) lb.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') lb.classList.remove('open');
+    if (e.key === 'ArrowLeft') show(cur - 1);
+    if (e.key === 'ArrowRight') show(cur + 1);
+  });
+</script>
+<script src="../../../artists/artist.js"></script>
+</body>
+</html>
