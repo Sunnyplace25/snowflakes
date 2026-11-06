@@ -92,6 +92,10 @@
     .eps a { display: flex; gap: 12px; align-items: baseline; padding: 11px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
       text-decoration: none; font-size: 14px; transition: border-color 0.2s, background 0.2s; }
     .eps a:hover { border-color: var(--accent); background: rgba(239, 106, 126, 0.12); }
+    /* 幕間：本編と区別するため、すみれ色の枠と背景 */
+    .eps .is-interlude a { border-color: rgba(167, 139, 250, 0.55); background: rgba(91, 70, 160, 0.28); }
+    .eps .is-interlude a:hover { border-color: #b9a4ff; background: rgba(110, 86, 190, 0.38); }
+    .eps .is-interlude .ep-no { color: #c9b8ff; }
     .ep-no { flex: none; width: 4.8em; white-space: nowrap; font-size: 12px; color: var(--gold); letter-spacing: 1px; }
     .eps-note { margin-top: 14px; font-size: 13px; color: var(--sub); }
     .eps-note a { color: var(--gold); }
@@ -287,8 +291,13 @@
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
 
+  // 幕間（なろうの 26 話目「幕間｜対バン」・2026-11-06 追加）。本編と色を変えて最後に出す
+  var INTERLUDES = [{ no: 26, title: '対バン' }];
+
   document.getElementById('ep-list').innerHTML = EPISODES.map(function (t, i) {
     return '<li><a href="https://ncode.syosetu.com/n3833mv/' + (i + 1) + '/" target="_blank" rel="noopener"><span class="ep-no">第' + kanjiNum(i + 1) + '話</span><span>' + esc(t) + '</span></a></li>';
+  }).join('') + INTERLUDES.map(function (m) {
+    return '<li class="is-interlude"><a href="https://ncode.syosetu.com/n3833mv/' + m.no + '/" target="_blank" rel="noopener"><span class="ep-no">幕間</span><span>' + esc(m.title) + '</span></a></li>';
   }).join('');
 
   document.getElementById('song-list').innerHTML = SONGS.map(function (s) {
