@@ -51,7 +51,7 @@
                 { label: 'カクヨム', url: 'https://kakuyomu.jp/works/11054822663783655461', note: '1話先行' }],
       artists: ['amaoto-club'],
       // 章ごとのページ（2026-11-06 第一章を公開。第二章 chapter2/ は試作中でまだ載せない）。あらすじのすぐ下にカードで出す（2026-11-07）
-      chapters: [{ title: '第一章', note: '全25話', href: 'chapter1/' }] },
+      chapters: [{ title: '第一章', note: '全25話', href: 'chapter1/', bg: 'artists/amaoto-club/img/bg_myon.webp', bgPos: '72% 25%', bgSize: '210% auto' }] },   // ミョンの目元をうすく
     { id: 'otohazu', status: 'public', featured: true, order: 3,
       title: '音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい', short: '音ハズ', kind: '連載小説', page: 'stories/otohazu/',
       lead: '山吹ことりが描く、「音」が運命を変える異世界ファンタジー。',

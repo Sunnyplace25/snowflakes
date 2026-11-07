@@ -179,7 +179,9 @@
         (w.updateNote ? '<p class="sf-update-note" style="color:' + (COLORS[w.id] || '#93c5fd') + '">' + w.updateNote.map(esc).join('<br>') + '</p>' : '')) +   // 最新の更新の下のお知らせ（site-data.js の updateNote）
       // 章ごとのページ（site-data.js の chapters）。最新の更新のすぐ下に出す
       sec('chapters', 'CHAPTERS', '章から読む', w.chapters && w.chapters.length ? '<div class="sf-arc-grid">' + w.chapters.map(function (c) {
-        return '<a class="sf-arc-card" href="' + esc(c.href) + '"><span class="sf-arc-title">' + esc(c.title) + '</span><span class="sf-arc-range">' + esc(c.note || '') + '</span></a>';
+        // bg：カードの背景にうすく敷く絵（bgPos で見せる位置。暗い膜を重ねて文字を読みやすく）
+        var bgs = c.bg ? ' style="background:linear-gradient(90deg, rgba(12,18,32,0.9) 30%, rgba(12,18,32,0.72)), url(' + encodeURI(link(root, c.bg)) + ') ' + esc(c.bgPos || 'center') + ' / ' + esc(c.bgSize || 'cover') + ' no-repeat"' : '';
+        return '<a class="sf-arc-card" href="' + esc(c.href) + '"' + bgs + '><span class="sf-arc-title">' + esc(c.title) + '</span><span class="sf-arc-range">' + esc(c.note || '') + '</span></a>';
       }).join('') + '</div>' : '') +
       sec('read', 'READ', '連載先', '<div class="sf-links">' + (w.serials || []).map(function (s) {
         var row = function (href, name, note) { return '<a class="sf-link-row" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">' + esc(name) + '</span>' +
