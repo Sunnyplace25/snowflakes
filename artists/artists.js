@@ -56,7 +56,8 @@
       color: '#e5a07a',
       glow: 'radial-gradient(ellipse at 50% 120%, rgba(156,163,175,0.2), transparent 70%)',
       services: [
-        { type: 'youtube', label: 'YouTube Shorts', url: 'https://youtube.com/shorts/tRBHxBTfBUA' }
+        { type: 'youtube', label: 'YouTube Shorts', url: 'https://youtube.com/shorts/tRBHxBTfBUA' },
+        { type: 'soundcloud', label: 'SoundCloud', url: 'https://soundcloud.com/yamabuki-kotori/acoustic-ver' }
       ]
     },
     {
@@ -85,7 +86,8 @@
     amazon:  'fa-brands fa-amazon',
     youtube: 'fa-brands fa-youtube',
     qobuz:   'fa-solid fa-compact-disc',
-    instagram: 'fa-brands fa-instagram'
+    instagram: 'fa-brands fa-instagram',
+    soundcloud: 'fa-brands fa-soundcloud'
   };
 
   function esc(s) {

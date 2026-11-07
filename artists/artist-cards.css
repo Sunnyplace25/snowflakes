@@ -40,6 +40,7 @@
 .ac-svc.ac-amazon:hover  { color: #5a8fa8; border-color: rgba(90,143,168,0.5); }
 .ac-svc.ac-youtube:hover { color: #f87171; border-color: rgba(248,113,113,0.5); }
 .ac-svc.ac-qobuz:hover   { color: #5aa0c8; border-color: rgba(90,160,200,0.5); }
+.ac-svc.ac-soundcloud:hover { color: #fdba74; border-color: rgba(253,186,116,0.5); }
 
 /* カードごとの雰囲気 */
 .ac-amaoto-club { border-radius: 6px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px), rgba(255,255,255,0.03); }
