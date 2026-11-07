@@ -403,6 +403,7 @@ a.rel-jacket { text-decoration: none; color: inherit; }
 .service-btn.live { border-color: var(--accent-line); color: var(--accent); }
 .service-btn.x         { border-color: rgba(226,232,240,0.3); color: #e2e8f0; }
 .service-btn.instagram { border-color: rgba(225,48,108,0.4);  color: #e1306c; }
+.service-btn.soundcloud { border-color: rgba(255,85,0,0.4);   color: #ff7a33; }
 
 /* MoonVeil：月明かりの青紫。夜の川面のような静けさ */
 .theme-moonveil {
