@@ -92,6 +92,7 @@
     { youtube: 'tRBHxBTfBUA', title: '雨音クラブ「雨天決行」｜山吹ことり', artist: 'amaoto-club' },
     { youtube: '_kqpiETerlo', title: '雨音クラブ｜午前零時のサイン', artist: 'amaoto-club' },
     { youtube: 'yjxA-WjvcaI', title: '雨音クラブ｜昨日までの音', artist: 'amaoto-club' },
+    { youtube: 'RLngFpWR7mg', title: '雨音クラブ「何でモテねえんだよ」｜山吹ことり', artist: 'amaoto-club' },
     { youtube: 'sqnFkL1rR5Q', title: 'Snow flakes「置いた音」｜山吹ことり セルフカバー', artist: 'kotori' },
     { youtube: 'rwRNOYh6kNA', title: 'ここからまたね｜山吹ことり', artist: 'kotori' }
   ];
