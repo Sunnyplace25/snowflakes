@@ -3286,8 +3286,8 @@ function sfShare(anchor) {
       // 名前あり → 日次制御
       if (localStorage.getItem(POPUP_DAY_KEY) === todayStr) return;
     } else {
-      // 名前なし → セッション制御（初回のみ名前を聞く）
-      if (sessionStorage.getItem('charaShown')) return;
+      // 名前なし → 何も出さない（名前を聞くポップアップは 2026-11-07 廃止。登録済みの人だけ今まで通り呼ぶ）
+      return;
     }
 
     var chars = [

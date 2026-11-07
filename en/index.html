@@ -1622,6 +1622,8 @@
     if (sessionStorage.getItem('charaShown')) return;
 
     var storedName = localStorage.getItem('sf_visitor_name');
+    // 名前を聞くポップアップは 2026-11-07 廃止。登録済みの人だけ今まで通り呼ぶ
+    if (!storedName) return;
 
     var chars = [
       { name: 'HINATA', img: 'plofile/chibi_hinata.webp', color: '#93c5fd' },
