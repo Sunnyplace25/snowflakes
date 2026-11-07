@@ -290,6 +290,10 @@ body.theme-amaoto {
 .theme-amaoto .member, .theme-amaoto .rel-card, .theme-amaoto .novel { border-radius: 4px; border-style: solid; }
 .theme-amaoto .member-body { border-top-style: dashed; }
 .theme-amaoto .sec-label { color: var(--accent); }
+/* ディスコグラフィのボタン：枠線だけ・白文字（アイコンだけサービスの色） */
+.theme-amaoto .rel-links .pill { color: #eef0f3; background: transparent; border-color: rgba(255,255,255,0.3); }
+.theme-amaoto .rel-links .pill:hover { opacity: 1; border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.06); }
+.theme-amaoto .rel-links .pill.soundcloud i { color: #ff7a33; }
 .theme-amaoto .tape {
   display: inline-block; transform: rotate(-2deg); background: rgba(229,160,122,0.14); color: #f1d5c4;
   font-family: 'Cormorant Garamond', serif; letter-spacing: 4px; font-size: 11px; padding: 4px 14px; margin-bottom: 12px;
