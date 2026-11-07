@@ -57,7 +57,7 @@
       glow: 'radial-gradient(ellipse at 50% 120%, rgba(156,163,175,0.2), transparent 70%)',
       services: [
         { type: 'youtube', label: 'YouTube Shorts', url: 'https://youtube.com/shorts/tRBHxBTfBUA' },
-        { type: 'soundcloud', label: 'SoundCloud', url: 'https://soundcloud.com/yamabuki-kotori/acoustic-ver' }
+        { type: 'soundcloud', label: 'SoundCloud', url: 'https://soundcloud.com/yamabuki-kotori' }
       ]
     },
     {
