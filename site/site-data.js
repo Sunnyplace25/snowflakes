@@ -50,9 +50,8 @@
       serials: [{ label: '小説家になろう', url: NAROU + 'n3833mv/', ncode: 'n3833mv' },
                 { label: 'カクヨム', url: 'https://kakuyomu.jp/works/11054822663783655461', note: '1話先行' }],
       artists: ['amaoto-club'],
-      // 章ごとのページ（2026-11-06 第一章を公開。第二章 chapter2/ は試作中でまだ載せない）
-      extra: '<span class="sf-sec-label">CHAPTERS</span><h2 class="sf-sec-title sf-head-gap">章ごとのページ</h2><div class="sf-links">' +
-             '<a class="sf-link-row" href="chapter1/"><span class="sf-link-name">第一章</span><span class="sf-link-note">あらすじ・登場人物・全25話</span><span>→</span></a></div>' },
+      // 章ごとのページ（2026-11-06 第一章を公開。第二章 chapter2/ は試作中でまだ載せない）。あらすじのすぐ下にカードで出す（2026-11-07）
+      chapters: [{ title: '第一章', note: '全25話', href: 'chapter1/' }] },
     { id: 'otohazu', status: 'public', featured: true, order: 3,
       title: '音を覚えるだけの外れスキルで追放された俺、失われた古代魔法を全部再生できるらしい', short: '音ハズ', kind: '連載小説', page: 'stories/otohazu/',
       lead: '山吹ことりが描く、「音」が運命を変える異世界ファンタジー。',
