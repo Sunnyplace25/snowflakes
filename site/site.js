@@ -173,13 +173,14 @@
         '<p class="sf-work-kind">' + esc(w.kind) + '</p><h1 class="sf-work-title">' + esc(w.title) + '</h1>' +
         (w.short ? '<p class="sf-card-note" style="margin-top:6px">通称「' + esc(w.short) + '」</p>' : '') +
         '<p class="sf-work-lead">' + esc(w.lead) + '</p>' + (global.SfArtists ? global.SfArtists.shareButton() : '') + media(root, w, w.short || w.title, w.kana || '', '16 / 9') + '</header>' +
+      // 最新の更新がいちばん上（2026-11-07 ユーザー）
+      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>' +
+        (w.updateNote ? '<p class="sf-update-note" style="color:' + (COLORS[w.id] || '#93c5fd') + '">' + w.updateNote.map(esc).join('<br>') + '</p>' : '')) +   // 最新の更新の下のお知らせ（site-data.js の updateNote）
       sec('synopsis', 'STORY', 'あらすじ', w.synopsis && w.synopsis.length ? '<div class="sf-prose">' + w.synopsis.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' : '') +
       // 章ごとのページ（site-data.js の chapters）。あらすじのすぐ下に出す
       sec('chapters', 'CHAPTERS', '章から読む', w.chapters && w.chapters.length ? '<div class="sf-arc-grid">' + w.chapters.map(function (c) {
         return '<a class="sf-arc-card" href="' + esc(c.href) + '"><span class="sf-arc-title">' + esc(c.title) + '</span><span class="sf-arc-range">' + esc(c.note || '') + '</span></a>';
       }).join('') + '</div>' : '') +
-      sec('update', 'UPDATE', '最新の更新', '<div class="sf-update-list" id="sf-update"></div>' +
-        (w.updateNote ? '<p class="sf-update-note" style="color:' + (COLORS[w.id] || '#93c5fd') + '">' + w.updateNote.map(esc).join('<br>') + '</p>' : '')) +   // 最新の更新の下のお知らせ（site-data.js の updateNote）
       sec('read', 'READ', '連載先', '<div class="sf-links">' + (w.serials || []).map(function (s) {
         var row = function (href, name, note) { return '<a class="sf-link-row" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"><span class="sf-link-name">' + esc(name) + '</span>' +
           (note ? '<span class="sf-link-note">' + esc(note) + '</span>' : '') + '<span>→</span></a>'; };

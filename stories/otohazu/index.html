@@ -81,10 +81,10 @@
       }).join('') + '</div>';
     }
     render();
-    // 「章から読む」を、いちばん下から上へ（あらすじがあればそのすぐ下、なければ「最新の更新」の前）へ移す（2026-11-07）
+    // 「章から読む」を、いちばん下から上へ（あらすじがあればそのすぐ下、なければ「最新の更新」のすぐ下）へ移す（2026-11-07）
     var syn = document.getElementById('synopsis'), upd = document.getElementById('update'), chs = document.getElementById('chapters');
-    if (chs && syn) syn.parentNode.insertBefore(chs, syn.nextSibling);
-    else if (chs && upd) upd.parentNode.insertBefore(chs, upd);
+    var after = syn || upd;
+    if (chs && after) after.parentNode.insertBefore(chs, after.nextSibling);
     var songs = (window.SF_ARC_SITE || {}).songs || [];
     if (songs.length) {
       document.getElementById('songs').hidden = false;
