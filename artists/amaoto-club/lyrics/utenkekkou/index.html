@@ -31,6 +31,8 @@
     .ly-from { font-family: 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 1px; color: #e3e6ea; margin: 16px 0 0; line-height: 1.8; }
     .ly-credit { font-family: 'Cormorant Garamond', serif; font-size: 16px; letter-spacing: 1.5px; color: #e3e6ea; margin: 6px 0 0; line-height: 1.6; }
     .ly-links { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .ly-player { max-width: 560px; margin: 28px auto 0; border-radius: 4px; overflow: hidden; }
+    .ly-player iframe { display: block; }
     .ly-body { max-width: 560px; margin: 0 auto; padding: 56px 20px 24px; font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 2.2; letter-spacing: 1px; color: #e8eaed; text-align: center; }
     .ly-body p { margin: 0 0 2.2em; }
     .ly-back { text-align: center; margin: 24px 0 0; }
@@ -59,6 +61,11 @@
     <div class="ly-links">
       <a class="pill soundcloud" href="https://soundcloud.com/yamabuki-kotori/acoustic-ver" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-soundcloud"></i> Acoustic Ver.</a>
       <a class="pill youtube" href="https://youtube.com/shorts/tRBHxBTfBUA" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> Short ver.</a>
+    </div>
+    <!-- 聴きながら歌詞を読めるよう、ここで再生（色は雨音クラブの #e5a07a） -->
+    <div class="ly-player">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" loading="lazy" title="雨音クラブ「雨天決行（Acoustic Ver.）」｜SoundCloud"
+              src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2433987540&color=%23e5a07a&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
     </div>
   </header>
 
