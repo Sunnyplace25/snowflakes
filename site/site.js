@@ -185,8 +185,9 @@
           (note ? '<span class="sf-link-note">' + esc(note) + '</span>' : '') + '<span>→</span></a>'; };
         return s.ncode ? row(s.url + '1/', '第1話から読む', s.label) : row(s.url, s.label, s.note);
       }).join('') + '</div>') +
-      sec('characters', 'CHARACTERS', '登場人物', related.length ? '<p class="sf-sec-lead">作中のバンドとメンバーは、アーティストページで紹介しています。</p><div class="sf-links">' + related.map(function (a) {
-        return '<a class="sf-link-row" href="' + esc(root + a.page) + '"><span class="sf-link-name">' + esc(a.name) + '</span><span class="sf-link-note">メンバー紹介・楽曲</span><span>→</span></a>';
+      // 作中のバンドの音楽ページ（登場人物は章ページにあるので、ここは音楽への入口だけ：2026-11-07 ユーザー）
+      sec('music', 'MUSIC', '音楽', related.length ? '<p class="sf-sec-lead">作中のバンドの楽曲は、アーティストページで聴けます。</p><div class="sf-links">' + related.map(function (a) {
+        return '<a class="sf-link-row" href="' + esc(root + a.page) + '"><span class="sf-link-name">' + esc(a.name) + '</span><span class="sf-link-note">楽曲・アーティストページ</span><span>→</span></a>';
       }).join('') + '</div>' : '') +
       sec('related', 'RELATED', '関連コンテンツ', games.length ? '<div class="sf-links">' + games.map(function (g) {
         return '<a class="sf-link-row" href="' + esc(link(root, g.href)) + '"><span class="sf-link-name">' + esc(g.title) + '</span><span class="sf-link-note">' + esc(g.kind) + '</span><span>→</span></a>';
