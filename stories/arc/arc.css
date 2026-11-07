@@ -25,14 +25,24 @@ main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; position: relativ
 .arc-map-items { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
 .arc-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px;
   font-size: 12.5px; text-decoration: none; color: var(--sub); background: rgba(255,255,255,0.04); transition: border-color 0.2s, color 0.2s; }
-.arc-chip:hover { border-color: var(--accent); color: var(--text); }
-.arc-chip.is-current { border-color: var(--accent); background: rgba(147, 197, 253, 0.18); color: var(--text); }
-.arc-chip-no { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--accent); }
+/* --arc：編の色（arcs.js の color。章カードと同じ。既定はヒナタの青） */
+.arc-chip { --arc: 147, 197, 253; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s; }
+.arc-chip.c-kouta  { --arc: 252, 165, 165; }
+.arc-chip.c-hayate { --arc: 253, 230, 138; }
+.arc-chip.c-saku   { --arc: 196, 181, 253; }
+.arc-chip.c-mikoto { --arc: 207, 238, 250; }
+.arc-chip:hover { border-color: rgb(var(--arc)); color: var(--text); box-shadow: 0 0 12px rgba(var(--arc), 0.35); }
+.arc-chip.is-current { border-color: rgb(var(--arc)); background: rgba(var(--arc), 0.18); color: var(--text); }
+.arc-chip-no { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: rgb(var(--arc)); }
 
-.hero { text-align: center; padding: 72px 0 56px; }
+.hero { text-align: center; padding: 72px 0 56px; --arc: 147, 197, 253; }   /* 編の色（線・ボタンの枠） */
+.hero.c-kouta  { --arc: 252, 165, 165; }
+.hero.c-hayate { --arc: 253, 230, 138; }
+.hero.c-saku   { --arc: 196, 181, 253; }
+.hero.c-mikoto { --arc: 207, 238, 250; }
 .hero-kind { font-family: 'Cormorant Garamond', serif; letter-spacing: 6px; font-size: 13px; color: var(--gold); }
 .hero-series { margin-top: 10px; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 4px; color: var(--sub); }
-.hero-chapter { display: inline-block; font-size: 15px; letter-spacing: 6px; padding: 3px 16px; border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent); margin: 14px 0 8px; }
+.hero-chapter { display: inline-block; font-size: 15px; letter-spacing: 6px; padding: 3px 16px; border-top: 1px solid rgb(var(--arc)); border-bottom: 1px solid rgb(var(--arc)); margin: 14px 0 8px; }
 .hero h1 { font-size: clamp(26px, 5.4vw, 42px); font-weight: 600; letter-spacing: 2px; line-height: 1.5; text-shadow: 0 2px 18px rgba(0,0,0,0.7); }
 .hero-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--sub); letter-spacing: 2px; }
 .hero-meta { margin-top: 10px; font-size: 13px; color: var(--sub); }
@@ -42,6 +52,8 @@ main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; position: relativ
 .btn:hover { background: rgba(255,255,255,0.12); }
 .btn.main { background: #3b6fb6; border-color: #5b8fd6; color: #fff; font-weight: 500; }
 .btn.main:hover { background: #4a80c8; }
+.hero .btn.main { background: rgba(var(--arc), 0.16); border-color: rgba(var(--arc), 0.85); color: #fff; transition: background 0.25s, box-shadow 0.25s; }
+.hero .btn.main:hover { background: rgba(var(--arc), 0.26); box-shadow: 0 0 16px rgba(var(--arc), 0.4); }
 .share-btn { display: inline-flex; align-items: center; gap: 8px; background: none; cursor: pointer; border: 1px solid var(--border); border-radius: 999px; padding: 11px 22px; color: var(--sub); font-family: "Cormorant Garamond", serif; font-size: 13px; letter-spacing: 3px; transition: border-color 0.2s, color 0.2s; }
 .share-btn:hover { border-color: rgba(255,255,255,0.35); color: var(--text); }
 #share-toast { display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(30,41,59,0.95); border: 1px solid var(--border); border-radius: 999px; padding: 10px 24px; font-size: 13px; color: var(--text); white-space: nowrap; }
@@ -72,6 +84,19 @@ main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; position: relativ
 .arc-link:hover { border-color: var(--accent); }
 .arc-link-name { font-size: 15px; }
 .arc-link-note { flex: 1; font-size: 12px; color: var(--sub); }
+.arc-link.is-soon:hover { border-color: var(--border); }
+/* 関連短篇の主人公の色（HP 共通の色）：枠をその色に、ホバーで濃く */
+.arc-link.c-hinata { border-color: rgba(147,197,253,0.75); } .arc-link.c-hinata:hover { border-color: #93c5fd; }
+.arc-link.c-kouta  { border-color: rgba(252,165,165,0.75); } .arc-link.c-kouta:hover  { border-color: #fca5a5; }
+.arc-link.c-hayate { border-color: rgba(253,230,138,0.75); } .arc-link.c-hayate:hover { border-color: #fde68a; }
+.arc-link.c-saku   { border-color: rgba(196,181,253,0.75); } .arc-link.c-saku:hover   { border-color: #c4b5fd; }
+.arc-set { background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+.arc-set > .arc-link { border: 0; background: none; }
+.arc-set-eps { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 18px 14px; }
+.arc-set-eps a { display: inline-flex; align-items: baseline; gap: 6px; font-size: 12px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; transition: border-color 0.2s; }
+.arc-set-eps a:hover { border-color: var(--accent); }
+.arc-set-eps small { color: var(--accent); font-size: 11px; }
+.arc-link-badge { flex-shrink: 0; font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); }
 
 .arc-book { display: flex; gap: 20px; align-items: center; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; text-decoration: none; max-width: 560px; transition: border-color 0.2s; }
 .arc-book:hover { border-color: var(--accent); }
@@ -96,7 +121,15 @@ main { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; position: relativ
 .arc-pager { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .arc-pager-link { display: flex; flex-direction: column; padding: 16px 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; font-size: 16px; transition: border-color 0.2s; }
 .arc-pager-link:hover { border-color: var(--accent); }
-.arc-pager-link small { font-size: 12px; color: var(--sub); }
+/* 行き先の編の色（arcs.js の color。既定はヒナタの青） */
+.arc-pager-link { --arc: 147, 197, 253; border-color: rgba(var(--arc), 0.7); }
+.arc-pager-link.c-kouta  { --arc: 252, 165, 165; }
+.arc-pager-link.c-hayate { --arc: 253, 230, 138; }
+.arc-pager-link.c-saku   { --arc: 196, 181, 253; }
+.arc-pager-link.c-mikoto { --arc: 207, 238, 250; }
+.arc-pager-link:hover { border-color: rgb(var(--arc)); box-shadow: 0 0 16px rgba(var(--arc), 0.35); }
+.arc-pager-link small { color: rgb(var(--arc)); }
+.arc-pager-link small { font-size: 12px; }
 .arc-pager-link.is-next { text-align: right; }
 
 footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: var(--sub); border-top: 1px solid var(--border); }
@@ -136,7 +169,28 @@ footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: va
 .song:hover { border-color: var(--accent); }
 .song-thumb { aspect-ratio: 4 / 5; overflow: hidden; background: #000; }
 .song-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.song-thumb.is-jacket { aspect-ratio: 1 / 1; }
+.song-thumb.is-mv { position: relative; }
+.song-thumb.is-mv img { transform: scale(1.34); }   /* hqdefault の上下の黒い帯を切る */
+.song-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; padding-left: 3px; }
 .song-body { padding: 12px 16px 16px; }
 .song-title { font-size: 15px; font-weight: 500; line-height: 1.6; }
 .song-note { font-size: 12px; color: var(--sub); }
 @media (max-width: 600px) { .songs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
+/* 未公開の短篇は、主人公の色を薄く（2026-11-07 ユーザー） */
+.arc-link.is-soon.c-hinata, .arc-link.is-soon.c-hinata:hover { border-color: rgba(147,197,253,0.35); background: rgba(147,197,253,0.05); }
+.arc-link.is-soon.c-kouta,  .arc-link.is-soon.c-kouta:hover  { border-color: rgba(252,165,165,0.35); background: rgba(252,165,165,0.05); }
+.arc-link.is-soon.c-hayate, .arc-link.is-soon.c-hayate:hover { border-color: rgba(253,230,138,0.35); background: rgba(253,230,138,0.05); }
+.arc-link.is-soon.c-saku,   .arc-link.is-soon.c-saku:hover   { border-color: rgba(196,181,253,0.35); background: rgba(196,181,253,0.05); }
+/* 3人の話：枠を3色（ヒナタ青・コウタ赤・ハヤテ黄）のグラデーションに。未公開は薄く */
+.arc-link.c-trio { border-color: transparent; background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(90deg, rgba(147,197,253,0.8), rgba(252,165,165,0.8), rgba(253,230,138,0.8)) border-box; }
+.arc-link.c-trio:hover { border-color: transparent; background: linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(90deg, #93c5fd, #fca5a5, #fde68a) border-box; }
+.arc-link.is-soon.c-trio, .arc-link.is-soon.c-trio:hover { border-color: transparent; background: linear-gradient(90deg, rgba(147,197,253,0.05), rgba(252,165,165,0.05), rgba(253,230,138,0.05)) padding-box, linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(90deg, rgba(147,197,253,0.4), rgba(252,165,165,0.4), rgba(253,230,138,0.4)) border-box; }
+/* ミコト（第二章）：白っぽい水色 */
+.arc-link.c-mikoto { border-color: rgba(207,238,250,0.75); } .arc-link.c-mikoto:hover { border-color: #cfeefa; }
+.arc-link.is-soon.c-mikoto, .arc-link.is-soon.c-mikoto:hover { border-color: rgba(207,238,250,0.35); background: rgba(207,238,250,0.05); }
+/* スマホ：話数が多い編の各話一覧は、枠の中だけスクロール（下に少しフェードを付けて、続きがあると分かるように） */
+@media (max-width: 600px) {
+  #arc-eps.is-scroll { max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; padding: 4px 4px 28px; border: 1px solid var(--border); border-radius: 12px;
+    -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent); mask-image: linear-gradient(#000 calc(100% - 28px), transparent); }
+}

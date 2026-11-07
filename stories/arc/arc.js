@@ -20,7 +20,7 @@
   function chapterLabel(a) {
     var g = GROUPS.filter(function (x) { return x.id === a.group; })[0] || {};
     if (a.label) return a.label;   // 音ハズの「第一章」など、編ごとに見出しを決めているとき
-    return a.no ? g.label + '　' + a.no : g.label;
+    return a.no != null ? g.label + '　' + a.no : g.label;
   }
   var soon = '<p class="arc-soon">準備中</p>';
 
@@ -30,8 +30,8 @@
     return '<div class="arc-map-group"><span class="arc-map-label">' + esc(g.label) + (g.sub ? '<small>' + esc(g.sub) + '</small>' : '') + '</span><div class="arc-map-items">' +
       items.map(function (a) {
         var cur = a.id === arc.id;
-        return '<a class="arc-chip' + (cur ? ' is-current' : '') + '" href="../' + a.id + '/"' + (cur ? ' aria-current="page"' : '') + '>' +
-          (a.no && g.numbered ? '<span class="arc-chip-no">' + a.no + '</span>' : '') + esc(a.title) + '</a>';
+        return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/"' + (cur ? ' aria-current="page"' : '') + '>' +
+          (a.no != null && g.numbered ? '<span class="arc-chip-no">' + a.no + '</span>' : '') + esc(a.title) + '</a>';
       }).join('') + '</div></div>';
   }).join('');
 
@@ -45,6 +45,7 @@
 
   // ── ヒーロー ──
   $('#arc-kind').textContent = group.kind ? group.kind + ' ' + arc.no : (group.en || 'STORY');   // kind … 章ごとに番号を付ける（音ハズの CHAPTER 1 など）
+  if (arc.color) document.querySelector('.hero').classList.add('c-' + arc.color);   // 編の色（章カード・ピルボタンと同じ）
   $('#arc-chapter').textContent = chapterLabel(arc);
   if (chapterLabel(arc) === arc.title) $('#arc-chapter').hidden = true;
   $('#arc-title').textContent = arc.title;
@@ -76,6 +77,8 @@
       }
       return (arc.parts.length > 1 ? '<h3 class="arc-part">' + esc(p.name) + '<small>ep.' + p.from + '〜' + partTo(p) + '</small></h3>' : '') + '<ol class="eps">' + rows.join('') + '</ol>';
     }).join('');
+    // 話数が多い編は、スマホでは決まった高さの枠に入れて枠の中だけスクロール（arc.css の .is-scroll：2026-11-07 ユーザー）
+    $('#arc-eps').classList.toggle('is-scroll', $('#arc-eps').querySelectorAll('li').length > 20);
   }
   renderEpisodes();
   if (arc.ongoing) {
@@ -97,15 +100,20 @@
   if (ig) {
     if (arc.instagram && window.SF_QF_INSTAGRAM) {
       ig.hidden = false;
-      $('#arc-ig-list').innerHTML = window.SF_QF_INSTAGRAM.slice().reverse().map(function (e) {
-        return '<li><a href="' + esc(e.url) + '" target="_blank" rel="noopener"><span class="ep-no">' + esc(e.ep) + '</span><span>' + esc(e.title) + (e.note ? '<small>' + esc(e.note) + '</small>' : '') + '</span></a></li>';
+      $('#arc-ig-list').innerHTML = window.SF_QF_INSTAGRAM.map(function (e) {   // 上の各話一覧と同じく ep.01 から。note（関連）はボタンに出さない
+        return '<li><a href="' + esc(e.url) + '" target="_blank" rel="noopener"><span class="ep-no">' + esc(e.ep) + '</span><span>' + esc(e.title) + '</span></a></li>';
       }).join('');
     }
   }
 
   // ── 関連短編 ──
+  // url がないものは未公開（リンクなしのカードだけ）
   $('#arc-shorts').innerHTML = arc.shorts.length ? '<div class="arc-links">' + arc.shorts.map(function (s) {
-    return '<a class="arc-link" href="' + esc(s.url) + '"' + (s.internal ? '' : ' target="_blank" rel="noopener"') + '><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>';
+    if (s.eps) return '<div class="arc-set"><a class="arc-link" href="' + esc(s.url) + '" target="_blank" rel="noopener"><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>' +
+      '<div class="arc-set-eps">' + s.eps.map(function (e) { return '<a href="' + esc(s.epBase + e.no + '/') + '" target="_blank" rel="noopener"><small>' + e.no + '</small>' + esc(e.title) + '</a>'; }).join('') + '</div></div>';   // 連作：1枚のカード＋各話のボタン
+    var cc = s.chara ? ' c-' + s.chara : '';   // 主人公の色（枠）
+    if (!s.url) return '<div class="arc-link is-soon' + cc + '"><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span class="arc-link-badge">未公開</span></div>';
+    return '<a class="arc-link' + cc + '" href="' + esc(s.url) + '"' + (s.internal ? '' : ' target="_blank" rel="noopener"') + '><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>';
   }).join('') + '</div>' : soon;
 
   // ── ギャラリー ──
@@ -119,8 +127,18 @@
   $('#arc-songs').innerHTML = songs.length ? '<div class="songs">' + songs.map(function (s) {
     if (s.yt) return '<a class="song" href="https://youtube.com/shorts/' + esc(s.yt) + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + esc(s.yt) + '/oar2.jpg" alt="' + esc(s.title) + '" loading="lazy"></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p><p class="song-note">' + esc(s.note || '') + '</p></div></a>';
+    if (s.mv) return '<a class="song" href="https://www.youtube.com/watch?v=' + esc(s.mv) + '" target="_blank" rel="noopener"><div class="song-thumb is-jacket is-mv"><img src="https://i.ytimg.com/vi/' + esc(s.mv) + '/hqdefault.jpg" alt="' + esc(s.title) + '" loading="lazy"><span class="song-play" aria-hidden="true">▶</span></div>' +
+      '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p></div></a>';   // mv … YouTube の MV（ジャケットと同じ四角いカード）
+    if (s.jacket) return '<a class="song" href="' + esc(s.url) + '"' + (/^https?:/.test(s.url) ? ' target="_blank" rel="noopener"' : '') + '><div class="song-thumb is-jacket"><img src="../../../../' + encodeURI(s.jacket) + '" alt="' + esc(s.title) + '" loading="lazy"></div>' +
+      '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p></div></a>';   // jacket … HP の Discography の画像（ジャケット＋タイトルだけ）
     return '<a class="arc-link" href="' + esc(s.url) + '"><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>';
   }).join('') + '</div>' : soon;
+
+  // 中身のない欄（あらすじ・関連短編・ギャラリー・関連曲）は「準備中」を並べず、欄ごと隠す（2026-11-07）
+  $('#story').hidden = !arc.lead;
+  $('#shorts').hidden = !arc.shorts.length;
+  $('#gallery').hidden = !arc.gallery.length;
+  $('#songs').hidden = !songs.length;
 
   // ── 書籍（Kindle に収録されている編だけ） ──
   var bk = arc.kindle != null ? BOOKS[arc.kindle] : null;
@@ -133,8 +151,8 @@
   // ── 前の編・次の編 ──
   var i = SHOWN.indexOf(arc), prev = SHOWN[i - 1], next = SHOWN[i + 1];
   $('#arc-pager').innerHTML =
-    (prev ? '<a class="arc-pager-link" href="../' + prev.id + '/"><small>← 前へ｜' + esc(chapterLabel(prev)) + '</small>' + esc(prev.title) + '</a>' : '<span></span>') +
-    (next ? '<a class="arc-pager-link is-next" href="../' + next.id + '/"><small>次へ｜' + esc(chapterLabel(next)) + ' →</small>' + esc(next.title) + '</a>' : '<span></span>');
+    (prev ? '<a class="arc-pager-link' + (prev.color ? ' c-' + prev.color : '') + '" href="../' + prev.id + '/"><small>← 前へ｜' + esc(chapterLabel(prev)) + '</small>' + esc(prev.title) + '</a>' : '<span></span>') +
+    (next ? '<a class="arc-pager-link is-next' + (next.color ? ' c-' + next.color : '') + '" href="../' + next.id + '/"><small>次へ｜' + esc(chapterLabel(next)) + ' →</small>' + esc(next.title) + '</a>' : '<span></span>');
 
   // ── ギャラリーの拡大 ──
   var lb = $('#lb'), lbImg = $('#lb-img'), cur = 0;
