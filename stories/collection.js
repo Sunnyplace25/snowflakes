@@ -2,7 +2,7 @@
    stories/collection.js — 「ホラー作品」「短篇・その他の作品」の一覧を描画する（2026-10-31）
    ・SfCollection.render(el, groups)
      groups: [{ id, label, title, lead, items: [ 作品 ] }]
-     作品: { title, kind, date, eps, rank, text, excerpt, image, imagePos, related: [{ label, href }], links: [{ label, href, note }],
+     作品: { title, kind, date, eps, rank, text, excerpt, image, imagePos, related: [{ label, href }], links: [{ label, href, note }], next: { label, href, note }（読み終えたあとに読んでほしい作品。「読む」の下に出る）,
              episodes: { base, list: [{ ep, title }] } }   … image：カード上部の画像（サイトのルートからのパス） / episodes：開閉式の各話一覧（base + 話数 + '/' へ直接移動）
    ・opts.root：サイトのルートまでの相対パス（stories/horror/ は '../../'）
    ・opts.showDates：true のときだけ日付を表示（2026-10-31 一覧ページでは日付を出さない方針。データの date は残している）
@@ -36,6 +36,7 @@
       '<div class="sc-actions">' + (w.links || []).map(function (l) {
         return '<a class="sc-read" href="' + esc(l.href) + '"' + ext(l.href) + '>' + esc(l.label || '読む') + ' →' + (l.note ? '<span class="sc-read-note">' + esc(l.note) + '</span>' : '') + '</a>';
       }).join('') + '</div>' +
+      (w.next ? '<p class="sc-next"><span class="sc-next-label">読み終えたら</span><a href="' + esc(w.next.href) + '"' + ext(w.next.href) + '>' + esc(w.next.label) + ' →</a>' + (w.next.note ? '<span class="sc-next-note">' + esc(w.next.note) + '</span>' : '') + '</p>' : '') +
       '</article>';
   }
 
