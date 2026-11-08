@@ -7,7 +7,7 @@
 (function (global) {
   var S = global.SF_SITE || {};
   var COLORS = { stories: '#93c5fd', music: '#c4b5fd', game: '#fde68a', video: '#f9a8d4', sweets: '#f9a8d4',
-    snowflakes: '#93c5fd', kamisama: '#e8a5c4', horror: '#f87171', shorts: '#a5b4fc', otohazu: '#7ccf9e', hayatecchi: '#fde68a', undertone: '#c4b5fd', gacha: '#fde68a' };
+    snowflakes: '#93c5fd', kamisama: '#e8a5c4', horror: '#f87171', shorts: '#a5b4fc', otohazu: '#7ccf9e', hayatecchi: '#fde68a', oto: '#93c5fd', undertone: '#c4b5fd', gacha: '#fde68a' };
   var CAT = { story: 'STORY', music: 'MUSIC', game: 'GAME', book: 'BOOK', video: 'VIDEO', event: 'EVENT', info: 'INFO' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }

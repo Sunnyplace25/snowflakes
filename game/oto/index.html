@@ -8,7 +8,13 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
   <title>Snow flakes あなたの音診断｜Snow flakes 公式</title>
   <meta name="description" content="今のあなたは、どんな音を持っているか。Snow flakes の登場人物の性質をもとにした診断。">
-  <meta name="robots" content="noindex, nofollow">   <!-- テスト公開中（2026-11-09）：検索に出さない。正式公開のときに外す -->
+  <link rel="canonical" href="https://sunnyplace25.github.io/snowflakes/game/oto/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Snow flakes あなたの音診断">
+  <meta property="og:description" content="今のあなたは、どんな音を持っているか。Snow flakes の9人の中から、あなたに近い音が見つかる診断。">
+  <meta property="og:url" content="https://sunnyplace25.github.io/snowflakes/game/oto/">
+  <meta property="og:image" content="https://sunnyplace25.github.io/snowflakes/img/games/oto.webp">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
   <meta name="theme-color" content="#0c1220">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +55,6 @@
     .opts.is-leaving .opt:not(.is-picked) { opacity: 0; transition: opacity .25s; }
     .opts.is-leaving .opt { pointer-events: none; }
     .res-main .res-who { margin: 4px 0 2px; }
-    .test-note { margin: 0; padding: 8px 16px; text-align: center; font-size: 12px; color: #fde68a; background: rgba(253,230,138,0.08); border-bottom: 1px solid rgba(253,230,138,0.25); }
     .h1-en { display: block; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; color: var(--sub); margin-bottom: 4px; }
     .res-close { margin: 14px 0 0; font-size: 14px; color: var(--sub); }
     .note { text-align: center; font-size: 12px; color: var(--sub); margin-top: 20px; }
@@ -90,8 +95,6 @@
 <body>
 <canvas id="snow"></canvas>
 <nav><a href="../">← GAME</a><a href="../../">Snow flakes</a></nav>
-<!-- テスト公開中の表示（正式公開のときに消す） -->
-<p class="test-note">テスト公開中のページです。正式公開前のため、内容は変わることがあります。</p>
 <main><canvas id="wave" hidden aria-hidden="true"></canvas><div id="app"></div></main>
 
 <script>
@@ -325,7 +328,7 @@
     var ranked = TYPES.map(function (t) { return { t: t, s: cos(v, typeVec(t)) }; }).sort(function (a, b) { return b.s - a.s; });
     var m = ranked[0].t, s1 = ranked[1].t, s2 = ranked[2].t, close = ranked[0].s - ranked[1].s < 0.03;
     Wave.settle(m.c);
-    try { if (window.gtag) gtag('event', 'oto_shindan_result', { main: m.id, sub: s1.id, after: s2.id, close: close ? 'yes' : 'no', stage: 'test' }); } catch (e) {}
+    try { if (window.gtag) gtag('event', 'oto_shindan_result', { main: m.id, sub: s1.id, after: s2.id, close: close ? 'yes' : 'no', stage: 'live' }); } catch (e) {}
     var small = function (t, kind) { return '<div style="--c:' + t.c + '"><p class="res-kind">' + kind + '</p><p class="res-name">' + esc(t.name) + '</p><p class="res-core">「' + esc(t.core) + '」</p><p class="res-who">' + esc(t.who) + 'に近い音</p></div>'; };
     var list = function (a) { return '<ul>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; };
     // あとで足せる欄（相性の良い音・おすすめ楽曲・関連エピソード）。中身があるときだけ出す
@@ -356,7 +359,7 @@
     document.getElementById('again').onclick = start;
     app.querySelectorAll('.fit button').forEach(function (b) {
       b.onclick = function () {
-        try { if (window.gtag) gtag('event', 'oto_shindan_feedback', { main: m.id, fit: b.dataset.fit, stage: 'test' }); } catch (e) {}
+        try { if (window.gtag) gtag('event', 'oto_shindan_feedback', { main: m.id, fit: b.dataset.fit, stage: 'live' }); } catch (e) {}
         b.parentNode.innerHTML = '<p>' + (b.dataset.fit === 'yes' ? 'ありがとう。その音、大事にしてください。' : 'ありがとう。音は、時期や気分でも変わります。') + '</p>';
       };
     });
