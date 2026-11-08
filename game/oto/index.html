@@ -371,8 +371,8 @@
 // BGM の ON / OFF（ショーケース特集と同じ動き）
 (function () {
   var a = document.getElementById('oto-bgm'), btn = document.getElementById('bgm-btn'), st = btn.querySelector('.bgm-state');
-  // 音源そのものを -24 LUFS まで小さくしてある（iPhone はページ側の音量指定が効かないため）。PC はさらに少し下げる
-  a.volume = 0.6;
+  // 音源そのものを -27 LUFS まで小さくしてある（iPhone はページ側の音量指定が効かないため）。PC は 0.85 で約 -28 LUFS＝ホラー特集と同じくらい
+  a.volume = 0.85;
   function set(on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.classList.toggle('is-on', on); st.textContent = on ? 'ON' : 'OFF'; }
   btn.addEventListener('click', function () {
     if (a.paused) a.play().then(function () { set(true); }).catch(function () { set(false); });
