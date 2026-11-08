@@ -6,7 +6,7 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
-  <title>あなたの音診断｜Snow flakes 公式</title>
+  <title>Snow flakes あなたの音診断｜Snow flakes 公式</title>
   <meta name="description" content="今のあなたは、どんな音を持っているか。Snow flakes の登場人物の性質をもとにした診断。">
   <meta name="robots" content="noindex, nofollow">   <!-- テスト公開中（2026-11-09）：検索に出さない。正式公開のときに外す -->
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
@@ -50,6 +50,7 @@
     .opts.is-leaving .opt { pointer-events: none; }
     .res-main .res-who { margin: 4px 0 2px; }
     .test-note { margin: 0; padding: 8px 16px; text-align: center; font-size: 12px; color: #fde68a; background: rgba(253,230,138,0.08); border-bottom: 1px solid rgba(253,230,138,0.25); }
+    .h1-en { display: block; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; color: var(--sub); margin-bottom: 4px; }
     .res-close { margin: 14px 0 0; font-size: 14px; color: var(--sub); }
     .note { text-align: center; font-size: 12px; color: var(--sub); margin-top: 20px; }
     .res-main { text-align: center; padding: 28px 20px; border-radius: 16px; border: 1px solid var(--c, var(--accent)); background: var(--card); overflow: hidden; }
@@ -276,7 +277,7 @@
     ask();
   }
   function intro() {
-    app.innerHTML = '<p class="label">YOUR SOUND</p><h1>あなたの音診断</h1>' +
+    app.innerHTML = '<p class="label">YOUR SOUND</p><h1><span class="h1-en">Snow flakes</span>あなたの音診断</h1>' +
       '<p class="lead">今のあなたは、どんな音を持っているか。<br>日常の場面で、近いほうを選んでください。<br>正解はありません。</p>' +
       '<p class="lead" style="font-size:12px;margin-top:16px;">全' + ASK + '問・質問は毎回少し変わります</p>' +
       '<button class="btn" type="button" id="go">はじめる</button>';
@@ -370,13 +371,16 @@
 // BGM の ON / OFF（ショーケース特集と同じ動き）
 (function () {
   var a = document.getElementById('oto-bgm'), btn = document.getElementById('bgm-btn'), st = btn.querySelector('.bgm-state');
-  a.volume = 0.3;
+  // 音源そのものを -24 LUFS まで小さくしてある（iPhone はページ側の音量指定が効かないため）。PC はさらに少し下げる
+  a.volume = 0.6;
   function set(on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.classList.toggle('is-on', on); st.textContent = on ? 'ON' : 'OFF'; }
   btn.addEventListener('click', function () {
     if (a.paused) a.play().then(function () { set(true); }).catch(function () { set(false); });
     else { a.pause(); set(false); }
   });
   window.addEventListener('pagehide', function () { a.pause(); set(false); });
+  // 画面を閉じた・別のアプリやタブに切り替えたときも止める（スマホは pagehide が来ないことがあるため）
+  document.addEventListener('visibilitychange', function () { if (document.hidden && !a.paused) { a.pause(); set(false); } });
 })();
 </script>
 <script src="../../artists/artist.js"></script>
