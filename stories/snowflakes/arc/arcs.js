@@ -96,5 +96,5 @@ window.SF_ARCS = [
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
     parts: [{ name: 'After the Snow', from: 310, to: null }],   // to: null … 連載中（episodes.js の最後まで）
-    kindle: null, lead: "Snow flakesの音を聴いて育った、子どもたちの物語。", ongoing: true, shorts: [], songs: [], gallery: [] }
+    kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。", ongoing: true, shorts: [], songs: [], gallery: [] }
 ];
