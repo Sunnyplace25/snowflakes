@@ -89,7 +89,7 @@
     if (songs.length) {
       document.getElementById('songs').hidden = false;
       document.getElementById('sf-songs').innerHTML = songs.map(function (m) {
-        return '<a class="sf-song" href="https://youtube.com/shorts/' + esc(m.yt) + '" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/' + esc(m.yt) + '/oar2.jpg" alt="' + esc(m.title) + '" loading="lazy">' +
+        return '<a class="sf-song" href="https://youtube.com/shorts/' + esc(m.yt) + '" target="_blank" rel="noopener"><img src="https://i.ytimg.com/vi/' + esc(m.yt) + '/oardefault.jpg" onload="if(this.naturalWidth<=120&&!this.dataset.fb){this.dataset.fb=1;this.src=this.src.replace(/oardefault/,this.dataset.alt)}" data-alt="oar2" alt="' + esc(m.title) + '" loading="lazy">' +
           '<span class="sf-song-body"><span class="sf-song-title">' + esc(m.title) + '</span><span class="sf-song-note">' + esc(m.note || '') + '</span></span></a>';
       }).join('');
     }

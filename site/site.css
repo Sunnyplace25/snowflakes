@@ -76,6 +76,23 @@
 .sf-link-name { flex: 1; font-size: 15px; color: #fff; }
 .sf-link-note { font-size: 12px; color: #94a3b8; }
 /* 最新の更新バナー（トップの DAILY UPDATE と同じ見た目・作品色 --c。当日更新は .is-today で光る） */
+/* 今日の5分（トップ EXPLORE） */
+.fm-card { max-width: 560px; margin: 40px auto 0; padding: 24px 20px 20px; border-radius: 16px; background: var(--card, rgba(255,255,255,0.04)); border: 1px solid rgba(147,197,253,0.35); text-align: center; }
+.fm-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 4px; color: #93c5fd; margin: 0; }
+.fm-title { font-family: 'Noto Serif JP', serif; font-weight: 400; font-size: 20px; letter-spacing: 3px; color: #fff; margin: 6px 0 4px; }
+.fm-lead { font-size: 13px; color: #c9ced6; margin: 0 0 18px; }
+.fm-body { display: flex; gap: 14px; align-items: stretch; text-align: left; }
+.fm-jacket { flex: 0 0 104px; aspect-ratio: 1; border-radius: 8px; overflow: hidden; }
+.fm-jacket img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fm-items { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.fm-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); color: inherit; text-decoration: none; transition: border-color .2s; }
+.fm-item:hover { border-color: rgba(147,197,253,0.6); }
+.fm-kind { flex-shrink: 0; font-size: 11px; letter-spacing: 1px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(147,197,253,0.5); color: #93c5fd; }
+.fm-name { flex: 1; min-width: 0; font-size: 15px; color: #fff; line-height: 1.4; }
+.fm-name small { display: block; font-size: 11px; color: #c9ced6; margin-top: 2px; }
+.fm-go { color: #c9ced6; }
+.fm-next { margin-top: 16px; background: none; border: none; color: #c9ced6; font-size: 12px; letter-spacing: 2px; cursor: pointer; padding: 6px 10px; }
+.fm-next:hover { color: #fff; }
 .sf-first { max-width: 520px; margin: 36px auto 0; text-align: center; }
 .sf-first-label { font-family: 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 3px; color: var(--accent, #93c5fd); margin: 0 0 8px; }
 .sf-first-text { font-size: 14px; line-height: 1.9; color: #e3e6ea; margin: 0 0 16px; }

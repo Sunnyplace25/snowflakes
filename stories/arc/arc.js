@@ -125,7 +125,7 @@
   // 章の曲＋作品全体の曲（SF_ARC_SITE.songs）。yt があれば YouTube Shorts のサムネイル付きカード
   var songs = arc.songs.concat(SITE.songs || []);
   $('#arc-songs').innerHTML = songs.length ? '<div class="songs">' + songs.map(function (s) {
-    if (s.yt) return '<a class="song" href="https://youtube.com/shorts/' + esc(s.yt) + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + esc(s.yt) + '/oar2.jpg" alt="' + esc(s.title) + '" loading="lazy"></div>' +
+    if (s.yt) return '<a class="song" href="https://youtube.com/shorts/' + esc(s.yt) + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + esc(s.yt) + '/oardefault.jpg" onload="if(this.naturalWidth<=120&&!this.dataset.fb){this.dataset.fb=1;this.src=this.src.replace(/oardefault/,this.dataset.alt)}" data-alt="oar2" alt="' + esc(s.title) + '" loading="lazy"></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p><p class="song-note">' + esc(s.note || '') + '</p></div></a>';
     if (s.mv) return '<a class="song" href="https://www.youtube.com/watch?v=' + esc(s.mv) + '" target="_blank" rel="noopener"><div class="song-thumb is-jacket is-mv"><img src="https://i.ytimg.com/vi/' + esc(s.mv) + '/hqdefault.jpg" alt="' + esc(s.title) + '" loading="lazy"><span class="song-play" aria-hidden="true">▶</span></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p></div></a>';   // mv … YouTube の MV（ジャケットと同じ四角いカード）

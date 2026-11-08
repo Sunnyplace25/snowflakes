@@ -959,6 +959,29 @@
     </div>
 
 
+    <!-- 次に解放したいもの（目標と、あと何個か。sweets/goal.js） -->
+    <div class="section" id="sw-goal-sec"><div class="goal-card" id="sw-goal" hidden></div></div>
+    <style>
+      .goal-card { max-width: 480px; margin: 0 auto; padding: 20px 18px; border-radius: 14px; border: 1px solid rgba(249,168,212,0.35); background: rgba(255,255,255,0.03); text-align: center; }
+      .goal-label { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 4px; color: #f9a8d4; margin: 0; }
+      .goal-title { font-family: 'Noto Serif JP', serif; font-size: 16px; letter-spacing: 2px; color: #fff; margin: 6px 0 10px; }
+      .goal-lead { font-size: 12px; color: #cbd5e1; line-height: 1.9; margin: 0 0 14px; }
+      .goal-name { font-size: 14px; color: #fff; margin: 0 0 12px; line-height: 1.6; }
+      .goal-type { font-size: 10px; letter-spacing: 1px; padding: 2px 8px; margin-right: 8px; border-radius: 999px; border: 1px solid rgba(249,168,212,0.5); color: #f9a8d4; vertical-align: 1px; }
+      .goal-needs { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+      .goal-need { display: flex; gap: 12px; align-items: center; }
+      .goal-need img { width: 32px; flex-shrink: 0; }
+      .goal-need-body { flex: 1; min-width: 0; }
+      .goal-need-body p { margin: 0; font-size: 12px; color: #e2e8f0; }
+      .goal-need-body b { font-weight: 500; color: #fff; }
+      .goal-bar { height: 4px; border-radius: 4px; background: rgba(255,255,255,0.1); margin: 6px 0 4px; overflow: hidden; }
+      .goal-bar span { display: block; height: 100%; background: #f9a8d4; }
+      .goal-left { font-size: 11px !important; color: #cbd5e1 !important; }
+      .goal-ready { font-size: 12px; color: #f9a8d4; margin: 14px 0 0; }
+      .goal-select { margin-top: 16px; width: 100%; padding: 10px 12px; border-radius: 10px; background: #0f172a; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.15); font-size: 13px; }
+      .goal-clear { margin-top: 8px; background: none; border: none; color: #94a3b8; font-size: 11px; letter-spacing: 1px; cursor: pointer; }
+    </style>
+
     <!-- Rooms section -->
     <div class="section" id="rooms-section">
       <div class="section-label">studio</div>
@@ -9909,5 +9932,6 @@
 })();
 </script>
 
+<script src="goal.js"></script>
 </body>
 </html>

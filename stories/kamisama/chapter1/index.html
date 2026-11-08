@@ -269,7 +269,8 @@
     { title: '雨天決行', yt: 'tRBHxBTfBUA', note: 'Short ver.' },
     { title: '午前零時のサイン', yt: '_kqpiETerlo', note: 'Short ver.' },
     { title: '昨日までの音', yt: 'yjxA-WjvcaI', note: 'Short ver.・第十二話' },
-    { title: '何でモテねえんだよ', yt: 'mtXDr0yTVO4', note: 'Short ver.' }
+    { title: 'ここで鳴らす', yt: 'oYcRo4GDQdU', note: 'Short ver.' },
+    { title: '何でモテねえんだよ', yt: 'mtXDr0yTVO4', note: 'Short ver.', thumb: 'oar1' }   // YouTube でサムネ未設定のため、いちばん合うコマ（oar1）を使う
   ];
 
   // ── シーンギャラリー（img/g01〜g08） ──
@@ -302,7 +303,7 @@
   }).join('');
 
   document.getElementById('song-list').innerHTML = SONGS.map(function (s) {
-    return '<a class="song" href="https://youtube.com/shorts/' + s.yt + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + s.yt + '/oar2.jpg" alt="' + esc(s.title) + '" loading="lazy"></div>' +
+    return '<a class="song" href="https://youtube.com/shorts/' + s.yt + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + s.yt + '/' + (s.thumb || 'oardefault') + '.jpg" onload="if(this.naturalWidth<=120&&!this.dataset.fb){this.dataset.fb=1;this.src=this.src.replace(/oardefault/,this.dataset.alt)}" data-alt="oar2" alt="' + esc(s.title) + '" loading="lazy"></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p><p class="song-note">雨音クラブ／' + esc(s.note) + '</p></div></a>';
   }).join('');
 

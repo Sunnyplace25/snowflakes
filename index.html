@@ -412,6 +412,8 @@
     .link-card.tiktok:hover { border-color: rgba(110,231,183,0.6); }
     .link-card.youtube  { border-color: rgba(248,113,113,0.3); }
     .link-card.youtube:hover { border-color: rgba(248,113,113,0.6); }
+    .link-card.soundcloud { border-color: rgba(255,122,51,0.3); }
+    .link-card.soundcloud:hover { border-color: rgba(255,122,51,0.6); }
 
     /* App CTA */
     .app-cta {
@@ -1050,6 +1052,8 @@ function sfShare(anchor) {
     <h2 class="sf-sec-title">楽しみ方を選ぶ</h2>
     <p class="sf-sec-lead">どこからでも楽しめます。気になる入口を選んでください。</p>
     <div id="home-entrances"></div>
+    <!-- 今日の5分（短篇＋関連曲のセット。site/five-min.js） -->
+    <div class="fm-card" id="five-min"></div>
   </div>
 </section>
 
@@ -2610,11 +2614,12 @@ function sfShare(anchor) {
       </div>
     </a>
 
-    <a class="link-card wip" href="hayatecchi-lp.html">
-      <span class="link-icon"><i class="fa-solid fa-gamepad" style="color:#fbbf24;"></i></span>
+    <!-- ハヤテっちの枠を SoundCloud に差し替え（2026-11-08 ユーザー） -->
+    <a class="link-card soundcloud" data-sf-action="soundcloud" href="https://soundcloud.com/yamabuki-kotori" target="_blank" rel="noopener noreferrer">
+      <span class="link-icon"><i class="fa-brands fa-soundcloud" style="color:#ff7a33;"></i></span>
       <div class="link-info">
-        <p class="link-name">ハヤテっち</p>
-        <p class="link-platform">Web Game — ¥100</p>
+        <p class="link-name">Kotori Yamabuki</p>
+        <p class="link-platform">SoundCloud</p>
       </div>
     </a>
   </div>
@@ -4429,6 +4434,7 @@ document.addEventListener('visibilitychange', function() {
 <!-- ── チュートリアルヒント ── -->
 <script>
 (function() {
+  return;   // 2026-11-08 廃止（トップの配置が変わり、指す場所が合わなくなったため）。中身は残しておく
   var HINT_KEY = 'sf_hint_v3_seen';
   var STEPS = [
     { text: '物語に触れてみよう<br><span style="font-size:11px;color:#64748b;letter-spacing:1px;">デイリーアップデート</span>', target: 'banner' },
@@ -5039,6 +5045,7 @@ document.addEventListener('visibilitychange', function() {
 <script src="releases/data.js"></script>
 <script src="site/site-data.js"></script>
 <script src="site/site.js"></script>
+<script src="site/five-min.js"></script>
 <script>
   // 総合トップの新しい部品（初めての方へ・代表作品・最新情報・その他のコンテンツ）
   SfSite.renderEntrances(document.getElementById('home-entrances'), { root: '' });
