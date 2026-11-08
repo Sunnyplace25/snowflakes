@@ -96,6 +96,9 @@
     .share p { margin: 0 0 10px; font-size: 14px; color: var(--sub); }
     .share button, .share a { display: inline-block; margin: 0 5px 8px; padding: 9px 20px; border-radius: 999px; border: 1px solid rgba(147,197,253,0.5); background: rgba(147,197,253,0.08); color: #fff; font-family: inherit; font-size: 13px; letter-spacing: 1px; text-decoration: none; cursor: pointer; }
     .share button:hover, .share a:hover { background: rgba(147,197,253,0.16); }
+    .share .share-gift { font-size: 13px; line-height: 1.9; color: #e2e8f0; margin: 0 0 14px; }
+    .share-card { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); margin: 0 auto 8px; -webkit-touch-callout: default; }
+    .share .share-how { font-size: 12px; color: var(--sub); margin: 0 0 12px; }
     .share [hidden] { display: none; }
     .between { text-align: center; font-size: 13px; color: var(--sub); letter-spacing: 2px; margin: 0 0 18px; min-height: 1.9em; }
     @media (prefers-reduced-motion: reduce) { .fade, .reveal, .listen p { animation: none; opacity: 1; } }
@@ -369,6 +372,11 @@
       '<p class="lead" style="font-size:12px;margin-top:28px;">今の気分や時期によって、音は変わります。<br>これは、Snow flakes の世界を楽しむための診断です。</p>' +
       // 結果をシェア（スマホは共有メニュー、PC は X とリンクのコピー）
       '<div class="share"><p>あなたの音をシェアする</p>' +
+        // 結果の画像（もらえる・保存できることを伝える。スマホは長押し、PC は右クリックか「画像を保存」）
+        '<p class="share-gift">あなたの音の画像を、おみやげにどうぞ。<br>コピーや保存をして、SNS のアイコンや投稿に使ってね。</p>' +
+        '<img class="share-card" src="share/' + m.id + '.jpg" alt="わたしの音は「' + esc(m.name) + '」でした（' + esc(m.who) + 'に近い音）" width="1200" height="630">' +
+        '<p class="share-how">スマホは画像を長押し、PC は右クリックで保存できます。</p>' +
+        '<a class="share-save" href="share/' + m.id + '.jpg" download="snowflakes-oto-' + m.id + '.jpg">画像を保存</a><br>' +
         '<button type="button" id="share-go">シェアする</button>' +
         '<a id="share-x" target="_blank" rel="noopener">X でポスト</a>' +
         '<button type="button" id="share-copy">リンクをコピー</button></div>' +

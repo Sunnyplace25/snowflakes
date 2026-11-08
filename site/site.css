@@ -98,6 +98,8 @@
 .sf-first-text { font-size: 14px; line-height: 1.9; color: #e3e6ea; margin: 0 0 16px; }
 .sf-first .sf-link-row { text-align: left; }
 .sf-first-note { font-size: 13px; color: #c9ced6; }
+/* カード最下部の制作者クレジット（小さく・薄く・中央。2026-11-09 音診断のカードから） */
+.sf-card-credit { display: block; margin-top: 18px; text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 12px; letter-spacing: 2px; color: #b8c2cf; }
 .sf-update-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; }
 .sf-update-note { max-width: 640px; margin: 18px auto 0; text-align: center; font-size: 15px; line-height: 1.9; color: var(--accent, #e8a5c4); letter-spacing: 0.06em; }
 .sf-upd { position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 28px 32px; border-radius: 20px; text-decoration: none;

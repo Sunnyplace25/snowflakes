@@ -36,7 +36,8 @@
       '<span class="sf-card-title">' + esc(o.title) + '</span>' +
       (o.text ? '<span class="sf-card-text">' + esc(o.text) + '</span>' : '') +
       (o.note ? '<span class="sf-card-note">' + esc(o.note) + '</span>' : '') +
-      '<span class="sf-card-go">' + esc(o.go || '見る →') + '</span></div></a>';
+      '<span class="sf-card-go">' + esc(o.go || '見る →') + '</span>' +
+      (o.credit ? '<span class="sf-card-credit">' + esc(o.credit) + '</span>' : '') + '</div></a>';   // credit … カードの最下部に小さく出す制作者クレジット
   }
 
   // ── 初めての方へ（3つの入口） ─────────────────────────────
@@ -93,7 +94,7 @@
     var root = (opts && opts.root) || '';
     var list = (S.games || []).filter(isPublic);
     el.innerHTML = list.length ? '<div class="sf-cards">' + list.map(function (g) {
-      return card(root, { href: g.href, label: g.kind, title: g.title, text: g.text, note: g.note, color: COLORS[g.id], mark: g.title, item: g, go: '遊ぶ・詳しく見る →' });
+      return card(root, { href: g.href, label: g.kind, title: g.title, text: g.text, note: g.note, color: COLORS[g.id], mark: g.title, item: g, go: '遊ぶ・詳しく見る →', credit: g.credit });
     }).join('') + '</div>' : '<p class="sf-empty">掲載中のゲームはありません。</p>';
   }
 

@@ -78,7 +78,7 @@
     // あなたの音診断（2026-11-09 正式公開・ユーザー指示でいちばん上に。ハヤテっちはいちばん下へ）
     { id: 'oto', status: 'public', title: 'Snow flakes あなたの音診断', kind: '診断', href: 'game/oto/',
       text: '今のあなたは、どんな音を持っているか。日常の場面で、いちばん近いものを選んでいくと、Snow flakes の9人の中から、あなたに近い音が見つかります。',
-      note: '全12問・質問は毎回少し変わります', work: 'snowflakes', image: 'img/games/oto.webp', imageSpec: '1200×750（16:10）・9人の結果画像を3×3に並べたもの' },
+      note: '全12問・質問は毎回少し変わります', credit: 'Created by Kotori Yamabuki', work: 'snowflakes', image: 'img/games/oto.webp', imageSpec: '1200×750（16:10）・9人の結果画像を3×3に並べたもの' },
     { id: 'undertone', status: 'public', title: 'Under tone', kind: 'ノベルゲーム＆占い', href: 'game/undertone/',   // 作品紹介 → ゲーム本体（room/undertone/）
       text: '短編「ひとつ多い音」の続編となるノベルゲーム＆占い。プロローグはすぐに遊べます。',   // 旧 note「続きの章はアイテムを集めると開きます」は 2026-10-28 アイテム必須の解除に合わせて削除
       note: '', work: 'snowflakes', image: 'img/games/undertone.webp', markOnImage: 'Under tone', markPos: 'top', imageSpec: '1200×750（16:10）' },   // 路地裏（入口 GAME と同じ画像の別ファイル）：2026-10-29 ユーザー指定
