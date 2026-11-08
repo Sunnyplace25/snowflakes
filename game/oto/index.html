@@ -375,14 +375,23 @@
       '<button class="btn" type="button" id="again">もう一度診断する</button></div>' +
       (/[?&]dev\b/.test(location.search) ? '<div class="dev">' + esc(AXES.map(function (ax, i) { return ax.join('↔') + ' ' + v[i]; }).join('\n') + '\n' + ranked.map(function (r) { return r.t.who + ' ' + r.s.toFixed(3); }).join('\n')) + '</div>' : '');
     document.getElementById('again').onclick = start;
-    // シェアの文：「わたしの音は「○○」（△△に近い音）でした。」＋副音＋タグ。URL は診断ページ（結果は入れない）
-    var url = 'https://sunnyplace25.github.io/snowflakes/game/oto/';
+    // シェアの文：「わたしの音は「○○」（△△に近い音）でした。」＋副音＋タグ。
+    // URL は結果ごとの共有用ページ（r/<id>/）。SNS に貼るとそのタイプのシェア画像（share/<id>.jpg）がカードで出て、開くと診断ページへ移る
+    var url = 'https://sunnyplace25.github.io/snowflakes/game/oto/r/' + m.id + '/';
     var text = 'わたしの音は「' + m.name + '」（' + m.who + 'に近い音）でした。副音は「' + s1.name + '」。\n#Snowflakesあなたの音診断';
     var go = document.getElementById('share-go'), x = document.getElementById('share-x'), cp = document.getElementById('share-copy');
     x.href = 'https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
     if (navigator.share) { x.hidden = true; cp.hidden = true; } else { go.hidden = true; }
     var mark = function (how) { try { if (window.gtag) gtag('event', 'oto_shindan_share', { main: m.id, how: how, stage: 'live' }); } catch (e) {} };
-    go.onclick = function () { navigator.share({ title: 'Snow flakes あなたの音診断', text: text, url: url }).then(function () { mark('menu'); }).catch(function () {}); };
+    // スマホ：シェア画像そのものも一緒に渡す（画像を受け取れないアプリには、文と URL だけ）
+    var card = null;
+    fetch('share/' + m.id + '.jpg').then(function (r) { return r.blob(); }).then(function (b) { card = new File([b], 'snowflakes-oto-' + m.id + '.jpg', { type: 'image/jpeg' }); }).catch(function () {});
+    go.onclick = function () {
+      var data = { title: 'Snow flakes あなたの音診断', text: text + '\n' + url };
+      if (card && navigator.canShare && navigator.canShare({ files: [card] })) data.files = [card];
+      else data.url = url;
+      navigator.share(data).then(function () { mark(data.files ? 'menu_image' : 'menu'); }).catch(function () {});
+    };
     x.onclick = function () { mark('x'); };
     cp.onclick = function () {
       if (!navigator.clipboard) return;

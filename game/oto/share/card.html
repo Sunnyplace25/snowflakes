@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<title>シェア画像のひな形</title>
+<!-- 音診断のシェア画像（1200×630）を作るためのひな形。?id=hinata などで開いて、ブラウザで 1200×630 を撮る（scratchpad の cdp_sharecard.mjs）。公開ページからは使わない -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #0c1220; }
+  .card { position: relative; width: 1200px; height: 630px; font-family: 'Noto Serif JP', serif; color: #fff; }
+  .bg { position: absolute; top: 0; bottom: 0; right: 0; width: 760px; background-size: cover; background-position: center; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, #0c1220 0%, #0c1220 36%, rgba(12,18,32,0.55) 50%, rgba(12,18,32,0) 66%); }
+  .text { position: absolute; left: 72px; top: 0; bottom: 0; width: 560px; display: flex; flex-direction: column; justify-content: center; }
+  .label { font-family: 'Cormorant Garamond', serif; font-size: 22px; letter-spacing: 8px; color: var(--c); margin: 0 0 18px; }
+  .lead { font-size: 30px; letter-spacing: 4px; margin: 0; }
+  .name { white-space: nowrap; font-size: 84px; font-weight: 500; letter-spacing: 14px; color: var(--c); margin: 6px 0 4px; line-height: 1.25; text-shadow: 0 0 30px rgba(0,0,0,0.6); }
+  .tail { font-size: 30px; letter-spacing: 4px; margin: 0 0 22px; }
+  .who { font-size: 24px; letter-spacing: 3px; color: #e2e8f0; margin: 0; }
+  .site { position: absolute; left: 72px; bottom: 40px; font-size: 20px; letter-spacing: 3px; color: #cbd5e1; }
+  .site b { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 24px; color: #fff; letter-spacing: 2px; }
+  .line { position: absolute; left: 72px; bottom: 96px; width: 120px; height: 2px; background: var(--c); }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="bg" id="bg"></div>
+  <div class="shade"></div>
+  <div class="text">
+    <p class="label">YOUR SOUND</p>
+    <p class="lead">わたしの音は</p>
+    <p class="name" id="name"></p>
+    <p class="tail">でした</p>
+    <p class="who" id="who"></p>
+  </div>
+  <div class="line"></div>
+  <p class="site">山吹ことり オフィシャルサイト｜<b>Snow flakes</b> あなたの音診断</p>
+</div>
+<script>
+  var T = {
+    hinata: ['白い音', '残す人', 'ヒナタ', '#93c5fd'], kouta: ['残響', '繋ぐ人', 'コウタ', '#fca5a5'], hayate: ['追い風', '進める人', 'ハヤテ', '#fde68a'],
+    koyuki: ['雪明かり', '残る人', '小雪', '#e2e8f0'], akari: ['灯り', '灯す人', 'あかり', '#fdba74'], rin: ['月灯り', '受け入れる人', 'りん', '#a5b4fc'],
+    saku: ['境界線', '保つ人', '朔', '#c4b5fd'], yoiko: ['夜風', '揺らす人', '宵子', '#cbd5e1'], michiru: ['満月', '選ぶ人', 'みちる', '#fef3c7']
+  };
+  var id = new URLSearchParams(location.search).get('id') || 'hinata', t = T[id];
+  document.getElementById('card').style.setProperty('--c', t[3]);
+  document.getElementById('bg').style.backgroundImage = 'url(../img/' + id + '.webp)';
+  document.getElementById('name').textContent = '「' + t[0] + '」';
+  document.getElementById('who').textContent = t[2] + 'に近い音　「' + t[1] + '」';
+</script>
+</body>
+</html>
