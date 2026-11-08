@@ -204,6 +204,12 @@
   color: #d9c79a; border: 1px solid rgba(217,199,154,0.45); background: rgba(217,199,154,0.06);
 }
 .dd-meta .hires { font-size: 11px; padding: 4px 9px 3px; }
+/* SoundCloud だけで聴ける作品（ストリーミング配信なし）の印 */
+.sc-only {
+  display: inline-flex; align-items: center; flex-shrink: 0; font-size: 10px; letter-spacing: 1px; line-height: 1;
+  padding: 3px 7px 2px; border-radius: 3px; color: #ff9a5c; border: 1px solid rgba(255,122,51,0.5); background: rgba(255,122,51,0.08);
+}
+.dd-meta .sc-only { font-size: 11px; padding: 4px 9px 3px; }
 
 /* シェアボタン：作品・楽曲ページは左寄せの情報に揃える（スマホは中央） */
 .dd-info .hero-actions { justify-content: flex-start; margin-top: 20px; }

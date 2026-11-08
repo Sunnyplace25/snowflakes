@@ -92,6 +92,7 @@
     var b = [];
     if (o.spotify) b.push('<a class="pill spotify" href="' + esc(o.spotify) + '" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-spotify"></i> Spotify</a>');
     if (o.amazon)  b.push('<a class="pill amazon" href="' + esc(o.amazon) + '" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-amazon"></i> Amazon Music</a>');
+    if (o.soundcloud) b.push('<a class="pill soundcloud" href="' + esc(o.soundcloud) + '" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-soundcloud"></i> SoundCloud</a>');
     return b.length ? '<div class="dd-links">' + b.join('') + '</div>' : '';
   }
   function section(id, en, ja, body) {
@@ -176,7 +177,8 @@
   }
   /** Hi-Res バッジ（作品データの hiRes が true のものだけ） */
   function hiResBadge(r) {
-    return r.hiRes === true ? '<span class="hires" title="ハイレゾ配信対応">Hi-Res</span>' : '';
+    return (r.hiRes === true ? '<span class="hires" title="ハイレゾ配信対応">Hi-Res</span>' : '') +
+      (r.soundcloud && !r.spotify && !r.amazon ? '<span class="sc-only" title="ストリーミング配信はありません">SoundCloud限定</span>' : '');
   }
   /** 一覧カード：ジャケット・作品タイトル・アーティスト・リリース日（＋種別と Hi-Res）。
       カップリング曲（sub）や収録曲名はカードに出さず、作品詳細の収録曲に表示する */

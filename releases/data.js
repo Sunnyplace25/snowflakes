@@ -47,6 +47,72 @@
   // 項目：title, artists[], isrc, createdDate, versionOf（別バージョンの元曲キー）,
   //       spotify, amazon（曲単位のURL）, lyrics, kotoriNote, credits[{role,name}], mv（YouTube ID）, stories[]
   var SONGS = {
+    // 雨音クラブ 雨天決行（Acoustic Ver.）：SoundCloud 限定（ストリーミング配信なし・2026-11-08 ユーザー）。歌詞は HP の歌詞ページと同じ
+    'utenkekkou-acoustic': { title: '雨天決行（Acoustic Ver.）', artists: ['amaoto-club'], soundcloud: 'https://soundcloud.com/yamabuki-kotori/acoustic-ver',
+      lyrics: `予定通りなんて一度もない
+正解らしい正解もない
+昨日の揉め事　今日も持ち越し
+それでもスタジオ　鍵は借りたし
+誰が悪いとか　もうどうでもいい
+言いたいことなら山ほどあるし
+四人で書いた予定の続き
+三人で勝手に書き足せばいい
+
+戻れない　戻さない
+似たようで全然違う
+消せない　消さない
+だったら持っていけばいい
+
+雨天決行　今日も結構
+格好悪いくらいがちょうどいい
+散々だった昨日ごと
+歪ませて鳴らせば音になる
+変更上等　予定は未定
+誰かの正解はいらない
+ダサい名前も今さらだろ
+雨音クラブで行けばいい
+
+知らない声で歌ったくらいで
+別のバンドになるわけじゃない
+誰かの真似じゃ息が続かない
+だったら最初から俺でいい
+足りない　足したい　やりすぎ　うるさい
+散々やってやっと気づいた
+空いた場所には空いた場所なりの
+風くらい通しておけばいい
+
+忘れない　縛られない
+似たようで全然違う
+変わりたい　変わってない
+そんなのどっちでもいい
+
+雨天決行　今日も結構
+綺麗じゃなくても構わない
+散々だった昨日より
+今日の失敗の方がまだいい
+変更上等　予定は未定
+止まる理由にはならない
+笑いたいやつは笑えばいい
+こっちはこっちでやっていく
+
+神様だって知らないなら
+俺らが知るわけないだろ
+だったら聞くな
+答えもいらない
+菓子でも食って
+そこで見てろよ
+
+雨天決行　今日も結構
+晴れるまでなんて待ってられない
+散々だった昨日ごと
+引きずって走れば傷になる
+それでも上等　予定は未定
+変わったくらいで終われない
+ダサい名前も悪くないだろ
+今さら妙に似合ってる
+雨天決行
+次も決行
+終わる時だけ決めればいい` },
     'round-bounce': { title: 'Round Bounce', artists: ['snowflakes'], isrc: 'QZPJ32543034',
       spotify: 'https://open.spotify.com/intl-ja/track/6bhi3AvpNpYUFsQhVB9iHf',
       amazon: 'https://music.amazon.co.jp/albums/B0GT7CKP47?marketplaceId=A1VC38T7YXB528&musicTerritory=JP&trackAsin=B0GT793GCM',
@@ -1805,6 +1871,12 @@ In One Sky
       spotify: 'https://open.spotify.com/intl-ja/album/38oT99du22hU22FaNHSZTc',
       amazon: 'https://music.amazon.co.jp/albums/B0HPGMNF4M',
       tracks: ['mada-natteru', 'nigai-purin'] },
+
+    // 雨音クラブ：SoundCloud 限定（soundcloud があって spotify・amazon が無い作品は「SoundCloud限定」の印が付く）
+    { id: 'utenkekkou-acoustic', title: '雨天決行', sub: 'Acoustic Ver.', type: 'single', artists: ['amaoto-club'], status: 'public',
+      releaseDate: '2026-11-08', jacket: 'artists/amaoto-club/img/utenkekkou_acoustic.webp',
+      soundcloud: 'https://soundcloud.com/yamabuki-kotori/acoustic-ver',
+      tracks: ['utenkekkou-acoustic'] },
 
     // TOWA（リリース日 2026-10-20：ユーザー指定 2026-10-24）
     { id: 'todoku-basho', title: '届く場所', type: 'single', artists: ['towa'], status: 'public', hiRes: true,
