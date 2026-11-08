@@ -278,7 +278,7 @@
   }
   function intro() {
     app.innerHTML = '<p class="label">YOUR SOUND</p><h1><span class="h1-en">Snow flakes</span>あなたの音診断</h1>' +
-      '<p class="lead">今のあなたは、どんな音を持っているか。<br>日常の場面で、近いほうを選んでください。<br>正解はありません。</p>' +
+      '<p class="lead">今のあなたは、どんな音を持っているか。<br>日常の場面で、いちばん近いものを選んでください。<br>正解はありません。</p>' +
       '<p class="lead" style="font-size:12px;margin-top:16px;">全' + ASK + '問・質問は毎回少し変わります</p>' +
       '<button class="btn" type="button" id="go">はじめる</button>';
     Wave.hide();
@@ -286,7 +286,7 @@
   }
   function ask() {
     var q = qs[idx];
-    app.innerHTML = '<div class="progress"><span style="width:' + (idx / ASK * 100) + '%"></span></div>' +
+    app.innerHTML = '<div class="progress"><span style="width:' + ((idx + 1) / ASK * 100) + '%"></span></div>' +
       '<p class="between">' + (BETWEEN[idx] || '') + '</p>' +
       '<div class="fade"><p class="q-no">' + (idx + 1) + ' / ' + ASK + '</p><p class="q-text">' + esc(q[0]) + '</p>' +
       '<div class="opts">' + q[1].map(function (o, i) { return '<button class="opt" type="button" data-i="' + i + '">' + esc(o[0]) + '</button>'; }).join('') + '</div>' +
