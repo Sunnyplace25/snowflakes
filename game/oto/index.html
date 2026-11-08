@@ -55,6 +55,11 @@
     .opts.is-leaving .opt:not(.is-picked) { opacity: 0; transition: opacity .25s; }
     .opts.is-leaving .opt { pointer-events: none; }
     .res-main .res-who { margin: 4px 0 2px; }
+    /* トップのシェア（artist.css の .share-btn・#share-toast と同じ見た目。このページは artist.css を読まないのでここに書く） */
+    .top-share { text-align: center; margin: 24px 0 0; }
+    .share-btn { display: inline-flex; align-items: center; gap: 8px; background: none; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 9px 22px; color: #94a3b8; font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 4px; transition: border-color 0.2s, color 0.2s; }
+    .share-btn:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+    #share-toast { display: none; position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(30,41,59,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; padding: 10px 24px; font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 3px; color: #94a3b8; white-space: nowrap; }
     .h1-en { display: block; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; color: var(--sub); margin-bottom: 4px; }
     .res-close { margin: 14px 0 0; font-size: 14px; color: var(--sub); }
     .note { text-align: center; font-size: 12px; color: var(--sub); margin-top: 20px; }
@@ -288,7 +293,10 @@
     app.innerHTML = '<p class="label">YOUR SOUND</p><h1><span class="h1-en">Snow flakes</span>あなたの音診断</h1>' +
       '<p class="lead">今のあなたは、どんな音を持っているか。<br>日常の場面で、いちばん近いものを選んでください。<br>正解はありません。</p>' +
       '<p class="lead" style="font-size:12px;margin-top:16px;">全' + ASK + '問・質問は毎回少し変わります</p>' +
-      '<button class="btn" type="button" id="go">はじめる</button>';
+      '<button class="btn" type="button" id="go">はじめる</button>' +
+      // シェア（ほかのページと同じボタン。診断ページそのものを共有する。結果のシェアは結果画面の下）
+      '<p class="top-share"><button class="share-btn" onclick="sfArtistShare()" type="button">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> share</button></p>';
     Wave.hide();
     document.getElementById('go').onclick = start;
   }
