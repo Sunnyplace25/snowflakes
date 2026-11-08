@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZDSHRWLQF"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','GT-MRQ2NK5K');gtag('config','G-DZDSHRWLQF');</script>
+  <title>あなたの音診断｜Snow flakes 公式</title>
+  <meta name="description" content="今のあなたは、どんな音を持っているか。Snow flakes の登場人物の性質をもとにした診断。">
+  <meta name="robots" content="noindex, nofollow">   <!-- テスト公開中（2026-11-09）：検索に出さない。正式公開のときに外す -->
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <meta name="theme-color" content="#0c1220">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0c1220; --card: rgba(255,255,255,0.04); --line: rgba(255,255,255,0.12); --text: #e8eaed; --sub: #c9ced6; --accent: #93c5fd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Noto Serif JP', serif; font-weight: 300; line-height: 1.9; }
+    a { color: inherit; }
+    #snow { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0.4; }   /* 雪（artists/artist.js が降らせる） */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+    nav a { text-decoration: none; font-size: 14px; }
+    /* BGM ボタン：ショーケース特集と同じ形（右下に浮かぶ小さな ON / OFF。押したときだけ鳴る） */
+    .bgm-btn { position: fixed; right: 16px; bottom: 16px; z-index: 30; display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Cormorant Garamond', 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 0.12em; color: var(--sub);
+      background: rgba(12,18,32,0.88); border: 1px solid var(--line); border-radius: 100px; padding: 5px 12px; cursor: pointer;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: color .2s, border-color .2s; }
+    .bgm-btn:hover { color: #fff; border-color: var(--accent); }
+    .bgm-btn .bgm-state { font-size: 12px; letter-spacing: 0.08em; }
+    .bgm-btn.is-on { color: #fff; border-color: var(--accent); }
+    .bgm-btn.is-on .bgm-state { color: var(--accent); }
+    main { max-width: 560px; margin: 0 auto; padding: 48px 20px 80px; }
+    .label { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 5px; color: var(--accent); text-align: center; margin: 0; }
+    h1 { font-weight: 400; font-size: 26px; letter-spacing: 4px; text-align: center; margin: 8px 0 24px; }
+    .lead { text-align: center; font-size: 14px; color: var(--sub); }
+    .btn { display: block; width: 100%; max-width: 320px; margin: 32px auto 0; padding: 14px; border-radius: 999px; border: 1px solid rgba(147,197,253,0.6); background: rgba(147,197,253,0.08); color: #fff; font-family: inherit; font-size: 15px; letter-spacing: 3px; cursor: pointer; }
+    .btn:hover { background: rgba(147,197,253,0.16); }
+    .progress { height: 3px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 28px; }
+    .progress span { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+    .q-no { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; color: var(--sub); text-align: center; margin: 0; }
+    .q-text { font-size: 18px; text-align: center; margin: 8px 0 28px; line-height: 1.8; }
+    .opts { display: flex; flex-direction: column; gap: 10px; }
+    .opt { text-align: left; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-family: inherit; font-size: 15px; line-height: 1.7; cursor: pointer; transition: border-color .2s; }
+    .opt:hover { border-color: rgba(147,197,253,0.6); }
+    /* 選んだものだけ光らせて、ほかは消える（連打で次の質問に答えないように） */
+    .opt.is-picked { border-color: rgba(147,197,253,0.9); background: rgba(147,197,253,0.14); }
+    .opts.is-leaving .opt:not(.is-picked) { opacity: 0; transition: opacity .25s; }
+    .opts.is-leaving .opt { pointer-events: none; }
+    .res-main .res-who { margin: 4px 0 2px; }
+    .test-note { margin: 0; padding: 8px 16px; text-align: center; font-size: 12px; color: #fde68a; background: rgba(253,230,138,0.08); border-bottom: 1px solid rgba(253,230,138,0.25); }
+    .res-close { margin: 14px 0 0; font-size: 14px; color: var(--sub); }
+    .note { text-align: center; font-size: 12px; color: var(--sub); margin-top: 20px; }
+    .res-main { text-align: center; padding: 28px 20px; border-radius: 16px; border: 1px solid var(--c, var(--accent)); background: var(--card); overflow: hidden; }
+    .res-img { margin: -28px -20px 22px; aspect-ratio: 16 / 9; }
+    .res-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .res-kind { font-size: 13px; letter-spacing: 3px; color: var(--sub); margin: 0; }
+    .res-name { font-size: 32px; letter-spacing: 6px; margin: 6px 0 4px; color: var(--c, #fff); font-weight: 400; }
+    .res-core { font-size: 15px; margin: 0; }
+    .res-who { font-size: 13px; color: var(--sub); margin: 10px 0 0; }
+    .res-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .res-sub > div { text-align: center; padding: 16px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); }
+    .res-sub .res-name { font-size: 20px; letter-spacing: 3px; }
+    .detail { margin-top: 32px; }
+    .detail h3 { font-size: 13px; letter-spacing: 3px; color: var(--accent); font-weight: 400; margin: 24px 0 6px; }
+    .detail p, .detail ul { margin: 0; font-size: 15px; }
+    .detail ul { padding-left: 1.2em; }
+    .msg { margin-top: 28px; padding: 18px; border-left: 2px solid var(--c, var(--accent)); font-size: 15px; }
+    .again { background: none; border: 1px solid var(--line); }
+    /* 答えるたびに育つ「あなたの音」（canvas）。結果を出す前に、しばらく鳴らす */
+    #wave { display: block; width: 100%; height: 120px; margin: 0 auto 8px; max-width: 560px; }
+    #wave[hidden] { display: none; }
+    .fade { animation: fadeIn .5s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .listen { text-align: center; padding: 24px 0 40px; }
+    .listen p { margin: 0; font-size: 15px; letter-spacing: 3px; animation: breathe 1.6s ease-in-out infinite; }
+    @keyframes breathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+    .reveal { opacity: 0; animation: fadeIn .9s ease forwards; }
+    .fit { text-align: center; margin-top: 24px; }
+    .fit p { margin: 0 0 10px; font-size: 14px; color: var(--sub); }
+    .fit button { margin: 0 5px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-family: inherit; font-size: 13px; cursor: pointer; }
+    .fit button:hover { border-color: rgba(147,197,253,0.6); }
+    .between { text-align: center; font-size: 13px; color: var(--sub); letter-spacing: 2px; margin: 0 0 18px; min-height: 1.9em; }
+    @media (prefers-reduced-motion: reduce) { .fade, .reveal, .listen p { animation: none; opacity: 1; } }
+    .dev { margin-top: 40px; font-size: 11px; color: var(--sub); white-space: pre-wrap; font-family: monospace; }
+  </style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav><a href="../">← GAME</a><a href="../../">Snow flakes</a></nav>
+<!-- テスト公開中の表示（正式公開のときに消す） -->
+<p class="test-note">テスト公開中のページです。正式公開前のため、内容は変わることがあります。</p>
+<main><canvas id="wave" hidden aria-hidden="true"></canvas><div id="app"></div></main>
+
+<script>
+/* あなたの音診断（試作）。設計：ユーザーの「あなたの音診断」設計資料（2026-11-08）
+   回答はキャラクターではなく 6 つの軸に点を入れ、軸の傾向と 9 人の基準値を比べて 主音・副音・余韻 を出す。
+   軸：K残す↔H変える／M見守る↔D動かす／I内側↔T繋がる／U受け入れる↔W働きかける／F自由↔R責任／G感覚↔S意志・整理 */
+(function () {
+  var AXES = [['K', 'H'], ['M', 'D'], ['I', 'T'], ['U', 'W'], ['F', 'R'], ['G', 'S']];
+  var ASK = 12;
+
+  // 9 タイプ（2026-11-09 審議を受けて書き直し：行動の癖で書き分け・断定を弱めた見出し）
+  //   nature＝その音の説明／light＝強み／habit＝ときどき出やすい癖／sway＝心が揺れやすい場面／hint＝今のあなたへのヒント／msg＝一言
+  //   compat・songs・episodes は、あとで足せるように空で置いておく（中身があるときだけ結果に出る）
+  var TYPES = [
+    { id: 'hinata', who: 'ヒナタ', name: '白い音', core: '残す人', c: '#93c5fd', base: 'KIMG', img: 'img/hinata.webp',
+      nature: '答えを急がず、言葉にならないものを、言葉にならないまま持っておける人。決めるときは、周りの声より「これは手放していいものか」を自分の中で確かめてから動きます。人を無理に変えようとせず、相手が自分で気づくまで待てます。',
+      light: ['流れや勢いに乗らず、自分の軸で選べる', '物事の表面より、奥にあるものに目が行く', '一度大事にすると決めたものを、長く続けられる'],
+      habit: ['説明するより先に黙って引き受けて、あとから「言ってくれればよかったのに」と言われる', '考えがまとまるまで返事を置いておいて、そのまま時間が過ぎる'],
+      sway: '大事にしてきたものが、知らないうちに形を変えていくとき。',
+      hint: '残しているものの中から、ひとつだけ誰かに話してみる。言葉にした分だけ、軽くなることもあります。',
+      msg: '残したものは、ちゃんと鳴っている。', compat: [], songs: [], episodes: [] },
+    { id: 'kouta', who: 'コウタ', name: '残響', core: '繋ぐ人', c: '#fca5a5', base: 'TSRW', img: 'img/kouta.webp',
+      nature: 'その場の空気の小さなずれに、最初に気づく人。誰かと誰かの間に立って、言葉を足したり話を整えたりしながら、関係が途切れないように動きます。決めるときは、自分の希望より「みんなが続けられる形」を先に考えます。',
+      light: ['違和感に早く気づいて、大きくなる前に手を打てる', '話をまとめて、次にやることをはっきりさせられる', '引き受けたことを、最後まで続けられる'],
+      habit: ['頼まれる前に動きすぎて、気づけば自分の予定がいちばん後ろになっている', '平気な顔で調整を続けて、疲れていることに自分でも気づきにくい'],
+      sway: '誰かとの連絡が途切れたり、輪の中に小さなひびが入ったとき。',
+      hint: '調整役を、一日だけ誰かに任せてみる。繋いできた人たちは、思っているより頼りになります。',
+      msg: '繋いできた音は、あなたにも返ってくる。', compat: [], songs: [], episodes: [] },
+    { id: 'hayate', who: 'ハヤテ', name: '追い風', core: '進める人', c: '#fde68a', base: 'HDFG', img: 'img/hayate.webp',
+      nature: '止まった空気を見ると、とりあえず一歩動かしてみたくなる人。完璧な準備を待つより、やりながら直す方を選びます。迷っている人の背中を押したり、周りを巻き込んで新しいことを始めたりするのが得意です。',
+      light: ['最初の一歩が早く、物事を動かし始められる', 'うまくいかなくても、すぐ次の手に切り替えられる', '周りの人を、自然と前向きにさせる'],
+      habit: ['勢いで決めてから、あとで段取りに追われる', 'にぎやかにしているあいだに、自分の寂しさを後回しにする'],
+      sway: 'やりたいことがあるのに、動けない時間が続くとき。',
+      hint: '走らなくてもいい日を、あえてひとつ作ってみる。止まっているあいだにも、風は集まっています。',
+      msg: '止まっている時間も、風は吹いている。', compat: [], songs: [], episodes: [] },
+    { id: 'koyuki', who: '小雪', name: '雪明かり', core: '残る人', c: '#e2e8f0', base: 'KMUT', img: 'img/koyuki.webp',
+      nature: '誰かを追いかけたり、無理に引き止めたりはしないけれど、大事な人のそばからは静かに離れない人。うまくいかないときも関係をすぐに切らず、相手が戻ってこられる場所を残しておきます。言葉より、変わらずそこにいることで、信じていることを伝えます。',
+      light: ['状況が変わっても、態度が変わらない', '相手のペースを尊重しながら、長く支えられる', 'いるだけで、周りが落ち着く'],
+      habit: ['「大丈夫」と言って、自分が待つ側にまわり続ける', '傷ついても、関係を守るために顔に出さない'],
+      sway: '帰る場所や、いつもの居場所がなくなりそうなとき。',
+      hint: '待つだけでなく、自分からひとこと送ってみる。あなたにも、帰ってきていい場所があります。',
+      msg: 'そこにいた時間は、誰かの帰る場所になっている。', compat: [], songs: [], episodes: [] },
+    { id: 'akari', who: 'あかり', name: '灯り', core: '灯す人', c: '#fdba74', base: 'TWDG', img: 'img/akari.webp',
+      nature: '落ち込んでいる人を見つけると、考えるより先に手を伸ばしている人。距離を縮めることを怖がらず、明るい言葉や小さな贈り物で、その場の温度を上げていきます。決めるときは、「誰かがひとりになっていないか」が基準になります。',
+      light: ['人との距離を、すっと縮められる', '気持ちを素直に言葉や行動にできる', 'その場を明るくして、話しやすい空気を作れる'],
+      habit: ['相手が頼む前に世話を焼いて、自分の予定を崩してしまう', '心配が顔や声に出て、相手に伝わりすぎることがある'],
+      sway: '大切な人が、ひとりで抱えているように見えるとき。',
+      hint: '誰かに向けている明かりを、ときどき自分にも向けてみる。',
+      msg: '伸ばした手を、今度は自分にも。', compat: [], songs: [], episodes: [] },
+    { id: 'rin', who: 'りん', name: '月灯り', core: '受け入れる人', c: '#a5b4fc', base: 'UMTS', img: 'img/rin.webp',
+      nature: '相手の悲しみや怒りを、正しいかどうかで分けずに、まずそのまま受け取る人。すぐに答えを出したり「こうすべき」と言ったりはせず、話を最後まで聞いて、相手が自分で決める余地を残します。落ち着いて状況を整理できるので、そばにいる人の気持ちを静かに整えます。',
+      light: ['否定せずに、最後まで話を聞ける', '感情が大きく揺れる場面でも、落ち着いていられる', '相手の選んだことを尊重して、見守れる'],
+      habit: ['聞き役が続いて、自分の話をする機会をなくしてしまう', '相手の気持ちを優先して、自分の違和感を飲み込む'],
+      sway: '大切な人の痛みに、どう寄り添えばいいか分からないとき。',
+      hint: '受け止めてきた分、今度は自分の話を誰かに聞いてもらう。',
+      msg: '静かな光ほど、遠くまで届く。', compat: [], songs: [], episodes: [] },
+    { id: 'saku', who: '朔', name: '境界線', core: '保つ人', c: '#c4b5fd', base: 'RSKI', img: 'img/saku.webp',
+      nature: '何を守るべきか、どこまで近づいていいかを考えてから動く人。気持ちに流される前に一度立ち止まり、自分の中の決まりや責任に照らして選びます。引き受けたことは、誰も見ていなくても最後までやり遂げます。',
+      light: ['状況を冷静に見て、線を引ける', '約束や決まりを、最後まで守り抜ける', '頼られたときに、ぶれずに応えられる'],
+      habit: ['弱音を吐くタイミングを逃して、ひとりで片づけてしまう', '自分にだけ厳しい基準を当てて、うまくいかないと自分を責める'],
+      sway: '守ると決めたものが、自分の手の届かないところで崩れそうなとき。',
+      hint: '引いた線の内側に、自分も入れてあげる。頼ることも、守ることのひとつです。',
+      msg: '守ってきたものの中に、あなたもいる。', compat: [], songs: [], episodes: [] },
+    { id: 'yoiko', who: '宵子', name: '夜風', core: '揺らす人', c: '#cbd5e1', base: 'FHWG', img: 'img/yoiko.webp',
+      nature: 'みんなが当たり前だと思っていることに、「本当にそう？」と問いを投げる人。前に進むことより、決められた形に収まらないことや、隠れている本音を表に出すことを大事にします。その一言で、固まっていた空気がふっと動き出します。',
+      light: ['違和感や本音に、いち早く気づく', '決まった形にとらわれず、別のやり方を思いつける', '固まった場面に、新しい風を入れられる'],
+      habit: ['核心をつく一言が、相手には急に聞こえることがある', 'ひとつの場所にじっとしていると、落ち着かなくなる'],
+      sway: '何も変わらない毎日や、息苦しい決まりの中にいるとき。',
+      hint: '揺らさなくてもいい場所を、ひとつ持ってみる。そこでは、ただ風に吹かれていればいい。',
+      msg: '吹き抜けたあとに、新しい音が残る。', compat: [], songs: [], episodes: [] },
+    { id: 'michiru', who: 'みちる', name: '満月', core: '選ぶ人', c: '#fef3c7', base: 'SIRH', img: 'img/michiru.webp',
+      nature: '迷っても、最後は自分で選び、その選択を引き受ける人。人の意見はよく聞くけれど、答えを誰かに任せることはしません。選んだ理由を自分の言葉で説明できるので、周りからも頼りにされます。',
+      light: ['自分の意思で決めて、結果まで引き受けられる', 'ひとりでも、筋の通った判断ができる', '必要なときは、思い切って方向を変えられる'],
+      habit: ['相談する前に決めてしまい、あとから周りを驚かせる', '一度決めたことを、なかなか曲げられない'],
+      sway: '自分で選ぶ余地がなく、誰かに決められてしまうとき。',
+      hint: '選ぶ前に、迷っていることをそのまま誰かに話してみる。',
+      msg: '選んだ道は、あなたの音になる。', compat: [], songs: [], episodes: [] }
+  ];
+
+  // 質問プール（2026-11-09 審議を受けて調整）。点は軸の文字だけに入れる（強い性質 +2・補助 +1）
+  //   3 つめの値は見分け用の印：'dw' ＝前へ進めたい（D）か、枠から外れたい・揺らしたい（W）かが分かれる質問（ハヤテ↔宵子）
+  //                             'ks' ＝そばに居続ける（K）か、気持ちをそのまま受け止めて整える（S）かが分かれる質問（小雪↔りん）
+  //   毎回の 12 問には、dw と ks を 2 問ずつ必ず入れる
+  var Q = [
+    ['昔よく聴いていた曲が、ふと流れてきた。', [['手を止めて、最後まで聴く', 'K2I1'], ['一緒にいる人に「これ懐かしい」と話す', 'T2W1'], ['今の気分に合う曲に変える', 'H2G1']]],
+    ['待ち合わせの相手が、少し遅れている。', [['近くの店をのぞいて時間をつぶす', 'F2G1'], ['着いてからの段取りを考えておく', 'S2R1'], ['「ゆっくりでいいよ」と送る', 'U2T1'], ['相手が来る方へ歩き出す', 'D2H1']]],
+    ['大切にしていた物が壊れた。', [['捨てずに取っておく', 'K2I1'], ['修理できないか調べる', 'S2K1'], ['新しいものを選ぶ', 'H2G1']]],
+    ['誰かから、長いメッセージが届いた。', [['すぐには返さず、何度か読み返す', 'I2K1'], ['要点を整理して、ていねいに返す', 'S2R1'], ['電話したほうが早いと思ってかける', 'D2T1'], ['まず「読んだよ、ありがとう」と返す', 'U2T1']]],
+    ['雨で、今日の予定が急に空いた。', [['家でゆっくり過ごす', 'I2M1'], ['前から気になっていた場所へ行く', 'F2H1'], ['誰かを誘ってみる', 'T2W1']]],
+    ['みんなの話し合いが、止まってしまった。', [['しばらく様子を見る', 'M2U1'], ['ひとつ案を出して、話を前に進める', 'D2H1'], ['出ている意見をまとめ直す', 'S2T1'], ['話題を変えて、空気をゆるめる', 'F2G1']]],
+    ['友だちが落ち込んでいる。', [['何も聞かずに、そばにいる', 'M2T1'], ['好きそうなものを持って会いに行く', 'W2T1'], ['気分転換に連れ出す', 'D2H1'], ['話を最後まで聞く', 'U2S1']]],
+    ['引っ越しで、荷物を減らすことになった。', [['思い出の物は残して、ほかを減らす', 'K2I1'], ['基準を決めて、迷わず仕分ける', 'S2R1'], ['思い切って、ほとんど手放す', 'H2F1']]],
+    ['初めて入った店。メニューが多すぎる。', [['ピンときたものにする', 'G2F1'], ['店の人におすすめを聞く', 'T2W1'], ['いつも頼むものに近いものを選ぶ', 'K2M1'], ['全部見てから決める', 'S2I1']]],
+    ['夜、なかなか眠れない。', [['昔の写真を見返す', 'K2I1'], ['明日の予定を書き出す', 'S2R1'], ['外に出て、少し歩く', 'D2F1'], ['誰かに「起きてる？」と送る', 'T2W1']]],
+    ['頼まれてはいないけれど、直せそうなことに気づいた。', [['黙って直しておく', 'D2I1'], ['「こうしたらどう？」と伝える', 'W2T1'], ['本人が気づくまで待つ', 'M2U1']]],
+    ['旅行の行き先を決める。', [['前に行って良かった場所に、もう一度', 'K2M1'], ['まだ行ったことのない場所', 'H2F1'], ['一緒に行く人が行きたい場所', 'U2T1'], ['日程と予算から、いちばん合う所', 'S2R1']]],
+    ['好きだった店が、閉店すると知った。', [['最後にもう一度、ひとりで行く', 'K2I1'], ['お店の人に「ありがとう」を伝えに行く', 'T2W1'], ['新しいお気に入りを探しはじめる', 'H2D1']]],
+    ['約束の日。出発まで少し時間があるけれど、いつもより疲れている。', [['約束した時間に、予定どおり向かう', 'R2K1'], ['相手に相談して、会い方を一緒に決める', 'T2S1'], ['少し休んでから、その日の気分に合う過ごし方を考える', 'G2F1']]],
+    ['誰かの秘密を、知ってしまった。', [['誰にも言わず、胸にしまう', 'I2K1'], ['本人にそっと伝える', 'W2T1'], ['本人が話すまでは、いつも通り接する', 'U2M1']]],
+    ['新しいことを始めたい。でも時間がない。', [['今あることをひとつやめて始める', 'H2S1'], ['とりあえず今日、5分だけやってみる', 'D2G1'], ['時間ができるまで、大事に取っておく', 'K2M1'], ['計画を立ててから始める', 'S2R1']]],
+    ['知らない人ばかりの集まりに来た。', [['少し離れて、全体を眺める', 'M2I1'], ['ひとりでいる人に話しかける', 'W2T1'], ['気の向くまま、会場を歩き回る', 'F2G1']]],
+    ['大事なことを、決めなければいけない。', [['自分の気持ちが固まるまで待つ', 'I2G1'], ['信頼できる人に相談する', 'T2U1'], ['理由を言えるほうを選ぶ', 'S2R1'], ['あまり考えすぎず、まず決めてみる', 'D2H1']]],
+    ['帰り道、雪が降ってきた。', [['立ち止まって、しばらく眺める', 'M2G1'], ['少し遠回りして歩く', 'D2F1'], ['誰かに写真を送る', 'T2W1'], ['明日の電車が動くか調べる', 'R2S1']]],
+    ['誰かと、意見がぶつかった。', [['相手の考えを、一度受け止める', 'U2M1'], ['自分の考えを、はっきり伝える', 'W2S1'], ['一晩置いて、自分の気持ちを確かめる', 'I2K1'], ['お互いが納得できる形を探す', 'T2R1']]],
+    ['帰り道に、知らない道を見つけた。', [['入ってみる', 'F2H1'], ['いつもの道で帰る', 'K2M1'], ['今度、誰かと一緒に来ようと思う', 'T2M1']]],
+    ['仲間が「もうやめたい」と言った。', [['理由を最後まで聞く', 'U2S1'], ['続ける方法がないか、一度だけ聞いてみる', 'W2K1'], ['その人が選んだことなら、と送り出す', 'F2U1'], ['抜けたあとのことを考えて動く', 'R2S1']]],
+    ['手紙を書くことになった。', [['書いては消して、時間をかけて書く', 'I2S1'], ['思いついたことを、そのまま書く', 'G2F1'], ['相手が読みやすいように整えて書く', 'S2T1']]],
+    ['大切な人が、遠くへ行くことになった。', [['笑って送り出す', 'U2F1'], ['離れても、変わらず連絡を取り続けようと思う', 'K2T1'], ['会いに行く方法を考える', 'D2T1'], ['自分も何か始めようと思う', 'H2I1']]],
+    ['頼りにされて、やることが増えてきた。', [['引き受けた以上は、最後までやる', 'R2S1'], ['誰かに手伝いを頼む', 'T2W1'], ['本当にやりたいことか、考え直す', 'F2I1']]],
+    ['いつも静かな友だちが、今日はよく話している。', [['話の続きを、黙って聞く', 'U2M1'], ['「今日は楽しそうだね」と声をかける', 'W2T1'], ['こちらからは触れず、いつも通り過ごす', 'M2K1'], ['何があったのか、少し考えてみる', 'S2I1']]],
+    // ── 見分け用：前へ進めたい（D）／枠から外れたい・揺らしたい（W）
+    ['決まったやり方で進めるように言われた。', [['まずその通りに進めて、やりながら良くしていく', 'D2H1'], ['「そもそも、どうしてこのやり方なんだろう」と聞いてみる', 'W2F1'], ['決まりの中で、いちばん良い形を探す', 'S2R1']], 'dw'],
+    ['みんなが「いいね」と言っている案に、少しだけ違和感がある。', [['その違和感を、思い切って口にしてみる', 'W2G1'], ['決まったなら、早く形にする方に力を使う', 'D2G1'], ['みんなの気持ちを、先に聞いてみる', 'U2T1'], ['静かに覚えておいて、あとで考える', 'I2M1']], 'dw'],
+    ['毎日が、同じことの繰り返しに感じてきた。', [['新しい目標を決めて、動き出す', 'D2H1'], ['いつもの決まりごとを、わざと崩してみる', 'W2F1'], ['繰り返しの中にある、変わらない良さを探す', 'K2M1']], 'dw'],
+    ['仲間が「このままでいい」と言っている。でも、何か足りない気がする。', [['「本当にそう思ってる？」と、本音を聞いてみる', 'W2G1'], ['足りない分を、自分が動いて埋める', 'D2H1'], ['みんなが納得しているなら、いったんその形を受け入れる', 'U2T1'], ['何が足りないのか、ひとりで整理する', 'S2I1']], 'dw'],
+    // ── 見分け用：そばに居続ける（K）／気持ちをそのまま受け止めて整える（S）
+    ['しばらく連絡のなかった友だちから、急に連絡が来た。', [['前と変わらない調子で、すぐに返す', 'K2T1'], ['何かあったのかもしれないと、話を聞く準備をする', 'U2S1'], ['会う約束を、すぐに決める', 'D2T1'], ['落ち着いてから、ゆっくり返す', 'I2M1']], 'ks'],
+    ['友だちが、あなたとは違う道を選んだ。', [['道が違っても、これまで通りそばにいる', 'K2T1'], ['その人が決めたことを、そのまま受け止める', 'U2S1'], ['気になることだけ、正直に伝える', 'W2S1'], ['自分も、自分の道を考えはじめる', 'H2I1']], 'ks'],
+    ['誰かが、泣きながら話している。', [['落ち着くまで、何も言わずに隣にいる', 'K2M1'], ['言葉をさえぎらず、最後まで聞く', 'U2S1'], ['温かい飲み物を用意してくる', 'W2T1'], ['何ができるか、一緒に考える', 'S2T1']], 'ks']
+  ];
+
+  var app = document.getElementById('app');
+
+  // ── あなたの音（波）：答えた選択肢のいちばん強い性質の色で、波が1本ずつ重なっていく ──
+  var Wave = (function () {
+    var cv = document.getElementById('wave'), cx = cv.getContext('2d'), layers = [], mode = 'idle', target = null, t0 = 0, raf = 0;
+    var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var COL = { K: '#93c5fd', H: '#fde68a', M: '#e2e8f0', D: '#fdba74', I: '#c4b5fd', T: '#fca5a5', U: '#a5b4fc', W: '#f9a8d4', F: '#cbd5e1', R: '#a7f3d0', G: '#fef3c7', S: '#bae6fd' };
+    var ORDER = 'KHMDITUWFRGS';
+    function size() { var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+    function draw(now) {
+      var w = cv.clientWidth, h = cv.clientHeight, t = (now - t0) / 1000;
+      cx.clearRect(0, 0, w, h);
+      cx.globalCompositeOperation = 'lighter';
+      var pulse = mode === 'listen' ? 1 + 0.35 * Math.sin(t * 5) : 1;
+      // 何も答えていないときの、かすかな線
+      cx.strokeStyle = 'rgba(255,255,255,0.18)'; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(0, h / 2); cx.lineTo(w, h / 2); cx.stroke();
+      layers.forEach(function (L, n) {
+        var grow = Math.min(1, (now - L.born) / 900), amp = L.amp * grow * pulse * (h / 2 - 8);
+        cx.strokeStyle = target || L.col; cx.globalAlpha = 0.55; cx.lineWidth = 1.6;
+        cx.beginPath();
+        for (var x = 0; x <= w; x += 4) {
+          var e = Math.sin(Math.PI * x / w);   // 両端は静かに
+          var y = h / 2 + Math.sin(x / w * Math.PI * L.f + t * L.sp + L.ph) * amp * e;
+          x ? cx.lineTo(x, y) : cx.moveTo(x, y);
+        }
+        cx.stroke();
+      });
+      cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if (!still) raf = requestAnimationFrame(draw);
+    }
+    return {
+      show: function () { cv.hidden = false; size(); cancelAnimationFrame(raf); t0 = performance.now(); raf = requestAnimationFrame(draw); },
+      hide: function () { cv.hidden = true; cancelAnimationFrame(raf); },
+      reset: function () { layers = []; mode = 'idle'; target = null; },
+      add: function (code) {
+        var m = code.match(/([A-Z])(\d)/), k = m ? m[1] : 'M', i = ORDER.indexOf(k);
+        layers.push({ col: COL[k] || '#fff', f: 2 + i % 6 + layers.length * 0.35, amp: 0.25 + 0.06 * (+m[2] || 1) + Math.random() * 0.12, sp: 0.8 + Math.random() * 1.2, ph: Math.random() * 6, born: performance.now() });
+        if (still) draw(performance.now());
+      },
+      listen: function () { mode = 'listen'; },
+      settle: function (col) { mode = 'idle'; target = col; if (still) draw(performance.now()); }
+    };
+  })();
+  window.addEventListener('resize', function () { if (!document.getElementById('wave').hidden) Wave.show(); });
+  // 途中の一言（4 問目・8 問目のあと）
+  var BETWEEN = { 4: '音が、少しずつ形になってきた。', 8: 'もう少しで、聴こえそう。' };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); };
+  var shuffle = function (a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+  var parse = function (code) { var o = {}; code.replace(/([A-Z])(\d)/g, function (_, k, n) { o[k] = (o[k] || 0) + +n; }); return o; };
+  function vecOf(pts) { return AXES.map(function (ax) { return (pts[ax[0]] || 0) - (pts[ax[1]] || 0); }); }
+  function typeVec(t) { var o = {}; t.base.split('').forEach(function (k) { o[k] = 1; }); return vecOf(o); }
+  function cos(a, b) { var d = 0, x = 0, y = 0; for (var i = 0; i < a.length; i++) { d += a[i] * b[i]; x += a[i] * a[i]; y += b[i] * b[i]; } return x && y ? d / Math.sqrt(x * y) : 0; }
+
+  var qs, idx, pts;
+  function start() {
+    // 見分け用の質問（dw・ks）を 2 問ずつ必ず入れて、残りはそれ以外から。並びと選択肢の順も毎回変える
+    var of = function (tag) { return shuffle(Q.filter(function (q) { return q[2] === tag; })); };
+    qs = shuffle(of('dw').slice(0, 2).concat(of('ks').slice(0, 2), shuffle(Q.filter(function (q) { return !q[2]; })).slice(0, ASK - 4)))
+      .map(function (q) { return [q[0], shuffle(q[1])]; });
+    idx = 0; pts = {};
+    Wave.reset(); Wave.show();
+    ask();
+  }
+  function intro() {
+    app.innerHTML = '<p class="label">YOUR SOUND</p><h1>あなたの音診断</h1>' +
+      '<p class="lead">今のあなたは、どんな音を持っているか。<br>日常の場面で、近いほうを選んでください。<br>正解はありません。</p>' +
+      '<p class="lead" style="font-size:12px;margin-top:16px;">全' + ASK + '問・質問は毎回少し変わります</p>' +
+      '<button class="btn" type="button" id="go">はじめる</button>';
+    Wave.hide();
+    document.getElementById('go').onclick = start;
+  }
+  function ask() {
+    var q = qs[idx];
+    app.innerHTML = '<div class="progress"><span style="width:' + (idx / ASK * 100) + '%"></span></div>' +
+      '<p class="between">' + (BETWEEN[idx] || '') + '</p>' +
+      '<div class="fade"><p class="q-no">' + (idx + 1) + ' / ' + ASK + '</p><p class="q-text">' + esc(q[0]) + '</p>' +
+      '<div class="opts">' + q[1].map(function (o, i) { return '<button class="opt" type="button" data-i="' + i + '">' + esc(o[0]) + '</button>'; }).join('') + '</div>' +
+      '<p class="note">いちばん近いものを、ひとつ</p></div>';
+    // 連打の防止：出てから 0.4 秒は押せない。押したら選んだものだけ光らせて、ほかは消してから次へ
+    var ready = false, shownAt = Date.now();
+    setTimeout(function () { ready = true; }, 400);
+    app.querySelectorAll('.opt').forEach(function (b) {
+      b.onclick = function () {
+        if (!ready || Date.now() - shownAt < 400) return;
+        ready = false;
+        var code = q[1][+b.dataset.i][1], add = parse(code);
+        Wave.add(code);
+        for (var k in add) pts[k] = (pts[k] || 0) + add[k];
+        b.classList.add('is-picked');
+        app.querySelector('.opts').classList.add('is-leaving');
+        setTimeout(function () { idx++; idx < ASK ? ask() : result(); window.scrollTo(0, 0); }, 320);
+      };
+    });
+  }
+  // 選択肢ごとの点の偏り（T や S が入った選択肢が多いなど）を消すため、出した質問の「平均的な答え」を差し引く
+  function baseline() {
+    var b = AXES.map(function () { return 0; });
+    qs.forEach(function (q) {
+      q[1].forEach(function (o) { vecOf(parse(o[1])).forEach(function (x, i) { b[i] += x / q[1].length; }); });
+    });
+    return b;
+  }
+  function result() {
+    app.innerHTML = '<div class="listen"><p>あなたの音を、聴いています…</p></div>';
+    Wave.listen();
+    setTimeout(showResult, /[?&]dev\b/.test(location.search) ? 200 : 2800);
+  }
+  function showResult() {
+    var b = baseline(), v = vecOf(pts).map(function (x, i) { return x - b[i]; });
+    var ranked = TYPES.map(function (t) { return { t: t, s: cos(v, typeVec(t)) }; }).sort(function (a, b) { return b.s - a.s; });
+    var m = ranked[0].t, s1 = ranked[1].t, s2 = ranked[2].t, close = ranked[0].s - ranked[1].s < 0.03;
+    Wave.settle(m.c);
+    try { if (window.gtag) gtag('event', 'oto_shindan_result', { main: m.id, sub: s1.id, after: s2.id, close: close ? 'yes' : 'no', stage: 'test' }); } catch (e) {}
+    var small = function (t, kind) { return '<div style="--c:' + t.c + '"><p class="res-kind">' + kind + '</p><p class="res-name">' + esc(t.name) + '</p><p class="res-core">「' + esc(t.core) + '」</p><p class="res-who">' + esc(t.who) + 'に近い音</p></div>'; };
+    var list = function (a) { return '<ul>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; };
+    // あとで足せる欄（相性の良い音・おすすめ楽曲・関連エピソード）。中身があるときだけ出す
+    var extra = function (title, a) { return a && a.length ? '<h3>' + title + '</h3><ul>' + a.map(function (x) {
+      return '<li>' + (x.url ? '<a href="' + esc(x.url) + '"' + (/^https?:/.test(x.url) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(x.title) + '</a>' : esc(x.title || x)) + '</li>'; }).join('') + '</ul>' : ''; };
+    // 結果の順：主音（音名・キャラ・核）→ 説明 → 強み → 癖 → 揺れやすい場面 → ヒント → 一言 → 副音・余韻 → 当たってた？ → 追加の欄
+    app.innerHTML = '<p class="label">YOUR SOUND</p><h1 style="font-size:20px;">今のあなたの音</h1>' +
+      '<div class="res-main reveal" style="--c:' + m.c + '">' + (m.img ? '<div class="res-img"><img src="' + m.img + '" alt="' + esc(m.who) + '"></div>' : '') + '<p class="res-kind">あなたの主音</p><p class="res-name">' + esc(m.name) + '</p>' +
+        '<p class="res-who">' + esc(m.who) + 'に近い音</p><p class="res-core">「' + esc(m.core) + '」</p>' +
+        // 主音と副音がほぼ同じとき（差 0.03 未満。でたらめに答えた場合で約 1 割）は、数字を出さずに文で添える
+        (close ? '<p class="res-close">ただ、<span style="color:' + s1.c + '">' + esc(s1.name) + '</span>も、すぐそばで響いています。</p>' : '') + '</div>' +
+      '<div class="reveal" style="animation-delay:1.2s"><div class="detail" style="--c:' + m.c + '">' +
+        '<h3>' + esc(m.name) + 'という音</h3><p>' + esc(m.nature) + '</p>' +
+        '<h3>強み</h3>' + list(m.light) +
+        '<h3>ときどき出やすい癖</h3>' + list(m.habit) +
+        '<h3>心が揺れやすい場面</h3><p>' + esc(m.sway) + '</p>' +
+        '<h3>今のあなたへのヒント</h3><p>' + esc(m.hint) + '</p>' +
+        '<p class="msg" style="--c:' + m.c + '">' + esc(m.msg) + '</p>' +
+      '</div></div>' +
+      '<div class="res-sub reveal" style="animation-delay:2s">' + small(s1, 'あなたの副音') + small(s2, 'あなたの余韻') + '</div>' +
+      // 当たってた？（押した数はアナリティクスの oto_shindan_feedback で見る。ページには数を出さない）
+      '<div class="reveal" style="animation-delay:2.4s"><div class="fit"><p>この音、当たってた？</p>' +
+        '<button type="button" data-fit="yes">当たってる</button><button type="button" data-fit="no">ちょっと違う</button></div>' +
+      '<div class="detail" style="--c:' + m.c + '">' + extra('相性の良い音', m.compat) + extra('おすすめの曲', m.songs) + extra('関連するエピソード', m.episodes) + '</div>' +
+      '<p class="lead" style="font-size:12px;margin-top:28px;">今の気分や時期によって、音は変わります。<br>これは、Snow flakes の世界を楽しむための診断です。</p>' +
+      '<button class="btn" type="button" id="again">もう一度診断する</button></div>' +
+      (/[?&]dev\b/.test(location.search) ? '<div class="dev">' + esc(AXES.map(function (ax, i) { return ax.join('↔') + ' ' + v[i]; }).join('\n') + '\n' + ranked.map(function (r) { return r.t.who + ' ' + r.s.toFixed(3); }).join('\n')) + '</div>' : '');
+    document.getElementById('again').onclick = start;
+    app.querySelectorAll('.fit button').forEach(function (b) {
+      b.onclick = function () {
+        try { if (window.gtag) gtag('event', 'oto_shindan_feedback', { main: m.id, fit: b.dataset.fit, stage: 'test' }); } catch (e) {}
+        b.parentNode.innerHTML = '<p>' + (b.dataset.fit === 'yes' ? 'ありがとう。その音、大事にしてください。' : 'ありがとう。音は、時期や気分でも変わります。') + '</p>';
+      };
+    });
+  }
+  intro();
+})();
+</script>
+<!-- BGM：音診断BGM（元 D:❄Snow flakes特集用BGM音診断BGM.mp3。メタデータを消して 128kbps に変換） -->
+<audio id="oto-bgm" src="bgm.mp3" preload="none" loop></audio>
+<button class="bgm-btn" id="bgm-btn" type="button" aria-pressed="false" aria-label="BGM を流す・止める">♪ BGM <span class="bgm-state">OFF</span></button>
+<script>
+// BGM の ON / OFF（ショーケース特集と同じ動き）
+(function () {
+  var a = document.getElementById('oto-bgm'), btn = document.getElementById('bgm-btn'), st = btn.querySelector('.bgm-state');
+  a.volume = 0.3;
+  function set(on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.classList.toggle('is-on', on); st.textContent = on ? 'ON' : 'OFF'; }
+  btn.addEventListener('click', function () {
+    if (a.paused) a.play().then(function () { set(true); }).catch(function () { set(false); });
+    else { a.pause(); set(false); }
+  });
+  window.addEventListener('pagehide', function () { a.pause(); set(false); });
+})();
+</script>
+<script src="../../artists/artist.js"></script>
+</body>
+</html>
