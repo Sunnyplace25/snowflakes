@@ -46,7 +46,7 @@ window.SF_ARCS = [
     songs: [{ title: '透明のまま', jacket: 'Discography/early_snow.webp', url: '../../../../releases/song.html?id=toumei-no-mama' },
       { title: '花の名前を忘れても', jacket: 'Discography/瞬間に残る.webp', url: '../../../../releases/song.html?id=hana-no-namae' },
       { title: 'Moon Veil', jacket: 'artists/moonveil/img/main.webp', url: 'https://www.instagram.com/reel/DZuqfqwxpNs/' },
-      { title: '夏の月（demo）', jacket: 'artists/moonveil/img/member_yoiko.webp', url: '../../../../sweets/' }],   // SWEETs 限定（ギターピック2枚で交換）。音源へ直接リンクはしない   // Moon Veil（朔と宵子）の曲。Instagram リール（2026-11-07 ユーザー）
+      { title: '夏の月（demo）', jacket: 'artists/moonveil/img/member_yoiko.webp', url: '../../../../sweets/', badge: 'SWEETs限定' }],   // SWEETs 限定（ギターピック2枚で交換）。音源へ直接リンクはしない   // Moon Veil（朔と宵子）の曲。Instagram リール（2026-11-07 ユーザー）
     gallery: [] },
   { id: 'position', group: 'ch1', no: 5, color: 'hayate', title: 'ポジション編', en: 'Position',
     parts: [{ name: 'ポジション編', from: 91, to: 126 }],

@@ -175,6 +175,15 @@ footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: va
 .song-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; padding-left: 3px; }
 .song-body { padding: 12px 16px 16px; }
 .song-title { font-size: 15px; font-weight: 500; line-height: 1.6; }
+.song-badge { display: inline-block; margin-top: 6px; font-size: 11px; letter-spacing: 1px; padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(249,168,212,0.5); color: #f9a8d4; }
+/* 3) スマホでは関連短編の補足をタイトルの下の段へ（矢印・未公開バッジは右上のまま） */
+@media (max-width: 600px) {
+  .arc-link { flex-wrap: wrap; row-gap: 4px; }
+  .arc-link-name { flex: 1 1 auto; min-width: 0; }
+  .arc-link > span:last-child, .arc-link-badge { order: 2; }
+  .arc-link-note { order: 3; flex: 0 0 100%; }
+  .arc-link-note:empty { display: none; }
+}
 .song-note { font-size: 12px; color: var(--sub); }
 @media (max-width: 600px) { .songs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } }
 /* 未公開の短篇は、主人公の色を薄く（2026-11-07 ユーザー） */

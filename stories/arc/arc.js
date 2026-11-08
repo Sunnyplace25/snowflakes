@@ -130,7 +130,7 @@
     if (s.mv) return '<a class="song" href="https://www.youtube.com/watch?v=' + esc(s.mv) + '" target="_blank" rel="noopener"><div class="song-thumb is-jacket is-mv"><img src="https://i.ytimg.com/vi/' + esc(s.mv) + '/hqdefault.jpg" alt="' + esc(s.title) + '" loading="lazy"><span class="song-play" aria-hidden="true">▶</span></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p></div></a>';   // mv … YouTube の MV（ジャケットと同じ四角いカード）
     if (s.jacket) return '<a class="song" href="' + esc(s.url) + '"' + (/^https?:/.test(s.url) ? ' target="_blank" rel="noopener"' : '') + '><div class="song-thumb is-jacket"><img src="../../../../' + encodeURI(s.jacket) + '" alt="' + esc(s.title) + '" loading="lazy"></div>' +
-      '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p></div></a>';   // jacket … HP の Discography の画像（ジャケット＋タイトルだけ）
+      '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p>' + (s.badge ? '<p class="song-badge">' + esc(s.badge) + '</p>' : '') + '</div></a>';   // jacket … HP の Discography の画像（ジャケット＋タイトルだけ）。badge … 「SWEETs限定」など押す前に知らせたいこと
     return '<a class="arc-link" href="' + esc(s.url) + '"><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>';
   }).join('') + '</div>' : soon;
 
