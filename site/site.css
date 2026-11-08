@@ -76,6 +76,11 @@
 .sf-link-name { flex: 1; font-size: 15px; color: #fff; }
 .sf-link-note { font-size: 12px; color: #94a3b8; }
 /* 最新の更新バナー（トップの DAILY UPDATE と同じ見た目・作品色 --c。当日更新は .is-today で光る） */
+.sf-first { max-width: 520px; margin: 36px auto 0; text-align: center; }
+.sf-first-label { font-family: 'Noto Serif JP', serif; font-size: 13px; letter-spacing: 3px; color: var(--accent, #93c5fd); margin: 0 0 8px; }
+.sf-first-text { font-size: 14px; line-height: 1.9; color: #e3e6ea; margin: 0 0 16px; }
+.sf-first .sf-link-row { text-align: left; }
+.sf-first-note { font-size: 13px; color: #c9ced6; }
 .sf-update-list { display: flex; flex-direction: column; gap: 14px; max-width: 640px; margin: 0 auto; }
 .sf-update-note { max-width: 640px; margin: 18px auto 0; text-align: center; font-size: 15px; line-height: 1.9; color: var(--accent, #e8a5c4); letter-spacing: 0.06em; }
 .sf-upd { position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 28px 32px; border-radius: 20px; text-decoration: none;

@@ -153,6 +153,8 @@
   $('#arc-pager').innerHTML =
     (prev ? '<a class="arc-pager-link' + (prev.color ? ' c-' + prev.color : '') + '" href="../' + prev.id + '/"><small>← 前へ｜' + esc(chapterLabel(prev)) + '</small>' + esc(prev.title) + '</a>' : '<span></span>') +
     (next ? '<a class="arc-pager-link is-next' + (next.color ? ' c-' + next.color : '') + '" href="../' + next.id + '/"><small>次へ｜' + esc(chapterLabel(next)) + ' →</small>' + esc(next.title) + '</a>' : '<span></span>');
+  // 続けて読む人が迷わないよう、前後の編は各話一覧のすぐ下へ（2026-11-08 導線見直し）
+  if ($('#episodes')) $('#episodes').parentNode.insertBefore($('#arc-pager'), $('#episodes').nextSibling);
 
   // ── ギャラリーの拡大 ──
   var lb = $('#lb'), lbImg = $('#lb-img'), cur = 0;

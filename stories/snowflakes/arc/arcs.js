@@ -77,7 +77,7 @@ window.SF_ARCS = [
     kindle: null, lead: "ハヤテとコウタがそれぞれの人生を歩き始める中で、ヒナタにも向き合わなければならない想いがあった。\n\nずっと音にしてきたもの。言葉にできずにいたこと。\n\n三人で鳴らし続けてきた音と、ひとりの人間としての選択。\n\nSnow flakes第一章、最後の物語。", shorts: [{ title: '始まりのベース', chara: 'kouta', note: '短篇', url: 'https://ncode.syosetu.com/n5432lz/' }], songs: [], gallery: [] },
   { id: 'qf', group: 'qf', no: null, title: 'Quietly Falling', en: 'Quietly Falling',
     parts: [{ name: 'Quietly Falling', from: 201, to: 289 }],
-    kindle: null, lead: "物語が終わっても、三人の日常は続いていく。\n\n仕事、結婚、家族、何気ない会話。大きな出来事ではないけれど、忘れたくない時間がある。\n\nヒナタ、コウタ、ハヤテと、大切な人たちが過ごす日々。\n\n本編では描かれなかった小さな出来事を集めた、もうひとつのSnow flakes。", instagram: true,
+    kindle: null, lead: "物語が終わっても、三人の日常は続いていく。\n\n本編のその先の、何気ない日々のひとこま。", instagram: true,
     shorts: [   // 「まだ、鳴っている」は話ごとに時期が違うので、いったん載せない（各話の時期が決まったら、編ごとに eps でその話だけ出せる）
       { title: '怖', note: 'まだ、鳴っている 第6話', url: 'https://ncode.syosetu.com/n8678mk/6/' },   // 2026-11-07 ユーザー
       { title: '音の鳴る石', note: '連載', url: 'https://ncode.syosetu.com/n5455ml/' },
@@ -96,5 +96,5 @@ window.SF_ARCS = [
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
     parts: [{ name: 'After the Snow', from: 310, to: null }],   // to: null … 連載中（episodes.js の最後まで）
-    kindle: null, lead: "Snow flakesの音を聴いて育った、次の世代の物語。\n\nヒナタの娘ミコト、コウタの息子ユウキ、ハヤテの娘ヒカリ。\n\n親たちの音楽が身近にある日常の中で、子どもたちはそれぞれの夢や迷いと向き合い始める。\n\n受け継ぐものと、自分で選ぶもの。\n\nあの雪のあとにも、新しい音は生まれ続ける。", ongoing: true, shorts: [], songs: [], gallery: [] }
+    kindle: null, lead: "Snow flakesの音を聴いて育った、子どもたちの物語。", ongoing: true, shorts: [], songs: [], gallery: [] }
 ];
