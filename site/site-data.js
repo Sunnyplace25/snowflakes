@@ -84,7 +84,8 @@
       note: '', work: 'snowflakes', image: 'img/games/undertone.webp', markOnImage: 'Under tone', markPos: 'top', imageSpec: '1200×750（16:10）' },   // 路地裏（入口 GAME と同じ画像の別ファイル）：2026-10-29 ユーザー指定
     { id: 'gacha', status: 'public', title: '今日の音', kind: 'ガチャ・占い', href: 'gacha/',
       text: '積もった ❄ Snow でガチャを引いてアイテムを集めよう。', note: '', work: 'snowflakes', image: 'img/games/gacha.webp', imageSpec: '1200×750（16:10）' },   // ちびキャラのスタジオ：2026-10-29 ユーザー指定
-    { id: 'hayatecchi', status: 'public', title: 'ハヤテっち', kind: 'キャラクター育成ゲーム', href: 'hayatecchi-lp.html',
+    // 2026-11-09 ユーザー指示で、いったん非表示（status を 'public' に戻せば出る）
+    { id: 'hayatecchi', status: 'hidden', title: 'ハヤテっち', kind: 'キャラクター育成ゲーム', href: 'hayatecchi-lp.html',
       text: 'Snow flakesのドラマー・ハヤテの日常に入り込む、キャラクター育成ゲームです。遊んでいるうちにドラムに詳しくなれるかも？',
       note: 'Web Game ／ ¥100 買い切り', work: 'snowflakes', image: 'img/games/hayatecchi.webp', imageSpec: '1200×750（16:10）' }   // ロゴ（背景透明）：2026-10-29 ユーザー指定。元画像は制作用の保管場所
   ];
