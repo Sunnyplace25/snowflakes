@@ -100,6 +100,11 @@
     .share-card { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); margin: 0 auto 8px; -webkit-touch-callout: default; }
     .share .share-how { font-size: 12px; color: var(--sub); margin: 0 0 12px; }
     .share [hidden] { display: none; }
+    .story { text-align: center; margin-top: 36px; padding: 24px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); }
+    .story-label { margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 4px; color: var(--c, var(--accent)); }
+    .story-text { margin: 8px 0 16px; font-size: 14px; line-height: 1.9; }
+    .story a { display: inline-block; padding: 10px 24px; border-radius: 999px; border: 1px solid var(--c, var(--accent)); color: #fff; text-decoration: none; font-size: 14px; letter-spacing: 1px; }
+    .story a:hover { background: rgba(255,255,255,0.06); }
     .between { text-align: center; font-size: 13px; color: var(--sub); letter-spacing: 2px; margin: 0 0 18px; min-height: 1.9em; }
     @media (prefers-reduced-motion: reduce) { .fade, .reveal, .listen p { animation: none; opacity: 1; } }
     .dev { margin-top: 40px; font-size: 11px; color: var(--sub); white-space: pre-wrap; font-family: monospace; }
@@ -380,9 +385,14 @@
         '<button type="button" id="share-go">シェアする</button>' +
         '<a id="share-x" target="_blank" rel="noopener">X でポスト</a>' +
         '<button type="button" id="share-copy">リンクをコピー</button></div>' +
+      // 診断のあとに本編へ（Snow flakes の章ページ。はじめての方へ の案内がある）
+      '<div class="story" style="--c:' + m.c + '"><p class="story-label">STORY</p>' +
+        '<p class="story-text">9人の音が鳴っている物語を、<br>読んでみませんか。</p>' +
+        '<a id="story-go" href="../../stories/snowflakes/#stories">Snow flakes 本編を読む →</a></div>' +
       '<button class="btn" type="button" id="again">もう一度診断する</button></div>' +
       (/[?&]dev\b/.test(location.search) ? '<div class="dev">' + esc(AXES.map(function (ax, i) { return ax.join('↔') + ' ' + v[i]; }).join('\n') + '\n' + ranked.map(function (r) { return r.t.who + ' ' + r.s.toFixed(3); }).join('\n')) + '</div>' : '');
     document.getElementById('again').onclick = start;
+    document.getElementById('story-go').onclick = function () { try { if (window.gtag) gtag('event', 'oto_shindan_story', { main: m.id }); } catch (e) {} };
     // シェアの文：「わたしの音は「○○」（△△に近い音）でした。」＋副音＋タグ。
     // URL は結果ごとの共有用ページ（r/<id>/）。SNS に貼るとそのタイプのシェア画像（share/<id>.jpg）がカードで出て、開くと診断ページへ移る
     var url = 'https://sunnyplace25.github.io/snowflakes/game/oto/r/' + m.id + '/';
