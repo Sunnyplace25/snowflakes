@@ -1582,6 +1582,37 @@ function sfShare(anchor) {
         return Array.isArray(val) ? val.slice().sort(function(a,b){return a-b;}) : [val];
       }
 
+      // 万が一の休載（2026-11-10）：更新時刻を30分過ぎても、なろうの最終更新（なろう小説API・JSONP）が
+      // 今日の更新時刻より前のままなら「本日休載」と出す。API が取れないときは今まで通りの表示
+      var KYUSAI_GRACE_MIN = 30;
+      var narouLastup = null;
+      var narouFetchedAt = 0;
+      var narouCheckedAt = 0;   // 最終更新を受け取った時刻（開きっぱなしで日をまたいだときに前日の結果を使わないため）
+      function fetchNarouLastup() {
+        if (Date.now() - narouFetchedAt < 5 * 60000) return;   // 5分に1回まで
+        narouFetchedAt = Date.now();
+        var cb = 'sfNarouLastup' + Date.now();
+        var s = document.createElement('script');
+        function done() { try { delete window[cb]; } catch (e) { window[cb] = undefined; } s.remove(); }
+        window[cb] = function(data) {
+          var v = data && data[1] && data[1].general_lastup;   // "2026-11-10 21:00:00"（日本時間）
+          if (v) { narouLastup = new Date(v.replace(' ', 'T') + '+09:00'); narouCheckedAt = Date.now(); }
+          done();
+          update();
+        };
+        s.onerror = done;
+        s.src = 'https://api.syosetu.com/novelapi/api/?out=jsonp&callback=' + cb + '&ncode=n9009lo&of=gl&_=' + Date.now();
+        document.head.appendChild(s);
+      }
+
+      function showKyusai(banner, epEl, status, sub, latestEp) {
+        banner.classList.remove('active');
+        epEl.textContent = '#' + latestEp;
+        banner.href = 'https://ncode.syosetu.com/n9009lo/' + latestEp;
+        status.textContent = '休 載';
+        if (sub) sub.textContent = '本日休載';
+      }
+
       function update() {
         var now    = new Date();
         var ep     = getEpisode(now);
@@ -1590,18 +1621,18 @@ function sfShare(anchor) {
         var banner = document.getElementById('update-banner');
         var epEl   = document.getElementById('update-ep');
         var status = document.getElementById('update-status');
+        var sub    = document.getElementById('update-sub');
         if (!banner || !epEl) return;
 
-        // スキップ日チェック（話数カウントしない日はバナーをアクティブにしない）
+        // スキップ日チェック（話数カウントしない日はバナーをアクティブにしない・本日休載と出す）
         var todayStr = getTodayKey(now);
         var isSkipDay = false;
         for (var i = 0; i < SKIP_DAYS.length; i++) {
           if (getTodayKey(SKIP_DAYS[i]) === todayStr) { isSkipDay = true; break; }
         }
         if (isSkipDay) {
-          banner.classList.remove('active');
-          status.textContent = '21 : 00';
-          if (sub) sub.textContent = '本編 明日21時更新';
+          // 21時前は getEpisode がまだ前日の話数、21時以降はスキップ分を引いた話数＝どちらも最新話
+          showKyusai(banner, epEl, status, sub, ep);
           return;
         }
 
@@ -1619,8 +1650,18 @@ function sfShare(anchor) {
         epEl.textContent = '#' + ep;
         banner.href = 'https://ncode.syosetu.com/n9009lo/' + ep;
 
-        var sub = document.getElementById('update-sub');
         if (activeHour !== null) {
+          // 更新時刻から30分過ぎたら、なろうで本当に更新されたか確かめる
+          var minsSince = (h - activeHour) * 60 + m;
+          if (minsSince >= KYUSAI_GRACE_MIN) {
+            fetchNarouLastup();
+            var hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), activeHour, 0, 0);
+            var checkedAfter = hourStart.getTime() + KYUSAI_GRACE_MIN * 60000;
+            if (narouLastup && narouCheckedAt >= checkedAfter && narouLastup.getTime() < hourStart.getTime() - 5 * 60000) {
+              showKyusai(banner, epEl, status, sub, ep - 1);
+              return;
+            }
+          }
           var hh = String(activeHour).padStart(2, '0');
           banner.classList.add('active');
           status.textContent = hh + ' : 00';
