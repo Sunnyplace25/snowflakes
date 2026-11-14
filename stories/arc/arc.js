@@ -138,6 +138,16 @@
   $('#story').hidden = !arc.lead;
   $('#shorts').hidden = !arc.shorts.length;
   $('#gallery').hidden = !arc.gallery.length;
+  // 登場人物（arcs.js の chars。その欄があるページだけ。2026-11-14）
+  var charsEl = $('#arc-chars');
+  if (charsEl) {
+    var chars = arc.chars || [];
+    charsEl.innerHTML = chars.length ? '<div class="arc-chars">' + chars.map(function (c) {
+      return '<figure class="arc-char' + (c.c ? ' c-' + esc(c.c) : '') + '"><img src="' + esc(c.img) + '" alt="' + esc(c.alt || c.name) + '" loading="lazy">' +
+        '<figcaption><span class="arc-char-name">' + esc(c.name) + '</span>' + (c.role ? '<span class="arc-char-role">' + esc(c.role) + '</span>' : '') + '<span class="arc-char-desc">' + esc(c.desc || '') + '</span></figcaption></figure>';
+    }).join('') + '</div>' : '';
+    $('#characters').hidden = !chars.length;
+  }
   $('#songs').hidden = !songs.length;
 
   // ── 書籍（Kindle に収録されている編だけ） ──

@@ -96,5 +96,11 @@ window.SF_ARCS = [
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
     parts: [{ name: '前編', from: 310, to: 355 }, { name: '後編', from: 356, to: null }],   // ep.356 から後編（2026-11-14 ユーザー）。to: null … 連載中（episodes.js の最後まで）
-    kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。", ongoing: true, shorts: [], songs: [], gallery: [] }
+    kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。", ongoing: true, shorts: [], songs: [], gallery: [],
+    // 登場人物（2026-11-14 ユーザー）。img はこのフォルダからのパス、c は枠の色（hinata / kouta / hayate）
+    chars: [
+      { name: 'ミコト', desc: 'ヒナタと小雪の娘', img: 'img/chara_mikoto_v2.webp', c: 'hinata', alt: 'ミコト。並木道で、かばんを肩にかけた黒髪ロングの女性' },
+      { name: 'ヒカリ', desc: 'ハヤテとりんの娘', img: 'img/chara_hikari_v2.webp', c: 'hayate', alt: 'ヒカリ。並木道で笑う、茶色のショートヘアの女性' },
+      { name: 'ユウキ', desc: 'コウタとあかりの息子', img: 'img/chara_yuuki.webp', c: 'kouta', alt: 'ユウキ。バイオリンを弾く、赤髪の青年' }
+    ] }
 ];
