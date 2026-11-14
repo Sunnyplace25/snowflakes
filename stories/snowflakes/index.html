@@ -171,7 +171,7 @@
 <script src="../../site/phrase.js"></script>
 <script src="books.js"></script>
 <script src="arc/qf-instagram.js"></script>
-<script src="arc/arcs.js?v=20261114g"></script>
+<script src="arc/arcs.js?v=20261114h"></script>
 <script src="arc/episodes.js"></script>
 <script src="../../site/site-footer.js" data-root="../../"></script>
 <script src="../../snow.js"></script>
@@ -258,7 +258,7 @@
         var ps = a.parts.filter(function (p) { return p.no != null && p.from <= lastNo; });
         if (ps.length) return ps.map(function (p) {
           var pt = Math.min(p.to == null ? lastNo : p.to, lastNo), live = a.ongoing && p.to == null;
-          return '<a class="sf-arc-card' + (a.color ? ' c-' + a.color : '') + '" href="arc/' + a.id + '/#part-' + p.no + '">' + (g.numbered ? '<span class="sf-arc-no">' + p.no + '</span>' : '') +
+          return '<a class="sf-arc-card' + (a.color ? ' c-' + a.color : '') + '" href="arc/' + a.id + '/' + (p === a.parts[0] ? '' : '#part-' + p.no) + '">' + (g.numbered ? '<span class="sf-arc-no">' + p.no + '</span>' : '') +
             '<span class="sf-arc-title">' + esc(a.title + ' ' + p.name) + '</span><span class="sf-arc-range">ep.' + p.from + '〜' + pt + (live ? '・連載中' : '') + '</span></a>';
         }).join('');
         var from = a.parts[0].from, lp = a.parts[a.parts.length - 1], to = Math.min(lp.to == null ? lastNo : lp.to, lastNo);

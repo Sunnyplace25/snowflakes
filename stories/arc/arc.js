@@ -33,7 +33,7 @@
         // 編ごとに番号がある章（After the Snow 前編・後編）は、編ごとにピルを出す。公開前の編は出さない（2026-11-14）
         var ps = a.parts.filter(function (p) { return p.no != null && p.from <= lastNo; });
         if (ps.length) return ps.map(function (p) {
-          return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/#part-' + p.no + '"' + (cur ? ' aria-current="page"' : '') + '>' +
+          return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/' + (p === a.parts[0] ? '' : '#part-' + p.no) + '"' + (cur ? ' aria-current="page"' : '') + '>' +
             (g.numbered ? '<span class="arc-chip-no">' + p.no + '</span>' : '') + esc(a.title + ' ' + p.name) + '</a>';
         }).join('');
         return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/"' + (cur ? ' aria-current="page"' : '') + '>' +
@@ -184,6 +184,7 @@
       var m = /^#part-(\d+)$/.exec(location.hash);
       var p = m && arc.parts.filter(function (x) { return x.no === +m[1]; })[0];
       if (p && keys.indexOf(p.name) >= 0) pick = p.name;
+      else if (!location.hash) pick = keys.length ? keys[0] : null;
     };
     fromHash();
     if (chars.length) drawChars(); else charsEl.innerHTML = '';
