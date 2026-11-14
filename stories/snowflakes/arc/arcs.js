@@ -102,7 +102,7 @@ window.SF_ARCS = [
     chars: [
       { name: 'ミコト', desc: 'ヒナタと小雪の娘', imgs: { 前編: 'img/chara_mikoto.webp', 後編: 'img/chara_mikoto_v2.webp' }, c: 'hinata', alt: 'ミコト。黒髪ロングの女性' },
       { name: 'ヒカリ', desc: 'ハヤテとりんの娘', imgs: { 前編: 'img/chara_hikari.webp', 後編: 'img/chara_hikari_v2.webp' }, c: 'hayate', alt: 'ヒカリ。茶色のショートヘアの女性' },
-      { name: 'ユウキ', desc: 'コウタとあかりの息子', imgs: { 前編: 'img/chara_yuuki.webp', 後編: 'img/chara_yuuki.webp' }, c: 'kouta', alt: 'ユウキ。バイオリンを弾く、赤髪の青年' },   // 後編の絵は届いたら差し替え
+      { name: 'ユウキ', desc: 'コウタとあかりの息子', imgs: { 前編: 'img/chara_yuuki_child.webp', 後編: 'img/chara_yuuki.webp' }, c: 'kouta', alt: 'ユウキ。赤髪の男の子' },   // 前編＝ランドセルの小学生、後編＝バイオリン（2026-11-14）
       // 2段目は Snow flakes の三人（上の段と同じ順：ヒナタ・ハヤテ・コウタ）。「〜の父」とは書かない（2026-11-14 ユーザー）
       { name: 'ヒナタ', desc: 'Snow flakes ギターボーカル', img: 'img/chara_hinata.webp', c: 'hinata', alt: 'ヒナタ。青いペンライトが光る客席で、キャップをかぶり頬杖をつく' },
       { name: 'ハヤテ', desc: 'Snow flakes ドラム', img: 'img/chara_hayate.webp', c: 'hayate', alt: 'ハヤテ。紫のペンライトが光る客席で、サングラスに手をかけて振り返り笑う' },
