@@ -95,6 +95,6 @@ window.SF_ARCS = [
     shorts: [{ title: 'Before the Sound', chara: 'trio', note: '文学賞版' }],   // url なし … 未公開（カードだけ）
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
-    parts: [{ name: 'After the Snow', from: 310, to: null }],   // to: null … 連載中（episodes.js の最後まで）
+    parts: [{ name: '前編', from: 310, to: 355 }, { name: '後編', from: 356, to: null }],   // ep.356 から後編（2026-11-14 ユーザー）。to: null … 連載中（episodes.js の最後まで）
     kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。", ongoing: true, shorts: [], songs: [], gallery: [] }
 ];

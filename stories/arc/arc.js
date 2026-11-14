@@ -68,12 +68,12 @@
     var acts = '<a class="btn main" href="' + NAROU + first + '/" target="_blank" rel="noopener">ep.' + first + ' から読む</a>';
     if (arc.ongoing) acts += '<a class="btn" href="' + NAROU + last + '/" target="_blank" rel="noopener">最新話を読む</a>';
     $('#arc-acts').innerHTML = acts + '<a class="btn" href="#episodes">各話一覧 ↓</a>';
-    // 編が2つある章は、編ごとに見出し。タイトルがまだ episodes.js にない新しい話は「新しい話」と出す
+    // 編が2つある章は、編ごとに見出し。タイトルがまだ episodes.js にない新しい話は、話番号だけ出す（2026-11-14 ユーザー）
     $('#arc-eps').innerHTML = arc.parts.map(function (p) {
       var rows = [];
       for (var n = p.from; n <= partTo(p); n++) {
         var t = EPS[n] || '', m = /^幕間[｜|](.*)$/.exec(t);
-        rows.push('<li' + (m ? ' class="is-interlude"' : '') + '><a href="' + NAROU + n + '/" target="_blank" rel="noopener"><span class="ep-no">' + (m ? '幕間' : 'ep.' + n) + '</span><span>' + (t ? esc(m ? m[1] : t) : '<span class="ep-new">新しい話</span>') + '</span></a></li>');
+        rows.push('<li' + (m ? ' class="is-interlude"' : '') + '><a href="' + NAROU + n + '/" target="_blank" rel="noopener"><span class="ep-no">' + (m ? '幕間' : 'ep.' + n) + '</span><span>' + (t ? esc(m ? m[1] : t) : '') + '</span></a></li>');
       }
       return (arc.parts.length > 1 ? '<h3 class="arc-part">' + esc(p.name) + '<small>ep.' + p.from + '〜' + partTo(p) + '</small></h3>' : '') + '<ol class="eps">' + rows.join('') + '</ol>';
     }).join('');
