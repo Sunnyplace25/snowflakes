@@ -101,7 +101,7 @@ window.SF_ARCS = [
     //   imgs：前編・後編で絵を分ける人（{ 前編: 画像, 後編: 画像 }）。切り替えボタンで出し分ける。img だけの人は、どちらでも同じ絵
     chars: [
       { name: 'ミコト', desc: 'ヒナタと小雪の娘', imgs: { 前編: 'img/chara_mikoto_child.webp', 後編: 'img/chara_mikoto_v2.webp' }, c: 'hinata', alt: 'ミコト。黒髪ロングの女の子' },   // 前編＝ピアノのそばの小学生、後編＝並木道（2026-11-14）
-      { name: 'ヒカリ', desc: 'ハヤテとりんの娘', imgs: { 前編: 'img/chara_hikari_child.webp', 後編: 'img/chara_hikari_v2.webp' }, c: 'hayate', alt: 'ヒカリ。茶色のショートヘアの女の子' },   // 前編＝夏の公園の小学生、後編＝並木道（2026-11-14）
+      { name: 'ヒカリ', desc: 'ハヤテとりんの娘', imgs: { 前編: 'img/chara_hikari_child_v2.webp', 後編: 'img/chara_hikari_v2.webp' }, c: 'hayate', alt: 'ヒカリ。茶色のショートヘアの女の子' },   // 前編＝ひまわり畑でピースする小学生、後編＝並木道（2026-11-14）
       { name: 'ユウキ', desc: 'コウタとあかりの息子', imgs: { 前編: 'img/chara_yuuki_child.webp', 後編: 'img/chara_yuuki.webp' }, c: 'kouta', alt: 'ユウキ。赤髪の男の子' },   // 前編＝ランドセルの小学生、後編＝バイオリン（2026-11-14）
       // 2段目は Snow flakes の三人（上の段と同じ順：ヒナタ・ハヤテ・コウタ）。「〜の父」とは書かない（2026-11-14 ユーザー）
       { name: 'ヒナタ', desc: 'Snow flakes ギターボーカル', img: 'img/chara_hinata.webp', c: 'hinata', alt: 'ヒナタ。青いペンライトが光る客席で、キャップをかぶり頬杖をつく' },
