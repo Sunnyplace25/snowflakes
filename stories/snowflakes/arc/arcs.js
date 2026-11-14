@@ -96,12 +96,13 @@ window.SF_ARCS = [
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
     parts: [{ name: '前編', from: 310, to: 355 }, { name: '後編', from: 356, to: null }],   // ep.356 から後編（2026-11-14 ユーザー）。to: null … 連載中（episodes.js の最後まで）
-    kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。", ongoing: true, shorts: [], songs: [], gallery: [],
+    kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。\n\nそして、その音を聴いて育った子どもたちの物語。", ongoing: true, shorts: [], songs: [], gallery: [],
     // 登場人物（2026-11-14 ユーザー）。img はこのフォルダからのパス、c は枠の色（hinata / kouta / hayate）
+    //   imgs：前編・後編で絵を分ける人（{ 前編: 画像, 後編: 画像 }）。切り替えボタンで出し分ける。img だけの人は、どちらでも同じ絵
     chars: [
-      { name: 'ミコト', desc: 'ヒナタと小雪の娘', img: 'img/chara_mikoto_v2.webp', c: 'hinata', alt: 'ミコト。並木道で、かばんを肩にかけた黒髪ロングの女性' },
-      { name: 'ヒカリ', desc: 'ハヤテとりんの娘', img: 'img/chara_hikari_v2.webp', c: 'hayate', alt: 'ヒカリ。並木道で笑う、茶色のショートヘアの女性' },
-      { name: 'ユウキ', desc: 'コウタとあかりの息子', img: 'img/chara_yuuki.webp', c: 'kouta', alt: 'ユウキ。バイオリンを弾く、赤髪の青年' },
+      { name: 'ミコト', desc: 'ヒナタと小雪の娘', imgs: { 前編: 'img/chara_mikoto.webp', 後編: 'img/chara_mikoto_v2.webp' }, c: 'hinata', alt: 'ミコト。黒髪ロングの女性' },
+      { name: 'ヒカリ', desc: 'ハヤテとりんの娘', imgs: { 前編: 'img/chara_hikari.webp', 後編: 'img/chara_hikari_v2.webp' }, c: 'hayate', alt: 'ヒカリ。茶色のショートヘアの女性' },
+      { name: 'ユウキ', desc: 'コウタとあかりの息子', imgs: { 前編: 'img/chara_yuuki.webp', 後編: 'img/chara_yuuki.webp' }, c: 'kouta', alt: 'ユウキ。バイオリンを弾く、赤髪の青年' },   // 後編の絵は届いたら差し替え
       // 2段目は Snow flakes の三人（上の段と同じ順：ヒナタ・ハヤテ・コウタ）。「〜の父」とは書かない（2026-11-14 ユーザー）
       { name: 'ヒナタ', desc: 'Snow flakes ギターボーカル', img: 'img/chara_hinata.webp', c: 'hinata', alt: 'ヒナタ。青いペンライトが光る客席で、キャップをかぶり頬杖をつく' },
       { name: 'ハヤテ', desc: 'Snow flakes ドラム', img: 'img/chara_hayate.webp', c: 'hayate', alt: 'ハヤテ。紫のペンライトが光る客席で、サングラスに手をかけて振り返り笑う' },

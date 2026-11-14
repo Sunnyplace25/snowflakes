@@ -142,10 +142,22 @@
   var charsEl = $('#arc-chars');
   if (charsEl) {
     var chars = arc.chars || [];
-    charsEl.innerHTML = chars.length ? '<div class="arc-chars">' + chars.map(function (c) {
-      return '<figure class="arc-char' + (c.c ? ' c-' + esc(c.c) : '') + '"><img src="' + esc(c.img) + '" alt="' + esc(c.alt || c.name) + '" loading="lazy">' +
-        '<figcaption><span class="arc-char-name">' + esc(c.name) + '</span>' + (c.role ? '<span class="arc-char-role">' + esc(c.role) + '</span>' : '') + '<span class="arc-char-desc">' + esc(c.desc || '') + '</span></figcaption></figure>';
-    }).join('') + '</div>' : '';
+    // 前編・後編で絵を分ける人がいれば、切り替えボタンを出す（最初は最新の編。2026-11-14）
+    var keys = [];
+    chars.forEach(function (c) { if (c.imgs) Object.keys(c.imgs).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); }); });
+    var pick = keys.length ? keys[keys.length - 1] : null;
+    var drawChars = function () {
+      charsEl.innerHTML = (keys.length > 1 ? '<div class="arc-char-tabs" role="tablist">' + keys.map(function (k) {
+          return '<button type="button" role="tab" class="arc-char-tab' + (k === pick ? ' is-on' : '') + '" aria-selected="' + (k === pick) + '" data-k="' + esc(k) + '">' + esc(k) + '</button>';
+        }).join('') + '</div>' : '') +
+        '<div class="arc-chars">' + chars.map(function (c) {
+          var img = c.imgs ? (c.imgs[pick] || c.imgs[keys[0]]) : c.img;
+          return '<figure class="arc-char' + (c.c ? ' c-' + esc(c.c) : '') + '"><img src="' + esc(img) + '" alt="' + esc((c.alt || c.name) + (c.imgs && pick ? '（' + pick + '）' : '')) + '" loading="lazy">' +
+            '<figcaption><span class="arc-char-name">' + esc(c.name) + '</span>' + (c.role ? '<span class="arc-char-role">' + esc(c.role) + '</span>' : '') + '<span class="arc-char-desc">' + esc(c.desc || '') + '</span></figcaption></figure>';
+        }).join('') + '</div>';
+      charsEl.querySelectorAll('.arc-char-tab').forEach(function (b) { b.addEventListener('click', function () { pick = b.dataset.k; drawChars(); }); });
+    };
+    if (chars.length) drawChars(); else charsEl.innerHTML = '';
     $('#characters').hidden = !chars.length;
   }
   $('#songs').hidden = !songs.length;
