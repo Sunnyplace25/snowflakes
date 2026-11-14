@@ -30,6 +30,12 @@
     return '<div class="arc-map-group"><span class="arc-map-label">' + esc(g.label) + (g.sub ? '<small>' + esc(g.sub) + '</small>' : '') + '</span><div class="arc-map-items">' +
       items.map(function (a) {
         var cur = a.id === arc.id;
+        // 編ごとに番号がある章（After the Snow 前編・後編）は、編ごとにピルを出す。公開前の編は出さない（2026-11-14）
+        var ps = a.parts.filter(function (p) { return p.no != null && p.from <= lastNo; });
+        if (ps.length) return ps.map(function (p) {
+          return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/#part-' + p.no + '"' + (cur ? ' aria-current="page"' : '') + '>' +
+            (g.numbered ? '<span class="arc-chip-no">' + p.no + '</span>' : '') + esc(a.title + ' ' + p.name) + '</a>';
+        }).join('');
         return '<a class="arc-chip' + (cur ? ' is-current' : '') + (a.color ? ' c-' + a.color : '') + '" href="../' + a.id + '/"' + (cur ? ' aria-current="page"' : '') + '>' +
           (a.no != null && g.numbered ? '<span class="arc-chip-no">' + a.no + '</span>' : '') + esc(a.title) + '</a>';
       }).join('') + '</div></div>';
@@ -75,10 +81,20 @@
         var t = EPS[n] || '', m = /^幕間[｜|](.*)$/.exec(t);
         rows.push('<li' + (m ? ' class="is-interlude"' : '') + '><a href="' + NAROU + n + '/" target="_blank" rel="noopener"><span class="ep-no">' + (m ? '幕間' : 'ep.' + n) + '</span><span>' + (t ? esc(m ? m[1] : t) : '') + '</span></a></li>');
       }
-      return (arc.parts.length > 1 ? '<h3 class="arc-part">' + esc(p.name) + '<small>ep.' + p.from + '〜' + partTo(p) + '</small></h3>' : '') + '<ol class="eps">' + rows.join('') + '</ol>';
+      return (arc.parts.length > 1 ? '<h3 class="arc-part"' + (p.no != null ? ' id="part-' + p.no + '"' : '') + '>' + esc(p.name) + '<small>ep.' + p.from + '〜' + partTo(p) + '</small></h3>' : '') + '<ol class="eps">' + rows.join('') + '</ol>';
     }).join('');
     // 話数が多い編は、スマホでは決まった高さの枠に入れて枠の中だけスクロール（arc.css の .is-scroll：2026-11-07 ユーザー）
     $('#arc-eps').classList.toggle('is-scroll', $('#arc-eps').querySelectorAll('li').length > 20);
+    // 編のピル（#part-12 など）から来たら、各話一覧のその編の見出しへ。一覧はあとから作るので、ここで移る（2026-11-14 ユーザー）
+    var goPart = function () {
+      var h = /^#part-\d+$/.test(location.hash) && document.getElementById(location.hash.slice(1));
+      if (!h) return;
+      var box = $('#arc-eps');
+      if (box.classList.contains('is-scroll')) box.scrollTop = h.offsetTop - box.offsetTop;   // スマホの枠の中もその編の頭に
+      h.scrollIntoView({ block: 'start' });
+    };
+    setTimeout(goPart, 0);
+    window.addEventListener('hashchange', goPart);
   }
   renderEpisodes();
   if (arc.ongoing) {
@@ -163,8 +179,16 @@
         }).join('') + '</div>';
       charsEl.querySelectorAll('.arc-char-tab').forEach(function (b) { b.addEventListener('click', function () { pick = b.dataset.k; drawChars(); }); });
     };
+    // 編のピル（#part-12 など）から来たときは、その編の絵にする（2026-11-14 ユーザー）
+    var fromHash = function () {
+      var m = /^#part-(\d+)$/.exec(location.hash);
+      var p = m && arc.parts.filter(function (x) { return x.no === +m[1]; })[0];
+      if (p && keys.indexOf(p.name) >= 0) pick = p.name;
+    };
+    fromHash();
     if (chars.length) drawChars(); else charsEl.innerHTML = '';
     $('#characters').hidden = !chars.length;
+    window.addEventListener('hashchange', function () { fromHash(); if (chars.length) drawChars(); });
   }
   $('#songs').hidden = !songs.length;
 

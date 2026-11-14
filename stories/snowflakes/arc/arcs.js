@@ -8,7 +8,7 @@ window.SF_ARC_GROUPS = [
   { id: 'ch1', label: '第一章', sub: 'Snow flakes', en: 'CHAPTER 1', numbered: true },   // 第一章の大きなくくり（第二章の After the Snow と対・2026-11-07 ユーザー）
   { id: 'qf', label: 'Quietly Falling', en: 'QF' },
   { id: 'mid', label: '第二章の前に', en: 'INTERLUDE', numbered: true },   // プロデュース編＝10・Before the Sound＝0（〇章扱い。番号だけ付ける：2026-11-07 ユーザー）
-  { id: 'ch2', label: '第二章', sub: 'After the Snow', en: 'CHAPTER 2' }   // 第二章の大きなくくりが After the Snow（2026-11-07 ユーザー）。中の編のタイトルは大学編に入ってから決める
+  { id: 'ch2', label: '第二章', sub: 'After the Snow', en: 'CHAPTER 2', numbered: true }   // 第二章の大きなくくりが After the Snow（2026-11-07 ユーザー）。中の編のタイトルは大学編に入ってから決める
 ];
 
 window.SF_ARCS = [
@@ -95,7 +95,8 @@ window.SF_ARCS = [
     shorts: [{ title: 'Before the Sound', chara: 'trio', note: '文学賞版' }],   // url なし … 未公開（カードだけ）
     songs: [], gallery: [] },
   { id: 'after-the-snow', group: 'ch2', no: 1, color: 'mikoto', title: 'After the Snow', en: 'After the Snow',
-    parts: [{ name: '前編', from: 310, to: 355 }, { name: '後編', from: 356, to: null }],   // ep.356 から後編（2026-11-14 ユーザー）。to: null … 連載中（episodes.js の最後まで）
+    parts: [{ name: '前編', no: 11, from: 310, to: 355 }, { name: '後編', no: 12, from: 356, to: null }],   // no：編ごとのピル（After the Snow 前編＝11・後編＝12。2026-11-14 ユーザー）
+      // ep.356 から後編（2026-11-14 ユーザー）。to: null … 連載中（episodes.js の最後まで）
     kindle: null, lead: "バンドも、家族も、それぞれの毎日も。\n\n三人の音は、まだ続いている。\n\nそして、その音を聴いて育った子どもたちの物語。", ongoing: true, shorts: [], songs: [], gallery: [],
     // 登場人物（2026-11-14 ユーザー）。img はこのフォルダからのパス、c は枠の色（hinata / kouta / hayate）
     //   imgs：前編・後編で絵を分ける人（{ 前編: 画像, 後編: 画像 }）。切り替えボタンで出し分ける。img だけの人は、どちらでも同じ絵

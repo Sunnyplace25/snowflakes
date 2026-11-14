@@ -224,3 +224,4 @@ footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: va
 .arc-mv-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,0.08); }
 .arc-mv-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .arc-mv-cap { margin: 8px 0 0; font-size: 13px; color: #94a3b8; text-align: center; letter-spacing: 1px; }
+.arc-part[id] { scroll-margin-top: 80px; }   /* 編のピルから飛んだとき、上の帯に隠れないように（2026-11-14） */

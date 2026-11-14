@@ -171,7 +171,7 @@
 <script src="../../site/phrase.js"></script>
 <script src="books.js"></script>
 <script src="arc/qf-instagram.js"></script>
-<script src="arc/arcs.js"></script>
+<script src="arc/arcs.js?v=20261114g"></script>
 <script src="arc/episodes.js"></script>
 <script src="../../site/site-footer.js" data-root="../../"></script>
 <script src="../../snow.js"></script>
@@ -254,6 +254,13 @@
     function renderArcs() { document.getElementById('sf-arcs').innerHTML = (window.SF_ARC_GROUPS || []).map(function (g) {
       var items = ARCS.filter(function (a) { return a.group === g.id && a.parts[0].from <= lastNo; });   // 公開前の編は出さない
       return '<div class="sf-arc-group"><p class="sf-arc-group-label"><span>' + esc(g.en) + '</span>' + esc(g.label) + (g.sub ? '<small>' + esc(g.sub) + '</small>' : '') + '</p><div class="sf-arc-grid">' + items.map(function (a) {
+        // 編ごとに番号がある章（After the Snow 前編＝11・後編＝12）は、編ごとにカード（2026-11-14）
+        var ps = a.parts.filter(function (p) { return p.no != null && p.from <= lastNo; });
+        if (ps.length) return ps.map(function (p) {
+          var pt = Math.min(p.to == null ? lastNo : p.to, lastNo), live = a.ongoing && p.to == null;
+          return '<a class="sf-arc-card' + (a.color ? ' c-' + a.color : '') + '" href="arc/' + a.id + '/#part-' + p.no + '">' + (g.numbered ? '<span class="sf-arc-no">' + p.no + '</span>' : '') +
+            '<span class="sf-arc-title">' + esc(a.title + ' ' + p.name) + '</span><span class="sf-arc-range">ep.' + p.from + '〜' + pt + (live ? '・連載中' : '') + '</span></a>';
+        }).join('');
         var from = a.parts[0].from, lp = a.parts[a.parts.length - 1], to = Math.min(lp.to == null ? lastNo : lp.to, lastNo);
         return '<a class="sf-arc-card' + (a.color ? ' c-' + a.color : '') + '" href="arc/' + a.id + '/">' + (a.no != null && g.numbered ? '<span class="sf-arc-no">' + a.no + '</span>' : '') +
           '<span class="sf-arc-title">' + esc(a.title) + '</span><span class="sf-arc-range">ep.' + from + '〜' + to + (a.ongoing ? '・連載中' : '') + '</span></a>';
