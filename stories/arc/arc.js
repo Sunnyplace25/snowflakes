@@ -148,10 +148,10 @@
   var charsEl = $('#arc-chars');
   if (charsEl) {
     var chars = arc.chars || [];
-    // 前編・後編で絵を分ける人がいれば、切り替えボタンを出す（最初は最新の編。2026-11-14）
+    // 前編・後編で絵を分ける人がいれば、切り替えボタンを出す（最初は前編＝はじめの編。2026-11-14 ユーザー）
     var keys = [];
     chars.forEach(function (c) { if (c.imgs) Object.keys(c.imgs).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); }); });
-    var pick = keys.length ? keys[keys.length - 1] : null;
+    var pick = keys.length ? keys[0] : null;
     var drawChars = function () {
       charsEl.innerHTML = (keys.length > 1 ? '<div class="arc-char-tabs" role="tablist">' + keys.map(function (k) {
           return '<button type="button" role="tab" class="arc-char-tab' + (k === pick ? ' is-on' : '') + '" aria-selected="' + (k === pick) + '" data-k="' + esc(k) + '">' + esc(k) + '</button>';
