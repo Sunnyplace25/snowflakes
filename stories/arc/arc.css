@@ -219,3 +219,8 @@ footer { text-align: center; padding: 40px 20px 60px; font-size: 12px; color: va
 .arc-char-tab { appearance: none; border: 0; background: transparent; color: #94a3b8; font: inherit; font-size: 13px; letter-spacing: 2px; padding: 6px 18px; border-radius: 999px; cursor: pointer; }
 .arc-char-tab.is-on { background: rgba(207,238,250,0.16); color: #e2e8f0; }
 .arc-char-tab:focus-visible { outline: 2px solid #cfeefa; outline-offset: 2px; }
+/* 章ページの MV 埋め込み（2026-11-14）。16:9 で幅いっぱい、曲のカードの上 */
+.arc-mv { margin: 0 0 22px; }
+.arc-mv-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,0.08); }
+.arc-mv-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.arc-mv-cap { margin: 8px 0 0; font-size: 13px; color: #94a3b8; text-align: center; letter-spacing: 1px; }

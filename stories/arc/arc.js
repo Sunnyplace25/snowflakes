@@ -124,7 +124,13 @@
   // ── 関連曲 ──
   // 章の曲＋作品全体の曲（SF_ARC_SITE.songs）。yt があれば YouTube Shorts のサムネイル付きカード
   var songs = arc.songs.concat(SITE.songs || []);
-  $('#arc-songs').innerHTML = songs.length ? '<div class="songs">' + songs.map(function (s) {
+  // embed: true の MV は、ページの中で再生できる大きな動画（16:9）にして、曲のカードの上に出す（2026-11-14）
+  var embeds = songs.filter(function (s) { return s.mv && s.embed; });
+  var cards = songs.filter(function (s) { return !(s.mv && s.embed); });
+  $('#arc-songs').innerHTML = !songs.length ? soon : embeds.map(function (s) {
+    return '<div class="arc-mv"><div class="arc-mv-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(s.mv) + '" title="' + esc(s.title) + '" loading="lazy"' +
+      ' allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p class="arc-mv-cap">' + esc(s.title) + '</p></div>';
+  }).join('') + (cards.length ? '<div class="songs">' + cards.map(function (s) {
     if (s.yt) return '<a class="song" href="https://youtube.com/shorts/' + esc(s.yt) + '" target="_blank" rel="noopener"><div class="song-thumb"><img src="https://i.ytimg.com/vi/' + esc(s.yt) + '/oardefault.jpg" onload="if(this.naturalWidth<=120&&!this.dataset.fb){this.dataset.fb=1;this.src=this.src.replace(/oardefault/,this.dataset.alt)}" data-alt="oar2" alt="' + esc(s.title) + '" loading="lazy"></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p><p class="song-note">' + esc(s.note || '') + '</p></div></a>';
     if (s.mv) return '<a class="song" href="https://www.youtube.com/watch?v=' + esc(s.mv) + '" target="_blank" rel="noopener"><div class="song-thumb is-jacket is-mv"><img src="https://i.ytimg.com/vi/' + esc(s.mv) + '/hqdefault.jpg" alt="' + esc(s.title) + '" loading="lazy"><span class="song-play" aria-hidden="true">▶</span></div>' +
@@ -132,7 +138,7 @@
     if (s.jacket) return '<a class="song" href="' + esc(s.url) + '"' + (/^https?:/.test(s.url) ? ' target="_blank" rel="noopener"' : '') + '><div class="song-thumb is-jacket"><img src="../../../../' + encodeURI(s.jacket) + '" alt="' + esc(s.title) + '" loading="lazy"></div>' +
       '<div class="song-body"><p class="song-title">' + esc(s.title) + '</p>' + (s.badge ? '<p class="song-badge">' + esc(s.badge) + '</p>' : '') + '</div></a>';   // jacket … HP の Discography の画像（ジャケット＋タイトルだけ）。badge … 「SWEETs限定」など押す前に知らせたいこと
     return '<a class="arc-link" href="' + esc(s.url) + '"><span class="arc-link-name">' + esc(s.title) + '</span><span class="arc-link-note">' + esc(s.note || '') + '</span><span>→</span></a>';
-  }).join('') + '</div>' : soon;
+  }).join('') + '</div>' : '');
 
   // 中身のない欄（あらすじ・関連短編・ギャラリー・関連曲）は「準備中」を並べず、欄ごと隠す（2026-11-07）
   $('#story').hidden = !arc.lead;

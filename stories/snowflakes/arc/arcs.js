@@ -87,7 +87,7 @@ window.SF_ARCS = [
     parts: [{ name: 'プロデュース編', from: 290, to: 301 }],
     kindle: null, lead: "今度は、自分たちではない誰かのために曲を作る。\n\n新しい歌い手たちとの出会い。打ち合わせを重ね、言葉を選び、音を形にしていく時間。\n\n誰のための歌なのか。何を届けたいのか。\n\nSnow flakesが、音楽を作ることの新しい意味に触れていく物語。", shorts: [],
     songs: [{ title: '届く場所', jacket: 'Discography/towa_todoku_basho.webp', url: '../../../../releases/song.html?id=todoku-basho' },
-      { title: '届く場所（MV）', mv: 'dhL9OJBSksE' }],   // TOWA（2026-11-07 ユーザー）
+      { title: '届く場所（MV）', mv: 'dhL9OJBSksE', embed: true }],   // TOWA（2026-11-07 ユーザー）。embed：ページの中で再生（2026-11-14 ユーザー）
     gallery: [] },
   { id: 'before-the-sound', group: 'mid', no: 0, title: 'Before the Sound', en: 'Before the Sound',
     parts: [{ name: 'Before the Sound', from: 302, to: 309 }],
