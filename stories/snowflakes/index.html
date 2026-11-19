@@ -20,6 +20,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../artists/artist.css">
   <link rel="stylesheet" href="../../site/site.css">
+  <style>
+    /* まんがタブの Instagram 埋め込み（stories/showcase と同じ考え方） */
+    .sf-ig-wrap { max-width: 540px; margin: 0 auto; display: flex; justify-content: center; }
+    .sf-ig-wrap .instagram-media { margin: 0 auto !important; min-width: 0 !important; width: 100% !important; max-width: 540px !important; border-radius: 14px !important; }
+    .sf-ig-wrap iframe { border-radius: 14px !important; }
+    .sf-ig-fallback { display: block; padding: 28px; text-align: center; color: #93c5fd; text-decoration: none; font-size: 15px; }
+  </style>
 </head>
 <body data-artist="stories-snowflakes">
 <canvas id="snow"></canvas>
@@ -66,6 +73,7 @@
         <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-qf" id="t-qf">QF</button>
         <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-short" id="t-short">短編</button>
         <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-books" id="t-books">書籍</button>
+        <button class="sf-tab" role="tab" aria-selected="false" aria-controls="tab-comic" id="t-comic">まんが</button>
       </div>
 
       <div class="sf-tab-panel" role="tabpanel" id="tab-main" aria-labelledby="t-main" style="margin-top:36px">
@@ -111,6 +119,17 @@
         <div class="sf-books" id="book-list"></div>
         <p class="sf-sec-lead" style="margin-top:24px;margin-bottom:0">以下続刊</p>
         <div class="sf-actions"><a class="pill" href="kindle/">Kindle 版の紹介ページ →</a><a class="pill" href="https://www.amazon.co.jp/stores/author/B0GPJX645L/allbooks" target="_blank" rel="noopener noreferrer">Amazon 著者ページ →</a></div>
+      </div>
+
+      <!-- まんが（Instagram の投稿を公式の埋め込みで表示・2026-11-20 ユーザー指示）。タブを開いたときに embed.js を読む -->
+      <div class="sf-tab-panel" role="tabpanel" id="tab-comic" aria-labelledby="t-comic" hidden style="margin-top:36px">
+        <p class="sf-sec-label" style="letter-spacing:5px">INSTAGRAM ／ まんが</p>
+        <h3 class="sf-sec-title" style="font-size:22px">ヒナタのチューナー</h3>
+        <div class="sf-ig-wrap">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Df7OHf3FMbs/" data-instgrm-version="14">
+            <a class="sf-ig-fallback" href="https://www.instagram.com/p/Df7OHf3FMbs/" target="_blank" rel="noopener noreferrer">Instagram で見る →</a>
+          </blockquote>
+        </div>
       </div>
     </div>
   </section>
@@ -237,7 +256,16 @@
       });
     }
     tabs.forEach(function (t) { t.addEventListener('click', function () { open(t.getAttribute('aria-controls')); }); });
-    var h = { '#qf': 'tab-qf', '#short-stories': 'tab-short', '#short': 'tab-short', '#books': 'tab-books', '#novel': 'tab-main' }[location.hash];
+    // まんがタブ：開いたときに Instagram の公式 embed.js を読む（1 回だけ）
+    var igLoaded = false;
+    function loadIg() {
+      if (igLoaded) return; igLoaded = true;
+      if (window.instgrm && window.instgrm.Embeds) { window.instgrm.Embeds.process(); return; }
+      var sc = document.createElement('script'); sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc);
+    }
+    document.getElementById('t-comic').addEventListener('click', loadIg);
+    if (location.hash === '#comic' || location.hash === '#manga') loadIg();
+    var h = { '#comic': 'tab-comic', '#manga': 'tab-comic', '#qf': 'tab-qf', '#short-stories': 'tab-short', '#short': 'tab-short', '#books': 'tab-books', '#novel': 'tab-main' }[location.hash];
     if (h) { open(h); setTimeout(function () { document.getElementById('stories').scrollIntoView(); }, 50); }
 
     // 作品の画像（site-data.js）と最新の更新（小説家になろう API。取得できなければ未取得）
