@@ -19,6 +19,18 @@ Claude / ChatGPT など複数環境から作業する場合は、更新前に `m
 
 ---
 
+## 2026-11-20 トップ：今日のワンオラクルのポップアップを追加
+
+### 内容
+
+- トップを開いたとき、最初に「TODAY'S ONE ORACLE」のポップアップを 1 日 1 回表示（カードをタップでめくる）
+- カードの文言・画像は Under tone の占い（`room/undertone/index.html` の `CARDS` / `CARD_IMGS`）と同じ。HP では Snow を消費しない
+- 結果の下に行き先 3 つ：Under tone へ行く（`room/undertone/`）／今日の音（`gacha/`）／小説を読む（トップの DAILY UPDATE バナーへ移動して光らせる）
+- 処理は `site/daily-oracle.js`。その日のカードは localStorage `sf_daily_oracle` に保存
+- **Under tone 側のカードを直したら `site/daily-oracle.js` も同じように直すこと**
+
+---
+
 ## 2026-10-31 物語ページ：ホラー作品・短篇の入口を追加
 
 ### 内容
