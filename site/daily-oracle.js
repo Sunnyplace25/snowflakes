@@ -178,6 +178,7 @@
     P + '.do-go a small{font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:2px;opacity:.75;}',
     P + '.do-go .g-ut{color:#c4b5fd;border-color:rgba(196,181,253,0.35);background:rgba(196,181,253,0.08);}',
     P + '.do-go .g-gacha{color:#fde68a;border-color:rgba(253,230,138,0.3);background:rgba(253,230,138,0.06);}',
+    P + '.do-go .g-oto{color:#f9a8d4;border-color:rgba(249,168,212,0.35);background:rgba(249,168,212,0.07);}',
     P + '.do-go .g-novel{color:#93c5fd;border-color:rgba(147,197,253,0.35);background:rgba(147,197,253,0.08);}',
     P + '.do-credit{font-family:"Cormorant Garamond",serif;font-size:10px;letter-spacing:2px;color:#475569;margin-top:16px;}',
     '@keyframes doFlash{0%,100%{box-shadow:0 0 0 rgba(147,197,253,0)}50%{box-shadow:0 0 36px rgba(147,197,253,0.45)}}',
@@ -222,7 +223,8 @@
           '<p class="do-adv">' + esc(data.advice) + '</p>',
           '<div class="do-go">',
             '<a class="g-ut" href="room/undertone/" data-go="undertone">Under tone へ行く<small>もっと占う →</small></a>',
-            '<a class="g-gacha" href="gacha/" data-go="gacha">今日の音<small>GACHA・音診断 →</small></a>',
+            '<a class="g-gacha" href="gacha/" data-go="gacha">今日の音<small>GACHA →</small></a>',
+            '<a class="g-oto" href="game/oto/" data-go="oto">あなたの音診断<small>診断する →</small></a>',
             '<a class="g-novel" href="#" data-go="novel">小説を読む<small>今日の更新 →</small></a>',
           '</div>',
           '<p class="do-credit">Snow flakes Tarot  ·  Words &amp; Interpretation  ·  Kotori Yamabuki</p>',
@@ -266,7 +268,7 @@
       a.addEventListener('click', function(e) {
         var go = a.getAttribute('data-go');
         track('daily_oracle_go', { destination: go, card: card.arch });
-        if (go !== 'novel') return;                       // Under tone・今日の音は通常のリンク
+        if (go !== 'novel') return;                       // Under tone・今日の音・音診断は通常のリンク
         e.preventDefault();
         close();
         var target = document.getElementById('update-banner') || document.getElementById('sf-banner-wrap');
