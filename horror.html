@@ -333,6 +333,20 @@
     SHARE
   </button>
 
+  <!-- 特集の告知リール（2026-11-26 ユーザー「１つめ、ホラー特集に埋め込み」「頭に」→ 見出し・SHARE の下）。欄が近づいたら公式の embed.js を読む -->
+  <div id="horror-reel" style="max-width:400px;margin:8px auto 36px;padding:0 16px;position:relative;z-index:1;display:flex;justify-content:center;">
+    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da6jfvCPC42/" data-instgrm-version="14" style="margin:0 auto;"><a href="https://www.instagram.com/reel/Da6jfvCPC42/" target="_blank" rel="noopener noreferrer" style="color:#fca5a5;">Instagram で見る →</a></blockquote>
+  </div>
+  <script>
+  (function () {
+    var box = document.getElementById('horror-reel'), done = false;
+    function load() { if (done) return; done = true; var sc = document.createElement('script'); sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc); }
+    if (!('IntersectionObserver' in window)) { load(); return; }
+    var io = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); load(); } }, { rootMargin: '600px 0px' });
+    io.observe(box);
+  })();
+  </script>
+  
   <!-- 新作短篇 Under tone（時刻制御） -->
   <div id="ut-story-card-wrap" style="margin-bottom:28px;"></div>
   <script>
@@ -1668,6 +1682,12 @@ STORYTEXT_END-->
     音の鳴る石 — 8.12 小説家になろう ［日間］ホラー文芸 1位 獲得（連載中）<br>
     Under tone — 8.21 小説家になろう ［日間］ホラー文芸 4位 獲得
   </p>
+</div>
+
+<!-- Instagram の投稿は専用ページ horror_instagram.html に（2026-11-26 ユーザー「インスタだけのページ作ってほしい」） -->
+<div style="text-align:center;margin-top:48px;position:relative;z-index:1;">
+  <a href="./horror_instagram.html" style="display:inline-block;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#f87171;text-decoration:none;border:1px solid rgba(239,68,68,0.35);border-radius:100px;padding:10px 26px;background:rgba(239,68,68,0.06);">INSTAGRAM →</a>
+  <p style="font-size:11px;color:#64748b;margin-top:8px;">特集の投稿をまとめて見る</p>
 </div>
 
 <div style="text-align:center;margin-top:40px;padding-bottom:8px;">
