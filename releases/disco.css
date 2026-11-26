@@ -404,3 +404,7 @@ html.dd-lyr-lock { overflow: hidden; }
   .dd-lyr-body p + p { margin-top: 1.4em; }
 }
 @media (prefers-reduced-motion: reduce) { .dd-lyr[open] { animation: none; } }
+
+/* 配信日前の歌詞：サビ以外はぼかす（中身はダミーの文字・2026-11-26） */
+.lyr-blur { filter: blur(6px); opacity: .7; user-select: none; pointer-events: none; }
+.lyr-teaser-note { font-size: 13px; opacity: .75; margin: 0 0 1.4em !important; }

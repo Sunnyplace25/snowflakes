@@ -1592,6 +1592,87 @@ In One Sky
 うまく言えない今日のことを
 このまま君に預けていく` },
 
+    // Sweet Encore / Shining（DistroKid・UPC 700074128388・配信日 2026-12-25。2026-11-26 ユーザー「スイートアンコールのページ作っておいて」）。歌詞は JARVIS の楽曲登録（sf_track_lyrics）から
+    'sweet-encore': { title: 'Sweet Encore', artists: ['snowflakes'], isrc: 'QTAFA2665111',
+      teaser: ['はじけたあとの甘さ', 'そばで鳴らして'],   // 配信日前はこの間（サビ）だけ見せて、ほかはぼかす（2026-11-26 ユーザー）
+      // 関連する話「Sweet Encore」のページ（まだ作っていない。作ったらこの場所に置く・2026-11-26 ユーザー）
+      // 短篇枠の話のページ（stories/sweet-encore/）ができたら、下の行の // を外す。今は無いページへのリンクになるので止めている（2026-11-26）
+      // stories: [{ type: 'related', label: 'Snow flakes 短篇「Sweet Encore」', url: '../stories/sweet-encore/', internal: true }],
+      lyrics: `ひとつ鳴ったら　もうひとつ
+隣へ渡して　もうひとつ
+じっとしてたら　もったいない
+まだまだ足りない　そのくらいじゃ
+
+ぱっと弾けて　目が合って
+つられて笑えば　また鳴って
+どこまで響くか　試そうか
+せーので　もう一回
+
+はじけたあとの甘さは
+まだ誰にも教えない
+誰にも聞こえない続き
+もう少し　そばで鳴らして
+
+ひとつ弾けりゃ　あちこちで
+澄ました顔まで　ほころんで
+誰が始めた　分からない
+気づけばこっちも　止まらない
+
+ぱっと弾けて　手が上がって
+知らない同士で　また笑って
+ここまで来たなら　付き合って
+せーので　もう一回
+
+はじけたあとの甘さを
+知ってるのは俺だけ
+誰にも聞こえない続き
+もう少し　そばで鳴らして
+
+もう一回　もう一回
+鳴りやむ前に　もう一回
+もう一回　もう一回
+せーので　もう一回
+
+はじけたあとの甘さは
+まだ誰にも教えない
+誰にも聞こえない続き
+もう少し　そばで鳴らして` },
+    'shining': { title: 'Shining', artists: ['snowflakes'], isrc: 'QTAFA2665112',
+      teaser: ['少しずつでいい', '君だけの音を　見つけよう'],   // 2026-11-26 ユーザー「すこしずつでいい から君だけの音を見つけようまで」
+      stories: [{ type: 'related', work: MAIN, ep: 355, epTitle: '幕間｜Shining', url: NOVEL + '355' }],   // 2026-11-26 ユーザー「シャイニングは幕間の話にリンク」
+      lyrics: `朝のひかりが　君を呼んでる
+ほどける空に　手をのばした
+涙のあとに　残る気配を
+そのまま　受け取って
+
+うまくいかない日もあるけど
+それでも　進んでいく
+こぼした夢の　その先に
+まだ光があるなら
+
+少しずつでいい
+歩いていけばいい
+音は　ちゃんと続いてる
+
+キラキラ　揺れるように
+笑って　前を向けば
+どんな日々も　光に変わる
+キラキラ　その先へ
+空へ　手をのばして
+君だけの音を　見つけよう
+
+言葉にならなくてもいい
+無理に強くならなくていい
+
+そのままで　ちゃんと響くから
+
+キラキラ　つながるように
+重ねた音の中で
+光はずっと　続いていく
+キラキラ　その先で
+未来は　ほどけていく
+終わらない音　ここにある` },
+
     // まだ鳴ってる（2026-10-27。曲名・収録曲は Amazon Music、リリース日は Apple の公開情報で確認。Spotify は配信後に追加）
     'mada-natteru': { title: 'まだ鳴ってる', artists: ['snowflakes'],
       // 歌詞（2026-10-28 ユーザー指定・ユーザーが整えた版のまま）
@@ -1871,6 +1952,11 @@ In One Sky
       spotify: 'https://open.spotify.com/intl-ja/album/38oT99du22hU22FaNHSZTc',
       amazon: 'https://music.amazon.co.jp/albums/B0HPGMNF4M',
       tracks: ['mada-natteru', 'nigai-purin'] },
+
+    // Sweet Encore（DistroKid 初・配信日 2026-12-25。announce で配信日前から「配信予定」として出す。Spotify・Amazon の URL は配信後に追加）
+    { id: 'sweet-encore', title: 'Sweet Encore', sub: 'Shining', type: 'single', artists: ['snowflakes'], status: 'public', announce: true,
+      releaseDate: '2026-12-25', jacket: 'Discography/sweet_encore.webp',
+      tracks: ['sweet-encore', 'shining'] },
 
     // 雨音クラブ：SoundCloud 限定（soundcloud があって spotify・amazon が無い作品は「SoundCloud限定」の印が付く）
     { id: 'utenkekkou-acoustic', title: '雨天決行', sub: 'Acoustic Ver.', type: 'single', artists: ['amaoto-club'], status: 'public',

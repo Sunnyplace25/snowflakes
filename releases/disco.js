@@ -28,6 +28,8 @@
 
   /** 一般公開してよい作品か（status が public で、リリース日が来ているもの） */
   function isVisible(r) {
+    // announce: true の作品は配信日前から出す（日付は「配信予定」と表示。2026-11-26 ユーザー「12月25日配信予定にして」）
+    if (r && r.status === 'public' && r.announce) return true;
     return r && r.status === 'public' && (!r.releaseDate || r.releaseDate <= todayJst());
   }
   function visibleReleases() { return D.releases.filter(isVisible); }
@@ -127,12 +129,23 @@
     var from = s.lyricsFrom && D.songs[s.lyricsFrom];
     return from && has(from.lyrics) ? from.lyrics : '';
   }
-  function lyricsParas(text) {
+  /* 配信日前は、サビ（teaser：[始まりの行, 終わりの行]。始まりの行で始まる最初の段落から、終わりの行を含む段落まで）だけ見せて、ほかはぼかす（2026-11-26 ユーザー「ぼかしてさびだけみせようか」）。
+     ぼかす所は本当の歌詞を置かず、同じ長さのダミーの文字にする（ページから読めないように）。配信日が来ると自動で全文に戻る */
+  var DUMMY = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん';
+  function dummyLine(l) { var o = ''; for (var i = 0; i < l.length; i++) o += /[ 　]/.test(l[i]) ? l[i] : DUMMY[(i * 7 + l.length * 3) % DUMMY.length]; return o; }
+  function lyricsParas(text, teaser) {
+    var st = 0;   // 0＝まだ 1＝見せている途中 2＝見せ終わった
     var parts = String(text).replace(/^\s*\n|\n\s*$/g, '').split(/(\n(?:[ \t　]*\n)+)/);
     var html = '', gap = 0;
     parts.forEach(function (p, i) {
       if (i % 2) { gap = p.split('\n').length - 2; return; }
-      html += '<p' + (gap > 1 ? ' data-gap="' + gap + '"' : '') + '>' + esc(p) + '</p>';
+      var hide = false;
+      if (teaser) {
+        if (st === 0 && p.indexOf(teaser[0]) === 0) st = 1;
+        hide = st !== 1;
+        if (st === 1 && p.indexOf(teaser[1] || teaser[0]) >= 0) st = 2;
+      }
+      html += '<p' + (gap > 1 ? ' data-gap="' + gap + '"' : '') + (hide ? ' class="lyr-blur" aria-hidden="true"' : '') + '>' + esc(hide ? p.split('\n').map(dummyLine).join('\n') : p) + '</p>';
     });
     return html;
   }
@@ -145,7 +158,7 @@
     return '<div class="dd-lyr-open-wrap"><button type="button" class="pill dd-lyr-open" aria-haspopup="dialog"' +
       ' data-title="' + esc(meta.title || '') + '" data-artist="' + esc(meta.artist || '') + '"' +
       ' data-credit="' + esc(creditLine(meta.credits)) + '">歌詞を見る</button></div>' +
-      '<div class="dd-lyrics dd-lyr-src" hidden>' + lyricsParas(text) + '</div>';
+      '<div class="dd-lyrics dd-lyr-src" hidden>' + (meta.teaser ? '<p class="lyr-teaser-note">' + esc(meta.teaserNote) + '</p>' : '') + lyricsParas(text, meta.teaser) + '</div>';
   }
   function textBlock(text, cls) {
     if (!has(text)) return '';
@@ -161,8 +174,10 @@
     }).join('') + '</div>';
   }
   /** 作品情報の日付：「Release：2026.03.19」形式の1行 */
+  function isUpcoming(d) { return !!d && d > todayJst(); }
+  function jpDate(d) { var p = d.split('-'); return +p[0] + '年' + (+p[1]) + '月' + (+p[2]) + '日'; }
   function infoLines(release, created) {
-    var h = (release ? '<p class="dd-line f-en">Release：' + fmtDate(release) + '</p>' : '') +
+    var h = (release ? (isUpcoming(release) ? '<p class="dd-line">' + jpDate(release) + ' 配信予定</p>' : '<p class="dd-line f-en">Release：' + fmtDate(release) + '</p>') : '') +
             (created ? '<p class="dd-line">制作：<span class="f-en">' + fmtDate(created) + '</span></p>' : '');
     return h ? '<div class="dd-lines">' + h + '</div>' : '';
   }
@@ -187,7 +202,7 @@
       '<span class="dc-meta"><span class="dc-type">' + esc(TYPE_LABEL[r.type] || r.type) + '</span>' + hiResBadge(r) + '</span>' +
       '<span class="dc-title">' + esc(r.title) + '</span>' +
       '<span class="dc-artist">' + artistNames(r.artists) + '</span>' +
-      (r.releaseDate ? '<span class="dc-date f-en">' + fmtDate(r.releaseDate) + '</span>' : '') + '</a>';
+      (r.releaseDate ? '<span class="dc-date f-en">' + fmtDate(r.releaseDate) + (isUpcoming(r.releaseDate) ? ' 配信予定' : '') + '</span>' : '') + '</a>';
   }
   function cardsBlock(list) {
     return list.length ? '<div class="dc-grid is-small">' + list.map(releaseCard).join('') + '</div>' : '';
@@ -569,7 +584,8 @@
     var mvs = s.mv ? [{ id: s.mv, caption: '「' + s.title + '」Music Video' }] : [];
     root.innerHTML = assemble({
       head: head,
-      lyrics: lyricsBlock(lyricsOf(s), { title: s.title, artist: artistPlain(s.artists), credits: s.credits }),
+      lyrics: lyricsBlock(lyricsOf(s), { title: s.title, artist: artistPlain(s.artists), credits: s.credits,
+        teaser: isUpcoming(first.releaseDate) && s.teaser ? s.teaser : null, teaserNote: '歌詞の全文は ' + jpDate(first.releaseDate || '2000-01-01') + 'の配信開始とともに公開します。' }),
       note: textBlock(s.kotoriNote, 'dd-note'), tracklist: '', mv: mvBlock(mvs),
       stories: s.stories || [], gallery: galleryBlock(s.gallery), versions: versionList,
       relatedTitle: '収録作品', related: cardsBlock(on.slice().reverse())
