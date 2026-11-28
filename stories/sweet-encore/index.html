@@ -86,6 +86,8 @@
     .se-footer nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; font-size: 13px; }
     .se-footer nav a { color: var(--muted); text-decoration: none; }
     #snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    #se-toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 120; background: rgba(30,41,59,0.95); color: var(--text); border: 1px solid var(--border); font-size: 13px; padding: 8px 18px; border-radius: 100px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    #se-toast.is-show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -112,6 +114,10 @@
         <a class="btn main" href="#story">各話一覧 ↓</a>
         <a class="btn" href="https://ncode.syosetu.com/n5644mp/" target="_blank" rel="noopener noreferrer">小説家になろうで読む</a>
         <a class="btn" href="../../releases/song.html?id=sweet-encore">楽曲ページへ</a>
+        <button class="btn" id="se-share" type="button" aria-label="このページをシェア（share）">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          share
+        </button>
       </div>
     </div>
   </header>
@@ -229,6 +235,20 @@
   document.addEventListener('visibilitychange', function () { if (document.hidden) { cancelAnimationFrame(raf); raf = 0; } else if (!raf) { last = 0; raf = requestAnimationFrame(step); } });
   raf = requestAnimationFrame(step);
 })();
+</script>
+<script>
+// シェア：共有メニュー（スマホなど）→ なければリンクをコピーして「コピーしました」
+document.getElementById('se-share').addEventListener('click', function () {
+  var url = location.href.split('#')[0].split('?')[0], title = document.title;
+  if (navigator.share) { navigator.share({ title: title, url: url }).catch(function () {}); return; }
+  if (!navigator.clipboard) return;
+  navigator.clipboard.writeText(url).then(function () {
+    var t = document.getElementById('se-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'se-toast'; t.setAttribute('role', 'status'); t.textContent = 'リンクをコピーしました'; document.body.appendChild(t); }
+    t.classList.add('is-show');
+    setTimeout(function () { t.classList.remove('is-show'); }, 2000);
+  });
+});
 </script>
 </body>
 </html>
