@@ -90,6 +90,14 @@
     { id: 'snowflakes', label: 'SNOW FLAKES', title: 'Snow flakes の短篇',
       lead: 'ヒナタ、ハヤテ、コウタ。三人がバンドになる前と、そのまわりにいた人たちの物語です。',
       items: [
+      // 短篇連作「Sweet Encore」（2026-11-28 ユーザー「短篇のカードもスイートEncoreにして」）。紹介文はなろうのあらすじの最初の2段落をそのまま。
+      // 状態は 12/11〜12/25 毎日20:00（日本時間）の公開に合わせて自動で変わる
+      { title: 'Sweet Encore', kind: '短篇連作', date: '2026.12.11',
+        eps: '全15話 · ' + (function () { var n = 0; for (var i = 0; i < 15; i++) if (Date.now() >= Date.parse('2026-12-' + (11 + i) + 'T20:00:00+09:00')) n++; return n === 15 ? '完結' : n ? '連載中（' + n + '／15話）' : '12月11日 連載開始'; })(),
+        image: 'stories/sweet-encore/img/main.webp', imagePos: 'center 40%',
+        text: '道内ツアーを終えたSnow flakesは、年明けに発売するアルバムの仕上げに追われていた。クリスマスまで埋まった予定。ツアー帰りの慌ただしいスタジオ。そして、仕事の合間に少しずつ見え始める、それぞれの気持ち。',
+        related: [SF, { label: '♪ Sweet Encore', href: SONG + 'sweet-encore' }],
+        links: [{ label: '作品ページへ', href: '../sweet-encore/' }] },
       // 短篇連作（2026-11-02 指示書）：紹介文は指示書のまま（表記は画像に合わせて「短篇連作」に統一・ユーザー指示）。公開状況・各話は stories/showcase/showcase-data.js
       { title: 'ショーケースの前で恋をした', kind: '短篇連作', date: '2026.11.07',
         eps: '全8話 · ' + SfShowcase.status().text,

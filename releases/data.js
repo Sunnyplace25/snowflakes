@@ -1595,9 +1595,8 @@ In One Sky
     // Sweet Encore / Shining（DistroKid・UPC 700074128388・配信日 2026-12-25。2026-11-26 ユーザー「スイートアンコールのページ作っておいて」）。歌詞は JARVIS の楽曲登録（sf_track_lyrics）から
     'sweet-encore': { title: 'Sweet Encore', artists: ['snowflakes'], isrc: 'QTAFA2665111',
       teaser: ['はじけたあとの甘さ', 'そばで鳴らして'],   // 配信日前はこの間（サビ）だけ見せて、ほかはぼかす（2026-11-26 ユーザー）
-      // 関連する話「Sweet Encore」のページ（まだ作っていない。作ったらこの場所に置く・2026-11-26 ユーザー）
-      // 短篇枠の話のページ（stories/sweet-encore/）ができたら、下の行の // を外す。今は無いページへのリンクになるので止めている（2026-11-26）
-      // stories: [{ type: 'related', label: 'Snow flakes 短篇「Sweet Encore」', url: '../stories/sweet-encore/', internal: true }],
+      // 関連する話：短篇連作「Sweet Encore」の作品ページ（2026-11-28 ユーザー「ここもすいーといれて」。表記はショーケースにそろえた）
+      stories: [{ type: 'related', label: 'Snow flakes 短篇連作「Sweet Encore」', url: '../stories/sweet-encore/', internal: true }],
       lyrics: `ひとつ鳴ったら　もうひとつ
 隣へ渡して　もうひとつ
 じっとしてたら　もったいない
